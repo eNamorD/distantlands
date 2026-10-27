@@ -46,11 +46,14 @@ Beacon, Stars) as ordinary walker decisions and ends by journaling
   like Setup's `SetupEnd`. The base rule gives the default actor and step;
   legacy powers can later change the actor, add a step or skip one. A test with
   a fake power proves the seam before Legacies exist.
-- **Actors.** Winner: Sun, Throne, and the Stars constellation. World task
-  holder (People's Favor): World. Beacon task holder (Darkest Secret): Beacon.
-  Task holders are seated players. Sun's step 7 assigns an unheld task. The
-  holder of both Beacon and World chooses the recipient and which task to give
-  (user ruling).
+- **Actors.** Steps that make a choice have an actor; the rest run
+  procedurally with none. Winner: the Sun and Throne choices. World task holder
+  (People's Favor): World. Beacon task holder (Darkest Secret): Beacon. Stars
+  has no actor (the constellation step is not implemented). Task holders are
+  seated players. Sun's step 7 lets the winner choose the World holder when no
+  one holds the People's Favor, and the Beacon holder when no one holds the
+  Darkest Secret. The holder of both Beacon and World chooses the recipient and
+  which task to give (user ruling).
 - **Scoring.** Throne awards 3 points plus 2-for-1 gifts into
   `era.lineageScores`. Legacy bonus points stay stubbed. Era-end detection and
   reset belong to the Eras slice.
@@ -84,12 +87,18 @@ image-only, read visually). Known gaps in the current summary:
 - Several steps omit "facedown".
 
 Rulebook ambiguities are put to the user and recorded in
-`docs/rules/ambiguities.md` with citations. Open for the user: who resolves the
-Stars steps after the constellation (the source names no actor; the winner is
-assumed until ruled), and whether "no one holds a banner" in Sun step 7 means
-either banner or both. Settled: task recipients are seated players only.
-Stars' "play again or store" choice does not apply; the phase always ends in
-`ChronicleUpdated`.
+`docs/rules/ambiguities.md` with citations. Rulings so far:
+
+- Task recipients are seated players only.
+- Sun step 7 is two rules: if no one holds the People's Favor, the winner
+  chooses who takes the World task; if no one holds the Darkest Secret, the
+  winner chooses who takes the Beacon task.
+- Most cleanup steps have no actor and run procedurally. Stars has no
+  actor-bound step except "Writing in the Stars" (constellation and narrative),
+  which is not implemented for the digital version. Everything else in Stars is
+  actorless. Setup steps may carry an actor; the rewrite checks each.
+- Stars' "play again or store" choice does not apply; the phase always ends in
+  `ChronicleUpdated`.
 
 ## Exit and extraction
 
@@ -130,6 +139,9 @@ checked against validation only.
 ## Out of scope
 
 Foundations and Legacies behaviour, Eras end and reset, Citizenship through
-Negotiation, Imperial setup and play, the TTS codec (which tracks neither era
-nor the Oathkeeper goal today), saved-campaign browsing, and starting a playable
+Negotiation, Imperial setup and play, the TTS codec. Its maintainer (harsch) will bump the encoding to version 3
+and add one digit after the foundations bitmask for the current Oath (0 unset,
+1 Supremacy/Conquest/Most Sites, 2 Devotion/Faith/Darkest Secret, 3
+People/Rebellion/People's Favor, 4 Protection/Sanctuary/Relics, 5-20 reserved,
+21+ fan content), so `oathkeeperGoal` has a wire home. Era still has none, saved-campaign browsing, and starting a playable
 game 2.
