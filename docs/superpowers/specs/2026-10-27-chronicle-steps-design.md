@@ -26,7 +26,16 @@ Beacon, Stars) as ordinary walker decisions and ends by journaling
   phase's concern.
 - **Procedure shape.** One triggered procedure per task (`ChronicleSun`,
   `ChronicleThrone`, `ChronicleWorld`, `ChronicleBeacon`, `ChronicleStars`),
-  each queuing the next. Not one large tree; not a player-ordered menu.
+  plus `ChronicleBegin` and a closing `ChronicleFinish`. Not one large tree; not
+  a player-ordered menu.
+- **Chaining (amended 2026-10-27).** The driver chains them, not the queue:
+  `QueuedProcedure.procedure` must be a `StartableRef` and its wire codec
+  rejects triggered refs. A `ChronicleSequence` table names the successor of
+  each completed Chronicle procedure, and `OathDriver.next` starts it while the
+  phase is `Chronicle`. `OathDriver.next` also starts `ChronicleBegin` once when
+  `result` is set and the phase is not yet `Chronicle` (today it returns early
+  on a result). `ChronicleBegin` is a parked decision owned by the winner; no
+  client command starts a procedure.
 - **Live state extended.** Game start keeps the whole original `Chronicle` as an
   immutable baseline on the live state, including lineages of colors that did
   not play (their cards, legacies and relics). The phase evolves that baseline.
@@ -66,7 +75,9 @@ Beacon, Stars) as ordinary walker decisions and ends by journaling
   The retained starting adviser and the drawn newcomers are owner-private
   decisions, as Setup's adviser decision is.
 - **UI.** The generic walker-decision panel and Game Log, plus the winner-only
-  Begin button. No Chronicle-specific views.
+  Begin button. No Chronicle-specific views. The frontend's `viewerPresentation`
+  currently hides all controls once a winner exists; it must let a parked
+  decision through.
 
 ## Rules source
 
