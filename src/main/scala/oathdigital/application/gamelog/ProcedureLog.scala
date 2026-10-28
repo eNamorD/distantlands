@@ -317,6 +317,13 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
         narrated = Vector(Told(ChronicleBeginProcedure.decisionId)),
         lines = ActionLineSource.Silent(
           "the Chronicle headline the phase change posts tells the answer"))
+    case TriggeredProcedureRef.ChronicleSun =>
+      ProcedureLog(tag = None, isSection = false,
+        lines = ActionLineSource.Silent("the Sun's steps write no lines yet"))
+    case TriggeredProcedureRef.ChronicleThrone =>
+      ProcedureLog(tag = None, isSection = false,
+        lines = ActionLineSource.Silent(
+          "the Throne's steps write no lines yet"))
     case TriggeredProcedureRef.ChronicleFinish =>
       ProcedureLog(tag = None, isSection = false,
         lines = ActionLineSource.Silent(

@@ -5,11 +5,13 @@ import oathdigital.model._
 /** The fixed order of the Chronicle Phase (Chronicle steps design,
   * "Chaining"). The queue only holds startable procedures, so the driver
   * chains these triggered ones: it starts the successor of whichever just
-  * completed. Later slices insert the five tasks between Begin and Finish.
+  * completed. World, Beacon and Stars are later inserted between Throne and
+  * Finish.
   */
 object ChronicleSequence:
   private val order: Vector[TriggeredProcedureRef] =
     Vector(TriggeredProcedureRef.ChronicleBegin,
+      TriggeredProcedureRef.ChronicleSun, TriggeredProcedureRef.ChronicleThrone,
       TriggeredProcedureRef.ChronicleFinish)
 
   /** The procedure that follows `completed`, when it is a Chronicle

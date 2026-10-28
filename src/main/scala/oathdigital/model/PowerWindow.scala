@@ -181,6 +181,36 @@ object PowerWindow:
     * chosen an adviser: Great Market, Bandit Market and Empty Grounds hook
     * here. */
   case object SetupEnd extends OtherWindow { val key = "setup.end" }
+  // One window per Chronicle task step, in step order (Chronicle steps
+  // design, "Windows, not hardcoded actors"): legacy powers can change a
+  // step's actor, add to it or skip it.
+  case object ChronicleRevealRelics extends OtherWindow:
+    val key = "chronicle.sun.reveal-relics"
+  case object ChronicleFlipLegacies extends OtherWindow:
+    val key = "chronicle.sun.flip-legacies"
+  case object ChronicleExileDormancy extends OtherWindow:
+    val key = "chronicle.sun.exile-dormancy"
+  case object ChronicleLegacyCap extends OtherWindow:
+    val key = "chronicle.sun.legacy-cap"
+  case object ChronicleShuffleLegacies extends OtherWindow:
+    val key = "chronicle.sun.shuffle-legacies"
+  case object ChronicleCrown extends OtherWindow { val key = "chronicle.sun.crown" }
+  case object ChronicleAssignTasks extends OtherWindow:
+    val key = "chronicle.sun.assign-tasks"
+  case object ChronicleOfferCitizenship extends OtherWindow:
+    val key = "chronicle.throne.offer-citizenship"
+  case object ChronicleShapeEmpire extends OtherWindow:
+    val key = "chronicle.throne.shape-empire"
+  case object ChronicleBuildEdifice extends OtherWindow:
+    val key = "chronicle.throne.build-edifice"
+  case object ChronicleStockReliquary extends OtherWindow:
+    val key = "chronicle.throne.stock-reliquary"
+  case object ChronicleScatterRelics extends OtherWindow:
+    val key = "chronicle.throne.scatter-relics"
+  case object ChronicleScoreLineage extends OtherWindow:
+    val key = "chronicle.throne.score-lineage"
+  case object ChronicleSwearOath extends OtherWindow:
+    val key = "chronicle.throne.swear-oath"
   /** Where an explored site's effects resolve, once an explore procedure
     * exists to fire it (2026-09-21 Chronicle design, "Setup powers" --
     * out of scope until then). Slice 3's E02/E06/E22 powers already name
