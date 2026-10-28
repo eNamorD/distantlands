@@ -2,7 +2,8 @@ package oathdigital.application.gamelog
 
 import oathdigital.gameplay.chronicle.{ChronicleBeginProcedure,
   ChronicleSunProcedure, BuildEdifice, IntroduceNewcomers, LineageScoring,
-  ProtectAndDispossess, ShapeEmpire, SwearOath, WelcomeStranger}
+  ProtectAndDispossess, ShapeEmpire, SwearOath, WelcomeStranger,
+  ChronicleStarsProcedure}
 import oathdigital.gameplay.actions.campaign.CampaignNotes
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
 import oathdigital.gameplay.actions.challenge.{ChallengeProcedure,
@@ -349,6 +350,11 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
         IntroduceNewcomers.returned -> LogKind.Delta,
         WelcomeStranger.keptAdviser -> LogKind.Decision)),
       narratedPrefixes = Vector("chronicle.beacon."), isSection = false)
+    case TriggeredProcedureRef.ChronicleStars => ProcedureLog(tag = None,
+      lines = ActionLineSource.Notes(Map(
+        ChronicleStarsProcedure.archived -> LogKind.Delta,
+        ChronicleStarsProcedure.keptInEmpire -> LogKind.Delta)),
+      narratedPrefixes = Vector.empty, isSection = false)
     case TriggeredProcedureRef.ChronicleFinish =>
       ProcedureLog(tag = None, isSection = false,
         lines = ActionLineSource.Silent(

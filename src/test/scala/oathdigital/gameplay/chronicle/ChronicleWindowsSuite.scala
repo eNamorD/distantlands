@@ -32,7 +32,8 @@ class ChronicleWindowsSuite extends munit.FunSuite:
     val state = ChronicleWalk.chronicleWonByP1.state
     val lineage = lineageOf(state, p2)
     val windows = ChronicleWindows.sun ++ ChronicleWindows.throne ++
-      ChronicleWindows.world ++ ChronicleWindows.beacon
+      ChronicleWindows.world ++ ChronicleWindows.beacon ++
+      ChronicleWindows.stars
     val rules = new OathRules(catalog,
       walkerPowerCatalog =
         WalkerPowers(Vector(PointPerWindow(lineage, windows))),
@@ -65,10 +66,16 @@ class ChronicleWindowsSuite extends munit.FunSuite:
         "chronicle.beacon.welcome-stranger",
         "chronicle.beacon.shape-foundation")))
 
-  test("the Throne is followed by the World, the Beacon, then Finish"):
+  test("Stars window keys stay as power data spells them"):
+    assertEquals(ChronicleWindows.stars.map(_.key),
+      Vector("chronicle.stars.write-in-the-stars",
+        "chronicle.stars.archive-rival-sites", "chronicle.stars.clean-up",
+        "chronicle.stars.store"))
+
+  test("the Throne is followed by the World, the Beacon, then the Stars"):
     assertEquals(Vector(TriggeredProcedureRef.ChronicleThrone,
       TriggeredProcedureRef.ChronicleWorld,
       TriggeredProcedureRef.ChronicleBeacon).map(ChronicleSequence.after),
       Vector(Some(TriggeredProcedureRef.ChronicleWorld),
         Some(TriggeredProcedureRef.ChronicleBeacon),
-        Some(TriggeredProcedureRef.ChronicleFinish)))
+        Some(TriggeredProcedureRef.ChronicleStars)))

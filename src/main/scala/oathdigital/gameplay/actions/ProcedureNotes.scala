@@ -3,7 +3,7 @@ package oathdigital.gameplay.actions
 import oathdigital.gameplay.actions.campaign.CampaignNotes
 import oathdigital.gameplay.chronicle.{ChronicleSunProcedure,
   ChronicleThroneProcedure, ChronicleWorldProcedure,
-  ChronicleBeaconProcedure}
+  ChronicleBeaconProcedure, ChronicleStarsProcedure}
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
 import oathdigital.gameplay.actions.challenge.{ChallengeProcedure,
   PlaceBannerResourceProcedure}
@@ -100,4 +100,6 @@ object ProcedureNotes:
         ChronicleWorldProcedure.noteKeys
       case TriggeredProcedureRef.ChronicleBeacon =>
         ChronicleBeaconProcedure.noteKeys
+      case TriggeredProcedureRef.ChronicleStars =>
+        ChronicleStarsProcedure.noteKeys
       case _ => Vector.empty
