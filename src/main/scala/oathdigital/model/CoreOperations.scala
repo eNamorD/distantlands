@@ -581,6 +581,13 @@ final case class SetOathkeeper(holder: Option[PlayerId]) extends PrimitiveOperat
 final case class SetOathkeeperGoal(goal: OathkeeperGoal)
     extends PrimitiveOperation
 
+/** Records the evolved Chronicle at the end of the Chronicle Phase
+  * (Chronicle steps design, "Exit and extraction"). It is the phase's one
+  * campaign record: the next game starts from it. Applying it only stores the
+  * value; the Chronicle procedures decide what it holds.
+  */
+final case class ChronicleUpdated(chronicle: Chronicle) extends PrimitiveOperation
+
 /** Records the result of the Campaign just fought as the public
   * `lastCampaignResult`, replacing the previous one.
   */

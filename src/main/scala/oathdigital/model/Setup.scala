@@ -46,7 +46,7 @@ final case class FirstGameSetupPlan(
     worldDeckOrder: Vector[WorldCardId],
     relicOrder: Vector[RelicId],
     homelandEdifices: Vector[(SiteId, EdificeId)],
-    oathkeeperGoal: OathkeeperGoal = OathkeeperGoal.Supremacy
+    oathkeeperGoal: OathkeeperGoal
 )
 
 /** Pure CR pp. 6-7 table setup, shared by `GameStartRules`. */

@@ -43,10 +43,12 @@ private[gameplay] trait OathRulesWalker:
       startArgs: Vector[DecisionOptionRef] = Vector.empty)
       : Either[OathViolation, OathTransition] =
     state match
+      // Checked first: after the game, the Start Chronicle decision is
+      // pending too, and an action is refused because the game is over.
+      case Ready(ready) if ready.game.current.result.nonEmpty => Left(GameEnded)
       case Ready(ready) if ready.game.current.walkerPending.nonEmpty ||
           ready.game.current.walkerProcedure.nonEmpty =>
         Left(InvalidEventOrder("a walker procedure is already pending"))
-      case Ready(ready) if ready.game.current.result.nonEmpty => Left(GameEnded)
       case Ready(ready) =>
         startNow(state, ready, procedure, requester, startArgs)
       case _ => Left(GameNotStarted)

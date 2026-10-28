@@ -43,6 +43,8 @@ object FirstGameChronicleGenerator:
         atlas,
         worldDeck = policy.order(worldPool, implementedDenizens, random),
         relicDeck = policy.order(relicPool, implementedRelics, random),
+        era = EraState(20, Map.empty),
+        oathkeeperGoal = OathkeeperGoal.Supremacy,
         dispossessed = dispossessedPool)
       _ <- validate(catalog, chronicle)
     yield chronicle

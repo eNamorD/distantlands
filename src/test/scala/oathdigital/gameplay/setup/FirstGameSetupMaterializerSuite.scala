@@ -26,7 +26,8 @@ class FirstGameSetupMaterializerSuite extends munit.FunSuite:
       denizenOrder = Vector.empty,
       worldDeckOrder = Vector.empty,
       relicOrder = relicOrder,
-      homelandEdifices = Vector.empty)
+      homelandEdifices = Vector.empty,
+      oathkeeperGoal = OathkeeperGoal.Supremacy)
     val material = materializer.materialize(plan, Vector.empty, Vector.empty)
 
     val placedRelics = sites.flatMap(id => material.map.sites(id).relics.map(_.id))

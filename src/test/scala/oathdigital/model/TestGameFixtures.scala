@@ -110,7 +110,14 @@ object TestGameFixtures:
     dispossessed = Vector(dispossessed),
     suitedReserves = Map(Suit.Arcane -> Vector(reserved)),
     oathkeeperGoal = OathkeeperGoal.Supremacy,
-    era = EraState(20, Map(lineageId -> 0))
+    era = EraState(20, Map(lineageId -> 0)),
+    baseline = Chronicle(
+      atlasBox = Vector(StoredSite(SiteId("S9"), Vector(storedEdifice.id))),
+      worldDeck = Vector.empty,
+      relicDeck = Vector.empty,
+      era = EraState(20, Map(lineageId -> 0)),
+      oathkeeperGoal = OathkeeperGoal.Supremacy,
+      lineages = Vector(lineage))
   )
 
   val current: CurrentGameState = CurrentGameState(

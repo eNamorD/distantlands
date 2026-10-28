@@ -7,13 +7,14 @@ import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.{ChooseOneAnswer, PartitionAnswer}
 import oathdigital.serialization.GameEventWire
+import oathdigital.gameplay.chronicle.ChronicleBeginProcedure
 import oathdigital.gameplay.setup.SetupProcedure
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.testkit.{CatalogNames, Look, Outcomes, PlacementPicks, Table,
   WarExhaustionChoices}
 import oathdigital.gameplay.powers.WalkerPowerCatalog
 import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, as, rejected}
+import oathdigital.testkit.Unwrap.{accepted, as, present, rejected}
 import ParkedServiceFixture.{firstPlayer, loaded, pickFacedownAdviser,
   playFacedownAdviser, replayingSecond, setupViaService}
 
@@ -94,12 +95,34 @@ class GameApplicationServiceStreamSuite extends munit.FunSuite:
         LoadedGame(position.state, position.nextSequence),
         player.player)
       assertEquals(view.phase, "game-over")
-      assertEquals(view.walkerDecision, None)
+      // Only the winner is asked to start the Chronicle; the rest wait.
+      val winner = finished.game.current.result.map(_.winner)
+      assertEquals(view.walkerDecision.map(_.decisionId),
+        Option.when(winner.contains(player.player))("chronicle.begin"))
+      assertEquals(view.walkerWaiting.map(_.playerId),
+        winner.filterNot(_ == player.player).map(_.value))
       assertEquals(view.oathkeeper.flatMap(_.winnerPlayerId),
         finished.game.current.result.map(_.winner.value))
       assertEquals(view.world.flatMap(_.sites).map(_.siteId).toSet,
         finished.game.current.map.inPlay.map(_.value).toSet)
     }
+    // The winner starts the Chronicle once; the stream reloads into the
+    // Chronicle phase with the evolved Chronicle recorded.
+    val winner = present(finished.game.current.result, "the result").winner
+    val start = GameCommand.ResolveWalker(winner, TreeDecision(
+      ChronicleBeginProcedure.decisionId,
+      ChooseOneAnswer(ChronicleBeginProcedure.start)))
+    val chronicled = accepted(service.handle("powered-playability",
+      position.nextSequence, start))
+    rejected(service.handle("powered-playability", chronicled.nextSequence,
+      start))
+    val reloaded = loaded(new GameApplicationService(catalog, repository)
+      .load("powered-playability"))
+    assertEquals(reloaded.state, chronicled.state)
+    val campaign = Outcomes.ready(reloaded.state).game.campaign
+    assertEquals(Outcomes.ready(reloaded.state).game.current.turn.phase,
+      Phase.Chronicle)
+    assertEquals(campaign.evolved, Some(campaign.baseline))
 
   test("create advance and reload replay the complete persisted stream"):
     // Stays on the replayed setup: it checks the length of Setup's journal.

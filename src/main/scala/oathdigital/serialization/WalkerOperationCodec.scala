@@ -39,7 +39,7 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
     Move | Take | Kill | Replace | Sacrifice | Burn | Give | Exchange | PayCost
   private type ResourceOperation = SpendSupply | GainSupply | FlipSecrets | Gain
   private type TurnOperation = AdvanceVisionsDrawn.type | BeginTurn | EnterPhase |
-    SetOathkeeper | SetOathkeeperGoal | RecordPowerUse | RecordCampaignResult |
+    SetOathkeeper | SetOathkeeperGoal | ChronicleUpdated | RecordPowerUse | RecordCampaignResult |
     ModifyDicePool | Roll | ModifyRollOutcome | Reroll | SetDieFaces |
     QueueProcedure | Defer | TakeDeferred | ActAsIf | OpenPick | ClosePick
 
@@ -212,6 +212,8 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
         "phase" -> phase.key)
       case operation: SetOathkeeper => encodeSetOathkeeper(operation)
       case operation: SetOathkeeperGoal => encodeSetOathkeeperGoal(operation)
+      case ChronicleUpdated(chronicle) => ujson.Obj(
+        "kind" -> "chronicle-updated", "chronicle" -> encodeChronicle(chronicle))
       // A use limit is journalled as the ref it records, not as the power
       // that asked for it: replay adds the same ref to the same turn without
       // gathering anything.
@@ -508,6 +510,9 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
         .map(EnterPhase.apply)
     case "set-oathkeeper" => Right(decodeSetOathkeeper(value))
     case "set-oathkeeper-goal" => decodeSetOathkeeperGoal(value, path)
+    case "chronicle-updated" =>
+      decodeChronicle(value("chronicle"), s"$path.chronicle")
+        .map(ChronicleUpdated.apply)
     case "record-power-use" => for
       timing <- decodePowerTiming(value("timing").str, s"$path.timing")
       source <- (if value.obj.contains("siteId") then

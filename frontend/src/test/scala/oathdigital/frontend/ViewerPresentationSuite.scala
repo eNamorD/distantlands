@@ -11,6 +11,38 @@ import munit.FunSuite
   */
 class ViewerPresentationSuite extends FunSuite:
 
+  /** A finished game won by blue, as every viewer is projected it. */
+  private def wonByBlue: GameProjection =
+    twoSeatProjection(phase = "game-over", activeParticipantId = "red-exile")
+      .copy(oathkeeper = Some(OathkeeperStatus("supremacy", Some("blue-exile"),
+        "usurper", usurperLimited = false, winnerPlayerId = Some("blue-exile"),
+        winnerVictoryKind = Some("usurper"))))
+
+  private val startChronicle: WalkerDecisionState = WalkerDecisionState(
+    "chronicle-begin", "chronicle.begin", query = Some(
+      DecisionQueryState.ChooseOne(Vector(DecisionOptionState("button",
+        "chronicle.start", "Start Chronicle")),
+        heading = Some("Start Chronicle"))))
+
+  test("the winner gets controls for their parked Start Chronicle decision"):
+    val presentation = ServerUiSupport.viewerPresentation(
+      wonByBlue.copy(walkerDecision = Some(startChronicle)), "blue-exile")
+    assert(presentation.showGameplayControls)
+
+  test("after the game, other players wait on the winner's Start Chronicle"):
+    val value = wonByBlue.copy(walkerWaiting =
+      Some(WalkerWaitingState("blue-exile", Some("Start Chronicle"))))
+    val presentation = ServerUiSupport.viewerPresentation(value, "red-exile")
+    assert(!presentation.showGameplayControls)
+    assertEquals(presentation.waitingForPlayerId, Some("blue-exile"))
+    assertEquals(ActionDecisionRenderer.status(value, presentation).textContent,
+      "Waiting for Blue Exile: Start Chronicle")
+
+  test("a finished game with nothing parked hides every control"):
+    val presentation = ServerUiSupport.viewerPresentation(wonByBlue, "red-exile")
+    assert(!presentation.showGameplayControls)
+    assertEquals(presentation.waitingForPlayerId, None)
+
   test("inactive Wake viewer waits and receives no gameplay controls"):
     val value = twoSeatProjection(
       phase = "wake",

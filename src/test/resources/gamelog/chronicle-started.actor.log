@@ -1,0 +1,9 @@
+0.0 round 0 | Round 1
+0.1 turn 0 | [player:p3|p3]'s turn
+0.2 phase 0 | Act
+5.0 phase 0 | Rest
+9.0 round 0 | Round 2
+9.1 turn 0 | [player:p1|p1]'s turn
+9.2 phase 0 | Wake
+10.0 victory 0 | [player:p1|p1] won as the Usurper
+14.0 phase 0 | Chronicle

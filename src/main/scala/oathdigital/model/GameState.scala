@@ -52,7 +52,9 @@ final case class CampaignState(
     dispossessed: Vector[WorldCardId],
     suitedReserves: Map[Suit, Vector[DenizenId]],
     oathkeeperGoal: OathkeeperGoal,
-    era: EraState
+    era: EraState,
+    baseline: Chronicle,
+    evolved: Option[Chronicle] = None
 )
 
 /** `key` is the phase's wire spelling, carried here rather than in a codec
@@ -71,8 +73,12 @@ object Phase:
     val key = "round-end"
   private[oathdigital] case object WarExhaustion extends Phase:
     val key = "war-exhaustion"
+  /** The post-game Chronicle tasks. Entered once, after the game has a
+    * result, when the winner starts the Chronicle. */
+  case object Chronicle extends Phase { val key = "chronicle" }
 
-  val all: Vector[Phase] = Vector(Setup, Wake, Act, Rest, RoundEnd, WarExhaustion)
+  val all: Vector[Phase] =
+    Vector(Setup, Wake, Act, Rest, RoundEnd, WarExhaustion, Chronicle)
 
   def fromKey(key: String): Option[Phase] = all.find(_.key == key)
 

@@ -41,3 +41,5 @@ private[application] final class PendingProjector(
       case Phase.Rest => "rest"
       case Phase.RoundEnd => "round-end"
       case Phase.WarExhaustion => "war-exhaustion"
+      // Unreachable while `result` is set, which the Chronicle always has.
+      case Phase.Chronicle => "chronicle"

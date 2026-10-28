@@ -42,6 +42,27 @@ class GameStartRulesSuite extends munit.FunSuite:
       AtlasEntry.StoredSite(site, Vector.empty, Vector.empty, Some(edifice))))
     assert(!ready.game.current.commonCards.edificeDeck.contains(edifice))
 
+  test("game start keeps the whole Chronicle, including lineages of colors " +
+      "that did not play"):
+    val absent = LineageState(LineageId("l9"), None, Role.Exile, Vector.empty,
+      Vector.empty)
+    val withAbsentLineage = chronicle.copy(lineages = Vector(absent))
+    val ready = accepted(GameStartRules.evolve(catalog, withAbsentLineage, orders))
+    assertEquals(ready.game.campaign.baseline, withAbsentLineage)
+    assertEquals(ready.game.campaign.evolved, None)
+
+  test("game start takes the era and Oathkeeper goal from the Chronicle"):
+    val scored = chronicle.copy(
+      era = EraState(15, Map(LineageId("l9") -> 6)),
+      oathkeeperGoal = OathkeeperGoal.Protection)
+    val campaign = accepted(GameStartRules.evolve(catalog, scored, orders))
+      .game.campaign
+    assertEquals(campaign.oathkeeperGoal, OathkeeperGoal.Protection)
+    assertEquals(campaign.era.targetScore, 15)
+    assertEquals(campaign.era.lineageScores(LineageId("l9")), 6)
+    assertEquals(orders.participants.map(p => campaign.era.lineageScores(p.lineageId)),
+      Vector.fill(orders.participants.size)(0))
+
   test("a non-empty world is refused"):
     // Starts from the Chronicle itself: the start rule is the subject.
     val withWorld = chronicle.copy(world = chronicle.atlasBox.take(1))

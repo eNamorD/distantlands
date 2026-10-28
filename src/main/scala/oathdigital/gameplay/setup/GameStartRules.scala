@@ -43,7 +43,10 @@ object GameStartRules:
       game = OathGame(
         CampaignState(atlas, foundations, lineages, chronicle.reliquary,
           chronicle.dispossessed, Map.empty, plan.oathkeeperGoal,
-          EraState(20, lineages.keys.map(_ -> 0).toMap)),
+          // A seated lineage the Chronicle has not scored yet starts at 0.
+          chronicle.era.copy(lineageScores =
+            lineages.keys.map(_ -> 0).toMap ++ chronicle.era.lineageScores),
+          baseline = chronicle),
         CurrentGameState(material.players, material.map, commonCards,
           material.banners, OathkeeperState(None, TitleSide.Oathkeeper),
           TurnState(orders.firstPlayer, Phase.Setup, Set.empty),
@@ -78,7 +81,7 @@ object GameStartRules:
       _ <- validateParticipants(orders)
     yield FirstGameSetupPlan(orders.participants, orders.firstPlayer,
       inPlay.map(_.site), chronicle.worldDeck, orders.worldDeckOrder,
-      chronicle.relicDeck, homelands)
+      chronicle.relicDeck, homelands, chronicle.oathkeeperGoal)
 
   private def duplicate[A](values: Vector[A]): Option[A] =
     val seen = scala.collection.mutable.HashSet.empty[A]

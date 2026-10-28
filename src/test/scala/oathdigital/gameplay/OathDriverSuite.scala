@@ -5,7 +5,8 @@ import oathdigital.gameplay.phases.PhaseMenu
 import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
 import oathdigital.gameplay.setup.FirstGameSetupFixture
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ActionBoundaryRan, WalkerCompleted}
+import oathdigital.gameplay.walker.{ActionBoundaryRan, ProcedureDequeued,
+  WalkerCompleted}
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
 import oathdigital.testkit.{CatalogNames, MenuPlay, Outcomes, TakeWealthFixture,
@@ -76,12 +77,17 @@ class OathDriverSuite extends munit.FunSuite:
     val skipped = accepted(FollowUpPlay.skipped(rules, start, p1))
     assertEquals(boundaries(skipped.events), 0)
 
-  test("a result stops the driver"):
+  test("a result starts no queued procedure, only the Start Chronicle " +
+      "decision"):
+    // The result is arranged directly: the queue left behind is the subject.
     val over = table.update(_.updateCurrent(_.copy(
       result = Some(GameResult(p2)),
       queue = Vector(offer(ActionRef.Campaign))))).state
-    assertEquals(accepted(FollowUpPlay.dequeued(rules, over)).events,
-      Vector.empty)
+    val driven = accepted(FollowUpPlay.dequeued(rules, over))
+    assert(!driven.events.exists(_.isInstanceOf[ProcedureDequeued]),
+      driven.events)
+    assertEquals(current(driven.state).walkerProcedure,
+      Some(TriggeredProcedureRef.ChronicleBegin))
 
   test("a minor action runs the boundary"):
     val start = table.relicAt("Brass Horse", at = ancientCity).state
@@ -119,9 +125,10 @@ class OathDriverSuite extends munit.FunSuite:
       .events
 
   test("the turn-start hooks run after Setup and after Finish Rest"):
-    assertEquals(driven(TriggeredProcedureRef.Setup),
+    // The win is the first event; the Start Chronicle decision follows it.
+    assertEquals(driven(TriggeredProcedureRef.Setup).take(1),
       Vector[OathEvent](OathEvent.UsurperVictory(p1)))
-    assertEquals(driven(PhaseTransitionRef.FinishRest),
+    assertEquals(driven(PhaseTransitionRef.FinishRest).take(1),
       Vector[OathEvent](OathEvent.UsurperVictory(p1)))
 
   test("no other walk starts a turn"):

@@ -189,6 +189,9 @@ private[operations] object TurnStateOperations:
       ready.updateCampaign(_.copy(oathkeeperGoal = goal)),
       OathkeeperGoalUnchanged(goal))
 
+  def chronicleUpdated(ready: ReadyGame, chronicle: Chronicle): ReadyGame =
+    ready.updateCampaign(_.copy(evolved = Some(chronicle)))
+
   def beginTurn(ready: ReadyGame, player: PlayerId,
       phase: Phase): Either[OperationError, ReadyGame] =
     if !ready.game.current.players.exists(_.player == player) then

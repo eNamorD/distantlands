@@ -21,6 +21,12 @@ class OperationExecutorSuite extends munit.FunSuite:
 
   private val executor = new OperationExecutor
 
+  test("ChronicleUpdated records the evolved Chronicle on the campaign"):
+    val evolved = ready.game.campaign.baseline.copy(
+      oathkeeperGoal = OathkeeperGoal.Devotion)
+    val after = accepted(executor.execute(ready, ChronicleUpdated(evolved)))
+    assertEquals(after.game.campaign.evolved, Some(evolved))
+
   test("Visions Drawn advances once and rejects integer overflow"):
     val once = accepted(executor.execute(ready, AdvanceVisionsDrawn))
     assertEquals(once.game.current.tracks.visionsDrawn,

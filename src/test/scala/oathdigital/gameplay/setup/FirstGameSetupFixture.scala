@@ -64,7 +64,9 @@ object FirstGameSetupFixture:
     atlasBox = sites.map(site => StoredSite(site,
       edificesBySite.get(site).toVector)),
     worldDeck = denizens,
-    relicDeck = relics
+    relicDeck = relics,
+    era = EraState(20, Map.empty),
+    oathkeeperGoal = OathkeeperGoal.Supremacy
   )
 
   /** The first game's first player. `Table.start` overrides it to p1; a

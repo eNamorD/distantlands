@@ -79,6 +79,11 @@ enum TriggeredProcedureRef(val key: String) extends ProcedureRef:
   /** The Act phase's menu, as the Wake menu is Wake's. The driver starts it
     * whenever the queue is empty in Act; it always asks. */
   case ActMenu extends TriggeredProcedureRef("act-menu")
+  /** The winner's Start Chronicle decision (Chronicle steps design). The
+    * driver starts it once the game has a result. */
+  case ChronicleBegin extends TriggeredProcedureRef("chronicle-begin")
+  /** Journals the evolved Chronicle; the last Chronicle procedure. */
+  case ChronicleFinish extends TriggeredProcedureRef("chronicle-finish")
 
 object ActionRef:
   case object Search extends ActionRef { val key = "search" }
@@ -131,7 +136,8 @@ object PhaseTransitionRef:
 
 object TriggeredProcedureRef:
   val all: Vector[TriggeredProcedureRef] = Vector(Oathkeeper, Setup,
-    ForcedWake, FollowUpOffer, WakeMenu, RestMenu, ActMenu)
+    ForcedWake, FollowUpOffer, WakeMenu, RestMenu, ActMenu, ChronicleBegin,
+    ChronicleFinish)
 
 object StartableRef:
   /** The finite references. The parameterized use-power reference is not

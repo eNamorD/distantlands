@@ -27,7 +27,9 @@ class ProcedureRefSuite extends munit.FunSuite:
       Vector(TriggeredProcedureRef.Oathkeeper, TriggeredProcedureRef.Setup,
         TriggeredProcedureRef.ForcedWake,
         TriggeredProcedureRef.FollowUpOffer, TriggeredProcedureRef.WakeMenu,
-        TriggeredProcedureRef.RestMenu, TriggeredProcedureRef.ActMenu))
+        TriggeredProcedureRef.RestMenu, TriggeredProcedureRef.ActMenu,
+        TriggeredProcedureRef.ChronicleBegin,
+        TriggeredProcedureRef.ChronicleFinish))
     assertEquals(TriggeredProcedureRef.ActMenu.key, "act-menu")
 
   test("a key resolves only under its own family"):

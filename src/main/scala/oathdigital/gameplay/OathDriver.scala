@@ -2,6 +2,7 @@ package oathdigital.gameplay
 
 import oathdigital.catalog.ExecutableCatalog
 import oathdigital.engine.EventEvolution
+import oathdigital.gameplay.chronicle.ChronicleSequence
 import oathdigital.gameplay.oathkeeper.{OathkeeperOutcome, OathkeeperRules}
 import oathdigital.gameplay.phases.PhaseMenu
 import oathdigital.gameplay.phases.rest.{TurnBoundary,
@@ -15,8 +16,9 @@ import oathdigital.model.OathState._
 import oathdigital.model.OathViolation._
 
 /** What runs between walks (walker-driven game loop design, "The driver").
-  * Every finished walk is handed to [[next]], which starts nothing while a
-  * result is set, and otherwise starts the queue's head. With an empty queue
+  * Every finished walk is handed to [[next]]. In the Chronicle phase it
+  * starts the next Chronicle procedure. Otherwise it starts nothing while a
+  * result is set, and starts the queue's head. With an empty queue
   * it runs, in order:
   *
   *  1. the action boundary, when an action has finished since the last one
@@ -31,6 +33,8 @@ import oathdigital.model.OathViolation._
   *
   * Each start runs on the state the steps before it left, so a turn that
   * changes inside one command gives the next walk the new active player.
+  * Once a result is set and nothing is pending, the winner's Start
+  * Chronicle decision parks.
   */
 private[gameplay] trait OathDriver:
   self: OathRulesWalker & EventEvolution[OathState, OathEvent,
@@ -42,7 +46,14 @@ private[gameplay] trait OathDriver:
   protected def outsideActions: Vector[OperationRestriction]
 
   private[gameplay] def next(transition: OathTransition,
+      finished: ProcedureRef): Either[OathViolation, OathTransition] =
+    driven(transition, finished).flatMap(openChronicle)
+
+  private def driven(transition: OathTransition,
       finished: ProcedureRef): Either[OathViolation, OathTransition] = transition.state match
+    case Ready(ready) if ready.game.current.turn.phase == Phase.Chronicle =>
+      ChronicleSequence.after(finished)
+        .fold(Right(transition))(startTriggered(transition, _))
     case Ready(ready) if ready.game.current.result.nonEmpty =>
       Right(transition)
     case Ready(ready) if ready.game.current.queue.nonEmpty =>
@@ -51,6 +62,16 @@ private[gameplay] trait OathDriver:
       boundary(transition, finished)
     case Ready(_) => turnStart(transition, finished)
     case _ => Right(transition)
+
+  /** Wherever a result was set -- by a walk, the Wake checks or the round's
+    * end -- the winner's Start Chronicle decision parks once the driver is
+    * done (Chronicle steps design, "Chaining"). */
+  private def openChronicle(transition: OathTransition) =
+    transition.state match
+      case Ready(ready) =>
+        ChronicleSequence.opening(ready.game.current)
+          .fold(Right(transition))(startTriggered(transition, _))
+      case _ => Right(transition)
 
   /** A queued head starts at once: a `Run` as its procedure, an `Offer` as
     * the question whose answer may queue it as a `Run`. */

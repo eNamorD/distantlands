@@ -280,7 +280,10 @@ private[frontend] object ServerUiSupport:
       value: GameProjection,
       playerId: String
   ): ViewerPresentation =
-    if value.oathkeeper.exists(_.winnerPlayerId.nonEmpty) then
+    // A finished game hides every control, except for a walk parked after
+    // it: the winner's Start Chronicle decision, and the Chronicle's own.
+    if value.oathkeeper.exists(_.winnerPlayerId.nonEmpty) &&
+        value.walkerDecision.isEmpty && value.walkerWaiting.isEmpty then
       return ViewerPresentation(showGameplayControls = false,
         waitingForPlayerId = None, waitingForDisplayName = None,
         playerId = playerId)
