@@ -6,7 +6,12 @@ package oathdigital.model
  * Chronicle design, "The Chronicle model").
  */
 final case class StoredSite(site: SiteId, items: Vector[CardId] = Vector.empty):
-  require(items.size <= 3, "a stored site holds at most three items")
+  require(items.size <= StoredSite.capacity,
+    s"a stored site holds at most ${StoredSite.capacity} items")
+
+object StoredSite:
+  /** The most cards a site keeps in storage. */
+  val capacity: Int = 3
 
 /**
  * The between-game record. Setup becomes a pure function of a Chronicle plus

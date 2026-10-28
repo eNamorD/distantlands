@@ -16,7 +16,12 @@ class BeaconTaskSuite extends munit.FunSuite:
     walkerPowerCatalog = WalkerPowerCatalog.default(catalog),
     walkerDice = WalkerDiceFixture.reversingShuffle)
 
-  private val tasksAssigned: Table = ChronicleWalk.throneHeldByChancellorP1
+  /** Tasks assigned, and the World's Separate Visions run: no Vision is
+    * left in play, so the Chronicle can be recorded at the end. */
+  private val tasksAssigned: Table = Table.from(
+    ChronicleWalk.throneHeldByChancellorP1.ready.updateCurrent(current =>
+      current.copy(commonCards = current.commonCards.copy(worldDeck =
+        current.commonCards.worldDeck.filterNot(_.isInstanceOf[VisionId])))))
 
   /** The walk from the end of the World: the driver starts the Beacon. */
   private def beaconStarted(table: Table)(using munit.Location)
