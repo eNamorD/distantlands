@@ -227,6 +227,18 @@ walker procedures in the same game journal once the winner starts the
 Chronicle. The driver chains them in a fixed order.
 _Avoid_: post-game, campaign step
 
+**Task holder**:
+The seated player who resolves a Chronicle task card: the Throne (the
+winner), the World (the People's Favor's holder) or the Beacon (the Darkest
+Secret's holder), or whoever the winner or a double holder gives it to.
+_Avoid_: task owner, task player
+
+**Set-aside edifices**:
+Edifices discarded during a game, kept in discard order apart from the
+edifice deck. Build Edifice offers one only when its suit has none left in
+the deck, then returns them all to the deck (Chronicle ruling 9).
+_Avoid_: edifice discard pile, buried edifices
+
 **Evolved Chronicle**:
 The Chronicle the Chronicle Phase ends with, recorded by the
 `ChronicleUpdated` operation. The next game starts from it.
