@@ -69,14 +69,13 @@ class RovingTerrorSuite extends munit.FunSuite:
     assertEquals(replayed(ready, t.events ++ done.events), Right(done.state))
     assertWireRoundTrips(t.events ++ done.events)
 
-  test("a ruined edifice goes to the bottom of the edifice deck"):
+  test("a ruined edifice is set aside"):
     val ready = staged.edifice(debate, EdificeSide.Ruined, at = giant).ready
     val UsedAndAnswered(_, done) = choose(ready,
       DecisionOptionRef.SiteSlot(giant, 0))
     val end = after(done)
     assertEquals(Look(end).cardsAt(giant), Vector[CardId](terror))
-    assertEquals(end.game.current.commonCards.edificeDeck.lastOption,
-      Some(debate))
+    assertEquals(end.game.current.setAsideEdifices, Vector(debate))
 
   test("with nothing to replace it shows Continue, keeps its secret, and " +
       "the line says so"):

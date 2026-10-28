@@ -243,7 +243,8 @@ class GameLogPropertiesSuite extends munit.FunSuite:
         "take-wealth",
         "muster", "trade", "challenge", "place-banner-resource",
         "negotiation", "campaign", "peek-site-relics", "reveal-owned-relic",
-        "move-warbands", "finish-rest", "oathkeeper", "setup"))
+        "move-warbands", "finish-rest", "oathkeeper", "setup", "chronicle-sun",
+        "chronicle-throne"))
     // A procedure can be marked `Notes` while declaring none, and then its
     // line vanishes with nothing said: `NoteCheck` refuses a note whose key
     // is undeclared. Tie the two together here, since nothing else does.

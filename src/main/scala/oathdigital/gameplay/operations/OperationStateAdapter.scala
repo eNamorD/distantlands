@@ -177,6 +177,7 @@ object OperationStateAdapter:
       case (CardContainer.Site(left, _), Location.Site(right)) => left == right
       case (CardContainer.Reliquary, Location.Reliquary) => true
       case (CardContainer.SetAsideRelics, Location.SetAsideRelics) => true
+      case (CardContainer.SetAsideEdifices, Location.SetAsideEdifices) => true
       case (CardContainer.Dispossessed, Location.Dispossessed) => true
       case (_: CardContainer.AtlasSite, Location.Atlas) => true
       case _ => false

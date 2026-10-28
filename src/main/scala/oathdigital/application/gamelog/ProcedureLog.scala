@@ -1,6 +1,7 @@
 package oathdigital.application.gamelog
 
-import oathdigital.gameplay.chronicle.ChronicleBeginProcedure
+import oathdigital.gameplay.chronicle.{ChronicleBeginProcedure,
+  ChronicleSunProcedure, BuildEdifice, LineageScoring, ShapeEmpire, SwearOath}
 import oathdigital.gameplay.actions.campaign.CampaignNotes
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
 import oathdigital.gameplay.actions.challenge.{ChallengeProcedure,
@@ -317,6 +318,24 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
         narrated = Vector(Told(ChronicleBeginProcedure.decisionId)),
         lines = ActionLineSource.Silent(
           "the Chronicle headline the phase change posts tells the answer"))
+    case TriggeredProcedureRef.ChronicleSun => ProcedureLog(tag = None,
+      lines = ActionLineSource.Notes(Map(
+        ChronicleSunProcedure.empireBroke -> LogKind.Delta,
+        ChronicleSunProcedure.crowned -> LogKind.Delta) ++
+        ChronicleTask.all.map(task =>
+          ChronicleSunProcedure.tookTask(task) -> LogKind.Decision)),
+      narratedPrefixes = Vector("chronicle.assign."), isSection = false)
+    case TriggeredProcedureRef.ChronicleThrone => ProcedureLog(tag = None,
+      lines = ActionLineSource.Notes(Map(
+        ShapeEmpire.discarded -> LogKind.Delta,
+        BuildEdifice.built -> LogKind.Decision,
+        LineageScoring.scored -> LogKind.Delta,
+        LineageScoring.gave -> LogKind.Decision,
+        SwearOath.swore -> LogKind.Decision)),
+      narratedPrefixes = Vector("chronicle.shape-empire.",
+        "chronicle.build-edifice.", "chronicle.stock-reliquary.",
+        "chronicle.score-lineage.", "chronicle.swear-oath."),
+      isSection = false)
     case TriggeredProcedureRef.ChronicleFinish =>
       ProcedureLog(tag = None, isSection = false,
         lines = ActionLineSource.Silent(

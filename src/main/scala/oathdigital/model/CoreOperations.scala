@@ -48,6 +48,7 @@ object Location:
   final case class RegionalDiscard(region: Region) extends Location
   case object SharedBank extends Location
   case object SetAsideRelics extends Location
+  case object SetAsideEdifices extends Location
   case object Reliquary extends Location
   case object Atlas extends Location
   case object Dispossessed extends Location
@@ -217,7 +218,9 @@ object Discard:
       discardWorld(card, from, to, None)
 
   /** Only a ruined edifice can be discarded; intact edifices are locked.
-    * `actingPlayer` and `actorless` are as for `Denizen`. */
+    * `actingPlayer` and `actorless` are as for `Denizen`. A discarded
+    * edifice is set aside in discard order, not buried, so Build Edifice
+    * offers it only when its suit has no other (Chronicle ruling 9). */
   final case class RuinedEdifice(card: EdificeId, from: PositionedLocation,
       suit: Suit, favor: Int, secrets: Int, actingPlayer: PlayerId,
       override val required: Boolean = false, actorless: Boolean = false)
@@ -230,8 +233,7 @@ object Discard:
 
     override val children: Vector[Operation] = Vector(Move(
       Piece.Card(card), from,
-      PositionedLocation(Location.Deck(CardDeck.Edifice),
-        StackPosition.Bottom), by = by)) ++
+      PositionedLocation(Location.SetAsideEdifices), by = by)) ++
       returnedResources(card, suit, favor, secrets, actingPlayer)
 
   /** Sets a relic aside until Chronicle and takes its secrets facedown. */
@@ -588,6 +590,38 @@ final case class SetOathkeeperGoal(goal: OathkeeperGoal)
   */
 final case class ChronicleUpdated(chronicle: Chronicle) extends PrimitiveOperation
 
+/** Sets a lineage's role (Crown Chancellor, CR p. 36). A seated lineage
+  * changes in `CampaignState.lineages`; a lineage only the baseline lists
+  * ("even in the box") changes in `CampaignState.boxRoles`. */
+final case class RoleChanged(lineage: LineageId, role: Role)
+    extends PrimitiveOperation
+
+/** Gives a seated player a Chronicle task (Assign Tasks, CR p. 36). */
+final case class ChronicleTaskAssigned(task: ChronicleTask, player: PlayerId)
+    extends PrimitiveOperation
+
+/** The winner takes the Grand Scepter from the box, faceup, when no one
+  * holds it (Chronicle ruling 10). */
+final case class GrandScepterFromBox(player: PlayerId)
+    extends PrimitiveOperation
+
+/** The Chancellor's purple warbands join the table: `count` Imperial
+  * warbands, unless the game already has an Imperial supply. */
+final case class ImperialWarbandsTaken(count: Int) extends PrimitiveOperation:
+  require(count > 0, "the Imperial supply must be positive")
+
+/** Adds lineage points to a lineage's era score (Score Lineage Points,
+  * CR p. 37). */
+final case class LineagePointsScored(lineage: LineageId, points: Int)
+    extends PrimitiveOperation:
+  require(points > 0, "scored lineage points must be positive")
+
+/** Places an edifice from the edifice deck or the set-aside list at a site,
+  * intact (Build Edifice, CR p. 37, Chronicle ruling 12). A `Move` cannot do
+  * this: a card with no state takes no edifice side. */
+final case class EdificeBuilt(edifice: EdificeId, site: SiteId)
+    extends PrimitiveOperation
+
 /** Records the result of the Campaign just fought as the public
   * `lastCampaignResult`, replacing the previous one.
   */
@@ -617,9 +651,10 @@ final case class BeginTurn(player: PlayerId, phase: Phase)
 case object AdvanceVisionsDrawn extends PrimitiveOperation:
   override val required: Boolean = true
 
-/** Reorders a pile Search draws from: the world deck, or one region's
-  * discard pile. `order` is the pile's new contents in stored order (the
-  * world deck top first, a discard pile top last).
+/** Reorders a shuffle pile: a pile Search draws from (the world deck, or
+  * one region's discard pile), the edifice deck, or the set-aside relics.
+  * `order` is the pile's new contents in stored order (the world deck top
+  * first, a discard pile top last).
   *
   * A tree declares a shuffle with no order, as a leaf of its own (a
   * `Branch` may return one). The walker fills the order from its random
@@ -629,8 +664,8 @@ case object AdvanceVisionsDrawn extends PrimitiveOperation:
   * is never filled. Applying a shuffle with no order, or with an order that
   * is not exactly the pile's cards, is an error.
   */
-final case class Shuffle(pile: SearchSource,
-    order: Option[Vector[WorldCardId]] = None) extends PrimitiveOperation:
+final case class Shuffle(pile: ShufflePile,
+    order: Option[Vector[CardId]] = None) extends PrimitiveOperation:
   override val required: Boolean = true
 
 /** Rolls `dice` drawn from `pool`; the pool count comes from state. `Parked`

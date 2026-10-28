@@ -114,8 +114,9 @@ object Situation:
     * available option. `Partition`: the first option kept in the first section that
     * demands one, every other option in another section -- the "keep one,
     * discard the rest" shape of Setup's adviser choice. `ChooseMany`: the
-    * first `min` available options. `ChooseAmount`: `min`. Anything else is not
-    * answered by default and fails the walk naming the decision.
+    * first `min` available options. `ChooseAmount`: `min`. `Distribute`:
+    * each slot its minimum, when those sum within the bounds. Anything else
+    * is not answered by default and fails the walk naming the decision.
     */
   val defaultAnswer: Answers =
     case Park(Decide(_, _, one: DecisionQuery.ChooseOne, _, _, _, _),
@@ -137,6 +138,11 @@ object Situation:
     case Park(Decide(_, _, amount: DecisionQuery.ChooseAmount, _, _, _, _),
         _, _, _) =>
       DecisionAnswer.ChooseAmountAnswer(amount.min)
+    case Park(Decide(_, _, spread: DecisionQuery.Distribute, _, _, _, _),
+        _, _, _) if spread.slots.map(_.minimum).sum >= spread.minTotal &&
+          spread.slots.map(_.minimum).sum <= spread.maxTotal =>
+      DecisionAnswer.DistributeAnswer(spread.slots.map(slot =>
+        DistributeAmount(slot.ref, slot.minimum)))
 
   /** Setup's pawn placements at `sites`, in placement order: the n-th pawn
     * placed goes to `sites(n)`, whoever places it. The turn order stays the

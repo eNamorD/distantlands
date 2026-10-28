@@ -14,7 +14,7 @@ import oathdigital.model._
   * itself through `discard`.
   *
   * The standard discard sends a denizen to the discard pile of the region
-  * after the site's, and a ruined edifice to the bottom of the edifice deck.
+  * after the site's, and sets a ruined edifice aside (Chronicle ruling 9).
   * Either returns its favor to its suit's bank and its secrets to the
   * acting player facedown.
   */

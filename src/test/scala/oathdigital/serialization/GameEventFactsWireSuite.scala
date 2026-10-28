@@ -57,6 +57,22 @@ class GameEventFactsWireSuite extends munit.FunSuite:
       OathkeeperGoal.Devotion.key)
     assertEquals(accepted(GameEventWire.decode(encoded)).event, event)
 
+  test("a GameStarted Chronicle keeps each lineage role, the Chancellor's " +
+      "included, and refuses an unknown one"):
+    val roles = Vector(Role.Exile, Role.Citizen, Role.Chancellor)
+    val event = OathEvent.GameStarted(chronicle.copy(lineages =
+      roles.zipWithIndex.map((role, index) => LineageState(
+        LineageId(s"l$index"), None, role, Vector.empty, Vector.empty))),
+      orders)
+    val encoded = accepted(GameEventWire.encodeEvent("roles", 0L, event))
+    assertEquals(encoded("payload")("chronicle")("lineages").arr
+      .map(_("role").str).toVector, Vector("exile", "citizen", "chancellor"))
+    assertEquals(accepted(GameEventWire.decode(encoded)).event, event)
+    encoded("payload")("chronicle")("lineages")(0)("role") = "regent"
+    rejected(GameEventWire.decode(encoded)) match
+      case WireError.InvalidValue(path, _) => assert(path.endsWith(".role"), path)
+      case other => fail(other.toString)
+
   test("a GameStarted Chronicle refuses an unknown Oathkeeper goal, a zero " +
       "era target and a doubled lineage score"):
     val event = OathEvent.GameStarted(chronicle.copy(era =

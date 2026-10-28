@@ -17,7 +17,7 @@ import oathdigital.testkit.Unwrap.{accepted, rejected}
 class ChronicleBeginSuite extends munit.FunSuite:
   private val rules = new OathRules(catalog,
     walkerPowerCatalog = WalkerPowerCatalog.default(catalog),
-    walkerDice = WalkerDiceFixture.blanks)
+    walkerDice = WalkerDiceFixture.reversingShuffle)
 
   private val usurperWakes: OathState = Table.start.turn(p1, Phase.Wake)
     .oathkeeper(Some(p1), TitleSide.Usurper).state
@@ -52,21 +52,29 @@ class ChronicleBeginSuite extends munit.FunSuite:
   test("only the winner may start the Chronicle"):
     rejected(startChronicle(usurperWon.state, p2))
 
-  test("starting the Chronicle enters its phase and journals the baseline " +
-      "as the evolved Chronicle"):
-    val won = usurperWon
-    val started = accepted(startChronicle(won.state, p1))
-    val campaign = Outcomes.ready(started.state).game.campaign
+  test("starting the Chronicle enters its phase and parks the Sun's first " +
+      "choice"):
+    val started = accepted(startChronicle(usurperWon.state, p1))
     assertEquals(current(started.state).turn.phase, Phase.Chronicle)
-    assertEquals(campaign.evolved, Some(campaign.baseline))
-    assert(RecordedOps.all(started.events)
-      .contains(ChronicleUpdated(campaign.baseline)), started.events)
-    assert(started.events.contains(
-      WalkerCompleted(TriggeredProcedureRef.ChronicleFinish)), started.events)
-    assertEquals(current(started.state).walkerPending, None)
+    val parked = EconomyActions.parkedDecision(started.state)
+    assertEquals((parked.decisionId, parked.owner),
+      (ChronicleTaskAssignment.worldDecisionId, p1))
+    assertEquals(Outcomes.ready(started.state).game.campaign.evolved, None)
+
+  test("finishing the Chronicle journals the evolved Chronicle"):
+    val done = ChronicleWalk.answeringEverything(rules,
+      accepted(startChronicle(usurperWon.state, p1)))
+    val campaign = Outcomes.ready(done.state).game.campaign
+    assert(campaign.evolved.nonEmpty)
+    assert(RecordedOps.all(done.events).contains(
+      ChronicleUpdated(campaign.evolved.get)), done.events)
+    assert(done.events.contains(
+      WalkerCompleted(TriggeredProcedureRef.ChronicleFinish)), done.events)
+    assertEquals(current(done.state).walkerPending, None)
 
   test("the Chronicle runs once: nothing starts after it is journaled"):
-    val started = accepted(startChronicle(usurperWon.state, p1))
+    val started = ChronicleWalk.answeringEverything(rules,
+      accepted(startChronicle(usurperWon.state, p1)))
     Vector[ProcedureRef](TriggeredProcedureRef.ChronicleFinish,
       PhaseTransitionRef.FinishRest).foreach: finished =>
       assertEquals(accepted(rules.next(
@@ -76,6 +84,7 @@ class ChronicleBeginSuite extends munit.FunSuite:
 
   test("replaying the recorded events reproduces the Chronicle phase state"):
     val won = usurperWon
-    val started = accepted(startChronicle(won.state, p1))
+    val started = ChronicleWalk.answeringEverything(rules,
+      accepted(startChronicle(won.state, p1)))
     assertEquals(replayed(usurperWakes, won.events ++ started.events),
       started.state)

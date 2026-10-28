@@ -82,6 +82,10 @@ enum TriggeredProcedureRef(val key: String) extends ProcedureRef:
   /** The winner's Start Chronicle decision (Chronicle steps design). The
     * driver starts it once the game has a result. */
   case ChronicleBegin extends TriggeredProcedureRef("chronicle-begin")
+  /** The Sun task: reveal relics, legacies, crown the winner, assign tasks. */
+  case ChronicleSun extends TriggeredProcedureRef("chronicle-sun")
+  /** The Throne task, resolved by its holder. */
+  case ChronicleThrone extends TriggeredProcedureRef("chronicle-throne")
   /** Journals the evolved Chronicle; the last Chronicle procedure. */
   case ChronicleFinish extends TriggeredProcedureRef("chronicle-finish")
 
@@ -137,7 +141,7 @@ object PhaseTransitionRef:
 object TriggeredProcedureRef:
   val all: Vector[TriggeredProcedureRef] = Vector(Oathkeeper, Setup,
     ForcedWake, FollowUpOffer, WakeMenu, RestMenu, ActMenu, ChronicleBegin,
-    ChronicleFinish)
+    ChronicleSun, ChronicleThrone, ChronicleFinish)
 
 object StartableRef:
   /** The finite references. The parameterized use-power reference is not

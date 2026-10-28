@@ -55,7 +55,7 @@ Rulings given by the project owner for the Chronicle Phase ([chronicle.md](chron
 11. **The Chancellor's warbands in the Throne task.** After Crown Chancellor, "your warbands" in Shape Empire are the Imperial warbands, "sites you rule" are the sites the Empire rules, and "the last warband of yours on the map" is the last Imperial warband. If the Empire rules no sites, the fallback places one Imperial warband at the winner's pawn site (CR p. 37).
 12. **Built edifice face.** An edifice placed by Build Edifice is placed intact (CR p. 37).
 13. **Lineage point gifts.** The winner may give lineage points only to players who were seated for the game, as for task recipients in ruling 1 (CR p. 37).
-14. **Shape Empire discard pile.** A denizen discarded in Shape Empire goes to the discard pile of its site's region. The World task's Gather Denizens shuffles every discard pile together next, so the pile matters only to the Game Log (CR pp. 37-38).
+14. **Shape Empire discard pile.** A denizen discarded in Shape Empire follows the general discard rule: it goes to the discard pile of the region after its site's region. The World task's Gather Denizens shuffles every discard pile together next, so the pile matters only to the Game Log (CR pp. 37-38).
 
 ## Source relationship cautions
 

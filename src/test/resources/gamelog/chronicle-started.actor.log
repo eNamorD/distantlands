@@ -7,3 +7,12 @@
 9.2 phase 0 | Wake
 10.0 victory 0 | [player:p1|p1] won as the Usurper
 14.0 phase 0 | Chronicle
+17.0 delta 1 | The Empire broke
+18.0 delta 1 | [player:p1|p1] became Chancellor
+20.0 decision 1 | [player:p1|p1] took the Throne task
+25.0 decision 1 | [player:p1|p1] took the World task
+30.0 decision 1 | [player:p1|p1] took the Beacon task
+38.0 decision 1 | [player:p2|p2] took the World task
+40.0 delta 1 | Moved 1 Imperial warband to [site:site:ancient-city|Ancient City]
+47.0 delta 1 | [player:p1|p1] scored [amount:3 lineage points]
+52.0 decision 1 | The Oathkeeper goal became Protection

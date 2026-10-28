@@ -197,9 +197,13 @@ continuation, and campaign browsing.
 - [ ] **End-of-game Chronicle steps.**
   - Foundation landed: the winner's Start Chronicle decision, driver
     chaining, the baseline Chronicle kept at game start, and
-    `ChronicleUpdated`. Remaining: Sun, Throne, World, Beacon, Stars.
-- [ ] **Enduring (Ancient City).** Its cards are not discarded in the
-  Chronicle Phase's Shape Empire step, which the engine does not have yet.
+    `ChronicleUpdated`.
+  - Sun and Throne landed: crowning, task assignment, Shape Empire, Build
+    Edifice, Reliquary and relics, lineage points and the Oath, with the
+    legacy and Citizenship steps as empty windows. Remaining: World, Beacon,
+    Stars and their extraction into the Chronicle.
+- [x] **Enduring (Ancient City).** Its cards are not discarded in the
+  Chronicle Phase's Shape Empire step.
 - [ ] **Chronicle import and export.** The Chronicle string codec for the TTS
   format, including the sections that format has not defined yet.
 - [ ] **Foundations.**

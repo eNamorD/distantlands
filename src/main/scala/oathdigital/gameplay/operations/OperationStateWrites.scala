@@ -144,6 +144,7 @@ private[operations] object OperationStateWrites:
     case CardContainer.Site(site, _) => Location.Site(site)
     case CardContainer.Reliquary => Location.Reliquary
     case CardContainer.SetAsideRelics => Location.SetAsideRelics
+    case CardContainer.SetAsideEdifices => Location.SetAsideEdifices
     case CardContainer.Dispossessed => Location.Dispossessed
     case _: CardContainer.AtlasSite => Location.Atlas
     case _ => Location.Atlas

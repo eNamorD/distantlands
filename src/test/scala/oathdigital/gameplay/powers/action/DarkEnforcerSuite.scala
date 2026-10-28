@@ -47,8 +47,7 @@ class DarkEnforcerSuite extends munit.FunSuite:
     assertEquals(Look(end).cardsAt(home), Vector[CardId](errandBoy))
     assertEquals(pile(end).takeRight(2),
       Vector[WorldCardId](codeOfHonor, homesteaders))
-    assertEquals(end.game.current.commonCards.edificeDeck.lastOption,
-      Some(hallOfBandits))
+    assertEquals(end.game.current.setAsideEdifices, Vector(hallOfBandits))
     assertEquals(end.banks.favor.getOrElse(Suit.Order, 0), orderBank + 1)
     assertEquals(NoteText.said(power, t.events), Vector(NoteText.Said(
       NoteKey.Used, s"Discarded ${codeOfHonor.value}, ${homesteaders.value}, " +

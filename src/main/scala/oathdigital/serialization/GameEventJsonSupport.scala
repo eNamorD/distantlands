@@ -112,11 +112,23 @@ private[serialization] trait GameEventJsonSupport:
       : Either[WireError, Tokens] =
     Right(Tokens(value("favor").num.toInt, value("secrets").num.toInt))
 
+  protected final def encodeRole(role: Role): String = role match
+    case Role.Exile => "exile"
+    case Role.Citizen => "citizen"
+    case Role.Chancellor => "chancellor"
+
+  protected final def decodeRole(value: String, path: String)
+      : Either[WireError, Role] = value match
+    case "exile" => Right(Role.Exile)
+    case "citizen" => Right(Role.Citizen)
+    case "chancellor" => Right(Role.Chancellor)
+    case other => Left(InvalidValue(path, s"unknown role '$other'"))
+
   protected final def encodeLineageState(lineage: LineageState): ujson.Value =
     ujson.Obj("id" -> lineage.id.value,
       "previousPlayer" -> lineage.previousPlayer.fold[ujson.Value](
         ujson.Null)(id => ujson.Str(id.value)),
-      "role" -> (if lineage.role.isImperial then "citizen" else "exile"),
+      "role" -> encodeRole(lineage.role),
       "legacies" -> ujson.Arr.from(lineage.legacies.map(legacy =>
         ujson.Obj("id" -> legacy.id.value, "active" -> legacy.active))),
       "startingAdvisers" -> ujson.Arr.from(
@@ -124,10 +136,7 @@ private[serialization] trait GameEventJsonSupport:
 
   protected final def decodeLineageState(value: ujson.Value, path: String)
       : Either[WireError, LineageState] = for
-    role <- value("role").str match
-      case "exile" => Right(Role.Exile)
-      case "citizen" => Right(Role.Citizen)
-      case other => Left(InvalidValue(s"$path.role", s"unknown role '$other'"))
+    role <- decodeRole(value("role").str, s"$path.role")
     legacies = value("legacies").arr.toVector.map(legacy =>
       LegacyState(LegacyId(legacy("id").str), legacy("active").bool))
     startingAdvisers <- traverse(value("startingAdvisers").arr.zipWithIndex.toVector):

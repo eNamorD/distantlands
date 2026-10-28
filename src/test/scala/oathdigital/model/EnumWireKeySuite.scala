@@ -16,7 +16,8 @@ class EnumWireKeySuite extends munit.FunSuite:
     assertEquals(TriggeredProcedureRef.all.map(_.key),
       Vector("oathkeeper", "setup", "forced-wake", "follow-up-offer",
         "wake-menu", "rest-menu", "act-menu", "chronicle-begin",
-        "chronicle-finish"))
+        "chronicle-sun", "chronicle-throne", "chronicle-finish"))
+
 
   test("Phase.Chronicle round-trips through its wire key"):
     assertEquals(Phase.fromKey("chronicle"), Some(Phase.Chronicle))

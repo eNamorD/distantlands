@@ -195,6 +195,7 @@ object OperationError:
     case Location.RegionalDiscard(_) => "regional discard"
     case Location.SharedBank => "shared bank"
     case Location.SetAsideRelics => "set-aside relics"
+    case Location.SetAsideEdifices => "set-aside edifices"
     case Location.Reliquary => "Reliquary"
     case Location.Atlas => "Atlas"
     case Location.Dispossessed => "Dispossessed"

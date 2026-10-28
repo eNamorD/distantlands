@@ -1,7 +1,7 @@
 package oathdigital.gameplay.walker
 
 import oathdigital.gameplay.chronicle.{ChronicleBeginProcedure,
-  ChronicleFinishProcedure}
+  ChronicleFinishProcedure, ChronicleSunProcedure, ChronicleThroneProcedure}
 import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.actions.challenge.{ChallengeProcedure, PlaceBannerResourceProcedure}
 import oathdigital.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
@@ -338,6 +338,16 @@ object WalkerProcedureRegistry:
       modifierWindow = None,
       build = ChronicleBeginProcedure.build,
       rebuild = ChronicleBeginProcedure.build),
+    TriggeredProcedureRef.ChronicleSun -> Entry(
+      rollDecisionId = None,
+      modifierWindow = None,
+      build = ChronicleSunProcedure.build,
+      rebuild = ChronicleSunProcedure.build),
+    TriggeredProcedureRef.ChronicleThrone -> Entry(
+      rollDecisionId = None,
+      modifierWindow = None,
+      build = ChronicleThroneProcedure.build,
+      rebuild = ChronicleThroneProcedure.build),
     TriggeredProcedureRef.ChronicleFinish -> Entry(
       rollDecisionId = None,
       modifierWindow = None,

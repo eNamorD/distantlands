@@ -36,6 +36,9 @@ lineages of colors that did not play, and takes the era and Oathkeeper goal
 from it; a seated lineage the Chronicle has not scored starts at 0. The
 Chronicle Phase records its result in `CampaignState.evolved`
 ([Chronicle steps design](../superpowers/specs/2026-10-27-chronicle-steps-design.md)).
+The phase now runs the Sun and Throne tasks; the recorded Chronicle carries
+their roles, era scores and Oathkeeper goal, while sites, decks and the
+Reliquary stay as in the baseline until the Stars task extracts them.
 
 The completed aggregate includes site resources and bandits, facedown site
 relics, ruined Homeland edifices, regional discards, player advisers, World and

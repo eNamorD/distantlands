@@ -94,13 +94,12 @@ class TamingCharmSuite extends munit.FunSuite:
     assertEquals(Look(end).favor(p1), Look(ready).favor(p1) + 2)
     assertEquals((bank(end, Suit.Nomad), bank(end, Suit.Beast)), (1, 5))
 
-  test("a ruined edifice goes to the bottom of the edifice deck"):
+  test("a ruined edifice is set aside"):
     val ready = staged().edifice(ruinedBeast, EdificeSide.Ruined, at = home)
       .ready
     val done = tame(ready, DecisionOptionRef.Edifice(ruinedBeast)).answered
     val end = after(done)
-    assertEquals(end.game.current.commonCards.edificeDeck.lastOption,
-      Some(ruinedBeast))
+    assertEquals(end.game.current.setAsideEdifices, Vector(ruinedBeast))
     assertEquals(Look(end).favor(p1), Look(ready).favor(p1) + 2)
 
   test("with the bank empty the card is still discarded, and the line " +

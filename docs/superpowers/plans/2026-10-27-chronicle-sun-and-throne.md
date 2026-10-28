@@ -1086,7 +1086,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Consumes: `ChronicleTasks.holder`, `ChronicleTasks.rules`, `PlayerForceKind.of`.
 - Produces: `ShapeEmpire.steps(catalog: ExecutableCatalog): Vector[Operation]` and decision id `chronicle.shape-empire.remove`. Note key `discarded` ("{0} was discarded from {1}").
 
-Rules (CR p. 37, rulings 6, 9, 11 and 14): the Throne holder may remove any of their warbands from sites, keeping at least one on the map. If they rule no sites, they remove every warband at their pawn's site and place one of theirs there. Then every denizen at a site they do not rule is discarded, except intact edifices and every card at an Enduring site. A discarded ruined edifice is set aside (Task 2), and other denizens go to the discard pile of their site's region.
+Rules (CR p. 37, rulings 6, 9, 11 and 14): the Throne holder may remove any of their warbands from sites, keeping at least one on the map. If they rule no sites, they remove every warband at their pawn's site and place one of theirs there. Then every denizen at a site they do not rule is discarded, except intact edifices and every card at an Enduring site. A discarded ruined edifice is set aside (Task 2), and other denizens go to the discard pile of the region after their site's (the general discard rule, `CardPlay.nextRegion`; ruling 14 as amended 2026-10-28).
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -1096,7 +1096,7 @@ Tests:
 1. "the Chancellor may remove Imperial warbands but keeps the last one". Imperial at Ancient City and Broken Peaks. The walk parks on `chronicle.shape-empire.remove`, owned by p1: a `Distribute` with one slot per Empire site, each max 1, and total max 1. Answer 1 at Broken Peaks. Broken Peaks is now `Empty`, and Ancient City keeps its warband.
 2. "one Imperial warband on the map asks nothing". Imperial only at Ancient City: no `chronicle.shape-empire.remove` decision.
 3. "with no Empire sites the pawn's site gets one Imperial warband". No Imperial warbands, 2 bandits at Ancient City (p1's pawn). The bandits are killed, and Ancient City holds `Occupied(Imperial, 1)`.
-4. "denizens at sites the Empire does not rule are discarded to their region". Imperial at Ancient City. A faceup denizen at Ancient City stays. A faceup denizen at Broken Peaks, which has no warbands, goes to `regionalDiscards(regionOf(Broken Peaks))`.
+4. "denizens at sites the Empire does not rule are discarded to their region". Imperial at Ancient City. A faceup denizen at Ancient City stays. A faceup denizen at Broken Peaks, which has no warbands, goes to the discard pile of the region after Broken Peaks' region (`CardPlay.nextRegion`).
 5. "intact edifices stay and ruined ones are set aside". An intact edifice and a ruined edifice at unruled sites. The intact one stays, and the ruined one is in `setAsideEdifices`.
 6. "cards at an Enduring site stay". Put a denizen at an Enduring site the Empire does not rule. Ancient City is Enduring, so make Broken Peaks the only Empire site and put the denizen at Ancient City. It stays.
 7. "the discard writes one line per card", using `discarded`.
@@ -1128,7 +1128,7 @@ object ShapeEmpire:
   - Else, with `total = ruled.map(_._2).sum`: when `total <= 1`, ask nothing. Otherwise `Decide(removeDecisionId, holder, DecisionQuery.Distribute(ruled.map((site, n) => DistributeSlot(DecisionOptionRef.Site(site), 0, n, None)), 0, total - 1, heading = Some("Remove warbands from the Empire"), confirmLabel = "Remove"))`, then a `BuildOps` that returns, per slot amount `a > 0`, `Move(Piece.Warbands(kind, a), PositionedLocation(Location.Site(site)), PositionedLocation(Location.WarbandBank(kind)))`.
   - Read the answer as `DecisionAnswer.DistributeAnswer(amounts)`; check `DistributeAmount`'s fields in `model/Decisions.scala`.
 - `discards(catalog, state, holder)`: one `BuildOps` and one `Note` per discarded card. For each site in `map.inPlay` where `!ChronicleTasks.rules(state, holder, site)` and the site is not Enduring:
-  - `DenizenState(id, _, tokens)`: `Discard.Denizen(id, at, region, suit, tokens.favor, tokens.secrets, actingPlayer = holder)`.
+  - `DenizenState(id, _, tokens)`: `Discard.Denizen(id, at, CardPlay.nextRegion(region), suit, tokens.favor, tokens.secrets, actingPlayer = holder)`, where `region` is the site's region.
   - `EdificeState(id, EdificeSide.Ruined, tokens)`: `Discard.RuinedEdifice(id, at, suit, tokens.favor, tokens.secrets, holder)`.
   - `EdificeState(_, EdificeSide.Intact, _)`: kept.
   - Suits come from `catalog.denizen(id)` and `catalog.edifice(id)`.

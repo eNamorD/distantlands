@@ -18,6 +18,7 @@ object CardContainer:
       extends CardContainer
   case object Reliquary extends CardContainer
   case object SetAsideRelics extends CardContainer
+  case object SetAsideEdifices extends CardContainer
   case object Dispossessed extends CardContainer
   final case class SuitedReserve(suit: Suit) extends CardContainer
   final case class AtlasSite(
@@ -198,6 +199,7 @@ object CardIndex:
 
     addIds(game.campaign.reliquary, CardContainer.Reliquary)
     addIds(game.current.setAsideRelics, CardContainer.SetAsideRelics)
+    addIds(game.current.setAsideEdifices, CardContainer.SetAsideEdifices)
     addIds(game.campaign.dispossessed, CardContainer.Dispossessed)
 
     Suit.all.foreach { suit =>

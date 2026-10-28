@@ -42,6 +42,9 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
     SetOathkeeper | SetOathkeeperGoal | ChronicleUpdated | RecordPowerUse | RecordCampaignResult |
     ModifyDicePool | Roll | ModifyRollOutcome | Reroll | SetDieFaces |
     QueueProcedure | Defer | TakeDeferred | ActAsIf | OpenPick | ClosePick
+  private type ChronicleOperation = RoleChanged | ChronicleTaskAssigned |
+    GrandScepterFromBox | ImperialWarbandsTaken | LineagePointsScored |
+    EdificeBuilt
 
   protected final def encodeOperation(operation: CoreOperation): ujson.Value =
     operation match
@@ -49,6 +52,24 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
       case operation: PieceOperation => encodePieceOperation(operation)
       case operation: ResourceOperation => encodeResourceOperation(operation)
       case operation: TurnOperation => encodeTurnOperation(operation)
+      case operation: ChronicleOperation => encodeChronicleOperation(operation)
+
+  private def encodeChronicleOperation(operation: ChronicleOperation)
+      : ujson.Value = operation match
+    case RoleChanged(lineage, role) => ujson.Obj("kind" -> "role-changed",
+      "lineage" -> lineage.value, "role" -> encodeRole(role))
+    case ChronicleTaskAssigned(task, player) => ujson.Obj(
+      "kind" -> "chronicle-task-assigned", "task" -> task.key,
+      "player" -> player.value)
+    case GrandScepterFromBox(player) => ujson.Obj(
+      "kind" -> "grand-scepter-from-box", "player" -> player.value)
+    case ImperialWarbandsTaken(count) => ujson.Obj(
+      "kind" -> "imperial-warbands-taken", "count" -> count)
+    case LineagePointsScored(lineage, points) => ujson.Obj(
+      "kind" -> "lineage-points-scored", "lineage" -> lineage.value,
+      "points" -> points)
+    case EdificeBuilt(edifice, site) => ujson.Obj("kind" -> "edifice-built",
+      "edifice" -> edifice.value, "site" -> site.value)
 
   private def encodeCardOperation(operation: CardOperation): ujson.Value =
     operation match
@@ -103,9 +124,9 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
           "secondLocation" -> encodePositionedLocation(secondLocation)), by)
       case Shuffle(pile, order) =>
         val shuffled = ujson.Obj("kind" -> "shuffle",
-          "pile" -> encodeSearchSource(pile))
+          "pile" -> encodeShufflePile(pile))
         order.foreach(cards =>
-          shuffled("order") = ujson.Arr.from(cards.map(encodeWorldCardId)))
+          shuffled("order") = ujson.Arr.from(cards.map(encodeCardId)))
         shuffled
 
   /** `encoded`, with `"by"` when the move names its mover. Written only
@@ -294,6 +315,7 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
       .orElse(decodePieceOperation(value, path))
       .orElse(decodeResourceOperation(value, path))
       .orElse(decodeTurnOperation(value, path))
+      .orElse(decodeChronicleOperation(value, path))
       .applyOrElse(value("kind").str, (other: String) => Left(InvalidValue(
         s"$path.kind", s"unknown recorded walker operation '$other'")))
 
@@ -383,16 +405,30 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
     yield Swap(firstCard, firstLocation, secondCard, secondLocation,
       decodeMover(value))
     case "shuffle" => for
-      pile <- decodeSearchSource(value("pile"), s"$path.pile")
+      pile <- decodeShufflePile(value("pile"), s"$path.pile")
       order <- decodeShuffleOrder(value, path)
     yield Shuffle(pile, order)
 
+  /** A Search pile keeps its Search source's spelling; the edifice deck and
+    * the set-aside relics have kinds of their own. */
+  private def encodeShufflePile(pile: ShufflePile): ujson.Value = pile match
+    case ShufflePile.Search(source) => encodeSearchSource(source)
+    case ShufflePile.EdificeDeck => ujson.Obj("kind" -> "edifice-deck")
+    case ShufflePile.SetAsideRelics => ujson.Obj("kind" -> "set-aside-relics")
+
+  private def decodeShufflePile(value: ujson.Value, path: String)
+      : Either[WireError, ShufflePile] =
+    value.objOpt.flatMap(_.get("kind")).flatMap(_.strOpt) match
+      case Some("edifice-deck") => Right(ShufflePile.EdificeDeck)
+      case Some("set-aside-relics") => Right(ShufflePile.SetAsideRelics)
+      case _ => decodeSearchSource(value, path).map(ShufflePile.Search.apply)
+
   /** A recorded shuffle carries its order; a declared one has none. */
   private def decodeShuffleOrder(value: ujson.Value, path: String)
-      : Either[WireError, Option[Vector[WorldCardId]]] =
-    value.obj.get("order").fold[Either[WireError, Option[Vector[WorldCardId]]]](
+      : Either[WireError, Option[Vector[CardId]]] =
+    value.obj.get("order").fold[Either[WireError, Option[Vector[CardId]]]](
       Right(None))(cards => traverse(cards.arr.zipWithIndex.toVector)({
-        case (card, index) => decodeWorldCardId(card, s"$path.order[$index]")
+        case (card, index) => decodeCardId(card, s"$path.order[$index]")
       }).map(Some(_)))
 
   /** A recorded reroll carries its faces; a declared one has none. */
@@ -494,6 +530,32 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
       force <- decodeForceKind(value("force"), s"$path.force")
       amount <- safeIntField(value.obj, "amount", path)
     yield Gain.Warbands(PlayerId(value("playerId").str), force, amount)
+
+  private def decodeChronicleOperation(value: ujson.Value,
+      path: String): DecodedOperation =
+    case "role-changed" =>
+      decodeRole(value("role").str, s"$path.role")
+        .map(RoleChanged(LineageId(value("lineage").str), _))
+    case "chronicle-task-assigned" =>
+      val key = value("task").str
+      ChronicleTask.fromKey(key).toRight(
+        InvalidValue(s"$path.task", s"unknown Chronicle task '$key'"))
+        .map(ChronicleTaskAssigned(_, PlayerId(value("player").str)))
+    case "grand-scepter-from-box" =>
+      Right(GrandScepterFromBox(PlayerId(value("player").str)))
+    case "imperial-warbands-taken" => for
+      count <- positive(value, "count", path)
+    yield ImperialWarbandsTaken(count)
+    case "lineage-points-scored" => for
+      points <- positive(value, "points", path)
+    yield LineagePointsScored(LineageId(value("lineage").str), points)
+    case "edifice-built" => Right(EdificeBuilt(
+      EdificeId(value("edifice").str), SiteId(value("site").str)))
+
+  private def positive(value: ujson.Value, name: String, path: String)
+      : Either[WireError, Int] =
+    safeIntField(value.obj, name, path).flatMap(number => Either.cond(
+      number > 0, number, InvalidValue(s"$path.$name", "must be positive")))
 
   private def decodeTurnOperation(value: ujson.Value,
       path: String): DecodedOperation =

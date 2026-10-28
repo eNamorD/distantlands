@@ -76,6 +76,8 @@ enum NoteUnit(val key: String, val one: String, val many: String):
   case Secret extends NoteUnit("secret", "secret", "secrets")
   case Supply extends NoteUnit("supply", "Supply", "Supply")
   case Warband extends NoteUnit("warband", "warband", "warbands")
+  case LineagePoint extends NoteUnit("lineage-point", "lineage point",
+    "lineage points")
   def word(value: Int): String = if value == 1 then one else many
 object NoteUnit:
   def fromKey(key: String): Option[NoteUnit] = values.find(_.key == key)

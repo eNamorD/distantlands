@@ -35,6 +35,13 @@ object OperationRun:
       id
   }.toSet
 
+  /** The cards this run brought into the game from the box: the Grand
+    * Scepter, taken by a winner when no one holds it (Chronicle ruling 10).
+    * The inventory check expects them afterwards. */
+  def unboxed(executed: Vector[CoreOperation]): Set[CardId] = executed.collect {
+    case GrandScepterFromBox(_) => TheGrandScepterCard.id: CardId
+  }.toSet
+
 /** Sole public orchestrator of an operation batch. It folds each operation
   * through settlement, staged resolution ([[OperationResolution]], which
   * concatenates the caller's `allowlist` policy, the shape guard and the
@@ -102,6 +109,7 @@ object OperationPipeline:
         // between operations — intermediate states within a legal batch are
         // not invariant-checked (matching the retired post-`update` check).
         _ <- OperationStateInvariant.validate(updated,
-          expected -- OperationRun.boxed(staged.executed))
+          expected -- OperationRun.boxed(staged.executed) ++
+            OperationRun.unboxed(staged.executed))
           .left.map(_.toViolation)
       yield staged.copy(state = updated)
