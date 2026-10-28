@@ -1,5 +1,6 @@
 package oathdigital.application.gamelog
 
+import oathdigital.gameplay.chronicle.ChronicleBeginProcedure
 import oathdigital.gameplay.actions.campaign.CampaignNotes
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
 import oathdigital.gameplay.actions.challenge.{ChallengeProcedure,
@@ -313,6 +314,7 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
           "each forced power writes its own lines, and narrates nothing here"))
     case TriggeredProcedureRef.ChronicleBegin =>
       ProcedureLog(tag = None, isSection = false,
+        narrated = Vector(Told(ChronicleBeginProcedure.decisionId)),
         lines = ActionLineSource.Silent(
           "the Chronicle headline the phase change posts tells the answer"))
     case TriggeredProcedureRef.ChronicleFinish =>

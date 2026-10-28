@@ -94,7 +94,12 @@ class GameApplicationServiceStreamSuite extends munit.FunSuite:
         LoadedGame(position.state, position.nextSequence),
         player.player)
       assertEquals(view.phase, "game-over")
-      assertEquals(view.walkerDecision, None)
+      // Only the winner is asked to start the Chronicle; the rest wait.
+      val winner = finished.game.current.result.map(_.winner)
+      assertEquals(view.walkerDecision.map(_.decisionId),
+        Option.when(winner.contains(player.player))("chronicle.begin"))
+      assertEquals(view.walkerWaiting.map(_.playerId),
+        winner.filterNot(_ == player.player).map(_.value))
       assertEquals(view.oathkeeper.flatMap(_.winnerPlayerId),
         finished.game.current.result.map(_.winner.value))
       assertEquals(view.world.flatMap(_.sites).map(_.siteId).toSet,

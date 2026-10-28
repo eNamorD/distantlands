@@ -5,6 +5,6 @@ package oathdigital.application.gamelog
   * script files contribute their own vectors. */
 object GoldenScripts:
   val named: Vector[(String, () => Script)] =
-    LogScripts.named ++ CampaignLogScripts.named
+    LogScripts.named ++ CampaignLogScripts.named ++ ChronicleLogScripts.named
 
   def all: Vector[Script] = named.map(_._2())

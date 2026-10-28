@@ -133,7 +133,12 @@ class StateBasedEvaluationSuite extends munit.FunSuite:
 
     val won = Outcomes.ready(state)
     assertEquals(won.game.current.result, Some(GameResult(holder)))
-    assertEquals(events.last, UsurperVictory(holder))
+    // The win is the last table event; the winner's Start Chronicle
+    // decision parks after it.
+    assertEquals(events.collect { case won: UsurperVictory => won }.lastOption,
+      Some(UsurperVictory(holder)))
+    assertEquals(won.game.current.walkerProcedure,
+      Some(TriggeredProcedureRef.ChronicleBegin))
     val replayed = events.foldLeft[Either[OathViolation, OathState]](
       Right(initial))((next, event) => next.flatMap(rules.evolve(_, event)))
     assertEquals(replayed, Right(state))

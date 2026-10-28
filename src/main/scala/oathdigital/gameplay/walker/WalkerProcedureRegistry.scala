@@ -1,5 +1,7 @@
 package oathdigital.gameplay.walker
 
+import oathdigital.gameplay.chronicle.{ChronicleBeginProcedure,
+  ChronicleFinishProcedure}
 import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.actions.challenge.{ChallengeProcedure, PlaceBannerResourceProcedure}
 import oathdigital.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
@@ -330,7 +332,17 @@ object WalkerProcedureRegistry:
       rollDecisionId = None,
       modifierWindow = None,
       build = oathdigital.gameplay.setup.SetupProcedure.build,
-      rebuild = oathdigital.gameplay.setup.SetupProcedure.build))
+      rebuild = oathdigital.gameplay.setup.SetupProcedure.build),
+    TriggeredProcedureRef.ChronicleBegin -> Entry(
+      rollDecisionId = None,
+      modifierWindow = None,
+      build = ChronicleBeginProcedure.build,
+      rebuild = ChronicleBeginProcedure.build),
+    TriggeredProcedureRef.ChronicleFinish -> Entry(
+      rollDecisionId = None,
+      modifierWindow = None,
+      build = ChronicleFinishProcedure.build,
+      rebuild = ChronicleFinishProcedure.build))
 
   /** Rejects start selections handed to an action that makes none.
     *
