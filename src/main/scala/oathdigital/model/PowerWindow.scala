@@ -223,6 +223,14 @@ object PowerWindow:
     val key = "chronicle.beacon.welcome-stranger"
   case object ChronicleShapeFoundation extends OtherWindow:
     val key = "chronicle.beacon.shape-foundation"
+  case object ChronicleWriteInTheStars extends OtherWindow:
+    val key = "chronicle.stars.write-in-the-stars"
+  case object ChronicleArchiveRivalSites extends OtherWindow:
+    val key = "chronicle.stars.archive-rival-sites"
+  case object ChronicleCleanUp extends OtherWindow:
+    val key = "chronicle.stars.clean-up"
+  case object ChronicleStore extends OtherWindow:
+    val key = "chronicle.stars.store"
   /** Where an explored site's effects resolve, once an explore procedure
     * exists to fire it (2026-09-21 Chronicle design, "Setup powers" --
     * out of scope until then). Slice 3's E02/E06/E22 powers already name

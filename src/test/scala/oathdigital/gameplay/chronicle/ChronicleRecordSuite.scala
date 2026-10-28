@@ -1,11 +1,13 @@
 package oathdigital.gameplay.chronicle
 
+import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{CatalogNames, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 
-/** What the journaled Chronicle carries after Sun and Throne: the live
-  * roles, era scores and Oathkeeper goal over the baseline. */
+/** What the journaled Chronicle carries from the campaign: the live roles,
+  * era scores, Oathkeeper goal and starting advisers over the baseline.
+  * `ChronicleExtraction` supplies the table fields. */
 class ChronicleRecordSuite extends munit.FunSuite:
   private val boxed = LineageId("lineage:boxed")
   private val legacy = LegacyState(LegacyId("legacy:any"), active = true)
@@ -51,7 +53,8 @@ class ChronicleRecordSuite extends munit.FunSuite:
       baseline = campaign.baseline.copy(lineages = Vector(LineageState(
         lineage, None, Role.Citizen, Vector(legacy), Vector.empty)))))).ready
     assertEquals(ChronicleRecord.campaignFields(ready).lineages.head,
-      LineageState(lineage, None, Role.Exile, Vector(legacy), Vector.empty))
+      LineageState(lineage, Some(p2), Role.Exile, Vector(legacy),
+        Vector.empty))
 
   test("every other field is the baseline's"):
     val ready = Table.start.denizen("Fae Merchant", at = "Ancient City")
@@ -61,3 +64,20 @@ class ChronicleRecordSuite extends munit.FunSuite:
     assertEquals(record.copy(era = baseline.era,
       oathkeeperGoal = baseline.oathkeeperGoal,
       lineages = baseline.lineages), baseline)
+
+  test("a seated lineage takes the starting advisers this Chronicle kept"):
+    val start = Table.start.ready
+    val lineage = lineageOf(start, p2)
+    // Two denizens the table does not hold, so the live state stays whole.
+    val Vector(baselineAdviser, keptAdviser) = catalog.denizens
+      .map(card => DenizenId(card.id.value))
+      .filterNot(card => start.game.cardIndex.toOption.get.ids(card)).take(2)
+    val kept = DenizenState(keptAdviser, Orientation.FaceDown, Tokens.empty)
+    val ready = Table.start.update(_.updateCampaign(campaign => campaign.copy(
+      baseline = campaign.baseline.copy(lineages = Vector(LineageState(
+        lineage, None, Role.Exile, Vector.empty, Vector(DenizenState(
+          baselineAdviser, Orientation.FaceDown, Tokens.empty))))),
+      lineages = campaign.lineages.updatedWith(lineage)(
+        _.map(_.copy(startingAdvisers = Vector(kept))))))).ready
+    assertEquals(ChronicleRecord.campaignFields(ready).lineages.head
+      .startingAdvisers, Vector(kept))

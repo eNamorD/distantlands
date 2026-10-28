@@ -250,6 +250,11 @@ the older Dispossessed so the Beacon's return leaves them alone. The
 Chronicle record joins both.
 _Avoid_: new Dispossessed, World Dispossessed
 
+**Archived site**:
+A rival site the Stars task stores at the atlas's Recent end with every card
+left on it. The Empire's sites are kept in the Chronicle's `world` instead.
+_Avoid_: rival storage, stored rival
+
 **Evolved Chronicle**:
 The Chronicle the Chronicle Phase ends with, recorded by the
 `ChronicleUpdated` operation. The next game starts from it.

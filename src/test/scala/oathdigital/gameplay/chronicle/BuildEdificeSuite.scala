@@ -146,8 +146,13 @@ class BuildEdificeSuite extends munit.FunSuite:
         Vector(DecisionOptionRef.Denizen(first._2)))))
     assertEquals(ChronicleWalk.parked(firstBuilt.state).map(_.decisionId),
       Some(BuildEdifice.decisionId(second._1)))
-    val done = build(OathTransition(firstBuilt.state, firstBuilt.events),
-      second._1, Vector(DecisionOptionRef.Denizen(second._2)))
+    // Answered alone, not walked to the end: Buried Giant holds more
+    // edifices than a site can store, so the Chronicle could not be
+    // recorded. The walk parks again in the World, after the Throne.
+    val secondBuilt = accepted(rules.resolveWalker(firstBuilt.state, p1,
+      BuildEdifice.decisionId(second._1), DecisionAnswer.ChooseManyAnswer(
+        Vector(DecisionOptionRef.Denizen(second._2)))))
+    val done = OathTransition(secondBuilt.state, secondBuilt.events)
     assertEquals(denizensAt(done, ancientCity).count(_.isInstanceOf[
       EdificeState]), 2)
 

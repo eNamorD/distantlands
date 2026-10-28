@@ -18,6 +18,8 @@ object ChronicleWindows:
     ChronicleGatherDenizens, ChronicleProtectAndDispossess)
   val beacon: Vector[PowerWindow] = Vector(ChronicleIntroduceNewcomers,
     ChronicleWelcomeStranger, ChronicleShapeFoundation)
+  val stars: Vector[PowerWindow] = Vector(ChronicleWriteInTheStars,
+    ChronicleArchiveRivalSites, ChronicleCleanUp, ChronicleStore)
 
   def step(window: PowerWindow, ops: Vector[Operation]): Operation =
     Sequence(ops, Some(window))

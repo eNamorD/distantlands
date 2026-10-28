@@ -17,7 +17,7 @@ class EnumWireKeySuite extends munit.FunSuite:
       Vector("oathkeeper", "setup", "forced-wake", "follow-up-offer",
         "wake-menu", "rest-menu", "act-menu", "chronicle-begin",
         "chronicle-sun", "chronicle-throne", "chronicle-world",
-        "chronicle-beacon", "chronicle-finish"))
+        "chronicle-beacon", "chronicle-stars", "chronicle-finish"))
 
 
   test("Phase.Chronicle round-trips through its wire key"):

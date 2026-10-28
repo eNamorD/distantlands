@@ -194,7 +194,7 @@ reconstruction, Reliquary changes, Foundation mutation, Legacy
 activation/scoring, Oathkeeper goal changes, era scoring, saved-campaign
 continuation, and campaign browsing.
 
-- [ ] **End-of-game Chronicle steps.**
+- [x] **End-of-game Chronicle steps.**
   - Foundation landed: the winner's Start Chronicle decision, driver
     chaining, the baseline Chronicle kept at game start, and
     `ChronicleUpdated`.
@@ -204,7 +204,9 @@ continuation, and campaign browsing.
   - World and Beacon landed: Visions leave play, nine denizens are dealt and
     one stack protected, newcomers are drawn from three suits, and each task
     holder keeps a starting adviser. Shape Foundation is an empty window.
-    Remaining: Stars and the extraction of the table into the Chronicle.
+  - Stars landed: rival sites are archived and the Empire's sites kept, and
+    the journaled Chronicle reads the table and passes game start's card
+    accounting. Starting the next game from it is Persistence's work.
 - [x] **Enduring (Ancient City).** Its cards are not discarded in the
   Chronicle Phase's Shape Empire step.
 - [ ] **Chronicle import and export.** The Chronicle string codec for the TTS

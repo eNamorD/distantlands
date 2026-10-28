@@ -58,6 +58,8 @@ Rulings given by the project owner for the Chronicle Phase ([chronicle.md](chron
 14. **Shape Empire discard pile.** A denizen discarded in Shape Empire follows the general discard rule: it goes to the discard pile of the region after its site's region. The World task's Gather Denizens shuffles every discard pile together next, so the pile matters only to the Game Log (CR pp. 37-38).
 15. **Newcomers from a short suit.** If a suit the Beacon task holder chose still has too few cards after all older Dispossessed return to their suit sections, the holder draws what remains of that suit. The project owner notes this should not happen in play (CR p. 39).
 16. **Locks in the Chronicle.** Lock icons restrict play, not the Chronicle Phase. Gather Denizens takes every adviser, locked or not. Rules that name a protected card, such as Shape Empire's intact edifices, still protect it (CR pp. 37-38).
+17. **Rival sites keep every card.** Archive Rival Sites stores every card left on a rival site with it, not only relics and intact edifices. After Shape Empire, a rival Enduring site can still hold denizens or a ruined edifice; they are stored too (CR p. 40).
+18. **The Stars on the table.** The Stars steps change nothing on the table. The Chronicle stores no pieces, so Clean Up's piece returns change nothing it records. The digital version reads the finished table once, at the end of the Chronicle Phase, and stores the sites as Archive Rival Sites, Clean Up and Store order them (CR pp. 40-41).
 
 ## Source relationship cautions
 
