@@ -311,6 +311,14 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
       ProcedureLog(tag = None, isSection = false,
         lines = ActionLineSource.Silent(
           "each forced power writes its own lines, and narrates nothing here"))
+    case TriggeredProcedureRef.ChronicleBegin =>
+      ProcedureLog(tag = None, isSection = false,
+        lines = ActionLineSource.Silent(
+          "the Chronicle headline the phase change posts tells the answer"))
+    case TriggeredProcedureRef.ChronicleFinish =>
+      ProcedureLog(tag = None, isSection = false,
+        lines = ActionLineSource.Silent(
+          "the Chronicle update is a campaign record, not table play"))
     case TriggeredProcedureRef.FollowUpOffer =>
       ProcedureLog(tag = None, isSection = false,
         narrated = Vector(Told(FollowUpOffer.decisionId)),

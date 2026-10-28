@@ -73,8 +73,12 @@ object Phase:
     val key = "round-end"
   private[oathdigital] case object WarExhaustion extends Phase:
     val key = "war-exhaustion"
+  /** The post-game Chronicle tasks. Entered once, after the game has a
+    * result, when the winner starts the Chronicle. */
+  case object Chronicle extends Phase { val key = "chronicle" }
 
-  val all: Vector[Phase] = Vector(Setup, Wake, Act, Rest, RoundEnd, WarExhaustion)
+  val all: Vector[Phase] =
+    Vector(Setup, Wake, Act, Rest, RoundEnd, WarExhaustion, Chronicle)
 
   def fromKey(key: String): Option[Phase] = all.find(_.key == key)
 

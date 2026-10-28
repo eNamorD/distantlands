@@ -2,6 +2,7 @@ package oathdigital.serialization
 
 import oathdigital.gameplay.actions.VisionRules
 import oathdigital.model._
+import oathdigital.gameplay.setup.FirstGameSetupFixture
 import oathdigital.gameplay.operations.{OperationPipeline, OperationPolicy}
 import oathdigital.gameplay.walker.{DeltaPayload, RollPayload,
   WalkerStepRecorded}
@@ -392,6 +393,8 @@ class WalkerOperationWireSuite extends munit.FunSuite:
       SetOathkeeper(Some(PlayerId("red"))),
       SetOathkeeper(None),
       SetOathkeeperGoal(OathkeeperGoal.ThePeople),
+      ChronicleUpdated(FirstGameSetupFixture.chronicle.copy(
+        oathkeeperGoal = OathkeeperGoal.ThePeople)),
       QueueProcedure(QueuedProcedure(PlayerId("p1"), ActionRef.Campaign,
           Vector.empty,
           Some(PowerSourceRef.Card(CatalogNames.denizen("Knights Errant"))),

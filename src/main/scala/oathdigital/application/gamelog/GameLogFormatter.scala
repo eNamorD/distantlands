@@ -259,7 +259,8 @@ private[application] final class GameLogFormatter(catalog: ExecutableCatalog,
   /** A turn begins at `BeginTurn(player, Wake)`, with its Wake headline.
     * Setup's closing one also opens Round 1; a `BeginTurn` into the round's
     * end posts nothing, since `gameplay.round-ended` posts the next round and
-    * its first turn. Act and Rest begin at the `EnterPhase` into them. */
+    * its first turn. Act, Rest and the Chronicle begin at the `EnterPhase` into
+    * them. */
   private def headlines(journal: LogJournal, at: Int): Vector[Posted] =
     journal.ops(at).flatMap {
       case OpStep(BeginTurn(player, Phase.Wake), before, _) =>
@@ -267,7 +268,8 @@ private[application] final class GameLogFormatter(catalog: ExecutableCatalog,
           Vector(roundHeadline(1), turnHeadline(player),
             phaseHeadline(Phase.Wake))
         else Vector(turnHeadline(player), phaseHeadline(Phase.Wake))
-      case OpStep(EnterPhase(phase @ (Phase.Act | Phase.Rest)), before, _)
+      case OpStep(EnterPhase(phase @ (Phase.Act | Phase.Rest | Phase.Chronicle)),
+          before, _)
           if before.game.current.turn.phase != phase =>
         Vector(phaseHeadline(phase))
       case _ => Vector.empty
@@ -276,6 +278,7 @@ private[application] final class GameLogFormatter(catalog: ExecutableCatalog,
   private def phaseWords(phase: Phase): Vector[LogSpan] = phase match
     case Phase.Wake => Vector(Text("Wake"))
     case Phase.Act => Vector(Text("Act"))
+    case Phase.Chronicle => Vector(Text("Chronicle"))
     case _ => Vector(Text("Rest"))
 
   private def phaseHeadline(phase: Phase): Posted =
