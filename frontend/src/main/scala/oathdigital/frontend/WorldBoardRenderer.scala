@@ -336,6 +336,8 @@ private[frontend] object WorldBoardRenderer:
      box.appendChild(RulesTextRenderer.glyph(s"suit-${bank.suit}"))
      box.appendChild(dom.document.createTextNode(
        s"${bank.suit.capitalize}: ${bank.count}"))
+     // The count is favor, drawn as the favor token is everywhere else.
+     box.appendChild(RulesTextRenderer.glyph("favor"))
      options.decorate(box,
        Vector(BoardOptionViews.key("favor-bank", bank.suit)))
      banks.appendChild(box)

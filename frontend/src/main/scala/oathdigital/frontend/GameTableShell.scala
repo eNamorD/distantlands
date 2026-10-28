@@ -32,6 +32,8 @@ private[frontend] final class GameTableShell(mount: dom.Element,
   private val players = new Pane("players", "Players")
   private val world = new Pane("world", "World Map")
   private val log = new Pane("log", "Game Log")
+  private val sidebar = new SidebarDivider(table.asInstanceOf[dom.html.Element],
+    actions.node.asInstanceOf[dom.html.Element], logStore)
   private val marker = new LogMarker(logStore)
   private val detachWheel = SidewaysWheel.attach(players.content)
   private val logPane = new GameLogPane(log.content, scrolled = () => watchLog())
@@ -247,6 +249,7 @@ private[frontend] final class GameTableShell(mount: dom.Element,
 
   def dispose(): Unit =
     mapView.dispose()
+    sidebar.dispose()
     detachWheel()
     dev.removeEventListener("keydown", escape)
     CardInspection.clear()

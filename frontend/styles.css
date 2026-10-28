@@ -282,12 +282,23 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .site-readonly { cursor: default; }
 /* Board decisions (spec 2026-10-03): an option drawn where it lies. Nothing
    that is not an option changes, and only an unavailable option is dimmed. */
+/* One mark for everything clickable, on the map, the boards and in the
+   pane: a bright brass ring at rest and a cream one, with a glow, under the
+   pointer. The map is drawn scaled, so there the ring is widened against
+   the scale and stays about `--option-ring` wide on screen. */
+:root { --option-line: var(--brass-bright); --option-ring: 2px;
+  --option-glow: rgba(241, 199, 129, 0.5); }
+.map-content { --option-ring: calc(2px / var(--map-scale, 1)); }
 .board-option { position: relative; cursor: pointer;
-  border-color: var(--brass); box-shadow: inset 0 0 0 1px var(--brass); }
+  border-color: var(--option-line);
+  box-shadow: inset 0 0 0 var(--option-ring) var(--option-line); }
 .board-option:hover, .board-option:focus-visible, .board-option-hover {
-  border-color: var(--cream-bright); box-shadow: 0 0 0 3px rgba(210, 168, 94, 0.35); }
+  border-color: var(--cream-bright);
+  box-shadow: inset 0 0 0 var(--option-ring) var(--cream-bright),
+    0 0 0 calc(var(--option-ring) * 2) var(--option-glow); }
 .board-option-selected, .board-option-locked, .board-option-played {
-  border-color: var(--selection); box-shadow: inset 0 0 0 2px var(--selection);
+  border-color: var(--selection);
+  box-shadow: inset 0 0 0 var(--option-ring) var(--selection);
   background: var(--selection-fill); }
 .board-option-locked, .board-option-played { cursor: default; }
 .board-option-unavailable { opacity: 0.45; cursor: not-allowed;
@@ -295,10 +306,12 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 /* An option the viewer may ask consent for (consent design): amber, not
    brass, and clickable. */
 .board-option-askable { border-color: var(--consent-amber);
-  box-shadow: inset 0 0 0 2px var(--consent-amber); }
+  box-shadow: inset 0 0 0 var(--option-ring) var(--consent-amber); }
 .board-option-askable:hover, .board-option-askable:focus-visible,
 .board-option-askable.board-option-hover {
-  border-color: var(--cream-bright); box-shadow: 0 0 0 3px rgba(232, 163, 61, 0.4); }
+  border-color: var(--cream-bright);
+  box-shadow: inset 0 0 0 var(--option-ring) var(--cream-bright),
+    0 0 0 calc(var(--option-ring) * 2) rgba(232, 163, 61, 0.5); }
 /* In the pane the Action face paints every button at one class of
    specificity, so these carry the pane's class too. */
 .pane-actions .walker-choice-askable,
@@ -451,7 +464,7 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .load-game, .adviser {
   min-height: 44px;
   padding: 8px 12px;
-  border: 1px solid #bca780;
+  border: var(--option-ring) solid var(--option-line);
   border-radius: 7px;
   background: #282117;
   color: #fff;
@@ -601,7 +614,8 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .card-face-unimplemented { border-style: dashed; border-color: #a15c4a; }
 /* An empty slot is a place, not a card: nothing to inspect, so no ring. */
 .card-face:not(.card-slot-empty):hover, .card-face:focus-visible {
-  outline: 2px solid var(--cream-focus); outline-offset: -3px; }
+  outline: var(--option-ring) solid var(--cream-focus);
+  outline-offset: calc(var(--option-ring) * -1.5); }
 /* The name sits beside the glyph while it fits and drops under it when it
    does not: a 13ex card leaves a one-word name like Catacombs no room beside
    the glyph, and breaking it mid-word ("Catacom bs") is worse than one more
@@ -919,11 +933,13 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   gap: 10px; margin-top: 10px; }
 .shared-banners .board-option-card { width: 100%; }
 .shared-banners .banner-face { width: 100%; height: auto; aspect-ratio: 1; }
+/* Under the regions, where the physical board keeps them. Their text is set
+   larger than the map's own, as the map is drawn at about half size. */
 .favor-banks { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 6px; margin-top: 12px; }
+  gap: 8px; margin-top: 10px; }
 .favor-bank { display: flex; align-items: center; justify-content: center;
-  gap: 0.3em; padding: 7px; border: 1px solid var(--line); border-radius: 6px;
-  text-align: center; font-weight: 700; }
+  gap: 0.3em; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px;
+  text-align: center; font-size: 1.6rem; font-weight: 700; line-height: 1.2; }
 .walker-choice .token-glyph { margin-right: 0.3em; vertical-align: -0.15em; }
 /* A token inside the label sits between words that already space it. */
 .walker-choice-label .token-glyph { margin-right: 0; }
@@ -985,6 +1001,26 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
   background: var(--pane); border: 1px solid #40382b; overflow: hidden; }
 .pane-players { grid-area: players; }.pane-world { grid-area: world; }
 .pane-actions { grid-area: actions; }.pane-log { grid-area: log; }
+/* The viewer's own width for the left column (SidebarDivider), held between
+   a usable minimum and half the table however the window is resized. The
+   phone layouts below put the columns back. */
+.game-table.sidebar-sized {
+  grid-template-columns: clamp(240px, var(--sidebar-w), 50%) minmax(0, 1fr); }
+/* Over the gap between the columns and a little either side of it, so the
+   edge is easy to catch; a brass line marks it under the pointer. */
+.sidebar-divider { grid-column: 1; grid-row: 1 / -1; justify-self: end;
+  position: relative; z-index: 2; width: 10px; margin-right: -7px;
+  cursor: col-resize; touch-action: none; }
+.sidebar-divider::after { content: ""; position: absolute; top: 0; bottom: 0;
+  left: 4px; width: 2px; background: transparent; }
+.sidebar-divider:hover::after, .sidebar-resizing .sidebar-divider::after {
+  background: var(--brass-line); }
+.sidebar-divider:focus-visible { outline: none; }
+.sidebar-divider:focus-visible::after { background: var(--cream-focus); }
+/* While dragging, the map and the panes do not pick up the pointer. */
+.sidebar-resizing { cursor: col-resize; user-select: none;
+  -webkit-user-select: none; }
+.sidebar-resizing > .game-pane { pointer-events: none; }
 .pane-header { display: flex; align-items: center; justify-content: space-between;
   flex: 0 0 auto; gap: 8px; min-height: 39px; padding: 4px 10px;
   border-bottom: 1px solid var(--line-pane); background: #26231d; }
@@ -1106,7 +1142,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 /* The regions keep 1500px, as a site's card width is a share of its
    region; the shared bank's column and its gap are added beside them. */
 .map-content { position: absolute; width: calc(1500px + 12px + var(--bank-w));
-  padding: 20px; --bank-w: 360px;
+  padding: 8px; --bank-w: 360px;
   transform-origin: top left; font-size: 1rem; }
 /* The glance layer. Below 0.72 the map's own text falls under 11px on
    screen, so what a player scans the board for (region and site names,
@@ -1243,12 +1279,13 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
    of size; the faces only paint. A card is a button too, and keeps its own
    face. */
 .pane-actions :where(button:not(.card-face)) { min-height: 44px;
-  padding: 8px 12px; border: 1px solid #bca780; border-radius: 7px;
-  background: #282117; color: #fff; }
+  padding: 8px 12px; border: var(--option-ring) solid var(--option-line);
+  border-radius: 7px; background: #282117; color: #fff; }
 .pane-actions :where(.distribute-decrement, .distribute-increment) {
   border-color: var(--brass-line); border-radius: 4px; background: var(--raised); color: #e8d9bb; }
 .pane-actions :where(button:not(.card-face)):hover:not(:disabled, [aria-disabled="true"]) {
-  border-color: var(--cream-bright); background: var(--pressed); }
+  border-color: var(--cream-bright); background: var(--pressed);
+  box-shadow: 0 0 0 var(--option-ring) var(--option-glow); }
 .pane-actions :where(button:not(.card-face)):is(:disabled,
   [aria-disabled="true"]) { opacity: 0.5; cursor: not-allowed; }
 /* The system's input field, on the warband count and a deal's amounts. */
@@ -1419,6 +1456,8 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
     grid-template-rows: minmax(150px, 34%) auto minmax(0, 1fr)
       minmax(90px, 13%);
     grid-template-areas: "actions" "players" "world" "log"; }
+  .game-table.sidebar-sized { grid-template-columns: minmax(0, 1fr); }
+  .sidebar-divider { display: none; }
   /* Sized to its boards, the strip has nothing below to scroll to; a
      sideways scrollbar's own height is not left to start one. */
   .pane-players > .pane-content { overflow-y: hidden; }
