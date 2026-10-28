@@ -580,6 +580,14 @@ final case class ChronicleTaskAssigned(task: ChronicleTask, player: PlayerId)
 final case class GrandScepterFromBox(player: PlayerId)
     extends PrimitiveOperation
 
+/** Brings a suit's boxed denizens into its live suited reserve, so the
+  * Beacon can draw from them (CR p. 39). Live reserves start empty; the box
+  * is every denizen the catalog has and the game does not. The walk builds
+  * `cards` from the catalog; the write checks only that none is in play. */
+final case class SuitedReserveFromBox(suit: Suit, cards: Vector[DenizenId])
+    extends PrimitiveOperation:
+  require(cards.nonEmpty, "a suited reserve takes at least one boxed card")
+
 /** The Chancellor's purple warbands join the table: `count` Imperial
   * warbands, unless the game already has an Imperial supply. */
 final case class ImperialWarbandsTaken(count: Int) extends PrimitiveOperation:

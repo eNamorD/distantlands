@@ -1,7 +1,7 @@
 package oathdigital.gameplay.operations
 
 import oathdigital.model._
-import oathdigital.testkit.Table
+import oathdigital.testkit.{CatalogNames, Table}
 import oathdigital.testkit.Unwrap.accepted
 
 class ShuffleOperationSuite extends munit.FunSuite:
@@ -77,3 +77,25 @@ class ShuffleOperationSuite extends munit.FunSuite:
     val done = accepted(executor.execute(aside,
       Shuffle(ShufflePile.SetAsideRelics, Some(relics.reverse))))
     assertEquals(done.game.current.setAsideRelics, relics.reverse)
+
+  test("a shuffle writes the gathering pile's new order"):
+    val three = zones(discarded).worldDeck.take(3)
+    val gathered = discarded.updateCurrent(current => current.copy(
+      commonCards = current.commonCards.copy(
+        worldDeck = current.commonCards.worldDeck.drop(3)),
+      chronicleGathering = three))
+    val done = accepted(executor.execute(gathered,
+      Shuffle(ShufflePile.ChronicleGathering, Some(three.reverse))))
+    assertEquals(done.game.current.chronicleGathering, three.reverse)
+
+  test("a shuffle writes a suited reserve's new order"):
+    val three = zones(discarded).worldDeck.collect { case id: DenizenId => id }
+      .take(3)
+    val suit = CatalogNames.suitOf(three.head)
+    val reserved = discarded.updateCurrent(current => current.copy(
+      commonCards = current.commonCards.copy(
+        worldDeck = current.commonCards.worldDeck.filterNot(three.contains))))
+      .updateCampaign(_.copy(suitedReserves = Map(suit -> three)))
+    val done = accepted(executor.execute(reserved,
+      Shuffle(ShufflePile.SuitedReserve(suit), Some(three.reverse))))
+    assertEquals(done.game.campaign.suitedReserves(suit), three.reverse)

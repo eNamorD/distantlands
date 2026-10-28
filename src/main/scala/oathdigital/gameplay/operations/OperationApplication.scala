@@ -229,6 +229,9 @@ private[gameplay] object OperationApplication:
         result.flatMap(ChronicleStateOperations.taskAssigned(_, task, player))
       case (result, GrandScepterFromBox(player)) =>
         result.flatMap(ChronicleStateOperations.scepterFromBox(_, player))
+      case (result, SuitedReserveFromBox(suit, cards)) =>
+        result.flatMap(ChronicleStateOperations.suitedReserveFromBox(_, suit,
+          cards))
       case (result, ImperialWarbandsTaken(count)) =>
         result.map(ChronicleStateOperations.imperialWarbandsTaken(_, count))
       case (result, LineagePointsScored(lineage, points)) =>

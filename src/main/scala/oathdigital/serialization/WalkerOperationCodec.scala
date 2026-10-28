@@ -44,7 +44,7 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
     QueueProcedure | Defer | TakeDeferred | ActAsIf | OpenPick | ClosePick
   private type ChronicleOperation = RoleChanged | ChronicleTaskAssigned |
     GrandScepterFromBox | ImperialWarbandsTaken | LineagePointsScored |
-    EdificeBuilt
+    EdificeBuilt | SuitedReserveFromBox
 
   protected final def encodeOperation(operation: CoreOperation): ujson.Value =
     operation match
@@ -70,6 +70,9 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
       "points" -> points)
     case EdificeBuilt(edifice, site) => ujson.Obj("kind" -> "edifice-built",
       "edifice" -> edifice.value, "site" -> site.value)
+    case SuitedReserveFromBox(suit, cards) => ujson.Obj(
+      "kind" -> "suited-reserve-from-box", "suit" -> suit.key,
+      "cards" -> cards.map(card => ujson.Str(card.value)))
 
   private def encodeCardOperation(operation: CardOperation): ujson.Value =
     operation match
@@ -415,12 +418,19 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
     case ShufflePile.Search(source) => encodeSearchSource(source)
     case ShufflePile.EdificeDeck => ujson.Obj("kind" -> "edifice-deck")
     case ShufflePile.SetAsideRelics => ujson.Obj("kind" -> "set-aside-relics")
+    case ShufflePile.ChronicleGathering =>
+      ujson.Obj("kind" -> "chronicle-gathering")
+    case ShufflePile.SuitedReserve(suit) =>
+      ujson.Obj("kind" -> "suited-reserve", "suit" -> suit.key)
 
   private def decodeShufflePile(value: ujson.Value, path: String)
       : Either[WireError, ShufflePile] =
     value.objOpt.flatMap(_.get("kind")).flatMap(_.strOpt) match
       case Some("edifice-deck") => Right(ShufflePile.EdificeDeck)
       case Some("set-aside-relics") => Right(ShufflePile.SetAsideRelics)
+      case Some("chronicle-gathering") => Right(ShufflePile.ChronicleGathering)
+      case Some("suited-reserve") => decodeSuit(value("suit").str,
+        s"$path.suit").map(ShufflePile.SuitedReserve.apply)
       case _ => decodeSearchSource(value, path).map(ShufflePile.Search.apply)
 
   /** A recorded shuffle carries its order; a declared one has none. */
@@ -551,6 +561,12 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
     yield LineagePointsScored(LineageId(value("lineage").str), points)
     case "edifice-built" => Right(EdificeBuilt(
       EdificeId(value("edifice").str), SiteId(value("site").str)))
+    case "suited-reserve-from-box" => for
+      suit <- decodeSuit(value("suit").str, s"$path.suit")
+      cards = value("cards").arr.toVector.map(card => DenizenId(card.str))
+      _ <- Either.cond(cards.nonEmpty, (), InvalidValue(s"$path.cards",
+        "a suited reserve takes at least one boxed card"))
+    yield SuitedReserveFromBox(suit, cards)
 
   private def positive(value: ujson.Value, name: String, path: String)
       : Either[WireError, Int] =

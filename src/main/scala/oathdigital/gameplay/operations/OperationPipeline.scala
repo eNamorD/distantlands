@@ -36,10 +36,13 @@ object OperationRun:
   }.toSet
 
   /** The cards this run brought into the game from the box: the Grand
-    * Scepter, taken by a winner when no one holds it (Chronicle ruling 10).
+    * Scepter, taken by a winner when no one holds it (Chronicle ruling 10),
+    * and the boxed denizens a suited reserve takes before the Beacon draws.
     * The inventory check expects them afterwards. */
-  def unboxed(executed: Vector[CoreOperation]): Set[CardId] = executed.collect {
-    case GrandScepterFromBox(_) => TheGrandScepterCard.id: CardId
+  def unboxed(executed: Vector[CoreOperation]): Set[CardId] = executed.flatMap {
+    case GrandScepterFromBox(_) => Vector(TheGrandScepterCard.id: CardId)
+    case SuitedReserveFromBox(_, cards) => cards
+    case _ => Vector.empty
   }.toSet
 
 /** Sole public orchestrator of an operation batch. It folds each operation

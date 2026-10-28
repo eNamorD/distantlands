@@ -70,16 +70,23 @@ object ShufflePile:
   final case class Search(source: SearchSource) extends ShufflePile
   case object EdificeDeck extends ShufflePile
   case object SetAsideRelics extends ShufflePile
+  case object ChronicleGathering extends ShufflePile
+  final case class SuitedReserve(suit: Suit) extends ShufflePile
 
   /** The pile's cards in stored order. */
-  def cards(pile: ShufflePile, current: CurrentGameState): Vector[CardId] =
+  def cards(pile: ShufflePile, game: OathGame): Vector[CardId] =
     pile match
-      case Search(source) => current.commonCards.pile(source)
-      case EdificeDeck => current.commonCards.edificeDeck
-      case SetAsideRelics => current.setAsideRelics
+      case Search(source) => game.current.commonCards.pile(source)
+      case EdificeDeck => game.current.commonCards.edificeDeck
+      case SetAsideRelics => game.current.setAsideRelics
+      case ChronicleGathering => game.current.chronicleGathering
+      case SuitedReserve(suit) =>
+        game.campaign.suitedReserves.getOrElse(suit, Vector.empty)
 
   /** How a failure names the pile. */
   def name(pile: ShufflePile): String = pile match
     case Search(source) => SearchSource.name(source)
     case EdificeDeck => "edifice deck"
     case SetAsideRelics => "set-aside relics"
+    case ChronicleGathering => "gathered denizens"
+    case SuitedReserve(suit) => s"${suit.key} reserve"

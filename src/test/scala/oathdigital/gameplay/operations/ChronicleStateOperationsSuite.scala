@@ -1,5 +1,6 @@
 package oathdigital.gameplay.operations
 
+import oathdigital.gameplay.setup.FirstGameSetupFixture
 import oathdigital.model._
 import oathdigital.testkit.{CatalogNames, Table}
 import oathdigital.testkit.Table.{p1, p2}
@@ -112,3 +113,35 @@ class ChronicleStateOperationsSuite extends munit.FunSuite:
       .edifice("Bandit Market", EdificeSide.Ruined, at = "Ancient City").ready
     rejected(run(ready, EdificeBuilt(CatalogNames.edifice("Bandit Market"),
       CatalogNames.site("Broken Peaks"))))
+
+  /** Denizens of `suit` the quiet table does not have in play. */
+  private def boxedOf(ready: ReadyGame, suit: Suit): Vector[DenizenId] =
+    val inPlay = ready.game.cardIndex.toOption.get.ids
+    FirstGameSetupFixture.catalog.denizens.filter(_.suit == suit)
+      .map(denizen => DenizenId(denizen.id.value))
+      .filterNot(inPlay.contains)
+
+  test("boxed denizens of a suit join its live reserve"):
+    val ready = Table.start.ready
+    val boxed = boxedOf(ready, Suit.Beast).take(2)
+    assertEquals(boxed.size, 2)
+    val after = accepted(run(ready, SuitedReserveFromBox(Suit.Beast, boxed)))
+    assertEquals(after.game.campaign.suitedReserves.get(Suit.Beast),
+      Some(boxed))
+
+  test("a card in play cannot come from the box"):
+    val ready = Table.start.ready
+    val inPlay = ready.game.current.commonCards.worldDeck
+      .collectFirst { case id: DenizenId => id }.get
+    rejected(run(ready, SuitedReserveFromBox(CatalogNames.suitOf(inPlay),
+      Vector(inPlay))))
+
+  test("the pipeline's card inventory expects the denizens a reserve " +
+      "brought from the box"):
+    val ready = Table.start.ready
+    val boxed = boxedOf(ready, Suit.Beast).take(2)
+    val run = accepted(OperationPipeline.run(ready,
+      Vector(SuitedReserveFromBox(Suit.Beast, boxed)),
+      OperationPolicy.Permissive, Vector.empty)(Right(_)))
+    assert(boxed.forall(card => run.state.game.cardIndex.toOption.exists(
+      _.locationOf(card).nonEmpty)))

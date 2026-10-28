@@ -43,6 +43,18 @@ private[operations] object ChronicleStateOperations:
           RelicState(scepter, Orientation.FaceUp, Tokens.empty))
         else state))))
 
+  /** None of `cards` may be in play. A broken card index counts as every
+    * card being absent; other checks reject that state. */
+  def suitedReserveFromBox(ready: ReadyGame, suit: Suit,
+      cards: Vector[DenizenId]): Either[OperationError, ReadyGame] =
+    val inPlay = ready.game.cardIndex.toOption.fold(Set.empty[CardId])(_.ids)
+    cards.find(inPlay.contains) match
+      case Some(card) => Left(InvalidDescription(
+        s"${card.value} is in play, not in the ${suit.key} box"))
+      case None => Right(ready.updateCampaign(campaign => campaign.copy(
+        suitedReserves = campaign.suitedReserves.updated(suit,
+          campaign.suitedReserves.getOrElse(suit, Vector.empty) ++ cards))))
+
   def imperialWarbandsTaken(ready: ReadyGame, count: Int): ReadyGame =
     ready.copy(banks = ready.banks.copy(warbandSupply =
       ready.banks.warbandSupply.updatedWith(ForceKind.Imperial)(
