@@ -200,8 +200,11 @@ continuation, and campaign browsing.
     `ChronicleUpdated`.
   - Sun and Throne landed: crowning, task assignment, Shape Empire, Build
     Edifice, Reliquary and relics, lineage points and the Oath, with the
-    legacy and Citizenship steps as empty windows. Remaining: World, Beacon,
-    Stars and their extraction into the Chronicle.
+    legacy and Citizenship steps as empty windows.
+  - World and Beacon landed: Visions leave play, nine denizens are dealt and
+    one stack protected, newcomers are drawn from three suits, and each task
+    holder keeps a starting adviser. Shape Foundation is an empty window.
+    Remaining: Stars and the extraction of the table into the Chronicle.
 - [x] **Enduring (Ancient City).** Its cards are not discarded in the
   Chronicle Phase's Shape Empire step.
 - [ ] **Chronicle import and export.** The Chronicle string codec for the TTS

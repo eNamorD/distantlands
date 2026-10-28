@@ -11,7 +11,7 @@ import oathdigital.model.{OathViolation, ReadyGame, Shuffle, ShufflePile}
 private[walker] object WalkerShuffles:
   def ordered(shuffle: Shuffle, state: ReadyGame, dice: WalkerDice)
       : Either[OathViolation, Shuffle] =
-    val cards = ShufflePile.cards(shuffle.pile, state.game.current)
+    val cards = ShufflePile.cards(shuffle.pile, state.game)
     if cards.size < 2 then Right(shuffle.copy(order = Some(cards)))
     else dice.shuffle(cards.size).flatMap(order => Either.cond(
       order.sorted == cards.indices.toVector,

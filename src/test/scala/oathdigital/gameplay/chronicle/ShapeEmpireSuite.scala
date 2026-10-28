@@ -5,7 +5,7 @@ import oathdigital.gameplay.actions.{CardPlay, ProcedureNotes}
 import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Outcomes, Table}
+import oathdigital.testkit.{CatalogNames, Table}
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
 
@@ -25,10 +25,15 @@ class ShapeEmpireSuite extends munit.FunSuite:
     accepted(rules.next(OathTransition(table.state, Vector.empty),
       TriggeredProcedureRef.ChronicleSun))
 
-  /** The Throne walked to its end, every other choice answered plainly. */
-  private def throneDone(transition: OathTransition)(using munit.Location)
-      : ReadyGame =
-    Outcomes.ready(ChronicleWalk.answeringEverything(rules, transition).state)
+  /** The Throne, started on `table`, walked to its end, every other
+    * choice answered plainly. */
+  private def throneDone(table: Table)(using munit.Location): ReadyGame =
+    throneDone(table, throneStarted(table))
+
+  /** `transition`, walked from `table`, to the Throne's end. */
+  private def throneDone(table: Table, transition: OathTransition)(
+      using munit.Location): ReadyGame = ChronicleWalk.endOf(rules,
+    table.state, transition, TriggeredProcedureRef.ChronicleThrone)
 
   private def empireAt(sites: String*): Table =
     sites.foldLeft(ChronicleWalk.throneHeldByChancellorP1)((table, site) =>
@@ -38,7 +43,8 @@ class ShapeEmpireSuite extends munit.FunSuite:
     ready.game.current.map.sites(site).forces
 
   test("the Chancellor may remove Imperial warbands but keeps the last one"):
-    val started = throneStarted(empireAt("Ancient City", "Broken Peaks"))
+    val table = empireAt("Ancient City", "Broken Peaks")
+    val started = throneStarted(table)
     val parked = ChronicleWalk.parked(started.state).get
     assertEquals((parked.decisionId, parked.owner),
       (ShapeEmpire.removeDecisionId, p1))
@@ -51,7 +57,8 @@ class ShapeEmpireSuite extends munit.FunSuite:
       ShapeEmpire.removeDecisionId, DecisionAnswer.DistributeAnswer(Vector(
         DistributeAmount(DecisionOptionRef.Site(ancientCity), 0),
         DistributeAmount(DecisionOptionRef.Site(brokenPeaks), 1)))))
-    val after = throneDone(OathTransition(removed.state, removed.events))
+    val after = throneDone(table,
+      OathTransition(removed.state, started.events ++ removed.events))
     assertEquals(forcesAt(after, brokenPeaks), SiteForces.Empty)
     assertEquals(forcesAt(after, ancientCity),
       SiteForces.Occupied(ForceKind.Imperial, 1))
@@ -62,8 +69,8 @@ class ShapeEmpireSuite extends munit.FunSuite:
       .exists(_.decisionId == ShapeEmpire.removeDecisionId))
 
   test("with no Empire site the pawn's site gets one Imperial warband"):
-    val after = throneDone(throneStarted(ChronicleWalk.throneHeldByChancellorP1
-      .bandits("Ancient City", 2)))
+    val after = throneDone(ChronicleWalk.throneHeldByChancellorP1
+      .bandits("Ancient City", 2))
     assertEquals(forcesAt(after, ancientCity),
       SiteForces.Occupied(ForceKind.Imperial, 1))
 
@@ -71,9 +78,9 @@ class ShapeEmpireSuite extends munit.FunSuite:
       "discard pile"):
     val kept = CatalogNames.denizen("Threatening Roar")
     val lost = CatalogNames.denizen("Fae Merchant")
-    val after = throneDone(throneStarted(empireAt("Broken Peaks")
+    val after = throneDone(empireAt("Broken Peaks")
       .denizen("Threatening Roar", at = "Broken Peaks")
-      .denizen("Fae Merchant", at = "Buried Giant")))
+      .denizen("Fae Merchant", at = "Buried Giant"))
     val map = after.game.current.map
     assert(map.sites(brokenPeaks).denizens.exists(_.id == kept))
     val region = map.regionOf(CatalogNames.site("Buried Giant")).get
@@ -84,9 +91,9 @@ class ShapeEmpireSuite extends munit.FunSuite:
       "returns the set-aside one to the deck"):
     val intact = CatalogNames.edifice("Great Market")
     val ruined = CatalogNames.edifice("Ruined School")
-    val after = throneDone(throneStarted(empireAt("Ancient City")
+    val after = throneDone(empireAt("Ancient City")
       .edifice("Great Market", EdificeSide.Intact, at = "Broken Peaks")
-      .edifice("Ruined School", EdificeSide.Ruined, at = "Buried Giant")))
+      .edifice("Ruined School", EdificeSide.Ruined, at = "Buried Giant"))
     assert(after.game.current.map.sites(brokenPeaks).denizens
       .exists(_.id == intact))
     assert(!after.game.current.map.sites(CatalogNames.site("Buried Giant"))
@@ -95,8 +102,8 @@ class ShapeEmpireSuite extends munit.FunSuite:
 
   test("cards at an Enduring site stay"):
     val card = CatalogNames.denizen("Threatening Roar")
-    val after = throneDone(throneStarted(empireAt("Broken Peaks")
-      .denizen("Threatening Roar", at = "Ancient City")))
+    val after = throneDone(empireAt("Broken Peaks")
+      .denizen("Threatening Roar", at = "Ancient City"))
     assert(after.game.current.map.sites(ancientCity).denizens
       .exists(_.id == card))
 

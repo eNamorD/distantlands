@@ -21,12 +21,13 @@ object Dice:
       Vector.fill(count)(DefenseDieFace.Blank)
 
   /** Stub of CampaignDicePort: attack always OneSword, defense always
-    * TwoShields. */
+    * TwoShields, and every shuffle keeps its pile's order. */
   val steady: CampaignDicePort = new CampaignDicePort:
     def rollAttack(count: Int): Vector[AttackDieFace] =
       Vector.fill(count)(AttackDieFace.OneSword)
     def rollDefense(count: Int): Vector[DefenseDieFace] =
       Vector.fill(count)(DefenseDieFace.TwoShields)
+    override def shuffle(count: Int): Vector[Int] = (0 until count).toVector
 
   /** Stub of CampaignDicePort: attack always OneSword, defense always
     * Blank, dice that favour the attacker in a Raid. */

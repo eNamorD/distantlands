@@ -36,11 +36,21 @@ object OperationRun:
   }.toSet
 
   /** The cards this run brought into the game from the box: the Grand
-    * Scepter, taken by a winner when no one holds it (Chronicle ruling 10).
+    * Scepter, taken by a winner when no one holds it (Chronicle ruling 10),
+    * and the boxed denizens a suited reserve takes before the Beacon draws.
     * The inventory check expects them afterwards. */
-  def unboxed(executed: Vector[CoreOperation]): Set[CardId] = executed.collect {
-    case GrandScepterFromBox(_) => TheGrandScepterCard.id: CardId
+  def unboxed(executed: Vector[CoreOperation]): Set[CardId] = executed.flatMap {
+    case GrandScepterFromBox(_) => Vector(TheGrandScepterCard.id: CardId)
+    case SuitedReserveFromBox(_, cards) => cards
+    case _ => Vector.empty
   }.toSet
+
+  /** The cards expected after the run, in operation order: a card boxed
+    * and later unboxed is expected, and one unboxed and later boxed is not.
+    */
+  def expectedAfter(expected: Set[CardId], executed: Vector[CoreOperation])
+      : Set[CardId] = executed.foldLeft(expected)((cards, operation) =>
+    cards -- boxed(Vector(operation)) ++ unboxed(Vector(operation)))
 
 /** Sole public orchestrator of an operation batch. It folds each operation
   * through settlement, staged resolution ([[OperationResolution]], which
@@ -109,7 +119,6 @@ object OperationPipeline:
         // between operations — intermediate states within a legal batch are
         // not invariant-checked (matching the retired post-`update` check).
         _ <- OperationStateInvariant.validate(updated,
-          expected -- OperationRun.boxed(staged.executed) ++
-            OperationRun.unboxed(staged.executed))
+          OperationRun.expectedAfter(expected, staged.executed))
           .left.map(_.toViolation)
       yield staged.copy(state = updated)

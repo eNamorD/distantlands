@@ -145,6 +145,12 @@ private[operations] object CardMovementOperations:
       case Location.Dispossessed =>
         if id.isInstanceOf[WorldCardId] then None
         else Some(InvalidDestination(transfer.piece, destination))
+      case Location.ChronicleGathering | Location.NewlyDispossessed =>
+        if id.isInstanceOf[WorldCardId] then None
+        else Some(InvalidDestination(transfer.piece, destination))
+      case _: Location.SuitedReserve | _: Location.StartingAdvisers =>
+        if id.isInstanceOf[DenizenId] then None
+        else Some(InvalidDestination(transfer.piece, destination))
       case _: Location.Site => id match
         case _: DenizenId | _: EdificeId | _: RelicId =>
           statefulMaterializationViolation(located, transfer)
@@ -260,6 +266,16 @@ private[operations] object CardMovementOperations:
     case CardContainer.Dispossessed => Right(ready.copy(game = ready.game.copy(
       campaign = ready.game.campaign.copy(dispossessed =
         ready.game.campaign.dispossessed.filterNot(_ == located.id)))))
+    case CardContainer.ChronicleGathering => Right(ready.updateCurrent(current =>
+      current.copy(chronicleGathering =
+        current.chronicleGathering.filterNot(_ == located.id))))
+    case CardContainer.NewlyDispossessed => Right(ready.updateCurrent(current =>
+      current.copy(newlyDispossessed =
+        current.newlyDispossessed.filterNot(_ == located.id))))
+    case CardContainer.SuitedReserve(suit) => Right(ready.updateCampaign(
+      campaign => campaign.copy(suitedReserves = campaign.suitedReserves
+        .updated(suit, campaign.suitedReserves.getOrElse(suit, Vector.empty)
+          .filterNot(_ == located.id)))))
     case CardContainer.AtlasSite(position, _, area) =>
       val entries = ready.game.campaign.atlas.entries.updated(position,
         ready.game.campaign.atlas.entries(position) match {
@@ -322,6 +338,29 @@ private[operations] object CardMovementOperations:
         ready.copy(game = ready.game.copy(campaign = ready.game.campaign.copy(
           dispossessed = ready.game.campaign.dispossessed :+
             id.asInstanceOf[WorldCardId]))))
+      case Location.ChronicleGathering => ensureEmptyTokens(original.state, id)
+        .map(_ => ready.updateCurrent(current => current.copy(
+          chronicleGathering = current.chronicleGathering :+
+            id.asInstanceOf[WorldCardId])))
+      case Location.NewlyDispossessed => ensureEmptyTokens(original.state, id)
+        .map(_ => ready.updateCurrent(current => current.copy(
+          newlyDispossessed = current.newlyDispossessed :+
+            id.asInstanceOf[WorldCardId])))
+      case Location.SuitedReserve(suit) => ensureEmptyTokens(original.state, id)
+        .map(_ => ready.updateCampaign(campaign => campaign.copy(
+          suitedReserves = campaign.suitedReserves.updated(suit,
+            campaign.suitedReserves.getOrElse(suit, Vector.empty) :+
+              id.asInstanceOf[DenizenId]))))
+      case Location.StartingAdvisers(lineage) =>
+        ensureEmptyTokens(original.state, id).flatMap(_ =>
+          ready.game.campaign.lineages.get(lineage).toRight(
+            InvalidDestination(transfer.piece, transfer.to.location)).map(
+            state => ready.updateCampaign(campaign => campaign.copy(
+              lineages = campaign.lineages.updated(lineage, state.copy(
+                startingAdvisers = state.startingAdvisers :+ DenizenState(
+                  id.asInstanceOf[DenizenId],
+                  transfer.resultingOrientation.getOrElse(
+                    Orientation.FaceDown), Tokens.empty)))))))
       case Location.SharedBank => ensureEmptyTokens(original.state, id)
         .map(_ => ready)
       case Location.Site(site) => adjustedState.flatMap:

@@ -19,12 +19,20 @@ trait AsIfLocked:
   * `asIf` are the rules that lock cards for some players only. A lock-icon
   * card's refusal comes first, since no consent lifts it.
   *
+  * No lock binds during the Chronicle Phase (Chronicle ruling 16).
+  *
   * One restriction holds every lock (`OperationRestrictions.printed`), so an
   * operation is flattened once however many cards are locked.
   */
 final case class LockedCards(cards: Set[CardId],
     asIf: Vector[AsIfLocked] = Vector.empty) extends OperationRestriction:
   override def reason(ready: ReadyGame,
+      operation: CoreOperation): Option[OperationReason] =
+    // Locks bind play, not the Chronicle's cleanup (Chronicle ruling 16).
+    if ready.game.current.turn.phase == Phase.Chronicle then None
+    else reasonInPlay(ready, operation)
+
+  private def reasonInPlay(ready: ReadyGame,
       operation: CoreOperation): Option[OperationReason] =
     val moved = LockedCards.touched(operation)
     moved.collectFirst {

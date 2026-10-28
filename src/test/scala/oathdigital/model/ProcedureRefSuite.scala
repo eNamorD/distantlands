@@ -31,6 +31,8 @@ class ProcedureRefSuite extends munit.FunSuite:
         TriggeredProcedureRef.ChronicleBegin,
         TriggeredProcedureRef.ChronicleSun,
         TriggeredProcedureRef.ChronicleThrone,
+        TriggeredProcedureRef.ChronicleWorld,
+        TriggeredProcedureRef.ChronicleBeacon,
         TriggeredProcedureRef.ChronicleFinish))
     assertEquals(TriggeredProcedureRef.ActMenu.key, "act-menu")
 

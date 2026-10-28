@@ -170,7 +170,11 @@ class WalkerOperationWireSuite extends munit.FunSuite:
       Location.SetAsideRelics,
       Location.Reliquary,
       Location.Atlas,
-      Location.Dispossessed)
+      Location.Dispossessed,
+      Location.ChronicleGathering,
+      Location.NewlyDispossessed,
+      Location.SuitedReserve(Suit.Beast),
+      Location.StartingAdvisers(LineageId("lineage")))
     // `PayCost` carries a bare `Location`, so it exercises each variant
     // without the stack-position wrapper or `Move`'s from/to constraints.
     val events = locations.map(location =>
@@ -413,6 +417,9 @@ class WalkerOperationWireSuite extends munit.FunSuite:
         Some(Vector(CatalogNames.edifice("Great Market")))),
       Shuffle(ShufflePile.SetAsideRelics,
         Some(Vector(RelicId("R1")))),
+      Shuffle(ShufflePile.ChronicleGathering, Some(Vector(denizen))),
+      Shuffle(ShufflePile.SuitedReserve(Suit.Beast),
+        Some(Vector(CatalogNames.denizen("Fae Merchant")))),
       SetOathkeeper(Some(PlayerId("red"))),
       SetOathkeeper(None),
       SetOathkeeperGoal(OathkeeperGoal.ThePeople),
@@ -425,6 +432,8 @@ class WalkerOperationWireSuite extends munit.FunSuite:
       ImperialWarbandsTaken(8),
       LineagePointsScored(LineageId("lineage:red"), 3),
       EdificeBuilt(CatalogNames.edifice("Great Market"), site),
+      SuitedReserveFromBox(Suit.Beast,
+        Vector(CatalogNames.denizen("Fae Merchant"))),
       QueueProcedure(QueuedProcedure(PlayerId("p1"), ActionRef.Campaign,
           Vector.empty,
           Some(PowerSourceRef.Card(CatalogNames.denizen("Knights Errant"))),

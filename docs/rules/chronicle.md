@@ -92,16 +92,21 @@ The player holding the Throne task (the winner) resolves these steps.
 The player holding the World task resolves these steps.
 
 1. **Separate Visions.** Set aside all 5 Vision cards. **Actor:** none: procedural.
+   - Digital: Visions leave play; setup adds all five again.
 2. **Gather Denizens.** Shuffle together all denizens from the discard piles and the players' advisers. Return all but 9 of them to the world deck, unseen. Split the 9 into three stacks of 3 and flip two stacks faceup. In the rare case of fewer than 9 denizens, take the difference from the world deck. **Actor:** none: procedural.
+   - Digital: the tokens on each adviser return to their banks first (favor to its suit's bank, secrets to the adviser's holder, facedown), and locked advisers go with the rest ([ruling 16](ambiguities.md#chronicle-rulings)). The nine dealt denizens sit in an ordered gathering pile: the facedown stack is always the last three cards and the faceup stacks come before it.
 3. **Protect and Dispossess.** Choose one faceup stack to protect: secretly choose 1 of its denizens as a facedown starting adviser you keep for the next game, and add the other 2 facedown to the world deck. Place the other two stacks, 6 denizens, behind the Dispossessed divider. **Actor:** the World task holder.
+   - Digital: the holder protects a stack by naming any card in it. When the step ends, the six unprotected denizens move to a newly Dispossessed pile, and one log line names the faceup three. They stay apart from the older Dispossessed until the Chronicle is recorded, so the Beacon's return leaves them alone.
 
 ### 4. The Beacon
 
 The player holding the Beacon task resolves these steps.
 
 1. **Introduce Newcomers.** Choose three different suits. Draw three random denizens of the first suit, two of the second, and one of the third, from the suited box sections. Do not take from the Dispossessed or Edifices sections. If any chosen suit lacks enough cards, then before drawing return all Dispossessed cards, except the 6 the World task just added, to their suited sections. **Actor:** the Beacon task holder chooses the suits; the draws are random.
+   - Digital: the holder chooses the suit for three draws, then two, then one. Each chosen suit's boxed denizens join its live reserve before the draw. A suit still short after the return draws what remains ([ruling 15](ambiguities.md#chronicle-rulings)).
 2. **Welcome a Stranger.** Look at the drawn denizens. Keep one as a facedown starting adviser for the next game, and add the other five facedown to the world deck. **Actor:** the Beacon task holder.
 3. **Shape Foundation.** You may flip one foundation setup card from its altered side to its normal side, unless an active legacy is altering it. **Actor:** the Beacon task holder.
+   - Digital: an empty window until Foundations exist.
 
 ### 5. The Stars
 

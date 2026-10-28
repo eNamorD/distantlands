@@ -10,7 +10,7 @@ import oathdigital.testkit.Outcomes
 import oathdigital.testkit.Table.p2
 import oathdigital.testkit.Unwrap.accepted
 
-/** Every Sun and Throne step runs inside its own power window, so a later
+/** Every Chronicle task step runs inside its own power window, so a later
   * legacy power can add to it (Chronicle steps design, "Windows, not
   * hardcoded actors"). The fake power gives p2 one lineage point per
   * window it is folded into. */
@@ -28,10 +28,11 @@ class ChronicleWindowsSuite extends munit.FunSuite:
     Outcomes.ready(state).game.current.players.find(_.player == player)
       .get.lineage
 
-  test("a power folded into every Sun and Throne window runs once per window"):
+  test("a power folded into every Chronicle window runs once per window"):
     val state = ChronicleWalk.chronicleWonByP1.state
     val lineage = lineageOf(state, p2)
-    val windows = ChronicleWindows.sun ++ ChronicleWindows.throne
+    val windows = ChronicleWindows.sun ++ ChronicleWindows.throne ++
+      ChronicleWindows.world ++ ChronicleWindows.beacon
     val rules = new OathRules(catalog,
       walkerPowerCatalog =
         WalkerPowers(Vector(PointPerWindow(lineage, windows))),
@@ -53,3 +54,21 @@ class ChronicleWindowsSuite extends munit.FunSuite:
         "chronicle.throne.shape-empire", "chronicle.throne.build-edifice",
         "chronicle.throne.stock-reliquary", "chronicle.throne.scatter-relics",
         "chronicle.throne.score-lineage", "chronicle.throne.swear-oath")))
+
+  test("World and Beacon window keys stay as power data spells them"):
+    assertEquals(
+      (ChronicleWindows.world.map(_.key), ChronicleWindows.beacon.map(_.key)), (
+      Vector("chronicle.world.separate-visions",
+        "chronicle.world.gather-denizens",
+        "chronicle.world.protect-and-dispossess"),
+      Vector("chronicle.beacon.introduce-newcomers",
+        "chronicle.beacon.welcome-stranger",
+        "chronicle.beacon.shape-foundation")))
+
+  test("the Throne is followed by the World, the Beacon, then Finish"):
+    assertEquals(Vector(TriggeredProcedureRef.ChronicleThrone,
+      TriggeredProcedureRef.ChronicleWorld,
+      TriggeredProcedureRef.ChronicleBeacon).map(ChronicleSequence.after),
+      Vector(Some(TriggeredProcedureRef.ChronicleWorld),
+        Some(TriggeredProcedureRef.ChronicleBeacon),
+        Some(TriggeredProcedureRef.ChronicleFinish)))

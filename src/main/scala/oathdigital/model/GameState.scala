@@ -186,6 +186,12 @@ final case class CurrentGameState(
     setAsideEdifices: Vector[EdificeId] = Vector.empty,
     // Who holds each Chronicle task card (Assign Tasks, CR p. 36).
     chronicleTasks: Map[ChronicleTask, PlayerId] = Map.empty,
+    // The World task's dealt denizens (CR p. 38), stack by stack. The
+    // facedown stack stays last when the protected stack leaves.
+    chronicleGathering: Vector[WorldCardId] = Vector.empty,
+    // The six denizens the World task dispossessed. Beacon's return leaves
+    // them alone (CR p. 39); the Stars slice records them as Dispossessed.
+    newlyDispossessed: Vector[WorldCardId] = Vector.empty,
     // Walker (procedure-walker) pending state: the only pending procedure
     // position. Walker procedures read and write `walkerPending`.
     walkerPending: Option[PendingTree] = None,
