@@ -19,6 +19,21 @@ object ChronicleWalk:
     .turn(p1, Phase.Chronicle)
     .update(_.updateCurrent(_.copy(result = Some(GameResult(p1)))))
 
+  /** p1's won game after the Sun: p1 is Chancellor and holds the Throne,
+    * p2 the World and p3 the Beacon, and the Empire has a supply of 24
+    * Imperial warbands but no site yet. The driver's step after
+    * `ChronicleSun` starts the Throne. */
+  def throneHeldByChancellorP1: Table = chronicleWonByP1.update(state =>
+    val lineage = state.game.current.players.find(_.player == p1).get.lineage
+    state.updateCampaign(campaign => campaign.copy(lineages =
+      campaign.lineages.updatedWith(lineage)(_.map(_.copy(
+        role = Role.Chancellor)))))
+      .updateCurrent(_.copy(chronicleTasks = Map(
+        ChronicleTask.Throne -> p1, ChronicleTask.World -> Table.p2,
+        ChronicleTask.Beacon -> Table.p3)))
+      .copy(banks = state.banks.copy(warbandSupply =
+        state.banks.warbandSupply.updated(ForceKind.Imperial, 24))))
+
   /** The decision `state` is parked on, if any. */
   def parked(state: OathState)(using munit.Location): Option[Decide] =
     ParkedNode.of(state, catalog, WalkerPowerCatalog.default(catalog)) match
