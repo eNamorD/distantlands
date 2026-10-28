@@ -113,9 +113,13 @@ The player holding the Beacon task resolves these steps.
 No step has an actor in the digital version.
 
 1. **Write in the Stars.** The winner draws and names a constellation on the back of the era scorepad, and the group may record the story of the game. Not implemented in the digital version.
+   - Digital: an empty window ([ruling 7](ambiguities.md#chronicle-rulings)).
 2. **Archive Rival Sites.** For each site not ruled by the winner, remove its pieces and stack its remaining cards (relics and intact edifices) on the site card. Stack these sites going Hinterward (top to bottom in the Cradle, then the Provinces, then the Hinterland), so the Cradlemost one is on top. Place the Empire divider on top, and put the stack on the Recent Sites side of the Atlas box, above the sites already there. **Actor:** none: procedural.
+   - Digital: one log line per archived site. The rival sites are stored at the atlas's Recent end, Cradlemost first, each with every card left on it ([rulings 17, 18](ambiguities.md#chronicle-rulings)). The Empire divider is not stored: the Chronicle keeps the Empire's sites in their own list.
 3. **Clean Up.** Return all pieces (favor, secrets, warbands, pawns) to their banks. Consolidate the winner's sites Cradleward with all their cards, so the only empty site slots are Hinterward. **Actor:** none: procedural.
+   - Digital: an empty window. The Chronicle stores no pieces, and the Empire's sites are kept Cradlemost first ([ruling 18](ambiguities.md#chronicle-rulings)).
 4. **Store.** Store the Empire's sites, with their cards, on top of the Empire divider, Cradlemost on top. Store each player's pieces, advisers and legacies, keeping legacy faces; store the Chancellor's pieces, the Grand Scepter and the Reliquary apart from the players; store the Visions and the world deck behind the World Deck divider. The rulebook's "play again or store" choice does not apply: the digital phase always ends by journaling `ChronicleUpdated` with the evolved Chronicle. **Actor:** none: procedural.
+   - Digital: one log line per Empire site. The Chronicle Phase then journals the record, which must pass game start's card accounting and keep every site and relic it started with. The Dispossessed are the older ones followed by the six the World task added.
 
 ## Card and rulebook differences
 
