@@ -1,6 +1,7 @@
 package oathdigital.gameplay.actions
 
 import oathdigital.gameplay.actions.campaign.CampaignNotes
+import oathdigital.gameplay.chronicle.ChronicleSunProcedure
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
 import oathdigital.gameplay.actions.challenge.{ChallengeProcedure,
   PlaceBannerResourceProcedure}
@@ -90,4 +91,5 @@ object ProcedureNotes:
       case PhaseTransitionRef.FinishRest => FinishRestProcedure.noteKeys
       case TriggeredProcedureRef.Oathkeeper => OathkeeperProcedure.noteKeys
       case TriggeredProcedureRef.Setup => SetupProcedure.noteKeys
+      case TriggeredProcedureRef.ChronicleSun => ChronicleSunProcedure.noteKeys
       case _ => Vector.empty

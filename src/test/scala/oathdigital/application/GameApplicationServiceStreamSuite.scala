@@ -107,7 +107,7 @@ class GameApplicationServiceStreamSuite extends munit.FunSuite:
         finished.game.current.map.inPlay.map(_.value).toSet)
     }
     // The winner starts the Chronicle once; the stream reloads into the
-    // Chronicle phase with the evolved Chronicle recorded.
+    // Chronicle phase, parked on a Chronicle task's choice.
     val winner = present(finished.game.current.result, "the result").winner
     val start = GameCommand.ResolveWalker(winner, TreeDecision(
       ChronicleBeginProcedure.decisionId,
@@ -119,10 +119,12 @@ class GameApplicationServiceStreamSuite extends munit.FunSuite:
     val reloaded = loaded(new GameApplicationService(catalog, repository)
       .load("powered-playability"))
     assertEquals(reloaded.state, chronicled.state)
-    val campaign = Outcomes.ready(reloaded.state).game.campaign
-    assertEquals(Outcomes.ready(reloaded.state).game.current.turn.phase,
-      Phase.Chronicle)
-    assertEquals(campaign.evolved, Some(campaign.baseline))
+    val current = Outcomes.ready(reloaded.state).game.current
+    assertEquals(current.turn.phase, Phase.Chronicle)
+    assert(current.walkerProcedure.exists(Vector[ProcedureRef](
+      TriggeredProcedureRef.ChronicleSun,
+      TriggeredProcedureRef.ChronicleThrone).contains), current.walkerProcedure)
+    assertEquals(Outcomes.ready(reloaded.state).game.campaign.evolved, None)
 
   test("create advance and reload replay the complete persisted stream"):
     // Stays on the replayed setup: it checks the length of Setup's journal.
