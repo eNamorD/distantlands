@@ -103,9 +103,9 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
           "secondLocation" -> encodePositionedLocation(secondLocation)), by)
       case Shuffle(pile, order) =>
         val shuffled = ujson.Obj("kind" -> "shuffle",
-          "pile" -> encodeSearchSource(pile))
+          "pile" -> encodeShufflePile(pile))
         order.foreach(cards =>
-          shuffled("order") = ujson.Arr.from(cards.map(encodeWorldCardId)))
+          shuffled("order") = ujson.Arr.from(cards.map(encodeCardId)))
         shuffled
 
   /** `encoded`, with `"by"` when the move names its mover. Written only
@@ -383,16 +383,30 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
     yield Swap(firstCard, firstLocation, secondCard, secondLocation,
       decodeMover(value))
     case "shuffle" => for
-      pile <- decodeSearchSource(value("pile"), s"$path.pile")
+      pile <- decodeShufflePile(value("pile"), s"$path.pile")
       order <- decodeShuffleOrder(value, path)
     yield Shuffle(pile, order)
 
+  /** A Search pile keeps its Search source's spelling; the edifice deck and
+    * the set-aside relics have kinds of their own. */
+  private def encodeShufflePile(pile: ShufflePile): ujson.Value = pile match
+    case ShufflePile.Search(source) => encodeSearchSource(source)
+    case ShufflePile.EdificeDeck => ujson.Obj("kind" -> "edifice-deck")
+    case ShufflePile.SetAsideRelics => ujson.Obj("kind" -> "set-aside-relics")
+
+  private def decodeShufflePile(value: ujson.Value, path: String)
+      : Either[WireError, ShufflePile] =
+    value.objOpt.flatMap(_.get("kind")).flatMap(_.strOpt) match
+      case Some("edifice-deck") => Right(ShufflePile.EdificeDeck)
+      case Some("set-aside-relics") => Right(ShufflePile.SetAsideRelics)
+      case _ => decodeSearchSource(value, path).map(ShufflePile.Search.apply)
+
   /** A recorded shuffle carries its order; a declared one has none. */
   private def decodeShuffleOrder(value: ujson.Value, path: String)
-      : Either[WireError, Option[Vector[WorldCardId]]] =
-    value.obj.get("order").fold[Either[WireError, Option[Vector[WorldCardId]]]](
+      : Either[WireError, Option[Vector[CardId]]] =
+    value.obj.get("order").fold[Either[WireError, Option[Vector[CardId]]]](
       Right(None))(cards => traverse(cards.arr.zipWithIndex.toVector)({
-        case (card, index) => decodeWorldCardId(card, s"$path.order[$index]")
+        case (card, index) => decodeCardId(card, s"$path.order[$index]")
       }).map(Some(_)))
 
   /** A recorded reroll carries its faces; a declared one has none. */

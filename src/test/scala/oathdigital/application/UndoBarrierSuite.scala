@@ -35,7 +35,7 @@ class UndoBarrierSuite extends munit.FunSuite:
       automatic = true))))
 
   test("a shuffle, a peek, a reveal and a faceup flip are barriers"):
-    assert(blocks(deltaStep(Shuffle(SearchSource.WorldDeck))))
+    assert(blocks(deltaStep(Shuffle(ShufflePile.Search(SearchSource.WorldDeck)))))
     assert(blocks(deltaStep(Peek(p1, relicCard, Location.Site(peaks)))))
     assert(blocks(deltaStep(Reveal(relicCard, Location.PlayArea(p1)))))
     assert(blocks(deltaStep(Flip(relicCard, Location.PlayArea(p1),

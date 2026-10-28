@@ -1,6 +1,6 @@
 package oathdigital.gameplay.walker
 
-import oathdigital.model.{OathViolation, ReadyGame, Shuffle}
+import oathdigital.model.{OathViolation, ReadyGame, Shuffle, ShufflePile}
 
 /** Fills a declared `Shuffle`'s order from the walker's random source. Split
   * out of [[ProcedureWalker]], which is close to the project's per-file
@@ -11,7 +11,7 @@ import oathdigital.model.{OathViolation, ReadyGame, Shuffle}
 private[walker] object WalkerShuffles:
   def ordered(shuffle: Shuffle, state: ReadyGame, dice: WalkerDice)
       : Either[OathViolation, Shuffle] =
-    val cards = state.game.current.commonCards.pile(shuffle.pile)
+    val cards = ShufflePile.cards(shuffle.pile, state.game.current)
     if cards.size < 2 then Right(shuffle.copy(order = Some(cards)))
     else dice.shuffle(cards.size).flatMap(order => Either.cond(
       order.sorted == cards.indices.toVector,

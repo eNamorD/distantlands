@@ -61,3 +61,25 @@ object SearchPlacement:
       replace: Option[CardId]
   ) extends SearchPlacement
 
+
+/** A pile the walker can shuffle with a recorded order: a pile Search draws
+  * from, the edifice deck (Build Edifice draws a random edifice per suit),
+  * or the set-aside relics (Scatter Relics deals them out). */
+sealed trait ShufflePile extends Product with Serializable
+object ShufflePile:
+  final case class Search(source: SearchSource) extends ShufflePile
+  case object EdificeDeck extends ShufflePile
+  case object SetAsideRelics extends ShufflePile
+
+  /** The pile's cards in stored order. */
+  def cards(pile: ShufflePile, current: CurrentGameState): Vector[CardId] =
+    pile match
+      case Search(source) => current.commonCards.pile(source)
+      case EdificeDeck => current.commonCards.edificeDeck
+      case SetAsideRelics => current.setAsideRelics
+
+  /** How a failure names the pile. */
+  def name(pile: ShufflePile): String = pile match
+    case Search(source) => SearchSource.name(source)
+    case EdificeDeck => "edifice deck"
+    case SetAsideRelics => "set-aside relics"

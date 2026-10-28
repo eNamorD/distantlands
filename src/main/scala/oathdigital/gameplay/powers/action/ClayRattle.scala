@@ -39,7 +39,8 @@ case object ClayRattle extends PaidAction(ClayRattleCard.power):
     Decide(decisionId, player, DecisionQuery.ChooseOne(
       piles.map(SearchSource.option),
       heading = Some("Clay Rattle: shuffle a pile"))),
-    Branch((_, pending) => chosen(pending.answered).toVector.map(Shuffle(_))),
+    Branch((_, pending) => chosen(pending.answered).toVector.map(source =>
+      Shuffle(ShufflePile.Search(source)))),
     Note(id, states => for
       card <- PowerSourceRef.of(source)
       pile <- chosen(states.answered)

@@ -2,7 +2,7 @@ package oathdigital.gameplay.operations
 
 import oathdigital.model._
 
-/** The `Shuffle` write: a pile Search draws from takes the order the walker
+/** The `Shuffle` write: a shuffle pile takes the order the walker
   * generated. The order must hold exactly the pile's cards, so a recorded
   * shuffle can reorder a pile but never add, drop or replace a card.
   *
@@ -12,16 +12,27 @@ import oathdigital.model._
 private[operations] object PileOperations:
   import OperationError.InvalidDescription
 
-  def shuffle(ready: ReadyGame, pile: SearchSource,
-      order: Option[Vector[WorldCardId]]): Either[OperationError, ReadyGame] =
-    val held = ready.game.current.commonCards.pile(pile)
-    val name = SearchSource.name(pile)
+  def shuffle(ready: ReadyGame, pile: ShufflePile,
+      order: Option[Vector[CardId]]): Either[OperationError, ReadyGame] =
+    val held = ShufflePile.cards(pile, ready.game.current)
+    val name = ShufflePile.name(pile)
     order match
       case None => Left(InvalidDescription(
         s"a shuffle of the $name has no order"))
       case Some(cards) if cards.size != held.size || cards.diff(held).nonEmpty =>
         Left(InvalidDescription(
           s"a shuffle of the $name must hold exactly its cards"))
-      case Some(cards) => Right(ready.updateCurrent(current => current.copy(
-        commonCards = current.commonCards.withPile(pile, cards))).copy(
+      case Some(cards) => Right(withCards(ready, pile, cards).copy(
         knowledge = cards.foldLeft(ready.knowledge)(CardKnowledgeMoves.forget)))
+
+  private def withCards(ready: ReadyGame, pile: ShufflePile,
+      cards: Vector[CardId]): ReadyGame = ready.updateCurrent(current =>
+    pile match
+      case ShufflePile.Search(source) => current.copy(commonCards =
+        current.commonCards.withPile(source,
+          cards.collect { case id: WorldCardId => id }))
+      case ShufflePile.EdificeDeck => current.copy(commonCards =
+        current.commonCards.copy(
+          edificeDeck = cards.collect { case id: EdificeId => id }))
+      case ShufflePile.SetAsideRelics => current.copy(
+        setAsideRelics = cards.collect { case id: RelicId => id }))

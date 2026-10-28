@@ -6,7 +6,7 @@ import oathdigital.testkit.Unwrap.accepted
 
 class ShuffleOperationSuite extends munit.FunSuite:
   private val executor = new OperationExecutor()
-  private val cradle = SearchSource.RegionalDiscard(Region.Cradle)
+  private val cradle = ShufflePile.Search(SearchSource.RegionalDiscard(Region.Cradle))
 
   /** The Cradle discard pile holds three cards from the world deck. */
   private val discarded = Table.start.discarded(Region.Cradle,
@@ -17,7 +17,7 @@ class ShuffleOperationSuite extends munit.FunSuite:
 
   test("a shuffle writes the world deck's new order"):
     val done = executor.execute(discarded,
-      Shuffle(SearchSource.WorldDeck, Some(deck.reverse)))
+      Shuffle(ShufflePile.Search(SearchSource.WorldDeck), Some(deck.reverse)))
     assertEquals(done.map(zones(_).worldDeck), Right(deck.reverse))
 
   test("a shuffle writes a discard pile's new order and leaves the rest"):
@@ -35,13 +35,13 @@ class ShuffleOperationSuite extends munit.FunSuite:
         order.toString))
 
   test("a shuffle the walker never ordered is refused"):
-    assertEquals(executor.execute(discarded, Shuffle(SearchSource.WorldDeck))
+    assertEquals(executor.execute(discarded, Shuffle(ShufflePile.Search(SearchSource.WorldDeck)))
       .left.toOption, Some(OperationError.InvalidDescription(
         "a shuffle of the world deck has no order")))
 
   test("a pile is named for a log line or a label"):
     assertEquals(SearchSource.name(SearchSource.WorldDeck), "world deck")
-    assertEquals(SearchSource.name(cradle), "Cradle discard pile")
+    assertEquals(SearchSource.name(cradle.source), "Cradle discard pile")
 
   test("a shuffle forgets its pile's cards, since no one knows which is where"):
     val peeker = discarded.game.current.players.head.player
@@ -53,3 +53,27 @@ class ShuffleOperationSuite extends munit.FunSuite:
       accepted(executor.execute(peeked, Shuffle(cradle, Some(pile.reverse))))
     assert(shuffled.knowledge.advisers.values.forall(known =>
       pile.forall(!known.contains(_))), shuffled.knowledge.advisers.toString)
+
+  test("a shuffle writes the edifice deck's new order"):
+    val edifices = zones(discarded).edificeDeck
+    assert(edifices.size > 1, edifices)
+    val done = accepted(executor.execute(discarded,
+      Shuffle(ShufflePile.EdificeDeck, Some(edifices.reverse))))
+    assertEquals(zones(done).edificeDeck, edifices.reverse)
+
+  test("an edifice deck order that drops an edifice is refused"):
+    val edifices = zones(discarded).edificeDeck
+    assertEquals(executor.execute(discarded,
+      Shuffle(ShufflePile.EdificeDeck, Some(edifices.tail))).left.toOption,
+      Some(OperationError.InvalidDescription(
+        "a shuffle of the edifice deck must hold exactly its cards")))
+
+  test("a shuffle writes the set-aside relics' new order"):
+    val relics = zones(discarded).relicDeck.take(2)
+    val aside = discarded.updateCurrent(current => current.copy(
+      commonCards = current.commonCards.copy(
+        relicDeck = current.commonCards.relicDeck.drop(2)),
+      setAsideRelics = relics))
+    val done = accepted(executor.execute(aside,
+      Shuffle(ShufflePile.SetAsideRelics, Some(relics.reverse))))
+    assertEquals(done.game.current.setAsideRelics, relics.reverse)
