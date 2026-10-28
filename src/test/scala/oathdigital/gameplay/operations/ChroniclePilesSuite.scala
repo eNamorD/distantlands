@@ -1,9 +1,10 @@
 package oathdigital.gameplay.operations
 
+import oathdigital.gameplay.actions.VisionRules
 import oathdigital.model._
 import oathdigital.testkit.{CatalogNames, Table}
 import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.{accepted, rejected}
+import oathdigital.testkit.Unwrap.accepted
 
 /** The Chronicle's card piles: the gathering pile, the newly Dispossessed,
   * the suited reserves and a lineage's starting advisers. */
@@ -71,9 +72,24 @@ class ChroniclePilesSuite extends munit.FunSuite:
     assert(after.knowledge.advisers.getOrElse(p2, Vector.empty)
       .contains(card))
 
-  test("a starting adviser must be a denizen"):
+  /** Whether moving the relic deck's top card to `to` is refused as a
+    * destination its card type cannot enter. */
+  private def relicRefusedAt(to: Location): Boolean =
     val start = Table.start.ready
     val relic = start.game.current.commonCards.relicDeck.head
-    rejected(executor.executeAll(start, Vector(moved(relic,
-      Location.Deck(CardDeck.Relic),
-      Location.StartingAdvisers(lineageOf(start, p1))))))
+    executor.executeAll(start, Vector(moved(relic,
+      Location.Deck(CardDeck.Relic), to))).left.toOption
+      .exists(_.isInstanceOf[OperationError.InvalidDestination])
+
+  test("only world cards enter the gathering pile and the newly " +
+      "Dispossessed; only denizens a reserve or starting advisers"):
+    val lineage = lineageOf(Table.start.ready, p1)
+    assert(Vector(Location.ChronicleGathering, Location.NewlyDispossessed,
+      Location.SuitedReserve(Suit.Beast), Location.StartingAdvisers(lineage))
+      .forall(relicRefusedAt))
+
+  test("a Vision is a world card but no denizen, so no reserve takes it"):
+    val ready = Table.start.revealedVision(p1, VisionRules.Conquest).ready
+    assert(executor.executeAll(ready, Vector(moved(VisionRules.Conquest,
+      Location.PlayArea(p1), Location.SuitedReserve(Suit.Beast)))).left.toOption
+      .exists(_.isInstanceOf[OperationError.InvalidDestination]))

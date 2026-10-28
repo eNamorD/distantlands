@@ -22,10 +22,11 @@ class ChroniclePilesIdentitySuite extends munit.FunSuite:
   test("every player identifies the two faceup stacks, nobody the third"):
     val ready = nineGathered.ready
     val gathered = ready.game.current.chronicleGathering
-    assert(gathered.take(6).forall(card =>
-      presentation.identifiesAt(ready, Some(p1), card)))
-    assert(gathered.drop(6).forall(card =>
-      !presentation.identifiesAt(ready, Some(p2), card)))
+    val viewers = Vector(Some(p1), Some(p2), None)
+    assert(viewers.forall(viewer => gathered.take(6).forall(card =>
+      presentation.identifiesAt(ready, viewer, card))))
+    assert(viewers.forall(viewer => gathered.drop(6).forall(card =>
+      !presentation.identifiesAt(ready, viewer, card))))
 
   test("once a stack leaves, the facedown stack is still the hidden last three"):
     // The first stack goes back to the world deck, so every card is still
