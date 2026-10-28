@@ -11,7 +11,8 @@ import oathdigital.model.OathViolation._
  * old `FirstGameSetupPlan` command and the setup half of the deleted
  * `FirstGameSetupRules`.
  *
- * Validation here is only what Setup itself needs: known and unique ids,
+ * Validation here is only what Setup itself needs: known and unique ids
+ * across every Chronicle field (`ChronicleAccounting`),
  * enough cards to deal, and one edifice per Homeland in play. The old
  * plan's suit-count and Vision-packet audit is the generator's own job now
  * (`FirstGameChronicleGenerator.validate`), checked once at generation
@@ -89,36 +90,8 @@ object GameStartRules:
 
   private def validateIds(catalog: ExecutableCatalog, chronicle: Chronicle)
       : Either[OathViolation, Unit] =
-    val siteIds = catalog.sites.map(_.id).toSet
-    val edificeIds = catalog.edifices.map(e => EdificeId(e.id.value)).toSet
-    val denizenIds = catalog.denizens.map(d => DenizenId(d.id.value)).toSet
-    val relicIds = catalog.relics.map(r => RelicId(r.id.value)).toSet
-    val atlasSites = chronicle.atlasBox.map(_.site)
-    val atlasEdifices = chronicle.atlasBox.flatMap(_.items)
-      .collect { case id: EdificeId => id }
-
-    if atlasSites.exists(id => !siteIds.contains(id)) then
-      Left(UnsupportedChronicle(
-        s"unknown atlas site ${atlasSites.find(id => !siteIds.contains(id)).get.value}"))
-    else if duplicate(atlasSites).nonEmpty then
-      Left(UnsupportedChronicle(
-        s"duplicate atlas site ${duplicate(atlasSites).get.value}"))
-    else if atlasEdifices.exists(id => !edificeIds.contains(id)) then
-      Left(UnsupportedChronicle(s"unknown edifice " +
-        s"${atlasEdifices.find(id => !edificeIds.contains(id)).get.value}"))
-    else if chronicle.worldDeck.exists(id => !denizenIds.contains(id)) then
-      Left(UnsupportedChronicle(s"unknown denizen " +
-        s"${chronicle.worldDeck.find(id => !denizenIds.contains(id)).get.value}"))
-    else if duplicate(chronicle.worldDeck).nonEmpty then
-      Left(UnsupportedChronicle(
-        s"duplicate world-deck denizen ${duplicate(chronicle.worldDeck).get.value}"))
-    else if chronicle.relicDeck.exists(id => !relicIds.contains(id)) then
-      Left(UnsupportedChronicle(s"unknown relic " +
-        s"${chronicle.relicDeck.find(id => !relicIds.contains(id)).get.value}"))
-    else if duplicate(chronicle.relicDeck).nonEmpty then
-      Left(UnsupportedChronicle(
-        s"duplicate relic ${duplicate(chronicle.relicDeck).get.value}"))
-    else Right(())
+    ChronicleAccounting.knownAndUnique(catalog, chronicle)
+      .left.map(UnsupportedChronicle(_))
 
   private def validateParticipants(orders: SetupOrders)
       : Either[OathViolation, Unit] =
