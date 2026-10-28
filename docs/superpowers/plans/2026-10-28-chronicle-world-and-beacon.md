@@ -1776,12 +1776,12 @@ World step 1, add: `   - Digital: Visions leave play; setup adds all five again.
 Beacon step 1, add:
 
 ```markdown
-   - Digital: the holder chooses the suit for three draws, then two, then one. Each chosen suit's boxed denizens join its live reserve before the draw. A suit still short after the return draws what remains ([ruling 15](ambiguities.md#chronicle-rulings)).
+   - Digital: the holder chooses the suit for three draws, then two, then one. Each chosen suit's boxed denizens join its live reserve before the draw. A suit still short after the return draws what remains (ruling 15, linked as `[ruling 15](ambiguities.md#chronicle-rulings)`).
 ```
 
 Beacon step 3, add: `   - Digital: an empty window until Foundations exist.`
 
-`docs/rules/implementation-traceability.md`: set the World and Beacon rows to **Partial**. World evidence: "Separate Visions, Gather Denizens and Protect and Dispossess, each in its own power window, are tested in `gameplay/chronicle/WorldTaskSuite.scala`; faceup stacks and starting advisers are identified per seat (`application/ChroniclePilesIdentitySuite.scala`)." World gap: "Starting advisers and the newly Dispossessed reach the Chronicle only with the Stars slice's extraction." Beacon evidence: "Introduce Newcomers (with [ruling 15](ambiguities.md#chronicle-rulings)) and Welcome a Stranger are tested in `gameplay/chronicle/BeaconTaskSuite.scala`." Beacon gap: "Shape Foundation is an empty window until Foundations (B2/B5); extraction waits for Stars." Update the Throne row's `ChronicleSunThroneEndToEndSuite` to `ChronicleEndToEndSuite`.
+`docs/rules/implementation-traceability.md`: set the World and Beacon rows to **Partial**. World evidence: "Separate Visions, Gather Denizens and Protect and Dispossess, each in its own power window, are tested in `gameplay/chronicle/WorldTaskSuite.scala`; faceup stacks and starting advisers are identified per seat (`application/ChroniclePilesIdentitySuite.scala`)." World gap: "Starting advisers and the newly Dispossessed reach the Chronicle only with the Stars slice's extraction." Beacon evidence: "Introduce Newcomers (with ruling 15, linked as in the other rows) and Welcome a Stranger are tested in `gameplay/chronicle/BeaconTaskSuite.scala`." Beacon gap: "Shape Foundation is an empty window until Foundations (B2/B5); extraction waits for Stars." Update the Throne row's `ChronicleSunThroneEndToEndSuite` to `ChronicleEndToEndSuite`.
 
 `CONTEXT.md`, beside "Set-aside edifices":
 
