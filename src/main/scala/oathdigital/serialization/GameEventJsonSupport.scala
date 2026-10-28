@@ -185,17 +185,25 @@ private[serialization] trait GameEventJsonSupport:
     target <- safeIntField(value.obj, "targetScore", path)
     scores <- traverse(value("lineageScores").arr.zipWithIndex.toVector):
       case (row, index) =>
-        safeIntField(row.obj, "score", s"$path.lineageScores[$index]")
-          .map(score => LineageId(row("lineageId").str) -> score)
+        val rowPath = s"$path.lineageScores[$index]"
+        for
+          id <- stringField(row.obj, "lineageId", rowPath)
+          score <- safeIntField(row.obj, "score", rowPath)
+        yield LineageId(id) -> score
+    _ <- duplicate(scores.map(_._1)).toLeft(()).left.map(id =>
+      InvalidValue(s"$path.lineageScores", s"duplicate lineage '${id.value}'"))
     era <- Either.cond(target > 0, EraState(target, scores.toMap),
       InvalidValue(s"$path.targetScore", "must be positive"))
   yield era
 
+  private def duplicate[A](values: Vector[A]): Option[A] =
+    values.diff(values.distinct).headOption
+
   private def decodeOathkeeperGoal(value: ujson.Value, path: String)
       : Either[WireError, OathkeeperGoal] =
-    val key = value.str
-    OathkeeperGoal.all.find(_.key == key).toRight(
-      InvalidValue(path, s"unknown Oathkeeper goal '$key'"))
+    value.strOpt.toRight(WrongType(path, "expected a string")).flatMap(key =>
+      OathkeeperGoal.all.find(_.key == key).toRight(
+        InvalidValue(path, s"unknown Oathkeeper goal '$key'")))
 
   protected final def encodeSetupOrders(orders: SetupOrders): ujson.Value =
     ujson.Obj(

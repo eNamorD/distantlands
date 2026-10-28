@@ -20,7 +20,7 @@ cards are slightly older than the CR; where they disagree, the CR wins (see
 - Six foundation faces, including whether an active legacy locks an altered face.
 - Atlas ordering: Recent vs Forgotten site stacks, Empire divider, and cards stored on each site.
 - World deck composition, Dispossessed denizens, and suited reserves. The digital version derives the world deck remainder and suited reserves ("every card not accounted for elsewhere") rather than storing them.
-- Reliquary pile (max 5 after Chronicle) and player-held/stored cards. The Grand Scepter goes to the Chancellor and is not stored separately.
+- Reliquary pile (max 5 after Chronicle) and player-held/stored cards. The Chancellor's pieces, the Grand Scepter and the Reliquary are stored apart from the players; the Grand Scepter always goes to the Chancellor, so the digital version does not record its holder.
 - Lineage-point scorepad and current era endpoint (CR pp. 36-41).
 
 Not stored by the digital version: the five Visions (always set aside together), the constellation and narrative, ruined/intact edifice faces (settled during setup), and edifice deck order (shuffled at the end of Build Edifice).
@@ -39,7 +39,7 @@ reason.
 
 ### 1. The Sun
 
-Actor for the task: the winner, for the choices it contains.
+The winner makes most of this task's choices; each step names its actor.
 
 **Resolve Legacies**
 
@@ -77,7 +77,9 @@ The player holding the Throne task (the winner) resolves these steps.
 
 1. **Offer Citizenship.** Offer Citizenship to any Exiles, including players who became Exiles during Crown Chancellor. Each offered Exile accepts or declines. If an Exile becomes a Citizen, flip their newly dormant legacies to active, and replace their warbands at each site they rule with one Imperial warband (excess Imperial warbands may come from other sites). If the former Chancellor accepts, also place one Imperial warband on each site that was previously Imperial, that is, each site with no warbands. **Actor:** the Throne holder chooses whom to offer; each offered Exile answers.
 2. **Shape Empire.** Remove any of your warbands from sites, except the last warband of yours on the map. If you rule no sites, remove all warbands from the site with your pawn and place one of your warbands there. Then discard the denizens you do not rule, except intact edifices and cards at Enduring sites. Some legacies also protect denizens from this discard. Ruined edifices discarded this way go to the bottom of the edifice deck. **Actor:** the Throne holder chooses which warbands to remove; the discard is procedural.
+   - Digital: discarded edifices join the ordered set-aside edifice list instead of the deck bottom ([ruling 9](ambiguities.md#chronicle-rulings)).
 3. **Build Edifice.** Find the topmost edifice of each suit in the edifice deck and set them aside: these are available to build. You may bury a denizen at a site you rule to place the matching available edifice there. Locked cards, edifices included, can be buried. Buried denizens go to the bottom of the world deck, facedown; buried edifices go to the bottom of the edifice deck. Shuffle the unused available edifices back into the edifice deck; this shuffle mixes the whole deck, so the edifice deck keeps no order between games. The source sets no limit on how many edifices you build. **Actor:** the Throne holder.
+   - Digital: each suit offers a random edifice from those not set aside, and the first set-aside edifice of that suit only when none is left; buried edifices join the set-aside list ([ruling 9](ambiguities.md#chronicle-rulings)).
 4. **Stock Reliquary.** Add all of your relics except the Grand Scepter to the Reliquary, facedown. If the Reliquary then holds more than 5 relics, discard relics of your choice until it holds 5. **Actor:** the Throne holder chooses the discards.
 5. **Scatter Relics.** Set aside the Grand Scepter and the Reliquary. Shuffle all discarded relics and all relics held by players, and deal them facedown to empty relic slots going Hinterward: top to bottom in the Cradle, then the Provinces, then the Hinterland. Return the rest to the relic deck. **Actor:** none: procedural.
 6. **Score Lineage Points.** The winner scores 3 lineage points plus, for each of their legacies, 1 point per matching card at sites they rule (not advisers). Any number of times, the winner may spend 2 of the points they are scoring to let another player score 1. Record the scores in this game's column; circle the Chancellor's score and underline Citizens' scores. If the era's end condition is reached, the player or players with the most lineage points win the era; after this Chronicle Phase, reset everyone's lineage points to 0 and change nothing else. **Actor:** the winner chooses gifts; scoring is procedural.
@@ -95,7 +97,7 @@ The player holding the World task resolves these steps.
 
 The player holding the Beacon task resolves these steps.
 
-1. **Introduce Newcomers.** Choose three different suits. Draw three random denizens of the first suit, two of the second, and one of the third, from the suited box sections (the Archive). Do not take from the Dispossessed or Edifices sections. If any chosen suit lacks enough cards, then before drawing return all Dispossessed cards, except the 6 the World task just added, to their suited sections. **Actor:** the Beacon task holder chooses the suits; the draws are random.
+1. **Introduce Newcomers.** Choose three different suits. Draw three random denizens of the first suit, two of the second, and one of the third, from the suited box sections. Do not take from the Dispossessed or Edifices sections. If any chosen suit lacks enough cards, then before drawing return all Dispossessed cards, except the 6 the World task just added, to their suited sections. **Actor:** the Beacon task holder chooses the suits; the draws are random.
 2. **Welcome a Stranger.** Look at the drawn denizens. Keep one as a facedown starting adviser for the next game, and add the other five facedown to the world deck. **Actor:** the Beacon task holder.
 3. **Shape Foundation.** You may flip one foundation setup card from its altered side to its normal side, unless an active legacy is altering it. **Actor:** the Beacon task holder.
 

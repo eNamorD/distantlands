@@ -57,6 +57,22 @@ class GameEventFactsWireSuite extends munit.FunSuite:
       OathkeeperGoal.Devotion.key)
     assertEquals(accepted(GameEventWire.decode(encoded)).event, event)
 
+  test("a GameStarted Chronicle refuses an unknown Oathkeeper goal, a zero " +
+      "era target and a doubled lineage score"):
+    val event = OathEvent.GameStarted(chronicle.copy(era =
+      EraState(20, Map(LineageId("l1") -> 2))), orders)
+    def refusedPath(edit: ujson.Value => Unit): String =
+      val encoded = accepted(GameEventWire.encodeEvent("goal", 0L, event))
+      edit(encoded("payload")("chronicle"))
+      rejected(GameEventWire.decode(encoded)) match
+        case WireError.InvalidValue(path, _) => path
+        case other => fail(other.toString)
+    assert(refusedPath(_("oathkeeperGoal") = "glory").endsWith(".oathkeeperGoal"))
+    assert(refusedPath(_("era")("targetScore") = 0).endsWith(".era.targetScore"))
+    assert(refusedPath { c =>
+      c("era")("lineageScores").arr.append(c("era")("lineageScores")(0))
+    }.endsWith(".era.lineageScores"))
+
   test("GameStarted refuses an unknown stored item kind with a typed " +
       "WireError"):
     val event = OathEvent.GameStarted(chronicle, orders)
