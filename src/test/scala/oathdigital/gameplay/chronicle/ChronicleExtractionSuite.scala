@@ -44,3 +44,14 @@ class ChronicleExtractionSuite extends munit.FunSuite:
       case Left(OathViolation.UnsupportedChronicle(reason)) =>
         assert(reason.contains(card.value), reason)
       case other => fail(other.toString)
+
+  test("a Vision still in play blocks the record"):
+    // The quiet table's world deck still holds the Visions the World's
+    // Separate Visions would remove.
+    val ready = p1RulesTwoSites.ready
+    val vision = ready.game.current.commonCards.worldDeck
+      .collectFirst { case id: VisionId => id }.get
+    ChronicleExtraction.extract(ready, ready.game.campaign.baseline) match
+      case Left(OathViolation.UnsupportedChronicle(reason)) =>
+        assert(reason.contains(vision.value), reason)
+      case other => fail(other.toString)
