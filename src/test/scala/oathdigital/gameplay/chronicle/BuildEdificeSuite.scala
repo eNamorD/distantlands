@@ -75,8 +75,10 @@ class BuildEdificeSuite extends munit.FunSuite:
       Vector(DecisionOptionRef.Denizen(roar)))
     assertEquals(denizensAt(done, ancientCity),
       Vector(EdificeState(edifice, EdificeSide.Intact, Tokens.empty)))
-    assertEquals(Outcomes.ready(done.state).game.current.commonCards
-      .worldDeck.last, roar)
+    // Read before the World deals its surplus under the buried card.
+    val throneEnded = ChronicleWalk.endOf(rules, table.state, done,
+      TriggeredProcedureRef.ChronicleThrone)
+    assertEquals(throneEnded.game.current.commonCards.worldDeck.last, roar)
 
   test("an intact edifice can be buried for another of its suit"):
     val old = CatalogNames.edifice("Great Market")

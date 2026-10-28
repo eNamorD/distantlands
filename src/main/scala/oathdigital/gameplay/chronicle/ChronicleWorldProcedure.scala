@@ -8,14 +8,16 @@ import oathdigital.model._
 object ChronicleWorldProcedure:
   def build(catalog: ExecutableCatalog, ready: ReadyGame, actor: PlayerId,
       args: Vector[DecisionOptionRef]): Either[OathViolation, Operation] =
-    Either.cond(args.isEmpty, Sequence(steps),
+    Either.cond(args.isEmpty, Sequence(steps(catalog)),
       OathViolation.InvalidEventOrder("the World takes no start selection"))
 
   /** The notes the World's steps write. */
-  def noteKeys: Vector[NoteKey] = Vector.empty
+  def noteKeys: Vector[NoteKey] = ProtectAndDispossess.noteKeys
 
-  private def steps: Vector[Operation] = Vector(
-    ChronicleWindows.step(PowerWindow.ChronicleSeparateVisions, Vector.empty),
-    ChronicleWindows.step(PowerWindow.ChronicleGatherDenizens, Vector.empty),
+  private def steps(catalog: ExecutableCatalog): Vector[Operation] = Vector(
+    ChronicleWindows.step(PowerWindow.ChronicleSeparateVisions,
+      SeparateVisions.steps),
+    ChronicleWindows.step(PowerWindow.ChronicleGatherDenizens,
+      GatherDenizens.steps(catalog)),
     ChronicleWindows.step(PowerWindow.ChronicleProtectAndDispossess,
-      Vector.empty))
+      ProtectAndDispossess.steps))
