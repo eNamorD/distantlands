@@ -100,8 +100,7 @@ class DazzleSuite extends munit.FunSuite:
       "a ruined Hearth edifice is discarded")
     assert(remaining.contains(spiralCastle), "an intact edifice is locked")
     assert(remaining.contains(ruinedSchool), "a Beast edifice is not discarded")
-    assertEquals(after.game.current.commonCards.edificeDeck.lastOption,
-      Some(emptyGrounds))
+    assertEquals(after.game.current.setAsideEdifices, Vector(emptyGrounds))
 
   test("Dazzle leaves other suits and other regions alone"):
     val errandBoy = CatalogNames.denizen("Errand Boy")

@@ -48,6 +48,7 @@ object Location:
   final case class RegionalDiscard(region: Region) extends Location
   case object SharedBank extends Location
   case object SetAsideRelics extends Location
+  case object SetAsideEdifices extends Location
   case object Reliquary extends Location
   case object Atlas extends Location
   case object Dispossessed extends Location
@@ -217,7 +218,9 @@ object Discard:
       discardWorld(card, from, to, None)
 
   /** Only a ruined edifice can be discarded; intact edifices are locked.
-    * `actingPlayer` and `actorless` are as for `Denizen`. */
+    * `actingPlayer` and `actorless` are as for `Denizen`. A discarded
+    * edifice is set aside in discard order, not buried, so Build Edifice
+    * offers it only when its suit has no other (Chronicle ruling 9). */
   final case class RuinedEdifice(card: EdificeId, from: PositionedLocation,
       suit: Suit, favor: Int, secrets: Int, actingPlayer: PlayerId,
       override val required: Boolean = false, actorless: Boolean = false)
@@ -230,8 +233,7 @@ object Discard:
 
     override val children: Vector[Operation] = Vector(Move(
       Piece.Card(card), from,
-      PositionedLocation(Location.Deck(CardDeck.Edifice),
-        StackPosition.Bottom), by = by)) ++
+      PositionedLocation(Location.SetAsideEdifices), by = by)) ++
       returnedResources(card, suit, favor, secrets, actingPlayer)
 
   /** Sets a relic aside until Chronicle and takes its secrets facedown. */

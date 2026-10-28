@@ -191,8 +191,7 @@ class CoreOperationsSuite extends munit.FunSuite:
       case value: Discard.RuinedEdifice => Operation.flatten(value)
     }.get, Vector(
       Move(Piece.Card(EdificeId("edifice:root")), from,
-        PositionedLocation(Location.Deck(CardDeck.Edifice), StackPosition.Bottom),
-        by = Some(red)),
+        PositionedLocation(Location.SetAsideEdifices), by = Some(red)),
       Move(Piece.Favor(1), PositionedLocation(Location.OnCard(
         EdificeId("edifice:root"))),
         PositionedLocation(Location.FavorBank(Suit.Order))),

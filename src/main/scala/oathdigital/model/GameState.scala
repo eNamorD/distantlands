@@ -177,6 +177,10 @@ final case class CurrentGameState(
     result: Option[GameResult],
     temporaryHands: Map[PlayerId, Vector[WorldCardId]] = Map.empty,
     setAsideRelics: Vector[RelicId] = Vector.empty,
+    // Edifices discarded this game, in discard order (Chronicle ruling 9).
+    // Build Edifice offers one only when its suit has none left in the
+    // edifice deck, and returns them all to the deck when it ends.
+    setAsideEdifices: Vector[EdificeId] = Vector.empty,
     // Walker (procedure-walker) pending state: the only pending procedure
     // position. Walker procedures read and write `walkerPending`.
     walkerPending: Option[PendingTree] = None,

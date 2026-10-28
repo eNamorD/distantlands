@@ -41,7 +41,8 @@ private[operations] object CardKnowledgeMoves:
 
   private def hidden(to: Location): Boolean = to match
     case Location.Deck(_) | Location.Reliquary | Location.SetAsideRelics |
-        Location.Dispossessed | Location.Atlas => true
+        Location.SetAsideEdifices | Location.Dispossessed | Location.Atlas =>
+      true
     case _ => false
 
   private def remember(knowledge: CardKnowledge, player: PlayerId,

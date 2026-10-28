@@ -73,12 +73,12 @@ class SiteDiscardFirstSuite extends munit.FunSuite:
     assertEquals(Look(done).cardsAt(home).size, 3)
     assert(Look(done).cardsAt(home).contains(card))
 
-  test("a ruined edifice may be replaced, and it goes back to the edifice deck"):
+  test("a ruined edifice may be replaced, and it is set aside"):
     val ready = playing(kept).edifice(hall, EdificeSide.Ruined, at = home)
       .warbandsAt(home, p1, 1).ready
     val done = playedTo(ready, slot(1))
     assertEquals(Look(done).cardsAt(home), Vector[CardId](kept, card))
-    assertEquals(done.game.current.commonCards.edificeDeck.last, hall)
+    assertEquals(done.game.current.setAsideEdifices, Vector(hall))
 
   test("the permission composes with an adviser limit through the walker"):
     val ready = playing(kept).adviser(p1, "Wrestlers", facedown = true)

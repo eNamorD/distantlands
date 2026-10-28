@@ -139,6 +139,9 @@ private[operations] object CardMovementOperations:
       case Location.Reliquary | Location.SetAsideRelics =>
         if id.isInstanceOf[RelicId] then None
         else Some(InvalidDestination(transfer.piece, destination))
+      case Location.SetAsideEdifices =>
+        if id.isInstanceOf[EdificeId] then None
+        else Some(InvalidDestination(transfer.piece, destination))
       case Location.Dispossessed =>
         if id.isInstanceOf[WorldCardId] then None
         else Some(InvalidDestination(transfer.piece, destination))
@@ -251,6 +254,9 @@ private[operations] object CardMovementOperations:
         ready.game.campaign.reliquary.filterNot(_ == located.id)))))
     case CardContainer.SetAsideRelics => Right(ready.updateCurrent(current =>
       current.copy(setAsideRelics = current.setAsideRelics.filterNot(_ == located.id))))
+    case CardContainer.SetAsideEdifices => Right(ready.updateCurrent(current =>
+      current.copy(setAsideEdifices =
+        current.setAsideEdifices.filterNot(_ == located.id))))
     case CardContainer.Dispossessed => Right(ready.copy(game = ready.game.copy(
       campaign = ready.game.campaign.copy(dispossessed =
         ready.game.campaign.dispossessed.filterNot(_ == located.id)))))
@@ -309,6 +315,9 @@ private[operations] object CardMovementOperations:
       case Location.SetAsideRelics => ensureEmptyTokens(original.state, id).map(_ =>
         ready.updateCurrent(current => current.copy(
           setAsideRelics = current.setAsideRelics :+ id.asInstanceOf[RelicId])))
+      case Location.SetAsideEdifices => ensureEmptyTokens(original.state, id).map(_ =>
+        ready.updateCurrent(current => current.copy(
+          setAsideEdifices = current.setAsideEdifices :+ id.asInstanceOf[EdificeId])))
       case Location.Dispossessed => ensureEmptyTokens(original.state, id).map(_ =>
         ready.copy(game = ready.game.copy(campaign = ready.game.campaign.copy(
           dispossessed = ready.game.campaign.dispossessed :+

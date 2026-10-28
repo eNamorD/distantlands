@@ -67,7 +67,7 @@ object ProvingGrounds:
 
 /** Discards all OTHER denizens in this region -- edifices count as denizens
   * for this clause specifically (design spec table), and a discarded ruined
-  * edifice returns to the edifice deck via `Discard.RuinedEdifice`; an
+  * edifice is set aside via `Discard.RuinedEdifice`; an
   * intact edifice is locked and stays, mirroring `Dazzle`. No player
   * discards them: the printed text names no "you", so the discards are
   * actorless and no restriction against enemies holds. Returned secrets go
