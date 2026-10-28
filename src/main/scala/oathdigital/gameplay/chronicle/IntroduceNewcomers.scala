@@ -42,13 +42,12 @@ object IntroduceNewcomers:
               NoteArg.Player(holder), NoteArg.SuitName(first),
               NoteArg.SuitName(second), NoteArg.SuitName(third)))
             case _ => None)))),
-      BuildOps((state, pending) => Right(fromBox(catalog, state,
-        chosen(pending))), required = true),
+      BuildOps((state, pending) => fromBox(catalog, state, chosen(pending)),
+        required = true),
       Note(noteId, states => Option.when(
         short(states.now, chosen(states.answered)) &&
-          states.now.game.campaign.dispossessed.nonEmpty)(
-        returned.sourceless(NoteArg.Cards(
-          states.now.game.campaign.dispossessed)))),
+          returning(states.now).nonEmpty)(
+        returned.sourceless(NoteArg.Cards(returning(states.now))))),
       BuildOps((state, pending) => Right(returnIfShort(catalog, state,
         chosen(pending))), required = true),
       // One shuffle leaf per suit; the walker fills each order.
@@ -69,14 +68,21 @@ object IntroduceNewcomers:
           if id == suitDecisionId(count) => suit
     })
 
+  /** A broken card index refuses the walk rather than reading as an empty
+    * table, which would box every card again. */
   private def fromBox(catalog: ExecutableCatalog, state: ReadyGame,
-      suits: Vector[Suit]): Vector[CoreOperation] =
-    val inPlay = state.game.cardIndex.toOption.fold(Set.empty[CardId])(_.ids)
-    suits.flatMap(suit =>
-      val boxed = catalog.denizens.filter(_.suit == suit)
-        .map(denizen => DenizenId(denizen.id.value))
-        .filterNot(inPlay.contains)
-      Option.when(boxed.nonEmpty)(SuitedReserveFromBox(suit, boxed)))
+      suits: Vector[Suit]): Either[OathViolation, Vector[CoreOperation]] =
+    state.game.cardIndex.left.map(problems => OathViolation.InvalidEventOrder(
+      s"the card index is broken: $problems")).map(index =>
+      suits.flatMap(suit =>
+        val boxed = catalog.denizens.filter(_.suit == suit)
+          .map(denizen => DenizenId(denizen.id.value))
+          .filterNot(index.ids.contains)
+        Option.when(boxed.nonEmpty)(SuitedReserveFromBox(suit, boxed))))
+
+  /** The older Dispossessed a short suit sends back: its denizens only. */
+  private def returning(state: ReadyGame): Vector[DenizenId] =
+    state.game.campaign.dispossessed.collect { case id: DenizenId => id }
 
   /** Whether a chosen suit's reserve holds fewer cards than it draws. */
   private def short(state: ReadyGame, suits: Vector[Suit]): Boolean =
@@ -87,12 +93,9 @@ object IntroduceNewcomers:
   private def returnIfShort(catalog: ExecutableCatalog, state: ReadyGame,
       suits: Vector[Suit]): Vector[CoreOperation] =
     if !short(state, suits) then Vector.empty
-    else state.game.campaign.dispossessed.flatMap {
-      case card: DenizenId => catalog.denizen(card).map(denizen =>
-        Move(Piece.Card(card), PositionedLocation(Location.Dispossessed),
-          PositionedLocation(Location.SuitedReserve(denizen.suit))))
-      case _ => None
-    }
+    else returning(state).flatMap(card => catalog.denizen(card).map(denizen =>
+      Move(Piece.Card(card), PositionedLocation(Location.Dispossessed),
+        PositionedLocation(Location.SuitedReserve(denizen.suit)))))
 
   private def draw(state: ReadyGame, holder: PlayerId, suits: Vector[Suit])
       : Vector[CoreOperation] =

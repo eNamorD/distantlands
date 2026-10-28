@@ -1,7 +1,8 @@
 package oathdigital.gameplay.chronicle
 
 import oathdigital.gameplay.{OathRules, WalkerDiceFixture}
-import oathdigital.gameplay.powers.WalkerPowerCatalog
+import oathdigital.gameplay.actions.ProcedureNotes
+import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
@@ -39,6 +40,12 @@ class BeaconTaskSuite extends munit.FunSuite:
     Outcomes.ready(transition.state).game.current.temporaryHands
       .getOrElse(p3, Vector.empty)
 
+  /** The "returned to the box" lines the walk journaled, as plain text. */
+  private def returnedLines(transition: OathTransition): Vector[String] =
+    NoteText.said(ProcedureNotes.id(TriggeredProcedureRef.ChronicleBeacon),
+      ChronicleBeaconProcedure.noteKeys, transition.events)
+      .filter(_.key == IntroduceNewcomers.returned.name).map(_.text)
+
   private def suitOf(card: WorldCardId)(using munit.Location): Suit =
     CatalogNames.suitOf(card.asInstanceOf[DenizenId])
 
@@ -60,6 +67,14 @@ class BeaconTaskSuite extends munit.FunSuite:
     second.query match
       case one: DecisionQuery.ChooseOne => assertEquals(one.options.map(_.ref),
         Suit.all.filterNot(_ == Suit.Beast).map(DecisionOptionRef.FavorBank(_)))
+      case other => fail(other.toString)
+    val twice = accepted(rules.resolveWalker(picked.state, p3,
+      IntroduceNewcomers.suitDecisionId(2),
+      ChooseOneAnswer(DecisionOptionRef.FavorBank(Suit.Arcane))))
+    ChronicleWalk.parked(twice.state).get.query match
+      case one: DecisionQuery.ChooseOne => assertEquals(one.options.map(_.ref),
+        Suit.all.filterNot(Set(Suit.Beast, Suit.Arcane))
+          .map(DecisionOptionRef.FavorBank(_)))
       case other => fail(other.toString)
 
   test("the holder draws three, two and one boxed denizens of the chosen " +
@@ -94,6 +109,13 @@ class BeaconTaskSuite extends munit.FunSuite:
     assertEquals(after.game.current.newlyDispossessed, newly)
     assertEquals(hand(drawn).filter(suitOf(_) == Suit.Nomad).toSet,
       older.toSet)
+    assertEquals(returnedLines(drawn), Vector(
+      s"${older.map(_.value).mkString(", ")} returned to the box"))
+
+  test("no line says the Dispossessed returned when no suit is short"):
+    val drawn = suitsChosen(tasksAssigned,
+      Vector(Suit.Beast, Suit.Arcane, Suit.Order))
+    assertEquals(returnedLines(drawn), Vector.empty)
 
   test("a suit still short after the return draws what remains " +
       "(Chronicle ruling 15)"):
