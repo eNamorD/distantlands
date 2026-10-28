@@ -33,15 +33,18 @@ object BuildEdifice:
   def steps(catalog: ExecutableCatalog): Vector[Operation] = Vector(
     // The shuffle draws the random edifice per suit: the deck is otherwise
     // in catalog order.
-    Shuffle(ShufflePile.EdificeDeck),
-    Branch((state, _) => ChronicleTasks.forHolder(state,
+    Shuffle(ShufflePile.EdificeDeck)) ++
+    // One Branch per suit: a resume re-reads a Branch against live state, and
+    // building one suit's last edifice must not change the node count the
+    // other suits' answers are replayed against.
+    Suit.all.map(suit => Branch((state, _) => ChronicleTasks.forHolder(state,
       ChronicleTask.Throne)(holder => available(catalog, state.game.current)
-        .flatMap((suit, edifice) =>
-          offer(catalog, state, holder, suit, edifice)))),
+        .find(_._1 == suit).toVector.flatMap((_, edifice) =>
+          offer(catalog, state, holder, suit, edifice))))) :+
     BuildOps((state, _) => Right(state.game.current.setAsideEdifices.map(id =>
       Move(Piece.Card(id), PositionedLocation(Location.SetAsideEdifices),
         PositionedLocation(Location.Deck(CardDeck.Edifice),
-          StackPosition.Bottom)))), required = true))
+          StackPosition.Bottom)))), required = true)
 
   /** The cards of `suit` at sites the holder rules, by site. */
   private def candidates(catalog: ExecutableCatalog, state: ReadyGame,

@@ -113,6 +113,42 @@ class BuildEdificeSuite extends munit.FunSuite:
     assertEquals(after.setAsideEdifices, Vector.empty)
     assert(ofSuit.tail.forall(after.commonCards.edificeDeck.contains))
 
+  test("after building a suit's only edifice, the next suit's answer still " +
+      "reaches its own choice"):
+    val other = empireAtAncientCity.ready.game.current.commonCards.worldDeck
+      .collectFirst { case id: DenizenId
+        if catalog.denizen(id).exists(_.suit != roarSuit) => id }.get
+    val otherSuit = catalog.denizen(other).get.suit
+    val (first, second) =
+      if Suit.all.indexOf(roarSuit) < Suit.all.indexOf(otherSuit) then
+        (roarSuit -> roar, otherSuit -> other)
+      else (otherSuit -> other, roarSuit -> roar)
+    val start = empireAtAncientCity
+      .denizen("Threatening Roar", at = "Ancient City")
+      .denizen(other, at = "Ancient City")
+    // Every edifice of the first suit but one stands intact at Buried Giant,
+    // which the Empire does not rule, so building leaves that suit none.
+    val ofSuit = start.ready.game.current.commonCards.edificeDeck
+      .filter(id => suitOf(id).contains(first._1))
+    val buriedGiant = CatalogNames.site("Buried Giant")
+    val table = start.update(_.updateCurrent(current => current.copy(
+      commonCards = current.commonCards.copy(edificeDeck =
+        current.commonCards.edificeDeck.filterNot(ofSuit.tail.contains)),
+      map = current.map.copy(sites = current.map.sites.updatedWith(
+        buriedGiant)(_.map(site => site.copy(denizens = site.denizens ++
+          ofSuit.tail.map(EdificeState(_, EdificeSide.Intact,
+            Tokens.empty)))))))))
+    val firstBuilt = accepted(rules.resolveWalker(
+      atBuildChoice(table, first._1).state, p1,
+      BuildEdifice.decisionId(first._1), DecisionAnswer.ChooseManyAnswer(
+        Vector(DecisionOptionRef.Denizen(first._2)))))
+    assertEquals(ChronicleWalk.parked(firstBuilt.state).map(_.decisionId),
+      Some(BuildEdifice.decisionId(second._1)))
+    val done = build(OathTransition(firstBuilt.state, firstBuilt.events),
+      second._1, Vector(DecisionOptionRef.Denizen(second._2)))
+    assertEquals(denizensAt(done, ancientCity).count(_.isInstanceOf[
+      EdificeState]), 2)
+
   test("cards at sites the Empire does not rule are not offered"):
     val at = atBuildChoice(empireAtAncientCity
       .denizen("Threatening Roar", at = "Broken Peaks"), roarSuit)
