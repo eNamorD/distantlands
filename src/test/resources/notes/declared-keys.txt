@@ -419,6 +419,7 @@ procedure.chronicle-sun empire-broke = The Empire broke
 procedure.chronicle-sun took-beacon = {0} took the Beacon task
 procedure.chronicle-sun took-throne = {0} took the Throne task
 procedure.chronicle-sun took-world = {0} took the World task
+procedure.chronicle-throne built = {0} built {1} at {2}
 procedure.chronicle-throne discarded = {0} was discarded from {1}
 procedure.finish-rest supply-increased = Increased supply from {0} to {1}
 procedure.forge forged = Forged {0}

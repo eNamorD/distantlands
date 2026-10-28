@@ -17,7 +17,7 @@ import oathdigital.testkit.Unwrap.{accepted, rejected}
 class ChronicleBeginSuite extends munit.FunSuite:
   private val rules = new OathRules(catalog,
     walkerPowerCatalog = WalkerPowerCatalog.default(catalog),
-    walkerDice = WalkerDiceFixture.blanks)
+    walkerDice = WalkerDiceFixture.reversingShuffle)
 
   private val usurperWakes: OathState = Table.start.turn(p1, Phase.Wake)
     .oathkeeper(Some(p1), TitleSide.Usurper).state

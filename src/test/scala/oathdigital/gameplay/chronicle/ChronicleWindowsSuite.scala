@@ -35,7 +35,7 @@ class ChronicleWindowsSuite extends munit.FunSuite:
     val rules = new OathRules(catalog,
       walkerPowerCatalog =
         WalkerPowers(Vector(PointPerWindow(lineage, windows))),
-      walkerDice = WalkerDiceFixture.blanks)
+      walkerDice = WalkerDiceFixture.reversingShuffle)
     val done = ChronicleWalk.answeringEverything(rules, accepted(rules.next(
       OathTransition(state, Vector.empty),
       TriggeredProcedureRef.ChronicleBegin)))

@@ -80,7 +80,8 @@ class ShapeEmpireSuite extends munit.FunSuite:
     assert(after.game.current.commonCards.discard(CardPlay.nextRegion(region))
       .contains(lost))
 
-  test("intact edifices stay and ruined ones are set aside"):
+  test("intact edifices stay and ruined ones leave the map; Build Edifice " +
+      "returns the set-aside one to the deck"):
     val intact = CatalogNames.edifice("Great Market")
     val ruined = CatalogNames.edifice("Ruined School")
     val after = throneDone(throneStarted(empireAt("Ancient City")
@@ -88,7 +89,9 @@ class ShapeEmpireSuite extends munit.FunSuite:
       .edifice("Ruined School", EdificeSide.Ruined, at = "Buried Giant")))
     assert(after.game.current.map.sites(brokenPeaks).denizens
       .exists(_.id == intact))
-    assert(after.game.current.setAsideEdifices.contains(ruined))
+    assert(!after.game.current.map.sites(CatalogNames.site("Buried Giant"))
+      .denizens.exists(_.id == ruined))
+    assert(after.game.current.commonCards.edificeDeck.contains(ruined))
 
   test("cards at an Enduring site stay"):
     val card = CatalogNames.denizen("Threatening Roar")

@@ -1,7 +1,7 @@
 package oathdigital.application.gamelog
 
 import oathdigital.gameplay.chronicle.{ChronicleBeginProcedure,
-  ChronicleSunProcedure, ShapeEmpire}
+  ChronicleSunProcedure, BuildEdifice, ShapeEmpire}
 import oathdigital.gameplay.actions.campaign.CampaignNotes
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
 import oathdigital.gameplay.actions.challenge.{ChallengeProcedure,
@@ -327,8 +327,10 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
       narratedPrefixes = Vector("chronicle.assign."), isSection = false)
     case TriggeredProcedureRef.ChronicleThrone => ProcedureLog(tag = None,
       lines = ActionLineSource.Notes(Map(
-        ShapeEmpire.discarded -> LogKind.Delta)),
-      narratedPrefixes = Vector("chronicle.shape-empire."),
+        ShapeEmpire.discarded -> LogKind.Delta,
+        BuildEdifice.built -> LogKind.Decision)),
+      narratedPrefixes = Vector("chronicle.shape-empire.",
+        "chronicle.build-edifice."),
       isSection = false)
     case TriggeredProcedureRef.ChronicleFinish =>
       ProcedureLog(tag = None, isSection = false,
