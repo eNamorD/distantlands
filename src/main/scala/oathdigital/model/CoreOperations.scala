@@ -590,6 +590,38 @@ final case class SetOathkeeperGoal(goal: OathkeeperGoal)
   */
 final case class ChronicleUpdated(chronicle: Chronicle) extends PrimitiveOperation
 
+/** Sets a lineage's role (Crown Chancellor, CR p. 36). A seated lineage
+  * changes in `CampaignState.lineages`; a lineage only the baseline lists
+  * ("even in the box") changes in `CampaignState.boxRoles`. */
+final case class RoleChanged(lineage: LineageId, role: Role)
+    extends PrimitiveOperation
+
+/** Gives a seated player a Chronicle task (Assign Tasks, CR p. 36). */
+final case class ChronicleTaskAssigned(task: ChronicleTask, player: PlayerId)
+    extends PrimitiveOperation
+
+/** The winner takes the Grand Scepter from the box, faceup, when no one
+  * holds it (Chronicle ruling 10). */
+final case class GrandScepterFromBox(player: PlayerId)
+    extends PrimitiveOperation
+
+/** The Chancellor's purple warbands join the table: `count` Imperial
+  * warbands, unless the game already has an Imperial supply. */
+final case class ImperialWarbandsTaken(count: Int) extends PrimitiveOperation:
+  require(count > 0, "the Imperial supply must be positive")
+
+/** Adds lineage points to a lineage's era score (Score Lineage Points,
+  * CR p. 37). */
+final case class LineagePointsScored(lineage: LineageId, points: Int)
+    extends PrimitiveOperation:
+  require(points > 0, "scored lineage points must be positive")
+
+/** Places an edifice from the edifice deck or the set-aside list at a site,
+  * intact (Build Edifice, CR p. 37, Chronicle ruling 12). A `Move` cannot do
+  * this: a card with no state takes no edifice side. */
+final case class EdificeBuilt(edifice: EdificeId, site: SiteId)
+    extends PrimitiveOperation
+
 /** Records the result of the Campaign just fought as the public
   * `lastCampaignResult`, replacing the previous one.
   */

@@ -211,6 +211,22 @@ class WalkerOperationWireSuite extends munit.FunSuite:
         Left(refusal), ujson.write(injected))
     }
 
+  test("an unknown Chronicle task and non-positive lineage points or Imperial " +
+      "supply decode to a typed WireError"):
+    def refusedPath(op: CoreOperation, edit: ujson.Value => Unit): String =
+      val injected = ujson.read(encodedStream("chronicle",
+        Vector(recordedOperation(op)))).arr
+      edit(injected(0)("payload")("step")("ops")(0))
+      GameEventWire.decodeStream(ujson.write(injected)) match
+        case Left(WireError.InvalidValue(path, _)) => path
+        case other => fail(other.toString)
+    assert(refusedPath(ChronicleTaskAssigned(ChronicleTask.World,
+      PlayerId("red")), _("task") = "moon").endsWith(".task"))
+    assert(refusedPath(LineagePointsScored(LineageId("lineage:red"), 2),
+      _("points") = 0).endsWith(".points"))
+    assert(refusedPath(ImperialWarbandsTaken(8), _("count") = -1)
+      .endsWith(".count"))
+
   test("a draw written before it had a position decodes as a draw from the " +
       "top, and a draw of no position is refused"):
     val player = PlayerId("red")
@@ -402,6 +418,13 @@ class WalkerOperationWireSuite extends munit.FunSuite:
       SetOathkeeperGoal(OathkeeperGoal.ThePeople),
       ChronicleUpdated(FirstGameSetupFixture.chronicle.copy(
         oathkeeperGoal = OathkeeperGoal.ThePeople)),
+      RoleChanged(LineageId("lineage:red"), Role.Chancellor),
+      RoleChanged(LineageId("lineage:blue"), Role.Citizen),
+      ChronicleTaskAssigned(ChronicleTask.Beacon, PlayerId("red")),
+      GrandScepterFromBox(PlayerId("red")),
+      ImperialWarbandsTaken(8),
+      LineagePointsScored(LineageId("lineage:red"), 3),
+      EdificeBuilt(CatalogNames.edifice("Great Market"), site),
       QueueProcedure(QueuedProcedure(PlayerId("p1"), ActionRef.Campaign,
           Vector.empty,
           Some(PowerSourceRef.Card(CatalogNames.denizen("Knights Errant"))),

@@ -223,6 +223,19 @@ private[gameplay] object OperationApplication:
         result.flatMap(TurnStateOperations.setOathkeeperGoal(_, goal))
       case (result, ChronicleUpdated(chronicle)) =>
         result.map(TurnStateOperations.chronicleUpdated(_, chronicle))
+      case (result, RoleChanged(lineage, role)) =>
+        result.flatMap(ChronicleStateOperations.roleChanged(_, lineage, role))
+      case (result, ChronicleTaskAssigned(task, player)) =>
+        result.flatMap(ChronicleStateOperations.taskAssigned(_, task, player))
+      case (result, GrandScepterFromBox(player)) =>
+        result.flatMap(ChronicleStateOperations.scepterFromBox(_, player))
+      case (result, ImperialWarbandsTaken(count)) =>
+        result.map(ChronicleStateOperations.imperialWarbandsTaken(_, count))
+      case (result, LineagePointsScored(lineage, points)) =>
+        result.map(ChronicleStateOperations.lineagePointsScored(_, lineage,
+          points))
+      case (result, EdificeBuilt(edifice, site)) =>
+        result.flatMap(ChronicleStateOperations.edificeBuilt(_, edifice, site))
       case (result, RecordCampaignResult(fact)) =>
         result.map(TurnStateOperations.recordCampaignResult(_, fact))
       case (result, QueueProcedure(entry, atFront)) =>

@@ -54,7 +54,10 @@ final case class CampaignState(
     oathkeeperGoal: OathkeeperGoal,
     era: EraState,
     baseline: Chronicle,
-    evolved: Option[Chronicle] = None
+    evolved: Option[Chronicle] = None,
+    // Roles this Chronicle gave to lineages nobody seated, which the
+    // baseline holds (Crown Chancellor: "even in the box", CR p. 36).
+    boxRoles: Map[LineageId, Role] = Map.empty
 )
 
 /** `key` is the phase's wire spelling, carried here rather than in a codec
@@ -181,6 +184,8 @@ final case class CurrentGameState(
     // Build Edifice offers one only when its suit has none left in the
     // edifice deck, and returns them all to the deck when it ends.
     setAsideEdifices: Vector[EdificeId] = Vector.empty,
+    // Who holds each Chronicle task card (Assign Tasks, CR p. 36).
+    chronicleTasks: Map[ChronicleTask, PlayerId] = Map.empty,
     // Walker (procedure-walker) pending state: the only pending procedure
     // position. Walker procedures read and write `walkerPending`.
     walkerPending: Option[PendingTree] = None,
