@@ -52,7 +52,9 @@ final case class CampaignState(
     dispossessed: Vector[WorldCardId],
     suitedReserves: Map[Suit, Vector[DenizenId]],
     oathkeeperGoal: OathkeeperGoal,
-    era: EraState
+    era: EraState,
+    baseline: Chronicle,
+    evolved: Option[Chronicle] = None
 )
 
 /** `key` is the phase's wire spelling, carried here rather than in a codec
