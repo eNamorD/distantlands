@@ -89,9 +89,10 @@ class ShuffleOperationSuite extends munit.FunSuite:
     assertEquals(done.game.current.chronicleGathering, three.reverse)
 
   test("a shuffle writes a suited reserve's new order"):
-    val three = zones(discarded).worldDeck.collect { case id: DenizenId => id }
-      .take(3)
-    val suit = CatalogNames.suitOf(three.head)
+    val denizens = zones(discarded).worldDeck.collect { case id: DenizenId => id }
+    val suit = CatalogNames.suitOf(denizens.head)
+    val three = denizens.filter(CatalogNames.suitOf(_) == suit).take(3)
+    assertEquals(three.size, 3)
     val reserved = discarded.updateCurrent(current => current.copy(
       commonCards = current.commonCards.copy(
         worldDeck = current.commonCards.worldDeck.filterNot(three.contains))))

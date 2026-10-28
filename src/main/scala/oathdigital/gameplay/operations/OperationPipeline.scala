@@ -45,6 +45,13 @@ object OperationRun:
     case _ => Vector.empty
   }.toSet
 
+  /** The cards expected after the run, in operation order: a card boxed
+    * and later unboxed is expected, and one unboxed and later boxed is not.
+    */
+  def expectedAfter(expected: Set[CardId], executed: Vector[CoreOperation])
+      : Set[CardId] = executed.foldLeft(expected)((cards, operation) =>
+    cards -- boxed(Vector(operation)) ++ unboxed(Vector(operation)))
+
 /** Sole public orchestrator of an operation batch. It folds each operation
   * through settlement, staged resolution ([[OperationResolution]], which
   * concatenates the caller's `allowlist` policy, the shape guard and the
@@ -112,7 +119,6 @@ object OperationPipeline:
         // between operations — intermediate states within a legal batch are
         // not invariant-checked (matching the retired post-`update` check).
         _ <- OperationStateInvariant.validate(updated,
-          expected -- OperationRun.boxed(staged.executed) ++
-            OperationRun.unboxed(staged.executed))
+          OperationRun.expectedAfter(expected, staged.executed))
           .left.map(_.toViolation)
       yield staged.copy(state = updated)

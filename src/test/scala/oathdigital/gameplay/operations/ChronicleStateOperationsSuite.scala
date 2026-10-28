@@ -145,3 +145,8 @@ class ChronicleStateOperationsSuite extends munit.FunSuite:
       OperationPolicy.Permissive, Vector.empty)(Right(_)))
     assert(boxed.forall(card => run.state.game.cardIndex.toOption.exists(
       _.locationOf(card).nonEmpty)))
+
+  test("a box card named twice is refused"):
+    val ready = Table.start.ready
+    val card = boxedOf(ready, Suit.Beast).head
+    rejected(run(ready, SuitedReserveFromBox(Suit.Beast, Vector(card, card))))
