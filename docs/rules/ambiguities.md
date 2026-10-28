@@ -51,6 +51,11 @@ Rulings given by the project owner for the Chronicle Phase ([chronicle.md](chron
 7. **Actors.** Most Chronicle steps have no actor and run procedurally. The Stars task has no actor-bound step except Write in the Stars, which the digital version does not implement (CR pp. 40-41).
 8. **Play again or store.** The digital phase always ends by journaling the evolved Chronicle; the CR's choice between playing again and storing does not apply (CR p. 41).
 9. **Edifice order.** Edifices discarded during play (for example a ruined edifice discarded by a homeland power) or in Shape Empire must not return in Build Edifice while another edifice of their suit is available. The end of Build Edifice shuffles the whole edifice deck, so no order survives between games. The digital version keeps an ordered set-aside edifice list on the live state, empty at game start. Build Edifice offers a random edifice of each suit from the edifices not set aside, and falls back to the first set-aside edifice of that suit only when none is left. The list is not part of the Chronicle (CR p. 37).
+10. **Grand Scepter with no Chancellor.** When no one holds the Grand Scepter (a first game leaves it out of the relic pool), the winner takes it from the box into their relics, faceup, during Crown Chancellor. If a player holds it, it moves from that player (CR p. 36).
+11. **The Chancellor's warbands in the Throne task.** After Crown Chancellor, "your warbands" in Shape Empire are the Imperial warbands, "sites you rule" are the sites the Empire rules, and "the last warband of yours on the map" is the last Imperial warband. If the Empire rules no sites, the fallback places one Imperial warband at the winner's pawn site (CR p. 37).
+12. **Built edifice face.** An edifice placed by Build Edifice is placed intact (CR p. 37).
+13. **Lineage point gifts.** The winner may give lineage points only to players who were seated for the game, as for task recipients in ruling 1 (CR p. 37).
+14. **Shape Empire discard pile.** A denizen discarded in Shape Empire goes to the discard pile of its site's region. The World task's Gather Denizens shuffles every discard pile together next, so the pile matters only to the Game Log (CR pp. 37-38).
 
 ## Source relationship cautions
 
