@@ -21,7 +21,9 @@ object ChronicleThroneProcedure:
       ShapeEmpire.steps(catalog)),
     ChronicleWindows.step(PowerWindow.ChronicleBuildEdifice,
       BuildEdifice.steps(catalog)),
-    ChronicleWindows.step(PowerWindow.ChronicleStockReliquary, Vector.empty),
-    ChronicleWindows.step(PowerWindow.ChronicleScatterRelics, Vector.empty),
+    ChronicleWindows.step(PowerWindow.ChronicleStockReliquary,
+      ReliquaryAndRelics.stock),
+    ChronicleWindows.step(PowerWindow.ChronicleScatterRelics,
+      ReliquaryAndRelics.scatter(catalog)),
     ChronicleWindows.step(PowerWindow.ChronicleScoreLineage, Vector.empty),
     ChronicleWindows.step(PowerWindow.ChronicleSwearOath, Vector.empty))

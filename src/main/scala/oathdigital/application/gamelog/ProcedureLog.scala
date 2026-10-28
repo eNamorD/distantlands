@@ -330,7 +330,7 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
         ShapeEmpire.discarded -> LogKind.Delta,
         BuildEdifice.built -> LogKind.Decision)),
       narratedPrefixes = Vector("chronicle.shape-empire.",
-        "chronicle.build-edifice."),
+        "chronicle.build-edifice.", "chronicle.stock-reliquary."),
       isSection = false)
     case TriggeredProcedureRef.ChronicleFinish =>
       ProcedureLog(tag = None, isSection = false,

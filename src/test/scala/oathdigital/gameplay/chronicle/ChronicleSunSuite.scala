@@ -4,6 +4,7 @@ import oathdigital.gameplay.{OathRules, WalkerDiceFixture}
 import oathdigital.gameplay.operations.TheGrandScepterCard
 import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
+import oathdigital.gameplay.walker.WalkerCompleted
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
 import oathdigital.testkit.{CatalogNames, Outcomes, Table}
@@ -50,6 +51,18 @@ class ChronicleSunSuite extends munit.FunSuite:
   private def ready(transition: OathTransition): ReadyGame =
     Outcomes.ready(transition.state)
 
+  /** The state the moment the Sun completes on `table`, World given to p3
+    * and Beacon to p2: the Throne runs on after it, so this replays the
+    * walk's events up to the Sun's `WalkerCompleted`. */
+  private def sunEnded(table: Table)(using munit.Location): ReadyGame =
+    val events = sunWithTasksGiven(table).events
+    val sunEvents = events.take(events.indexOf(
+      WalkerCompleted(TriggeredProcedureRef.ChronicleSun)) + 1)
+    assert(sunEvents.nonEmpty, events)
+    Outcomes.ready(accepted(sunEvents.foldLeft[
+      Either[OathViolation, OathState]](Right(table.state))((state, event) =>
+        state.flatMap(rules.evolve(_, event)))))
+
   private def lineageOf(ready: ReadyGame, player: PlayerId): LineageId =
     ready.game.current.players.find(_.player == player).get.lineage
 
@@ -68,19 +81,18 @@ class ChronicleSunSuite extends munit.FunSuite:
 
   test("facedown relics held by players are revealed; relics at sites stay " +
       "facedown"):
-    val done = sunWithTasksGiven(ChronicleWalk.chronicleWonByP1
+    val after = sunEnded(ChronicleWalk.chronicleWonByP1
       .relic(p2, "Brass Horse", facedown = true)
       .relicAt("Grand Mask", at = "Ancient City"))
-    assertEquals(relicsOf(ready(done), p2).map(_.orientation),
+    assertEquals(relicsOf(after, p2).map(_.orientation),
       Vector(Orientation.FaceUp))
-    assertEquals(ready(done).game.current.map.sites(ancientCity).relics
+    assertEquals(after.game.current.map.sites(ancientCity).relics
       .map(_.orientation), Vector(Orientation.FaceDown))
 
   test("an Exile winner becomes Chancellor and one Imperial warband " +
       "replaces theirs at each site they rule"):
-    val done = sunWithTasksGiven(ChronicleWalk.chronicleWonByP1
+    val after = sunEnded(ChronicleWalk.chronicleWonByP1
       .warbandsAt("Ancient City", p1, 2))
-    val after = ready(done)
     assertEquals(roleOf(after, p1), Role.Chancellor)
     assertEquals(after.game.current.map.sites(ancientCity).forces,
       SiteForces.Occupied(ForceKind.Imperial, 1))
@@ -90,28 +102,28 @@ class ChronicleSunSuite extends munit.FunSuite:
       Some(after.game.current.map.inPlay.size))
 
   test("the winner takes the Grand Scepter from the box, faceup"):
-    val after = ready(sunWithTasksGiven(ChronicleWalk.chronicleWonByP1))
+    val after = sunEnded(ChronicleWalk.chronicleWonByP1)
     assertEquals(relicsOf(after, p1).last, RelicState(TheGrandScepterCard.id,
       Orientation.FaceUp, Tokens.empty))
 
   test("the Grand Scepter moves from the player who holds it"):
-    val after = ready(sunWithTasksGiven(ChronicleWalk.chronicleWonByP1
-      .relic(p2, TheGrandScepterCard.id)))
+    val after = sunEnded(ChronicleWalk.chronicleWonByP1
+      .relic(p2, TheGrandScepterCard.id))
     assertEquals(relicsOf(after, p1).map(_.id), Vector(TheGrandScepterCard.id))
     assertEquals(relicsOf(after, p2), Vector.empty)
 
   test("a Citizen lineage in the box becomes an Exile when the Empire breaks"):
-    val after = ready(sunWithTasksGiven(
-      withBoxedLineage(ChronicleWalk.chronicleWonByP1, Role.Citizen)))
+    val after = sunEnded(
+      withBoxedLineage(ChronicleWalk.chronicleWonByP1, Role.Citizen))
     assertEquals(after.game.campaign.boxRoles, Map(boxed -> Role.Exile))
 
   test("the Reliquary's relics are discarded when the Empire breaks"):
     val relic = CatalogNames.relic("Brass Horse")
-    val after = ready(sunWithTasksGiven(ChronicleWalk.chronicleWonByP1
+    val after = sunEnded(ChronicleWalk.chronicleWonByP1
       .update(_.updateCurrent(current => current.copy(commonCards =
         current.commonCards.copy(relicDeck =
           current.commonCards.relicDeck.filterNot(_ == relic)))))
-      .update(_.updateCampaign(_.copy(reliquary = Vector(relic))))))
+      .update(_.updateCampaign(_.copy(reliquary = Vector(relic)))))
     assertEquals(after.game.campaign.reliquary, Vector.empty)
     assertEquals(after.game.current.setAsideRelics, Vector(relic))
 
@@ -124,7 +136,7 @@ class ChronicleSunSuite extends munit.FunSuite:
           lineageOf(state, p1))(_.map(_.copy(role = Role.Citizen)))))
       .copy(banks = state.banks.copy(warbandSupply =
         state.banks.warbandSupply.updated(ForceKind.Imperial, 24))))
-    val after = ready(sunWithTasksGiven(table))
+    val after = sunEnded(table)
     assertEquals(roleOf(after, p1), Role.Chancellor)
     assertEquals(after.game.campaign.boxRoles, Map(boxed -> Role.Citizen))
     assertEquals(after.game.current.players.find(_.player == p1).get
