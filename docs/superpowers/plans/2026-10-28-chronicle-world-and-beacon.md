@@ -45,8 +45,8 @@ Digital accounting choices made here, inside the rules:
 
 - **Visions leave play.** Separate Visions moves every Vision in play to the shared bank, the one place a card may leave the game (`OperationPipeline`). The Chronicle does not store Visions, and setup adds them again.
 - **Advisers are discarded first.** Gather Denizens discards each adviser, actorless, to the Cradle discard pile before gathering the piles. `Discard.Denizen` returns the tokens on the card to their banks. Stars returns all pieces anyway (CR p. 39).
-- **The gathering pile.** The nine dealt denizens sit in an ordered pile on the live state. Positions 0-2 and 3-5 are the two faceup stacks and positions 6-8 the facedown stack. Every player may identify the faceup ones.
-- **The newly Dispossessed pile.** World puts its six dispossessed denizens in their own pile, not in the Dispossessed. Beacon's return then takes "all Dispossessed cards, except the 6 the World task just added" without tracking which six. The Stars slice merges both piles into the Chronicle's Dispossessed.
+- **The gathering pile.** The nine dealt denizens sit in an ordered pile on the live state. Positions 0-2 and 3-5 are the two faceup stacks and positions 6-8 the facedown stack. The facedown stack is always the last three cards, also after the protected stack leaves, so every player may identify the cards before it. No view shows the pile; the protect decision names the faceup cards.
+- **The newly Dispossessed pile.** The six unprotected denizens wait in the gathering pile while the holder chooses an adviser. When the step ends they move together to their own pile, not the Dispossessed, and one log line names them: the faceup three by name, the facedown three hidden. Beacon's return then takes "all Dispossessed cards, except the 6 the World task just added" without tracking which six. The Stars slice merges both piles into the Chronicle's Dispossessed.
 - **Suited reserves come from the box.** Live suited reserves are empty at game start (`GameStartRules`). Before Beacon draws, `SuitedReserveFromBox` brings each chosen suit's catalog denizens that are nowhere in play into the live reserve. This follows the Grand Scepter precedent (`GrandScepterFromBox`, `OperationRun.unboxed`).
 - **Drawn and kept cards use the temporary hand.** The protected stack and the newcomers go to the holder's temporary hand, which only that player can identify, as Setup's adviser choice does. The kept card goes facedown to the holder's lineage's starting advisers. The rest go to the world deck bottom.
 
@@ -240,6 +240,19 @@ class ChroniclePilesIdentitySuite extends munit.FunSuite:
     assert(gathered.drop(6).forall(card =>
       !presentation.identifiesAt(ready, Some(p2), card)))
 
+  test("once a stack leaves, the facedown stack is still the hidden last three"):
+    // The first stack goes back to the world deck, so every card is still
+    // somewhere and the card index stays whole.
+    val ready = nineGathered.update(_.updateCurrent(current => current.copy(
+      commonCards = current.commonCards.copy(worldDeck =
+        current.commonCards.worldDeck ++ current.chronicleGathering.take(3)),
+      chronicleGathering = current.chronicleGathering.drop(3)))).ready
+    val six = ready.game.current.chronicleGathering
+    assert(six.take(3).forall(card =>
+      presentation.identifiesAt(ready, Some(p1), card)))
+    assert(six.drop(3).forall(card =>
+      !presentation.identifiesAt(ready, Some(p1), card)))
+
   test("only the lineage's player identifies a starting adviser"):
     val ready = Table.start.update(state =>
       val lineage = state.game.current.players.find(_.player == p2).get.lineage
@@ -271,8 +284,9 @@ Expected: compile errors naming `Location.ChronicleGathering`, `chronicleGatheri
 In `M/model/Location.scala`, after `case object Dispossessed extends Location`:
 
 ```scala
-  /** The nine denizens the World task deals: positions 0-2 and 3-5 are the
-    * faceup stacks, 6-8 the facedown one (CR p. 38). */
+  /** The nine denizens the World task deals, stack by stack (CR p. 38).
+    * The facedown stack is always the last three; the cards before it
+    * are faceup. */
   case object ChronicleGathering extends Location
   /** The six denizens the World task dispossessed, kept apart from the
     * older Dispossessed until the Chronicle is recorded (CR p. 39). */
@@ -286,8 +300,8 @@ In `M/model/Location.scala`, after `case object Dispossessed extends Location`:
 In `M/model/GameState.scala`, after `chronicleTasks`:
 
 ```scala
-    // The World task's nine dealt denizens (CR p. 38): positions 0-5 are
-    // the faceup stacks, 6-8 the facedown one.
+    // The World task's dealt denizens (CR p. 38), stack by stack. The
+    // facedown stack stays last when the protected stack leaves.
     chronicleGathering: Vector[WorldCardId] = Vector.empty,
     // The six denizens the World task dispossessed. Beacon's return leaves
     // them alone (CR p. 39); the Stars slice records them as Dispossessed.
@@ -407,11 +421,14 @@ Update that object's doc comment: list the new piles beside "the dispossessed".
 In `GamePresentationProjector.identifiesCard`, before `case _ => false`:
 
 ```scala
-      // The World task deals two stacks faceup and one facedown (CR p. 38):
-      // the first six gathered cards are on the table for all to see.
+      // The World task deals two stacks faceup and one facedown (CR p. 38).
+      // The facedown stack is the last three gathered cards, also after
+      // the protected stack leaves; every card before it is on the table
+      // for all to see.
       case CardContainer.ChronicleGathering =>
-        val at = ready.game.current.chronicleGathering.indexOf(id)
-        at >= 0 && at < 6
+        val pile = ready.game.current.chronicleGathering
+        val at = pile.indexOf(id)
+        at >= 0 && at < pile.size - 3
       // A starting adviser is kept facedown for the lineage's next player.
       case CardContainer.Lineage(lineage, LineageCardArea.StartingAdvisers) =>
         viewer.exists(player => ready.game.current.players
@@ -932,7 +949,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
   - `SeparateVisions.steps: Vector[Operation]`.
   - `GatherDenizens.steps(catalog: ExecutableCatalog): Vector[Operation]`; `GatherDenizens.dealt: Int = 9`.
   - `ProtectAndDispossess.protectDecisionId = "chronicle.world.protect"`, `keepDecisionId = "chronicle.world.keep"`, `keepKey = "keep"`, `deckKey = "world-deck"`, `steps: Vector[Operation]`.
-  - Notes (on `ProcedureNotes.id(TriggeredProcedureRef.ChronicleWorld)`): `GatherDenizens.gathered`, `ProtectAndDispossess.protectedStack`, `ProtectAndDispossess.keptAdviser`.
+  - Notes (on `ProcedureNotes.id(TriggeredProcedureRef.ChronicleWorld)`): `GatherDenizens.gathered`, `ProtectAndDispossess.protectedStack`, `ProtectAndDispossess.keptAdviser`, `ProtectAndDispossess.dispossessed`.
   - `ChronicleWalk.plainestAnswer` answers a `Partition`.
 
 - [ ] **Step 1: Teach `ChronicleWalk` to answer a partition**
@@ -1050,8 +1067,14 @@ class WorldTaskSuite extends munit.FunSuite:
         DecisionOptionRef.Denizen(second(1).asInstanceOf[DenizenId]))))
     val ready = Outcomes.ready(protectedState.state)
     assertEquals(ready.game.current.temporaryHands.get(p2), Some(second))
-    assertEquals(ready.game.current.newlyDispossessed.toSet,
-      (nine.take(3) ++ nine.drop(6)).toSet)
+    // The other six wait in the pile, the facedown stack still last and
+    // still unknown to p1.
+    assertEquals(ready.game.current.chronicleGathering,
+      nine.take(3) ++ nine.drop(6))
+    assert(nine.take(3).forall(card =>
+      GamePresentationProjector.identifiesAt(ready, Some(p1), card)))
+    assert(nine.drop(6).forall(card =>
+      !GamePresentationProjector.identifiesAt(ready, Some(p1), card)))
     val kept = second.last
     val done = accepted(rules.resolveWalker(protectedState.state, p2,
       ProtectAndDispossess.keepDecisionId, PartitionAnswer(second.map(card =>
@@ -1066,6 +1089,9 @@ class WorldTaskSuite extends munit.FunSuite:
       second.init.toSet)
     assertEquals(after.game.current.temporaryHands.getOrElse(p2, Vector.empty),
       Vector.empty)
+    assertEquals(after.game.current.chronicleGathering, Vector.empty)
+    assertEquals(after.game.current.newlyDispossessed,
+      nine.take(3) ++ nine.drop(6))
     assert(GamePresentationProjector.identifiesAt(after, Some(p2), kept))
     assert(!GamePresentationProjector.identifiesAt(after, Some(p1), kept))
 
@@ -1079,7 +1105,7 @@ class WorldTaskSuite extends munit.FunSuite:
       !GamePresentationProjector.identifiesAt(ready, Some(p1), card)))
 ```
 
-Add one Game Log test in the shape `ChronicleSunSuite` uses for its lines (find its log assertion with `grep -n "lines\|LogLine" src/test/scala/oathdigital/gameplay/chronicle/ChronicleSunSuite.scala`): after the walk, p2's log reads "kept {card} as a starting adviser" with the card's name, and p1's log reads the same line with the card hidden.
+Add one Game Log test in the shape `ChronicleSunSuite` uses for its lines (find its log assertion with `grep -n "lines\|LogLine" src/test/scala/oathdigital/gameplay/chronicle/ChronicleSunSuite.scala`): after the walk, p2's log reads "kept {card} as a starting adviser" with the card's name, and p1's log reads the same line with the card hidden. A second line closes the step: "{cards} were dispossessed". p1 sees the three faceup cards by name and the three facedown ones hidden.
 
 If `discarded` cannot take a Vision, put the Vision in the discard with `update(_.updateCurrent(...))` instead.
 
@@ -1209,7 +1235,9 @@ import oathdigital.model._
   * task holder protects one of the two faceup stacks by naming a card in
   * it; the stack goes to their temporary hand. They keep one secretly as a
   * facedown starting adviser and the other two go to the world deck bottom.
-  * The other six gathered cards are newly Dispossessed. */
+  * The other six gathered cards wait in the gathering pile until the step
+  * ends, then are newly Dispossessed with one log line. Nobody knows the
+  * facedown three, so the line names only the faceup ones. */
 object ProtectAndDispossess:
   val protectDecisionId: String = "chronicle.world.protect"
   val keepDecisionId: String = "chronicle.world.keep"
@@ -1224,6 +1252,8 @@ object ProtectAndDispossess:
   val keptAdviser: NoteKey = notes.key("kept-adviser", Vector(
     NotePart.Arg(0), NotePart.Text(" kept "), NotePart.Arg(1),
     NotePart.Text(" as a starting adviser")))
+  val dispossessed: NoteKey = notes.key("dispossessed", Vector(
+    NotePart.Arg(0), NotePart.Text(" were dispossessed")))
   def noteKeys: Vector[NoteKey] = notes.declared
 
   private val stackSize = 3
@@ -1232,7 +1262,17 @@ object ProtectAndDispossess:
     Branch((state, _) => ChronicleTasks.forHolder(state, ChronicleTask.World)(
       holder => protect(state, holder))),
     Branch((state, _) => ChronicleTasks.forHolder(state, ChronicleTask.World)(
-      holder => keep(state, holder))))
+      holder => keep(state, holder))),
+    // The note reads the pile before the move, while the faceup cards are
+    // still identifiable where they lie.
+    Note(noteId, states => Option.when(
+      states.now.game.current.chronicleGathering.nonEmpty)(
+      dispossessed.sourceless(NoteArg.Cards(
+        states.now.game.current.chronicleGathering)))),
+    BuildOps((state, _) => Right(state.game.current.chronicleGathering.map(
+      card => Move(Piece.Card(card),
+        PositionedLocation(Location.ChronicleGathering),
+        PositionedLocation(Location.NewlyDispossessed)))), required = true))
 
   private def faceup(state: ReadyGame): Vector[DenizenId] =
     state.game.current.chronicleGathering.take(2 * stackSize)
@@ -1258,17 +1298,16 @@ object ProtectAndDispossess:
       case DecisionOptionRef.Denizen(card) => card
     }.toRight(PowerAnswers.missing(protectDecisionId))
 
-  /** The protected stack to the holder's hand, the rest to the newly
-    * Dispossessed. */
+  /** The protected stack to the holder's hand. The rest stay in the
+    * gathering pile, the facedown stack still last. */
   private def split(state: ReadyGame, holder: PlayerId, card: DenizenId)
       : Vector[CoreOperation] =
     val pile = state.game.current.chronicleGathering
     val stack = pile.indexOf(card) / stackSize
-    pile.zipWithIndex.map((id, at) => Move(Piece.Card(id),
-      PositionedLocation(Location.ChronicleGathering),
-      PositionedLocation(
-        if at / stackSize == stack then Location.Hand(holder)
-        else Location.NewlyDispossessed)))
+    pile.zipWithIndex.collect { case (id, at) if at / stackSize == stack =>
+      Move(Piece.Card(id), PositionedLocation(Location.ChronicleGathering),
+        PositionedLocation(Location.Hand(holder)))
+    }
 
   private def keep(state: ReadyGame, holder: PlayerId): Vector[Operation] =
     val hand = state.game.current.temporaryHands.getOrElse(holder, Vector.empty)
@@ -1355,7 +1394,8 @@ In `ProcedureLog`'s World entry:
       lines = ActionLineSource.Notes(Map(
         GatherDenizens.gathered -> LogKind.Delta,
         ProtectAndDispossess.protectedStack -> LogKind.Decision,
-        ProtectAndDispossess.keptAdviser -> LogKind.Decision)),
+        ProtectAndDispossess.keptAdviser -> LogKind.Decision,
+        ProtectAndDispossess.dispossessed -> LogKind.Delta)),
 ```
 
 Add `ChronicleWorld` to `GameLogPropertiesSuite`'s list of procedures that write notes. Regenerate the note snapshot: `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly *NoteKeys*"`, then check the diff shows only the three World keys.
@@ -1762,13 +1802,13 @@ Expected: every test passes; architecture and coverage pass.
 `docs/rules/chronicle.md`, World step 2, add:
 
 ```markdown
-   - Digital: advisers are discarded first, which returns the tokens on them to their banks. The nine dealt denizens sit in an ordered gathering pile: the first six are the two faceup stacks and the last three the facedown stack.
+   - Digital: advisers are discarded first, which returns the tokens on them to their banks. The nine dealt denizens sit in an ordered gathering pile: the facedown stack is always the last three cards and the faceup stacks come before it.
 ```
 
 World step 3, add:
 
 ```markdown
-   - Digital: the holder protects a stack by naming any card in it. The six dispossessed denizens sit in a newly Dispossessed pile until the Chronicle is recorded, so the Beacon's return leaves them alone.
+   - Digital: the holder protects a stack by naming any card in it. When the step ends, the six unprotected denizens move to a newly Dispossessed pile, and one log line names the faceup three. They stay there until the Chronicle is recorded, so the Beacon's return leaves them alone.
 ```
 
 World step 1, add: `   - Digital: Visions leave play; setup adds all five again.`
