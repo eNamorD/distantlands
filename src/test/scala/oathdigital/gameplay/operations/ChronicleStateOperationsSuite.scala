@@ -56,6 +56,18 @@ class ChronicleStateOperationsSuite extends munit.FunSuite:
         Tokens.empty))
     rejected(run(after, GrandScepterFromBox(p2)))
 
+  test("the pipeline's card inventory expects the Scepter it brought from " +
+      "the box"):
+    val run = accepted(OperationPipeline.run(Table.start.ready,
+      Vector(GrandScepterFromBox(p1)), OperationPolicy.Permissive,
+      Vector.empty)(Right(_)))
+    assert(run.state.game.cardIndex.toOption.exists(
+      _.locationOf(TheGrandScepterCard.id).nonEmpty))
+
+  test("only a seated lineage scores lineage points"):
+    rejected(run(Table.start.ready,
+      LineagePointsScored(LineageId("lineage:nobody"), 1)))
+
   test("the Imperial supply is taken once and kept after"):
     val after = accepted(run(Table.start.ready, ImperialWarbandsTaken(8)))
     assertEquals(after.banks.warbandSupply.get(ForceKind.Imperial), Some(8))

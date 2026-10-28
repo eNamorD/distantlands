@@ -48,11 +48,16 @@ private[operations] object ChronicleStateOperations:
       ready.banks.warbandSupply.updatedWith(ForceKind.Imperial)(
         _.orElse(Some(count)))))
 
+  /** Only a seated lineage scores (gifts go to seated players, Chronicle
+    * ruling 13). */
   def lineagePointsScored(ready: ReadyGame, lineage: LineageId, points: Int)
-      : ReadyGame = ready.updateCampaign(campaign => campaign.copy(
-    era = campaign.era.copy(lineageScores = campaign.era.lineageScores
-      .updated(lineage,
-        campaign.era.lineageScores.getOrElse(lineage, 0) + points))))
+      : Either[OperationError, ReadyGame] =
+    Either.cond(ready.game.campaign.lineages.contains(lineage),
+      ready.updateCampaign(campaign => campaign.copy(
+        era = campaign.era.copy(lineageScores = campaign.era.lineageScores
+          .updated(lineage,
+            campaign.era.lineageScores.getOrElse(lineage, 0) + points)))),
+      InvalidDescription(s"no seated lineage ${lineage.value} to score"))
 
   def edificeBuilt(ready: ReadyGame, edifice: EdificeId, site: SiteId)
       : Either[OperationError, ReadyGame] =

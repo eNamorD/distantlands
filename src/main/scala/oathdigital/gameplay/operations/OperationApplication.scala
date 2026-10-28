@@ -232,7 +232,7 @@ private[gameplay] object OperationApplication:
       case (result, ImperialWarbandsTaken(count)) =>
         result.map(ChronicleStateOperations.imperialWarbandsTaken(_, count))
       case (result, LineagePointsScored(lineage, points)) =>
-        result.map(ChronicleStateOperations.lineagePointsScored(_, lineage,
+        result.flatMap(ChronicleStateOperations.lineagePointsScored(_, lineage,
           points))
       case (result, EdificeBuilt(edifice, site)) =>
         result.flatMap(ChronicleStateOperations.edificeBuilt(_, edifice, site))
