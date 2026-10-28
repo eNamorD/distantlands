@@ -26,6 +26,11 @@ object CatalogNames:
         .map(d => DenizenId(d.id.value))
         .getOrElse(unknown("denizen", name, catalog.denizens.map(_.name)))
 
+  /** The printed suit of a denizen. */
+  def suitOf(card: DenizenId)(using munit.Location): Suit =
+    catalog.denizen(card).map(_.suit).getOrElse(
+      munit.Assertions.fail(s"no denizen ${card.value} in the catalog"))
+
   def worldCard(card: String | WorldCardId)(using munit.Location): WorldCardId =
     card match
       case id: WorldCardId => id

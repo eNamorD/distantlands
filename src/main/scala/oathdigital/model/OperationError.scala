@@ -199,3 +199,8 @@ object OperationError:
     case Location.Reliquary => "Reliquary"
     case Location.Atlas => "Atlas"
     case Location.Dispossessed => "Dispossessed"
+    case Location.ChronicleGathering => "gathered denizens"
+    case Location.NewlyDispossessed => "newly Dispossessed"
+    case Location.SuitedReserve(suit) => s"${suit.key} reserve"
+    case Location.StartingAdvisers(lineage) =>
+      s"${lineage.value} starting advisers"

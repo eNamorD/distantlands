@@ -6,7 +6,8 @@ import oathdigital.model._
   * card"). A player who knew a card keeps knowing it when it moves, into a
   * regional discard pile too: the table saw it go in. A card that goes into
   * any other card pile (a deck, the reliquary, the set-aside relics, the
-  * dispossessed or the atlas) is known by nobody, since no one at the table
+  * dispossessed, the Chronicle's gathered, newly dispossessed and suited
+  * reserve piles, or the atlas) is known by nobody, since no one at the table
   * tracks a card inside one.
   *
   * `CardKnowledge` is derived during replay and never journaled, so a game
@@ -41,7 +42,9 @@ private[operations] object CardKnowledgeMoves:
 
   private def hidden(to: Location): Boolean = to match
     case Location.Deck(_) | Location.Reliquary | Location.SetAsideRelics |
-        Location.SetAsideEdifices | Location.Dispossessed | Location.Atlas =>
+        Location.SetAsideEdifices | Location.Dispossessed | Location.Atlas |
+        Location.ChronicleGathering | Location.NewlyDispossessed |
+        _: Location.SuitedReserve =>
       true
     case _ => false
 

@@ -249,6 +249,10 @@ private[application] final class GamePresentationProjector(
     *    viewer whose knowledge records it: one who peeked at it there
     *    (Scryer, Oracular Pig), or, in a discard pile, one who knew it
     *    before it was discarded.
+    *  - The World task's gathered denizens are named to every viewer except
+    *    the last three, the facedown stack (CR p. 38).
+    *  - A lineage's starting advisers are named only to the player seated
+    *    with that lineage.
     *  - Everything else -- other decks, the reliquary, set-aside relics, the
     *    dispossessed pile, suited reserves, atlas sites -- is never
     *    identified. A card in a deck has no orientation at all, so it must be
@@ -286,6 +290,18 @@ private[application] final class GamePresentationProjector(
       case CardContainer.Deck(CardDeck.World) | CardContainer.RegionalDiscard(_) =>
         viewer.exists(player => ready.knowledge.advisers
           .getOrElse(player, Vector.empty).exists(_ == id))
+      // The World task deals two stacks faceup and one facedown (CR p. 38).
+      // The facedown stack is the last three gathered cards, also after
+      // the protected stack leaves; every card before it is on the table
+      // for all to see.
+      case CardContainer.ChronicleGathering =>
+        val pile = ready.game.current.chronicleGathering
+        val at = pile.indexOf(id)
+        at >= 0 && at < pile.size - 3
+      // A starting adviser is kept facedown for the lineage's next player.
+      case CardContainer.Lineage(lineage, LineageCardArea.StartingAdvisers) =>
+        viewer.exists(player => ready.game.current.players
+          .exists(seat => seat.player == player && seat.lineage == lineage))
       case _ => false
 
   /** [[identifiesCard]] for the card wherever it lies in `ready`: its own
