@@ -215,6 +215,23 @@ participants and the recorded shuffle orders. Two games with the same input
 begin identically.
 _Avoid_: setup fixture, setup data, bootstrap
 
+**Baseline**:
+The Chronicle a game started from, kept whole on the campaign state by game
+start, including the lineages of colors that did not play. The Chronicle
+Phase evolves it.
+_Avoid_: original chronicle, input chronicle
+
+**Chronicle Phase**:
+The post-game tasks (Sun, Throne, World, Beacon, Stars), run as triggered
+walker procedures in the same game journal once the winner starts the
+Chronicle. The driver chains them in a fixed order.
+_Avoid_: post-game, campaign step
+
+**Evolved Chronicle**:
+The Chronicle the Chronicle Phase ends with, recorded by the
+`ChronicleUpdated` operation. The next game starts from it.
+_Avoid_: next chronicle, result chronicle
+
 **Situation**:
 A game reached by real play from a first-game input: every command issued and
 every parked decision answered along the way, in order. Named situations are

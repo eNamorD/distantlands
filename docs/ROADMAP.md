@@ -195,6 +195,9 @@ activation/scoring, Oathkeeper goal changes, era scoring, saved-campaign
 continuation, and campaign browsing.
 
 - [ ] **End-of-game Chronicle steps.**
+  - Foundation landed: the winner's Start Chronicle decision, driver
+    chaining, the baseline Chronicle kept at game start, and
+    `ChronicleUpdated`. Remaining: Sun, Throne, World, Beacon, Stars.
 - [ ] **Enduring (Ancient City).** Its cards are not discarded in the
   Chronicle Phase's Shape Empire step, which the engine does not have yet.
 - [ ] **Chronicle import and export.** The Chronicle string codec for the TTS

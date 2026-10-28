@@ -18,8 +18,8 @@ other triggered procedure does, with `BeginTurn(firstPlayer, Wake)`.
 
 A `Chronicle` is the between-game record a Chronicle generator produces: the
 ordered atlas box (which sites are in play and their stored edifices), the
-World Deck's denizen pool, the ordinary-relic order, the reliquary, and the
-dispossessed board. `SetupOrders` is the one-time per-game deal drawn from
+World Deck's denizen pool, the ordinary-relic order, the era scorepad, the
+Oathkeeper goal, the reliquary, and the dispossessed board. `SetupOrders` is the one-time per-game deal drawn from
 it -- participants, first player, and the dealt `worldDeckOrder` -- computed
 by `ChronicleFirstGamePlan.dealOrder` and recorded alongside the Chronicle on
 `GameStarted`, so replay never re-derives either.
@@ -31,6 +31,12 @@ Homeland in play. The deeper suit-count and Vision-packet audit a Chronicle
 must satisfy is the generator's own job, checked once at generation time
 (`FirstGameChronicleGenerator.validate`) rather than again at every setup.
 
+Game start keeps the whole Chronicle on `CampaignState.baseline`, including
+lineages of colors that did not play, and takes the era and Oathkeeper goal
+from it; a seated lineage the Chronicle has not scored starts at 0. The
+Chronicle Phase records its result in `CampaignState.evolved`
+([Chronicle steps design](../superpowers/specs/2026-10-27-chronicle-steps-design.md)).
+
 The completed aggregate includes site resources and bandits, facedown site
 relics, ruined Homeland edifices, regional discards, player advisers, World and
 relic decks, starting Exile boards and Supply, banners, tracks, the Oathkeeper
@@ -38,8 +44,8 @@ goal, favor banks, and six unaltered Foundations.
 
 The scope follows Combined Rulebook pp. 6-7 and the New Foundations first-game
 clarification on p. 8. It excludes Legacy selection/effects,
-Chancellor/Citizen/Imperial setup, campaign restoration, altered Foundations,
-and Chronicle progression beyond the first game.
+Chancellor/Citizen/Imperial setup, restoring the rest of a stored campaign
+(roles, legacies, the Empire's sites), and altered Foundations.
 
 ## Application and transport
 
