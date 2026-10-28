@@ -123,7 +123,9 @@ class GameApplicationServiceStreamSuite extends munit.FunSuite:
     assertEquals(current.turn.phase, Phase.Chronicle)
     assert(current.walkerProcedure.exists(Vector[ProcedureRef](
       TriggeredProcedureRef.ChronicleSun,
-      TriggeredProcedureRef.ChronicleThrone).contains), current.walkerProcedure)
+      TriggeredProcedureRef.ChronicleThrone,
+      TriggeredProcedureRef.ChronicleWorld,
+      TriggeredProcedureRef.ChronicleBeacon).contains), current.walkerProcedure)
     assertEquals(Outcomes.ready(reloaded.state).game.campaign.evolved, None)
 
   test("create advance and reload replay the complete persisted stream"):

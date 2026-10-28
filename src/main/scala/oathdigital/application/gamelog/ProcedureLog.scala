@@ -336,6 +336,12 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
         "chronicle.build-edifice.", "chronicle.stock-reliquary.",
         "chronicle.score-lineage.", "chronicle.swear-oath."),
       isSection = false)
+    case TriggeredProcedureRef.ChronicleWorld => ProcedureLog(tag = None,
+      isSection = false, narratedPrefixes = Vector("chronicle.world."),
+      lines = ActionLineSource.Silent("the World's steps land next"))
+    case TriggeredProcedureRef.ChronicleBeacon => ProcedureLog(tag = None,
+      isSection = false, narratedPrefixes = Vector("chronicle.beacon."),
+      lines = ActionLineSource.Silent("the Beacon's steps land next"))
     case TriggeredProcedureRef.ChronicleFinish =>
       ProcedureLog(tag = None, isSection = false,
         lines = ActionLineSource.Silent(

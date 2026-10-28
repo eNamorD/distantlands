@@ -86,6 +86,10 @@ enum TriggeredProcedureRef(val key: String) extends ProcedureRef:
   case ChronicleSun extends TriggeredProcedureRef("chronicle-sun")
   /** The Throne task, resolved by its holder. */
   case ChronicleThrone extends TriggeredProcedureRef("chronicle-throne")
+  /** The World task, resolved by the People's Favor's task holder. */
+  case ChronicleWorld extends TriggeredProcedureRef("chronicle-world")
+  /** The Beacon task, resolved by the Darkest Secret's task holder. */
+  case ChronicleBeacon extends TriggeredProcedureRef("chronicle-beacon")
   /** Journals the evolved Chronicle; the last Chronicle procedure. */
   case ChronicleFinish extends TriggeredProcedureRef("chronicle-finish")
 
@@ -141,7 +145,8 @@ object PhaseTransitionRef:
 object TriggeredProcedureRef:
   val all: Vector[TriggeredProcedureRef] = Vector(Oathkeeper, Setup,
     ForcedWake, FollowUpOffer, WakeMenu, RestMenu, ActMenu, ChronicleBegin,
-    ChronicleSun, ChronicleThrone, ChronicleFinish)
+    ChronicleSun, ChronicleThrone, ChronicleWorld, ChronicleBeacon,
+    ChronicleFinish)
 
 object StartableRef:
   /** The finite references. The parameterized use-power reference is not
