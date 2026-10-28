@@ -46,7 +46,11 @@ Beacon, Stars) as ordinary walker decisions and ends by journaling
   `suitedReserves` are derived views ("every card not accounted for elsewhere"),
   not stored. Visions and the Grand Scepter holder are not stored (the Scepter
   goes to the Chancellor). Ruined versus intact edifice faces are settled in
-  setup and are not part of the Chronicle.
+  setup and are not part of the Chronicle. Discarded edifices go to an ordered
+  set-aside list on the live state (empty at game start); Build Edifice draws a
+  random edifice per suit from the rest and falls back to the set-aside list
+  only when a suit has none. The list is not stored in the Chronicle, because
+  Build Edifice ends by shuffling the whole deck (ruling 9).
 - **Stubs.** Foundations and Legacies are later slices. Steps that depend on
   them (Sun steps 2-4 and the goal checks, Throne's legacy bonus points,
   Beacon's restore-a-foundation) are empty power windows that carry

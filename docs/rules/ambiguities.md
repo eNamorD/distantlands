@@ -36,6 +36,21 @@ These are not claimed errors in the rulebook. They are places where an implement
 8. **First game exception.** CR recommends ignoring "become Citizen" powers in the first game, wording this as a recommendation rather than a strict prohibition. Product rules need a configurable or explicit interpretation (CR p. 30; CR p. 34 uses similar guidance).
 9. **Campaign target legality under Pass and zero-capacity sites.** Target generation must combine campaign type, ruler, region Pass consent, and special no-capacity cases (CR pp. 21-22, 30-31).
 10. **Chronicle actor availability.** Banner task assignment can target "anyone"; player attendance may change between games. Define whether absent/stored lineages can be assigned tasks or whether "anyone" means current participants (CR p. 36).
+    Resolved: only players seated for the game receive tasks ([Chronicle rulings](#chronicle-rulings), ruling 1).
+
+## Chronicle rulings
+
+Rulings given by the project owner for the Chronicle Phase ([chronicle.md](chronicle.md)). The rev1 task cards are slightly older than the CR; where they disagree, the CR governs.
+
+1. **Task recipients.** Only players who were seated for the game can receive a Chronicle task (CR p. 36).
+2. **Unheld banners.** "If no one holds a banner" is two rules: if no one holds the People's Favor, the winner chooses who takes the World task; if no one holds the Darkest Secret, the winner chooses who takes the Beacon task (CR p. 36).
+3. **One player holds World and Beacon.** That player chooses which task to give away and to whom (CR p. 36).
+4. **Legacy goal ties.** The CR's friendly (Imperial-only) and unfriendly (any Exile) tie rules govern. The Sun card's "The Chancellor or first player breaks goal ties" is outdated (CR p. 36).
+5. **Citizenship.** Only Exiles can be offered Citizenship, including players who became Exiles earlier in the same Chronicle when an Exile won (CR pp. 36-37). The Throne card's "any players" is outdated.
+6. **Shape Empire exceptions.** Intact edifices and cards at Enduring sites are not discarded, as the CR says; the Throne card omits both. Some legacies also protect denizens; those arrive with legacy powers (CR p. 37).
+7. **Actors.** Most Chronicle steps have no actor and run procedurally. The Stars task has no actor-bound step except Write in the Stars, which the digital version does not implement (CR pp. 40-41).
+8. **Play again or store.** The digital phase always ends by journaling the evolved Chronicle; the CR's choice between playing again and storing does not apply (CR p. 41).
+9. **Edifice order.** Edifices discarded during play (for example a ruined edifice discarded by a homeland power) or in Shape Empire must not return in Build Edifice while another edifice of their suit is available. The end of Build Edifice shuffles the whole edifice deck, so no order survives between games. The digital version keeps an ordered set-aside edifice list on the live state, empty at game start. Build Edifice offers a random edifice of each suit from the edifices not set aside, and falls back to the first set-aside edifice of that suit only when none is left. The list is not part of the Chronicle (CR p. 37).
 
 ## Source relationship cautions
 
