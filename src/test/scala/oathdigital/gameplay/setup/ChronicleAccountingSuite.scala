@@ -77,3 +77,25 @@ class ChronicleAccountingSuite extends munit.FunSuite:
     val baseline = chronicle.copy(atlasBox = chronicle.atlasBox.tail)
     assertEquals(ChronicleAccounting.conserves(baseline, chronicle),
       Left(s"site ${extra.site.value} was not in the baseline"))
+    val extraRelic = chronicle.relicDeck.head
+    assertEquals(ChronicleAccounting.conserves(
+      chronicle.copy(relicDeck = chronicle.relicDeck.tail), chronicle),
+      Left(s"relic ${extraRelic.value} was not in the baseline"))
+
+  test("ids in the Dispossessed and the Reliquary must be known"):
+    assertEquals(ChronicleAccounting.knownAndUnique(catalog, chronicle.copy(
+      dispossessed = Vector(DenizenId("no-such-denizen")))),
+      Left("unknown denizen no-such-denizen"))
+    assertEquals(ChronicleAccounting.knownAndUnique(catalog, chronicle.copy(
+      reliquary = Vector(RelicId("no-such-relic")))),
+      Left("unknown relic no-such-relic"))
+
+  test("an edifice stored at two sites is refused"):
+    val withEdifice = chronicle.atlasBox.find(_.items.nonEmpty).get
+    val edifice = withEdifice.items.head
+    val bare = chronicle.atlasBox.find(_.items.isEmpty).get
+    val twice = chronicle.copy(
+      atlasBox = chronicle.atlasBox.filterNot(_ == bare),
+      world = Vector(bare.copy(items = Vector(edifice))))
+    assertEquals(ChronicleAccounting.knownAndUnique(catalog, twice),
+      Left(s"edifice ${edifice.value} is stored twice"))
