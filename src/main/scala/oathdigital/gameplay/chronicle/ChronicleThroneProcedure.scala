@@ -12,7 +12,8 @@ object ChronicleThroneProcedure:
       OathViolation.InvalidEventOrder("the Throne takes no start selection"))
 
   /** The notes the Throne's steps write. */
-  def noteKeys: Vector[NoteKey] = ShapeEmpire.noteKeys ++ BuildEdifice.noteKeys
+  def noteKeys: Vector[NoteKey] = ShapeEmpire.noteKeys ++
+    BuildEdifice.noteKeys ++ LineageScoring.noteKeys ++ SwearOath.noteKeys
 
   private def steps(catalog: ExecutableCatalog): Vector[Operation] = Vector(
     // Offer Citizenship (CR p. 37) waits for the Empire phase.
@@ -25,5 +26,6 @@ object ChronicleThroneProcedure:
       ReliquaryAndRelics.stock),
     ChronicleWindows.step(PowerWindow.ChronicleScatterRelics,
       ReliquaryAndRelics.scatter(catalog)),
-    ChronicleWindows.step(PowerWindow.ChronicleScoreLineage, Vector.empty),
-    ChronicleWindows.step(PowerWindow.ChronicleSwearOath, Vector.empty))
+    ChronicleWindows.step(PowerWindow.ChronicleScoreLineage,
+      LineageScoring.steps),
+    ChronicleWindows.step(PowerWindow.ChronicleSwearOath, SwearOath.steps))

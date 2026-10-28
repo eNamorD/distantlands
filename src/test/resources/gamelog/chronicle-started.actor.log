@@ -14,3 +14,5 @@
 30.0 decision 1 | [player:p1|p1] took the Beacon task
 38.0 decision 1 | [player:p2|p2] took the World task
 40.0 delta 1 | Moved 1 Imperial warband to [site:site:ancient-city|Ancient City]
+47.0 delta 1 | [player:p1|p1] scored [amount:3 lineage points]
+52.0 decision 1 | The Oathkeeper goal became Protection

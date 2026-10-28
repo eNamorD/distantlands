@@ -58,13 +58,8 @@ class ReliquaryAndRelicsSuite extends munit.FunSuite:
     val stored = deckRelics.take(4)
     val held = deckRelics.slice(4, 7)
     val started = throneStarted(holding(inReliquary(empire, stored), p1, held))
-    val walked = Iterator.iterate(started)(step =>
-      val decide = ChronicleWalk.parked(step.state).get
-      val next = accepted(rules.resolveWalker(step.state, decide.owner,
-        decide.decisionId, ChronicleWalk.plainestAnswer(decide)))
-      OathTransition(next.state, step.events ++ next.events))
-      .find(step => ChronicleWalk.parked(step.state)
-        .forall(_.decisionId == ReliquaryAndRelics.discardDecisionId)).get
+    val walked = ChronicleWalk.walkedTo(rules, started,
+      ReliquaryAndRelics.discardDecisionId)
     val parked = ChronicleWalk.parked(walked.state).get
     assertEquals(parked.owner, p1)
     parked.query match

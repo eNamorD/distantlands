@@ -55,6 +55,18 @@ object ChronicleWalk:
           DistributeAmount(slot.ref, slot.minimum)))
       case other => munit.Assertions.fail(s"no plain answer for $other")
 
+  /** `transition`, answering every other parked decision plainly, until
+    * the walk parks on `decisionId` or parks on nothing. */
+  def walkedTo(rules: OathRules, transition: OathTransition,
+      decisionId: String)(using munit.Location): OathTransition =
+    Iterator.iterate(transition)(step =>
+      val decide = parked(step.state).get
+      val next = accepted(rules.resolveWalker(step.state, decide.owner,
+        decide.decisionId, plainestAnswer(decide)))
+      OathTransition(next.state, step.events ++ next.events))
+      .find(step => parked(step.state).forall(_.decisionId == decisionId))
+      .get
+
   /** `transition`, then every parked decision answered with
     * `plainestAnswer`, until nothing is parked. */
   def answeringEverything(rules: OathRules, transition: OathTransition)(

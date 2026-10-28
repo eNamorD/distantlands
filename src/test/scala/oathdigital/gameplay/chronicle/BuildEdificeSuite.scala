@@ -40,13 +40,8 @@ class BuildEdificeSuite extends munit.FunSuite:
       : OathTransition =
     val started = accepted(rules.next(OathTransition(table.state, Vector.empty),
       TriggeredProcedureRef.ChronicleSun))
-    Iterator.iterate(started)(step =>
-      val decide = ChronicleWalk.parked(step.state).get
-      val next = accepted(rules.resolveWalker(step.state, decide.owner,
-        decide.decisionId, ChronicleWalk.plainestAnswer(decide)))
-      OathTransition(next.state, step.events ++ next.events))
-      .find(step => ChronicleWalk.parked(step.state)
-        .forall(_.decisionId == BuildEdifice.decisionId(suit))).get
+    ChronicleWalk.walkedTo(rules, started,
+      BuildEdifice.decisionId(suit))
 
   private def build(transition: OathTransition, suit: Suit,
       picked: Vector[DecisionOptionRef])(using munit.Location)
