@@ -11,7 +11,7 @@ class SuitGlyphSuite extends munit.FunSuite:
   private def glyphs(node: dom.Element): Vector[String] =
     Dom.all(node, ".token-glyph").map(_.getAttribute("class"))
 
-  test("the shared banks print each suit's symbol before its count"):
+  test("the shared banks print each suit's symbol before its count, and favor after it"):
     val value = TestProjections.actingProjection(players = Vector(
       GamePlayer("red", "Red", "Exile", PlayerColor.Red)))
       .copy(favorBanks = Vector(FavorBankState("arcane", 3),
@@ -20,7 +20,8 @@ class SuitGlyphSuite extends munit.FunSuite:
     val banks = Dom.all(panel, ".favor-bank")
     assertEquals(banks.map(_.textContent), Vector("Arcane: 3", "Nomad: 0"))
     assertEquals(banks.flatMap(glyphs),
-      Vector("token-glyph token-suit-arcane", "token-glyph token-suit-nomad"))
+      Vector("token-glyph token-suit-arcane", "token-glyph token-favor",
+        "token-glyph token-suit-nomad", "token-glyph token-favor"))
 
   test("a bank offered as a choice carries its symbol too"):
     val query = DecisionQueryState.ChooseOne(
