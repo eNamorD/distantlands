@@ -239,6 +239,17 @@ edifice deck. Build Edifice offers one only when its suit has none left in
 the deck, then returns them all to the deck (Chronicle ruling 9).
 _Avoid_: edifice discard pile, buried edifices
 
+**Gathering pile**:
+The denizens the World task deals into stacks: two faceup stacks and the
+facedown stack, which is always the last three cards.
+_Avoid_: World stacks, gathered denizens
+
+**Newly Dispossessed**:
+The six denizens the World task dispossessed this Chronicle, held apart from
+the older Dispossessed so the Beacon's return leaves them alone. The
+Chronicle record joins both.
+_Avoid_: new Dispossessed, World Dispossessed
+
 **Evolved Chronicle**:
 The Chronicle the Chronicle Phase ends with, recorded by the
 `ChronicleUpdated` operation. The next game starts from it.

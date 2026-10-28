@@ -56,6 +56,8 @@ Rulings given by the project owner for the Chronicle Phase ([chronicle.md](chron
 12. **Built edifice face.** An edifice placed by Build Edifice is placed intact (CR p. 37).
 13. **Lineage point gifts.** The winner may give lineage points only to players who were seated for the game, as for task recipients in ruling 1 (CR p. 37).
 14. **Shape Empire discard pile.** A denizen discarded in Shape Empire follows the general discard rule: it goes to the discard pile of the region after its site's region. The World task's Gather Denizens shuffles every discard pile together next, so the pile matters only to the Game Log (CR pp. 37-38).
+15. **Newcomers from a short suit.** If a suit the Beacon task holder chose still has too few cards after all older Dispossessed return to their suit sections, the holder draws what remains of that suit. The project owner notes this should not happen in play (CR p. 39).
+16. **Locks in the Chronicle.** Lock icons restrict play, not the Chronicle Phase. Gather Denizens takes every adviser, locked or not. Rules that name a protected card, such as Shape Empire's intact edifices, still protect it (CR pp. 37-38).
 
 ## Source relationship cautions
 
