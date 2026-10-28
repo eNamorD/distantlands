@@ -22,12 +22,19 @@ final case class StoredSite(site: SiteId, items: Vector[CardId] = Vector.empty):
  * (`worldDeck`, `relicDeck`) is kept but not meaningful between games --
  * setup shuffles both. `reliquary`, `foundations` and `lineages` are empty
  * or default for a first game.
+ *
+ * `era` and `oathkeeperGoal` are required; a first game starts at
+ * `EraState(20, Map.empty)` and `OathkeeperGoal.Supremacy`. The TTS codec has
+ * no era field, and gains an Oath digit in encoding version 3; Persistence
+ * decides the wire format.
  */
 final case class Chronicle(
     atlasBox: Vector[StoredSite],
     world: Vector[StoredSite] = Vector.empty,
     worldDeck: Vector[DenizenId],
     relicDeck: Vector[RelicId],
+    era: EraState,
+    oathkeeperGoal: OathkeeperGoal,
     dispossessed: Vector[DenizenId] = Vector.empty,
     reliquary: Vector[RelicId] = Vector.empty,
     foundations: Map[FoundationNumber, FoundationState] = Map.empty,

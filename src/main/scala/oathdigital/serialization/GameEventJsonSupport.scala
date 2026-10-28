@@ -145,6 +145,12 @@ private[serialization] trait GameEventJsonSupport:
       "world" -> ujson.Arr.from(chronicle.world.map(encodeStoredSite)),
       "worldDeck" -> stringArray(chronicle.worldDeck.map(_.value)),
       "relicDeck" -> stringArray(chronicle.relicDeck.map(_.value)),
+      "era" -> ujson.Obj(
+        "targetScore" -> chronicle.era.targetScore,
+        "lineageScores" -> ujson.Arr.from(chronicle.era.lineageScores.toVector
+          .sortBy(_._1.value).map { case (id, score) =>
+            ujson.Obj("lineageId" -> id.value, "score" -> score) })),
+      "oathkeeperGoal" -> chronicle.oathkeeperGoal.key,
       "dispossessed" -> stringArray(chronicle.dispossessed.map(_.value)),
       "reliquary" -> stringArray(chronicle.reliquary.map(_.value)),
       "foundations" -> ujson.Arr.from(chronicle.foundations.toVector
@@ -162,12 +168,34 @@ private[serialization] trait GameEventJsonSupport:
       case (entry, index) => decodeFoundationState(entry, s"$path.foundations[$index]")
     lineages <- traverse(value("lineages").arr.zipWithIndex.toVector):
       case (lineage, index) => decodeLineageState(lineage, s"$path.lineages[$index]")
-  yield Chronicle(atlasBox, world,
-    value("worldDeck").arr.toVector.map(v => DenizenId(v.str)),
-    value("relicDeck").arr.toVector.map(v => RelicId(v.str)),
-    value("dispossessed").arr.toVector.map(v => DenizenId(v.str)),
-    value("reliquary").arr.toVector.map(v => RelicId(v.str)),
-    foundations.toMap, lineages)
+    era <- requiredField(value.obj, "era", path)
+      .flatMap(decodeEra(_, s"$path.era"))
+    goal <- requiredField(value.obj, "oathkeeperGoal", path)
+      .flatMap(decodeOathkeeperGoal(_, s"$path.oathkeeperGoal"))
+  yield Chronicle(atlasBox = atlasBox, world = world,
+    worldDeck = value("worldDeck").arr.toVector.map(v => DenizenId(v.str)),
+    relicDeck = value("relicDeck").arr.toVector.map(v => RelicId(v.str)),
+    era = era, oathkeeperGoal = goal,
+    dispossessed = value("dispossessed").arr.toVector.map(v => DenizenId(v.str)),
+    reliquary = value("reliquary").arr.toVector.map(v => RelicId(v.str)),
+    foundations = foundations.toMap, lineages = lineages)
+
+  private def decodeEra(value: ujson.Value, path: String)
+      : Either[WireError, EraState] = for
+    target <- safeIntField(value.obj, "targetScore", path)
+    scores <- traverse(value("lineageScores").arr.zipWithIndex.toVector):
+      case (row, index) =>
+        safeIntField(row.obj, "score", s"$path.lineageScores[$index]")
+          .map(score => LineageId(row("lineageId").str) -> score)
+    era <- Either.cond(target > 0, EraState(target, scores.toMap),
+      InvalidValue(s"$path.targetScore", "must be positive"))
+  yield era
+
+  private def decodeOathkeeperGoal(value: ujson.Value, path: String)
+      : Either[WireError, OathkeeperGoal] =
+    val key = value.str
+    OathkeeperGoal.all.find(_.key == key).toRight(
+      InvalidValue(path, s"unknown Oathkeeper goal '$key'"))
 
   protected final def encodeSetupOrders(orders: SetupOrders): ujson.Value =
     ujson.Obj(

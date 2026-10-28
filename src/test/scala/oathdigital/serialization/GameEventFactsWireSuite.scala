@@ -46,6 +46,17 @@ class GameEventFactsWireSuite extends munit.FunSuite:
       chronicle.worldDeck.size)
     assertEquals(accepted(GameEventWire.decode(encoded)).event, event)
 
+  test("a GameStarted Chronicle round trips its era scores and Oathkeeper goal"):
+    val scored = chronicle.copy(
+      era = EraState(targetScore = 15,
+        lineageScores = Map(LineageId("l1") -> 4, LineageId("l9") -> 7)),
+      oathkeeperGoal = OathkeeperGoal.Devotion)
+    val event = OathEvent.GameStarted(scored, orders)
+    val encoded = accepted(GameEventWire.encodeEvent("goal", 0L, event))
+    assertEquals(encoded("payload")("chronicle")("oathkeeperGoal").str,
+      OathkeeperGoal.Devotion.key)
+    assertEquals(accepted(GameEventWire.decode(encoded)).event, event)
+
   test("GameStarted refuses an unknown stored item kind with a typed " +
       "WireError"):
     val event = OathEvent.GameStarted(chronicle, orders)
