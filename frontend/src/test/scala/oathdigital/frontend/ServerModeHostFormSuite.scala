@@ -16,11 +16,8 @@ import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
   * game, its add-player menu and validation, and the seat links it shows.
   */
 class ServerModeHostFormSuite extends FunSuite:
-  private val seatLinksResponse = """{"gameId":"host-game","seats":[""" +
-    """{"playerId":"Red","url":"https://oath.test/s/red-code"},""" +
-    """{"playerId":"Blue","url":"https://oath.test/s/blue-code"}],""" +
-    """"chronicle":{"json":"{}","digest":"ab12","summary":""" +
-    """{"name":"Chronicle 2026-10-29","game":1,"eraTarget":20,"scores":[]}}}"""
+  private val seatLinksResponse =
+    ChronicleFixtures.seatLinksResponse("Chronicle 2026-10-29")
 
   /** A `ScriptedTransport` that records into `requests` and answers every
     * request with `status` and `body`.
@@ -66,7 +63,9 @@ class ServerModeHostFormSuite extends FunSuite:
   private def startHostForm(browser: TestBrowser,
       requests: ArrayBuffer[RecordedRequest] = ArrayBuffer.empty): Unit =
     Main.start(browser.mount, "/", trustedAlpha = true,
-      withEmptyLogPage(hostTransport(requests)))
+      withEmptyLogPage(hostTransport(requests)),
+      devices = ChronicleFixtures.devices())
+    browser.click("new-chronicle")
 
   test("trusted root posts host form and displays ordered copyable " +
       "seat links"):
@@ -203,7 +202,9 @@ class ServerModeHostFormSuite extends FunSuite:
       Main.start(browser.mount, "/", trustedAlpha = true,
         withEmptyLogPage(hostTransport(requests, 409,
           """{"error":"game-already-exists",""" +
-            """"message":"Game already exists"}""")))
+            """"message":"Game already exists"}""")),
+        devices = ChronicleFixtures.devices())
+      browser.click("new-chronicle")
       browser.click("create-trusted-game")
       browser.settle.flatMap { _ =>
         assert(browser.text.contains("could not assign a new game ID"),
@@ -224,7 +225,9 @@ class ServerModeHostFormSuite extends FunSuite:
       val requests = ArrayBuffer.empty[RecordedRequest]
       val opened = ArrayBuffer.empty[String]
       Main.start(browser.mount, "/", trustedAlpha = false,
-        withEmptyLogPage(hostTransport(requests)), navigate = opened += _)
+        withEmptyLogPage(hostTransport(requests)), navigate = opened += _,
+        devices = ChronicleFixtures.devices())
+      browser.click("new-chronicle")
       assertEquals(requests.size, 0)
       assertEquals(hostColors(browser), Vector("red", "blue"))
       assert(!browser.text.contains("assigned link"))

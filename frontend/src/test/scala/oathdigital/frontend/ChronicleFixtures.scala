@@ -3,7 +3,7 @@ package oathdigital.frontend
 import oathdigital.protocol.{ChronicleConvertRequest,
   ChronicleConvertRequestCodec, ChronicleConvertResponse,
   ChronicleConvertResponseCodec, ChronicleEntry, ChronicleScore,
-  ChronicleSummary}
+  ChronicleSummary, ChronicleEntryCodec}
 import scala.collection.mutable.ArrayBuffer
 import scala.concurrent.Future
 
@@ -58,3 +58,14 @@ private[frontend] object ChronicleFixtures:
       files: FakeChronicleFiles = new FakeChronicleFiles(),
       history: FakePageHistory = new FakePageHistory()): ChronicleDevices =
     ChronicleDevices(storage, files, history, clock)
+
+  /** `POST /games`'s answer: game "host-game" with seats Red and Blue, and
+    * the starting Chronicle named `name`, with digest "d-start". */
+  def seatLinksResponse(name: String): String =
+    ujson.write(ujson.Obj("gameId" -> "host-game",
+      "seats" -> ujson.Arr(
+        ujson.Obj("playerId" -> "Red", "url" -> "https://oath.test/s/red-code"),
+        ujson.Obj("playerId" -> "Blue",
+          "url" -> "https://oath.test/s/blue-code")),
+      "chronicle" -> ChronicleEntryCodec.encodeValue(
+        entry(name, "d-start"))))

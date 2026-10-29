@@ -7,7 +7,10 @@ import scala.scalajs.js
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import ServerUiSupport._
 
-/** The game-creation page for both runtime modes.
+/** Player selection at `/new-game` for both runtime modes (Chronicle
+  * browsing design, "Player selection page"): it starts a game from a new
+  * Chronicle, named here, or from the loaded one, and saves a new Chronicle
+  * once its game is created.
   *
   * Both modes post the same trusted creation request, so games get the same
   * generated setup. Trusted mode shows the seat links, which live only in this
@@ -22,7 +25,7 @@ private[frontend] object TrustedHostUi:
 
   def defaultPlayerId(color: PlayerColor): String = name(color)
 
-  /** "Chronicle 2026-10-29", today's date, until slice 2's name field. */
+  /** "Chronicle 2026-10-29", today's date: the name field's default. */
   def defaultChronicleName(): String =
     "Chronicle " + new js.Date().toISOString().take(10)
   private def name(color: PlayerColor): String = color.key.capitalize
@@ -34,8 +37,13 @@ private[frontend] object TrustedHostUi:
   private final case class PlayerRow(color: PlayerColor, node: dom.Element, input: dom.html.Input)
 
   def start(mount: dom.Element, transport: JsonTransport,
+      chronicle: HostChronicle, shelf: ChronicleShelf, back: () => Unit,
       openCreated: Option[TrustedGameCreateResponse => Unit] = None): Unit =
     mount.textContent = ""
+    val backLink = button("Back", "chronicle-back")
+    backLink.setAttribute("type", "button")
+    backLink.onclick = event => { event.preventDefault(); back() }
+    mount.appendChild(backLink)
     mount.appendChild(text("h1", "", "Create an Oath Digital game"))
     mount.appendChild(text("p", "", openCreated match {
       case None => "Add one row per player, then send each player " +
@@ -47,6 +55,21 @@ private[frontend] object TrustedHostUi:
         "The new game opens as the first listed player; switch players from the toolbar."
     }))
     val form = element("form", "trusted-host-form")
+    val nameField = chronicle match
+      case HostChronicle.New =>
+        val default = defaultChronicleName()
+        val field = textField("chronicle-name", "Chronicle name",
+          if shelf.find(default).isEmpty then default
+          else shelf.uniqueName(default))
+        val label = element("label", "host-field")
+        label.appendChild(text("span", "", "Chronicle name"))
+        label.appendChild(field)
+        form.appendChild(label)
+        Some(field)
+      case HostChronicle.Continue(saved) =>
+        form.appendChild(text("p", "chronicle-continued",
+          s"Chronicle: ${saved.name}"))
+        None
     val list = element("ol", "host-players")
     list.setAttribute("aria-label", "Players")
     form.appendChild(list)
@@ -151,44 +174,56 @@ private[frontend] object TrustedHostUi:
       if create.disabled then return
       val ids = rows.map(_.input.value.trim)
       val problem =
+        nameField.flatMap(field => shelf.nameProblem(field.value)).orElse(
         if rows.size < MinPlayers then Some(s"Need at least $MinPlayers players.")
         else rows.zip(ids).collectFirst {
           case (row, id) if !validPlayerId(id) =>
             s"${name(row.color)} player ID must start with a letter or digit and use only " +
               "letters, digits, '.', '_', ':' or '-' (up to 128 characters)."
         }.orElse(ids.diff(ids.distinct).headOption.map(id =>
-          s"Player ID \"$id\" is used twice. Give each player a different ID."))
+          s"Player ID \"$id\" is used twice. Give each player a different ID.")))
       problem match
         case Some(message) => status.textContent = message; return
         case None => ()
       val participants = rows.zip(ids).map { case (row, id) =>
         BootstrapParticipantRequest(id, row.color)
       }
-      val request = TrustedGameCreateRequest(participants,
-        ChronicleRequest.New(TrustedHostUi.defaultChronicleName()))
+      val request = TrustedGameCreateRequest(participants, chronicle match
+        case HostChronicle.New =>
+          ChronicleRequest.New(nameField.fold("")(_.value.trim))
+        case HostChronicle.Continue(saved) =>
+          ChronicleRequest.Saved(saved.entry.json))
       create.disabled = true
       status.textContent = "Creating game…"
       transport.request("POST", "/games", Some(TrustedGameCreateRequestCodec.encode(request)))
         .foreach { result =>
-          val decoded = result.flatMap { response =>
+          val decoded = result.left.map(_.message).flatMap { response =>
             if response.status >= 200 && response.status < 300 then
               TrustedGameCreateResponseCodec.decode(response.body).left.map(error =>
-                GameClientFailure.DecodeFailure(error.path, error.message))
+                GameClientFailure.DecodeFailure(error.path, error.message).message)
             // The generic reading of a 409 is a stale table position; here it
             // means every game ID the server drew was taken.
             else if response.status == 409 then
               Left(GameClientFailure.HttpFailure(409, "duplicate-game",
-                "The server could not assign a new game ID. Select Create game again."))
-            else Left(GameJson.responseFailure(response))
+                "The server could not assign a new game ID. Select Create game again.")
+                .message)
+            // Game start's refusal of the Chronicle, in its own words.
+            else if response.status == 422 then Left(ChronicleClient.reason(response))
+            else Left(GameJson.responseFailure(response).message)
           }
+          val unsaved = decoded.toOption.flatMap(created => chronicle match
+            case HostChronicle.New => shelf.put(created.chronicle).left.toOption
+            case HostChronicle.Continue(_) => None)
           decoded match
-            case Left(error) => create.disabled = false; status.textContent = error.message
+            case Left(message) => create.disabled = false; status.textContent = message
             case Right(created) if openCreated.nonEmpty =>
               status.textContent = "Game created. Opening it…"
               openCreated.foreach(_(created))
             case Right(created) =>
               mount.removeChild(form)
-              status.textContent = "Game created. Copy and save each assigned seat link."
+              status.textContent =
+                "Game created. Copy and save each assigned seat link." +
+                  unsaved.fold("")(reason => s" $reason")
               mount.appendChild(text("p", "created-game-id", s"Game ID: ${created.gameId}"))
               val links = element("ol", "seat-links")
               created.seats.foreach { seat =>

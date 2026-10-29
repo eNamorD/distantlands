@@ -16,16 +16,19 @@ object Main:
 
   private[frontend] def start(mount: dom.Element, pathname: String,
       trustedAlpha: Boolean, transport: JsonTransport,
-      navigate: String => Unit = url => dom.window.location.assign(url)): Unit =
+      navigate: String => Unit = url => dom.window.location.assign(url),
+      devices: ChronicleDevices = ChronicleDevices.browser): Unit =
+    val startPage = pathname == "/" || pathname == ChroniclePages.NewGamePath
     ServerUiSupport.canonicalGameId(pathname) match
       case Some(gameId) =>
         ServerModeUi.start(mount, new TrustedHttpGameClient(transport), Some(gameId))
-      case None if trustedAlpha && pathname == "/" => TrustedHostUi.start(mount, transport)
+      case None if trustedAlpha && startPage =>
+        ChroniclePages.start(mount, pathname, transport, devices)
       case None if trustedAlpha => mount.textContent = "Open your assigned seat link."
       case None if ServerUiSupport.queryParameter("gameId").isEmpty =>
         // Development games are created exactly like trusted ones, then opened
         // in the development table as the first listed player.
-        TrustedHostUi.start(mount, transport, Some(created =>
+        ChroniclePages.start(mount, pathname, transport, devices, Some(created =>
           navigate(ServerUiSupport.sessionUrl(created.gameId, created.seats.head.playerId))))
       case None => ServerModeUi.start(mount, new HttpGameClient(transport),
         startOver = () => navigate(DevelopmentStartUrl))

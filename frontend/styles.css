@@ -236,6 +236,9 @@ span.color-swatch { display: inline-block; width: 1.25rem; height: 1.25rem; padd
 .chronicle-row-name { font-weight: 700; }
 .chronicle-row-details { color: var(--brass); flex: 1 1 14rem; }
 .chronicle-row-controls { display: flex; gap: 0.5rem; align-items: center; }
+.chronicle-back { margin: 0 0 1rem; }
+.chronicle-name { font: inherit; padding: 0.5rem; }
+.chronicle-continued { margin: 0; font-weight: 700; }
 
 #app {
   max-width: 1280px;
