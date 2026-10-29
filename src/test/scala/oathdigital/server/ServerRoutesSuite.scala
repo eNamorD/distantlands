@@ -18,7 +18,8 @@ class ServerRoutesSuite extends munit.FunSuite:
   /** A two-player create-game request, Red and Blue. */
   private val createGameBody = """{"participants":[""" +
     """{"playerId":"Red","color":"red"},""" +
-    """{"playerId":"Blue","color":"blue"}]}"""
+    """{"playerId":"Blue","color":"blue"}],""" +
+    """"chronicle":{"kind":"new","name":"Routes Chronicle"}}"""
 
   private def openRuntime(label: String): ServerRuntime =
     accepted(ServerRuntime.open(

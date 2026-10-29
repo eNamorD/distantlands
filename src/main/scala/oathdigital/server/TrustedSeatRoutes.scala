@@ -38,6 +38,8 @@ final class TrustedSeatRoutes(
               provisioning.create(request, publicBaseUrl.toString) match
                 case Right(created) => json(StatusCodes.Created, TrustedGameCreateResponseCodec.encode(created))
                 case Left(TrustedGameFailure.InvalidRequest) => malformed
+                case Left(TrustedGameFailure.Refused(reason)) => error(
+                  StatusCodes.UnprocessableContent, "chronicle-refused", reason)
                 case Left(TrustedGameFailure.DuplicateGame) => error(StatusCodes.Conflict,
                   "duplicate-game", "the game already exists")
                 case Left(_) => internalError()

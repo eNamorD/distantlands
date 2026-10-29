@@ -8,6 +8,7 @@ import java.nio.file.{Files, Path}
 import scala.jdk.CollectionConverters._
 import oathdigital.application._
 import oathdigital.application.chronicle.ChronicleEntries
+import oathdigital.gameplay.chronicle.EvolvedChronicleFixture
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.gameplay.setup.FirstGameSetupFixture.chronicle
 import oathdigital.gameplay.setup.SetupProcedure
@@ -131,6 +132,18 @@ class TrustedSeatRoutesSuite extends munit.FunSuite:
       assert(refused.body().contains("invalid-chronicle"), refused.body())
       val malformed = send(server, "/chronicles/convert", Some("""{"x":1}"""))
       assertEquals(malformed.statusCode(), 400, malformed.body())
+    }
+
+  test("creation refuses an evolved Chronicle with game start's reason"):
+    withServer() { (server, _) =>
+      val body = TrustedGameCreateRequestCodec.encode(TrustedGameCreateRequest(
+        Vector(BootstrapParticipantRequest("p1", PlayerColor.Red),
+          BootstrapParticipantRequest("p2", PlayerColor.Blue)),
+        ChronicleRequest.Saved(conversionEntries.entry(
+          EvolvedChronicleFixture.record).json)))
+      val response = send(server, "/games", Some(body))
+      assertEquals(response.statusCode(), 422, response.body())
+      assert(response.body().contains("chronicle-refused"), response.body())
     }
 
   test("creation returns ordered public links"):
@@ -485,7 +498,8 @@ class TrustedSeatRoutesSuite extends munit.FunSuite:
   /** A two-seat create request, p1 Red and p2 Blue. */
   private val requestBody: String =
     TrustedGameCreateRequestCodec.encode(TrustedGameCreateRequest(Vector(BootstrapParticipantRequest("p1", PlayerColor.Red),
-      BootstrapParticipantRequest("p2", PlayerColor.Blue))))
+      BootstrapParticipantRequest("p2", PlayerColor.Blue)),
+      ChronicleRequest.New("Route Chronicle")))
 
   /** `requestBody`, with `gameId` queued as the ID its creation receives. */
   private def creationBody(gameId: String): String =

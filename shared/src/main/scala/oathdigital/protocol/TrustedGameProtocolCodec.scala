@@ -45,11 +45,16 @@ object TrustedGameCreateRequestCodec:
 
   def encode(request: TrustedGameCreateRequest): String = ujson.write(ujson.Obj(
     "participants" -> ujson.Arr.from(request.participants.map(p => ujson.Obj(
-      "playerId" -> p.playerId, "color" -> p.color.key)))))
+      "playerId" -> p.playerId, "color" -> p.color.key))),
+    "chronicle" -> (request.chronicle match
+      case ChronicleRequest.New(name) =>
+        ujson.Obj("kind" -> "new", "name" -> name)
+      case ChronicleRequest.Saved(json) =>
+        ujson.Obj("kind" -> "saved", "json" -> json))))
 
   def decode(json: String): Either[ProtocolDecodeFailure, TrustedGameCreateRequest] =
     parse(json) { raw => for
-      root <- exact(raw, Vector("participants"), "$")
+      root <- exact(raw, Vector("participants", "chronicle"), "$")
       participants <- array(root("participants"), "$.participants") { (raw, path) => for
         obj <- exact(raw, Vector("playerId", "color"), path)
         player <- identifier(obj, "playerId", path)
@@ -57,10 +62,19 @@ object TrustedGameCreateRequestCodec:
           oathdigital.model.PlayerColor.fromKey(key).toRight(
             InvalidValue(s"$path.color", s"unknown player color '$key'")))
       yield BootstrapParticipantRequest(player, color) }
+      chronicle <- root("chronicle") match
+        case obj: ujson.Obj if obj.value.get("kind").contains(ujson.Str("new")) =>
+          exact(obj, Vector("kind", "name"), "$.chronicle")
+            .flatMap(text(_, "name", "$.chronicle")).map(ChronicleRequest.New(_))
+        case obj: ujson.Obj if obj.value.get("kind").contains(ujson.Str("saved")) =>
+          exact(obj, Vector("kind", "json"), "$.chronicle")
+            .flatMap(text(_, "json", "$.chronicle")).map(ChronicleRequest.Saved(_))
+        case _ => Left(InvalidValue("$.chronicle.kind",
+          "expected \"new\" or \"saved\""))
       _ <- Either.cond(participants.nonEmpty &&
         participants.map(_.playerId).distinct.size == participants.size, (),
         InvalidValue("$.participants", "requires unique player IDs and at least one participant"))
-    yield TrustedGameCreateRequest(participants) }
+    yield TrustedGameCreateRequest(participants, chronicle) }
 
 object TrustedGameCreateResponseCodec:
   import TrustedGameCodecFields._
@@ -68,11 +82,12 @@ object TrustedGameCreateResponseCodec:
   def encode(response: TrustedGameCreateResponse): String = ujson.write(ujson.Obj(
     "gameId" -> response.gameId,
     "seats" -> ujson.Arr.from(response.seats.map(seat => ujson.Obj(
-      "playerId" -> seat.playerId, "url" -> seat.url)))))
+      "playerId" -> seat.playerId, "url" -> seat.url))),
+    "chronicle" -> ChronicleEntryCodec.encodeValue(response.chronicle)))
 
   def decode(json: String): Either[ProtocolDecodeFailure, TrustedGameCreateResponse] =
     parse(json) { raw => for
-      root <- exact(raw, Vector("gameId", "seats"), "$")
+      root <- exact(raw, Vector("gameId", "seats", "chronicle"), "$")
       game <- identifier(root, "gameId", "$")
       seats <- array(root("seats"), "$.seats") { (raw, path) => for
         obj <- exact(raw, Vector("playerId", "url"), path)
@@ -81,4 +96,6 @@ object TrustedGameCreateResponseCodec:
       yield TrustedSeatLink(player, url) }
       _ <- Either.cond(seats.nonEmpty && seats.map(_.playerId).distinct.size == seats.size,
         (), InvalidValue("$.seats", "requires unique player IDs and at least one seat"))
-    yield TrustedGameCreateResponse(game, seats) }
+      chronicle <- ChronicleEntryCodec.decodeValue(root("chronicle"),
+        "$.chronicle")
+    yield TrustedGameCreateResponse(game, seats, chronicle) }

@@ -5,14 +5,20 @@ import java.security.SecureRandom
 import scala.util.Try
 import scala.util.control.NonFatal
 import oathdigital.application._
+import oathdigital.application.chronicle.ChronicleConversion
+import oathdigital.model.OathViolation
 import oathdigital.protocol._
 
-enum TrustedGameFailure { case InvalidRequest, DuplicateGame, CodeCollision, StorageFailure }
+enum TrustedGameFailure:
+  case InvalidRequest, DuplicateGame, CodeCollision, StorageFailure
+  /** The request's Chronicle cannot start a game; the reason is shown. */
+  case Refused(reason: String)
 
 final class TrustedGameProvisioning(
     service: GameApplicationService,
     planFactory: FirstGamePlanFactory,
     store: TrustedGameStore,
+    chronicles: ChronicleConversion,
     generateCode: () => SeatCode = () => TrustedGameProvisioning.generateCode(),
     nowMillis: () => Long = () => System.currentTimeMillis(),
     generateGameId: () => String = () => TrustedGameProvisioning.generateGameId()
@@ -26,15 +32,21 @@ final class TrustedGameProvisioning(
         valid <- TrustedGameCreateRequestCodec.decode(TrustedGameCreateRequestCodec.encode(request))
           .left.map(_ => InvalidRequest)
         origin <- validatedOrigin(publicBaseUrl)
+        choice <- valid.chronicle match
+          case ChronicleRequest.New(name) => Right(ChronicleChoice.New(name.trim))
+          case ChronicleRequest.Saved(json) =>
+            chronicles.decode(json).map(ChronicleChoice.Saved(_)).left.map(Refused(_))
         // The plan factory shuffles the seating and picks the first player,
         // so the first participant is only a placeholder.
         config = FirstGameBootstrapMapper.map(FirstGameBootstrapRequest(
           0L, valid.participants, valid.participants.head.playerId))
-        plan <- planFactory.build(config, ChronicleChoice.New("Chronicle")).left.map(_ => InvalidRequest)
+        plan <- planFactory.build(config, choice).left.map(failure =>
+          Refused(failure.message))
         placed <- place(valid.participants, plan, None, 1)
         (gameId, codes) = placed
       yield TrustedGameCreateResponse(gameId, codes.map { case (player, code) =>
-        TrustedSeatLink(player, s"$origin/s/${code.raw}") })
+        TrustedSeatLink(player, s"$origin/s/${code.raw}") },
+        chronicles.entry(plan.chronicle))
     catch { case NonFatal(_) => Left(StorageFailure) }
 
   /** Stores the game under a freshly drawn ID. A taken ID is drawn again, up
@@ -47,6 +59,8 @@ final class TrustedGameProvisioning(
     for
       prepared <- service.prepareBootstrap(gameId, plan.chronicle,
         plan.resolvedConfig).left.map:
+        case GameApplicationError.CommandRejected(
+            OathViolation.UnsupportedChronicle(reason)) => Refused(reason)
         case _: GameApplicationError.CommandRejected => InvalidRequest
         case _ => StorageFailure
       codes <- seats.fold(generateSeats(participants))(Right(_))

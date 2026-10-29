@@ -52,6 +52,7 @@ object ServerRuntime:
         )
       val authorization =
         new MembershipAuthorizationService(database.identities)
+      val chronicles = new ChronicleConversion(catalog)
       new ServerRuntime(
         new GameServerGateway(
           firstGameService,
@@ -67,9 +68,9 @@ object ServerRuntime:
         authorization,
         database.identities,
         new TrustedGameProvisioning(firstGameService, generatedPlanFactory,
-          database.trustedGames, generateGameId = gameIds),
+          database.trustedGames, chronicles, generateGameId = gameIds),
         new TrustedGameGateway(firstGameService, projector),
-        new ChronicleConversion(catalog),
+        chronicles,
         database
       )
     }

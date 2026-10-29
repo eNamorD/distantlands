@@ -5,6 +5,8 @@ import oathdigital.model.{PlayerColor, TriggeredProcedureRef}
 import java.nio.file.{Files, Path}
 import java.sql.{Connection, DriverManager}
 import oathdigital.application._
+import oathdigital.application.chronicle.{ChronicleConversion, ChronicleEntries}
+import oathdigital.gameplay.chronicle.EvolvedChronicleFixture
 import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.{catalog, chronicle,
   orders, participants}
@@ -25,7 +27,8 @@ class TrustedGameProvisioningSuite extends munit.FunSuite:
   private val gameId = "trusted-game"
   private val request = TrustedGameCreateRequest(Vector(
     BootstrapParticipantRequest("p1", PlayerColor.Red),
-    BootstrapParticipantRequest("p2", PlayerColor.Blue)))
+    BootstrapParticipantRequest("p2", PlayerColor.Blue)),
+    ChronicleRequest.New("Ashen Crown"))
   private val codes = Vector("AAAAAAAAAAAAAAAAAAAAAA", "AQEBAQEBAQEBAQEBAQEBAQ",
     "AgICAgICAgICAgICAgICAg", "AwMDAwMDAwMDAwMDAwMDAw")
     .map(raw => accepted(SeatCode.parse(raw)))
@@ -40,7 +43,8 @@ class TrustedGameProvisioningSuite extends munit.FunSuite:
   private def provision(owner: HsqldbDatabaseOwner, generate: () => SeatCode,
       gameIds: () => String = () => gameId) =
     new TrustedGameProvisioning(new GameApplicationService(catalog, owner.eventStreams),
-      new GeneratedFirstGamePlanFactory(catalog), owner.trustedGames, generate, () => 1234L,
+      new GeneratedFirstGamePlanFactory(catalog), owner.trustedGames,
+      new ChronicleConversion(catalog), generate, () => 1234L,
       gameIds)
 
   /** How many rows `gameId` has in each table a trusted game writes. */
@@ -70,7 +74,8 @@ class TrustedGameProvisioningSuite extends munit.FunSuite:
     withDatabase { (owner, connection) =>
       val generated = codes.iterator
       val response = provision(owner, () => generated.next()).create(request, "https://games.example.test")
-      assertEquals(response, Right(TrustedGameCreateResponse("trusted-game", Vector(
+      assertEquals(response.map(created => (created.gameId, created.seats)),
+        Right(("trusted-game", Vector(
         TrustedSeatLink("p1", "https://games.example.test/s/AAAAAAAAAAAAAAAAAAAAAA"),
         TrustedSeatLink("p2", "https://games.example.test/s/AQEBAQEBAQEBAQEBAQEBAQ")))))
       // GameStarted plus the WalkerParked fact from Setup's immediate first
@@ -177,6 +182,59 @@ class TrustedGameProvisioningSuite extends munit.FunSuite:
         "ftp://games.test", "https://games.test/#secret").foreach { origin =>
         assertEquals(service.create(request, origin), Left(TrustedGameFailure.InvalidRequest))
       }
+      assertEquals(rows(connection, gameId), nothingStored)
+    }
+
+  test("a new Chronicle starts the game under its name, and the response " +
+      "carries its entry"):
+    withDatabase { (owner, _) =>
+      val generated = codes.iterator
+      val created = accepted(provision(owner, () => generated.next())
+        .create(request, "http://127.0.0.1:8080"))
+      assertEquals(created.chronicle.summary.name, "Ashen Crown")
+      assertEquals(created.chronicle.summary.game, Some(1))
+      assertEquals(created.chronicle.digest,
+        ChronicleEntries.digest(created.chronicle.json))
+    }
+
+  test("a new name is trimmed, and a saved first-game Chronicle starts " +
+      "the game as it is"):
+    withDatabase { (owner, _) =>
+      val generated = codes.iterator
+      val saved = ChronicleEntries().entry(chronicle)
+      val padded = accepted(provision(owner, () => generated.next(),
+        () => "padded").create(request.copy(chronicle =
+        ChronicleRequest.New("  Ashen Crown ")), "http://127.0.0.1:8080"))
+      assertEquals(padded.chronicle.summary.name, "Ashen Crown")
+      val created = accepted(provision(owner, () => generated.next()).create(
+        request.copy(chronicle = ChronicleRequest.Saved(saved.json)),
+        "http://127.0.0.1:8080"))
+      assertEquals(created.chronicle, saved)
+    }
+
+  test("an evolved Chronicle is refused with game start's reason, and " +
+      "unreadable JSON and an overlong name with theirs, storing nothing"):
+    withDatabase { (owner, connection) =>
+      val service = provision(owner, () => codes.head)
+      val evolved = ChronicleEntries().entry(EvolvedChronicleFixture.record)
+      assertEquals(service.create(
+        request.copy(chronicle = ChronicleRequest.Saved(evolved.json)),
+        "http://127.0.0.1:8080"),
+        Left(TrustedGameFailure.Refused("a non-empty world requires the Empire")))
+      service.create(request.copy(chronicle = ChronicleRequest.Saved("{")),
+        "http://127.0.0.1:8080") match
+        case Left(TrustedGameFailure.Refused(reason)) =>
+          assert(reason.startsWith("not a Chronicle file"), reason)
+        case other => fail(other.toString)
+      assertEquals(service.create(
+        request.copy(chronicle = ChronicleRequest.New("a" * 81)),
+        "http://127.0.0.1:8080"),
+        Left(TrustedGameFailure.Refused(
+          "a Chronicle name has at most 80 characters")))
+      // The protocol already refuses a blank name.
+      assertEquals(service.create(
+        request.copy(chronicle = ChronicleRequest.New("   ")),
+        "http://127.0.0.1:8080"), Left(TrustedGameFailure.InvalidRequest))
       assertEquals(rows(connection, gameId), nothingStored)
     }
 

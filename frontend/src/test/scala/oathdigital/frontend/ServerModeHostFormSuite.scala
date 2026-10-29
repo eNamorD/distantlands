@@ -2,7 +2,7 @@ package oathdigital.frontend
 
 import oathdigital.frontend.ServerModeFixtures.withEmptyLogPage
 import oathdigital.model.PlayerColor
-import oathdigital.protocol.{BootstrapParticipantRequest,
+import oathdigital.protocol.{BootstrapParticipantRequest, ChronicleRequest,
   TrustedGameCreateRequestCodec}
 import oathdigital.testkit.Unwrap.{accepted, as, present}
 
@@ -18,7 +18,9 @@ import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 class ServerModeHostFormSuite extends FunSuite:
   private val seatLinksResponse = """{"gameId":"host-game","seats":[""" +
     """{"playerId":"Red","url":"https://oath.test/s/red-code"},""" +
-    """{"playerId":"Blue","url":"https://oath.test/s/blue-code"}]}"""
+    """{"playerId":"Blue","url":"https://oath.test/s/blue-code"}],""" +
+    """"chronicle":{"json":"{}","digest":"ab12","summary":""" +
+    """{"name":"Chronicle 2026-10-29","game":1,"eraTarget":20,"scores":[]}}}"""
 
   /** A `ScriptedTransport` that records into `requests` and answers every
     * request with `status` and `body`.
@@ -85,8 +87,13 @@ class ServerModeHostFormSuite extends FunSuite:
           Vector("POST" -> "/games"))
         // The server generates the game ID and derives each lineage.
         val body = present(requests.head.body, "a request body")
-        assertEquals(ujson.read(body).obj.keySet, Set("participants"))
+        assertEquals(ujson.read(body).obj.keySet,
+          Set("participants", "chronicle"))
         val request = decodedHostRequests(requests).head
+        request.chronicle match
+          case ChronicleRequest.New(name) =>
+            assert(name.startsWith("Chronicle "), name)
+          case other => fail(other.toString)
         assertEquals(request.participants, Vector(
           BootstrapParticipantRequest("Red", PlayerColor.Red),
           BootstrapParticipantRequest("Blue", PlayerColor.Blue)))
