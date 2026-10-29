@@ -1,11 +1,13 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower}
 import oathdigital.model._
 
 object RainBootsCard extends Denizen(DenizenId("14"), "Rain Boots", Suit.Nomad):
   val power = PrintedPower(PowerId("denizen.rain-boots"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.AttackPlan),
     text = "Ignore all your enemy's rolls of single shields [shield]. " +
       "At end, discard Rain Boots.")
   val powers: Vector[PrintedPower] = Vector(power)

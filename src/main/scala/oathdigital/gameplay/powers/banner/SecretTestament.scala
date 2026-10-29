@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.banner
 
-import oathdigital.catalog.{PrintedPower, Relic}
+import oathdigital.catalog.{ModifierMark, PrintedPower, Relic}
 import oathdigital.gameplay.actions.BannerRules
 import oathdigital.gameplay.actions.challenge.ChallengeProcedure
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
@@ -11,6 +11,7 @@ import oathdigital.model._
 object SecretTestamentCard extends Relic(RelicId("R38"), "Secret Testament", value = 82, defense = 2):
   val power = PrintedPower(PowerId("relic.secret-testament"),
     persistent = true, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Challenge)),
     text = "When an enemy takes a banner from you, take all [favor] or " +
       "[secret] on the banner.")
   val powers: Vector[PrintedPower] = Vector(power)

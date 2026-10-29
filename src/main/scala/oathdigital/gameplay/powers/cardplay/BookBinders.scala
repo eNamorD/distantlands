@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.cardplay
 
 import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
-  PrintedPower}
+  ModifierMark, PrintedPower}
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution, PowerCtx, Transform}
 import oathdigital.gameplay.powers.CatalogResolution
 import oathdigital.gameplay.{NoteSupport, PowerAccess}
@@ -10,6 +10,7 @@ import oathdigital.model._
 object BookBindersCard extends Denizen(DenizenId("140"), "Book Binders", Suit.Hearth) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.book-binders"),
     persistent = true, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Search)),
     text = "After another player plays a Vision faceup, you gain " +
       "[favor] [favor] from any one favor bank.")
   val powers: Vector[PrintedPower] = Vector(power)

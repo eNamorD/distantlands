@@ -1,7 +1,8 @@
 package oathdigital.catalog.holding
 
-import oathdigital.catalog.{Edifice, EdificeFace, Locked, PrintedPower}
-import oathdigital.model.{Cost, EdificeId, PowerId, Suit}
+import oathdigital.catalog.{Edifice, EdificeFace, Locked, ModifierMark,
+  PrintedPower}
+import oathdigital.model.{Cost, EdificeId, MajorActionType, PowerId, Suit}
 
 // Generated from the retired runtime JSON (card classes slice 1).
 // Hand-edited from here on; a card moves out when it is implemented.
@@ -10,6 +11,7 @@ object HallOfDebateCard extends Edifice(EdificeId("E01"), Suit.Discord):
   object intact extends EdificeFace("Hall of Debate") with Locked:
     val power = PrintedPower(PowerId("edifice.e01.intact"),
       persistent = true, cost = Cost.free,
+      modifier = Some(ModifierMark.Action(MajorActionType.Campaign)),
       text = "If this card's ruler holds the People's Favor, their " +
         "enemies **cannot** target the People's Favor. If ruled by " +
         "Empire, all Imperials have this power.")
@@ -27,11 +29,13 @@ object GrandCanalCard extends Edifice(EdificeId("E03"), Suit.Discord):
   object intact extends EdificeFace("Grand Canal") with Locked:
     val power = PrintedPower(PowerId("edifice.e03.intact"),
       persistent = true, cost = Cost.free,
+      modifier = Some(ModifierMark.Action(MajorActionType.Travel)),
       text = "Act as if this site is a Coast along with its other powers.")
     val powers: Vector[PrintedPower] = Vector(power)
   object ruined extends EdificeFace("Lost Lagoon"):
     val power = PrintedPower(PowerId("edifice.e03.ruined"),
       persistent = true, cost = Cost.free,
+      modifier = Some(ModifierMark.Action(MajorActionType.Travel)),
       text = "Act as if this site is an Island along with its other " +
         "powers.")
     val powers: Vector[PrintedPower] = Vector(power)
@@ -178,12 +182,14 @@ object RelicPatrolsCard extends Edifice(EdificeId("E17"), Suit.Order):
   object intact extends EdificeFace("Relic Patrols") with Locked:
     val power = PrintedPower(PowerId("edifice.e17.intact"),
       persistent = true, cost = Cost.free,
+      modifier = Some(ModifierMark.Action(MajorActionType.Recover)),
       text = "Enemies of this card's ruler **cannot** recover relics at " +
         "sites ruled by this card's ruler.")
     val powers: Vector[PrintedPower] = Vector(power)
   object ruined extends EdificeFace("Bandit Patrols"):
     val power = PrintedPower(PowerId("edifice.e17.ruined"),
       persistent = true, cost = Cost.free,
+      modifier = Some(ModifierMark.Action(MajorActionType.Recover)),
       text = "Enemies of this card's ruler **cannot** recover relics at " +
         "sites ruled by bandits.")
     val powers: Vector[PrintedPower] = Vector(power)
@@ -192,6 +198,7 @@ object TomeGuardiansCard extends Edifice(EdificeId("E18"), Suit.Order):
   object intact extends EdificeFace("Tome Guardians") with Locked:
     val power = PrintedPower(PowerId("edifice.e18.intact"),
       persistent = true, cost = Cost.free,
+      modifier = Some(ModifierMark.Action(MajorActionType.Campaign)),
       text = "If this card's ruler holds the Darkest Secret, their " +
         "enemies **cannot** target the Darkest Secret. If ruled by " +
         "Empire, all Imperials have this power.")
@@ -280,6 +287,7 @@ object HallowedSpringCard extends Edifice(EdificeId("E26"), Suit.Beast):
   object intact extends EdificeFace("Hallowed Spring") with Locked:
     val power = PrintedPower(PowerId("edifice.e26.intact"),
       persistent = true, cost = Cost.free,
+      modifier = Some(ModifierMark.Action(MajorActionType.Trade)),
       text = "When trading at this site for [secret], you **must** place " +
         "both [favor] on the card you are trading with _(instead of " +
         "burning one)_.")

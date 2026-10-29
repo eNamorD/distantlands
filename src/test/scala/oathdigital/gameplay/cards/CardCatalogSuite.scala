@@ -1,9 +1,11 @@
 package oathdigital.gameplay.cards
 
 import oathdigital.catalog.{AdviserOnly, ExecutableCatalog, Locked,
-  PrintedPower, PrintsPowers, SiteOnly}
-import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
-import oathdigital.model.{CardId, PowerId}
+  ModifierMark, PrintedPower, PrintsPowers, SiteOnly}
+import oathdigital.gameplay.powers.{PhasePowerCatalog, SelectedModifier,
+  WalkerPowerCatalog}
+import oathdigital.gameplay.powers.campaign.BattlePlan
+import oathdigital.model.{CardId, MajorActionType, PowerId}
 import oathdigital.testkit.CatalogNames
 
 /** The printed-corpus checks `validate-component-catalog.py` ran on the JSON,
@@ -82,6 +84,51 @@ class CardCatalogSuite extends munit.FunSuite:
       !e.ruined.isInstanceOf[AdviserOnly]))
     assert(catalog.edifices.forall(e => !e.intact.isInstanceOf[SiteOnly] &&
       !e.intact.isInstanceOf[AdviserOnly]))
+
+  // The modifier icon is printed, so the catalog states it; the engine's own
+  // modifiers and battle plans say which actions and sides they serve, and
+  // the two must agree.
+  test("printed modifier marks agree with the engine's modifiers and plans"):
+    val engine = WalkerPowerCatalog.default(catalog).powers.collect {
+      case plan: BattlePlan => plan.id -> ModifierMark.BattlePlan(
+        plan.sides.toVector.sortBy(_.ordinal)*)
+      case modifier: SelectedModifier => modifier.id -> ModifierMark.Action(
+        modifier.actions.toVector.sortBy(_.ordinal)*)
+    }.filter((id, _) => powers.exists(_.id == id)).toMap
+    // Spiteful Mirror is picked in the Muster and Trade modifier decisions,
+    // but its card prints no modifier icon.
+    val unmarked = Set(PowerId("relic.spiteful-mirror"))
+    val printed = powers.collect { case power if !power.persistent =>
+      power.modifier.map(power.id -> _) }.flatten.toMap
+    assertEquals(printed, engine -- unmarked)
+    assert(unmarked.forall(engine.contains), unmarked)
+
+  // Persistent modifiers have no engine type to check against, so the
+  // owner's reading of the printed icons is pinned here.
+  test("persistent modifier marks are the printed ones"):
+    val marked = powers.filter(_.persistent).flatMap(power =>
+      power.modifier.map(power.id.value -> _)).toMap
+    def action(action: MajorActionType, ids: String*) =
+      ids.map(_ -> ModifierMark.Action(action))
+    assertEquals(marked, Map(
+      action(MajorActionType.Travel, "denizen.way-station",
+        "denizen.toll-roads", "denizen.grasping-vines", "edifice.e03.intact",
+        "edifice.e03.ruined") ++
+      action(MajorActionType.Search, "denizen.forced-labor",
+        "denizen.vow-of-wisdom", "denizen.book-binders", "denizen.gossip",
+        "denizen.saddle-makers", "edifice.e08.intact") ++
+      action(MajorActionType.Trade, "denizen.curfew", "edifice.e26.intact") ++
+      action(MajorActionType.Recover, "edifice.e17.intact",
+        "edifice.e17.ruined") ++
+      action(MajorActionType.Challenge, "denizen.vow-of-silence",
+        "relic.secret-testament") ++
+      action(MajorActionType.Campaign, "denizen.beast-tamer",
+        "denizen.diplomat", "denizen.gleaming-armor", "denizen.insect-swarm",
+        "denizen.marsh-spirit", "denizen.sealing-ward", "denizen.true-names",
+        "denizen.vow-of-peace", "denizen.vow-of-union.campaign",
+        "denizen.forgotten-vault", "denizen.sneak-attack", "denizen.herald",
+        "relic.circlet-of-command", "edifice.e01.intact",
+        "edifice.e18.intact")*))
 
   test("a site has Forge requirements exactly when it has three slots"):
     catalog.sites.foreach(s =>

@@ -1,12 +1,13 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, PrintedPower}
+import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
 import oathdigital.gameplay.NoteSupport
 import oathdigital.model._
 
 object ShieldWallCard extends Denizen(DenizenId("108"), "Shield Wall", Suit.Order):
   val power = PrintedPower(PowerId("denizen.shield-wall"),
     persistent = false, cost = Cost(favor = 1),
+    modifier = Some(ModifierMark.DefensePlan),
     text = "+2 [defense-die] If you're defeated, kill all of your force.")
   val powers: Vector[PrintedPower] = Vector(power)
 

@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.search
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower}
 import oathdigital.gameplay.operations.SupplyStrip
 import oathdigital.gameplay.powerresolver.{Contribution, Transform}
 import oathdigital.gameplay.powers.SelectedModifier
@@ -9,6 +10,7 @@ import oathdigital.model._
 object NewsFromAfarCard extends Denizen(DenizenId("134"), "News from Afar", Suit.Hearth):
   val power = PrintedPower(PowerId("denizen.news-from-alfar"),
     persistent = false, cost = Cost(favor = 2),
+    modifier = Some(ModifierMark.Action(MajorActionType.Search)),
     text = "Spend no Supply.")
   val powers: Vector[PrintedPower] = Vector(power)
 

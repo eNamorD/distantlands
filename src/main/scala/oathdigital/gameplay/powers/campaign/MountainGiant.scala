@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower}
 import oathdigital.gameplay.actions.campaign.{CampaignProcedure, PlanAmounts}
 import oathdigital.gameplay.powers.PowerAnswers
 import oathdigital.model._
@@ -9,6 +10,7 @@ object MountainGiantCard extends Denizen(DenizenId("155"), "Mountain Giant",
     Suit.Nomad):
   val power = PrintedPower(PowerId("denizen.mountain-giant"),
     persistent = false, cost = Cost(secret = 1),
+    modifier = Some(ModifierMark.EitherSidePlan),
     text = "±1 [attack-die] or ±3 [attack-die] At end, discard.")
   val powers: Vector[PrintedPower] = Vector(power)
 

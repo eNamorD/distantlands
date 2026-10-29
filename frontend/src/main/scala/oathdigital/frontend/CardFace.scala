@@ -121,15 +121,28 @@ private[frontend] object CardFace:
     node
 
   /** Priority order, dropped from the bottom as the box shrinks: the header
-    * (suit glyph and name), live tokens, relic value and defense,
-    * restriction, unimplemented. The suit rides the header as a glyph rather
-    * than a word below the name: it costs no line and colour plus shape says
-    * it faster than reading does.
+    * (suit glyph with the restriction banner hung under it, name, and
+    * defense at its right end), live tokens, the power marks, unimplemented.
+    * The suit rides the header as a glyph rather than a word below the name:
+    * it costs no line and colour plus shape says it faster than reading
+    * does. The restriction is a banner under it for the same reason, as the
+    * printed card hangs it, and is the whole card's. Each power's modifier
+    * tab or battle-plan crown stands in the lower-left corner, a first step
+    * toward a face that shows its powers; the rest of a power is read in the
+    * overlay.
     */
   private def summary(card: CardDetails): Vector[dom.Element] =
     val header = element("span", "card-header")
-    card.suit.foreach(value =>
-      header.appendChild(RulesTextRenderer.glyph(s"suit-$value")))
+    val suit = card.suit.map(value => RulesTextRenderer.glyph(s"suit-$value"))
+    // One column for the glyph and the banner, so a name that does not fit
+    // beside them drops under both whole, as it drops under a glyph alone.
+    PowerMarks.restriction(card) match
+      case Some(banner) =>
+        val emblems = element("span", "card-emblems")
+        suit.foreach(emblems.appendChild)
+        emblems.appendChild(banner)
+        header.appendChild(emblems)
+      case None => suit.foreach(header.appendChild)
     header.appendChild(text("span", "card-name", card.name))
     // Both forms are in the DOM and the map's scale picks one, so a zoom
     // never re-renders a card. The short form is decoration for the eye:
@@ -152,12 +165,12 @@ private[frontend] object CardFace:
         node.appendChild(RulesTextRenderer.glyph("defense-die")))
       header.appendChild(node)
     }
+    val marks = element("span", "card-power-marks")
+    card.powers.foreach(power => power.modifier.foreach(mark =>
+      PowerMarks.modifier(mark, power.persistent).foreach(marks.appendChild)))
     Vector(Some(header),
       Option.when(tokens.childNodes.length > 0)(tokens),
-      // Unrestricted is the default every card carries, so printing it spends
-      // a line of a small face on nothing.
-      card.restrictions.filterNot(_ == "unrestricted")
-        .map(value => text("span", "card-restriction", value)),
+      Option.when(marks.childNodes.length > 0)(marks),
       Option.when(!card.implemented)(
         text("span", "card-unimplemented-badge", "Unimplemented"))).flatten
 

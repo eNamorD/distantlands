@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, PrintedPower}
+import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
 import oathdigital.gameplay.actions.campaign.{CampaignProcedure, PlanAmounts}
 import oathdigital.model._
 
@@ -8,6 +8,7 @@ object UnstableSummonCard extends Denizen(DenizenId("225"),
     "Unstable Summon", Suit.Discord):
   val power = PrintedPower(PowerId("denizen.unstable-summon"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.AttackPlan),
     text = "If you hold the Darkest Secret, burn X [secret] from it to " +
       "collect X [attack-die].")
   val powers: Vector[PrintedPower] = Vector(power)

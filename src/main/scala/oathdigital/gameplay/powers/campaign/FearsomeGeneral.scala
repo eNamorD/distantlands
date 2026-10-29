@@ -1,11 +1,12 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, PrintedPower}
+import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
 import oathdigital.model._
 
 object FearsomeGeneralCard extends Denizen(DenizenId("253"), "Fearsome General", Suit.Order):
   val power = PrintedPower(PowerId("denizen.fearsome-general"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.AttackPlan),
     text = "Each [skull] you roll adds two more [sword] _(4 total)_, " +
       "even if the [skull] is ignored _(Outriders, etc.)_.")
   val powers: Vector[PrintedPower] = Vector(power)

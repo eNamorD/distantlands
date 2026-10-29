@@ -1,11 +1,13 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower}
 import oathdigital.model._
 
 object TributeSpoilsCard extends Denizen(DenizenId("239"), "Tribute Spoils", Suit.Nomad):
   val power = PrintedPower(PowerId("denizen.tribute-spoils"),
     persistent = false, cost = Cost(favor = 1),
+    modifier = Some(ModifierMark.EitherSidePlan),
     text = "If you're victorious in a conquest, take [favor] for each " +
       "card at targeted sites from the matching favor bank.")
   val powers: Vector[PrintedPower] = Vector(power)

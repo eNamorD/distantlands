@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.search
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower}
 import oathdigital.gameplay.actions.PlacementLimit
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
@@ -13,6 +14,7 @@ import oathdigital.model._
 object LandWardenCard extends Denizen(DenizenId("130"), "Land Warden", Suit.Hearth):
   val power = PrintedPower(PowerId("denizen.land-warden"),
     persistent = false, cost = Cost(favor = 1),
+    modifier = Some(ModifierMark.Action(MajorActionType.Search)),
     text = "You may play two cards you draw _(instead of one)_ if you " +
       "play at least one card to a site.")
   val powers: Vector[PrintedPower] = Vector(power)

@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.search
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower}
 import oathdigital.gameplay.EffectiveSuit
 import oathdigital.gameplay.actions.PlaySites
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
@@ -12,6 +13,7 @@ object NewGrowthCard extends Denizen(DenizenId("188"), "New Growth",
     Suit.Beast):
   val power = PrintedPower(PowerId("denizen.new-growth"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Search)),
     text = "You may play [suit-beast] and [suit-hearth] cards to any " +
       "site _(that has space)_.")
   val powers: Vector[PrintedPower] = Vector(power)

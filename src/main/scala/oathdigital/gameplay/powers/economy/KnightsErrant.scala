@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.economy
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower}
 import oathdigital.gameplay.powerresolver.{Contribution, Transform}
 import oathdigital.gameplay.powers.SelectedModifier
 import oathdigital.model._
@@ -8,6 +9,7 @@ import oathdigital.model._
 object KnightsErrantCard extends Denizen(DenizenId("120"), "Knights Errant", Suit.Order):
   val power = PrintedPower(PowerId("denizen.knights-errant"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Muster)),
     text = "After mustering, you may campaign, spending no Supply.")
   val powers: Vector[PrintedPower] = Vector(power)
 

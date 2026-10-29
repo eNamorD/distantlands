@@ -43,7 +43,7 @@ private[frontend] object MenuPanel:
       option.badge.foreach { badge =>
         val cost = element("span", "menu-option-cost")
         cost.appendChild(dom.document.createTextNode(" ("))
-        RulesTextRenderer.inline(badge, cost)
+        RulesTextRenderer.cost(badge, cost)
         cost.appendChild(dom.document.createTextNode(")"))
         choose.appendChild(cost)
         choose.setAttribute("aria-label",

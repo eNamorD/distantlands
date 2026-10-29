@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.travel
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower}
 import oathdigital.gameplay.operations.SupplyStrip
 import oathdigital.gameplay.powerresolver.{Contribution, PowerCtx, Transform}
 import oathdigital.gameplay.powers.{PlayerFacts, SelectedModifier}
@@ -9,6 +10,7 @@ import oathdigital.model._
 object AFastSteedCard extends Denizen(DenizenId("172"), "A Fast Steed", Suit.Nomad):
   val power = PrintedPower(PowerId("denizen.old-fast-steed"),
     persistent = false, cost = Cost(favor = 1),
+    modifier = Some(ModifierMark.Action(MajorActionType.Travel)),
     text = "Spend no Supply if you have three or fewer warbands on your " +
       "board.")
   val powers: Vector[PrintedPower] = Vector(power)

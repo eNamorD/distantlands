@@ -37,8 +37,10 @@ class CardFaceSuite extends munit.FunSuite:
     val node = CardFace.render(faceUp.copy(favor = 2, secrets = 1))
     assertEquals(firstMatch(node, ".card-name").map(_.textContent),
       Some("Old Oak"))
-    assertEquals(firstMatch(node, ".card-restriction").map(_.textContent),
-      Some("site-only"))
+    // The restriction is the whole card's, so it is a banner, not words.
+    assertEquals(firstMatch(node, ".card-header .restriction-mark")
+      .map(_.getAttribute("aria-label")), Some("Site only"))
+    assert(!node.textContent.contains("site"), node.textContent)
     assertEquals(all(node, ".card-tokens .token-glyph")
       .map(_.getAttribute("aria-label")), Vector("favor", "secret"))
     assertEquals(all(node, ".card-token-count").map(_.textContent),
@@ -120,13 +122,40 @@ class CardFaceSuite extends munit.FunSuite:
       .getOrElse(fail("no suit glyph"))
     assertEquals(glyph.getAttribute("aria-label"), "order suit")
     assertEquals(glyph.getAttribute("class"), "token-glyph token-suit-order")
-    assertEquals(header.firstChild, glyph)
+    // The restriction banner hangs under the glyph, the two one column.
+    val emblems = header.firstChild.asInstanceOf[dom.Element]
+    assertEquals(emblems.getAttribute("class"), "card-emblems")
+    assertEquals(emblems.firstChild, glyph)
+    assertEquals(emblems.lastChild.asInstanceOf[dom.Element].getAttribute("class"),
+      "restriction-mark restriction-mark-site")
     assertEquals(header.childNodes(1).asInstanceOf[dom.Element].getAttribute("class"),
       "card-name")
-    assertEquals(header.lastChild.asInstanceOf[dom.Element].getAttribute("class"),
+    assertEquals(header.childNodes(2).asInstanceOf[dom.Element].getAttribute("class"),
       "card-name-short")
     assertEquals(all(node, ".card-suit"), Vector.empty)
     assert(!node.textContent.contains("order"), node.textContent)
+
+  test("an unrestricted card leads with its bare suit glyph"):
+    val node = CardFace.render(faceUp.copy(restrictions = Some("unrestricted")))
+    val header = firstMatch(node, ".card-header")
+      .getOrElse(fail("no card header"))
+    assertEquals(header.firstChild.asInstanceOf[dom.Element].getAttribute("class"),
+      "token-glyph token-suit-order")
+    assertEquals(all(node, ".restriction-mark"), Vector.empty)
+
+  test("each power's modifier tab or plan crown stands at the face's foot"):
+    import oathdigital.protocol.projection.ModifierMarkProjection
+    val node = CardFace.render(faceUp.copy(powers = Vector(
+      PowerFace("Spend no Supply.", persistent = true,
+        modifier = Some(ModifierMarkProjection.Action(Vector("travel")))),
+      PowerFace("**ACTION:** Gain [favor]."),
+      PowerFace("± [attack-die]", modifier = Some(
+        ModifierMarkProjection.BattlePlan(Vector("defense")))))))
+    assertEquals(all(node, ".card-power-marks > .power-mark")
+      .map(_.getAttribute("aria-label")),
+      Vector("Persistent Travel modifier", "Defense plan"))
+    // A card whose powers modify nothing carries no row.
+    assertEquals(all(CardFace.render(faceUp), ".card-power-marks"), Vector.empty)
 
   test("a card with no suit shows its name alone in the header"):
     val bare = CardFace.render(knowable.copy(orientation = Some("face-up"),

@@ -1,12 +1,13 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, PrintedPower}
+import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
 import oathdigital.gameplay.powerresolver.OptionRestriction
 import oathdigital.model._
 
 object CodeOfHonorCard extends Denizen(DenizenId("103"), "Code of Honor", Suit.Order):
   val power = PrintedPower(PowerId("denizen.code-of-honor"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.EitherSidePlan),
     text = "±2 [attack-die] but you **cannot** use other battle plans.")
   val powers: Vector[PrintedPower] = Vector(power)
 

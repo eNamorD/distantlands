@@ -1,12 +1,13 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, PrintedPower}
+import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
 import oathdigital.gameplay.powerresolver.{ContributingPower, PowerCtx}
 import oathdigital.model._
 
 object BillowingFogCard extends Denizen(DenizenId("59"), "Billowing Fog", Suit.Arcane):
   val power = PrintedPower(PowerId("denizen.billowing-fog"),
     persistent = false, cost = Cost(secret = 1),
+    modifier = Some(ModifierMark.EitherSidePlan),
     text = "If you're defeated, kill no warbands in your force. " +
       "**Ignore** powers that kill all of your force.")
   val powers: Vector[PrintedPower] = Vector(power)

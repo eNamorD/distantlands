@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, PrintedPower}
+import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
 import oathdigital.gameplay.actions.campaign.CampaignSetup
 import oathdigital.gameplay.powers.PlayerFacts
 import oathdigital.model._
@@ -8,6 +8,7 @@ import oathdigital.model._
 object BearTrapsCard extends Denizen(DenizenId("3"), "Bear Traps", Suit.Order):
   val power = PrintedPower(PowerId("denizen.bear-traps"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.DefensePlan),
     text = "- [attack-die] Kill one warband on the attacker's board.")
   val powers: Vector[PrintedPower] = Vector(power)
 

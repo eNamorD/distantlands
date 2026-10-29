@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{PrintedPower, Relic}
+import oathdigital.catalog.{ModifierMark, PrintedPower, Relic}
 import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.actions.campaign.CampaignProcedure
 import oathdigital.gameplay.powers.PowerAnswers
@@ -9,6 +9,7 @@ import oathdigital.model._
 object StickyFireCard extends Relic(RelicId("R01"), "Sticky Fire", value = 3, defense = 3):
   val power = PrintedPower(PowerId("relic.sticky-fire"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.EitherSidePlan),
     text = "If you're victorious, you may kill all the warbands in your " +
       "enemy's force. If you do, you **must** give them [favor] if " +
       "able.")

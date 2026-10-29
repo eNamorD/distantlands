@@ -2,10 +2,10 @@ package oathdigital.gameplay.powers.travel
 
 import oathdigital.testkit.MenuPlay
 import oathdigital.gameplay.powerresolver.{FoldPhase, Transform}
-import oathdigital.gameplay.powers.{NoteText, PayOrAsk, PowerFixture,
-  RulerToll}
+import oathdigital.gameplay.powers.{NoteText, PayOrAsk, PhasePowerCatalog,
+  PowerFixture, RulerToll}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.ParkedDecisionAssertions
+import oathdigital.gameplay.walker.{ParkedDecisionAssertions, QueuedStart}
 import oathdigital.model._
 import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes,
   Refusals, Table}
@@ -43,6 +43,15 @@ class WayStationSuite extends munit.FunSuite:
     on(rivalRules(favor = favor))(_
       .denizen(CatalogNames.denizen("Toll Roads"), at = provincePlains)
       .warbandsAt(provincePlains, rival, 1))
+
+  // The Act menu's Travel badge names both ways to pay rather than the
+  // cheapest in Supply alone, which read as if Travel cost favor.
+  test("the Act menu prices Travel in Supply or in Way Station's favor"):
+    val travelling = QueuedProcedure(actor, ActionRef.Travel, Vector.empty,
+      None, QueueKind.Run)
+    assertEquals(QueuedStart.priced(catalog, rivalRules(), travelling,
+      powers(Vector.empty), PhasePowerCatalog.default(catalog))
+      .map(_.words), Right(Some("1+ Supply or 1 [favor]")))
 
   test("its ruler travels there free, unasked"):
     val ready = on(board(supply = 7))(_.denizen(wayStation, at = coast)

@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.targeting
 
 import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
-  PrintedPower}
+  ModifierMark, PrintedPower}
 import oathdigital.gameplay.actions.campaign.CampaignSetup
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   OptionRestriction, PowerCtx, Restriction}
@@ -12,6 +12,7 @@ import oathdigital.model._
 object DiplomatCard extends Denizen(DenizenId("230"), "Diplomat", Suit.Hearth) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.diplomat"),
     persistent = true, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Campaign)),
     text = "Players **cannot** campaign against you unless they rule a " +
       "[suit-hearth] card.")
   val powers: Vector[PrintedPower] = Vector(power)

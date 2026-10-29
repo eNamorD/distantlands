@@ -175,9 +175,16 @@ private[frontend] object WalkerPanelSupport:
       if option.kind == "favor-bank" then
         choose.insertBefore(RulesTextRenderer.glyph(s"suit-${option.id}"),
           choose.firstChild)
+      // A battle plan and a modifier lead with the tab their card prints, so
+      // the two never read alike: a crown in the plan's side colour, or an
+      // arch holding the action's emblem.
+      powerMark(decision, option).foreach(mark =>
+        choose.insertBefore(mark, choose.firstChild))
       option.badge.foreach { badge =>
         val chip = element("span", s"option-badge ${badgeClass(badge)}")
-        RulesTextRenderer.inline(badge, chip)
+        if badgeClass(badge) == "option-cost" then
+          RulesTextRenderer.cost(badge, chip)
+        else RulesTextRenderer.inline(badge, chip)
         choose.appendChild(chip)
         // Named in words: the content alone reads the label and the chip
         // run together.
@@ -212,8 +219,30 @@ private[frontend] object WalkerPanelSupport:
           panel.appendChild(choice)
         case None => panel.appendChild(choose)
       withholds(choose, option)
-      if option.details.nonEmpty then panel.appendChild(text("p",
-        "walker-choice-details", option.details.mkString(" · ")))
+      // A price among the details names its tokens, drawn as their glyphs.
+      if option.details.nonEmpty then
+        val details = element("p", "walker-choice-details")
+        RulesTextRenderer.cost(option.details.mkString(" · "), details)
+        panel.appendChild(details)
+    }
+
+  /** The tab a power option's card prints for the power offered: the crown
+    * its plan-side chip names, or, at a major action's modifier decision
+    * (`{action}.modifiers`), the arch of the card's modifier of that action.
+    * None for an option that offers no such power. */
+  private[frontend] def powerMark(decision: WalkerDecisionState,
+      option: DecisionOptionState): Option[dom.Element] =
+    option.badge.flatMap(PowerMarks.planForBadge).orElse {
+      val action = Option.when(decision.decisionId.endsWith(".modifiers"))(
+        decision.decisionId.stripSuffix(".modifiers"))
+      for
+        key <- action
+        card <- option.card
+        power <- card.powers.find(_.modifier.exists {
+          case projection.ModifierMarkProjection.Action(actions) =>
+            actions.contains(key)
+          case _ => false })
+      yield PowerMarks.action(key, power.persistent)
     }
 
   /** The three battle-plan chips, so a side reads as a colour as well as a

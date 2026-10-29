@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
+import oathdigital.catalog.{AdviserOnly, Denizen, Locked, ModifierMark,
+  PrintedPower}
 import oathdigital.gameplay.actions.campaign.CampaignSetup
 import oathdigital.gameplay.powerresolver._
 import oathdigital.model._
@@ -8,6 +9,7 @@ import oathdigital.model._
 object VowOfPeaceCard extends Denizen(DenizenId("145"), "Vow of Peace", Suit.Hearth) with Locked with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.vow-of-peace"),
     persistent = true, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Campaign)),
     text = "You **cannot** campaign. Attackers **cannot** sacrifice " +
       "warbands to increase their attack against you.")
   val powers: Vector[PrintedPower] = Vector(power)

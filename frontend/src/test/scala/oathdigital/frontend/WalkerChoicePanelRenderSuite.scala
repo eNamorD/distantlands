@@ -94,6 +94,32 @@ class WalkerChoicePanelRenderSuite extends munit.FunSuite:
     assertEquals(all(panel, ".walker-choice-details").map(_.textContent),
       Vector("1 Favor"))
 
+  test("a plan leads with its side's crown and a modifier with its arch"):
+    val plan = DecisionOptionState("relic", "relic:sticky-fire", "Sticky Fire",
+      Some(CardDetails("relic:sticky-fire", "relic", "Sticky Fire")),
+      badge = Some("Attack Plan"))
+    val plans = draw(WalkerDecisionState("campaign", "campaign.attacker-plan",
+      query = Some(DecisionQueryState.ChooseOne(Vector(plan)))))
+    assertEquals(all(plans, ".walker-choice > .power-mark")
+      .map(_.getAttribute("aria-label")), Vector("Attack plan"))
+    val tents = CardDetails("29", "denizen", "Tents", powers = Vector(
+      PowerFace("Travel costs 1 less.", cost = Vector("favor"),
+        modifier = Some(oathdigital.protocol.projection.ModifierMarkProjection
+          .Action(Vector("travel"))))))
+    val pick = DecisionOptionState("denizen", "29", "Tents", Some(tents),
+      Vector("Cost: 1 [favor]"))
+    val modifiers = draw(WalkerDecisionState("travel", "travel.modifiers",
+      query = Some(DecisionQueryState.ChooseOne(Vector(pick)))))
+    assertEquals(all(modifiers, ".walker-choice > .power-mark")
+      .map(_.getAttribute("aria-label")), Vector("Travel modifier"))
+    // Its price is in the table's cost notation, the favor a glyph.
+    assertEquals(all(modifiers, ".walker-choice-details .token-glyph")
+      .map(_.getAttribute("aria-label")), Vector("favor"))
+    // The same card offered for some other decision carries no tab.
+    val muster = draw(WalkerDecisionState("muster", "muster.source",
+      query = Some(DecisionQueryState.ChooseOne(Vector(pick)))))
+    assertEquals(all(muster, ".power-mark").size, 0)
+
   test("the plans already played are listed above the remaining offers"):
     val played = DecisionOptionState("relic", "relic:sticky-fire", "Sticky Fire",
       None, Vector.empty, Some("Battle Plan"))

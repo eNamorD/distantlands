@@ -93,6 +93,22 @@ class QueuedStartSuite extends munit.FunSuite:
   test("a free start has no words"):
     assertEquals(priced(ActionRef.PeekSiteRelics).map(_.words), Right(None))
 
+  test("a cost names each way no other way undercuts, Supply ways first"):
+    val supply = (n: Int) => PricedOptions.Spent(supply = n)
+    val favor = PricedOptions.Spent(favor = 1)
+    // Way Station: the destinations cost Supply, and one may be paid in favor
+    // instead; the favor way is the cheapest in Supply, but not the price.
+    assertEquals(StartCost(favor, Vector(supply(1), supply(3))).words,
+      Some("1+ Supply or 1 [favor]"))
+    // A toll is never the cheapest way: it adds favor to a Supply way.
+    assertEquals(StartCost(supply(1), Vector(supply(2),
+      PricedOptions.Spent(supply = 1, favor = 1))).words, Some("1+ Supply"))
+    // Free to one destination is free in Supply, not free.
+    assertEquals(StartCost(PricedOptions.Spent(), Vector(supply(2))).words,
+      Some("0+ Supply"))
+    assertEquals(StartCost(PricedOptions.Spent(),
+      Vector(PricedOptions.Spent())).words, None)
+
   test("a Supply shortfall is worded with the amounts"):
     assert(priced(ActionRef.Search, supply = 1).isLeft)
     assertEquals(QueuedStart.needs(catalog, acting(1), entry(

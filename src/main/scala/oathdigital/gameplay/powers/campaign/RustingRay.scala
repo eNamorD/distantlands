@@ -1,11 +1,12 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, PrintedPower}
+import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
 import oathdigital.model._
 
 object RustingRayCard extends Denizen(DenizenId("57"), "Rusting Ray", Suit.Arcane):
   val power = PrintedPower(PowerId("denizen.rusting-ray"),
     persistent = false, cost = Cost(secret = 1),
+    modifier = Some(ModifierMark.DefensePlan),
     text = "If you hold the Darkest Secret, **ignore** all your enemy's " +
       "rolls of hollow swords [hollow-sword].")
   val powers: Vector[PrintedPower] = Vector(power)

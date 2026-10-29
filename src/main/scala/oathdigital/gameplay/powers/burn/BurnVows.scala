@@ -1,12 +1,14 @@
 package oathdigital.gameplay.powers.burn
 
-import oathdigital.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
+import oathdigital.catalog.{AdviserOnly, Denizen, Locked, ModifierMark,
+  PrintedPower}
 import oathdigital.gameplay.powerresolver._
 import oathdigital.model._
 
 object VowOfSilenceCard extends Denizen(DenizenId("74"), "Vow of Silence", Suit.Arcane) with Locked with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.vow-of-silence"),
     persistent = true, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Challenge)),
     text = "You **cannot** challenge the Darkest Secret. Whenever an " +
       "enemy burns [secret-burnt], you take those secrets.")
   val powers: Vector[PrintedPower] = Vector(power)

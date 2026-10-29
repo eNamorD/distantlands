@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower}
 import oathdigital.gameplay.actions.CardPlay
 import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignSetup}
 import oathdigital.model._
@@ -9,6 +10,7 @@ object SignalTreesCard extends Denizen(DenizenId("217"), "Signal Trees",
     Suit.Beast):
   val power = PrintedPower(PowerId("denizen.signal-trees"),
     persistent = false, cost = Cost(secret = 1),
+    modifier = Some(ModifierMark.EitherSidePlan),
     text = "Reveal the top three cards of your region's discard pile. " +
       "±2 [attack-die] per revealed [suit-beast]. Discard all of " +
       "the revealed cards.")

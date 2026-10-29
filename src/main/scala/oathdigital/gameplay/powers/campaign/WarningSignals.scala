@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower}
 import oathdigital.gameplay.actions.campaign.{CampaignProcedure, CampaignSetup}
 import oathdigital.gameplay.powers.{PowerAnswers, WarbandArrangement}
 import oathdigital.gameplay.powers.economy.VowOfWandering
@@ -9,6 +10,7 @@ import oathdigital.model._
 object WarningSignalsCard extends Denizen(DenizenId("25"), "Warning Signals", Suit.Nomad):
   val power = PrintedPower(PowerId("denizen.warning-signals"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.DefensePlan),
     text = "Move any warbands to and from your board and any sites you " +
       "rule _(except the last warband from a site)_. At end, " +
       "discard Warning Signals.")

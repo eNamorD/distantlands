@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.search
 
-import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
+import oathdigital.catalog.{ExecutableCatalog, ModifierMark, PrintedPower,
+  Relic}
 import oathdigital.gameplay.actions.SearchRules
 import oathdigital.gameplay.actions.search.SearchProcedure
 import oathdigital.gameplay.powerresolver.{Contribution, ModifierPicks,
@@ -11,6 +12,7 @@ import oathdigital.model._
 object WineOfWelcomeCard extends Relic(RelicId("R33"), "Wine of Welcome", value = 7, defense = 1):
   val power = PrintedPower(PowerId("relic.wine-of-welcome"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Search)),
     text = "Draw from the bottom of the world deck instead of the top.")
   val powers: Vector[PrintedPower] = Vector(power)
 

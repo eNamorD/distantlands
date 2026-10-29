@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.recover
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower}
 import oathdigital.gameplay.powerresolver.{Contribution, Transform}
 import oathdigital.gameplay.powers.SelectedModifier
 import oathdigital.model._
@@ -8,6 +9,7 @@ import oathdigital.model._
 object RelicWorshipCard extends Denizen(DenizenId("173"), "Relic Worship", Suit.Nomad):
   val power = PrintedPower(PowerId("denizen.relic-worship"),
     persistent = false, cost = Cost(secret = 1),
+    modifier = Some(ModifierMark.Action(MajorActionType.Recover)),
     text = "After recovering a relic, gain 2 Supply.")
   val powers: Vector[PrintedPower] = Vector(power)
 

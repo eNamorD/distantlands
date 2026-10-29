@@ -24,6 +24,7 @@ private[frontend] final class CardInspectionOverlay(root: dom.Element):
   node.appendChild(close)
   root.appendChild(node)
   TokenSprite.mount(root)
+  PowerMarks.mount(root)
 
   /** What opened the overlay, and where focus goes back to when it closes.
     * `pane` is the opener's `.game-pane`: a poll rebuilds a pane's content
@@ -193,7 +194,13 @@ private[frontend] final class CardInspectionOverlay(root: dom.Element):
         item.appendChild(text("dd", "", value))
         properties.appendChild(item)
     if properties.childNodes.length > 0 then panel.appendChild(properties)
-    card.rulesText.foreach { value =>
+    // Each power under its braid, as the card prints it; a card the catalog
+    // lays out no powers for (a Vision) keeps its rules text as written.
+    if card.powers.nonEmpty then
+      val rules = element("div", "card-overlay-rules")
+      card.powers.foreach(power => rules.appendChild(powerFace(power)))
+      panel.appendChild(rules)
+    else card.rulesText.foreach { value =>
       val rules = element("div", "card-overlay-rules")
       RulesTextRenderer.powers(value).foreach(rules.appendChild)
       panel.appendChild(rules)
@@ -201,6 +208,25 @@ private[frontend] final class CardInspectionOverlay(root: dom.Element):
     if !card.implemented then
       panel.appendChild(text("p", "card-unimplemented-badge", "Unimplemented"))
     panel
+
+  /** A power below its braid, which divides it from the one above: the
+    * modifier tab at the braid's left, the cost on it, black for a
+    * persistent power. */
+  private def powerFace(power: PowerFace): dom.Element =
+    val section = element("section", if power.persistent then
+      "power-face power-face-persistent" else "power-face")
+    val braid = element("div", "power-braid")
+    if power.persistent then braid.setAttribute("aria-label", "Persistent")
+    power.modifier.foreach(mark => PowerMarks.modifier(mark, power.persistent)
+      .foreach(braid.appendChild))
+    if power.cost.nonEmpty then
+      val cost = element("span", "power-cost")
+      power.cost.foreach(token =>
+        cost.appendChild(RulesTextRenderer.glyph(token)))
+      braid.appendChild(cost)
+    section.appendChild(braid)
+    section.appendChild(RulesTextRenderer.power(power.text))
+    section
 
   private val dismiss: dom.MouseEvent => Unit = event =>
     // A click anywhere on the overlay dismisses it, except inside the card

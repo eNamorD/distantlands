@@ -237,7 +237,9 @@ private[frontend] object BoardDecisionPanel:
         tally.values.find(value => BoardOptionViews.key(value.kind, value.id) ==
           key).map(value => s"${value.value} ${tally.unit}"))
       case _ => Vector.empty) ++ option.details
-    if values.nonEmpty then item.appendChild(text("span",
-      "board-decision-row-values", values.mkString(" · ")))
+    if values.nonEmpty then
+      val shown = element("span", "board-decision-row-values")
+      RulesTextRenderer.cost(values.mkString(" · "), shown)
+      item.appendChild(shown)
     BoardOptions.hoverSync(item, home)
     item

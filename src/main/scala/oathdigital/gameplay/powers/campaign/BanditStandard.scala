@@ -1,11 +1,12 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{PrintedPower, Relic}
+import oathdigital.catalog.{ModifierMark, PrintedPower, Relic}
 import oathdigital.model._
 
 object BanditStandardCard extends Relic(RelicId("R30"), "Bandit Standard", value = 55, defense = 3):
   val power = PrintedPower(PowerId("relic.bandit-standard"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.AttackPlan),
     text = "+ [attack-die] for each bandit in your region. This " +
       "**cannot** be used while targeting sites ruled by bandits.")
   val powers: Vector[PrintedPower] = Vector(power)

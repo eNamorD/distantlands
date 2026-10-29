@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.economy
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower, SiteOnly}
 import oathdigital.gameplay.EffectiveSuit
 import oathdigital.gameplay.actions.economy.TradeProcedure
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
@@ -12,6 +13,7 @@ import oathdigital.model._
 object CurfewCard extends Denizen(DenizenId("119"), "Curfew", Suit.Order) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.curfew"),
     persistent = true, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Trade)),
     text = "Enemies **cannot** trade with cards ruled by Curfew's ruler " +
       "unless they give [favor] to its ruler. _(Give it to " +
       "Chancellor if Empire, burn it if bandits.)_")

@@ -75,8 +75,9 @@ private[frontend] final class BoardOptions(views: Map[String, OptionView],
       Option(target.getAttribute("aria-label")).foreach(name =>
         target.setAttribute("aria-label", s"$name, $word"))
     target.setAttribute("data-option-ref", key)
+    // A hover note is plain text, so a price there names its tokens.
     found.reason.orElse(Option.when(found.option.details.nonEmpty)(
-      found.option.details.mkString(" · ")))
+      RulesTextRenderer.spoken(found.option.details.mkString(" · "))))
       .foreach(HoverTip.set(target, _))
     BoardOptions.hoverSync(target, key)
     val native = target.tagName == "BUTTON"

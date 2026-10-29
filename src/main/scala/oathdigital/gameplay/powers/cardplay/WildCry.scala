@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.cardplay
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower}
 import oathdigital.gameplay.EffectiveSuit
 import oathdigital.gameplay.powerresolver.{Contribution, PowerCtx, Transform}
 import oathdigital.gameplay.powers.{PlayerFacts, SelectedModifier}
@@ -9,6 +10,7 @@ import oathdigital.model._
 object WildCryCard extends Denizen(DenizenId("189"), "Wild Cry", Suit.Beast):
   val power = PrintedPower(PowerId("denizen.wild-cry"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Search)),
     text = "If you play a [suit-beast] card, gain 1 Supply and 2 " +
       "warbands.")
   val powers: Vector[PrintedPower] = Vector(power)

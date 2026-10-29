@@ -1,11 +1,12 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, PrintedPower}
+import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
 import oathdigital.model._
 
 object FaeBattalionCard extends Denizen(DenizenId("215"), "Fae Battalion", Suit.Beast):
   val power = PrintedPower(PowerId("denizen.fae-battalion"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.AttackPlan),
     text = "If you have the Darkest Secret, you may count each " +
       "[hollow-sword] as a [sword] instead.")
   val powers: Vector[PrintedPower] = Vector(power)

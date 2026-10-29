@@ -1,12 +1,14 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower}
 import oathdigital.gameplay.actions.campaign.CampaignBattle
 import oathdigital.model._
 
 object LancersCard extends Denizen(DenizenId("154"), "Lancers", Suit.Nomad):
   val power = PrintedPower(PowerId("denizen.lancers"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.AttackPlan),
     text = "Double your total attack roll. At end, discard Lancers.")
   val powers: Vector[PrintedPower] = Vector(power)
 

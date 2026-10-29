@@ -1,11 +1,12 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, PrintedPower}
+import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
 import oathdigital.model._
 
 object WarTortoiseCard extends Denizen(DenizenId("187"), "War Tortoise", Suit.Beast):
   val power = PrintedPower(PowerId("denizen.war-tortoise"),
     persistent = false, cost = Cost(favor = 1),
+    modifier = Some(ModifierMark.EitherSidePlan),
     text = "**Ignore** all attack or defense added by your enemy's " +
       "rolls of [sword] [sword] [skull] or [shield] [shield]. " +
       "_(Any [skull] they roll still kill their warbands.)_")

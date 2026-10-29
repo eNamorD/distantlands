@@ -1,12 +1,13 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, PrintedPower}
+import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
 import oathdigital.gameplay.NoteSupport
 import oathdigital.model._
 
 object ScoutsCard extends Denizen(DenizenId("8"), "Scouts", Suit.Order):
   val power = PrintedPower(PowerId("denizen.scouts"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.AttackPlan),
     text = "Gain 1 Supply.")
   val powers: Vector[PrintedPower] = Vector(power)
 

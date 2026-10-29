@@ -42,11 +42,25 @@ private[frontend] object RulesTextRenderer:
 
   def powers(rulesText: String): Vector[dom.Element] =
     rulesText.split("\n\\s*\n").toVector.map(_.trim).filter(_.nonEmpty)
-      .map { block =>
-        val node = ServerUiSupport.element("p", "rules-power")
-        emphasise(block, node)
-        node
-      }
+      .map(power)
+
+  /** One power's text as a paragraph. */
+  def power(text: String): dom.Element =
+    val node = ServerUiSupport.element("p", "rules-power")
+    emphasise(text, node)
+    node
+
+  /** A cost badge ("1+ Supply or 1 [favor]"): its tokens drawn as glyphs,
+    * and each " or " between two ways to pay set apart as its own word, so
+    * the ways read as a choice rather than one sum. */
+  def cost(value: String, into: dom.Element): Unit =
+    value.split(" or ", -1).toVector.zipWithIndex.foreach { (way, index) =>
+      if index > 0 then
+        into.appendChild(dom.document.createTextNode(" "))
+        into.appendChild(ServerUiSupport.text("span", "cost-or", "or"))
+        into.appendChild(dom.document.createTextNode(" "))
+      tokenise(way, into)
+    }
 
   /** `**bold**` and `_italic_` wrap runs that may themselves hold tokens. */
   private def emphasise(value: String, into: dom.Element): Unit =

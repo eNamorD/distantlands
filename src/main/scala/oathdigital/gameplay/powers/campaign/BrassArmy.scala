@@ -1,11 +1,12 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{PrintedPower, Relic}
+import oathdigital.catalog.{ModifierMark, PrintedPower, Relic}
 import oathdigital.model._
 
 object BrassArmyCard extends Relic(RelicId("R25"), "Brass Army", value = 77, defense = 3):
   val campaign = PrintedPower(PowerId("relic.brass-army.campaign"),
     persistent = false, cost = Cost(secret = 1),
+    modifier = Some(ModifierMark.EitherSidePlan),
     text = "±4 [attack-die]")
   val restriction = PrintedPower(PowerId("relic.brass-army.restriction"),
     persistent = true, cost = Cost.free,

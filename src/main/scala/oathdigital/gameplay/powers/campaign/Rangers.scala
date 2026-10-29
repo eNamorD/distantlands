@@ -1,12 +1,13 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, PrintedPower}
+import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.model._
 
 object RangersCard extends Denizen(DenizenId("45"), "Rangers", Suit.Beast):
   val power = PrintedPower(PowerId("denizen.rangers"),
     persistent = false, cost = Cost(favor = 1),
+    modifier = Some(ModifierMark.AttackPlan),
     text = "Ignore all skulls [skull] you roll. +2 [attack-die] if the " +
       "defense pool has 4+ [defense-die].")
   val powers: Vector[PrintedPower] = Vector(power)
