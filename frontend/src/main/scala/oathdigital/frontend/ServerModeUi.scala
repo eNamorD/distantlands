@@ -8,7 +8,9 @@ object ServerModeUi:
   def start(mount: dom.Element,
       client: GameClient = new HttpGameClient(new SameOriginJsonTransport),
       trustedGameId: Option[String] = None,
-      startOver: () => Unit = () => dom.window.location.assign(Main.DevelopmentStartUrl)): Unit =
+      startOver: () => Unit = () => dom.window.location.assign(Main.DevelopmentStartUrl),
+      transport: JsonTransport = new SameOriginJsonTransport,
+      devices: ChronicleDevices = ChronicleDevices.browser): Unit =
     val trusted = trustedGameId.nonEmpty
     val initialPlayer = if trusted then "" else queryParameter("playerId").getOrElse("red-exile")
     val initialGame = trustedGameId.getOrElse(queryParameter("gameId").getOrElse(freshGameId()))
@@ -17,8 +19,11 @@ object ServerModeUi:
     lazy val session: TableSession = new TableSession(client, trusted,
       initialGame, initialPlayer, new BrowserPollClock,
       new BrowserNavigation(startOver), () => screen.render())
+    lazy val chronicle = new TableChronicle(mount,
+      devices.storage.map(new ChronicleShelf(_, devices.now)),
+      new ChronicleClient(transport), devices.files, () => screen.render())
     lazy val screen: TableScreen = new TableScreen(shell, session, session,
-      session)
+      session, Some(chronicle))
 
     dom.document.addEventListener(
       "visibilitychange",

@@ -408,6 +408,16 @@ private[frontend] object ServerUiSupport:
   private[frontend] def updateUrl(gameId: String, playerId: String): Unit =
     dom.window.history.replaceState(null, "", sessionUrl(gameId, playerId))
 
+  /** A text box named `label` for assistive technology, holding `value`. */
+  private[frontend] def textField(className: String, label: String,
+      value: String): dom.html.Input =
+    val node = dom.document.createElement("input").asInstanceOf[dom.html.Input]
+    node.className = className
+    node.setAttribute("aria-label", label)
+    node.setAttribute("autocomplete", "off")
+    node.value = value
+    node
+
   private[frontend] def button(label: String, className: String): dom.html.Button =
     val node =
       dom.document.createElement("button").asInstanceOf[dom.html.Button]

@@ -2,7 +2,8 @@ package oathdigital.frontend
 
 import oathdigital.frontend.ServerModeFixtures.withEmptyLogPage
 import oathdigital.model.PlayerColor
-import oathdigital.protocol.projection.GameProjectionCodec
+import oathdigital.protocol.projection.{ChronicleProjection,
+  GameProjectionCodec}
 import oathdigital.testkit.Unwrap.present
 
 import munit.FunSuite
@@ -27,11 +28,12 @@ class ServerModeSessionSuite extends FunSuite:
     */
   private def encodedGame(viewer: Option[String] = Some("blue"),
       active: String = "red", phase: String = "awaiting-pawn",
-      ready: Boolean = false, nextSequence: Long = 1L): String =
+      ready: Boolean = false, nextSequence: Long = 1L,
+      chronicle: Option[ChronicleProjection] = None): String =
     GameProjectionCodec.encode(TestProjections.actingProjection(
       gameId = "my game", nextSequence = nextSequence, phase = phase,
       activePlayer = Some(active), players = redAndBlueExiles,
-      ready = ready).copy(viewerPlayerId = viewer))
+      ready = ready).copy(viewerPlayerId = viewer, chronicle = chronicle))
 
   /** Blue's Act menu parked, with End Act and Rest on screen, as `viewer`
     * sees it.
@@ -50,6 +52,26 @@ class ServerModeSessionSuite extends FunSuite:
     WalkerDecisionState("act-menu", "phase.menu", query = Some(
       DecisionQueryState.ChooseOne(options.toVector,
         heading = Some("Act: take an action, use a power or rest"))))
+
+  test("a trusted seat saves the evolved Chronicle and offers its export"):
+    TestBrowser.use(): browser =>
+      val storage = new MemoryChronicleStorage()
+      val evolved = ChronicleFixtures.entry("Ashen Crown", "d-2")
+      val transport = ScriptedTransport((_, _, _) =>
+        Future.successful(Right(TransportResponse(200, encodedGame(
+          chronicle = Some(ChronicleProjection("Ashen Crown", "d-1",
+            Some(evolved))))))))
+      Main.start(browser.mount, "/games/my%20game", trustedAlpha = true,
+        withEmptyLogPage(transport),
+        devices = ChronicleFixtures.devices(Some(storage)))
+      browser.settle.map { _ =>
+        val section = present(browser.byClass("table-chronicle").headOption,
+          "the table's Chronicle section")
+        assert(section.textContent.contains("Chronicle: Ashen Crown"))
+        assertEquals(browser.byClass("export-chronicle-json").size, 1)
+        assertEquals(new ChronicleShelf(storage, ChronicleFixtures.clock)
+          .loaded.map(_.entry), Some(evolved))
+      }
 
   test("trusted player renders its fixed seat and never bootstraps " +
       "switches or loads raw events"):

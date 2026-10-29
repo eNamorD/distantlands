@@ -60,6 +60,9 @@ private[frontend] final class TestBrowser(search: String = ""):
   def click(name: String): Unit =
     byClass(name).head.asInstanceOf[js.Dynamic].onclick(
       js.Dynamic.literal(preventDefault = (() => ()): js.Function0[Unit]))
+  def change(name: String): Unit =
+    byClass(name).head.asInstanceOf[js.Dynamic].onchange(
+      js.Dynamic.literal(preventDefault = (() => ()): js.Function0[Unit]))
   def tick(): Unit = { browser.tick(); () }
   def urls: Vector[String] = browser.urls.asInstanceOf[js.Array[String]].toVector
   def copied: Vector[String] = browser.copied.asInstanceOf[js.Array[String]].toVector

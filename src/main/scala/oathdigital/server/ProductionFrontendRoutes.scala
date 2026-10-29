@@ -27,6 +27,11 @@ object ProductionFrontendRoutes:
     pathEndOrSingleSlash {
       gamePage
     } ~
+      // The player selection page is drawn by the app; a reload there loads
+      // the same shell, which returns to the Chronicle page.
+      path("new-game") {
+        gamePage
+      } ~
       pathPrefix("assets"):
         respondWithHeader(AssetCacheControl):
           path("main.js") {

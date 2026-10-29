@@ -209,20 +209,20 @@ continuation, and campaign browsing.
     accounting. Starting the next game from it waits for the Empire phase.
 - [x] **Enduring (Ancient City).** Its cards are not discarded in the
   Chronicle Phase's Shape Empire step.
-- [ ] **Chronicle import and export.** The Chronicle string codec for the TTS
+- [x] **Chronicle import and export.** The Chronicle string codec for the TTS
   format, including the sections that format has not defined yet.
   Designed in the
   [Chronicle TTS codec design](superpowers/specs/2026-10-28-chronicle-tts-codec-design.md).
   - The codec landed: TTS strings of versions 2 and 3 decode, and version 3
-    encodes. Import and export in the UI come with Saved-campaign browsing.
-- [ ] **Saved-campaign browsing.** Import, export, load and delete a campaign.
+    encodes. Import and export in the UI landed with Saved-campaign browsing.
+- [x] **Saved-campaign browsing.** Import, export, load and delete a campaign.
   Designed in the
   [Chronicle browsing design](superpowers/specs/2026-10-28-chronicle-browsing-design.md);
   the Chronicle codec comes first.
-  - Slice 1 landed: `Chronicle.name`, the era scorepad, canonical Chronicle
-    JSON with a digest and summary, `POST /chronicles/convert`, game
-    creation from a new or saved Chronicle, and the projection's Chronicle.
-    Slice 2 builds the browser pages and storage.
+  - Landed in two slices: the server side, then the Chronicle page, player
+    selection, browser storage, JSON and TTS import and export, and the
+    automatic save at the table. Starting game 2 from an evolved Chronicle
+    waits for the Empire phase.
 - [ ] **Foundations.**
 - [ ] **The Grand Council and Festival banner faces.** Legacies that set
   Foundation V or VI turn the banners to these faces. Their ids are in

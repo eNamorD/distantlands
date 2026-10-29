@@ -30,7 +30,8 @@ private[frontend] final class TableScreen(
     shell: GameTableShell,
     view: TableView,
     controls: TableControls,
-    session: SessionControls):
+    session: SessionControls,
+    chronicle: Option[TableChronicle] = None):
   def render(): Unit =
     val projection = view.viewedProjection
     val failure = view.shownFailure
@@ -78,6 +79,8 @@ private[frontend] final class TableScreen(
     if view.trusted && selectedPlayer.nonEmpty then
       actionContent.appendChild(text("p", "seat-identity", "Your seat: " +
         projection.fold(selectedPlayer)(playerDisplayName(_, selectedPlayer))))
+    chronicle.flatMap(_.section(projection.flatMap(_.chronicle)))
+      .foreach(actionContent.appendChild)
     val (players, world, decision) = projection match
       case None if failure.isEmpty =>
         actionContent.appendChild(text("div", "status", "Loading game…"))
