@@ -224,6 +224,18 @@ span.color-swatch { display: inline-block; width: 1.25rem; height: 1.25rem; padd
 .chronicle-export-controls .status { flex: 1 0 100%; margin: 0; }
 .export-tts-text { flex: 1 0 100%; font: inherit; min-height: 4rem;
   overflow-wrap: anywhere; }
+.chronicle-loaded-heading { display: flex; flex-wrap: wrap; align-items: center;
+  gap: 0.75rem; }
+.chronicle-loaded-name { margin: 0; font-family: Georgia, serif; font-size: 1.6rem;
+  color: var(--cream); }
+.chronicle-rename { font: inherit; padding: 0.5rem; flex: 1 1 14rem; min-width: 0; }
+.chronicle-summary-line { margin: 0; color: var(--brass); }
+.continue-chronicle, .new-chronicle, .edit-chronicle { margin: 0.5rem 0.75rem 0.5rem 0; }
+.chronicle-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
+.chronicle-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; }
+.chronicle-row-name { font-weight: 700; }
+.chronicle-row-details { color: var(--brass); flex: 1 1 14rem; }
+.chronicle-row-controls { display: flex; gap: 0.5rem; align-items: center; }
 
 #app {
   max-width: 1280px;
