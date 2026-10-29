@@ -58,3 +58,50 @@ object ChronicleEntryCodec:
       }
     yield ChronicleEntry(json, digest, ChronicleSummary(name, game, target,
       scores))
+
+/** `POST /chronicles/convert`'s body: a saved Chronicle's JSON, or a TTS
+  * string with the name it is imported under. */
+enum ChronicleConvertRequest:
+  case FromJson(json: String)
+  case FromTts(tts: String, name: String)
+
+/** The convert route's answer: `{json, digest, summary, tts?}`. */
+final case class ChronicleConvertResponse(entry: ChronicleEntry,
+    tts: Option[String])
+
+object ChronicleConvertRequestCodec:
+  import TrustedGameCodecFields.{exact => exactKeys, parse, text}
+
+  def encode(request: ChronicleConvertRequest): String =
+    ujson.write(request match
+      case ChronicleConvertRequest.FromJson(json) => ujson.Obj("json" -> json)
+      case ChronicleConvertRequest.FromTts(tts, name) =>
+        ujson.Obj("tts" -> tts, "name" -> name))
+
+  def decode(json: String)
+      : Either[ProtocolDecodeFailure, ChronicleConvertRequest] =
+    parse(json) {
+      case raw: ujson.Obj if raw.value.contains("json") =>
+        exactKeys(raw, Vector("json"), "$").flatMap(root =>
+          text(root, "json", "$")).map(ChronicleConvertRequest.FromJson(_))
+      case raw => for
+        root <- exactKeys(raw, Vector("tts", "name"), "$")
+        tts <- text(root, "tts", "$")
+        name <- text(root, "name", "$")
+      yield ChronicleConvertRequest.FromTts(tts, name)
+    }
+
+object ChronicleConvertResponseCodec:
+  def encode(response: ChronicleConvertResponse): String =
+    val value = ChronicleEntryCodec.encodeValue(response.entry)
+    response.tts.foreach(tts => value("tts") = tts)
+    ujson.write(value)
+
+  def decode(json: String)
+      : Either[ProtocolDecodeFailure, ChronicleConvertResponse] =
+    TrustedGameCodecFields.parse(json) { raw => for
+      value <- obj(raw, "$")
+      _ <- exact(value, ChronicleEntryCodec.fields + "tts", "$")
+      entry <- ChronicleEntryCodec.decodeFields(value, "$")
+      tts <- optionalAbsent(value, "tts", "$")(string)
+    yield ChronicleConvertResponse(entry, tts) }

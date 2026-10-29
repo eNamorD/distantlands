@@ -44,7 +44,8 @@ object ServerRoutes:
       Seq("localhost", "127.0.0.1", "[::1]").map(host =>
         new java.net.URI(s"http://$host:${config.port}"))
     val trustedSeats = new TrustedSeatRoutes(runtime.identities,
-      runtime.trustedGameProvisioning, runtime.trustedGame, publicOrigin,
+      runtime.trustedGameProvisioning, runtime.trustedGame, runtime.chronicles,
+      publicOrigin,
       blockingExecutionContext, loopbackAliases).route
     val application = config.mode match
       case ServerMode.Development =>

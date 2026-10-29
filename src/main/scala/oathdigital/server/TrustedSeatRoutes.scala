@@ -11,12 +11,14 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import org.slf4j.LoggerFactory
 import oathdigital.application._
+import oathdigital.application.chronicle.ChronicleConversion
 import oathdigital.protocol._
 
 final class TrustedSeatRoutes(
     identities: IdentityRepository,
     provisioning: TrustedGameProvisioning,
     gateway: TrustedGameGateway,
+    chronicles: ChronicleConversion,
     publicBaseUrl: URI,
     blockingExecutionContext: ExecutionContext,
     extraOrigins: Seq[URI] = Nil
@@ -39,6 +41,24 @@ final class TrustedSeatRoutes(
                 case Left(TrustedGameFailure.DuplicateGame) => error(StatusCodes.Conflict,
                   "duplicate-game", "the game already exists")
                 case Left(_) => internalError()
+        }
+      } } }
+    } ~ path("chronicles" / "convert") {
+      post { noQuery { sameOrigin {
+        entity(as[String]) { body =>
+          ChronicleConvertRequestCodec.decode(body) match
+            case Left(_) => complete(malformed)
+            case Right(request) => async:
+              val converted = request match
+                case ChronicleConvertRequest.FromJson(text) =>
+                  chronicles.fromJson(text)
+                case ChronicleConvertRequest.FromTts(text, name) =>
+                  chronicles.fromTts(text, name)
+              converted.fold(
+                reason => error(StatusCodes.UnprocessableContent,
+                  "invalid-chronicle", reason),
+                done => json(StatusCodes.OK, ChronicleConvertResponseCodec
+                  .encode(ChronicleConvertResponse(done.entry, done.tts))))
         }
       } } }
     } ~ path("s" / Segment) { raw =>

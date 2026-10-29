@@ -21,3 +21,21 @@ class ChronicleProtocolSuite extends munit.FunSuite:
     val raw = ChronicleEntryCodec.encodeValue(entry)
     raw("extra") = 1
     assert(ChronicleEntryCodec.decodeValue(raw, "$").isLeft)
+
+  test("a convert request is JSON alone, or a TTS string with a name"):
+    Vector(ChronicleConvertRequest.FromJson("{}"),
+      ChronicleConvertRequest.FromTts("03abc", "Imported")).foreach(request =>
+      assertEquals(ChronicleConvertRequestCodec.decode(
+        ChronicleConvertRequestCodec.encode(request)), Right(request)))
+    assert(ChronicleConvertRequestCodec.decode("""{"tts":"03abc"}""").isLeft)
+    assert(ChronicleConvertRequestCodec.decode(
+      """{"json":"{}","name":"x"}""").isLeft)
+
+  test("a convert response is the entry's fields and an optional TTS string"):
+    Vector(Some("03abc"), None).foreach(tts =>
+      val response = ChronicleConvertResponse(entry, tts)
+      assertEquals(ChronicleConvertResponseCodec.decode(
+        ChronicleConvertResponseCodec.encode(response)), Right(response)))
+    assertEquals(ujson.read(ChronicleConvertResponseCodec.encode(
+      ChronicleConvertResponse(entry, None))).obj.keySet.toSet,
+      Set("json", "digest", "summary"))
