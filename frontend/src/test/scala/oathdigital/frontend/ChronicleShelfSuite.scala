@@ -85,7 +85,7 @@ class ChronicleShelfSuite extends munit.FunSuite:
       Map(ChronicleShelf.ListKey -> "not json"))
     val shelf = shelfOver(storage)
     assertEquals(shelf.rows, Vector(ShelfRow.Unreadable(0)))
-    shelf.delete(0)
+    shelf.delete(0, None)
     assertEquals(storage.values(ChronicleShelf.ListKey), "[]")
     assertEquals(shelf.rows, Vector.empty)
 
@@ -93,7 +93,7 @@ class ChronicleShelfSuite extends munit.FunSuite:
     val storage = storageHolding("A", "B")
     val shelf = shelfOver(storage)
     shelf.load("A")
-    shelf.delete(0)
+    shelf.delete(0, Some("A"))
     assertEquals(names(shelf), Vector("B"))
     assertEquals(shelf.loaded, None)
     assert(!storage.values.contains(ChronicleShelf.LoadedKey))
@@ -101,8 +101,15 @@ class ChronicleShelfSuite extends munit.FunSuite:
   test("deleting another entry keeps the loaded Chronicle"):
     val shelf = shelfOver(storageHolding("A", "B"))
     shelf.load("A")
-    shelf.delete(1)
+    shelf.delete(1, Some("B"))
     assertEquals(shelf.loaded.map(_.name), Some("A"))
+
+  test("delete leaves a row that no longer holds the entry shown"):
+    val storage = storageHolding("A", "B")
+    val stale = shelfOver(storage)
+    shelfOver(storage).delete(0, Some("A"))
+    stale.delete(0, Some("A"))
+    assertEquals(names(stale), Vector("B"))
 
   test("load ignores a name the shelf does not hold"):
     val storage = storageHolding("A")
@@ -154,6 +161,7 @@ class ChronicleShelfSuite extends munit.FunSuite:
       AutoSave.Saved(SavedChronicle(evolved, ChronicleFixtures.savedAt)))
     assertEquals(names(shelf), Vector("A", "B"))
     assertEquals(present(shelf.find("A"), "A").entry.digest, "d-2")
+    assertEquals(shelf.loaded.map(_.entry), Some(evolved))
 
   test("autoSave over any other digest is a Conflict naming the entry"):
     val shelf = shelfOver(storageHolding("A"))

@@ -31,7 +31,8 @@ private[frontend] object ChronicleFiles:
       dom.document.body.appendChild(link)
       link.click()
       dom.document.body.removeChild(link)
-      dom.URL.revokeObjectURL(url)
+      // Some browsers cancel a download whose URL is revoked at once.
+      dom.window.setTimeout(() => dom.URL.revokeObjectURL(url), 10000)
 
     def copy(text: String): Future[Boolean] =
       val clipboard = dom.window.navigator.asInstanceOf[js.Dynamic]

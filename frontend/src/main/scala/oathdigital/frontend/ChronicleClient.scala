@@ -39,8 +39,10 @@ private[frontend] object ChronicleClient:
       ujson.write(value)
     }.toOption.toRight("The saved Chronicle could not be read.")
 
-  /** A refusal's reason as the server wrote it, without the status line. */
+  /** A refusal's reason as the server wrote it, as a sentence; an answer
+    * that is not the server's error shape, as from a proxy, names only its
+    * status. */
   def reason(response: TransportResponse): String =
-    GameJson.responseFailure(response) match
-      case GameClientFailure.HttpFailure(_, _, detail) => detail
-      case other => other.message
+    GameJson.decodeError(response.body).fold(
+      _ => s"The server answered HTTP ${response.status}.",
+      (_, message) => message.capitalize)

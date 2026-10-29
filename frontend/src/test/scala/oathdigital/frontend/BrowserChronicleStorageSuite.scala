@@ -13,11 +13,12 @@ class BrowserChronicleStorageSuite extends ChronicleStorageContract:
   private val jsObject = js.Dynamic.global.Object
   private var replaced: js.Dynamic = js.undefined.asInstanceOf[js.Dynamic]
 
-  /** Installs a `localStorage` stand-in over a plain dictionary whose
-    * `setItem` throws for every key that `refuses`. */
-  private def installLocalStorage(refuses: String => Boolean): Unit =
+  /** Installs a `localStorage` stand-in over a plain dictionary holding
+    * `initial`, whose `setItem` throws for every key that `refuses`. */
+  private def installLocalStorage(refuses: String => Boolean,
+      initial: Map[String, String] = Map.empty): Unit =
     replaced = jsObject.getOwnPropertyDescriptor(window, "localStorage")
-    val items = js.Dictionary.empty[String]
+    val items = js.Dictionary(initial.toSeq*)
     val getItem: js.Function1[String, String] =
       key => items.get(key).orNull
     val setItem: js.Function2[String, String, Unit] = (key, value) =>
@@ -59,6 +60,14 @@ class BrowserChronicleStorageSuite extends ChronicleStorageContract:
   test("a browser that refuses every write gives no store"):
     installLocalStorage(_ => true)
     try assertEquals(ChronicleStorage.browser, None)
+    finally putBackLocalStorage()
+
+  test("a full storage that already holds Chronicles keeps its store"):
+    installLocalStorage(_ => true, Map(ChronicleShelf.ListKey -> "[]"))
+    try
+      val store = present(ChronicleStorage.browser, "a store")
+      assertEquals(store.read(ChronicleShelf.ListKey), Some("[]"))
+      assert(!store.write(ChronicleShelf.ListKey, "[1]"))
     finally putBackLocalStorage()
 
   test("a storage that refuses writes, as a full one does, answers false"):

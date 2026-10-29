@@ -69,7 +69,8 @@ private[frontend] final class ChronicleShelf(storage: ChronicleStorage,
     }.find(find(_).isEmpty).get
 
   /** Saves `entry` and loads it. An entry with its name, or with the name
-    * `replacing`, is replaced where it stands; otherwise it is added last. */
+    * `replacing`, is replaced where it stands; otherwise it is added last.
+    * Callers that must not overwrite check `nameProblem` first. */
   def put(entry: ChronicleEntry, replacing: Option[String] = None)
       : Either[String, SavedChronicle] =
     val added = SavedChronicle(entry, now())
@@ -91,12 +92,16 @@ private[frontend] final class ChronicleShelf(storage: ChronicleStorage,
     if find(name).nonEmpty && !storage.read(LoadedKey).contains(name) then
       storage.write(LoadedKey, name)
 
-  def delete(index: Int): Unit =
+  /** Removes the row at `index` if it still holds the entry named `shown`,
+    * or an unreadable one when `shown` is empty: another page of this
+    * browser may have changed the list since this one was drawn. */
+  def delete(index: Int, shown: Option[String]): Unit =
     val current = items
-    val gone = current.lift(index).flatMap(decode).map(_.name)
-    store(current.patch(index, Nil, 1))
-    if gone.exists(name => storage.read(LoadedKey).contains(name)) then
-      storage.remove(LoadedKey)
+    val gone = current.lift(index).map(decode(_).map(_.name))
+    if gone.contains(shown) then
+      store(current.patch(index, Nil, 1))
+      if shown.exists(name => storage.read(LoadedKey).contains(name)) then
+        storage.remove(LoadedKey)
 
   def autoSave(evolved: ChronicleEntry, startingDigest: String): AutoSave =
     def saving = put(evolved).fold(AutoSave.Refused(_), AutoSave.Saved(_))

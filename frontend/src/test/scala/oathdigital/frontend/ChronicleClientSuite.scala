@@ -32,6 +32,18 @@ class ChronicleClientSuite extends munit.FunSuite:
       .convert(ChronicleConvertRequest.FromJson("{}"))
       .map(result => assertEquals(result, Left("$.era: bad")))
 
+  test("a refusal's reason reads as a sentence"):
+    clientAnswering(422,
+      """{"error":"invalid-chronicle","message":"a Chronicle needs a name"}""")
+      .convert(ChronicleConvertRequest.FromJson("{}"))
+      .map(result => assertEquals(result, Left("A Chronicle needs a name")))
+
+  test("an answer that is not the server's error names only its status"):
+    clientAnswering(502, "<html>Bad gateway</html>")
+      .convert(ChronicleConvertRequest.FromJson("{}"))
+      .map(result => assertEquals(result,
+        Left("The server answered HTTP 502.")))
+
   test("a transport failure answers its message"):
     ChronicleClient(ScriptedTransport((_, _, _) => Future.successful(
       Left(GameClientFailure.NetworkFailure("offline")))))

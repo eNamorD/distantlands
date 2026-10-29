@@ -26,7 +26,10 @@ private[frontend] class MemoryChronicleStorage(
 
 private[frontend] object ChronicleStorage:
   /** Written and removed once to learn whether the browser keeps anything:
-    * some private windows have a `localStorage` that refuses every write. */
+    * some private windows have a `localStorage` that refuses every write.
+    * A browser that already holds Chronicles keeps its store even when the
+    * probe fails, as a full storage's does: they stay listed and loadable,
+    * and only writes are refused. */
   val Probe = "oath.chronicles.probe"
 
   /** The browser's `localStorage`, or nothing when the browser refuses it. */
@@ -36,7 +39,8 @@ private[frontend] object ChronicleStorage:
       .filter(storage => Try {
         storage.setItem(Probe, Probe)
         storage.removeItem(Probe)
-      }.isSuccess)
+      }.isSuccess || Try(storage.getItem(ChronicleShelf.ListKey) != null)
+        .getOrElse(false))
       .map(storage =>
         new ChronicleStorage:
           def read(key: String): Option[String] =
