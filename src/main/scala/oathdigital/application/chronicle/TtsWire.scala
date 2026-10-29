@@ -155,24 +155,26 @@ object TtsWire:
 
   private def mod(a: Long, m: Int): Int = (((a % m) + m) % m).toInt
 
+  /** Each character steps the seed, shifts by it, then feeds its true index
+    * back into the seed. */
   private def scramble(input: String, decoding: Boolean): Either[String, String] =
     val n = Base82Plus.length
-    var seed = ScrambleSeed
-    val out = new StringBuilder
-    input.foldLeft[Either[String, Unit]](Right(()))((ok, c) =>
-      ok.flatMap(_ =>
-        seed = seed * 16807 % SeedModulus
+    input.foldLeft[Either[String, (Long, String)]](Right((ScrambleSeed, ""))) {
+      case (done, c) => done.flatMap { case (previous, out) =>
+        val seed = previous * 16807 % SeedModulus
         val idx = Base82Plus.indexOf(c)
         if idx < 0 then Left(s"scramble: invalid character \"$c\" in string")
         else
           val trueIdx = if decoding then mod(idx - seed, n) else idx
-          out += Base82Plus(if decoding then trueIdx else mod(idx + seed, n))
-          seed = (seed + trueIdx) % SeedModulus
-          Right(()))).map(_ => out.toString)
+          val written = if decoding then trueIdx else mod(idx + seed, n)
+          Right(((seed + trueIdx) % SeedModulus, out + Base82Plus(written)))
+      }
+    }.map(_._2)
 
   private def checksum(text: String): Int =
-    text.zipWithIndex.foldLeft(0)((sum, entry) =>
-      (sum + (entry._2 + 1) * Base82Plus.indexOf(entry._1)) % ChecksumModulus)
+    text.zipWithIndex.foldLeft(0) { case (sum, (c, i)) =>
+      (sum + (i + 1) * Base82Plus.indexOf(c)) % ChecksumModulus
+    }
 
   // ---------- sites ----------
   // One token per site, ended by '#': the index in the lowest 2 digits,
@@ -185,8 +187,9 @@ object TtsWire:
           s"Site index ${site.index} does not fit")
         _ <- site.items.find(id => id < 1 || id >= 1000)
           .toLeft(()).left.map(id => s"Item $id does not fit in a site")
-        value = site.items.zipWithIndex.foldLeft(BigInt(site.index))(
-          (n, entry) => n + BigInt(entry._1) * BigInt(1000).pow(entry._2) * 100)
+        value = site.items.zipWithIndex.foldLeft(BigInt(site.index)) {
+          case (n, (item, i)) => n + BigInt(item) * BigInt(1000).pow(i) * 100
+        }
         token <- safe(value).flatMap(toBase82)
       yield token + "#")).map(_.mkString)
 
@@ -233,8 +236,9 @@ object TtsWire:
   private def packValue(ids: Vector[Int], radix: Int): Either[String, Long] =
     ids.find(id => id < 1 || id >= radix).toLeft(()).left
       .map(id => s"Id $id does not fit in radix $radix")
-      .flatMap(_ => safe(ids.zipWithIndex.foldLeft(BigInt(0))((n, entry) =>
-        n + BigInt(entry._1) * BigInt(radix).pow(entry._2))))
+      .flatMap(_ => safe(ids.zipWithIndex.foldLeft(BigInt(0)) {
+        case (n, (id, i)) => n + BigInt(id) * BigInt(radix).pow(i)
+      }))
 
   /** The value's digits in `radix`, lowest first, stopping at zero. */
   private def digits(value: Long, radix: Int): Iterator[Int] =
@@ -315,7 +319,8 @@ object TtsWire:
       case fields => Left(
         s"Player section should have 3 fields, found ${fields.size}: $section")
 
-  private def sequence[A](values: Vector[Either[String, A]])
+  /** The values, or the first refusal among them. */
+  private[chronicle] def sequence[A](values: Vector[Either[String, A]])
       : Either[String, Vector[A]] =
     values.foldLeft[Either[String, Vector[A]]](Right(Vector.empty))(
       (done, next) => done.flatMap(found => next.map(found :+ _)))

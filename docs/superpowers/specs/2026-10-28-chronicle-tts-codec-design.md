@@ -1,6 +1,7 @@
 # Chronicle TTS codec design
 
-Status: approved in brainstorming, 2026-10-28. Next step: implementation plan.
+Status: implemented, 2026-10-29
+([plan](../plans/2026-10-28-chronicle-tts-codec.md)).
 
 Roadmap item: **Phase - Chronicle steps**, "Chronicle import and export". It
 comes before the [Chronicle browsing design](2026-10-28-chronicle-browsing-design.md),
@@ -92,10 +93,15 @@ The format in brief:
 
 - `application/chronicle/TtsIds.scala`: the id tables, both directions.
 - `application/chronicle/ChronicleTtsCodec.scala`:
-  `decode(text, name): Either[String, Chronicle]` and
+  `decode(text): Either[String, Chronicle]` and
   `encode(chronicle): Either[String, TtsExport]`, where
   `TtsExport(text: String, omitted: Vector[String])`. Encoding fails only for a
-  value the format cannot represent, such as more than six starting advisers.
+  value the format cannot represent, such as more than six starting advisers,
+  a kept Vision or a lineage of a color TTS lacks. Browsing slice 1 adds the
+  `name` parameter and the name entry in the omitted list, when `Chronicle`
+  gains `name`.
+- `application/chronicle/TtsWire.scala`: the string format itself, over TTS
+  numbers.
 - `model/GameState.scala`: `LineageState.startingRelics`.
 - `gameplay/setup/GameStartRules.scala` and `ChronicleAccounting.scala`: the
   refusal and the accounting.

@@ -8,6 +8,7 @@ import java.nio.file.{Files, Path}
 import scala.jdk.CollectionConverters._
 import oathdigital.application._
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
+import oathdigital.gameplay.setup.FirstGameSetupFixture.chronicle
 import oathdigital.gameplay.setup.SetupProcedure
 import oathdigital.protocol._
 import oathdigital.testkit.{CatalogNames, HttpTestServer}

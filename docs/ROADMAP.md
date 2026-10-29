@@ -213,6 +213,8 @@ continuation, and campaign browsing.
   format, including the sections that format has not defined yet.
   Designed in the
   [Chronicle TTS codec design](superpowers/specs/2026-10-28-chronicle-tts-codec-design.md).
+  - The codec landed: TTS strings of versions 2 and 3 decode, and version 3
+    encodes. Import and export in the UI come with Saved-campaign browsing.
 - [ ] **Saved-campaign browsing.** Import, export, load and delete a campaign.
   Designed in the
   [Chronicle browsing design](superpowers/specs/2026-10-28-chronicle-browsing-design.md);

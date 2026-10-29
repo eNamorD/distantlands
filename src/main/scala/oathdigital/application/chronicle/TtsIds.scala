@@ -45,7 +45,7 @@ final class TtsIds(catalog: ExecutableCatalog):
 
   private def numbered(value: String, prefix: String): Option[Int] =
     Option.when(value.startsWith(prefix))(value.drop(prefix.length))
-      .flatMap(_.toIntOption).filter(_ > 0)
+      .flatMap(_.toIntOption).filter(n => n > 0 && n < 100)
 
 object TtsIds:
   /** The sites in TTS index order: alphabetical by name. */
