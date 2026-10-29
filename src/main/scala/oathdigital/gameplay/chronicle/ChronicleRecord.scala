@@ -25,15 +25,11 @@ object ChronicleRecord:
     val campaign = ready.game.campaign
     val seatedBy = ready.game.current.players
       .map(player => player.lineage -> player.player).toMap
-    // A seated lineage the baseline lists keeps its baseline legacies: game
-    // start seats every lineage fresh, so the live state has none of its
-    // own yet. Its starting advisers are the ones this Chronicle kept.
+    // A seated lineage the baseline lists is its live state: game start
+    // seated it from its record (`GameStartRules`).
     val kept = campaign.baseline.lineages.map(lineage =>
       campaign.lineages.get(lineage.id)
-        .map(live => lineage.copy(role = live.role,
-          previousPlayer = seatedBy.get(lineage.id),
-          startingAdvisers = live.startingAdvisers,
-          startingRelics = live.startingRelics))
+        .map(_.copy(previousPlayer = seatedBy.get(lineage.id)))
         .getOrElse(lineage.copy(role =
           campaign.boxRoles.getOrElse(lineage.id, lineage.role))))
     val known = kept.map(_.id).toSet

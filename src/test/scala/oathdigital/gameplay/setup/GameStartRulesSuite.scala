@@ -60,6 +60,48 @@ class GameStartRulesSuite extends munit.FunSuite:
       Left(OathViolation.UnsupportedChronicle(
         "starting relics require Legacies")))
 
+  test("a seated lineage the Chronicle lists starts from its record, and an " +
+      "unlisted one starts as a fresh Exile"):
+    val Vector(listed, unlisted) = orders.participants.take(2).map(_.lineageId)
+    val record = LineageState(listed, Some(PlayerId("p9")), Role.Exile,
+      Vector.empty, Vector.empty)
+    val ready = accepted(GameStartRules.evolve(catalog,
+      chronicle.copy(lineages = Vector(record)), orders))
+    assertEquals(ready.game.campaign.lineages(listed), record)
+    assertEquals(ready.game.campaign.lineages(unlisted), LineageState(unlisted,
+      None, Role.Exile, Vector.empty, Vector.empty))
+
+  test("game start refuses an Imperial role, even in the box, until the " +
+      "Empire"):
+    val seated = orders.participants.head.lineageId
+    for (lineage, role) <- Vector(seated -> Role.Chancellor,
+        LineageId("l9") -> Role.Citizen) do
+      val imperial = chronicle.copy(lineages = Vector(LineageState(lineage,
+        None, role, Vector.empty, Vector.empty)))
+      assertEquals(GameStartRules.evolve(catalog, imperial, orders),
+        Left(OathViolation.UnsupportedChronicle(
+          "Imperial roles require the Empire")))
+
+  test("game start refuses a seated lineage's legacies until Legacies"):
+    val legacy = LegacyState(LegacyId(catalog.legacies.head.id.value),
+      active = true)
+    val keeping = chronicle.copy(lineages = Vector(LineageState(
+      orders.participants.head.lineageId, None, Role.Exile, Vector(legacy),
+      Vector.empty)))
+    assertEquals(GameStartRules.evolve(catalog, keeping, orders),
+      Left(OathViolation.UnsupportedChronicle("legacies require Legacies")))
+
+  test("game start refuses a seated lineage's starting advisers until " +
+      "later-game setup"):
+    val adviser = DenizenState(chronicle.worldDeck.head, Orientation.FaceDown,
+      Tokens.empty)
+    val keeping = chronicle.copy(worldDeck = chronicle.worldDeck.tail,
+      lineages = Vector(LineageState(orders.participants.head.lineageId, None,
+        Role.Exile, Vector.empty, Vector(adviser))))
+    assertEquals(GameStartRules.evolve(catalog, keeping, orders),
+      Left(OathViolation.UnsupportedChronicle(
+        "starting advisers require later-game setup")))
+
   test("game start takes the era and Oathkeeper goal from the Chronicle"):
     val l9 = LineageId("l9")
     val scored = chronicle.copy(

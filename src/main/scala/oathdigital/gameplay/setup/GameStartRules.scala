@@ -32,9 +32,13 @@ object GameStartRules:
         .collect { case id: EdificeId => id }.toSet
       commonCards = material.commonCards.copy(edificeDeck =
         material.commonCards.edificeDeck.filterNot(storedEdifices))
+      // A seated lineage the Chronicle lists starts from its record;
+      // `buildPlan` refuses what that record needs later-game setup for.
+      recorded = chronicle.lineages.map(lineage => lineage.id -> lineage).toMap
       lineages = plan.participants.map(participant =>
-        participant.lineageId -> LineageState(
-          participant.lineageId, None, Role.Exile, Vector.empty, Vector.empty)
+        participant.lineageId -> recorded.getOrElse(participant.lineageId,
+          LineageState(participant.lineageId, None, Role.Exile, Vector.empty,
+            Vector.empty))
       ).toMap
       foundations = FoundationNumber.all.map(number =>
         number -> FoundationState(FoundationFace.Normal, Set.empty)).toMap
@@ -63,6 +67,14 @@ object GameStartRules:
         UnsupportedChronicle("a non-empty world requires the Empire"))
       _ <- Either.cond(chronicle.lineages.forall(_.startingRelics.isEmpty), (),
         UnsupportedChronicle("starting relics require Legacies"))
+      _ <- Either.cond(chronicle.lineages.forall(!_.role.isImperial), (),
+        UnsupportedChronicle("Imperial roles require the Empire"))
+      seated = orders.participants.map(_.lineageId).toSet
+      records = chronicle.lineages.filter(lineage => seated(lineage.id))
+      _ <- Either.cond(records.forall(_.legacies.isEmpty), (),
+        UnsupportedChronicle("legacies require Legacies"))
+      _ <- Either.cond(records.forall(_.startingAdvisers.isEmpty), (),
+        UnsupportedChronicle("starting advisers require later-game setup"))
       _ <- Either.cond(chronicle.atlasBox.size >= 8, (),
         UnsupportedChronicle(
           s"at least 8 atlas sites are required, got ${chronicle.atlasBox.size}"))
