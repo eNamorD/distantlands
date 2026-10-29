@@ -58,7 +58,7 @@ private[serialization] trait GameEventJsonSupport:
         case FoundationFace.Altered => "altered"
       }),
       "alterationSources" -> stringArray(
-        state.alterationSources.toVector.map(_.value)))
+        state.alterationSources.toVector.map(_.value).sorted))
 
   protected final def decodeFoundationState(value: ujson.Value, path: String)
       : Either[WireError, (FoundationNumber, FoundationState)] = for
@@ -168,6 +168,7 @@ private[serialization] trait GameEventJsonSupport:
       "dispossessed" -> stringArray(chronicle.dispossessed.map(_.value)),
       "reliquary" -> stringArray(chronicle.reliquary.map(_.value)),
       "foundations" -> ujson.Arr.from(chronicle.foundations.toVector
+        .sortBy(_._1.value)
         .map { case (number, state) => encodeFoundationState(number, state) }),
       "lineages" -> ujson.Arr.from(chronicle.lineages.map(encodeLineageState))
     )
