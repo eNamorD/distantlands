@@ -36,7 +36,7 @@ class GameServerGatewaySubmitBeginSuite extends munit.FunSuite:
   private def begun(using munit.Location): BegunGame =
     val plan = accepted(new GeneratedFirstGamePlanFactory(catalog, unshuffled)
       .build(config, ChronicleChoice.New("Gateway Chronicle")))
-    val dealt = ChronicleFirstGamePlan.dealOrder(plan.chronicle, plan.resolvedConfig)
+    val dealt = plan.orders
     val path = Files.createTempDirectory("oathdigital-bootstrap-")
       .resolve("journal")
     val repository = accepted(OwnedHsqldbEventStreamRepository.open(path))

@@ -25,7 +25,8 @@ object StoredSite:
  * sites in storage (index 0 is the Recent end) and `world` holds the
  * Empire's sites, which stay on the map into the next game. Deck order
  * (`worldDeck`, `relicDeck`) is kept but not meaningful between games --
- * setup shuffles both. `reliquary`, `foundations` and `lineages` are empty
+ * game creation shuffles both into `SetupOrders`, and setup deals from
+ * those, since a Chronicle is shown to players. `reliquary`, `foundations` and `lineages` are empty
  * or default for a first game.
  *
  * `name` is the Chronicle's identity in a browser, which keeps its names

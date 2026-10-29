@@ -12,8 +12,9 @@ import oathdigital.gameplay.powers.PowerImplementationStatus
  *
  * A saved Chronicle is used as it is. Either way the seating order is
  * shuffled, and the first seat becomes the first player, so the requested
- * `firstPlayer` is ignored. The shuffled order is
- * recorded in the plan, so replay stays RNG-free.
+ * `firstPlayer` is ignored. Both decks are shuffled into the deal by
+ * `policy`, since a Chronicle's own order is shown to players. The
+ * shuffled orders are recorded in the plan, so replay stays RNG-free.
  */
 final class GeneratedFirstGamePlanFactory(
     catalog: ExecutableCatalog,
@@ -23,17 +24,24 @@ final class GeneratedFirstGamePlanFactory(
   override def build(config: FirstGameBootstrapConfig, choice: ChronicleChoice)
       : Either[BootstrapPlanFailure, FirstGamePlan] =
     val resolvedConfig = shuffledSeating(config)
+    val implemented = PowerImplementationStatus.implemented(catalog)
     val chronicle = choice match
       case ChronicleChoice.New(name) =>
-        FirstGameChronicleGenerator.generate(catalog, name,
-            PowerImplementationStatus.implemented(catalog), random, policy)
+        FirstGameChronicleGenerator.generate(catalog, name, implemented,
+            random, policy)
           .left.map {
             case ChronicleGeneratorFailure.InvalidName(reason) =>
               BootstrapPlanFailure(reason)
             case failure => BootstrapPlanFailure(failure.toString)
           }
       case ChronicleChoice.Saved(saved) => Right(saved)
-    chronicle.map(FirstGamePlan(_, resolvedConfig))
+    chronicle.map(chronicle => FirstGamePlan(chronicle, resolvedConfig,
+      ChronicleFirstGamePlan.dealOrder(resolvedConfig,
+        policy.order(chronicle.worldDeck,
+          ImplementedCardCatalog.denizens(catalog, implemented), random),
+        policy.order(chronicle.relicDeck,
+          ImplementedCardCatalog.ordinaryRelics(catalog, implemented),
+          random))))
 
   private def shuffledSeating(config: FirstGameBootstrapConfig)
       : FirstGameBootstrapConfig =

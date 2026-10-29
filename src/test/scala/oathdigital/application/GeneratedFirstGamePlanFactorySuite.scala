@@ -3,6 +3,7 @@ package oathdigital.application
 import oathdigital.gameplay.powers.PowerImplementationStatus
 import oathdigital.gameplay.setup.{FirstGameSetupFixture, GameStartRules}
 import oathdigital.model._
+import oathdigital.testkit.ChronicleShuffles
 import oathdigital.testkit.Unwrap.{accepted, present}
 
 class GeneratedFirstGamePlanFactorySuite extends munit.FunSuite:
@@ -20,7 +21,7 @@ class GeneratedFirstGamePlanFactorySuite extends munit.FunSuite:
       cards.dropWhile(implemented).forall(card => !implemented(card))
 
     val plan = accepted(factory.build(config, ChronicleChoice.New("Test Chronicle")))
-    val orders = ChronicleFirstGamePlan.dealOrder(plan.chronicle, plan.resolvedConfig)
+    val orders = plan.orders
     val current = accepted(
       GameStartRules.evolve(catalog, plan.chronicle, orders)).game.current
     val dealtWorld: Vector[WorldCardId] =
@@ -34,7 +35,7 @@ class GeneratedFirstGamePlanFactorySuite extends munit.FunSuite:
 
     val dealtRelics = current.map.inPlay.flatMap(site =>
       current.map.sites(site).relics.map(_.id)) ++ current.commonCards.relicDeck
-    assertEquals(dealtRelics, plan.chronicle.relicDeck)
+    assertEquals(dealtRelics, plan.orders.relicOrder)
     assert(implementedFirst(dealtRelics, relics), dealtRelics.toString)
     assert(current.map.inPlay.flatMap(current.map.sites(_).denizens).forall {
       case edifice: EdificeState =>
@@ -68,3 +69,15 @@ class GeneratedFirstGamePlanFactorySuite extends munit.FunSuite:
     assertEquals(plan.chronicle, saved)
     assertEquals(plan.resolvedConfig.participants.toSet,
       config.participants.toSet)
+
+  test("the deal is shuffled from the Chronicle's decks, not their order"):
+    val saved = FirstGameSetupFixture.chronicle
+    val plan = accepted(new GeneratedFirstGamePlanFactory(catalog,
+      ChronicleShuffles.reversing).build(config, ChronicleChoice.Saved(saved)))
+    assertNotEquals(plan.orders.denizenOrder, saved.worldDeck)
+    assertEquals(plan.orders.denizenOrder.sortBy(_.value),
+      saved.worldDeck.sortBy(_.value))
+    assertNotEquals(plan.orders.relicOrder, saved.relicDeck)
+    assertEquals(plan.orders.relicOrder.sortBy(_.value),
+      saved.relicDeck.sortBy(_.value))
+    assertEquals(plan.chronicle, saved)

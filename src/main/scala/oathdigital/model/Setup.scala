@@ -13,10 +13,17 @@ final case class PawnPlacement(playerId: PlayerId, siteId: SiteId)
   * order is not meaningful for (2026-09-21 Chronicle design, slice 2,
   * "Setup from a Chronicle"). Recorded on `GameStarted` alongside the
   * Chronicle itself, so replay never re-derives either from live state.
+  *
+  * Setup deals from these orders, never from the Chronicle's: a Chronicle
+  * is shown to players, so its deck order must not be the deal.
+  * `denizenOrder` is the world deck shuffled, which deals hands and the
+  * regional discards; `worldDeckOrder` is the rest of it with the Visions
+  * spliced in; `relicOrder` is the relic deck shuffled.
   */
 final case class SetupOrders(
     participants: Vector[FirstGameParticipant],
     firstPlayer: PlayerId,
+    denizenOrder: Vector[DenizenId],
     worldDeckOrder: Vector[WorldCardId],
     relicOrder: Vector[RelicId]
 )

@@ -80,9 +80,27 @@ object GameStartRules:
         chronicle.relicDeck.size >= inPlay.map(s => relicSlots(catalog, s.site)).sum,
         (), UnsupportedChronicle("not enough relics to fill site slots"))
       _ <- validateParticipants(orders)
+      _ <- validateDeal(chronicle, orders)
     yield FirstGameSetupPlan(orders.participants, orders.firstPlayer,
-      inPlay.map(_.site), chronicle.worldDeck, orders.worldDeckOrder,
-      chronicle.relicDeck, homelands, chronicle.oathkeeperGoal)
+      inPlay.map(_.site), orders.denizenOrder, orders.worldDeckOrder,
+      orders.relicOrder, homelands, chronicle.oathkeeperGoal)
+
+  /** The deal holds the Chronicle's decks, each card once, in any order; the
+    * world deck below the dealt cards is the rest of `denizenOrder`. */
+  private def validateDeal(chronicle: Chronicle, orders: SetupOrders)
+      : Either[OathViolation, Unit] =
+    val dealt = 6 + orders.participants.size * 3
+    for
+      _ <- Either.cond(orders.denizenOrder.sortBy(_.value) ==
+          chronicle.worldDeck.sortBy(_.value), (),
+        UnsupportedChronicle("the deal does not hold the Chronicle's world deck"))
+      _ <- Either.cond(orders.relicOrder.sortBy(_.value) ==
+          chronicle.relicDeck.sortBy(_.value), (),
+        UnsupportedChronicle("the deal does not hold the Chronicle's relic deck"))
+      _ <- Either.cond(orders.worldDeckOrder.collect { case id: DenizenId => id }
+          == orders.denizenOrder.drop(dealt), (),
+        UnsupportedChronicle("the world deck is not the rest of the deal"))
+    yield ()
 
   private def duplicate[A](values: Vector[A]): Option[A] =
     val seen = scala.collection.mutable.HashSet.empty[A]

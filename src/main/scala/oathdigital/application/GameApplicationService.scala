@@ -117,10 +117,10 @@ final class GameApplicationService(
   def prepareBootstrap(
       gameId: String,
       chronicle: Chronicle,
-      config: FirstGameBootstrapConfig
+      orders: SetupOrders
   ): Either[GameApplicationError, PreparedGameBootstrap] =
     prepareTransition(gameId, rules.initialState,
-      GameCommand.Begin(chronicle, ChronicleFirstGamePlan.dealOrder(chronicle, config)),
+      GameCommand.Begin(chronicle, orders),
       0L)
       .map { case (transition, records) => PreparedGameBootstrap(
         records, transition.state, transition.events) }

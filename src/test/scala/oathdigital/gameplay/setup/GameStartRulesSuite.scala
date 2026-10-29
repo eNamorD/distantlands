@@ -74,6 +74,28 @@ class GameStartRulesSuite extends munit.FunSuite:
     assertEquals(orders.participants.map(p => campaign.era.score(p.lineageId)),
       Vector.fill(orders.participants.size)(0))
 
+  test("setup deals from the recorded deal, not the Chronicle's order"):
+    val swapped = orders.denizenOrder(1) +: orders.denizenOrder(0) +:
+      orders.denizenOrder.drop(2)
+    val current = accepted(GameStartRules.evolve(catalog, chronicle,
+      orders.copy(denizenOrder = swapped))).game.current
+    assertEquals(current.commonCards.discard(Region.Cradle), swapped.take(2))
+    assertNotEquals(swapped.take(2), chronicle.worldDeck.take(2))
+
+  test("a deal that does not hold the Chronicle's decks is refused"):
+    def refusal(dealt: SetupOrders): OathViolation =
+      rejected(GameStartRules.evolve(catalog, chronicle, dealt))
+    assertEquals(refusal(orders.copy(denizenOrder = orders.denizenOrder.tail)),
+      OathViolation.UnsupportedChronicle(
+        "the deal does not hold the Chronicle's world deck"))
+    assertEquals(refusal(orders.copy(relicOrder = orders.relicOrder.tail)),
+      OathViolation.UnsupportedChronicle(
+        "the deal does not hold the Chronicle's relic deck"))
+    assertEquals(refusal(orders.copy(worldDeckOrder =
+        orders.worldDeckOrder.reverse)),
+      OathViolation.UnsupportedChronicle(
+        "the world deck is not the rest of the deal"))
+
   test("a non-empty world is refused"):
     // Starts from the Chronicle itself: the start rule is the subject.
     val withWorld = chronicle.copy(world = chronicle.atlasBox.take(1))

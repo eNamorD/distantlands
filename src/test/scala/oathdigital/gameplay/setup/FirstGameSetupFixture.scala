@@ -74,7 +74,7 @@ object FirstGameSetupFixture:
     * test that runs from `orders` itself starts with p2. */
   val firstPlayer: PlayerId = PlayerId("p2")
 
-  val orders: SetupOrders = SetupOrders(participants, firstPlayer,
+  val orders: SetupOrders = SetupOrders(participants, firstPlayer, denizens,
     ChronicleFixtureDealOrder.dealOrder(denizens, participants.size), relics)
 
   /** A fresh `Ready` game in `Phase.Setup`: nothing placed, nothing chosen.

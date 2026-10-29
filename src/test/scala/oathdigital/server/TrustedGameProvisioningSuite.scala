@@ -255,9 +255,10 @@ class TrustedGameProvisioningSuite extends munit.FunSuite:
       def append(id: String, expected: ExpectedStream, records: Vector[String]): Either[RepositoryFailure, RepositoryAppendResult] =
         fail("preparation must not write storage")
     val config = FirstGameBootstrapConfig(participants, orders.firstPlayer)
-    val dealt = ChronicleFirstGamePlan.dealOrder(chronicle, config)
+    val dealt = ChronicleFirstGamePlan.dealOrder(config,
+      chronicle.worldDeck, chronicle.relicDeck)
     val prepared = accepted(new GameApplicationService(catalog, untouched)
-      .prepareBootstrap("prepared", chronicle, config))
+      .prepareBootstrap("prepared", chronicle, dealt))
     val journal = new InMemoryEventStreamRepository
     val handled = accepted(new GameApplicationService(catalog, journal)
       .handle("prepared", 0L, GameCommand.Begin(chronicle, dealt)))

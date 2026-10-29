@@ -94,8 +94,7 @@ final class AuthenticatedGameGateway(
                 .flatMap(plan => service.handle(
                   gameId,
                   request.expectedNextSequence,
-                  GameCommand.Begin(plan.chronicle,
-                    ChronicleFirstGamePlan.dealOrder(plan.chronicle, plan.resolvedConfig))
+                  GameCommand.Begin(plan.chronicle, plan.orders)
                 ).left.map(Application.apply))
                 .map(accepted => projector.projectPublic(
                   gameId,

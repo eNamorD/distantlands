@@ -42,7 +42,8 @@ final class TrustedGameProvisioning(
           0L, valid.participants, valid.participants.head.playerId))
         plan <- planFactory.build(config, choice).left.map(failure =>
           Refused(failure.message))
-        placed <- place(valid.participants, plan, None, 1)
+        saved = valid.chronicle.isInstanceOf[ChronicleRequest.Saved]
+        placed <- place(valid.participants, plan, saved, None, 1)
         (gameId, codes) = placed
       yield TrustedGameCreateResponse(gameId, codes.map { case (player, code) =>
         TrustedSeatLink(player, s"$origin/s/${code.raw}") },
@@ -51,16 +52,22 @@ final class TrustedGameProvisioning(
 
   /** Stores the game under a freshly drawn ID. A taken ID is drawn again, up
     * to `MaxGameIdAttempts` draws, keeping the seat codes already generated.
+    * Game start's refusal of a `saved` Chronicle is shown to the host; for a
+    * generated one it means the request itself was wrong.
     */
   private def place(participants: Vector[BootstrapParticipantRequest],
-      plan: FirstGamePlan, seats: Option[Vector[(String, SeatCode)]], attempt: Int)
+      plan: FirstGamePlan, saved: Boolean, seats: Option[Vector[(String, SeatCode)]], attempt: Int)
       : Either[TrustedGameFailure, (String, Vector[(String, SeatCode)])] =
     val gameId = generateGameId()
     for
       prepared <- service.prepareBootstrap(gameId, plan.chronicle,
-        plan.resolvedConfig).left.map:
+        plan.orders).left.map:
         case GameApplicationError.CommandRejected(
             OathViolation.UnsupportedChronicle(reason)) => Refused(reason)
+        // A saved Chronicle can fail game start's other checks too, such
+        // as a stored site holding two edifices; the host sees why.
+        case GameApplicationError.CommandRejected(violation) if saved =>
+          Refused(s"game start refused the Chronicle: $violation")
         case _: GameApplicationError.CommandRejected => InvalidRequest
         case _ => StorageFailure
       codes <- seats.fold(generateSeats(participants))(Right(_))
@@ -68,7 +75,7 @@ final class TrustedGameProvisioning(
           code.digest -> player }, prepared.records, nowMillis()) match
         case Left(TrustedGameStoreFailure.DuplicateGame)
             if attempt < TrustedGameProvisioning.MaxGameIdAttempts =>
-          place(participants, plan, Some(codes), attempt + 1)
+          place(participants, plan, saved, Some(codes), attempt + 1)
         case Left(TrustedGameStoreFailure.DuplicateGame) => Left(DuplicateGame)
         case Left(TrustedGameStoreFailure.CodeCollision) => Left(CodeCollision)
         case Left(TrustedGameStoreFailure.InvalidInput) => Left(InvalidRequest)
