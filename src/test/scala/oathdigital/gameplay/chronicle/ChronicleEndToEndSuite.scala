@@ -58,3 +58,12 @@ class ChronicleEndToEndSuite extends munit.FunSuite:
     assertEquals(accepted(events.foldLeft[Either[OathViolation, OathState]](
       Right(usurperWakes))((state, event) => state.flatMap(
         rules.evolve(_, event)))), done.state)
+
+  test("game start refuses the crowned Chancellor rather than seating them " +
+      "as an Exile, even with the Empire's sites back in the atlas"):
+    val withoutEmpire = record.copy(atlasBox = record.world ++ record.atlasBox,
+      world = Vector.empty)
+    assertEquals(GameStartRules.evolve(catalog, withoutEmpire,
+      FirstGameSetupFixture.orders),
+      Left(OathViolation.UnsupportedChronicle(
+        "Imperial roles require the Empire")))
