@@ -40,7 +40,9 @@ class ChronicleEndToEndSuite extends munit.FunSuite:
     val lineage = ready.game.current.players.find(_.player == p1).get.lineage
     assertEquals(record.lineages.find(_.id == lineage).map(_.role),
       Some(Role.Chancellor))
-    assertEquals(record.era.lineageScores.get(lineage), Some(3))
+    assertEquals(record.era.score(lineage), 3)
+    assertEquals(record.era.games.last.entries.find(_.lineage == lineage)
+      .map(_.endingRole), Some(Role.Chancellor))
     assertNotEquals(record.oathkeeperGoal,
       ready.game.campaign.baseline.oathkeeperGoal)
     assertEquals(ready.game.campaign.evolved, Some(record))

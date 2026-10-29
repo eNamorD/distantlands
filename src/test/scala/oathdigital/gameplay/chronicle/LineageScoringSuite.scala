@@ -32,8 +32,8 @@ class LineageScoringSuite extends munit.FunSuite:
     OathTransition(next.state, at.events ++ next.events)
 
   private def scoreOf(ready: ReadyGame, player: PlayerId): Int =
-    ready.game.campaign.era.lineageScores.getOrElse(
-      ready.game.current.players.find(_.player == player).get.lineage, 0)
+    ready.game.campaign.era.score(
+      ready.game.current.players.find(_.player == player).get.lineage)
 
   test("the winner may give the other seated players one point for two"):
     val parked = ChronicleWalk.parked(atGifts.state).get

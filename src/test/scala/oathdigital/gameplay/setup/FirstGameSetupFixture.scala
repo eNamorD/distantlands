@@ -65,7 +65,7 @@ object FirstGameSetupFixture:
       edificesBySite.get(site).toVector)),
     worldDeck = denizens,
     relicDeck = relics,
-    era = EraState(20, Map.empty),
+    era = EraState(20, Vector.empty),
     oathkeeperGoal = OathkeeperGoal.Supremacy
   )
 

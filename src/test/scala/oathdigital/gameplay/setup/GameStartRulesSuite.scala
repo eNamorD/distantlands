@@ -61,15 +61,17 @@ class GameStartRulesSuite extends munit.FunSuite:
         "starting relics require Legacies")))
 
   test("game start takes the era and Oathkeeper goal from the Chronicle"):
+    val l9 = LineageId("l9")
     val scored = chronicle.copy(
-      era = EraState(15, Map(LineageId("l9") -> 6)),
+      era = EraState(15, Vector(EraGame(Vector(
+        EraEntry(l9, 6, Role.Citizen))))),
       oathkeeperGoal = OathkeeperGoal.Protection)
     val campaign = accepted(GameStartRules.evolve(catalog, scored, orders))
       .game.campaign
     assertEquals(campaign.oathkeeperGoal, OathkeeperGoal.Protection)
-    assertEquals(campaign.era.targetScore, 15)
-    assertEquals(campaign.era.lineageScores(LineageId("l9")), 6)
-    assertEquals(orders.participants.map(p => campaign.era.lineageScores(p.lineageId)),
+    assertEquals(campaign.era, scored.era)
+    assertEquals(campaign.era.score(l9), 6)
+    assertEquals(orders.participants.map(p => campaign.era.score(p.lineageId)),
       Vector.fill(orders.participants.size)(0))
 
   test("a non-empty world is refused"):

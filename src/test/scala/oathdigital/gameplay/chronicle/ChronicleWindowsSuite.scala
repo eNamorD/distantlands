@@ -42,7 +42,7 @@ class ChronicleWindowsSuite extends munit.FunSuite:
       OathTransition(state, Vector.empty),
       TriggeredProcedureRef.ChronicleBegin)))
     assertEquals(Outcomes.ready(done.state).game.campaign.era
-      .lineageScores.get(lineage), Some(windows.size))
+      .score(lineage), windows.size)
 
   test("Chronicle window keys stay as power data spells them"):
     assertEquals(

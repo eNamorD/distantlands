@@ -31,7 +31,7 @@ class ChronicleTtsCodecSuite extends munit.FunSuite:
       .map(_.legacies.map(_.active)), Some(Vector(true, false, true)))
     assert(!full.lineages.exists(_.id == lineageOf(PlayerColor.Black)))
     assertEquals(full.oathkeeperGoal, OathkeeperGoal.Supremacy)
-    assertEquals(full.era, EraState(20, Map.empty))
+    assertEquals(full.era, EraState(20, Vector.empty))
 
   test("the first-game fixture round trips and loses nothing"):
     val exported = codec.encode(chronicle).fold(fail(_), identity)
@@ -56,13 +56,14 @@ class ChronicleTtsCodecSuite extends munit.FunSuite:
 
   test("an export lists what the TTS string leaves out"):
     val evolved = chronicle.copy(
-      era = EraState(15, Map(lineageOf(PlayerColor.Red) -> 6)),
+      era = EraState(15, Vector(EraGame(Vector(
+        EraEntry(lineageOf(PlayerColor.Red), 6, Role.Exile))))),
       lineages = Vector(LineageState(lineageOf(PlayerColor.Red),
         Some(PlayerId("Red")), Role.Exile, Vector.empty, Vector.empty)),
       foundations = Map(FoundationNumber.II -> FoundationState(
         FoundationFace.Altered, Set(CatalogNames.legacy("Arbiter")))))
     assertEquals(codec.encode(evolved).map(_.omitted), Right(Vector(
-      "the era target", "the era scores", "previous players",
+      "the era target", "the era scorepad", "previous players",
       "Foundation alteration sources", "Exile lineages with nothing kept")))
 
   test("an unknown card, a wrong kind and a reserved goal are refused"):

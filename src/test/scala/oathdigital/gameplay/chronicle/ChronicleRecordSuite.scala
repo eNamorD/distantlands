@@ -18,8 +18,8 @@ class ChronicleRecordSuite extends munit.FunSuite:
   test("the record keeps the live era scores and Oathkeeper goal"):
     val ready = Table.start.oathkeeperGoal(OathkeeperGoal.Devotion)
       .update(state => state.updateCampaign(campaign => campaign.copy(
-        era = campaign.era.copy(lineageScores =
-          Map(lineageOf(state, p1) -> 4))))).ready
+        era = campaign.era.copy(games = Vector(EraGame(Vector(
+          EraEntry(lineageOf(state, p1), 4, Role.Exile)))))))).ready
     val record = ChronicleRecord.campaignFields(ready)
     assertEquals(record.oathkeeperGoal, OathkeeperGoal.Devotion)
     assertEquals(record.era, ready.game.campaign.era)

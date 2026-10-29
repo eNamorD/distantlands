@@ -18,7 +18,7 @@ final class ChronicleTtsCodec(catalog: ExecutableCatalog):
   private val ids = TtsIds(catalog)
   private val colors: Vector[PlayerColor] =
     TtsWire.colors.map(key => PlayerColor.fromKey(key).get)
-  private val defaultEra = EraState(20, Map.empty)
+  private val defaultEra = EraState(20, Vector.empty)
   // The version 3 goal digits; 0 is unset, 5-20 reserved, 21+ fan content.
   private val goalDigits: Vector[(Int, OathkeeperGoal)] = Vector(
     1 -> OathkeeperGoal.Supremacy, 2 -> OathkeeperGoal.Devotion,
@@ -80,8 +80,7 @@ final class ChronicleTtsCodec(catalog: ExecutableCatalog):
   private def omitted(chronicle: Chronicle): Vector[String] = Vector(
     Option.when(chronicle.era.targetScore != defaultEra.targetScore)(
       "the era target"),
-    Option.when(chronicle.era.lineageScores.values.exists(_ > 0))(
-      "the era scores"),
+    Option.when(chronicle.era.games.nonEmpty)("the era scorepad"),
     Option.when(chronicle.lineages.exists(_.previousPlayer.nonEmpty))(
       "previous players"),
     Option.when(chronicle.foundations.values

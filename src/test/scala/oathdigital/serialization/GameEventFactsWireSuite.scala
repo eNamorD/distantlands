@@ -48,8 +48,9 @@ class GameEventFactsWireSuite extends munit.FunSuite:
 
   test("a GameStarted Chronicle round trips its era scores and Oathkeeper goal"):
     val scored = chronicle.copy(
-      era = EraState(targetScore = 15,
-        lineageScores = Map(LineageId("l1") -> 4, LineageId("l9") -> 7)),
+      era = EraState(targetScore = 15, games = Vector(EraGame(Vector(
+        EraEntry(LineageId("l1"), 4, Role.Chancellor),
+        EraEntry(LineageId("l9"), 7, Role.Exile))))),
       oathkeeperGoal = OathkeeperGoal.Devotion)
     val event = OathEvent.GameStarted(scored, orders)
     val encoded = accepted(GameEventWire.encodeEvent("goal", 0L, event))
@@ -76,9 +77,10 @@ class GameEventFactsWireSuite extends munit.FunSuite:
       case other => fail(other.toString)
 
   test("a GameStarted Chronicle refuses an unknown Oathkeeper goal, a zero " +
-      "era target and a doubled lineage score"):
+      "era target, a doubled scorepad lineage and a negative total"):
     val event = OathEvent.GameStarted(chronicle.copy(era =
-      EraState(20, Map(LineageId("l1") -> 2))), orders)
+      EraState(20, Vector(EraGame(Vector(
+        EraEntry(LineageId("l1"), 2, Role.Exile)))))), orders)
     def refusedPath(edit: ujson.Value => Unit): String =
       val encoded = accepted(GameEventWire.encodeEvent("goal", 0L, event))
       edit(encoded("payload")("chronicle"))
@@ -88,8 +90,11 @@ class GameEventFactsWireSuite extends munit.FunSuite:
     assert(refusedPath(_("oathkeeperGoal") = "glory").endsWith(".oathkeeperGoal"))
     assert(refusedPath(_("era")("targetScore") = 0).endsWith(".era.targetScore"))
     assert(refusedPath { c =>
-      c("era")("lineageScores").arr.append(c("era")("lineageScores")(0))
-    }.endsWith(".era.lineageScores"))
+      val entries = c("era")("games")(0)("entries")
+      entries.arr.append(entries(0))
+    }.endsWith(".era.games[0].entries"))
+    assert(refusedPath(_("era")("games")(0)("entries")(0)("totalScore") = -1)
+      .endsWith(".totalScore"))
 
   test("GameStarted refuses an unknown stored item kind with a typed " +
       "WireError"):

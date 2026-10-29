@@ -44,9 +44,7 @@ object GameStartRules:
       game = OathGame(
         CampaignState(atlas, foundations, lineages, chronicle.reliquary,
           chronicle.dispossessed, Map.empty, plan.oathkeeperGoal,
-          // A seated lineage the Chronicle has not scored yet starts at 0.
-          chronicle.era.copy(lineageScores =
-            lineages.keys.map(_ -> 0).toMap ++ chronicle.era.lineageScores),
+          chronicle.era,
           baseline = chronicle),
         CurrentGameState(material.players, material.map, commonCards,
           material.banners, OathkeeperState(None, TitleSide.Oathkeeper),

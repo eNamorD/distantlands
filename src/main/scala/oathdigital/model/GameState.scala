@@ -37,15 +37,28 @@ final case class LineageState(
     startingRelics: Vector[RelicId] = Vector.empty
 )
 
-final case class EraState(
-    targetScore: Int,
-    lineageScores: Map[LineageId, Int]
-):
+/** One player's row for one game on the era scorepad: their lineage's
+  * total after the game and their role when Score Lineage Points recorded
+  * it, after the Sun has crowned (Chronicle ruling 19). */
+final case class EraEntry(lineage: LineageId, totalScore: Int,
+    endingRole: Role):
+  require(totalScore >= 0, "lineage scores must be non-negative")
+
+/** One game's column on the era scorepad: an entry per participating
+  * player. */
+final case class EraGame(entries: Vector[EraEntry]):
+  require(entries.map(_.lineage).distinct.size == entries.size,
+    "a game records each lineage once")
+
+/** The era scorepad. Resetting `games` at an era's end belongs to the
+  * Eras item. */
+final case class EraState(targetScore: Int, games: Vector[EraGame]):
   require(targetScore > 0, "era target score must be positive")
-  require(
-    lineageScores.values.forall(_ >= 0),
-    "lineage scores must be non-negative"
-  )
+
+  /** The lineage's latest total, or 0 before it has one. */
+  def score(lineage: LineageId): Int =
+    games.reverseIterator.flatMap(_.entries.find(_.lineage == lineage))
+      .nextOption().fold(0)(_.totalScore)
 
 final case class CampaignState(
     atlas: AtlasState,
