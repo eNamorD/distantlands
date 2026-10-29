@@ -25,6 +25,11 @@ class ProductionFrontendRoutesSuite extends munit.FunSuite:
       assert(index.body().contains("/assets/main.js"))
       assertEquals(cacheControl(index), Some("no-cache"))
 
+      val newGame = server.get("/new-game")
+      assertEquals(newGame.statusCode(), 200)
+      assertEquals(newGame.body(), index.body())
+      assertEquals(cacheControl(newGame), Some("no-cache"))
+
       val javascript = server.get("/assets/main.js")
       assertEquals(javascript.statusCode(), 200)
       assertEquals(javascript.body(), packaged("main.js"))

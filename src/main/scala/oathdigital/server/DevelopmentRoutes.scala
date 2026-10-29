@@ -29,4 +29,7 @@ object DevelopmentRoutes:
           pathEndOrSingleSlash {
             getFromFile("frontend/index.html")
           } ~
+          path("new-game") {
+            getFromFile("frontend/index.html")
+          } ~
           getFromDirectory("frontend")

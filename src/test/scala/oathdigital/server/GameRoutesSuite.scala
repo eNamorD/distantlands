@@ -54,6 +54,9 @@ class GameRoutesSuite extends munit.FunSuite:
       // The pinned, version-free fastLinkJS output directory (build.sbt).
       assert(index.body().contains(
         "./target/fastopt/main.js?dev-cache=no-store-v1"))
+      val newGame = server.get("/new-game")
+      assertEquals(newGame.statusCode(), 200)
+      assertEquals(newGame.body(), index.body())
       val stylesheet = server.get("/styles.css")
       assertEquals(stylesheet.statusCode(), 200)
       assertEquals(cacheControl(stylesheet),
