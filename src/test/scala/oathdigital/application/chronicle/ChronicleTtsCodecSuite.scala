@@ -63,7 +63,7 @@ class ChronicleTtsCodecSuite extends munit.FunSuite:
         FoundationFace.Altered, Set(CatalogNames.legacy("Arbiter")))))
     assertEquals(codec.encode(evolved).map(_.omitted), Right(Vector(
       "the era target", "the era scores", "previous players",
-      "Foundation alteration sources")))
+      "Foundation alteration sources", "Exile lineages with nothing kept")))
 
   test("an unknown card, a wrong kind and a reserved goal are refused"):
     val unknownSite = TtsChronicle(atlasBox = Some(Vector(TtsSite(30, Vector.empty))))
@@ -79,3 +79,32 @@ class ChronicleTtsCodecSuite extends munit.FunSuite:
     val odd = chronicle.copy(lineages = Vector(LineageState(LineageId("l9"),
       None, Role.Exile, Vector.empty, Vector.empty)))
     assertEquals(codec.encode(odd), Left("lineage l9 has no TTS color"))
+
+  test("the full Lua export survives our own encoding"):
+    val full = codec.decode(fullExport).fold(fail(_), identity)
+    assertEquals(roundTripped(full), full)
+
+  test("altered Foundations round trip"):
+    val altered = chronicle.copy(foundations = Vector(FoundationNumber.II,
+      FoundationNumber.VI).map(_ -> FoundationState(FoundationFace.Altered,
+        Set.empty)).toMap)
+    assertEquals(roundTripped(altered), altered)
+
+  test("a version 3 goal digit of 0 reads as Supremacy"):
+    val unset = TtsChronicle(foundations = Some(TtsFoundations(0, Some(0))))
+    assertEquals(codec.fromTts(unset).map(_.oathkeeperGoal),
+      Right(OathkeeperGoal.Supremacy))
+
+  test("a denizen in the relic deck is refused"):
+    val number = TtsIds(FirstGameSetupFixture.catalog)
+      .ttsCard(chronicle.worldDeck.head)
+      .fold(fail(_), identity)
+    assertEquals(codec.fromTts(TtsChronicle(relicDeck = Some(Vector(number)))),
+      Left(s"TTS card $number is not a relic"))
+
+  test("a kept Vision is refused on export"):
+    val vision = LineageState(lineageOf(PlayerColor.Red), None, Role.Exile,
+      Vector.empty, Vector(VisionState(VisionId("vision"), Orientation.FaceDown)))
+    assertEquals(codec.encode(chronicle.copy(lineages = Vector(vision))),
+      Left(s"lineage ${vision.id.value} keeps the Vision vision, " +
+        "which TTS cannot store"))

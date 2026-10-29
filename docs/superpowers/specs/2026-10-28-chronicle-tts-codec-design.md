@@ -72,9 +72,10 @@ The format in brief:
   with: Oathkeeper goal Supremacy, as the first-game generator does; era target
   20 with an empty scorepad; no previous players; no alteration sources.
 - **Export lists its losses.** Encoding returns the string and the fields it
-  left out: the name, a non-empty era scorepad, any previous player, and any
-  Foundation alteration source. The caller shows them as a note; nothing is
-  refused.
+  left out: the name, an era target other than 20, any non-zero era score,
+  any previous player, any Foundation alteration source, and any Exile
+  lineage with nothing kept, which reads back as no lineage. The caller shows
+  them as a note; nothing is refused.
 - **Players.** A player section maps to a `LineageState`: status to `role`,
   cards to `startingAdvisers`, legacies to `legacies` (flipped to
   `active = true`), relics to the new `startingRelics`. A section with Exile

@@ -86,7 +86,11 @@ final class ChronicleTtsCodec(catalog: ExecutableCatalog):
       "previous players"),
     Option.when(chronicle.foundations.values
       .exists(_.alterationSources.nonEmpty))(
-      "Foundation alteration sources")).flatten
+      "Foundation alteration sources"),
+    // An empty Exile section reads back as no lineage.
+    Option.when(chronicle.lineages.exists(l => l.role == Role.Exile &&
+      l.startingAdvisers.isEmpty && l.legacies.isEmpty &&
+      l.startingRelics.isEmpty))("Exile lineages with nothing kept")).flatten
 
   private def sites(tts: Vector[TtsSite]): Either[String, Vector[StoredSite]] =
     sequence(tts.map(site =>
@@ -129,11 +133,13 @@ final class ChronicleTtsCodec(catalog: ExecutableCatalog):
   private def lineage(color: PlayerColor, player: TtsPlayer)
       : Either[String, LineageState] =
     for
+      role <- roles.lift(player.status)
+        .toRight(s"TTS player status ${player.status} is unknown")
       legacies <- sequence(player.legacies.map(l =>
         ids.legacy(l.id).map(LegacyState(_, active = l.flipped))))
       advisers <- denizens(player.cards)
       kept <- relics(player.relics)
-    yield LineageState(lineageOf(color), None, roles(player.status), legacies,
+    yield LineageState(lineageOf(color), None, role, legacies,
       advisers.map(DenizenState(_, Orientation.FaceDown, Tokens.empty)),
       startingRelics = kept)
 
