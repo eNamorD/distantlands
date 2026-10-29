@@ -53,6 +53,20 @@ class PhonePaneSwitchSuite extends munit.FunSuite:
       assertEquals(table(browser).getAttribute("data-phone-pane"), "actions")
     }
 
+  test("switching to the Log shows its newest entries"):
+    val store = new FakeLogStore()
+    store.write("oath.log.seen.g.red", "3")
+    withShell(Some(store)) { (browser, shell) =>
+      // The stylesheet hides the Log behind Actions, so it is drawn with no
+      // size and cannot scroll.
+      val content = one(browser.mount, ".pane-log .pane-content")
+      TestLog.size(content, total = 0, height = 0, scrolled = 0)
+      shell.showLog("g", "red", entries, Map.empty)
+      TestLog.resize(content, total = 500, height = 100)
+      click(logTab(browser, "actions"))
+      assertEquals(content.scrollTop, 500.0)
+    }
+
   test("the Log side counts the events the viewer has not seen"):
     val store = new FakeLogStore()
     store.write("oath.log.seen.g.red", "3")
