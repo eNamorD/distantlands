@@ -19,7 +19,7 @@ class GeneratedFirstGamePlanFactorySuite extends munit.FunSuite:
     def implementedFirst[A](cards: Vector[A], implemented: A => Boolean): Boolean =
       cards.dropWhile(implemented).forall(card => !implemented(card))
 
-    val plan = accepted(factory.build(config))
+    val plan = accepted(factory.build(config, ChronicleChoice.New("Test Chronicle")))
     val orders = ChronicleFirstGamePlan.dealOrder(plan.chronicle, plan.resolvedConfig)
     val current = accepted(
       GameStartRules.evolve(catalog, plan.chronicle, orders)).game.current
@@ -46,7 +46,7 @@ class GeneratedFirstGamePlanFactorySuite extends munit.FunSuite:
     }, "a Homeland in play carries its suit's implemented edifice")
 
   test("seating order and first player are shuffled, keeping every participant"):
-    val plans = Vector.fill(30)(accepted(factory.build(config)).resolvedConfig)
+    val plans = Vector.fill(30)(accepted(factory.build(config, ChronicleChoice.New("Test Chronicle"))).resolvedConfig)
     plans.foreach { resolved =>
       assertEquals(resolved.participants.toSet, config.participants.toSet)
       assertEquals(resolved.firstPlayer, resolved.participants.head.playerId)
@@ -55,3 +55,16 @@ class GeneratedFirstGamePlanFactorySuite extends munit.FunSuite:
       "the first player should vary across generated plans")
     assert(plans.map(_.participants).distinct.size > 1,
       "the seating order should vary across generated plans")
+
+  test("a new Chronicle carries its name, and a blank name is refused"):
+    assertEquals(accepted(factory.build(config,
+      ChronicleChoice.New("Ashen Crown"))).chronicle.name, "Ashen Crown")
+    assertEquals(factory.build(config, ChronicleChoice.New("")).left.map(
+      _.message), Left("a Chronicle needs a name"))
+
+  test("a saved Chronicle is used as it is, with the seating shuffled"):
+    val saved = FirstGameSetupFixture.chronicle
+    val plan = accepted(factory.build(config, ChronicleChoice.Saved(saved)))
+    assertEquals(plan.chronicle, saved)
+    assertEquals(plan.resolvedConfig.participants.toSet,
+      config.participants.toSet)

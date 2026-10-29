@@ -61,6 +61,7 @@ object FirstGameSetupFixture:
     * world deck; the ordinary relics as the relic deck.
     */
   val chronicle: Chronicle = Chronicle(
+    name = "Fixture Chronicle",
     atlasBox = sites.map(site => StoredSite(site,
       edificesBySite.get(site).toVector)),
     worldDeck = denizens,

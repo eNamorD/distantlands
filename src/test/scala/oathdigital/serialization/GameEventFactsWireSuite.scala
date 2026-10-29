@@ -58,6 +58,19 @@ class GameEventFactsWireSuite extends munit.FunSuite:
       OathkeeperGoal.Devotion.key)
     assertEquals(accepted(GameEventWire.decode(encoded)).event, event)
 
+  test("a GameStarted Chronicle round trips its name and refuses a blank one"):
+    val event = OathEvent.GameStarted(chronicle.copy(name = "Ashen Crown"),
+      orders)
+    val encoded = accepted(GameEventWire.encodeEvent("named", 0L, event))
+    assertEquals(encoded("payload")("chronicle")("name").str, "Ashen Crown")
+    assertEquals(accepted(GameEventWire.decode(encoded)).event, event)
+    encoded("payload")("chronicle")("name") = ""
+    rejected(GameEventWire.decode(encoded)) match
+      case WireError.InvalidValue(path, message) =>
+        assert(path.endsWith(".name"), path)
+        assertEquals(message, "a Chronicle needs a name")
+      case other => fail(other.toString)
+
   test("a GameStarted Chronicle keeps each lineage role, the Chancellor's " +
       "included, and refuses an unknown one"):
     val roles = Vector(Role.Exile, Role.Citizen, Role.Chancellor)

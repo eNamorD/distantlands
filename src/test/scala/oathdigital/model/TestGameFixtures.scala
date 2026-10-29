@@ -112,6 +112,7 @@ object TestGameFixtures:
     oathkeeperGoal = OathkeeperGoal.Supremacy,
     era = EraState(20, Vector.empty),
     baseline = Chronicle(
+      name = "Test Chronicle",
       atlasBox = Vector(StoredSite(SiteId("S9"), Vector(storedEdifice.id))),
       worldDeck = Vector.empty,
       relicDeck = Vector.empty,

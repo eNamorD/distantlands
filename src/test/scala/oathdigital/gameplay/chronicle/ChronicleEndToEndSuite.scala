@@ -37,6 +37,7 @@ class ChronicleEndToEndSuite extends munit.FunSuite:
     val record = RecordedOps.all(done.events).collect {
       case ChronicleUpdated(chronicle) => chronicle
     }.last
+    assertEquals(record.name, ready.game.campaign.baseline.name)
     val lineage = ready.game.current.players.find(_.player == p1).get.lineage
     assertEquals(record.lineages.find(_.id == lineage).map(_.role),
       Some(Role.Chancellor))

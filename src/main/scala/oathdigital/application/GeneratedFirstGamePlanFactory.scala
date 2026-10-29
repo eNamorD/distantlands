@@ -10,8 +10,9 @@ import oathdigital.gameplay.powers.PowerImplementationStatus
  * authenticated bootstrap all use this now that the dev-only loopback route
  * and its deterministic `DevelopmentFirstGamePlanFactory` are retired.
  *
- * The seating order is shuffled too, and the first seat becomes the first
- * player, so the requested `firstPlayer` is ignored. The shuffled order is
+ * A saved Chronicle is used as it is. Either way the seating order is
+ * shuffled, and the first seat becomes the first player, so the requested
+ * `firstPlayer` is ignored. The shuffled order is
  * recorded in the plan, so replay stays RNG-free.
  */
 final class GeneratedFirstGamePlanFactory(
@@ -19,14 +20,20 @@ final class GeneratedFirstGamePlanFactory(
     random: ChronicleRandomPort = ChronicleRandomPort.random,
     policy: ShufflePolicy = ShufflePolicy.implementedFirst
 ) extends FirstGamePlanFactory:
-  override def build(config: FirstGameBootstrapConfig)
+  override def build(config: FirstGameBootstrapConfig, choice: ChronicleChoice)
       : Either[BootstrapPlanFailure, FirstGamePlan] =
     val resolvedConfig = shuffledSeating(config)
-    for
-      chronicle <- FirstGameChronicleGenerator.generate(catalog,
-          PowerImplementationStatus.implemented(catalog), random, policy)
-        .left.map(failure => BootstrapPlanFailure(failure.toString))
-    yield FirstGamePlan(chronicle, resolvedConfig)
+    val chronicle = choice match
+      case ChronicleChoice.New(name) =>
+        FirstGameChronicleGenerator.generate(catalog, name,
+            PowerImplementationStatus.implemented(catalog), random, policy)
+          .left.map {
+            case ChronicleGeneratorFailure.InvalidName(reason) =>
+              BootstrapPlanFailure(reason)
+            case failure => BootstrapPlanFailure(failure.toString)
+          }
+      case ChronicleChoice.Saved(saved) => Right(saved)
+    chronicle.map(FirstGamePlan(_, resolvedConfig))
 
   private def shuffledSeating(config: FirstGameBootstrapConfig)
       : FirstGameBootstrapConfig =

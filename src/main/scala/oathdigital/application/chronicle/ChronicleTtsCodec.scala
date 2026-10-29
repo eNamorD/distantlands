@@ -10,10 +10,11 @@ import TtsWire.sequence
 final case class TtsExport(text: String, omitted: Vector[String])
 
 /** A Chronicle to and from the TTS export string (Chronicle TTS codec
-  * design). Decoding fills what TTS does not carry: Oathkeeper goal
+  * design). Decoding takes the name from the caller and fills the rest of
+  * what TTS does not carry: Oathkeeper goal
   * Supremacy unless a version 3 string sets it, era target 20 with no
   * scores, no previous players, no Foundation alteration sources. Encoding
-  * writes version 3 and lists what it left out. */
+  * writes version 3 and lists what it left out, always the name first. */
 final class ChronicleTtsCodec(catalog: ExecutableCatalog):
   private val ids = TtsIds(catalog)
   private val colors: Vector[PlayerColor] =
@@ -25,17 +26,20 @@ final class ChronicleTtsCodec(catalog: ExecutableCatalog):
     3 -> OathkeeperGoal.ThePeople, 4 -> OathkeeperGoal.Protection)
   private val roles = Vector(Role.Exile, Role.Citizen, Role.Chancellor)
 
-  def decode(text: String): Either[String, Chronicle] =
-    TtsWire.decodeExport(text).flatMap((_, tts) => fromTts(tts))
+  /** `name` becomes the Chronicle's name: TTS carries none. */
+  def decode(text: String, name: String): Either[String, Chronicle] =
+    TtsWire.decodeExport(text).flatMap((_, tts) => fromTts(tts, name))
 
   def encode(chronicle: Chronicle): Either[String, TtsExport] =
     toTts(chronicle).flatMap(TtsWire.encodeExport(_, 3))
       .map(TtsExport(_, omitted(chronicle)))
 
   /** Versions differ only in the goal digit, which `tts` already holds. */
-  private[chronicle] def fromTts(tts: TtsChronicle): Either[String, Chronicle] =
+  private[chronicle] def fromTts(tts: TtsChronicle, name: String)
+      : Either[String, Chronicle] =
     val empty = TtsFoundations(0, None)
     for
+      _ <- Chronicle.nameProblem(name).toLeft(())
       atlasBox <- sites(tts.atlasBox.getOrElse(Vector.empty))
       world <- sites(tts.world.getOrElse(Vector.empty))
       worldDeck <- denizens(tts.worldDeck.getOrElse(Vector.empty))
@@ -48,7 +52,7 @@ final class ChronicleTtsCodec(catalog: ExecutableCatalog):
         case (color, Some(player)) if !emptyExile(player) =>
           lineage(color, player)
       })
-    yield Chronicle(atlasBox, world, worldDeck, relicDeck, defaultEra, goal,
+    yield Chronicle(name, atlasBox, world, worldDeck, relicDeck, defaultEra, goal,
       dispossessed, reliquary, FoundationNumber.all.zipWithIndex.collect {
         case (number, bit) if (foundations.mask & (1 << bit)) != 0 =>
           number -> FoundationState(FoundationFace.Altered, Set.empty)
@@ -78,6 +82,7 @@ final class ChronicleTtsCodec(catalog: ExecutableCatalog):
       players.map(Some(_)))
 
   private def omitted(chronicle: Chronicle): Vector[String] = Vector(
+    Some("the name"),
     Option.when(chronicle.era.targetScore != defaultEra.targetScore)(
       "the era target"),
     Option.when(chronicle.era.games.nonEmpty)("the era scorepad"),

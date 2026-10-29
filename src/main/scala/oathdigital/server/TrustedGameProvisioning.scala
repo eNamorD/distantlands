@@ -30,7 +30,7 @@ final class TrustedGameProvisioning(
         // so the first participant is only a placeholder.
         config = FirstGameBootstrapMapper.map(FirstGameBootstrapRequest(
           0L, valid.participants, valid.participants.head.playerId))
-        plan <- planFactory.build(config).left.map(_ => InvalidRequest)
+        plan <- planFactory.build(config, ChronicleChoice.New("Chronicle")).left.map(_ => InvalidRequest)
         placed <- place(valid.participants, plan, None, 1)
         (gameId, codes) = placed
       yield TrustedGameCreateResponse(gameId, codes.map { case (player, code) =>

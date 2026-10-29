@@ -28,11 +28,15 @@ object StoredSite:
  * setup shuffles both. `reliquary`, `foundations` and `lineages` are empty
  * or default for a first game.
  *
+ * `name` is the Chronicle's identity in a browser, which keeps its names
+ * unique; `ChronicleUpdated` copies it forward unchanged.
+ *
  * `era` and `oathkeeperGoal` are required; a first game starts at
- * `EraState(20, Map.empty)` and `OathkeeperGoal.Supremacy`. The TTS string has
+ * `EraState(20, Vector.empty)` and `OathkeeperGoal.Supremacy`. The TTS string has
  * no era field, and gains an Oath digit in encoding version 3.
  */
 final case class Chronicle(
+    name: String,
     atlasBox: Vector[StoredSite],
     world: Vector[StoredSite] = Vector.empty,
     worldDeck: Vector[DenizenId],
@@ -43,4 +47,19 @@ final case class Chronicle(
     reliquary: Vector[RelicId] = Vector.empty,
     foundations: Map[FoundationNumber, FoundationState] = Map.empty,
     lineages: Vector[LineageState] = Vector.empty
-)
+):
+  Chronicle.nameProblem(name).foreach(problem =>
+    throw new IllegalArgumentException(problem))
+
+object Chronicle:
+  val maxNameLength: Int = 80
+
+  /** Why `name` cannot name a Chronicle, if it cannot: it is trimmed and
+    * has 1 to 80 characters (Chronicle browsing design, "Model"). */
+  def nameProblem(name: String): Option[String] =
+    if name != name.trim then
+      Some("a Chronicle name has no leading or trailing spaces")
+    else if name.isEmpty then Some("a Chronicle needs a name")
+    else if name.length > maxNameLength then
+      Some(s"a Chronicle name has at most $maxNameLength characters")
+    else None

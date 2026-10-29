@@ -20,7 +20,12 @@ final case class FirstGamePlan(
     resolvedConfig: FirstGameBootstrapConfig
 )
 
+/** What a new game starts from (Chronicle browsing design, "Create
+  * request"): a fresh first-game Chronicle under a name, or a saved one. */
+enum ChronicleChoice:
+  case New(name: String)
+  case Saved(chronicle: Chronicle)
+
 trait FirstGamePlanFactory:
-  def build(
-      config: FirstGameBootstrapConfig
-  ): Either[BootstrapPlanFailure, FirstGamePlan]
+  def build(config: FirstGameBootstrapConfig, choice: ChronicleChoice)
+      : Either[BootstrapPlanFailure, FirstGamePlan]

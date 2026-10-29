@@ -152,6 +152,7 @@ private[serialization] trait GameEventJsonSupport:
 
   protected final def encodeChronicle(chronicle: Chronicle): ujson.Value =
     ujson.Obj(
+      "name" -> chronicle.name,
       "atlasBox" -> ujson.Arr.from(chronicle.atlasBox.map(encodeStoredSite)),
       "world" -> ujson.Arr.from(chronicle.world.map(encodeStoredSite)),
       "worldDeck" -> stringArray(chronicle.worldDeck.map(_.value)),
@@ -181,11 +182,14 @@ private[serialization] trait GameEventJsonSupport:
       case (entry, index) => decodeFoundationState(entry, s"$path.foundations[$index]")
     lineages <- traverse(value("lineages").arr.zipWithIndex.toVector):
       case (lineage, index) => decodeLineageState(lineage, s"$path.lineages[$index]")
+    name <- stringField(value.obj, "name", path)
+    _ <- Chronicle.nameProblem(name).toLeft(()).left.map(problem =>
+      InvalidValue(s"$path.name", problem))
     era <- requiredField(value.obj, "era", path)
       .flatMap(decodeEra(_, s"$path.era"))
     goal <- requiredField(value.obj, "oathkeeperGoal", path)
       .flatMap(decodeOathkeeperGoal(_, s"$path.oathkeeperGoal"))
-  yield Chronicle(atlasBox = atlasBox, world = world,
+  yield Chronicle(name = name, atlasBox = atlasBox, world = world,
     worldDeck = value("worldDeck").arr.toVector.map(v => DenizenId(v.str)),
     relicDeck = value("relicDeck").arr.toVector.map(v => RelicId(v.str)),
     era = era, oathkeeperGoal = goal,

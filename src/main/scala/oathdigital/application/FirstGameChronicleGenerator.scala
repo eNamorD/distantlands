@@ -10,6 +10,7 @@ object ChronicleGeneratorFailure:
   final case class TooFewSuitDenizens(suit: Suit, implemented: Int, unimplemented: Int)
       extends ChronicleGeneratorFailure
   final case class InvariantViolated(detail: String) extends ChronicleGeneratorFailure
+  final case class InvalidName(reason: String) extends ChronicleGeneratorFailure
 
 /**
  * Produces a random first-game Chronicle (2026-09-21 Chronicle design, "The
@@ -28,10 +29,11 @@ object ChronicleGeneratorFailure:
 object FirstGameChronicleGenerator:
   import ChronicleGeneratorFailure._
 
-  def generate(catalog: ExecutableCatalog, implemented: PowerId => Boolean,
+  def generate(catalog: ExecutableCatalog, name: String, implemented: PowerId => Boolean,
       random: ChronicleRandomPort, policy: ShufflePolicy)
       : Either[ChronicleGeneratorFailure, Chronicle] =
     for
+      _ <- Chronicle.nameProblem(name).map(InvalidName(_)).toLeft(())
       atlas <- atlasBox(catalog, implemented, random)
       pools <- denizenPools(catalog, implemented, random)
       (worldPool, dispossessedPool) = pools
@@ -40,6 +42,7 @@ object FirstGameChronicleGenerator:
       relicPool = catalog.relics.filter(_.id != TheGrandScepterCard.id)
         .map(_.id)
       chronicle = Chronicle(
+        name,
         atlas,
         worldDeck = policy.order(worldPool, implementedDenizens, random),
         relicDeck = policy.order(relicPool, implementedRelics, random),
