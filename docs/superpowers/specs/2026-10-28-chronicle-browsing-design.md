@@ -1,7 +1,9 @@
 # Chronicle browsing design
 
-Status: slice 1 implemented, 2026-10-29: the server side. Next step: slice 2,
-the browser pages and storage.
+Status: implemented, 2026-10-29. Slice 1 is the server side; slice 2 the
+browser pages, storage, import and export, and the automatic save. The
+table has no menu, so its Export Chronicle sits in a Chronicle section of
+the action pane, which every seat sees.
 
 Roadmap item: **Phase - Chronicle steps**, "Saved-campaign browsing": import,
 export, load and delete a campaign. A campaign is a named, saved Chronicle.
