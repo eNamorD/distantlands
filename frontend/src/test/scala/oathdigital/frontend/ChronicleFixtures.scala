@@ -1,10 +1,16 @@
 package oathdigital.frontend
 
-import oathdigital.protocol.{ChronicleEntry, ChronicleScore, ChronicleSummary}
+import oathdigital.protocol.{ChronicleConvertRequest,
+  ChronicleConvertRequestCodec, ChronicleConvertResponse,
+  ChronicleConvertResponseCodec, ChronicleEntry, ChronicleScore,
+  ChronicleSummary}
+import scala.collection.mutable.ArrayBuffer
+import scala.concurrent.Future
 
-/** Chronicle entries and a fixed clock for the browsing suites. An entry's
-  * JSON is a stand-in, `{"format":1,"name":…}`: the browser never reads a
-  * Chronicle's JSON except to rename it. */
+/** Chronicle entries, a fixed clock, a converting server and browser
+  * devices for the browsing suites. An entry's JSON is a stand-in,
+  * `{"format":1,"name":…}`: the browser never reads a Chronicle's JSON
+  * except to rename it. */
 private[frontend] object ChronicleFixtures:
   val savedAt = "2026-10-29T12:00:00.000Z"
   val clock: () => String = () => savedAt
@@ -16,3 +22,39 @@ private[frontend] object ChronicleFixtures:
       digest,
       ChronicleSummary(name, game, 20, Vector(
         ChronicleScore("red-lineage", 9), ChronicleScore("blue-lineage", 6))))
+
+  def converted(entry: ChronicleEntry, tts: Option[String] = None)
+      : TransportResponse =
+    TransportResponse(200, ChronicleConvertResponseCodec.encode(
+      ChronicleConvertResponse(entry, tts)))
+
+  /** The reply `POST /chronicles/convert` gives these fixtures: JSON comes
+    * back under the name it carries, with digest "d-<name>"; a TTS string
+    * comes back under its name with no game. */
+  def convertReply(body: Option[String], tts: Option[String])
+      : TransportResponse =
+    ChronicleConvertRequestCodec.decode(body.getOrElse("")) match
+      case Right(ChronicleConvertRequest.FromJson(json)) =>
+        val name = ujson.read(json)("name").str
+        converted(entry(name, s"d-$name", json = Some(json)), tts)
+      case Right(ChronicleConvertRequest.FromTts(_, name)) =>
+        converted(entry(name, s"d-$name", game = None), tts)
+      case Left(_) =>
+        TransportResponse(400, """{"error":"malformed","message":"bad"}""")
+
+  /** Answers `POST /chronicles/convert` by `convertReply`; any other
+    * request is a 404. */
+  def convertingTransport(
+      requests: ArrayBuffer[RecordedRequest] = ArrayBuffer.empty,
+      tts: Option[String] = Some("TTS-STRING")): ScriptedTransport =
+    ScriptedTransport((_, url, body) => Future.successful(Right(
+      if url == "/chronicles/convert" then convertReply(body, tts)
+      else TransportResponse(404,
+        """{"error":"not-found","message":"no route"}"""))),
+      requests)
+
+  def devices(storage: Option[ChronicleStorage] =
+        Some(new MemoryChronicleStorage()),
+      files: FakeChronicleFiles = new FakeChronicleFiles(),
+      history: FakePageHistory = new FakePageHistory()): ChronicleDevices =
+    ChronicleDevices(storage, files, history, clock)
