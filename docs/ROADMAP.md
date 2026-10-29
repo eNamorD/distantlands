@@ -219,6 +219,10 @@ continuation, and campaign browsing.
   Designed in the
   [Chronicle browsing design](superpowers/specs/2026-10-28-chronicle-browsing-design.md);
   the Chronicle codec comes first.
+  - Slice 1 landed: `Chronicle.name`, the era scorepad, canonical Chronicle
+    JSON with a digest and summary, `POST /chronicles/convert`, game
+    creation from a new or saved Chronicle, and the projection's Chronicle.
+    Slice 2 builds the browser pages and storage.
 - [ ] **Foundations.**
 - [ ] **The Grand Council and Festival banner faces.** Legacies that set
   Foundation V or VI turn the banners to these faces. Their ids are in

@@ -1,7 +1,7 @@
 # Chronicle browsing design
 
-Status: approved in brainstorming, 2026-10-28. Next step: the Chronicle codec
-(TTS) design, then an implementation plan for browsing slice 1.
+Status: slice 1 implemented, 2026-10-29: the server side. Next step: slice 2,
+the browser pages and storage.
 
 Roadmap item: **Phase - Chronicle steps**, "Saved-campaign browsing": import,
 export, load and delete a campaign. A campaign is a named, saved Chronicle.
