@@ -60,6 +60,7 @@ Rulings given by the project owner for the Chronicle Phase ([chronicle.md](chron
 16. **Locks in the Chronicle.** Lock icons restrict play, not the Chronicle Phase. Gather Denizens takes every adviser, locked or not. Rules that name a protected card, such as Shape Empire's intact edifices, still protect it (CR pp. 37-38).
 17. **Rival sites keep every card.** Archive Rival Sites stores every card left on a rival site with it, not only relics and intact edifices. After Shape Empire, a rival Enduring site can still hold denizens or a ruined edifice; they are stored too (CR p. 40).
 18. **The Stars on the table.** The Stars steps change nothing on the table. The Chronicle stores no pieces, so Clean Up's piece returns change nothing it records. The digital version reads the finished table once, at the end of the Chronicle Phase, and stores the sites as Archive Rival Sites, Clean Up and Store order them (CR pp. 40-41).
+19. **The scorepad's roles.** The era scorepad records each player's role when Score Lineage Points records their score, after the Sun has crowned, so a winning Exile is recorded as Chancellor ([chronicle.md](chronicle.md), the Throne, step 6: "circle the Chancellor's score").
 
 ## Source relationship cautions
 

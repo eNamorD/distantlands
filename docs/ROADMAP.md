@@ -212,6 +212,9 @@ continuation, and campaign browsing.
 - [ ] **Chronicle import and export.** The Chronicle string codec for the TTS
   format, including the sections that format has not defined yet.
 - [ ] **Saved-campaign browsing.** Import, export, load and delete a campaign.
+  Designed in the
+  [Chronicle browsing design](superpowers/specs/2026-10-28-chronicle-browsing-design.md);
+  the Chronicle codec comes first.
 - [ ] **Foundations.**
 - [ ] **The Grand Council and Festival banner faces.** Legacies that set
   Foundation V or VI turn the banners to these faces. Their ids are in
