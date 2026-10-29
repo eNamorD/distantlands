@@ -107,6 +107,7 @@ private[frontend] final class GameTableShell(mount: dom.Element,
     phonePane = id
     table.setAttribute("data-phone-pane", id)
     if id == "actions" then table.removeAttribute("data-actions-fresh")
+    else logPane.cameIntoView()
     switches.foreach { switch =>
       switch.toActions.setAttribute("aria-selected", (id == "actions").toString)
       switch.toLog.setAttribute("aria-selected", (id == "log").toString)

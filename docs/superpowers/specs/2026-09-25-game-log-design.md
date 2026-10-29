@@ -575,8 +575,12 @@ the pane shows the single headline "Setup".
 On load, the client reads `oath.log.seen.{gameId}.{seatId}` from
 `localStorage`. If it holds a sequence lower than the last entry's, the client
 inserts a client-only line "Since you last looked" before the first entry
-with a higher sequence, and scrolls the pane so that line sits at the top.
-Otherwise it opens at the bottom. The marker is written whenever the pane or
+with a higher sequence. Either way the pane opens at the bottom, on the
+newest entries, which playtesters asked to see first; the divider waits above
+for a reader who scrolls back. A pane the stylesheet hides when the log
+arrives, as the phone's pane switch does, cannot scroll, so it goes to the
+bottom when it is shown, unless the reader had scrolled up before it was
+hidden. The marker is written whenever the pane or
 the overlay has been scrolled to the end for one second, and on page unload.
 An observer seat writes no marker and shows no divider. Reads and writes are
 wrapped so a blocked store degrades to "no divider". This is the first

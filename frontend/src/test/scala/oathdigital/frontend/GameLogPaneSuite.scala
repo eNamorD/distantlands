@@ -183,7 +183,7 @@ class GameLogPaneSuite extends munit.FunSuite:
   private def scroll(content: dom.Element): Unit =
     content.dispatchEvent(new dom.Event("scroll"))
 
-  test("a marker below the last entry puts the divider before the first newer one, at the top"):
+  test("a marker below the last entry puts the divider before the first newer one, and the list still opens at the end"):
     val content = TestLog.sizedBox(total = 500, height = 100, scrolled = 0)
     new GameLogPane(content).show("g|red", Vector(setup, turn, travel), Map.empty,
       since = Some(3))
@@ -192,8 +192,7 @@ class GameLogPaneSuite extends munit.FunSuite:
       "log-divider", "log-entry log-line log-action"))
     assertEquals(content.querySelector(".log-divider").textContent,
       "Since you last looked")
-    // Scrolled to the divider, which jsdom places at 0, not to the end.
-    assertEquals(content.scrollTop, 0.0)
+    assertEquals(content.scrollTop, 500.0)
 
   test("a marker at the last entry, or none, opens at the end with no divider"):
     Vector(Some(5L), None).foreach { since =>
@@ -202,6 +201,30 @@ class GameLogPaneSuite extends munit.FunSuite:
       assertEquals(content.querySelectorAll(".log-divider").length, 0)
       assertEquals(content.scrollTop, 500.0)
     }
+
+  test("a list drawn while hidden goes to the end when it comes into view"):
+    val content = TestLog.sizedBox(total = 0, height = 0, scrolled = 0)
+    val pane = new GameLogPane(content)
+    pane.show("g|red", Vector(setup, turn), Map.empty)
+    pane.show("g|red", Vector(setup, turn, travel), Map.empty)
+    TestLog.resize(content, total = 500, height = 100)
+    pane.cameIntoView()
+    assertEquals(content.scrollTop, 500.0)
+    assert(content.querySelector(".log-new").hasAttribute("hidden"))
+
+  test("a reader who scrolled up before the list was hidden keeps their place when it comes back"):
+    val content = TestLog.sizedBox(total = 500, height = 100, scrolled = 0)
+    val pane = new GameLogPane(content)
+    pane.show("g|red", Vector(setup, turn), Map.empty)
+    content.scrollTop = 40
+    scroll(content)
+    TestLog.resize(content, total = 0, height = 0)
+    pane.show("g|red", Vector(setup, turn, travel), Map.empty)
+    // Lines that arrive while hidden are still unread.
+    assert(!content.querySelector(".log-new").hasAttribute("hidden"))
+    TestLog.resize(content, total = 500, height = 100)
+    pane.cameIntoView()
+    assertEquals(content.scrollTop, 40.0)
 
   test("appends never add a divider"):
     val content = TestLog.sizedBox(total = 0, height = 0, scrolled = 0)

@@ -9,7 +9,8 @@ import ServerUiSupport._
   * children. Live entries only ever arrive at the end, so a render appends
   * what is new rather than replacing the list; an undo changes lines already
   * shown, and then the list is redrawn in place. A reader at the end stays there; a
-  * reader who has scrolled up stays put and is offered the "New" chip.
+  * reader who has scrolled up stays put and is offered the "New" chip. A
+  * session's first draw opens at the end.
   *
   * `headings` makes headlines into headings, for the overlay: a screen reader
   * jumps between them there, while the pane keeps the table's outline short.
@@ -34,9 +35,13 @@ private[frontend] final class GameLogPane(content: dom.html.Element,
   private var shown = Vector.empty[LogEntry]
   // The taken-back groups on show that the reader opened, kept across redraws.
   private var expanded = Set.empty[Long]
+  // Whether the reader follows the end. A hidden list has no size, so it
+  // cannot tell by measuring; this keeps what it last knew.
+  private var following = true
   list.appendChild(headline(GameLogPane.placeholder, "round"))
 
   private val onScroll: dom.Event => Unit = _ =>
+    if visible then following = atEnd
     if atEnd then chip.setAttribute("hidden", "")
     scrolled()
   content.addEventListener("scroll", onScroll)
@@ -54,7 +59,7 @@ private[frontend] final class GameLogPane(content: dom.html.Element,
       entries.drop(shown.size).forall(_.takenBack.isEmpty)
     if appending then
       if entries.size > shown.size then
-        val following = atEnd
+        val followed = followingNow
         // A line that continues the last entry's band moves the band's end
         // down to itself; anything else starts a band of its own.
         entries.drop(shown.size).foldLeft(shown.last) { (previous, entry) =>
@@ -64,7 +69,7 @@ private[frontend] final class GameLogPane(content: dom.html.Element,
           list.appendChild(item(entry, colors, start = !continues, end = true))
           entry
         }
-        if following then toEnd() else chip.removeAttribute("hidden")
+        if followed then toEnd() else chip.removeAttribute("hidden")
     else redraw(entries, colors, since,
       keepPlace = sameSession && shown.nonEmpty)
     key = Some(sessionKey)
@@ -72,10 +77,12 @@ private[frontend] final class GameLogPane(content: dom.html.Element,
 
   /** `keepPlace` is a redraw of a list already on show, after an undo: a
     * reader at the end stays there and anyone else keeps their scroll.
-    * Only a session's first draw goes to the divider. */
+    * Only a session's first draw places the divider, and that draw opens at
+    * the end, as the newest lines are what a returning player looks for
+    * (spec, "Divider"). */
   private def redraw(entries: Vector[LogEntry], colors: Map[String, String],
       since: Option[Long], keepPlace: Boolean): Unit =
-    val following = atEnd
+    val followed = followingNow
     val top = content.scrollTop
     // A group is named by its first line, and a Redo restores the first
     // batch first, so a group's id can change while its lines stay. A group
@@ -121,12 +128,12 @@ private[frontend] final class GameLogPane(content: dom.html.Element,
             Some(taken.group -> lines)
     }
     if keepPlace then
-      if following then toEnd()
+      if followed then toEnd()
       else
         content.scrollTop = top
         // Live lines that arrived with the undo are still unread.
         if entries.size > shown.size then chip.removeAttribute("hidden")
-    else divideAt.fold(toEnd())(_ => reveal(list.querySelector(".log-divider")))
+    else toEnd()
 
   /** A taken-back group (undo design, "Game Log"): a toggle naming who took
     * the moves back, over the lines, collapsed unless the reader opened it.
@@ -155,6 +162,15 @@ private[frontend] final class GameLogPane(content: dom.html.Element,
 
   def atEnd: Boolean = GameLogPane.atEnd(content)
 
+  /** Called when the stylesheet shows a list it hid, as the phone's pane
+    * switch does. A list cannot scroll while hidden, so a reader who was
+    * following is taken to the end now. */
+  def cameIntoView(): Unit = if following then toEnd()
+
+  private def visible: Boolean = content.clientHeight > 0
+
+  private def followingNow: Boolean = if visible then atEnd else following
+
   def last: Option[Long] = shown.lastOption.map(_.sequence)
 
   /** Where the reader is: nothing at the end, otherwise the index among the
@@ -182,6 +198,7 @@ private[frontend] final class GameLogPane(content: dom.html.Element,
     (0 until list.children.length).map(list.children(_)).toVector
 
   private def toEnd(): Unit =
+    following = true
     chip.setAttribute("hidden", "")
     content.scrollTop = content.scrollHeight.toDouble
 
