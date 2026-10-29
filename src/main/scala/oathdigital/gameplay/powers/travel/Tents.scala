@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.travel
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower}
 import oathdigital.gameplay.operations.SupplyStrip
 import oathdigital.gameplay.powerresolver.{Contribution, PowerCtx, Transform}
 import oathdigital.gameplay.powers.SelectedModifier
@@ -9,6 +10,7 @@ import oathdigital.model._
 object TentsCard extends Denizen(DenizenId("29"), "Tents", Suit.Nomad):
   val power = PrintedPower(PowerId("denizen.tents"),
     persistent = false, cost = Cost(favor = 1),
+    modifier = Some(ModifierMark.Action(MajorActionType.Travel)),
     text = "Spend no Supply if you're traveling to a site in your " +
       "region.")
   val powers: Vector[PrintedPower] = Vector(power)

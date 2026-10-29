@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.economy
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower, SiteOnly}
 import oathdigital.gameplay.{NoteSupport, SiteRulers}
 import oathdigital.gameplay.actions.economy.TradeProcedure
 import oathdigital.gameplay.powerresolver.{Contribution, Transform}
@@ -10,6 +11,7 @@ import oathdigital.model._
 object MovingMarketCard extends Denizen(DenizenId("241"), "Moving Market", Suit.Nomad) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.moving-market"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Trade)),
     text = "After trading with Moving Market, you may move this card to " +
       "any site with capacity. If you do, gain [favor] from the " +
       "[suit-nomad] bank.")

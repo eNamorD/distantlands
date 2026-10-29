@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.travel
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower, SiteOnly}
 import oathdigital.gameplay.SiteRulers
 import oathdigital.gameplay.operations.SupplyStrip
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
@@ -11,6 +12,7 @@ import oathdigital.model._
 object WayStationCard extends Denizen(DenizenId("169"), "Way Station", Suit.Nomad) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.way-station"),
     persistent = true, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Travel)),
     text = "Spend no Supply if you're traveling to this site and either " +
       "rule Way Station or choose to give [favor] to its ruler. " +
       "_(Give it to Chancellor if Empire, burn it if bandits.)_")

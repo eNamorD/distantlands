@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.economy
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower, SiteOnly}
 import oathdigital.gameplay.actions.economy.TradeProcedure
 import oathdigital.gameplay.powerresolver.{Contribution, Deferred,
   OperationRewrite, Transform}
@@ -10,6 +11,7 @@ import oathdigital.model._
 object TheOldOakCard extends Denizen(DenizenId("42"), "The Old Oak", Suit.Beast) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.the-old-oak"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Trade)),
     text = "If trading with The Old Oak for [secret], gain one more " +
       "[secret] if you have any [suit-beast] advisers.")
   val powers: Vector[PrintedPower] = Vector(power)

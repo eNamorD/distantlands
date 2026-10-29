@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, PrintedPower, SiteOnly}
+import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
 import oathdigital.gameplay.SiteRulers
 import oathdigital.gameplay.powerresolver.PowerCtx
 import oathdigital.gameplay.powers.PlayerFacts
@@ -10,6 +10,7 @@ import oathdigital.model._
 object HospitalCard extends Denizen(DenizenId("149"), "Hospital", Suit.Hearth) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.hospital"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.EitherSidePlan),
     text = "If any of your warbands would be killed, place them on " +
       "Hospital's site instead if you still rule it.")
   val powers: Vector[PrintedPower] = Vector(power)

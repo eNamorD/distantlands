@@ -3,24 +3,25 @@ package oathdigital.application
 import oathdigital.model.OptionPrice
 
 /** The cost of an option, worded for display: what a player weighs when they
-  * choose a battle plan. Every part is a line of its own, in a fixed order, and
-  * a part that costs nothing is not mentioned.
+  * choose a battle plan or a modifier. It is one line in the table's cost
+  * notation, the one a start's and a destination's badge use: each part a
+  * count and its token, in a fixed order, joined by " · " ("Cost: 1 [favor]
+  * · 1 [secret-burnt]"), and a part that costs nothing is not mentioned.
   */
 private[application] object PriceDetails:
-  def of(price: OptionPrice): Vector[String] = Vector(
-    line(price.favor, "favor", "favor", ""),
-    line(price.secrets, "secret", "secrets", ""),
-    if price.secretsX then "Cost: X secrets" else "",
-    line(price.favorBurnt, "favor", "favor", " burnt"),
-    line(price.secretsBurnt, "secret", "secrets", " burnt"),
-    if price.warbands == 0 then ""
-    else s"Cost: sacrifice ${price.warbands} warband" +
-      (if price.warbands == 1 then "" else "s")).filter(_.nonEmpty)
+  def of(price: OptionPrice): Vector[String] =
+    val parts = Vector(
+      part(price.favor, "[favor]"),
+      part(price.favorBurnt, "[favor-burnt]"),
+      part(price.secrets, "[secret]"),
+      if price.secretsX then "X [secret]" else "",
+      part(price.secretsBurnt, "[secret-burnt]"),
+      part(price.warbands, if price.warbands == 1 then "warband"
+        else "warbands")).filter(_.nonEmpty)
+    Option.when(parts.nonEmpty)(parts.mkString("Cost: ", " · ", "")).toVector
 
-  private def line(count: Int, one: String, many: String, suffix: String)
-      : String =
-    if count == 0 then ""
-    else s"Cost: $count ${if count == 1 then one else many}$suffix"
+  private def part(count: Int, unit: String): String =
+    if count == 0 then "" else s"$count $unit"
 
   /** What a pick paid, worded for its row: "1 favor", "2 secrets burnt",
     * "1 warband sacrificed", or "Free" when it paid nothing. */

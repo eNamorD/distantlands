@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.economy
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower}
 import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.operations.SupplyStrip
 import oathdigital.gameplay.powerresolver.{Contribution, Transform}
@@ -10,6 +11,7 @@ import oathdigital.model._
 object AwaitedReturnCard extends Denizen(DenizenId("150"), "Awaited Return", Suit.Hearth):
   val power = PrintedPower(PowerId("denizen.awaited-return"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Trade)),
     text = "Spend no Supply if you sacrifice one warband from your " +
       "board.")
   val powers: Vector[PrintedPower] = Vector(power)

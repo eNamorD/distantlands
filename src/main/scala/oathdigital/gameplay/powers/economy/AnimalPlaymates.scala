@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.economy
 
 import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
-  PrintedPower}
+  ModifierMark, PrintedPower}
 import oathdigital.gameplay.actions.economy.MusterProcedure
 import oathdigital.gameplay.powerresolver.Contribution
 import oathdigital.gameplay.powers.SelectedModifier
@@ -10,6 +10,7 @@ import oathdigital.model._
 object AnimalPlaymatesCard extends Denizen(DenizenId("40"), "Animal Playmates", Suit.Beast) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.animal-playmates"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Muster)),
     text = "Spend no Supply if you're mustering on a [suit-beast] card.")
   val powers: Vector[PrintedPower] = Vector(power)
 

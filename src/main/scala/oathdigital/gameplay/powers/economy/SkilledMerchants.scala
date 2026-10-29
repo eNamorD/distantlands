@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.economy
 
 import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
-  PrintedPower}
+  ModifierMark, PrintedPower}
 import oathdigital.gameplay.powerresolver.{Contribution, Transform}
 import oathdigital.gameplay.powers.SelectedModifier
 import oathdigital.model._
@@ -9,6 +9,7 @@ import oathdigital.model._
 object SkilledMerchantsCard extends Denizen(DenizenId("238"), "Skilled Merchants", Suit.Hearth) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.skilled-merchants"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Trade)),
     text = "You may trade with any denizens in your region.")
   val powers: Vector[PrintedPower] = Vector(power)
 

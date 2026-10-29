@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.cardplay
 
-import oathdigital.catalog.{Edifice, EdificeFace, Locked, PrintedPower}
+import oathdigital.catalog.{Edifice, EdificeFace, Locked, ModifierMark,
+  PrintedPower}
 import oathdigital.gameplay.PowerAccess
 import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.powers.setup.EdificeSetupSupport
@@ -11,6 +12,7 @@ object SacredGroundCard extends Edifice(EdificeId("E08"), Suit.Nomad):
   object intact extends EdificeFace("Sacred Ground") with Locked:
     val power = PrintedPower(PowerId("edifice.e08.intact"),
       persistent = true, cost = Cost.free,
+      modifier = Some(ModifierMark.Action(MajorActionType.Search)),
       text = "Players **cannot** play Visions, except the Conspiracy, " +
         "faceup unless their pawn is at this site.")
     val powers: Vector[PrintedPower] = Vector(power)

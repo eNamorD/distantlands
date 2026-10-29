@@ -1,11 +1,12 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, PrintedPower}
+import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
 import oathdigital.model._
 
 object BannerBreakersCard extends Denizen(DenizenId("222"), "Banner Breakers", Suit.Discord):
   val power = PrintedPower(PowerId("denizen.banner-breakers"),
     persistent = false, cost = Cost(favor = 1, favorBurnt = 1),
+    modifier = Some(ModifierMark.AttackPlan),
     text = "+3 [attack-die] if the defender has the Darkest Secret or " +
       "People's Favor.")
   val powers: Vector[PrintedPower] = Vector(power)

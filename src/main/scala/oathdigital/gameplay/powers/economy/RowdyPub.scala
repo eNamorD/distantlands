@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.economy
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower, SiteOnly}
 import oathdigital.gameplay.actions.economy.MusterProcedure
 import oathdigital.gameplay.powerresolver.{Contribution, Transform}
 import oathdigital.gameplay.powers.{PlayerFacts, PowerAnswers, SelectedModifier}
@@ -9,6 +10,7 @@ import oathdigital.model._
 object RowdyPubCard extends Denizen(DenizenId("144"), "Rowdy Pub", Suit.Hearth) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.rowdy-pub"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Muster)),
     text = "Gain one more warband if mustering from Rowdy Pub.")
   val powers: Vector[PrintedPower] = Vector(power)
 

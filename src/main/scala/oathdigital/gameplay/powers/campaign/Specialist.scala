@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, PrintedPower}
+import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
 import oathdigital.gameplay.actions.campaign.{CampaignAnswers, CampaignIds}
 import oathdigital.gameplay.powerresolver.{OptionRestriction, PowerCtx}
 import oathdigital.model._
@@ -8,6 +8,7 @@ import oathdigital.model._
 object SpecialistCard extends Denizen(DenizenId("114"), "Specialist", Suit.Order):
   val power = PrintedPower(PowerId("denizen.specialist"),
     persistent = false, cost = Cost(favor = 2),
+    modifier = Some(ModifierMark.AttackPlan),
     text = "The defender **cannot** use battle plans.")
   val powers: Vector[PrintedPower] = Vector(power)
 

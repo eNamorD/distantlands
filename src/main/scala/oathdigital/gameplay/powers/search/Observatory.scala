@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.search
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower,
-  SiteOnly}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower, SiteOnly}
 import oathdigital.gameplay.powerresolver.{Contribution, Transform}
 import oathdigital.gameplay.powers.SelectedModifier
 import oathdigital.model._
@@ -9,6 +9,7 @@ import oathdigital.model._
 object ObservatoryCard extends Denizen(DenizenId("64"), "Observatory", Suit.Arcane) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.observatory"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Search)),
     text = "While your pawn is here, you may draw from any one discard " +
       "pile.")
   val powers: Vector[PrintedPower] = Vector(power)

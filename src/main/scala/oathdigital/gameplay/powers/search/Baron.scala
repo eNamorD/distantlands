@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.search
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower}
 import oathdigital.gameplay.PowerAccess
 import oathdigital.gameplay.actions.{CardPlayRules, DiscardPermission,
   PlaySites}
@@ -12,6 +13,7 @@ import oathdigital.model._
 object BaronCard extends Denizen(DenizenId("250"), "Baron", Suit.Order):
   val power = PrintedPower(PowerId("denizen.baron"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Search)),
     text = "You may play to any site you rule, and you may discard a " +
       "card from that site first.")
   val powers: Vector[PrintedPower] = Vector(power)

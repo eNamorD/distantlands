@@ -1,12 +1,13 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, PrintedPower}
+import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
 import oathdigital.gameplay.actions.campaign.{CampaignBattle, CampaignIds}
 import oathdigital.model._
 
 object ZealotsCard extends Denizen(DenizenId("87"), "Zealots", Suit.Discord):
   val power = PrintedPower(PowerId("denizen.zealots"),
     persistent = false, cost = Cost(favor = 1),
+    modifier = Some(ModifierMark.AttackPlan),
     text = "If the defending force is larger than your force, each " +
       "warband you sacrifice will add three _(not one)_ to your " +
       "attack.")

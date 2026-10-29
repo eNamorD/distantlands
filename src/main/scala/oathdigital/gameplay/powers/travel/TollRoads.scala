@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.travel
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower, SiteOnly}
 import oathdigital.gameplay.{NoteSupport, SiteRulers}
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerCtx, Transform, Waiver}
@@ -10,6 +11,7 @@ import oathdigital.model._
 object TollRoadsCard extends Denizen(DenizenId("118"), "Toll Roads", Suit.Order) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.toll-roads"),
     persistent = true, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Travel)),
     text = "Enemies **cannot** travel to sites ruled by Toll Roads' " +
       "ruler unless they give [favor] to its ruler. _(Give it to " +
       "Chancellor if Empire, burn it if bandits.)_")

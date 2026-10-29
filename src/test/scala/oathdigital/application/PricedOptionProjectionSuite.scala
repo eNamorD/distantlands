@@ -33,14 +33,14 @@ class PricedOptionProjectionSuite extends munit.FunSuite:
       ("site", site.value)))
     assertEquals(options.head.details, Vector.empty[String])
     assertEquals(options(1).label, options.head.label)
-    assertEquals(options(1).details, Vector("Cost: 1 favor", "Cost: 2 secrets",
-      "Cost: 1 favor burnt", "Cost: 1 secret burnt", "Cost: sacrifice 1 warband"))
+    assertEquals(options(1).details, Vector("Cost: 1 [favor] · 1 [favor-burnt] · " +
+      "2 [secret] · 1 [secret-burnt] · 1 warband"))
 
   test("a price words only what it costs, and pluralises"):
     assertEquals(PriceDetails.of(OptionPrice()), Vector.empty[String])
     assertEquals(PriceDetails.of(OptionPrice(secretsBurnt = 2, warbands = 3)),
-      Vector("Cost: 2 secrets burnt", "Cost: sacrifice 3 warbands"))
+      Vector("Cost: 2 [secret-burnt] · 3 warbands"))
 
   test("an amount's price words X secrets"):
     assertEquals(PriceDetails.of(OptionPrice(secretsX = true)),
-      Vector("Cost: X secrets"))
+      Vector("Cost: X [secret]"))

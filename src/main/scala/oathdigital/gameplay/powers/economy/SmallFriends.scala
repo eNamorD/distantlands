@@ -1,12 +1,13 @@
 package oathdigital.gameplay.powers.economy
 
 import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
-  PrintedPower}
+  ModifierMark, PrintedPower}
 import oathdigital.model._
 
 object SmallFriendsCard extends Denizen(DenizenId("177"), "Small Friends", Suit.Beast) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.small-friends"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Trade)),
     text = "Act as if your pawn is at any site with a [suit-beast] " +
       "card. _(You may use Trade modifiers there.)_")
   val powers: Vector[PrintedPower] = Vector(power)

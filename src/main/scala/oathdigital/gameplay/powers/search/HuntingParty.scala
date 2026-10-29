@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.search
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower}
 import oathdigital.gameplay.actions.search.SearchProcedure
 import oathdigital.gameplay.powerresolver.{Contribution, Transform}
 import oathdigital.gameplay.powers.{PowerAnswers, SelectedModifier}
@@ -9,6 +10,7 @@ import oathdigital.model._
 object HuntingPartyCard extends Denizen(DenizenId("122"), "Hunting Party", Suit.Order):
   val power = PrintedPower(PowerId("denizen.hunting-party"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Search)),
     text = "After searching the world deck, you may campaign, spending " +
       "no Supply.")
   val powers: Vector[PrintedPower] = Vector(power)

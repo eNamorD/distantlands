@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{PrintedPower, Relic}
+import oathdigital.catalog.{ModifierMark, PrintedPower, Relic}
 import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.powerresolver.PowerCtx
 import oathdigital.gameplay.powers.PlayerFacts
@@ -9,6 +9,7 @@ import oathdigital.model._
 object CursedCauldronCard extends Relic(RelicId("R02"), "Cursed Cauldron", value = 84, defense = 2):
   val power = PrintedPower(PowerId("relic.cursed-cauldron"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.EitherSidePlan),
     text = "If you're victorious, gain 1 warband per enemy warband " +
       "killed in this campaign.")
   val powers: Vector[PrintedPower] = Vector(power)

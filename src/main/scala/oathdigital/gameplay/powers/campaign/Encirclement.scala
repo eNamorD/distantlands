@@ -1,12 +1,13 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, PrintedPower}
+import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
 import oathdigital.gameplay.actions.campaign.CampaignBattle
 import oathdigital.model._
 
 object EncirclementCard extends Denizen(DenizenId("124"), "Encirclement", Suit.Order):
   val power = PrintedPower(PowerId("denizen.encirclement"),
     persistent = false, cost = Cost(favor = 1),
+    modifier = Some(ModifierMark.EitherSidePlan),
     text = "±2 [attack-die] if your force is larger than your enemy's.")
   val powers: Vector[PrintedPower] = Vector(power)
 

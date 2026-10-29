@@ -433,6 +433,31 @@
         "role": "secondary",
         "displayName": "Neutral Band",
         "canonical": "#b8ab92"
+      },
+      "mark-modifier": {
+        "role": "tertiary",
+        "displayName": "Mark Modifier",
+        "canonical": "#6e675c"
+      },
+      "mark-persistent": {
+        "role": "tertiary",
+        "displayName": "Mark Persistent",
+        "canonical": "#0e0d0b"
+      },
+      "restriction-adviser": {
+        "role": "tertiary",
+        "displayName": "Restriction Adviser",
+        "canonical": "#e3672b"
+      },
+      "restriction-site": {
+        "role": "tertiary",
+        "displayName": "Restriction Site",
+        "canonical": "#e2b245"
+      },
+      "restriction-edifice": {
+        "role": "tertiary",
+        "displayName": "Restriction Edifice",
+        "canonical": "#c9bfa9"
       }
     },
     "typographyMeta": {
@@ -609,6 +634,11 @@
       {
         "name": "The Shape First Rule",
         "body": "Every suit, token and die has its own glyph. Color only keeps them from blurring; it never carries meaning alone. A token glyph is 1.25em of its line (`.token-glyph`); the strip's resource figures carry it at 1.3em and a card header at 1.5em.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Cost Notation Rule",
+        "body": "Every price, a start's badge, a destination's or source's badge, and a plan's or modifier's price, is written one way by the server and drawn by RulesTextRenderer.cost: parts in a fixed order joined by \" · \", a \"+\" where another way spends more, and ways to pay joined by a small uppercase \"or\" in Ink Dim. A badge lists only the ways no other way undercuts, Supply ways first: \"1+ Supply OR 1 [favor]\".",
         "section": "colors"
       },
       {

@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.travel
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower}
 import oathdigital.gameplay.operations.SupplyStrip
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution, PowerCtx, Transform}
 import oathdigital.gameplay.powers.SelectedModifier
@@ -9,6 +10,7 @@ import oathdigital.model._
 object ForestPathsCard extends Denizen(DenizenId("43"), "Forest Paths", Suit.Beast):
   val power = PrintedPower(PowerId("denizen.forest-paths"),
     persistent = false, cost = Cost(favor = 1),
+    modifier = Some(ModifierMark.Action(MajorActionType.Travel)),
     text = "Spend no Supply and ignore the powers of sites if you're " +
       "traveling to a site with a [suit-beast] card.")
   val powers: Vector[PrintedPower] = Vector(power)

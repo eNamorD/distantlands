@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.economy
 
 import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
-  PrintedPower}
+  ModifierMark, PrintedPower}
 import oathdigital.gameplay.actions.economy.TradeProcedure
 import oathdigital.gameplay.powerresolver.Contribution
 import oathdigital.gameplay.powers.SelectedModifier
@@ -10,6 +10,7 @@ import oathdigital.model._
 object BirdsongCard extends Denizen(DenizenId("176"), "Birdsong", Suit.Beast) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.birdsong"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Trade)),
     text = "Spend no Supply if you're trading with a [suit-beast] or " +
       "[suit-nomad] card.")
   val powers: Vector[PrintedPower] = Vector(power)

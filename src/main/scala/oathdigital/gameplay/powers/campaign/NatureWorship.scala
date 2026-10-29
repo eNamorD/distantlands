@@ -1,12 +1,14 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower}
 import oathdigital.gameplay.EffectiveSuit
 import oathdigital.model._
 
 object NatureWorshipCard extends Denizen(DenizenId("175"), "Nature Worship", Suit.Beast):
   val power = PrintedPower(PowerId("denizen.nature-worship"),
     persistent = false, cost = Cost(secret = 1),
+    modifier = Some(ModifierMark.EitherSidePlan),
     text = "± [attack-die] per [suit-beast] adviser you have.")
   val powers: Vector[PrintedPower] = Vector(power)
 

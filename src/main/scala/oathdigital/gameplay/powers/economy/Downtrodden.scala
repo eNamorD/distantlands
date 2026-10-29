@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.economy
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower}
 import oathdigital.gameplay.EffectiveSuit
 import oathdigital.gameplay.actions.economy.MusterProcedure
 import oathdigital.gameplay.powerresolver.{Contribution, Transform}
@@ -10,6 +11,7 @@ import oathdigital.model._
 object DowntroddenCard extends Denizen(DenizenId("81"), "Downtrodden", Suit.Discord):
   val power = PrintedPower(PowerId("denizen.downtrodden"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Muster)),
     text = "Gain two more warbands if mustering on a card whose favor " +
       "bank has the least [favor] _(not tied)_.")
   val powers: Vector[PrintedPower] = Vector(power)

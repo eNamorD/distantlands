@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower}
 import oathdigital.gameplay.actions.campaign.CampaignProcedure
 import oathdigital.gameplay.powers.PowerAnswers
 import oathdigital.model._
@@ -8,6 +9,7 @@ import oathdigital.model._
 object SaltTheEarthCard extends Denizen(DenizenId("89"), "Salt the Earth", Suit.Discord):
   val power = PrintedPower(PowerId("denizen.salt-the-earth"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.AttackPlan),
     text = "If you're victorious in a conquest, bury all cards at one " +
       "site you targeted.")
   val powers: Vector[PrintedPower] = Vector(power)

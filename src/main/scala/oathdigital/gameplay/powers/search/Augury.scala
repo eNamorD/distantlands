@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.search
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower}
 import oathdigital.gameplay.powerresolver.{Contribution, Transform}
 import oathdigital.gameplay.powers.SelectedModifier
 import oathdigital.model._
@@ -8,6 +9,7 @@ import oathdigital.model._
 object AuguryCard extends Denizen(DenizenId("56"), "Augury", Suit.Arcane):
   val power = PrintedPower(PowerId("denizen.augury"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Search)),
     text = "Draw one more card. _(Stop after a Vision as normal.)_")
   val powers: Vector[PrintedPower] = Vector(power)
 

@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, PrintedPower}
+import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
 import oathdigital.gameplay.powerresolver.Transform
 import oathdigital.model._
 
@@ -8,6 +8,7 @@ object CarefulPlansCard extends Denizen(DenizenId("254"), "Careful Plans",
     Suit.Order):
   val power = PrintedPower(PowerId("denizen.careful-plans"),
     persistent = false, cost = Cost(favor = 1),
+    modifier = Some(ModifierMark.AttackPlan),
     text = "The defender **must** roll their [defense-die] before the " +
       "attacker rolls their [attack-die].")
   val powers: Vector[PrintedPower] = Vector(power)

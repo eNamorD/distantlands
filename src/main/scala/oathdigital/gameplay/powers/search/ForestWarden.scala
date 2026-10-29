@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.search
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower}
 import oathdigital.gameplay.EffectiveSuit
 import oathdigital.gameplay.actions.{CardPlayRules, DiscardPermission,
   SiteRemoval}
@@ -13,6 +14,7 @@ object ForestWardenCard extends Denizen(DenizenId("218"), "Forest Warden",
     Suit.Beast):
   val power = PrintedPower(PowerId("denizen.forest-warden"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Search)),
     text = "If you play a [suit-beast] card to a site, you may bury a " +
       "card at the site first.")
   val powers: Vector[PrintedPower] = Vector(power)

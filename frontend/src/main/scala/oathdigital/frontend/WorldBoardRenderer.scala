@@ -165,7 +165,7 @@ private[frontend] object WorldBoardRenderer:
      options: BoardOptions): Unit =
    options.view(keys).flatMap(_.option.badge).foreach { badge =>
      val chip = text("span", "target-detail-badge", "")
-     RulesTextRenderer.inline(badge, chip)
+     RulesTextRenderer.cost(badge, chip)
      target.appendChild(chip)
    }
 

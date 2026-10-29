@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.campaign
 
 import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
-  PrintedPower}
+  ModifierMark, PrintedPower}
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   OptionRestriction, PowerCtx}
 import oathdigital.model._
@@ -9,6 +9,7 @@ import oathdigital.model._
 object BeastTamerCard extends Denizen(DenizenId("90"), "Beast Tamer", Suit.Discord) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.beast-tamer"),
     persistent = true, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Campaign)),
     text = "Enemies cannot use [suit-beast] or [suit-nomad] battle " +
       "plans against you.")
   val powers: Vector[PrintedPower] = Vector(power)

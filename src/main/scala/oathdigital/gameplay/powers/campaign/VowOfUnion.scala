@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
+import oathdigital.catalog.{AdviserOnly, Denizen, Locked, ModifierMark,
+  PrintedPower}
 import oathdigital.gameplay.{NoteSupport, PowerAccess}
 import oathdigital.gameplay.actions.campaign.{CampaignIds,
   CampaignProcedure, CampaignSetup}
@@ -12,6 +13,7 @@ import oathdigital.model._
 object VowOfUnionCard extends Denizen(DenizenId("185"), "Vow of Union", Suit.Beast) with Locked with AdviserOnly:
   val campaign = PrintedPower(PowerId("denizen.vow-of-union.campaign"),
     persistent = true, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Campaign)),
     text = "At the start of **any** campaign, you may move any number " +
       "of warbands from sites you rule in your region to your " +
       "board or vice versa.")

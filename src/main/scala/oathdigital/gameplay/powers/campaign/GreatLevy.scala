@@ -1,11 +1,12 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, PrintedPower}
+import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
 import oathdigital.model._
 
 object TheGreatLevyCard extends Denizen(DenizenId("137"), "The Great Levy", Suit.Hearth):
   val power = PrintedPower(PowerId("denizen.the-great-levy"),
     persistent = false, cost = Cost(favor = 2),
+    modifier = Some(ModifierMark.EitherSidePlan),
     text = "±3 [attack-die] and **ignore** all skulls [skull] you roll, " +
       "unless your enemy has the People's Favor.")
   val powers: Vector[PrintedPower] = Vector(power)

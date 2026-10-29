@@ -1,12 +1,14 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower}
 import oathdigital.gameplay.EffectiveSuit
 import oathdigital.model._
 
 object MilitaryParadeCard extends Denizen(DenizenId("109"), "Military Parade", Suit.Order):
   val power = PrintedPower(PowerId("denizen.military-parade"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.EitherSidePlan),
     text = "If you're victorious, gain [favor] from the favor banks " +
       "matching each adviser of your enemy _(including Imperial " +
       "Allies)_.")

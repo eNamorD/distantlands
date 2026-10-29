@@ -37,6 +37,16 @@
   --die-round: #9b59b6;
   /* An option the viewer may ask consent for, and nothing else. */
   --consent-amber: #e8a33d;
+  /* The printed power marks (PowerMarks): a modifier's tab is warm grey,
+     black when persistent, as the card blackens it with its braid; a
+     restriction banner is edged orange for an adviser, gold for a site and
+     parchment for an edifice's face. Shape names each one; these only keep
+     them apart from the card behind. */
+  --mark-modifier: #6e675c;
+  --mark-persistent: #0e0d0b;
+  --restriction-adviser: #e3672b;
+  --restriction-site: #e2b245;
+  --restriction-edifice: #c9bfa9;
   /* The table's surfaces, inks, lines and player colours, named as
      DESIGN.md names them. The one-off colours stay inline where they
      are used. */
@@ -122,6 +132,55 @@
   border-color: var(--die); }
 .rules-power { margin: 0 0 0.7em; line-height: 1.5; }
 .rules-power:last-child { margin-bottom: 0; }
+/* The printed marks (PowerMarks). Each is a small SVG: a frame filled from
+   its class, an emblem coloured through currentColor. */
+.mark-sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+.power-mark, .restriction-mark { display: inline-block; flex: 0 0 auto;
+  width: 1.5em; height: 1.5em; overflow: visible; }
+.power-mark-emblem { color: var(--cream-bright); }
+.power-mark-action .power-mark-frame { fill: var(--mark-modifier); }
+.power-mark-persistent .power-mark-frame { fill: var(--mark-persistent);
+  stroke: var(--line-mid); stroke-width: 0.8; }
+.power-mark-keyline { fill: none; stroke: var(--cream-bright); stroke-width: 0.9;
+  opacity: 0.5; }
+.power-mark-persistent .power-mark-keyline { opacity: 0.85; }
+.power-mark-plan-attack .power-mark-frame { fill: var(--suit-discord); }
+.power-mark-plan-defense .power-mark-frame { fill: var(--suit-order); }
+.power-mark-plan-either .power-mark-frame { fill: url(#mark-either-side); }
+.restriction-mark { --restriction-edge: var(--line-mid); }
+.restriction-mark-adviser { --restriction-edge: var(--restriction-adviser); }
+.restriction-mark-site { --restriction-edge: var(--restriction-site); }
+.restriction-mark-tower, .restriction-mark-tower-ruined {
+  --restriction-edge: var(--restriction-edifice); }
+.restriction-mark-edge { fill: var(--restriction-edge); }
+.restriction-mark-body { fill: var(--mark-persistent); }
+.restriction-mark-disc { fill: var(--cream-bright); }
+.restriction-mark-adviser .power-mark-emblem { color: #24407f; }
+.restriction-mark-site .power-mark-emblem { color: #2e6b3d; }
+.restriction-mark-chain { color: var(--cream-bright); stroke: var(--mark-persistent);
+  stroke-width: 0.6; }
+/* A power under its braid. The braid divides it from the power above, as
+   on the card: a twisted rope, or a black herringbone for a persistent
+   power, with the modifier tab standing on its left and the cost on it. */
+.power-face + .power-face { margin-top: 1em; }
+.power-braid { position: relative; display: flex; align-items: flex-end;
+  gap: 0.25em; min-height: 0.8em; margin: 0 0 0.4em; padding: 0 0.35em; }
+.power-braid::before { content: ""; position: absolute; right: 0; bottom: 0.15em;
+  left: 0; height: 0.5em; border-radius: 0.25em; background-color: #b5a682;
+  background-image: repeating-linear-gradient(120deg, #e6d9b8 0 0.16em,
+    #8a7c5e 0.16em 0.28em, #b5a682 0.28em 0.46em); }
+.power-face-persistent .power-braid::before { background-color: var(--mark-persistent);
+  background-image: linear-gradient(135deg, #7a6e5c 25%, transparent 25%),
+    linear-gradient(225deg, #7a6e5c 25%, transparent 25%);
+  background-size: 0.5em 0.5em; box-shadow: 0 0 0 1px var(--line-mid); }
+.power-braid > * { position: relative; }
+.power-braid .power-mark { width: 2.8em; height: 2.8em; }
+/* The cost sits on the braid's middle, on the overlay's own fill so a gold
+   coin keeps its edge against the rope. */
+.power-cost { display: inline-flex; align-self: center; gap: 0.1em;
+  margin: 0 auto; padding: 0.05em 0.3em; border-radius: 1em; background: #1b1811;
+  box-shadow: 0 0 0 1px var(--brass-line); }
+.power-cost .token-glyph { width: 1.2em; height: 1.2em; }
 
 * { box-sizing: border-box; }
 body { margin: 0; }
@@ -638,8 +697,20 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    beside the dice rather than under them. */
 .card-defense { display: flex; flex: 0 0 auto; align-items: flex-start;
   gap: 0.05em; margin-left: auto; font-size: 1em; }
-.card-restriction { margin-top: auto; font-size: max(0.72em, 0.7rem);
-  color: var(--ink-dim); text-transform: capitalize; }
+/* The suit glyph with the restriction banner hung under it, one column at
+   the header's left, as the printed card hangs its banner under the suit. */
+.card-emblems { display: flex; flex: 0 0 auto; flex-direction: column;
+  align-items: center; gap: 0.15em; }
+.card-header .restriction-mark { width: 1.5em; height: 1.5em; }
+/* Each power's modifier tab or battle-plan crown, in the lower-left corner,
+   lifted above the unimplemented band or a Replace badge when either is
+   there. */
+.card-power-marks { position: absolute; left: 0.35em; bottom: 0.35em;
+  display: flex; gap: 0.15em; }
+.card-power-marks .power-mark { width: 1.5em; height: 1.5em; }
+.card-face:has(> .card-unimplemented-badge) > .card-power-marks {
+  bottom: calc(max(0.62em, 0.7rem) * 1.35 + 0.3em); }
+.card-face.board-option-replace > .card-power-marks { bottom: calc(0.35em + 1.6em); }
 /* A band across the card's foot, out to the dashed border, so the word gets
    the card's whole width: at the floor's 0.7rem, mixed case, "Unimplemented"
    fits the smallest card in a pane. The card keeps the band's height free
@@ -959,6 +1030,13 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .plan-side-both {
   background: linear-gradient(90deg, var(--suit-discord), var(--suit-order));
   color: #fff; }
+/* A power option leads with the tab its card prints (PowerMarks): a plan's
+   crown or a modifier's arch, so the two never read alike in one list. */
+.walker-choice .power-mark { width: 1.45em; height: 1.45em; margin-right: 0.35em;
+  vertical-align: -0.38em; }
+/* "or" between two ways to pay, set apart from the amounts on either side. */
+.cost-or { font-size: 0.78em; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink-dim); }
 /* A cost chip reads as the board's cost badges do (.target-detail-badge). */
 .option-cost { border: 1px solid #a98b58; background: var(--base); color: var(--brass-bright);
   font-weight: 700; white-space: nowrap; }
@@ -1216,8 +1294,19 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 .map-compact .card-header .token-glyph { position: absolute; top: 0.2em;
   left: 0.2em; width: 1.5em; height: 1.5em; }
 .map-compact .card-tokens { justify-content: center; }
-.map-compact .card-face .card-defense, .map-compact .card-face .card-restriction,
+.map-compact .card-face .card-defense, .map-compact .card-face .card-power-marks,
 .map-compact .card-face .card-unimplemented-badge { display: none; }
+/* The banner takes the corner opposite the suit glyph, in the room the
+   face's top padding already keeps for it. */
+.map-compact .card-emblems { display: contents; }
+.map-compact .card-header .restriction-mark { position: absolute; top: 0.2em;
+  right: 0.2em; }
+/* A compact card too narrow for the glyph and the banner side by side, as
+   a phone's whole-map view makes it, keeps the suit glyph alone; the banner
+   is read on a zoom or in the overlay. */
+.map-compact .site .card-face { container-type: inline-size; }
+@container (max-width: 3.6em) {
+  .map-compact .card-header .restriction-mark { display: none; } }
 /* A compact banner shows its name alone, held at the glance size as a
    site's card is: the side and the "Banner of the" prefix are the study
    layer, read on a zoom or in the overlay. The name is set in the face its

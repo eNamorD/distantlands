@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower, SiteOnly}
 import oathdigital.gameplay.actions.BannerRules
 import oathdigital.model._
 
@@ -8,6 +9,7 @@ object HeartsAndMindsCard extends Denizen(DenizenId("138"),
     "Hearts and Minds", Suit.Hearth) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.hearts-and-minds"),
     persistent = false, cost = Cost(favor = 3),
+    modifier = Some(ModifierMark.DefensePlan),
     text = "As defender, you're victorious now. At end, discard Hearts " +
       "and Minds unless you hold the People's Favor.")
   val powers: Vector[PrintedPower] = Vector(power)

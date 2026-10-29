@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.targeting
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower, SiteOnly}
 import oathdigital.gameplay.SiteRulers
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution, OptionRestriction, PowerCtx}
 import oathdigital.gameplay.powers.CatalogResolution
@@ -9,6 +10,7 @@ import oathdigital.model._
 object ForgottenVaultCard extends Denizen(DenizenId("75"), "Forgotten Vault", Suit.Arcane) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.forgotten-vault"),
     persistent = true, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Campaign)),
     text = "Enemies of Forgotten Vault's ruler **cannot** target relics " +
       "held by its ruler. If ruled by Empire, all Imperials have " +
       "this power.")

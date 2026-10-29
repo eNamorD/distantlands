@@ -1,6 +1,7 @@
 package oathdigital.application
 
-import oathdigital.catalog.{AdviserOnly, ExecutableCatalog, Locked, PrintsPowers, SiteOnly}
+import oathdigital.catalog.{AdviserOnly, ExecutableCatalog, Locked, ModifierMark,
+  PrintsPowers, SiteOnly}
 import oathdigital.gameplay.PlayerSecretSummary
 import oathdigital.gameplay.phases.rest.FinishRestProcedure
 import oathdigital.gameplay.powers.{AdviserLimit, PlayerFacts, PowerImplementationStatus}
@@ -50,7 +51,8 @@ private[application] final class GamePresentationProjector(
         case EdificeSide.Intact => "intact"
         case EdificeSide.Ruined => "ruined"
       }), favor = value.tokens.favor, secrets = value.tokens.secrets,
-      implemented = face.exists(cardImplemented))
+      implemented = face.exists(cardImplemented),
+      powers = face.fold(Vector.empty)(powerFaces))
 
   def readyPlayers(ready: ReadyGame) = ready.game.current.players.map { player =>
     SetupPlayerProjection(player.player.value, playerLabel(player.player),
@@ -355,7 +357,7 @@ private[application] final class GamePresentationProjector(
       CardDetailsProjection(value.value, "denizen", d.name, Some(d.suit.key),
         Some(restrictionName(d)), Some(d.rulesText),
         orientation.map(orientationName), hidden = hidden,
-        implemented = cardImplemented(d))
+        implemented = cardImplemented(d), powers = powerFaces(d))
     }
     case value: VisionId => VisionCardPresentation.byId.get(value.value).fold(
       CardDetailsProjection(value.value, "vision", safeLabel(value.value),
@@ -369,10 +371,24 @@ private[application] final class GamePresentationProjector(
         orientation = orientation.map(orientationName), hidden = hidden)) { r =>
       CardDetailsProjection(value.value, "relic", r.name, rulesText = Some(r.rulesText),
         orientation = orientation.map(orientationName), relicValue = Some(r.value),
-        defense = Some(r.defense), hidden = hidden, implemented = cardImplemented(r))
+        defense = Some(r.defense), hidden = hidden, implemented = cardImplemented(r),
+        powers = powerFaces(r))
     }
     case other => CardDetailsProjection(other.value, other.getClass.getSimpleName,
       safeLabel(other.value), orientation = orientation.map(orientationName), hidden = hidden)
+
+  /** Each printed power as its card lays it out, for the inspection
+    * overlay's braids. */
+  private def powerFaces(card: PrintsPowers): Vector[PowerFaceProjection] =
+    card.powers.map(power => PowerFaceProjection(power.text, power.costSymbols,
+      power.persistent, power.modifier.map {
+        case ModifierMark.Action(actions*) =>
+          ModifierMarkProjection.Action(actions.map(_.key).toVector)
+        case ModifierMark.BattlePlan(sides*) =>
+          ModifierMarkProjection.BattlePlan(sides.map {
+            case CampaignPlanSide.Attacker => "attack"
+            case CampaignPlanSide.Defender => "defense" }.toVector)
+      }))
 
   private def restrictionName(card: AnyRef): String = card match
     case _: (Locked & AdviserOnly) => "locked-adviser-only"

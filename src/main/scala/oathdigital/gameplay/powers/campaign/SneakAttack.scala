@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.campaign
 
 import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
-  PrintedPower}
+  ModifierMark, PrintedPower}
 import oathdigital.gameplay.actions.campaign.CampaignSetup
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   Transform}
@@ -12,6 +12,7 @@ import oathdigital.model._
 object SneakAttackCard extends Denizen(DenizenId("98"), "Sneak Attack", Suit.Discord) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.sneak-attack"),
     persistent = true, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Campaign)),
     text = "After another player's campaign, you may campaign, spending " +
       "no Supply, if you declare them as the defender.")
   val powers: Vector[PrintedPower] = Vector(power)

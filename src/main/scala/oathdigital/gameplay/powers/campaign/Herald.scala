@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.campaign
 
 import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
-  PrintedPower}
+  ModifierMark, PrintedPower}
 import oathdigital.gameplay.actions.campaign.CampaignProcedure
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   Transform}
@@ -13,6 +13,7 @@ import oathdigital.model._
 object HeraldCard extends Denizen(DenizenId("143"), "Herald", Suit.Hearth) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.herald"),
     persistent = true, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Campaign)),
     text = "After another player campaigns against a player _(not " +
       "bandits)_, you gain [favor] from any favor bank.")
   val powers: Vector[PrintedPower] = Vector(power)

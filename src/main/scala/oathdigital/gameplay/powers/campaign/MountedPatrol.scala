@@ -1,12 +1,14 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower}
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.model._
 
 object MountedPatrolCard extends Denizen(DenizenId("163"), "Mounted Patrol", Suit.Nomad):
   val power = PrintedPower(PowerId("denizen.mounted-patrol"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.DefensePlan),
     text = "The attacker rolls only half the [attack-die] in their " +
       "attack pool, rounded down. At end, discard Mounted Patrol.")
   val powers: Vector[PrintedPower] = Vector(power)

@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.economy
 
-import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
+import oathdigital.catalog.{ExecutableCatalog, ModifierMark, PrintedPower,
+  Relic}
 import oathdigital.gameplay.actions.economy.{MusterSource, TradeProcedure}
 import oathdigital.gameplay.powerresolver.Contribution
 import oathdigital.gameplay.powers.SelectedModifier
@@ -9,6 +10,7 @@ import oathdigital.model._
 object CupOfPlentyCard extends Relic(RelicId("R07"), "Cup of Plenty", value = 96, defense = 1):
   val power = PrintedPower(PowerId("relic.cup-of-plenty"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Trade)),
     text = "Spend no Supply if you're trading with a card that does not " +
       "match any of your advisers.")
   val powers: Vector[PrintedPower] = Vector(power)

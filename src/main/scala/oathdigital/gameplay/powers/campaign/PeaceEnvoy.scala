@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, PrintedPower}
+import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
 import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.actions.campaign.{CampaignAnswers, CampaignIds,
   CampaignSetup}
@@ -10,6 +10,7 @@ import oathdigital.model._
 object PeaceEnvoyCard extends Denizen(DenizenId("125"), "Peace Envoy", Suit.Order):
   val power = PrintedPower(PowerId("denizen.peace-envoy"),
     persistent = false, cost = Cost(favor = 1),
+    modifier = Some(ModifierMark.EitherSidePlan),
     text = "You **cannot** use other battle plans. If your enemy's pawn " +
       "is at your site, give them one [favor] per [defense-die] in " +
       "the pool. You're victorious now. **Ignore** killing " +

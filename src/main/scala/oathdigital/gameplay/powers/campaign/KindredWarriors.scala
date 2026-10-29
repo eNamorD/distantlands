@@ -1,11 +1,13 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower}
 import oathdigital.model._
 
 object KindredWarriorsCard extends Denizen(DenizenId("60"), "Kindred Warriors", Suit.Arcane):
   val power = PrintedPower(PowerId("denizen.kindred-warriors"),
     persistent = false, cost = Cost(secret = 1),
+    modifier = Some(ModifierMark.EitherSidePlan),
     text = "Ignore all skulls [skull] you roll. ±X [attack-die] up to " +
       "the number of other suits you rule.")
   val powers: Vector[PrintedPower] = Vector(power)

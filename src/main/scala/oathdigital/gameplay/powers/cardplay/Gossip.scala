@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.cardplay
 
 import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
-  PrintedPower}
+  ModifierMark, PrintedPower}
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution, PowerCtx, Transform}
 import oathdigital.gameplay.powers.CatalogResolution
 import oathdigital.gameplay.{NoteSupport, PowerAccess}
@@ -10,6 +10,7 @@ import oathdigital.model._
 object GossipCard extends Denizen(DenizenId("99"), "Gossip", Suit.Discord) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.gossip"),
     persistent = true, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Search)),
     text = "After an enemy plays an adviser facedown _(including a " +
       "Vision)_, gain [favor] from the [suit-discord] bank.")
   val powers: Vector[PrintedPower] = Vector(power)

@@ -5,6 +5,11 @@ colors:
   brass: "#d2a85e"
   brass-bright: "#f1c781"
   consent-amber: "#e8a33d"
+  mark-modifier: "#6e675c"
+  mark-persistent: "#0e0d0b"
+  restriction-adviser: "#e3672b"
+  restriction-site: "#e2b245"
+  restriction-edifice: "#c9bfa9"
   brass-label: "#d5bd8f"
   brass-line: "#7c694b"
   cream: "#f5ecd7"
@@ -343,6 +348,20 @@ by glyph, each right after its count at 1.1em ("1 Supply · 1 [favor] · 1
 its own count beside its cracked glyph, never folded into the paid one. A
 hover note is plain text, so a cost there stays in words.
 
+**The One Cost Notation Rule.** Every price the table shows, a start's badge
+in the Act menu, a destination's or a source's badge on the board, and a
+plan's or a modifier's price beside its choice, is written one way by the
+server and drawn one way by `RulesTextRenderer.cost`. A way to pay is its
+parts in a fixed order, Supply, favor, burnt favor, secrets, X secrets,
+burnt secrets, warbands, joined by " · ". A "+" after a count says some
+other way spends more of that part ("1+ Supply"). Two ways to pay are joined
+by an "or", drawn as its own small uppercase word in Ink Dim so the ways
+read as a choice and never as one sum: a Travel that Way Station lets pay in
+favor reads "1+ Supply OR 1 [favor]". A badge lists only the ways no other
+way undercuts in every part, Supply ways first; one destination free in
+Supply reads "0+ Supply"; a start free every way shows no badge. A plan's or
+a modifier's price opens with "Cost:".
+
 **The One Cool Rule.** Selection blue is the only cool UI color, and it means
 "selected". Do not use it for links, information or decoration.
 
@@ -400,9 +419,8 @@ cards and the page title. It is never used for controls, labels or body text.
 
 **The Eleven-Pixel Floor.** Functional text is never under 11px on screen. In
 the panes this is a floor on the text, not the box: a card name is
-`max(0.95em, 0.7rem)` and a restriction `max(0.72em, 0.7rem)`, so a card
-scaled down by its pane's font size keeps its box in `ex` and its text
-readable. The smallest steps in use are `.84em` for a partition option and
+`max(0.95em, 0.7rem)`, so a card scaled down by its pane's font size keeps
+its box in `ex` and its text readable. The smallest steps in use are `.84em` for a partition option and
 `.85em` for its order note, both chosen to clear the floor at the pane's
 0.9rem.
 
@@ -416,8 +434,9 @@ names near one screen size while the board keeps shrinking under them, the
 way a map's place names hold still while the map zooms. The site footer
 (powers and requirement) sits inside the details and so holds the glance
 size too, clamped to one line on the compact map; a card's own study layer
-(defense, restriction and badge) is hidden there and read on a zoom or in
-the overlay. Text on the map may fall under 11px; the Eleven-Pixel Floor is
+(defense and badge) is hidden there and read on a zoom or in the overlay;
+the restriction banner stays, in the card's top-right corner, and the power
+marks are hidden. Text on the map may fall under 11px; the Eleven-Pixel Floor is
 a pane rule. Nothing in the compact mode may change the map's height,
 because the Fit scale is computed from it: the site box is fixed at 21.5rem
 and clips, and the region title has a fixed 2.4rem line. The two glance
@@ -624,10 +643,36 @@ controls are 30px.
   Order fill for defense, a Discord-to-Order gradient for both; white text.
 - **Option cost**: the plan-side pill's shape on a choice, read as a target
   detail badge: `#a98b58` border, Base fill, Bright Brass 700 text.
+- **Power marks** (`PowerMarks`): original glyphs after the printed card's
+  layout, never its art, each a small SVG whose frame takes its fill from a
+  class and whose emblem takes Bright Cream through `currentColor`.
+  - A **modifier** is an arch-topped tab with a faint inner keyline,
+    holding its action's emblem: a boot for Travel, a spyglass for Search, a
+    hand under a coin for Trade, a swallowtailed flag for Muster, a pack for
+    Recover, a scroll and quill for Challenge, a horse's head for Campaign.
+    No power modifies Forge, so it has no emblem. The tab is Mark Modifier
+    warm grey, or Mark Persistent black with a brighter keyline when the
+    power is persistent. A power the engine offers as a modifier but whose
+    card prints no icon, as Spiteful Mirror's, shows none.
+  - A **battle plan** is a Campaign modifier: a crowned tab holding the
+    Campaign emblem, filled Discord for attack, Order for defense and a
+    Discord-to-Order gradient for either side, the plan-side chip's colours.
+    The side is also the crown's name and the chip's word, so colour never
+    carries it alone. No plan is persistent.
+  - A **restriction** is a banner hung over the whole card, a flat top and a
+    pointed foot, edged in its colour on a Mark Persistent body: a bust on a
+    cream disc, edged Restriction Adviser, for adviser only; a fir, edged
+    Restriction Site, for site only; a tower, whole or broken, edged
+    Restriction Edifice, for an edifice's face; and a chain of three links
+    across the top of any locked card.
+  - A choice that offers a power leads with its tab at 1.45em: a plan with
+    its crown before its side chip, a modifier at its action's modifier
+    decision with its arch, so the two never read alike in one list.
+    Offered on the board instead, the card face shows its own marks.
 - **Unimplemented badge**: a band across the card's foot, out to its dashed
   border, in the Unimplemented fill: Cream mixed case at `max(0.62em,
   0.7rem)`, centered. The card keeps the band's height free at its foot, so
-  the restriction sits above it. Mixed case and the full width are what let
+  the power marks sit above it. Mixed case and the full width are what let
   the word clear the Eleven-Pixel Floor on the smallest card in a pane.
 
 ### Cards
@@ -638,11 +683,16 @@ ratio, sized in `ex` from `--card-w: 13ex`.
   denizen, `#7a6a4c` for a relic, dashed Unimplemented for a card the engine
   does not run, dashed Line-mid with transparent fill for an empty slot.
 - **Face:** header row of suit glyph (1.5em) and name (700, 0.95em) with
-  defense dice pushed right; a name that does not fit beside the glyph drops
-  under it whole rather than breaking mid-word, and a single word too long
-  for the box is hyphenated at a syllable; token row and defense row at 1em;
-  restriction in Ink Dim capitalized at the bottom; footer sinks to the
-  bottom.
+  defense dice pushed right; a restricted card hangs its restriction banner
+  (1.5em, no words) under the suit glyph, as the printed card does, the two
+  one column (`.card-emblems`); a name that does not fit beside the glyph
+  or the column drops under it whole rather than breaking mid-word, and a
+  single word too long for the box is hyphenated at a syllable; token row
+  and defense row at 1em. Each power's modifier tab or battle-plan crown
+  stands in the lower-left corner at 1.5em, a row of them for a card with
+  several, lifted above the unimplemented band or a Replace badge: a first
+  step toward a face that shows its powers, whose text and cost are read in
+  the overlay. Footer sinks to the bottom.
 - **Compact (zoomed-out map only):** the box and ratio are unchanged; the
   suit glyph moves to the top-left corner at 1.5em, with the face padded
   1.7em at the top so the name starts under it, and the name sits centered
@@ -663,7 +713,11 @@ ratio, sized in `ex` from `--card-w: 13ex`.
   to its border, never breaks inside a word and never hyphenates: initials
   are the compact face's answer to a word that does not fit. The whole
   name stays in the button's label and hover note.
-  Defense, restriction and the unimplemented badge are hidden; tokens stay.
+  The restriction banner leaves the glyph's column for the top-right corner
+  at 1.5em, in the room the top padding keeps, since under the glyph it
+  would run into the centred name, and is hidden on a card under 3.6em wide (a
+  container query), where it would cover the suit glyph. Defense, the power
+  marks and the unimplemented badge are hidden; tokens stay.
 - **Face-down:** Facedown fill, centered Facedown Letter at 1.9em 700; a
   knowable card adds a Secret pip top-right and reveals a summary on hover or
   focus (pointer devices only, CSS only, no client state).
@@ -683,7 +737,12 @@ ratio, sized in `ex` from `--card-w: 13ex`.
   card's upper right.
 - **Overlay:** the same card at `font-size: 1.9em` beside a details column
   (Georgia name, `dt`/`dd` property grid), inside a Brass Line box on
-  `#1b1811` over the scrim.
+  `#1b1811` over the scrim. Each printed power sits under its braid, a
+  0.5em band that divides it from the power above, as the card's braids
+  do: a twisted rope in parchment tones, or a black herringbone for a
+  persistent power. The modifier tab stands on its left end at 2.8em, and
+  the power's cost sits on its middle as token glyphs on a `#1b1811` pill,
+  so the text below no longer opens with the cost symbols.
 
 ### Dice
 A rolled die is a face-shaped chip: 1.9em minimum width, 1.5em tall, 1px

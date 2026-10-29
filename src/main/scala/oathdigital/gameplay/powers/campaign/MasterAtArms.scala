@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower}
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.actions.dice.{DiceThrow, RerollChoice}
 import oathdigital.gameplay.powerresolver.{Contribution, OfferReroll,
@@ -11,6 +12,7 @@ object MasterAtArmsCard extends Denizen(DenizenId("249"), "Master at Arms",
     Suit.Order):
   val power = PrintedPower(PowerId("denizen.master-at-arms"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.AttackPlan),
     text = "You may reroll any number of dice that show hollow swords " +
       "[hollow-sword] once.")
   val powers: Vector[PrintedPower] = Vector(power)

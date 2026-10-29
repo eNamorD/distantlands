@@ -37,6 +37,17 @@ class MenuPanelSuite extends munit.FunSuite:
       canControl = true, panel, ui)
     panel
 
+  test("a start with two ways to pay names both, the or set apart"):
+    val travel = button("travel", "Travel", "major",
+      Some("1+ Supply or 1 [favor]"))
+    val cost = Dom.one(draw(Vector(travel)), ".menu-option-cost")
+    assertEquals(cost.textContent, " (1+ Supply or 1 )")
+    assertEquals(all(cost, ".cost-or").map(_.textContent), Vector("or"))
+    assertEquals(all(cost, ".token-glyph").map(_.getAttribute("aria-label")),
+      Vector("favor"))
+    assertEquals(Dom.one(draw(Vector(travel)), ".menu-option")
+      .getAttribute("aria-label"), "Travel (1+ Supply or 1 favor)")
+
   test("the options are grouped, and the ending comes last"):
     val panel = draw(Vector(search, recover, peek, power, ending))
     assertEquals(all(panel, "h2").map(_.textContent),

@@ -1,12 +1,14 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower}
 import oathdigital.gameplay.{EffectiveSuit, PledgeToDiscordCard}
 import oathdigital.model._
 
 object GreatCrusadeCard extends Denizen(DenizenId("164"), "Great Crusade", Suit.Nomad):
   val power = PrintedPower(PowerId("denizen.great-crusade"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.EitherSidePlan),
     text = "± [attack-die] per [suit-nomad] card you rule. At end, " +
       "discard Great Crusade.")
   val powers: Vector[PrintedPower] = Vector(power)

@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.cardplay
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower, SiteOnly}
 import oathdigital.gameplay.powerresolver.{Contribution, PowerCtx, Transform}
 import oathdigital.gameplay.powers.SelectedModifier
 import oathdigital.model._
@@ -8,6 +9,7 @@ import oathdigital.model._
 object WelcomingPartyCard extends Denizen(DenizenId("50"), "Welcoming Party", Suit.Hearth) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.welcoming-party"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Search)),
     text = "If you play a denizen card that was not a facedown adviser, " +
       "gain [favor] from the [suit-hearth] bank.")
   val powers: Vector[PrintedPower] = Vector(power)

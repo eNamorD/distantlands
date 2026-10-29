@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.targeting
 
-import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
+import oathdigital.catalog.{ExecutableCatalog, ModifierMark, PrintedPower,
+  Relic}
 import oathdigital.gameplay.actions.BannerRules
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution, OptionRestriction, PowerCtx}
 import oathdigital.gameplay.powers.CatalogResolution
@@ -10,6 +11,7 @@ import oathdigital.model._
 object CircletOfCommandCard extends Relic(RelicId("R15"), "Circlet of Command", value = 12, defense = 0):
   val power = PrintedPower(PowerId("relic.circlet-of-command"),
     persistent = true, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Campaign)),
     text = "Players **cannot** target your banners or your other relics.")
   val powers: Vector[PrintedPower] = Vector(power)
 

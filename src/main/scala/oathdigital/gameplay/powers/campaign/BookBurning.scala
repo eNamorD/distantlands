@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, PrintedPower}
+import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
 import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.powers.SecretBurns
 import oathdigital.model._
@@ -8,6 +8,7 @@ import oathdigital.model._
 object BookBurningCard extends Denizen(DenizenId("22"), "Book Burning", Suit.Discord):
   val power = PrintedPower(PowerId("denizen.book-burning"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.AttackPlan),
     text = "If you're victorious in a raid, burn all [secret] on the " +
       "defender's board except their last [secret].")
   val powers: Vector[PrintedPower] = Vector(power)

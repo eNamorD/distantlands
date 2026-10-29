@@ -24,6 +24,19 @@ class LogPageCodecSuite extends munit.FunSuite:
       Vector(LogEntry(7, 0, LogKind.Action, spans)))
     assertEquals(LogPageCodec.decode(LogPageCodec.encode(all)), Right(all))
 
+  test("a card's printed powers round-trip with their braids and marks"):
+    val card = CardDetailsProjection("4", "denizen", "Longbows", Some("order"),
+      powers = Vector(
+        PowerFaceProjection("± [attack-die]", modifier = Some(
+          ModifierMarkProjection.BattlePlan(Vector("attack", "defense")))),
+        PowerFaceProjection("Spend no Supply.", Vector("favor", "secret-burnt"),
+          persistent = true,
+          modifier = Some(ModifierMarkProjection.Action(Vector("travel")))),
+        PowerFaceProjection("**ACTION:** Gain 2 Supply.")))
+    val page = LogPage("g", 0, 9, Vector(LogEntry(7, 0, LogKind.Action,
+      Vector(LogSpan.Cards(Vector(card))))))
+    assertEquals(LogPageCodec.decode(LogPageCodec.encode(page)), Right(page))
+
   test("a text span is the whole of its object: a kind and its words"):
     val json = ujson.read(LogPageCodec.encode(LogPage("g", 0, 9,
       Vector(LogEntry(7, 0, LogKind.Turn, Vector(LogSpan.Text("'s turn")))))))

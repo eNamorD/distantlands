@@ -1,12 +1,13 @@
 package oathdigital.gameplay.powers.campaign
 
 import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
-  PrintedPower}
+  ModifierMark, PrintedPower}
 import oathdigital.model._
 
 object InsectSwarmCard extends Denizen(DenizenId("184"), "Insect Swarm", Suit.Beast) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.insect-swarm"),
     persistent = true, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Campaign)),
     text = "Your enemy's battle plans each have an added cost of " +
       "[favor-burnt].")
   val powers: Vector[PrintedPower] = Vector(power)

@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.travel
 
-import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
+import oathdigital.catalog.{ExecutableCatalog, ModifierMark, PrintedPower,
+  Relic}
 import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.powerresolver.{Contribution, PowerCtx, Transform}
 import oathdigital.gameplay.powers.{PlayerFacts, SelectedModifier}
@@ -9,6 +10,7 @@ import oathdigital.model._
 object DragonskinDrumCard extends Relic(RelicId("R20"), "Dragonskin Drum", value = 59, defense = 2):
   val power = PrintedPower(PowerId("relic.dragonskin-drum"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Travel)),
     text = "After traveling, gain one warband.")
   val powers: Vector[PrintedPower] = Vector(power)
 

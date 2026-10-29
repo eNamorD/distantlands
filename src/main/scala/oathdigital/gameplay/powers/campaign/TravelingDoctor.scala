@@ -1,12 +1,14 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower}
 import oathdigital.gameplay.powerresolver.{ContributingPower, PowerCtx}
 import oathdigital.model._
 
 object TravelingDoctorCard extends Denizen(DenizenId("51"), "Traveling Doctor", Suit.Hearth):
   val power = PrintedPower(PowerId("denizen.traveling-doctor"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.EitherSidePlan),
     text = "If you're defeated, kill no warbands in your force and " +
       "discard Traveling Doctor. **Ignore** powers that kill all " +
       "of your force.")

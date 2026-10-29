@@ -19,12 +19,25 @@ object QueuedStart:
     * other way it could go. */
   final case class StartCost(least: PricedOptions.Spent,
       others: Vector[PricedOptions.Spent] = Vector.empty):
-    /** "1 Supply", "2 Supply · 1 [favor]", "1+ Supply", "1 Supply · 1
-      * [favor] · 1 [favor-burnt]": a "+" marks an amount another way spends
-      * more of. `None` when the start is free. */
+    /** "1 Supply", "2 Supply · 1 [favor]", "1+ Supply", "1+ Supply or 1
+      * [favor]", "0+ Supply": every way no other way undercuts in every
+      * part, those spending Supply first, joined by " or ", and a "+" on an
+      * amount some way spends more of. A way that is never the cheapest
+      * would only lengthen the badge, and the cheapest alone hides the
+      * choice: a Travel that Way Station lets pay in favor read "1 [favor]",
+      * as if favor were the price. `None` when every way is free. */
     def words: Option[String] =
-      Option.when(least != PricedOptions.Spent())(least.words(part =>
-        others.exists(way => part.of(way) > part.of(least))))
+      val ways = (least +: others).distinct
+      val undercut = ways.filter(way => ways.exists(other =>
+        other != way && PricedOptions.Spent.parts.forall(part =>
+          part.of(other) <= part.of(way))))
+      Option.when(ways.exists(_ != PricedOptions.Spent()))(ways
+        .filterNot(undercut.contains)
+        .sortBy(way => (way.supply == 0, way.supply, way.allFavor,
+          way.allSecrets, way.favorBurnt, way.secretsBurnt))
+        .map(way => way.words(part =>
+          ways.exists(other => part.of(other) > part.of(way))))
+        .mkString(" or "))
 
   def refusal(catalog: ExecutableCatalog, ready: ReadyGame,
       entry: QueuedProcedure, powers: WalkerPowers,

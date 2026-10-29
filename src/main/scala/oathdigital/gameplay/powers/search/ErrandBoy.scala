@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.search
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower}
 import oathdigital.gameplay.actions.search.SearchProcedure
 import oathdigital.gameplay.powerresolver.{Contribution, PowerCtx, Transform}
 import oathdigital.gameplay.powers.SelectedModifier
@@ -9,6 +10,7 @@ import oathdigital.model._
 object ErrandBoyCard extends Denizen(DenizenId("11"), "Errand Boy", Suit.Beast):
   val power = PrintedPower(PowerId("denizen.errand-boy"),
     persistent = false, cost = Cost(favor = 1),
+    modifier = Some(ModifierMark.Action(MajorActionType.Search)),
     text = "You may draw from a discard pile in a different region " +
       "instead of yours.")
   val powers: Vector[PrintedPower] = Vector(power)

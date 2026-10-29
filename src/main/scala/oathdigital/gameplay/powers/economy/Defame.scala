@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.economy
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower}
 import oathdigital.gameplay.{EffectiveSuit, NoteSupport}
 import oathdigital.gameplay.actions.economy.TradeProcedure
 import oathdigital.gameplay.powerresolver.{Contribution, Transform}
@@ -10,6 +11,7 @@ import oathdigital.model._
 object DefameCard extends Denizen(DenizenId("102"), "Defame", Suit.Discord):
   val power = PrintedPower(PowerId("denizen.defame"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Trade)),
     text = "After trading with a [suit-discord] card, burn " +
       "[favor-burnt] from any player board.")
   val powers: Vector[PrintedPower] = Vector(power)

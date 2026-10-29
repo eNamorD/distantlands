@@ -207,7 +207,7 @@ class WalkerDecisionProjectorSuite extends munit.FunSuite:
       .optionProjection(context.ready, Some(p1),
         CardIndex.from(context.ready.game).toOption, option)
     assertEquals(projected.flatMap(_.badge), Some("Battle Plan"))
-    assertEquals(projected.map(_.details), Some(Vector("Cost: 1 favor")))
+    assertEquals(projected.map(_.details), Some(Vector("Cost: 1 [favor]")))
 
   test("an edifice option projects its label and details from the card's side, " +
       "and one that is not at a site suppresses the decision"):

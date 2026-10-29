@@ -1,11 +1,12 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, PrintedPower}
+import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
 import oathdigital.model._
 
 object SecondWindCard extends Denizen(DenizenId("16"), "Second Wind", Suit.Discord):
   val power = PrintedPower(PowerId("denizen.second-wind"),
     persistent = false, cost = Cost(secret = 1, favorBurnt = 1),
+    modifier = Some(ModifierMark.EitherSidePlan),
     text = "After you're victorious, you may travel and then may " +
       "campaign, spending no Supply for either.")
   val powers: Vector[PrintedPower] = Vector(power)

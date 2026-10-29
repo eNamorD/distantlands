@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.recover
 
-import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
+import oathdigital.catalog.{ExecutableCatalog, ModifierMark, PrintedPower,
+  Relic}
 import oathdigital.gameplay.actions.recover.RecoverProcedure
 import oathdigital.gameplay.powerresolver.{Contribution, Transform}
 import oathdigital.gameplay.powers.SelectedModifier
@@ -10,6 +11,7 @@ import oathdigital.model.DecisionAnswer.ChooseManyAnswer
 object SilverCharmCard extends Relic(RelicId("R31"), "Silver Charm", value = 37, defense = 1):
   val power = PrintedPower(PowerId("relic.silver-charm"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Recover)),
     text = "Each time you spend Supply to roll [defense-die], you may " +
       "also reroll any number of previous [defense-die] at the same " +
       "time.")

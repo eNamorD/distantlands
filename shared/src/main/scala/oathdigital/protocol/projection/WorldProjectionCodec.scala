@@ -1,5 +1,6 @@
 package oathdigital.protocol.projection
 
+import oathdigital.protocol.ProtocolDecodeFailure.InvalidValue
 import ProjectionCodecSupport._
 
 private[protocol] object WorldProjectionCodec:
@@ -21,12 +22,13 @@ private[protocol] object WorldProjectionCodec:
     "rulesText" -> stringOption(value.rulesText), "orientation" -> stringOption(value.orientation),
     "side" -> stringOption(value.side), "favor" -> value.favor, "secrets" -> value.secrets,
     "relicValue" -> intOption(value.relicValue), "defense" -> intOption(value.defense),
-    "hidden" -> value.hidden, "implemented" -> value.implemented)
+    "hidden" -> value.hidden, "implemented" -> value.implemented,
+    "powers" -> encoded(value.powers)(encodePowerFace))
   def decodeCard(raw: ujson.Value, path: String): Result[CardDetailsProjection] = for
     value <- obj(raw, path)
     _ <- exact(value, Set("cardId", "cardKind", "name", "suit", "restrictions",
       "rulesText", "orientation", "side", "favor", "secrets", "relicValue",
-      "defense", "hidden", "implemented"), path)
+      "defense", "hidden", "implemented", "powers"), path)
     cardId <- string(value, "cardId", path)
     kind <- string(value, "cardKind", path)
     name <- string(value, "name", path)
@@ -41,8 +43,44 @@ private[protocol] object WorldProjectionCodec:
     defense <- optionalAbsent(value, "defense", path)(int)
     hidden <- bool(value, "hidden", path)
     implemented <- boolOr(value, "implemented", path, true)
+    powers <- default(value, "powers", path, Vector.empty[PowerFaceProjection])(
+      (raw, child) => array(raw, child).flatMap(traverse(_, child)(decodePowerFace)))
   yield CardDetailsProjection(cardId, kind, name, suit, restrictions, rulesText,
-    orientation, side, favor, secrets, relicValue, defense, hidden, implemented)
+    orientation, side, favor, secrets, relicValue, defense, hidden, implemented,
+    powers)
+
+  private def encodePowerFace(value: PowerFaceProjection): ujson.Value =
+    ujson.Obj("text" -> value.text, "cost" -> encoded(value.cost)(ujson.Str(_)),
+      "persistent" -> value.persistent,
+      "modifier" -> option(value.modifier)(encodeModifier))
+  private def decodePowerFace(raw: ujson.Value, path: String)
+      : Result[PowerFaceProjection] = for
+    value <- obj(raw, path)
+    _ <- exact(value, Set("text", "cost", "persistent", "modifier"), path)
+    text <- string(value, "text", path)
+    cost <- strings(value, "cost", path)
+    persistent <- bool(value, "persistent", path)
+    modifier <- optional(value, "modifier", path)(decodeModifier)
+  yield PowerFaceProjection(text, cost, persistent, modifier)
+
+  private def encodeModifier(value: ModifierMarkProjection): ujson.Value =
+    value match
+      case ModifierMarkProjection.Action(actions) => ujson.Obj(
+        "kind" -> "action", "actions" -> encoded(actions)(ujson.Str(_)))
+      case ModifierMarkProjection.BattlePlan(sides) => ujson.Obj(
+        "kind" -> "battle-plan", "sides" -> encoded(sides)(ujson.Str(_)))
+  private def decodeModifier(raw: ujson.Value, path: String)
+      : Result[ModifierMarkProjection] = for
+    value <- obj(raw, path)
+    kind <- string(value, "kind", path)
+    mark <- kind match
+      case "action" => exact(value, Set("kind", "actions"), path).flatMap(_ =>
+        strings(value, "actions", path).map(ModifierMarkProjection.Action(_)))
+      case "battle-plan" => exact(value, Set("kind", "sides"), path).flatMap(_ =>
+        strings(value, "sides", path).map(ModifierMarkProjection.BattlePlan(_)))
+      case other => Left(InvalidValue(s"$path.kind",
+        s"unknown modifier kind $other"))
+  yield mark
 
   private def encodePower(value: SitePowerProjection): ujson.Value = ujson.Obj(
     "kind" -> value.kind, "label" -> value.label,

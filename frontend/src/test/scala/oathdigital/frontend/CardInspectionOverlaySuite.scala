@@ -47,6 +47,30 @@ class CardInspectionOverlaySuite extends munit.FunSuite:
     dom.document.body.appendChild(node)
     node
 
+  test("each power sits under its braid, with its modifier tab and its cost"):
+    val waystation = CardDetails("169", "denizen", "Way Station",
+      orientation = Some("face-up"), powers = Vector(
+        PowerFace("Spend no Supply if you're traveling here.",
+          persistent = true, modifier = Some(
+            oathdigital.protocol.projection.ModifierMarkProjection.Action(
+              Vector("travel")))),
+        PowerFace("**ACTION:** Gain [favor].", cost = Vector("secret"))))
+    val MountedOverlay(root, overlay) = mountedOverlay()
+    overlay.show(waystation, focusableOpener())
+    val faces = all(root, ".card-overlay-rules > .power-face")
+    assertEquals(faces.map(_.getAttribute("class")),
+      Vector("power-face power-face-persistent", "power-face"))
+    // The braid comes first: it divides a power from the one above it.
+    assertEquals(faces.map(_.firstElementChild.getAttribute("class")),
+      Vector("power-braid", "power-braid"))
+    assertEquals(all(faces(0), ".power-braid .power-mark")
+      .map(_.getAttribute("aria-label")), Vector("Persistent Travel modifier"))
+    assertEquals(all(faces(1), ".power-braid .power-cost .token-glyph")
+      .map(_.getAttribute("aria-label")), Vector("secret"))
+    // The cost is on the braid, so the text no longer opens with it.
+    assertEquals(all(faces(1), ".rules-power").map(_.textContent),
+      Vector("ACTION: Gain ."))
+
   test("the overlay is hidden until a card opens it, and shows that card in full"):
     val MountedOverlay(root, overlay) = mountedOverlay()
     assert(root.querySelector(".card-overlay").hasAttribute("hidden"))

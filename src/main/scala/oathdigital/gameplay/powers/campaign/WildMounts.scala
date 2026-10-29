@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower}
 import oathdigital.gameplay.actions.campaign.CampaignProcedure
 import oathdigital.gameplay.powerresolver.{Deferred, OperationRewrite,
   Transform}
@@ -10,6 +11,7 @@ import oathdigital.model._
 object WildMountsCard extends Denizen(DenizenId("153"), "Wild Mounts", Suit.Nomad):
   val power = PrintedPower(PowerId("denizen.wild-mounts"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.EitherSidePlan),
     text = "If you would discard any number of [suit-nomad] battle " +
       "plans, you may instead discard any one [suit-beast] card " +
       "you rule.")

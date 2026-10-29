@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.cardplay
 
 import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
-  PrintedPower}
+  ModifierMark, PrintedPower}
 import oathdigital.gameplay.{EffectiveSuit, NoteSupport, PowerAccess}
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerCtx, Transform}
@@ -11,6 +11,7 @@ import oathdigital.model._
 object SaddleMakersCard extends Denizen(DenizenId("142"), "Saddle Makers", Suit.Hearth) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.saddle-makers"),
     persistent = true, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Search)),
     text = "After another player plays a [suit-nomad] or [suit-order] " +
       "card, you gain [favor] [favor] from the matching favor bank.")
   val powers: Vector[PrintedPower] = Vector(power)

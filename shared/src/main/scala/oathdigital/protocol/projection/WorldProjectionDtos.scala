@@ -20,8 +20,25 @@ final case class CardDetailsProjection(
     relicValue: Option[Int] = None,
     defense: Option[Int] = None,
     hidden: Boolean = false,
-    implemented: Boolean = true
+    implemented: Boolean = true,
+    powers: Vector[PowerFaceProjection] = Vector.empty
 )
+/** One printed power as its card lays it out: a braid above it, black when
+  * `persistent`, with the `cost` tokens on it in printed order ("favor",
+  * "secret-burnt") and the modifier icon at its left, then `text`, the
+  * power's words without the cost symbols they open with. */
+final case class PowerFaceProjection(text: String,
+    cost: Vector[String] = Vector.empty, persistent: Boolean = false,
+    modifier: Option[ModifierMarkProjection] = None)
+/** The modifier icon a power prints: the major actions it modifies, by key
+  * ("travel"), or a battle plan, which is a Campaign modifier, with the
+  * sides of a Campaign that may play it ("attack", "defense"). */
+sealed trait ModifierMarkProjection extends Product with Serializable
+object ModifierMarkProjection:
+  final case class Action(actions: Vector[String])
+      extends ModifierMarkProjection
+  final case class BattlePlan(sides: Vector[String])
+      extends ModifierMarkProjection
 final case class SiteCardProjection(
     cardId: String,
     label: String,

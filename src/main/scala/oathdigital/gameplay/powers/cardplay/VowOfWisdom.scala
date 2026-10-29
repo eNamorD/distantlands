@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.cardplay
 
-import oathdigital.catalog.{AdviserOnly, Denizen, PrintedPower}
+import oathdigital.catalog.{AdviserOnly, Denizen, ModifierMark, PrintedPower}
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   OperationRewrite, PowerCtx, Transform}
 import oathdigital.gameplay.PowerAccess
@@ -10,6 +10,7 @@ object VowOfWisdomCard extends Denizen(DenizenId("203"), "Vow of Wisdom",
     Suit.Arcane) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.vow-of-wisdom"),
     persistent = true, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Search)),
     text = "You **must** gain [secret] instead of [favor] when you play " +
       "to a site.")
   val powers: Vector[PrintedPower] = Vector(power)

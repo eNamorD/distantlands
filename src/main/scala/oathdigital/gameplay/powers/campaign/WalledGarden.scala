@@ -1,11 +1,13 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower, SiteOnly}
 import oathdigital.model._
 
 object WalledGardenCard extends Denizen(DenizenId("195"), "Walled Garden", Suit.Beast) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.walled-garden"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.DefensePlan),
     text = "+[defense-die] per [suit-beast] at any sites if this site " +
       "is targeted.")
   val powers: Vector[PrintedPower] = Vector(power)

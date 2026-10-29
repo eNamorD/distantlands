@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, PrintedPower}
+import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
 import oathdigital.gameplay.actions.campaign.{CampaignIds,
   CampaignProcedure, PlanAmounts}
 import oathdigital.gameplay.powers.PowerAnswers
@@ -10,6 +10,7 @@ object ArcaneArmorCard extends Denizen(DenizenId("206"), "Arcane Armor",
     Suit.Arcane):
   val power = PrintedPower(PowerId("denizen.arcane-armor"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.DefensePlan),
     text = "X [secret] Set X [defense-die] you have collected to their " +
       "[shield][shield] face instead of rolling them.")
   val powers: Vector[PrintedPower] = Vector(power)

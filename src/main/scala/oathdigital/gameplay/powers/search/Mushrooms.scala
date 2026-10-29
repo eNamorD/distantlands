@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.search
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower,
-  SiteOnly}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower, SiteOnly}
 import oathdigital.gameplay.actions.search.SearchProcedure
 import oathdigital.gameplay.operations.SupplyStrip
 import oathdigital.gameplay.powerresolver.{Contribution, ModifierPicks,
@@ -12,6 +12,7 @@ import oathdigital.model._
 object MushroomsCard extends Denizen(DenizenId("183"), "Mushrooms", Suit.Beast) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.mushrooms"),
     persistent = false, cost = Cost(secret = 1),
+    modifier = Some(ModifierMark.Action(MajorActionType.Search)),
     text = "Spend no Supply, but draw only one card _(not three)_ from " +
       "the bottom of your region's discard pile.")
   val powers: Vector[PrintedPower] = Vector(power)

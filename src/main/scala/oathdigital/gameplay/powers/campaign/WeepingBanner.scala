@@ -1,12 +1,13 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{PrintedPower, Relic}
+import oathdigital.catalog.{ModifierMark, PrintedPower, Relic}
 import oathdigital.model._
 
 object WeepingBannerCard extends Relic(RelicId("R42"), "Weeping Banner",
     value = 63, defense = 2):
   val power = PrintedPower(PowerId("relic.weeping-banner"),
     persistent = false, cost = Cost(secret = 1),
+    modifier = Some(ModifierMark.DefensePlan),
     text = "The attacker **must** resolve another [skull] for each " +
       "[skull] rolled.")
   val powers: Vector[PrintedPower] = Vector(power)

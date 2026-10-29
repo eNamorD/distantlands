@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.search
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
+  PrintedPower}
 import oathdigital.gameplay.powerresolver.{Contribution, OperationRewrite,
   Transform}
 import oathdigital.gameplay.powers.banner.CardPowerBanners
@@ -10,6 +11,7 @@ import oathdigital.model._
 object DisciplesCard extends Denizen(DenizenId("205"), "Disciples", Suit.Arcane):
   val power = PrintedPower(PowerId("denizen.disciples"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Search)),
     text = "If you have the Darkest Secret, spend only 2 Supply if " +
       "you're searching the world deck.")
   val powers: Vector[PrintedPower] = Vector(power)
