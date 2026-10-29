@@ -189,46 +189,30 @@ than for the actor only. Citizenship offers belong to the Empire phase.
 ### Phase - Chronicle steps
 
 After the all-Exile alpha, implement the Chronicle and persistent campaign:
-generalized later-game setup, Atlas transitions, Chronicle tasks, world
-reconstruction, Reliquary changes, Foundation mutation, Legacy
-activation/scoring, Oathkeeper goal changes, era scoring, saved-campaign
-continuation, and campaign browsing.
+Foundation mutation, Legacy activation and scoring, and era scoring.
 
-- [x] **End-of-game Chronicle steps.**
-  - Foundation landed: the winner's Start Chronicle decision, driver
-    chaining, the baseline Chronicle kept at game start, and
-    `ChronicleUpdated`.
-  - Sun and Throne landed: crowning, task assignment, Shape Empire, Build
-    Edifice, Reliquary and relics, lineage points and the Oath, with the
-    legacy and Citizenship steps as empty windows.
-  - World and Beacon landed: Visions leave play, nine denizens are dealt and
-    one stack protected, newcomers are drawn from three suits, and each task
-    holder keeps a starting adviser. Shape Foundation is an empty window.
-  - Stars landed: rival sites are archived and the Empire's sites kept, and
-    the journaled Chronicle reads the table and passes game start's card
-    accounting. Starting the next game from it waits for the Empire phase.
-- [x] **Enduring (Ancient City).** Its cards are not discarded in the
-  Chronicle Phase's Shape Empire step.
-- [x] **Chronicle import and export.** The Chronicle string codec for the TTS
-  format, including the sections that format has not defined yet.
-  Designed in the
-  [Chronicle TTS codec design](superpowers/specs/2026-10-28-chronicle-tts-codec-design.md).
-  - The codec landed: TTS strings of versions 2 and 3 decode, and version 3
-    encodes. Import and export in the UI landed with Saved-campaign browsing.
-- [x] **Saved-campaign browsing.** Import, export, load and delete a campaign.
-  Designed in the
-  [Chronicle browsing design](superpowers/specs/2026-10-28-chronicle-browsing-design.md);
-  the Chronicle codec comes first.
-  - Landed in two slices: the server side, then the Chronicle page, player
-    selection, browser storage, JSON and TTS import and export, and the
-    automatic save at the table. Starting game 2 from an evolved Chronicle
-    waits for the Empire phase.
-- [ ] **Foundations.**
+The Chronicle Phase itself landed on 2026-10-28: every task runs end to end
+and journals the evolved Chronicle
+([Chronicle steps design](superpowers/specs/2026-10-27-chronicle-steps-design.md)).
+Chronicle import, export and saved-campaign browsing landed on 2026-10-29
+([TTS codec design](superpowers/specs/2026-10-28-chronicle-tts-codec-design.md),
+[browsing design](superpowers/specs/2026-10-28-chronicle-browsing-design.md)).
+Game start seats each lineage from its Chronicle record and refuses, by name,
+what that record needs later-game setup for.
+
+- [ ] **Foundations.** Fills the Beacon's empty Shape Foundation window.
+  Game start also sets every foundation to its normal face and ignores the
+  Chronicle's stored faces.
 - [ ] **The Grand Council and Festival banner faces.** Legacies that set
   Foundation V or VI turn the banners to these faces. Their ids are in
   `RuleSourceIndex`, and the faces have no behaviour.
-- [ ] **Legacies.**
-- [ ] **Eras.**
+- [ ] **Legacies.** Fills the Sun's empty steps 2-5 and the legacy bonus in
+  Score Lineage Points. Game start refuses a seated lineage's legacies and
+  starting relics until then.
+- [ ] **Eras.** Era end, tie-breaks (F7) and the reset of lineage points.
+- [ ] **Edit Chronicle.** The Chronicle page shows the button disabled,
+  "Coming in a later release". Edits a saved Chronicle's fields in the
+  browser.
 
 ### Phase - Empire
 
@@ -239,8 +223,10 @@ remaining production authentication work needed for broader hosting. Empire
 defenders in a Campaign are not modelled either.
 
 - [ ] **Saved-campaign continuation.** Start game 2 from the Chronicle that the
-  Chronicle Phase journals. Game start refuses an Empire-state Chronicle until
-  Imperial setup exists.
+  Chronicle Phase journals: the later-game setup of CR pp. 8-13. Game start
+  refuses a non-empty world, any Imperial role and a seated lineage's
+  starting advisers until it exists.
+- [ ] **Offer Citizenship.** The Throne's step is an empty window.
 
 ### Phase - Gameplay completeness gate
 
@@ -261,8 +247,10 @@ one.
   add: player choices earlier in setup once foundations and legacies exist,
   such as the Chancellor choosing Recent or Forgotten sites; later-game setup
   (Empire `world` sites, stored denizens and relics); and WHEN EXPLORED
-  triggers once an explore procedure exists. The Chronicle string codec is
-  under **Phase - Chronicle steps**.
+  triggers once an explore procedure exists.
+- [ ] **Keyboard focus on the Chronicle pages.** A redraw of the Chronicle
+  page drops the focused control, and the table's save dialog does not trap
+  focus. Do it with the next accessibility pass over the start pages.
 - [ ] **Desecrated Ground.** E08's ruined face lets an Exile at its
   site keep any number of revealed Visions, which turns
   `PlayerState.revealedVision` into a collection across card play, projection,
@@ -476,8 +464,8 @@ before treating the numbers below as current.
     invitation flow first; until then, keep development routes loopback-only.
 - [ ] **L3 — Licensed game assets with permanent visual fallbacks**, including
   suit and restriction icons on card faces.
-- [ ] **L4 — Saved-game browser and replay navigation** (campaign-continuity
-  phase)
+- [ ] **L4 — Saved-game browser and replay navigation.** Saved campaigns
+  are browsable; saved games and replays are not.
 - [ ] **L5 — Asynchronous accounts, invitations, and notifications**
 - [ ] **L6 — Incremental implementation of remaining phases and rules** (tracked
   in the phased sequence above; the next denizens and relics come

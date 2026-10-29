@@ -1962,5 +1962,5 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 ## Known gaps carried forward
 
-- Game start seats every lineage as an Exile and ignores a saved Chronicle's roles. This slice does not reach that path, because game start refuses an evolved Chronicle until the Empire phase. It must be fixed before the Empire phase lets game 2 start.
+- Game start seats every lineage as an Exile and ignores a saved Chronicle's roles. This slice does not reach that path, because game start refuses an evolved Chronicle until the Empire phase. It must be fixed before the Empire phase lets game 2 start. Fixed on 2026-10-29: game start seats each lineage from its record and refuses what later-game setup must handle.
 - A player who never reopens the game after its Chronicle Phase gets no automatic save, as the spec's "Known limits" says.
