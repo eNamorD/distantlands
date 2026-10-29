@@ -211,6 +211,8 @@ continuation, and campaign browsing.
   Chronicle Phase's Shape Empire step.
 - [ ] **Chronicle import and export.** The Chronicle string codec for the TTS
   format, including the sections that format has not defined yet.
+  Designed in the
+  [Chronicle TTS codec design](superpowers/specs/2026-10-28-chronicle-tts-codec-design.md).
 - [ ] **Saved-campaign browsing.** Import, export, load and delete a campaign.
   Designed in the
   [Chronicle browsing design](superpowers/specs/2026-10-28-chronicle-browsing-design.md);
