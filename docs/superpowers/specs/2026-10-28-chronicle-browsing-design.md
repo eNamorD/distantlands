@@ -121,7 +121,9 @@ must not match a saved name) or the loaded Chronicle's name as text (Continue
 Chronicle), and a Back link to `/`. Create game sends `New(name)` or
 `Saved(json)`. On success with `New`, the browser saves the returned entry and
 loads it. A refusal shows on this page. Opening the page without having chosen
-New or Continue redirects to `/`.
+New or Continue redirects to `/`. While a game is being created, the page
+stays: its Back is disabled, and the browser's Back or Forward returns to
+`/new-game`, since the seat links appear only here.
 
 ### Automatic save
 
