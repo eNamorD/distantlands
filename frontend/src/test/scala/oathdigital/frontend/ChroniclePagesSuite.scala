@@ -69,6 +69,7 @@ class ChroniclePagesSuite extends munit.FunSuite:
       startPages(browser, "/new-game", ChronicleFixtures.devices(
         history = history))
       assertEquals(history.replaced.toVector, Vector("/"))
+      assert(browser.mount.classList.contains("start-page"))
       assert(shows(browser, "new-chronicle"))
       assert(!shows(browser, "create-trusted-game"))
 

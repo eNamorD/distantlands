@@ -1108,6 +1108,9 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 /* Arcs-inspired persistent table. Existing content styles stay in styles.css. */
 html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: none; }
 #app { width: 100%; height: 100vh; height: 100dvh; max-width: none; margin: 0; padding: 0; }
+/* The start pages are documents, not the table: they scroll within #app and
+   keep a gutter. */
+#app.start-page { overflow-y: auto; box-sizing: border-box; padding: 28px 16px 48px; }
 /* Actions lead the table, top left and two rows tall, beside the players
    and the map they are answered on; the Log takes the corner under them. */
 .game-table { width: 100%; height: 100%; display: grid; gap: 4px; padding: 4px;

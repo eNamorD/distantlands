@@ -18,6 +18,9 @@ private[frontend] object ChroniclePages:
       devices.storage.getOrElse(new MemoryChronicleStorage()), devices.now)
     val client = new ChronicleClient(transport)
     var choice = Option.empty[HostChronicle]
+    // The table's stylesheet fixes the page to the viewport; the start pages
+    // are long, so they scroll inside it.
+    mount.classList.add("start-page")
 
     def show(path: String): Unit =
       if path == NewGamePath then choice match
