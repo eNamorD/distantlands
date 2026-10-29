@@ -16,6 +16,22 @@ class ChronicleAccountingSuite extends munit.FunSuite:
     LineageState(LineageId("lineage:any"), None, Role.Exile, Vector.empty,
       Vector(DenizenState(card, Orientation.FaceDown, Tokens.empty)))
 
+  private def lineageKeeping(relic: RelicId): LineageState =
+    LineageState(LineageId("lineage:any"), None, Role.Exile, Vector.empty,
+      Vector.empty, startingRelics = Vector(relic))
+
+  test("a starting relic also in the relic deck is stored twice"):
+    val relic = chronicle.relicDeck.head
+    val kept = chronicle.copy(lineages = Vector(lineageKeeping(relic)))
+    assertEquals(ChronicleAccounting.knownAndUnique(catalog, kept),
+      Left(s"relic ${relic.value} is stored twice"))
+
+  test("a relic moved from the relic deck to a starting relic is conserved"):
+    val relic = chronicle.relicDeck.head
+    val moved = chronicle.copy(relicDeck = chronicle.relicDeck.tail,
+      lineages = Vector(lineageKeeping(relic)))
+    assertEquals(ChronicleAccounting.conserves(chronicle, moved), Right(()))
+
   test("the first-game fixture's Chronicle passes"):
     assertEquals(ChronicleAccounting.knownAndUnique(catalog, chronicle),
       Right(()))

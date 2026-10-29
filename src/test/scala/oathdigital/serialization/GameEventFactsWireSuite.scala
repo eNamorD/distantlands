@@ -62,7 +62,9 @@ class GameEventFactsWireSuite extends munit.FunSuite:
     val roles = Vector(Role.Exile, Role.Citizen, Role.Chancellor)
     val event = OathEvent.GameStarted(chronicle.copy(lineages =
       roles.zipWithIndex.map((role, index) => LineageState(
-        LineageId(s"l$index"), None, role, Vector.empty, Vector.empty))),
+        LineageId(s"l$index"), None, role, Vector.empty, Vector.empty,
+        startingRelics =
+          if index == 0 then chronicle.relicDeck.take(1) else Vector.empty))),
       orders)
     val encoded = accepted(GameEventWire.encodeEvent("roles", 0L, event))
     assertEquals(encoded("payload")("chronicle")("lineages").arr

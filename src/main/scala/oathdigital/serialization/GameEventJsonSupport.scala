@@ -132,7 +132,8 @@ private[serialization] trait GameEventJsonSupport:
       "legacies" -> ujson.Arr.from(lineage.legacies.map(legacy =>
         ujson.Obj("id" -> legacy.id.value, "active" -> legacy.active))),
       "startingAdvisers" -> ujson.Arr.from(
-        lineage.startingAdvisers.map(encodeAdviserState)))
+        lineage.startingAdvisers.map(encodeAdviserState)),
+      "startingRelics" -> stringArray(lineage.startingRelics.map(_.value)))
 
   protected final def decodeLineageState(value: ujson.Value, path: String)
       : Either[WireError, LineageState] = for
@@ -142,11 +143,12 @@ private[serialization] trait GameEventJsonSupport:
     startingAdvisers <- traverse(value("startingAdvisers").arr.zipWithIndex.toVector):
       case (adviser, index) =>
         decodeAdviserState(adviser, s"$path.startingAdvisers[$index]")
+    startingRelics = value("startingRelics").arr.toVector.map(r => RelicId(r.str))
   yield LineageState(LineageId(value("id").str),
     value("previousPlayer") match {
       case ujson.Null => None
       case id => Some(PlayerId(id.str))
-    }, role, legacies, startingAdvisers)
+    }, role, legacies, startingAdvisers, startingRelics)
 
   protected final def encodeChronicle(chronicle: Chronicle): ujson.Value =
     ujson.Obj(

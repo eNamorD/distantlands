@@ -32,13 +32,14 @@ object ChronicleRecord:
       campaign.lineages.get(lineage.id)
         .map(live => lineage.copy(role = live.role,
           previousPlayer = seatedBy.get(lineage.id),
-          startingAdvisers = live.startingAdvisers))
+          startingAdvisers = live.startingAdvisers,
+          startingRelics = live.startingRelics))
         .getOrElse(lineage.copy(role =
           campaign.boxRoles.getOrElse(lineage.id, lineage.role))))
     val known = kept.map(_.id).toSet
     val added = campaign.lineages.values.toVector
       .filterNot(lineage => known(lineage.id)).sortBy(_.id.value)
       .map(live => LineageState(live.id, seatedBy.get(live.id), live.role,
-        Vector.empty, live.startingAdvisers))
+        Vector.empty, live.startingAdvisers, live.startingRelics))
     campaign.baseline.copy(era = campaign.era,
       oathkeeperGoal = campaign.oathkeeperGoal, lineages = kept ++ added)

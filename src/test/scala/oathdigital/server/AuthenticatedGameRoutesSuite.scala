@@ -9,6 +9,7 @@ import oathdigital.catalog.SiteOnly
 import oathdigital.persistence.HsqldbDatabaseOwner
 import oathdigital.gameplay.setup.SetupProcedure
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
+import oathdigital.gameplay.setup.FirstGameSetupFixture.chronicle
 import oathdigital.model.DenizenId
 import oathdigital.testkit.{CatalogNames, HttpTestServer,
   TestUserHeaderAuthenticator}

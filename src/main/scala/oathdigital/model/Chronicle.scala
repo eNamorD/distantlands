@@ -18,8 +18,8 @@ object StoredSite:
  * recorded shuffle orders (2026-09-21 Chronicle design). Fields mirror the
  * Oath NF TTS Chronicle export format
  * (https://github.com/harsch1/oath-nf-tts-scripts/blob/main/chronicle-codec.js)
- * so an eventual codec can import and export the same strings; this project
- * does not parse that string format yet.
+ * so `application/chronicle/ChronicleTtsCodec` can import and export the same
+ * strings.
  *
  * `atlasBox` and `world` together account for every site: `atlasBox` holds
  * sites in storage (index 0 is the Recent end) and `world` holds the
@@ -29,9 +29,8 @@ object StoredSite:
  * or default for a first game.
  *
  * `era` and `oathkeeperGoal` are required; a first game starts at
- * `EraState(20, Map.empty)` and `OathkeeperGoal.Supremacy`. The TTS codec has
- * no era field, and gains an Oath digit in encoding version 3; Persistence
- * decides the wire format.
+ * `EraState(20, Map.empty)` and `OathkeeperGoal.Supremacy`. The TTS string has
+ * no era field, and gains an Oath digit in encoding version 3.
  */
 final case class Chronicle(
     atlasBox: Vector[StoredSite],

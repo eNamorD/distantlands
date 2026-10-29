@@ -63,6 +63,8 @@ object GameStartRules:
     for
       _ <- Either.cond(chronicle.world.isEmpty, (),
         UnsupportedChronicle("a non-empty world requires the Empire"))
+      _ <- Either.cond(chronicle.lineages.forall(_.startingRelics.isEmpty), (),
+        UnsupportedChronicle("starting relics require Legacies"))
       _ <- Either.cond(chronicle.atlasBox.size >= 8, (),
         UnsupportedChronicle(
           s"at least 8 atlas sites are required, got ${chronicle.atlasBox.size}"))

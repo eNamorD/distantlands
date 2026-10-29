@@ -1,6 +1,7 @@
 # Chronicle TTS codec design
 
-Status: approved in brainstorming, 2026-10-28. Next step: implementation plan.
+Status: implemented, 2026-10-29
+([plan](../plans/2026-10-28-chronicle-tts-codec.md)).
 
 Roadmap item: **Phase - Chronicle steps**, "Chronicle import and export". It
 comes before the [Chronicle browsing design](2026-10-28-chronicle-browsing-design.md),
@@ -71,9 +72,10 @@ The format in brief:
   with: Oathkeeper goal Supremacy, as the first-game generator does; era target
   20 with an empty scorepad; no previous players; no alteration sources.
 - **Export lists its losses.** Encoding returns the string and the fields it
-  left out: the name, a non-empty era scorepad, any previous player, and any
-  Foundation alteration source. The caller shows them as a note; nothing is
-  refused.
+  left out: the name, an era target other than 20, any non-zero era score,
+  any previous player, any Foundation alteration source, and any Exile
+  lineage with nothing kept, which reads back as no lineage. The caller shows
+  them as a note; nothing is refused.
 - **Players.** A player section maps to a `LineageState`: status to `role`,
   cards to `startingAdvisers`, legacies to `legacies` (flipped to
   `active = true`), relics to the new `startingRelics`. A section with Exile
@@ -92,10 +94,15 @@ The format in brief:
 
 - `application/chronicle/TtsIds.scala`: the id tables, both directions.
 - `application/chronicle/ChronicleTtsCodec.scala`:
-  `decode(text, name): Either[String, Chronicle]` and
+  `decode(text): Either[String, Chronicle]` and
   `encode(chronicle): Either[String, TtsExport]`, where
   `TtsExport(text: String, omitted: Vector[String])`. Encoding fails only for a
-  value the format cannot represent, such as more than six starting advisers.
+  value the format cannot represent, such as more than six starting advisers,
+  a kept Vision or a lineage of a color TTS lacks. Browsing slice 1 adds the
+  `name` parameter and the name entry in the omitted list, when `Chronicle`
+  gains `name`.
+- `application/chronicle/TtsWire.scala`: the string format itself, over TTS
+  numbers.
 - `model/GameState.scala`: `LineageState.startingRelics`.
 - `gameplay/setup/GameStartRules.scala` and `ChronicleAccounting.scala`: the
   refusal and the accounting.
