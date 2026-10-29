@@ -9,11 +9,7 @@ specs.
 
 ## Now
 
-**Phase - Cleanup tasks** holds what finished phases left behind. Catalog
-batch 7 (Campaign dice) landed on 2026-10-10; what it left behind is under
-Cleanup tasks. Catalog batch 8 landed on 2026-10-18: its
-[design](superpowers/specs/2026-10-12-catalog-batch-8-design.md) records
-every slice and item.
+**Phase - Cleanup tasks** holds what finished phases left behind.
 
 ## Next
 
@@ -190,15 +186,6 @@ than for the actor only. Citizenship offers belong to the Empire phase.
 
 After the all-Exile alpha, implement the Chronicle and persistent campaign:
 Foundation mutation, Legacy activation and scoring, and era scoring.
-
-The Chronicle Phase itself landed on 2026-10-28: every task runs end to end
-and journals the evolved Chronicle
-([Chronicle steps design](superpowers/specs/2026-10-27-chronicle-steps-design.md)).
-Chronicle import, export and saved-campaign browsing landed on 2026-10-29
-([TTS codec design](superpowers/specs/2026-10-28-chronicle-tts-codec-design.md),
-[browsing design](superpowers/specs/2026-10-28-chronicle-browsing-design.md)).
-Game start seats each lineage from its Chronicle record and refuses, by name,
-what that record needs later-game setup for.
 
 - [ ] **Foundations.** Fills the Beacon's empty Shape Foundation window.
   Game start also sets every foundation to its normal face and ignores the
