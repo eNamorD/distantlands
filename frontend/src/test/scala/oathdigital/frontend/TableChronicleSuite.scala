@@ -75,16 +75,22 @@ class TableChronicleSuite extends munit.FunSuite:
 
   test("the starting Chronicle under that name is replaced silently"):
     TestBrowser.useSynchronously(): browser =>
-      val storage = storageHolding(entry("Ashen Crown", "d-1"))
-      Table(browser, Some(storage)).show(ashenCrown(Some(evolved)))
-      assertEquals(shelfOver(storage).saved.map(_.entry), Vector(evolved))
+      val storage = storageHolding(entry("Ashen Crown", "d-1"),
+        entry("Iron Vow"))
+      val node = Table(browser, Some(storage)).show(ashenCrown(Some(evolved)))
+      assertEquals(shelfOver(storage).saved.map(_.entry),
+        Vector(evolved, entry("Iron Vow")))
+      assertEquals(shelfOver(storage).loaded.map(_.entry), Some(evolved))
+      assertEquals(noteOf(node), "Saved in this browser as \"Ashen Crown\".")
       assertEquals(prompts(browser), Vector.empty)
 
   test("the evolved Chronicle already saved changes nothing"):
     TestBrowser.useSynchronously(): browser =>
-      val storage = storageHolding(evolved)
+      val storage = storageHolding(evolved, entry("Iron Vow"))
       val node = Table(browser, Some(storage)).show(ashenCrown(Some(evolved)))
-      assertEquals(shelfOver(storage).saved.map(_.savedAt), Vector("earlier"))
+      assertEquals(shelfOver(storage).saved.map(_.savedAt),
+        Vector("earlier", "earlier"))
+      assertEquals(shelfOver(storage).loaded.map(_.entry), Some(evolved))
       assertEquals(noteOf(node), "Already saved in this browser.")
 
   test("a different Chronicle under that name asks, and asks once"):
@@ -126,6 +132,33 @@ class TableChronicleSuite extends munit.FunSuite:
         assertEquals(prompts(browser), Vector.empty)
         assertEquals(table.repaints, 1)
       }
+
+  test("while a new name is being saved, Overwrite does nothing"):
+    TestBrowser.use(): browser =>
+      val storage = storageHolding(entry("Ashen Crown", "d-9"))
+      val table = Table(browser, Some(storage))
+      table.show(ashenCrown(Some(evolved)))
+      browser.click("chronicle-save-new")
+      browser.click("chronicle-overwrite")
+      browser.click("chronicle-save-new")
+      browser.settle.map { _ =>
+        val shelf = shelfOver(storage)
+        assertEquals(shelf.saved.map(_.entry.digest),
+          Vector("d-9", "d-Ashen Crown (2)"))
+        assertEquals(shelf.loaded.map(_.name), Some("Ashen Crown (2)"))
+        assertEquals(prompts(browser), Vector.empty)
+        assertEquals(table.repaints, 1)
+      }
+
+  test("a redraw keeps the export controls, and what they show"):
+    TestBrowser.useSynchronously(): browser =>
+      val table = Table(browser, Some(new MemoryChronicleStorage()))
+      val first = table.show(ashenCrown(Some(evolved)))
+      val controls = present(first, "a section")
+        .querySelector(".chronicle-export-controls")
+      val second = table.show(ashenCrown(Some(evolved)))
+      assert(present(second, "a section")
+        .querySelector(".chronicle-export-controls") eq controls)
 
   test("a taken new name is refused in the dialog without a request"):
     TestBrowser.useSynchronously(): browser =>

@@ -17,9 +17,13 @@ private[frontend] object ChroniclePage:
   def render(mount: dom.Element, shelf: ChronicleShelf, kept: Boolean,
       client: ChronicleClient, files: ChronicleFiles,
       choose: HostChronicle => Unit): Unit =
-    def redraw(): Unit = render(mount, shelf, kept, client, files, choose)
+    // An import or rename that answers after the player has moved on to
+    // player selection must not draw this page over it.
+    def redraw(): Unit =
+      if mount.querySelector(".chronicle-page-title") != null then
+        render(mount, shelf, kept, client, files, choose)
     mount.textContent = ""
-    mount.appendChild(text("h1", "", "Oath Digital"))
+    mount.appendChild(text("h1", "chronicle-page-title", "Oath Digital"))
     if !kept then
       val notice = text("p", "status chronicle-storage-refused",
         "Chronicles cannot be kept in this browser. A Chronicle you import " +

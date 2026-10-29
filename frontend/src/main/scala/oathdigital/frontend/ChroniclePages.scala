@@ -24,6 +24,13 @@ private[frontend] object ChroniclePages:
 
     def show(path: String): Unit =
       if path == NewGamePath then choice match
+        // The browser's Forward can return here after the loaded Chronicle
+        // was renamed or deleted; it is then chosen again from `/`.
+        case Some(HostChronicle.Continue(saved))
+            if !shelf.loaded.contains(saved) =>
+          choice = None
+          devices.history.replace("/")
+          show("/")
         case Some(chosen) => TrustedHostUi.start(mount, transport, chosen,
           shelf, () => { devices.history.push("/"); show("/") }, openCreated)
         case None =>

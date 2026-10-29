@@ -6,7 +6,7 @@ import oathdigital.protocol.{ChronicleRequest, TrustedGameCreateRequestCodec}
 import oathdigital.testkit.Unwrap.{accepted, as, present}
 import org.scalajs.dom
 import scala.collection.mutable.ArrayBuffer
-import scala.concurrent.Future
+import scala.concurrent.{Future, Promise}
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 
 /** The start pages together: the Chronicle page at `/`, player selection at
@@ -182,6 +182,74 @@ class ChroniclePagesSuite extends munit.FunSuite:
         assert(!createButton(browser).disabled)
         assertEquals(browser.byClass("seat-link"), Vector.empty)
       }
+
+  test("Back is withheld while the game is being created"):
+    TestBrowser.useSynchronously(): browser =>
+      val history = FakePageHistory()
+      val pending = Promise[Either[GameClientFailure, TransportResponse]]()
+      Main.start(browser.mount, "/", trustedAlpha = true,
+        ScriptedTransport((_, _, _) => pending.future),
+        devices = ChronicleFixtures.devices(history = history))
+      browser.click("new-chronicle")
+      browser.click("create-trusted-game")
+      assert(as[dom.html.Button](browser.byClass("chronicle-back").head)
+        .disabled)
+      browser.click("chronicle-back")
+      assertEquals(history.pushed.toVector, Vector("/new-game"))
+      assert(shows(browser, "create-trusted-game"))
+
+  test("a game created after the browser's Back leaves the Chronicle page " +
+      "drawn"):
+    TestBrowser.use(): browser =>
+      val history = FakePageHistory()
+      val pending = Promise[Either[GameClientFailure, TransportResponse]]()
+      Main.start(browser.mount, "/", trustedAlpha = true,
+        ScriptedTransport((_, _, _) => pending.future),
+        devices = ChronicleFixtures.devices(history = history))
+      browser.click("new-chronicle")
+      browser.click("create-trusted-game")
+      history.back("/")
+      pending.success(Right(TransportResponse(201,
+        seatLinksResponse(TrustedHostUi.defaultChronicleName()))))
+      browser.settle.map { _ =>
+        assert(shows(browser, "new-chronicle"))
+        assertEquals(browser.byClass("seat-link"), Vector.empty)
+      }
+
+  test("an import that answers after New Chronicle leaves player " +
+      "selection drawn"):
+    TestBrowser.use(): browser =>
+      val storage = new MemoryChronicleStorage()
+      val pending = Promise[Either[GameClientFailure, TransportResponse]]()
+      Main.start(browser.mount, "/", trustedAlpha = true,
+        ScriptedTransport((_, _, _) => pending.future),
+        devices = ChronicleFixtures.devices(Some(storage)))
+      as[dom.html.TextArea](browser.byClass("import-chronicle-tts").head)
+        .value = "abc"
+      browser.input("Name for the TTS import").value = "Iron Vow"
+      browser.click("import-tts")
+      browser.click("new-chronicle")
+      pending.success(Right(ChronicleFixtures.converted(entry("Iron Vow"))))
+      browser.settle.map { _ =>
+        assert(shows(browser, "create-trusted-game"))
+        assert(!shows(browser, "new-chronicle"))
+        assertEquals(shelfOver(storage).loaded.map(_.name), Some("Iron Vow"))
+      }
+
+  test("Forward to a Continue whose Chronicle was renamed returns to /"):
+    TestBrowser.useSynchronously(): browser =>
+      val storage = storageWithAshenCrown()
+      val history = FakePageHistory()
+      startPages(browser, "/", ChronicleFixtures.devices(Some(storage),
+        history = history))
+      browser.click("continue-chronicle")
+      history.back("/")
+      accepted(shelfOver(storage).put(entry("Ember Throne"),
+        replacing = Some("Ashen Crown")))
+      history.back("/new-game")
+      assertEquals(history.replaced.toVector, Vector("/"))
+      assert(shows(browser, "new-chronicle"))
+      assert(!shows(browser, "create-trusted-game"))
 
   test("refused storage still creates from a new Chronicle"):
     TestBrowser.use(): browser =>

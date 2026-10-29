@@ -59,9 +59,12 @@ private[frontend] object ChronicleTransfer:
     file.className = "import-chronicle-file"
     file.accept = ".json,application/json"
     file.setAttribute("aria-label", "Chronicle JSON file")
-    file.onchange = _ => files.read(file).foreach(_.fold(
-      reason => status.textContent = reason,
-      json => convert(ChronicleConvertRequest.FromJson(json))))
+    file.onchange = _ => files.read(file).foreach { result =>
+      // Choosing the same file again, after a refusal, fires again.
+      file.value = ""
+      result.fold(reason => status.textContent = reason,
+        json => convert(ChronicleConvertRequest.FromJson(json)))
+    }
     section.appendChild(labelled("A Chronicle JSON file", file))
 
     val tts = dom.document.createElement("textarea")
@@ -127,6 +130,7 @@ private[frontend] object ChronicleTransfer:
   private def showForCopying(box: dom.Element, status: dom.Element,
       string: String): Unit =
     status.textContent = "Copy this TTS string."
+    Option(box.querySelector(".export-tts-text")).foreach(box.removeChild)
     val shown = dom.document.createElement("textarea")
       .asInstanceOf[dom.html.TextArea]
     shown.className = "export-tts-text"

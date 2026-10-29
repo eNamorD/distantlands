@@ -27,7 +27,7 @@ private[frontend] object TrustedHostUi:
 
   /** "Chronicle 2026-10-29", today's date: the name field's default. */
   def defaultChronicleName(): String =
-    "Chronicle " + new js.Date().toISOString().take(10)
+    "Chronicle " + ChronicleText.localDate(new js.Date().toISOString())
   private def name(color: PlayerColor): String = color.key.capitalize
 
   /** Mirrors the backend identifier rule in `TrustedGameCodecFields.identifier`. */
@@ -42,7 +42,9 @@ private[frontend] object TrustedHostUi:
     mount.textContent = ""
     val backLink = button("Back", "chronicle-back")
     backLink.setAttribute("type", "button")
-    backLink.onclick = event => { event.preventDefault(); back() }
+    backLink.onclick = event =>
+      event.preventDefault()
+      if !backLink.disabled then back()
     mount.appendChild(backLink)
     mount.appendChild(text("h1", "", "Create an Oath Digital game"))
     mount.appendChild(text("p", "", openCreated match {
@@ -194,6 +196,8 @@ private[frontend] object TrustedHostUi:
         case HostChronicle.Continue(saved) =>
           ChronicleRequest.Saved(saved.entry.json))
       create.disabled = true
+      // Leaving now would lose the seat links, which only this page shows.
+      backLink.disabled = true
       status.textContent = "Creating game…"
       transport.request("POST", "/games", Some(TrustedGameCreateRequestCodec.encode(request)))
         .foreach { result =>
@@ -215,12 +219,19 @@ private[frontend] object TrustedHostUi:
             case HostChronicle.New => shelf.put(created.chronicle).left.toOption
             case HostChronicle.Continue(_) => None)
           decoded match
-            case Left(message) => create.disabled = false; status.textContent = message
+            case Left(message) =>
+              create.disabled = false
+              backLink.disabled = false
+              status.textContent = message
             case Right(created) if openCreated.nonEmpty =>
               status.textContent = "Game created. Opening it…"
               openCreated.foreach(_(created))
+            // The browser's Back left this page while the game was created:
+            // the page now drawn is not this one's to change.
+            case Right(_) if form.parentNode == null => ()
             case Right(created) =>
               mount.removeChild(form)
+              mount.removeChild(backLink)
               status.textContent =
                 "Game created. Copy and save each assigned seat link." +
                   unsaved.fold("")(reason => s" $reason")

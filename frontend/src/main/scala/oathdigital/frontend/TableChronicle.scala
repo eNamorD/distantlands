@@ -18,6 +18,9 @@ private[frontend] final class TableChronicle(mount: dom.Element,
     files: ChronicleFiles, repaint: () => Unit):
   private var handled = Set.empty[String]
   private var note = ""
+  /** The export controls of the evolved Chronicle shown, kept across
+    * redraws so a copy in flight or a TTS box to copy by hand survives. */
+  private var exports = Option.empty[(String, dom.Element)]
 
   def section(chronicle: Option[ChronicleProjection]): Option[dom.Element] =
     chronicle.map { value =>
@@ -30,10 +33,17 @@ private[frontend] final class TableChronicle(mount: dom.Element,
       value.evolved.foreach { evolved =>
         if note.nonEmpty then
           node.appendChild(text("p", "table-chronicle-note", note))
-        node.appendChild(ChronicleTransfer.exportControls(Some(evolved), client,
-          files))
+        node.appendChild(exportControls(evolved))
       }
       node
+    }
+
+  private def exportControls(evolved: ChronicleEntry): dom.Element =
+    exports.filter(_._1 == evolved.digest).map(_._2).getOrElse {
+      val controls = ChronicleTransfer.exportControls(Some(evolved), client,
+        files)
+      exports = Some(evolved.digest -> controls)
+      controls
     }
 
   private def save(evolved: ChronicleEntry, startingDigest: String): Unit =
@@ -72,17 +82,29 @@ private[frontend] final class TableChronicle(mount: dom.Element,
     val saveNew = button("Save under new name", "chronicle-save-new")
     val overwrite = button("Overwrite", "chronicle-overwrite")
 
+    // One choice is made: while a rename is in flight neither button
+    // answers, so a second click cannot save a second copy.
+    def busy(on: Boolean): Unit = Vector(saveNew, overwrite)
+      .foreach(_.disabled = on)
+
     def finish(result: Either[String, SavedChronicle]): Unit = result match
-      case Left(reason) => status.textContent = reason
+      case Left(reason) =>
+        busy(false)
+        status.textContent = reason
       case Right(saved) =>
         note = savedAs(saved)
-        mount.removeChild(overlay)
+        if overlay.parentNode != null then mount.removeChild(overlay)
         repaint()
 
-    overwrite.onclick = _ => finish(kept.put(evolved))
+    overwrite.onclick = _ =>
+      if !overwrite.disabled then
+        busy(true)
+        finish(kept.put(evolved))
     saveNew.onclick = _ => kept.nameProblem(field.value) match
+      case _ if saveNew.disabled => ()
       case Some(problem) => status.textContent = problem
       case None =>
+        busy(true)
         status.textContent = "Saving…"
         client.rename(evolved, field.value).foreach(result =>
           finish(result.flatMap(renamed => kept.put(renamed))))

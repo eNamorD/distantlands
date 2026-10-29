@@ -233,10 +233,14 @@ class ChronicleTransferSuite extends munit.FunSuite:
       mountExportControls(browser, Some(entry("Ashen Crown")),
         convertingTransport(), files)
       browser.click("export-chronicle-tts")
-      browser.settle.map { _ =>
+      browser.settle.flatMap { _ =>
         val shown = as[dom.html.TextArea](present(
           browser.byClass("export-tts-text").headOption, "the TTS box"))
         assertEquals(shown.value, "TTS-STRING")
         assert(shown.readOnly)
         assertEquals(textOf(browser, "export-status"), "Copy this TTS string.")
+        browser.click("export-chronicle-tts")
+        browser.settle
+      }.map { _ =>
+        assertEquals(browser.byClass("export-tts-text").size, 1)
       }
