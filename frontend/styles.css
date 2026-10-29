@@ -210,6 +210,20 @@ span.color-swatch { display: inline-block; width: 1.25rem; height: 1.25rem; padd
 .add-player-limit { color: var(--brass); }
 .seat-link-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; margin: 1rem 0; }
 .seat-link { flex: 1 1 20rem; }
+/* Chronicle page (Chronicle browsing design, "Chronicle page"). */
+.chronicle-import, .chronicle-export, .chronicle-saved, .chronicle-loaded {
+  max-width: 40rem; margin: 1.5rem 0; display: grid; gap: 0.75rem; }
+.import-chronicle-tts { font: inherit; min-height: 5rem; padding: 0.5rem;
+  overflow-wrap: anywhere; }
+.import-chronicle-name, .import-new-name { font: inherit; padding: 0.5rem; }
+.import-clash { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; }
+.import-clash:empty { display: none; }
+.import-clash > p { flex: 1 0 100%; margin: 0; }
+.chronicle-export-controls { display: flex; flex-wrap: wrap; align-items: center;
+  gap: 0.75rem; }
+.chronicle-export-controls .status { flex: 1 0 100%; margin: 0; }
+.export-tts-text { flex: 1 0 100%; font: inherit; min-height: 4rem;
+  overflow-wrap: anywhere; }
 
 #app {
   max-width: 1280px;
