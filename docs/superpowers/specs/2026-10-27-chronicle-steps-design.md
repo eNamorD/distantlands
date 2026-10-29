@@ -1,10 +1,12 @@
 # Chronicle steps design
 
-Status: approved in brainstorming, 2026-10-27. Next step: implementation plan.
+Status: implemented, 2026-10-28. Foundation, Sun and Throne, World and Beacon,
+and Stars landed on `0.2.0-alpha`.
 
 Roadmap item: **Phase - Chronicle steps**, "End-of-game Chronicle steps". The
-Persistence work (saved-campaign continuation, campaign browsing, the TTS
-string codec) follows as its own design once this phase lands.
+Persistence work (saved-campaign browsing and the TTS string codec) follows as
+its own design. Starting game 2 from the evolved Chronicle waits for the Empire
+phase.
 
 ## Goal
 
@@ -22,8 +24,8 @@ Beacon, Stars) as ordinary walker decisions and ends by journaling
   see the victory banner and "Waiting on {winner}: Start Chronicle" through the
   existing waiting view.
 - **Always ends with `ChronicleUpdated`.** There is no "play again or store"
-  choice. The next game starting from the evolved Chronicle is the Persistence
-  phase's concern.
+  choice. Starting the next game from the evolved Chronicle waits for the
+  Empire phase.
 - **Procedure shape.** One triggered procedure per task (`ChronicleSun`,
   `ChronicleThrone`, `ChronicleWorld`, `ChronicleBeacon`, `ChronicleStars`),
   plus `ChronicleBegin` and a closing `ChronicleFinish`. Not one large tree; not
@@ -154,9 +156,16 @@ checked against validation only.
 ## Out of scope
 
 Foundations and Legacies behaviour, Eras end and reset, Citizenship through
-Negotiation, Imperial setup and play, the TTS codec. Its maintainer (harsch) will bump the encoding to version 3
-and add one digit after the foundations bitmask for the current Oath (0 unset,
-1 Supremacy/Conquest/Most Sites, 2 Devotion/Faith/Darkest Secret, 3
+Negotiation, and Imperial setup and play.
+
+Saved-campaign browsing: importing, exporting, loading and deleting a campaign.
+
+Starting a playable game 2 from the evolved Chronicle. Game start refuses an
+Empire-state Chronicle, so this waits for the Empire phase.
+
+The TTS codec. Its maintainer (harsch) will bump the encoding to version 3 and
+add one digit after the foundations bitmask for the current Oath (0 unset, 1
+Supremacy/Conquest/Most Sites, 2 Devotion/Faith/Darkest Secret, 3
 People/Rebellion/People's Favor, 4 Protection/Sanctuary/Relics, 5-20 reserved,
-21+ fan content), so `oathkeeperGoal` has a wire home. Era still has none, saved-campaign browsing, and starting a playable
-game 2.
+21+ fan content), so `oathkeeperGoal` has a wire home. The format has no field
+for the current Era yet.
