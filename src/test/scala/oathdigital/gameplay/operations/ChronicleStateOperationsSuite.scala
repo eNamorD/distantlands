@@ -75,13 +75,19 @@ class ChronicleStateOperationsSuite extends munit.FunSuite:
     val again = accepted(run(after, ImperialWarbandsTaken(3)))
     assertEquals(again.banks.warbandSupply.get(ForceKind.Imperial), Some(8))
 
-  test("lineage points add to the era score"):
+  test("the game's first lineage points open its scorepad row for every " +
+      "seated lineage, with its role, and later points add to it"):
     val ready = Table.start.ready
     val lineage = lineageOf(ready, p1)
-    val before = ready.game.campaign.era.lineageScores.getOrElse(lineage, 0)
     val after = accepted(run(ready, LineagePointsScored(lineage, 3),
       LineagePointsScored(lineage, 1)))
-    assertEquals(after.game.campaign.era.lineageScores(lineage), before + 4)
+    val era = after.game.campaign.era
+    assertEquals(era.games.size, ready.game.campaign.era.games.size + 1)
+    assertEquals(era.games.last.entries.map(_.lineage),
+      ready.game.current.players.map(_.lineage))
+    assertEquals(era.score(lineage), 4)
+    assertEquals(era.games.last.entries.find(_.lineage == lineage)
+      .map(_.endingRole), Some(ready.game.campaign.lineages(lineage).role))
 
   test("scoring no points and an empty Imperial supply cannot be built"):
     intercept[IllegalArgumentException](

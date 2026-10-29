@@ -61,16 +61,40 @@ class GameStartRulesSuite extends munit.FunSuite:
         "starting relics require Legacies")))
 
   test("game start takes the era and Oathkeeper goal from the Chronicle"):
+    val l9 = LineageId("l9")
     val scored = chronicle.copy(
-      era = EraState(15, Map(LineageId("l9") -> 6)),
+      era = EraState(15, Vector(EraGame(Vector(
+        EraEntry(l9, 6, Role.Citizen))))),
       oathkeeperGoal = OathkeeperGoal.Protection)
     val campaign = accepted(GameStartRules.evolve(catalog, scored, orders))
       .game.campaign
     assertEquals(campaign.oathkeeperGoal, OathkeeperGoal.Protection)
-    assertEquals(campaign.era.targetScore, 15)
-    assertEquals(campaign.era.lineageScores(LineageId("l9")), 6)
-    assertEquals(orders.participants.map(p => campaign.era.lineageScores(p.lineageId)),
+    assertEquals(campaign.era, scored.era)
+    assertEquals(campaign.era.score(l9), 6)
+    assertEquals(orders.participants.map(p => campaign.era.score(p.lineageId)),
       Vector.fill(orders.participants.size)(0))
+
+  test("setup deals from the recorded deal, not the Chronicle's order"):
+    val swapped = orders.denizenOrder(1) +: orders.denizenOrder(0) +:
+      orders.denizenOrder.drop(2)
+    val current = accepted(GameStartRules.evolve(catalog, chronicle,
+      orders.copy(denizenOrder = swapped))).game.current
+    assertEquals(current.commonCards.discard(Region.Cradle), swapped.take(2))
+    assertNotEquals(swapped.take(2), chronicle.worldDeck.take(2))
+
+  test("a deal that does not hold the Chronicle's decks is refused"):
+    def refusal(dealt: SetupOrders): OathViolation =
+      rejected(GameStartRules.evolve(catalog, chronicle, dealt))
+    assertEquals(refusal(orders.copy(denizenOrder = orders.denizenOrder.tail)),
+      OathViolation.UnsupportedChronicle(
+        "the deal does not hold the Chronicle's world deck"))
+    assertEquals(refusal(orders.copy(relicOrder = orders.relicOrder.tail)),
+      OathViolation.UnsupportedChronicle(
+        "the deal does not hold the Chronicle's relic deck"))
+    assertEquals(refusal(orders.copy(worldDeckOrder =
+        orders.worldDeckOrder.reverse)),
+      OathViolation.UnsupportedChronicle(
+        "the world deck is not the rest of the deal"))
 
   test("a non-empty world is refused"):
     // Starts from the Chronicle itself: the start rule is the subject.

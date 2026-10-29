@@ -66,6 +66,15 @@ class ProjectionProtocolSuite extends munit.FunSuite:
     walkerWaiting = Some(WalkerWaitingProjection("blue", Some("Choose the Oathkeeper"))),
     supplyMaximum = 7)
 
+
+  test("the projection round trips its Chronicle, with and without the " +
+      "evolved one"):
+    val entry = ChronicleEntry("{}", "ab12", ChronicleSummary("Ashen Crown",
+      Some(2), 20, Vector(ChronicleScore("red-lineage", 3))))
+    Vector(None, Some(entry)).foreach(evolved =>
+      assertRoundTrips(projection.copy(chronicle = Some(ChronicleProjection(
+        "Ashen Crown", "cd34", evolved)))))
+
   test("a fully populated projection round-trips exactly"):
     assertRoundTrips(projection)
 

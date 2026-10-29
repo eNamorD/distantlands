@@ -7,6 +7,8 @@ import java.net.http.{HttpClient, HttpRequest, HttpResponse => JavaResponse}
 import java.nio.file.{Files, Path}
 import scala.jdk.CollectionConverters._
 import oathdigital.application._
+import oathdigital.application.chronicle.ChronicleEntries
+import oathdigital.gameplay.chronicle.EvolvedChronicleFixture
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.gameplay.setup.FirstGameSetupFixture.chronicle
 import oathdigital.gameplay.setup.SetupProcedure
@@ -104,6 +106,45 @@ class TrustedSeatRoutesSuite extends munit.FunSuite:
     assertEquals(gateway.submit("trusted", trustedP2Seat, command),
       Left(TrustedSeatFailure.Application(GameApplicationError.StaleClientPosition(
         afterBegin, placed.nextSequence))))
+
+  private val conversionEntries = ChronicleEntries()
+
+  test("convert answers a Chronicle's JSON with its entry and TTS string"):
+    withServer() { (server, _) =>
+      val json = conversionEntries.entry(chronicle).json
+      val response = send(server, "/chronicles/convert", Some(
+        ChronicleConvertRequestCodec.encode(
+          ChronicleConvertRequest.FromJson(json))))
+      assertEquals(response.statusCode(), 200, response.body())
+      val converted = accepted(ChronicleConvertResponseCodec.decode(
+        response.body()))
+      assertEquals(converted.entry, conversionEntries.entry(chronicle))
+      assert(converted.tts.nonEmpty)
+    }
+
+  test("convert refuses a Chronicle it cannot read with the reason, and " +
+      "a malformed body as malformed"):
+    withServer() { (server, _) =>
+      val refused = send(server, "/chronicles/convert", Some(
+        ChronicleConvertRequestCodec.encode(
+          ChronicleConvertRequest.FromTts("nonsense", "Imported"))))
+      assertEquals(refused.statusCode(), 422, refused.body())
+      assert(refused.body().contains("invalid-chronicle"), refused.body())
+      val malformed = send(server, "/chronicles/convert", Some("""{"x":1}"""))
+      assertEquals(malformed.statusCode(), 400, malformed.body())
+    }
+
+  test("creation refuses an evolved Chronicle with game start's reason"):
+    withServer() { (server, _) =>
+      val body = TrustedGameCreateRequestCodec.encode(TrustedGameCreateRequest(
+        Vector(BootstrapParticipantRequest("p1", PlayerColor.Red),
+          BootstrapParticipantRequest("p2", PlayerColor.Blue)),
+        ChronicleRequest.Saved(conversionEntries.entry(
+          EvolvedChronicleFixture.record).json)))
+      val response = send(server, "/games", Some(body))
+      assertEquals(response.statusCode(), 422, response.body())
+      assert(response.body().contains("chronicle-refused"), response.body())
+    }
 
   test("creation returns ordered public links"):
     withServer() { (server, _) =>
@@ -457,7 +498,8 @@ class TrustedSeatRoutesSuite extends munit.FunSuite:
   /** A two-seat create request, p1 Red and p2 Blue. */
   private val requestBody: String =
     TrustedGameCreateRequestCodec.encode(TrustedGameCreateRequest(Vector(BootstrapParticipantRequest("p1", PlayerColor.Red),
-      BootstrapParticipantRequest("p2", PlayerColor.Blue))))
+      BootstrapParticipantRequest("p2", PlayerColor.Blue)),
+      ChronicleRequest.New("Route Chronicle")))
 
   /** `requestBody`, with `gameId` queued as the ID its creation receives. */
   private def creationBody(gameId: String): String =

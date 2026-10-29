@@ -12,7 +12,8 @@ class ServerRuntimeSuite extends munit.FunSuite:
   private val request = TrustedGameCreateRequest(Vector(
     BootstrapParticipantRequest("p1", PlayerColor.Red),
     BootstrapParticipantRequest("p2", PlayerColor.Blue),
-    BootstrapParticipantRequest("p3", PlayerColor.Yellow)))
+    BootstrapParticipantRequest("p3", PlayerColor.Yellow)),
+    ChronicleRequest.New("Runtime Chronicle"))
 
   test("trusted-game provisioning draws a randomized board"):
     val runtime = accepted(ServerRuntime.open(

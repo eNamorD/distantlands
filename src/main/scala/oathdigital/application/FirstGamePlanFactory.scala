@@ -9,7 +9,8 @@ final case class FirstGameBootstrapConfig(
 
 final case class BootstrapPlanFailure(message: String)
 
-/** A generated Chronicle plus the config it was actually dealt against --
+/** A Chronicle, the config it was actually dealt against and the shuffled
+  * deal (`orders`), which `GameCommand.Begin` records. The config:
   * `GeneratedFirstGamePlanFactory` shuffles seating and picks a new first
   * player before generating, so the config a caller passed in is stale the
   * moment `build` returns; `resolvedConfig` is the one to deal `SetupOrders`
@@ -17,10 +18,16 @@ final case class BootstrapPlanFailure(message: String)
   */
 final case class FirstGamePlan(
     chronicle: Chronicle,
-    resolvedConfig: FirstGameBootstrapConfig
+    resolvedConfig: FirstGameBootstrapConfig,
+    orders: SetupOrders
 )
 
+/** What a new game starts from (Chronicle browsing design, "Create
+  * request"): a fresh first-game Chronicle under a name, or a saved one. */
+enum ChronicleChoice:
+  case New(name: String)
+  case Saved(chronicle: Chronicle)
+
 trait FirstGamePlanFactory:
-  def build(
-      config: FirstGameBootstrapConfig
-  ): Either[BootstrapPlanFailure, FirstGamePlan]
+  def build(config: FirstGameBootstrapConfig, choice: ChronicleChoice)
+      : Either[BootstrapPlanFailure, FirstGamePlan]

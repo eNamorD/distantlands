@@ -20,14 +20,17 @@ A `Chronicle` is the between-game record a Chronicle generator produces: the
 ordered atlas box (which sites are in play and their stored edifices), the
 World Deck's denizen pool, the ordinary-relic order, the era scorepad, the
 Oathkeeper goal, the reliquary, and the dispossessed board. `SetupOrders` is the one-time per-game deal drawn from
-it -- participants, first player, and the dealt `worldDeckOrder` -- computed
-by `ChronicleFirstGamePlan.dealOrder` and recorded alongside the Chronicle on
-`GameStarted`, so replay never re-derives either.
+it -- participants, first player, the shuffled `denizenOrder` that deals hands
+and regional discards, the `worldDeckOrder` below them, and the shuffled
+`relicOrder` -- built by `ChronicleFirstGamePlan.dealOrder` and recorded
+alongside the Chronicle on `GameStarted`, so replay never re-derives either.
+Setup deals from these orders, never from the Chronicle's deck order: a
+Chronicle is shown to players, so its order must not be the deal.
 
 `GameStartRules.evolve` validates only what Setup itself needs from the
 Chronicle: known and unique atlas/denizen/relic ids, at least 8 atlas sites,
-enough World Deck and relic cards to deal, and one matching edifice per
-Homeland in play. The deeper suit-count and Vision-packet audit a Chronicle
+enough World Deck and relic cards to deal, a deal holding exactly the
+Chronicle's decks, and one matching edifice per Homeland in play. The deeper suit-count and Vision-packet audit a Chronicle
 must satisfy is the generator's own job, checked once at generation time
 (`FirstGameChronicleGenerator.validate`) rather than again at every setup.
 
@@ -53,7 +56,8 @@ Chancellor/Citizen/Imperial setup, restoring the rest of a stored campaign
 ## Application and transport
 
 `GeneratedFirstGamePlanFactory` derives a random Chronicle through
-`FirstGameChronicleGenerator` and shuffles seating; trusted-game
+`FirstGameChronicleGenerator`, or takes a saved one, shuffles seating, and
+shuffles both decks into the deal; trusted-game
 provisioning, development game creation, and authenticated bootstrap all use
 it (the dev-only loopback bootstrap route and its deterministic
 `DevelopmentFirstGamePlanFactory` fixture were retired once the development

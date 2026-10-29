@@ -21,6 +21,10 @@ private[frontend] object TrustedHostUi:
   val MaxPlayers = 6
 
   def defaultPlayerId(color: PlayerColor): String = name(color)
+
+  /** "Chronicle 2026-10-29", today's date, until slice 2's name field. */
+  def defaultChronicleName(): String =
+    "Chronicle " + new js.Date().toISOString().take(10)
   private def name(color: PlayerColor): String = color.key.capitalize
 
   /** Mirrors the backend identifier rule in `TrustedGameCodecFields.identifier`. */
@@ -160,7 +164,8 @@ private[frontend] object TrustedHostUi:
       val participants = rows.zip(ids).map { case (row, id) =>
         BootstrapParticipantRequest(id, row.color)
       }
-      val request = TrustedGameCreateRequest(participants)
+      val request = TrustedGameCreateRequest(participants,
+        ChronicleRequest.New(TrustedHostUi.defaultChronicleName()))
       create.disabled = true
       status.textContent = "Creating game…"
       transport.request("POST", "/games", Some(TrustedGameCreateRequestCodec.encode(request)))

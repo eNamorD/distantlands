@@ -42,8 +42,8 @@ class GameApplicationServiceStreamSuite extends munit.FunSuite:
     val p2Index = 6 + orders.participants.indexWhere(_.playerId == p2) * 3
     val poweredWorldDeck = place(chronicle.worldDeck, p2Index, whenPlayedPower)
     val poweredChronicle = chronicle.copy(worldDeck = poweredWorldDeck)
-    val poweredOrders = ChronicleFirstGamePlan.dealOrder(poweredChronicle,
-      FirstGameBootstrapConfig(orders.participants, orders.firstPlayer))
+    val poweredOrders = ChronicleFirstGamePlan.dealOrder(FirstGameBootstrapConfig(orders.participants, orders.firstPlayer),
+      poweredChronicle.worldDeck, poweredChronicle.relicDeck)
     var service = new GameApplicationService(catalog, repository,
       warExhaustionRandomPort = WarExhaustionChoices.firstCandidate)
     var position = setupViaService(service, "powered-playability", sites,

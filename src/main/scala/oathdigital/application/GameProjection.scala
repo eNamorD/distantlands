@@ -1,5 +1,6 @@
 package oathdigital.application
 
+import oathdigital.application.chronicle.ChronicleEntries
 import oathdigital.catalog.ExecutableCatalog
 import oathdigital.model.OathState.{NoGame, Ready}
 import oathdigital.gameplay.PlayerSecretSummary
@@ -11,7 +12,8 @@ import oathdigital.model._
 import oathdigital.protocol.projection._
 
 /** Assembles a player-scoped projection from authoritative state. */
-final class GameProjector(catalog: ExecutableCatalog, phasePowers: PhasePowers):
+final class GameProjector(catalog: ExecutableCatalog, phasePowers: PhasePowers,
+    entries: ChronicleEntries = ChronicleEntries()):
   def this(catalog: ExecutableCatalog) =
     this(catalog, PhasePowerCatalog.default(catalog))
 
@@ -119,6 +121,7 @@ final class GameProjector(catalog: ExecutableCatalog, phasePowers: PhasePowers):
         context.ready.setup.firstPlayer.value)),
       relicDeckCount = current.commonCards.relicDeck.size)
       .copy(walkerDecision = pending.walkerDecision,
+        chronicle = Some(chronicleView(context.ready.game.campaign)),
         walkerWaiting = pending.walkerWaiting,
         temporaryHandPreview = handPreview(context, pending.walkerDecision),
         supplyMaximum = SupplyTrack.Maximum,
@@ -126,6 +129,15 @@ final class GameProjector(catalog: ExecutableCatalog, phasePowers: PhasePowers):
           SupplyBandProjection(band.warbandsInBank.minimum,
             Option.when(band.warbandsInBank.maximum != Int.MaxValue)(
               band.warbandsInBank.maximum), band.baseSupply)))
+
+  /** Every seat's Chronicle (Chronicle browsing design, "Projection"): the
+    * name and starting digest from the start, the evolved Chronicle once
+    * the Chronicle Phase journals it. The relic deck's order shows; that is
+    * accepted. */
+  private def chronicleView(campaign: CampaignState): ChronicleProjection =
+    ChronicleProjection(campaign.baseline.name,
+      entries.entry(campaign.baseline).digest,
+      campaign.evolved.map(entries.entry))
 
   /** The cards the viewer is handling and nothing else on the panel draws:
     * their own temporary hand, face up because the cards are held in their

@@ -61,11 +61,12 @@ object FirstGameSetupFixture:
     * world deck; the ordinary relics as the relic deck.
     */
   val chronicle: Chronicle = Chronicle(
+    name = "Fixture Chronicle",
     atlasBox = sites.map(site => StoredSite(site,
       edificesBySite.get(site).toVector)),
     worldDeck = denizens,
     relicDeck = relics,
-    era = EraState(20, Map.empty),
+    era = EraState(20, Vector.empty),
     oathkeeperGoal = OathkeeperGoal.Supremacy
   )
 
@@ -73,7 +74,7 @@ object FirstGameSetupFixture:
     * test that runs from `orders` itself starts with p2. */
   val firstPlayer: PlayerId = PlayerId("p2")
 
-  val orders: SetupOrders = SetupOrders(participants, firstPlayer,
+  val orders: SetupOrders = SetupOrders(participants, firstPlayer, denizens,
     ChronicleFixtureDealOrder.dealOrder(denizens, participants.size), relics)
 
   /** A fresh `Ready` game in `Phase.Setup`: nothing placed, nothing chosen.

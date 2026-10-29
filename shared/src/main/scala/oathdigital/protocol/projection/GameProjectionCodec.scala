@@ -2,7 +2,7 @@ package oathdigital.protocol.projection
 
 import scala.util.control.NonFatal
 
-import oathdigital.protocol.ProtocolDecodeFailure
+import oathdigital.protocol.{ChronicleEntryCodec, ProtocolDecodeFailure}
 import oathdigital.protocol.ProtocolDecodeFailure.MalformedJson
 import ProjectionCodecSupport._
 import WorldProjectionCodec._
@@ -19,7 +19,7 @@ object GameProjectionCodec:
     "relicDeckCount", "temporaryHandPreview",
     "walkerDecision", "walkerWaiting", "viewerPlayerId",
     "supplyMaximum", "supplyBands", "undo", "redo", "logRevision",
-    "consentWaiting", "consentPrompt", "consentPreferences")
+    "consentWaiting", "consentPrompt", "consentPreferences", "chronicle")
 
   def encode(value: GameProjection): String = ujson.write(encodeValue(value))
   def decode(json: String): Either[ProtocolDecodeFailure, GameProjection] =
@@ -75,7 +75,8 @@ object GameProjectionCodec:
     "consentPrompt" -> option(value.consentPrompt)(
       ConsentProjectionCodec.encodePrompt),
     "consentPreferences" -> encoded(value.consentPreferences)(
-      ConsentProjectionCodec.encodePreferences))
+      ConsentProjectionCodec.encodePreferences),
+    "chronicle" -> option(value.chronicle)(encodeChronicle))
     value.viewerPlayerId.foreach(player => result("viewerPlayerId") = ujson.Str(player))
     result
 
@@ -140,13 +141,31 @@ object GameProjectionCodec:
       Vector.empty[ujson.Value])(array)
     consentPreferences <- traverse(preferenceRaws,
       s"$path.consentPreferences")(ConsentProjectionCodec.decodePreferences)
+    chronicle <- optionalAbsent(value, "chronicle", path)(decodeChronicle)
   yield GameProjection(game, sequence, phase, active, players, world, pawns,
     ready, completed, resources, siteResources,
     deckCount, deckTop, boards, oathkeeper, banners,
     banks, tracks, relicDeck, preview,
     walkerDecision, walkerWaiting, viewer,
     supplyMaximum, bands, undo, redo, logRevision,
-    consentWaiting, consentPrompt, consentPreferences)
+    consentWaiting, consentPrompt, consentPreferences, chronicle)
+
+  private def encodeChronicle(value: ChronicleProjection): ujson.Value =
+    val result = ujson.Obj("name" -> value.name,
+      "startingDigest" -> value.startingDigest)
+    value.evolved.foreach(entry =>
+      result("evolved") = ChronicleEntryCodec.encodeValue(entry))
+    result
+
+  private def decodeChronicle(raw: ujson.Value, path: String)
+      : Result[ChronicleProjection] = for
+    row <- obj(raw, path)
+    _ <- exact(row, Set("name", "startingDigest", "evolved"), path)
+    name <- string(row, "name", path)
+    digest <- string(row, "startingDigest", path)
+    evolved <- optionalAbsent(row, "evolved", path)(
+      ChronicleEntryCodec.decodeValue)
+  yield ChronicleProjection(name, digest, evolved)
 
   private def decodeStepOffer(raw: ujson.Value, path: String)
       : Result[StepOfferProjection] = for

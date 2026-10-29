@@ -72,7 +72,7 @@ The format in brief:
   with: Oathkeeper goal Supremacy, as the first-game generator does; era target
   20 with an empty scorepad; no previous players; no alteration sources.
 - **Export lists its losses.** Encoding returns the string and the fields it
-  left out: the name, an era target other than 20, any non-zero era score,
+  left out: the name, an era target other than 20, any game on the era scorepad,
   any previous player, any Foundation alteration source, and any Exile
   lineage with nothing kept, which reads back as no lineage. The caller shows
   them as a note; nothing is refused.
@@ -94,13 +94,12 @@ The format in brief:
 
 - `application/chronicle/TtsIds.scala`: the id tables, both directions.
 - `application/chronicle/ChronicleTtsCodec.scala`:
-  `decode(text): Either[String, Chronicle]` and
+  `decode(text, name): Either[String, Chronicle]` and
   `encode(chronicle): Either[String, TtsExport]`, where
   `TtsExport(text: String, omitted: Vector[String])`. Encoding fails only for a
   value the format cannot represent, such as more than six starting advisers,
-  a kept Vision or a lineage of a color TTS lacks. Browsing slice 1 adds the
-  `name` parameter and the name entry in the omitted list, when `Chronicle`
-  gains `name`.
+  a kept Vision or a lineage of a color TTS lacks. Decoding takes the name
+  from the caller, and the omitted list always starts with the name.
 - `application/chronicle/TtsWire.scala`: the string format itself, over TTS
   numbers.
 - `model/GameState.scala`: `LineageState.startingRelics`.

@@ -13,7 +13,7 @@ class FirstGameChronicleGeneratorSuite extends munit.FunSuite:
   private val policy = ShufflePolicy.implementedFirst
 
   private def generated(using munit.Location): Chronicle =
-    accepted(FirstGameChronicleGenerator.generate(catalog, status, random,
+    accepted(FirstGameChronicleGenerator.generate(catalog, "Test Chronicle", status, random,
       policy))
 
   /** The printed suit of `card`; fails naming a card the catalog lacks. */

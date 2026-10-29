@@ -4,10 +4,12 @@ import oathdigital.model.PlayerColor
 import oathdigital.protocol.ProtocolDecodeFailure.*
 
 class TrustedGameProtocolSuite extends munit.FunSuite:
-  private val json = """{"participants":[{"playerId":"p1","color":"red"},{"playerId":"p2","color":"blue"}]}"""
+  private val json = """{"participants":[{"playerId":"p1","color":"red"},{"playerId":"p2","color":"blue"}],""" +
+    """"chronicle":{"kind":"new","name":"Ashen Crown"}}"""
   private val request = TrustedGameCreateRequest(Vector(
     BootstrapParticipantRequest("p1", PlayerColor.Red),
-    BootstrapParticipantRequest("p2", PlayerColor.Blue)))
+    BootstrapParticipantRequest("p2", PlayerColor.Blue)),
+    ChronicleRequest.New("Ashen Crown"))
 
   test("creation request round trips with stable actorless field order"):
     assertEquals(TrustedGameCreateRequestCodec.encode(request), json)
@@ -34,6 +36,21 @@ class TrustedGameProtocolSuite extends munit.FunSuite:
     lineage("participants")(0)("lineageId") = "l1"
     assertEquals(TrustedGameCreateRequestCodec.decode(ujson.write(lineage)).left.toOption
       .map(_.path), Some("$.participants[0].lineageId"))
+
+  test("a create request carries a new Chronicle's name or a saved one's JSON"):
+    Vector(ChronicleRequest.New("Ashen Crown"), ChronicleRequest.Saved("{}"))
+      .foreach(chronicle =>
+        val value = request.copy(chronicle = chronicle)
+        assertEquals(TrustedGameCreateRequestCodec.decode(
+          TrustedGameCreateRequestCodec.encode(value)), Right(value)))
+    val missing = ujson.read(json).obj
+    missing.remove("chronicle")
+    assertEquals(TrustedGameCreateRequestCodec.decode(ujson.write(missing)),
+      Left(MissingField("$.chronicle")))
+    val unknown = ujson.read(json)
+    unknown("chronicle")("kind") = "edited"
+    assertEquals(TrustedGameCreateRequestCodec.decode(ujson.write(unknown))
+      .left.toOption.map(_.path), Some("$.chronicle.kind"))
 
   test("invalid player ids are refused"):
     // An id holds at most 128 characters, starts with a letter or a digit
@@ -80,11 +97,15 @@ class TrustedGameProtocolSuite extends munit.FunSuite:
 
   private val seatResponse = TrustedGameCreateResponse("game-1", Vector(
     TrustedSeatLink("p2", "https://example.test/s/code2"),
-    TrustedSeatLink("p1", "https://example.test/s/code1")))
+    TrustedSeatLink("p1", "https://example.test/s/code1")),
+    ChronicleEntry("{}", "ab12", ChronicleSummary("Ashen Crown", Some(1), 20,
+      Vector.empty)))
   private val seatResponseJson =
     """{"gameId":"game-1","seats":[""" +
       """{"playerId":"p2","url":"https://example.test/s/code2"},""" +
-      """{"playerId":"p1","url":"https://example.test/s/code1"}]}"""
+      """{"playerId":"p1","url":"https://example.test/s/code1"}],""" +
+      """"chronicle":{"json":"{}","digest":"ab12","summary":""" +
+      """{"name":"Ashen Crown","eraTarget":20,"scores":[],"game":1}}}"""
 
   test("response writes ordered game and seat links and decodes them back"):
     assertEquals(TrustedGameCreateResponseCodec.encode(seatResponse),

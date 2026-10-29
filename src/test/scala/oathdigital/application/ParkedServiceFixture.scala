@@ -162,7 +162,8 @@ object ParkedServiceFixture:
     val config = FirstGameBootstrapConfig(baseOrders.participants,
       baseOrders.firstPlayer)
     ChronicleWithDeckTop(newChronicle,
-      ChronicleFirstGamePlan.dealOrder(newChronicle, config))
+      ChronicleFirstGamePlan.dealOrder(config,
+      newChronicle.worldDeck, newChronicle.relicDeck))
 
   /** A park: the service and journal it was driven through, the position it
     * stopped at, and the journaled situation parked there, to play on from.

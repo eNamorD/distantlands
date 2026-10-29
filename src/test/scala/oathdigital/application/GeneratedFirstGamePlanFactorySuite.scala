@@ -3,6 +3,7 @@ package oathdigital.application
 import oathdigital.gameplay.powers.PowerImplementationStatus
 import oathdigital.gameplay.setup.{FirstGameSetupFixture, GameStartRules}
 import oathdigital.model._
+import oathdigital.testkit.ChronicleShuffles
 import oathdigital.testkit.Unwrap.{accepted, present}
 
 class GeneratedFirstGamePlanFactorySuite extends munit.FunSuite:
@@ -19,8 +20,8 @@ class GeneratedFirstGamePlanFactorySuite extends munit.FunSuite:
     def implementedFirst[A](cards: Vector[A], implemented: A => Boolean): Boolean =
       cards.dropWhile(implemented).forall(card => !implemented(card))
 
-    val plan = accepted(factory.build(config))
-    val orders = ChronicleFirstGamePlan.dealOrder(plan.chronicle, plan.resolvedConfig)
+    val plan = accepted(factory.build(config, ChronicleChoice.New("Test Chronicle")))
+    val orders = plan.orders
     val current = accepted(
       GameStartRules.evolve(catalog, plan.chronicle, orders)).game.current
     val dealtWorld: Vector[WorldCardId] =
@@ -34,7 +35,7 @@ class GeneratedFirstGamePlanFactorySuite extends munit.FunSuite:
 
     val dealtRelics = current.map.inPlay.flatMap(site =>
       current.map.sites(site).relics.map(_.id)) ++ current.commonCards.relicDeck
-    assertEquals(dealtRelics, plan.chronicle.relicDeck)
+    assertEquals(dealtRelics, plan.orders.relicOrder)
     assert(implementedFirst(dealtRelics, relics), dealtRelics.toString)
     assert(current.map.inPlay.flatMap(current.map.sites(_).denizens).forall {
       case edifice: EdificeState =>
@@ -46,7 +47,7 @@ class GeneratedFirstGamePlanFactorySuite extends munit.FunSuite:
     }, "a Homeland in play carries its suit's implemented edifice")
 
   test("seating order and first player are shuffled, keeping every participant"):
-    val plans = Vector.fill(30)(accepted(factory.build(config)).resolvedConfig)
+    val plans = Vector.fill(30)(accepted(factory.build(config, ChronicleChoice.New("Test Chronicle"))).resolvedConfig)
     plans.foreach { resolved =>
       assertEquals(resolved.participants.toSet, config.participants.toSet)
       assertEquals(resolved.firstPlayer, resolved.participants.head.playerId)
@@ -55,3 +56,28 @@ class GeneratedFirstGamePlanFactorySuite extends munit.FunSuite:
       "the first player should vary across generated plans")
     assert(plans.map(_.participants).distinct.size > 1,
       "the seating order should vary across generated plans")
+
+  test("a new Chronicle carries its name, and a blank name is refused"):
+    assertEquals(accepted(factory.build(config,
+      ChronicleChoice.New("Ashen Crown"))).chronicle.name, "Ashen Crown")
+    assertEquals(factory.build(config, ChronicleChoice.New("")).left.map(
+      _.message), Left("a Chronicle needs a name"))
+
+  test("a saved Chronicle is used as it is, with the seating shuffled"):
+    val saved = FirstGameSetupFixture.chronicle
+    val plan = accepted(factory.build(config, ChronicleChoice.Saved(saved)))
+    assertEquals(plan.chronicle, saved)
+    assertEquals(plan.resolvedConfig.participants.toSet,
+      config.participants.toSet)
+
+  test("the deal is shuffled from the Chronicle's decks, not their order"):
+    val saved = FirstGameSetupFixture.chronicle
+    val plan = accepted(new GeneratedFirstGamePlanFactory(catalog,
+      ChronicleShuffles.reversing).build(config, ChronicleChoice.Saved(saved)))
+    assertNotEquals(plan.orders.denizenOrder, saved.worldDeck)
+    assertEquals(plan.orders.denizenOrder.sortBy(_.value),
+      saved.worldDeck.sortBy(_.value))
+    assertNotEquals(plan.orders.relicOrder, saved.relicDeck)
+    assertEquals(plan.orders.relicOrder.sortBy(_.value),
+      saved.relicDeck.sortBy(_.value))
+    assertEquals(plan.chronicle, saved)

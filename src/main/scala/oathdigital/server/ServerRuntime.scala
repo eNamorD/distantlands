@@ -7,6 +7,7 @@ import oathdigital.application.{
   IdentityRepository,
   MembershipAuthorizationService
 }
+import oathdigital.application.chronicle.ChronicleConversion
 import oathdigital.gameplay.cards.NewFoundations
 import oathdigital.persistence.HsqldbDatabaseOwner
 final class ServerRuntime private (
@@ -16,6 +17,7 @@ final class ServerRuntime private (
     val identities: IdentityRepository,
     val trustedGameProvisioning: TrustedGameProvisioning,
     val trustedGame: TrustedGameGateway,
+    val chronicles: ChronicleConversion,
     private val database: HsqldbDatabaseOwner
 ) extends AutoCloseable:
   override def close(): Unit = database.close()
@@ -50,6 +52,7 @@ object ServerRuntime:
         )
       val authorization =
         new MembershipAuthorizationService(database.identities)
+      val chronicles = new ChronicleConversion(catalog)
       new ServerRuntime(
         new GameServerGateway(
           firstGameService,
@@ -65,8 +68,9 @@ object ServerRuntime:
         authorization,
         database.identities,
         new TrustedGameProvisioning(firstGameService, generatedPlanFactory,
-          database.trustedGames, generateGameId = gameIds),
+          database.trustedGames, chronicles, generateGameId = gameIds),
         new TrustedGameGateway(firstGameService, projector),
+        chronicles,
         database
       )
     }

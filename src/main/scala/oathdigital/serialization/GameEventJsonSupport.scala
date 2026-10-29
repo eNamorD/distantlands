@@ -58,7 +58,7 @@ private[serialization] trait GameEventJsonSupport:
         case FoundationFace.Altered => "altered"
       }),
       "alterationSources" -> stringArray(
-        state.alterationSources.toVector.map(_.value)))
+        state.alterationSources.toVector.map(_.value).sorted))
 
   protected final def decodeFoundationState(value: ujson.Value, path: String)
       : Either[WireError, (FoundationNumber, FoundationState)] = for
@@ -152,19 +152,23 @@ private[serialization] trait GameEventJsonSupport:
 
   protected final def encodeChronicle(chronicle: Chronicle): ujson.Value =
     ujson.Obj(
+      "name" -> chronicle.name,
       "atlasBox" -> ujson.Arr.from(chronicle.atlasBox.map(encodeStoredSite)),
       "world" -> ujson.Arr.from(chronicle.world.map(encodeStoredSite)),
       "worldDeck" -> stringArray(chronicle.worldDeck.map(_.value)),
       "relicDeck" -> stringArray(chronicle.relicDeck.map(_.value)),
       "era" -> ujson.Obj(
         "targetScore" -> chronicle.era.targetScore,
-        "lineageScores" -> ujson.Arr.from(chronicle.era.lineageScores.toVector
-          .sortBy(_._1.value).map { case (id, score) =>
-            ujson.Obj("lineageId" -> id.value, "score" -> score) })),
+        "games" -> ujson.Arr.from(chronicle.era.games.map(game => ujson.Obj(
+          "entries" -> ujson.Arr.from(game.entries.map(entry => ujson.Obj(
+            "lineage" -> entry.lineage.value,
+            "totalScore" -> entry.totalScore,
+            "endingRole" -> encodeRole(entry.endingRole)))))))),
       "oathkeeperGoal" -> chronicle.oathkeeperGoal.key,
       "dispossessed" -> stringArray(chronicle.dispossessed.map(_.value)),
       "reliquary" -> stringArray(chronicle.reliquary.map(_.value)),
       "foundations" -> ujson.Arr.from(chronicle.foundations.toVector
+        .sortBy(_._1.value)
         .map { case (number, state) => encodeFoundationState(number, state) }),
       "lineages" -> ujson.Arr.from(chronicle.lineages.map(encodeLineageState))
     )
@@ -179,11 +183,14 @@ private[serialization] trait GameEventJsonSupport:
       case (entry, index) => decodeFoundationState(entry, s"$path.foundations[$index]")
     lineages <- traverse(value("lineages").arr.zipWithIndex.toVector):
       case (lineage, index) => decodeLineageState(lineage, s"$path.lineages[$index]")
+    name <- stringField(value.obj, "name", path)
+    _ <- Chronicle.nameProblem(name).toLeft(()).left.map(problem =>
+      InvalidValue(s"$path.name", problem))
     era <- requiredField(value.obj, "era", path)
       .flatMap(decodeEra(_, s"$path.era"))
     goal <- requiredField(value.obj, "oathkeeperGoal", path)
       .flatMap(decodeOathkeeperGoal(_, s"$path.oathkeeperGoal"))
-  yield Chronicle(atlasBox = atlasBox, world = world,
+  yield Chronicle(name = name, atlasBox = atlasBox, world = world,
     worldDeck = value("worldDeck").arr.toVector.map(v => DenizenId(v.str)),
     relicDeck = value("relicDeck").arr.toVector.map(v => RelicId(v.str)),
     era = era, oathkeeperGoal = goal,
@@ -194,16 +201,25 @@ private[serialization] trait GameEventJsonSupport:
   private def decodeEra(value: ujson.Value, path: String)
       : Either[WireError, EraState] = for
     target <- safeIntField(value.obj, "targetScore", path)
-    scores <- traverse(value("lineageScores").arr.zipWithIndex.toVector):
-      case (row, index) =>
-        val rowPath = s"$path.lineageScores[$index]"
+    games <- traverse(value("games").arr.zipWithIndex.toVector):
+      case (game, gameIndex) =>
+        val gamePath = s"$path.games[$gameIndex]"
         for
-          id <- stringField(row.obj, "lineageId", rowPath)
-          score <- safeIntField(row.obj, "score", rowPath)
-        yield LineageId(id) -> score
-    _ <- duplicate(scores.map(_._1)).toLeft(()).left.map(id =>
-      InvalidValue(s"$path.lineageScores", s"duplicate lineage '${id.value}'"))
-    era <- Either.cond(target > 0, EraState(target, scores.toMap),
+          entries <- traverse(game("entries").arr.zipWithIndex.toVector):
+            case (row, index) =>
+              val rowPath = s"$gamePath.entries[$index]"
+              for
+                id <- stringField(row.obj, "lineage", rowPath)
+                total <- safeIntField(row.obj, "totalScore", rowPath)
+                _ <- Either.cond(total >= 0, (),
+                  InvalidValue(s"$rowPath.totalScore", "must not be negative"))
+                role <- decodeRole(row("endingRole").str, s"$rowPath.endingRole")
+              yield EraEntry(LineageId(id), total, role)
+          _ <- duplicate(entries.map(_.lineage)).toLeft(()).left.map(id =>
+            InvalidValue(s"$gamePath.entries",
+              s"duplicate lineage '${id.value}'"))
+        yield EraGame(entries)
+    era <- Either.cond(target > 0, EraState(target, games),
       InvalidValue(s"$path.targetScore", "must be positive"))
   yield era
 
@@ -226,6 +242,7 @@ private[serialization] trait GameEventJsonSupport:
         )
       }),
       "firstPlayer" -> orders.firstPlayer.value,
+      "denizenOrder" -> stringArray(orders.denizenOrder.map(_.value)),
       "worldDeckOrder" -> ujson.Arr.from(orders.worldDeckOrder.map(encodeWorldCardId)),
       "relicOrder" -> stringArray(orders.relicOrder.map(_.value))
     )
@@ -245,6 +262,7 @@ private[serialization] trait GameEventJsonSupport:
       worldDeckOrder <- traverse(obj("worldDeckOrder").arr.zipWithIndex.toVector):
         case (item, index) => decodeWorldCardId(item, s"$path.worldDeckOrder[$index]")
     yield SetupOrders(participants, PlayerId(obj("firstPlayer").str),
+      obj("denizenOrder").arr.toVector.map(v => DenizenId(v.str)),
       worldDeckOrder, obj("relicOrder").arr.toVector.map(v => RelicId(v.str)))
   catch
     case NonFatal(error) =>

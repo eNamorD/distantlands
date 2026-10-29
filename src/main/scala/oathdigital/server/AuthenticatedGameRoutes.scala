@@ -89,13 +89,12 @@ final class AuthenticatedGameGateway(
           memberships =>
             val config = FirstGameBootstrapMapper.map(request)
             validateSeats(memberships, config).flatMap { _ =>
-              planFactory.build(config)
+              planFactory.build(config, ChronicleChoice.New(s"Chronicle $gameId"))
                 .left.map(failure => BootstrapConfiguration(failure.message))
                 .flatMap(plan => service.handle(
                   gameId,
                   request.expectedNextSequence,
-                  GameCommand.Begin(plan.chronicle,
-                    ChronicleFirstGamePlan.dealOrder(plan.chronicle, plan.resolvedConfig))
+                  GameCommand.Begin(plan.chronicle, plan.orders)
                 ).left.map(Application.apply))
                 .map(accepted => projector.projectPublic(
                   gameId,

@@ -63,15 +63,26 @@ private[operations] object ChronicleStateOperations:
         _.orElse(Some(count)))))
 
   /** Only a seated lineage scores (gifts go to seated players, Chronicle
-    * ruling 13). */
+    * ruling 13). The game's first points open its scorepad row: an entry
+    * per seated lineage, in seating order, at its total before this game
+    * and its live role, which the Sun has already crowned (ruling 19). */
   def lineagePointsScored(ready: ReadyGame, lineage: LineageId, points: Int)
       : Either[OperationError, ReadyGame] =
-    Either.cond(ready.game.campaign.lineages.contains(lineage),
-      ready.updateCampaign(campaign => campaign.copy(
-        era = campaign.era.copy(lineageScores = campaign.era.lineageScores
-          .updated(lineage,
-            campaign.era.lineageScores.getOrElse(lineage, 0) + points)))),
-      InvalidDescription(s"no seated lineage ${lineage.value} to score"))
+    val campaign = ready.game.campaign
+    if !campaign.lineages.contains(lineage) then
+      Left(InvalidDescription(s"no seated lineage ${lineage.value} to score"))
+    else
+      val opened = campaign.era.games.size > campaign.baseline.era.games.size
+      val era = if opened then campaign.era else campaign.era.copy(games =
+        campaign.era.games :+ EraGame(ready.game.current.players
+          .map(_.lineage).filter(campaign.lineages.contains).map(id =>
+            EraEntry(id, campaign.era.score(id), campaign.lineages(id).role))))
+      val game = era.games.last
+      Right(ready.updateCampaign(_.copy(era = era.copy(games =
+        era.games.init :+ EraGame(game.entries.map(entry =>
+          if entry.lineage == lineage then
+            entry.copy(totalScore = entry.totalScore + points)
+          else entry))))))
 
   def edificeBuilt(ready: ReadyGame, edifice: EdificeId, site: SiteId)
       : Either[OperationError, ReadyGame] =
