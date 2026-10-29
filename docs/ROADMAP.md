@@ -206,11 +206,12 @@ continuation, and campaign browsing.
     holder keeps a starting adviser. Shape Foundation is an empty window.
   - Stars landed: rival sites are archived and the Empire's sites kept, and
     the journaled Chronicle reads the table and passes game start's card
-    accounting. Starting the next game from it is Persistence's work.
+    accounting. Starting the next game from it waits for the Empire phase.
 - [x] **Enduring (Ancient City).** Its cards are not discarded in the
   Chronicle Phase's Shape Empire step.
 - [ ] **Chronicle import and export.** The Chronicle string codec for the TTS
   format, including the sections that format has not defined yet.
+- [ ] **Saved-campaign browsing.** Import, export, load and delete a campaign.
 - [ ] **Foundations.**
 - [ ] **The Grand Council and Festival banner faces.** Legacies that set
   Foundation V or VI turn the banners to these faces. Their ids are in
@@ -225,6 +226,10 @@ forces, Grand Scepter and Reliquary behavior, Citizenship through Negotiation,
 Successor goals, forced and self-exile, Imperial setup/turn/end rules, and the
 remaining production authentication work needed for broader hosting. Empire
 defenders in a Campaign are not modelled either.
+
+- [ ] **Saved-campaign continuation.** Start game 2 from the Chronicle that the
+  Chronicle Phase journals. Game start refuses an Empire-state Chronicle until
+  Imperial setup exists.
 
 ### Phase - Gameplay completeness gate
 

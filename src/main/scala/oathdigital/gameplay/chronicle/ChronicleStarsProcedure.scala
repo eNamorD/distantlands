@@ -37,6 +37,8 @@ object ChronicleStarsProcedure:
 
   private def perSite(sites: ChronicleExtraction.SiteLayout => Vector[SiteId],
       key: NoteKey): Operation =
+    // The Chronicle Phase follows a result, so the layout is always there;
+    // the refusal keeps a walk without one from noting nothing.
     Branch((state, _) => ChronicleExtraction.layout(state) match
       case Left(violation) => Vector(ChronicleTasks.failing(violation))
       case Right(layout) => sites(layout).map(site =>

@@ -7,8 +7,9 @@ import oathdigital.model._
   * 17 and 18). The Stars steps change nothing on the table; this reads it
   * once into the Chronicle's table fields. The winner's sites become the
   * Empire's `world` and the rest are archived at the atlas's Recent end,
-  * each with every card left on it. A card in a pile the Chronicle cannot
-  * store refuses the record. */
+  * each with every card left on it: its edifice, then its denizens in slot
+  * order, then its relics, the order the atlas already stores. A card in a
+  * pile the Chronicle cannot store refuses the record. */
 object ChronicleExtraction:
   /** The sites in play, split by ruler, each in `MapState.hinterward`
     * order: Cradlemost first. */
@@ -36,7 +37,9 @@ object ChronicleExtraction:
     val campaign = ready.game.campaign
     def atSite(site: SiteId) = storedSite(site, current.map.sites.get(site)
       .toVector.flatMap(state =>
-        state.denizens.map(_.id) ++ state.relics.map(_.id)))
+        val (edifices, denizens) = state.denizens.map(_.id)
+          .partition(_.isInstanceOf[EdificeId])
+        edifices ++ denizens ++ state.relics.map(_.id)))
     for
       _ <- leftovers(ready)
       sites <- layout(ready)

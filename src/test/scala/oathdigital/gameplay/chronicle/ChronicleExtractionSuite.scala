@@ -55,3 +55,24 @@ class ChronicleExtractionSuite extends munit.FunSuite:
       case Left(OathViolation.UnsupportedChronicle(reason)) =>
         assert(reason.contains(vision.value), reason)
       case other => fail(other.toString)
+
+  test("a stored site lists its edifice, then its denizens, then its relics"):
+    val roar = CatalogNames.denizen("Threatening Roar")
+    val hall = CatalogNames.edifice("Hall of Debate")
+    val horse = CatalogNames.relic("Brass Horse")
+    // An empty Broken Peaks and no Visions left in play, so the record
+    // stores.
+    val ready = Table.from(p1RulesTwoSites.ready.updateCurrent(current =>
+      current.copy(
+        map = current.map.copy(sites = current.map.sites.updatedWith(
+          brokenPeaks)(_.map(_.copy(denizens = Vector.empty,
+            relics = Vector.empty)))),
+        commonCards = current.commonCards.copy(worldDeck = current
+          .commonCards.worldDeck.filterNot(_.isInstanceOf[VisionId])))))
+      .denizen(roar, brokenPeaks)
+      .edifice(hall, EdificeSide.Intact, brokenPeaks)
+      .relicAt(horse, brokenPeaks).ready
+    val record = ChronicleExtraction.extract(ready,
+      ready.game.campaign.baseline)
+    assertEquals(record.map(_.world.find(_.site == brokenPeaks)),
+      Right(Some(StoredSite(brokenPeaks, Vector(hall, roar, horse)))))

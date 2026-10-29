@@ -39,9 +39,11 @@ class StarsTaskSuite extends munit.FunSuite:
       case ChronicleUpdated(chronicle) => chronicle
     }.lastOption.getOrElse(fail("no Chronicle was journaled"))
 
-  private def cardsAt(ready: ReadyGame, site: SiteId): Vector[CardId] =
+  /** The cards on `site`, in no particular order. ChronicleExtractionSuite
+    * checks the order the record keeps them in. */
+  private def cardsAt(ready: ReadyGame, site: SiteId): Set[CardId] =
     val state = ready.game.current.map.sites(site)
-    state.denizens.map(_.id) ++ state.relics.map(_.id)
+    (state.denizens.map(_.id) ++ state.relics.map(_.id)).toSet
 
   test("rival sites are archived Cradlemost first, above the stored atlas, " +
       "and the Empire keeps its sites"):
@@ -65,7 +67,8 @@ class StarsTaskSuite extends munit.FunSuite:
     assert(record.atlasBox.find(_.site == ancientCity).get.items
       .contains(roar), record.atlasBox)
     (record.world ++ record.atlasBox.take(7)).foreach(stored =>
-      assertEquals(stored.items, cardsAt(ready, stored.site), stored.site))
+      assertEquals(stored.items.toSet, cardsAt(ready, stored.site),
+        stored.site))
 
   test("the record takes the decks, the Reliquary, both Dispossessed piles " +
       "and the kept starting advisers from the table"):
