@@ -9,10 +9,11 @@ import oathdigital.model._
   * it from a board an earlier step has changed).
   *
   * People's Favor returns every favor to the least-favor banks, leftmost
-  * first. Wandering Flame first returns the previous holder's retained half,
-  * then places the rest on the least-stocked sites: each pass places one
-  * secret on every tied site while it can, and when fewer secrets remain than
-  * tied sites the player picks which of them, once.
+  * first. Wandering Flame first gives the previous holder the rest beyond
+  * half, or burns it when the banner was unclaimed, then places the half on
+  * the least-stocked sites: each pass places one secret on every tied site
+  * while it can, and when fewer secrets remain than tied sites the player
+  * picks which of them, once.
   */
 private[challenge] object ChallengeRibbon:
   val siteDecisionId = "challenge.ribbon-site"
@@ -24,7 +25,7 @@ private[challenge] object ChallengeRibbon:
     case Banner.PeoplesFavor =>
       Vector(BuildOps((ready, _) => Right(favorReturns(ready))))
     case Banner.DarkestSecret => Vector(
-      BuildOps((ready, _) => Right(retainedHalf(ready))),
+      BuildOps((ready, _) => Right(returnedSecrets(ready, actor))),
       Repeat((ready, _) => BannerRules.resources(ready.game.current,
         Banner.DarkestSecret) > 0,
         Branch((ready, _) => pass(ready, actor))))
@@ -36,18 +37,22 @@ private[challenge] object ChallengeRibbon:
         PositionedLocation(Location.OnBanner(Banner.PeoplesFavor)),
         PositionedLocation(Location.FavorBank(suit))))
 
-  /** The previous holder keeps `P - P / 2` of the `P` secrets; an unclaimed
-    * banner keeps none. Afterwards every secret left on the banner is one to
+  /** The `P - P / 2` of the `P` secrets beyond half go to the previous
+    * holder, or burn when the banner was unclaimed (rule 11.1, which the 7.8.2
+    * errata follows). Afterwards every secret left on the banner is one to
     * place, so the count still to place is always the banner's own total.
     */
-  private def retainedHalf(ready: ReadyGame): Vector[CoreOperation] =
+  private def returnedSecrets(ready: ReadyGame,
+      actor: PlayerId): Vector[CoreOperation] =
     val current = ready.game.current
     val total = BannerRules.resources(current, Banner.DarkestSecret)
-    BannerRules.holder(current, Banner.DarkestSecret).toVector.flatMap { holder =>
-      val kept = total - total / 2
-      Option.when(kept > 0)(Move(Piece.Secrets(kept), secretBanner,
-        PositionedLocation(Location.PlayArea(holder))): CoreOperation)
-    }
+    val beyondHalf = total - total / 2
+    Option.when(beyondHalf > 0)(
+      BannerRules.holder(current, Banner.DarkestSecret) match
+        case Some(holder) => Move(Piece.Secrets(beyondHalf), secretBanner,
+          PositionedLocation(Location.PlayArea(holder)))
+        case None => Burn.secrets(beyondHalf, secretBanner, Some(actor))
+    ).toVector
 
   private def pass(ready: ReadyGame, actor: PlayerId): Vector[Operation] =
     val current = ready.game.current

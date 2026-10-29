@@ -30,9 +30,10 @@ amount. Both answers come before any resource moves. The ribbon then returns
 the banner's resources (`ChallengeRibbon`):
 
 - People's Favor returns every favor to the least-favor banks, leftmost first.
-- Darkest Secret first gives the previous holder their retained half, then
-  places the rest on the least-stocked sites one pass at a time. When fewer
-  secrets remain than tied sites, the challenger picks which sites.
+- Darkest Secret first gives the previous holder the secrets beyond half
+  (rounded down), or burns them when the banner was unclaimed (7.8.2 errata).
+  It then places the half on the least-stocked sites one pass at a time. When
+  fewer secrets remain than tied sites, the challenger picks which sites.
 
 Last, the challenger pays the amount onto the banner and takes it by a
 required `Take`. Each answer is a recorded walker step and every effect is

@@ -140,27 +140,41 @@ class ChallengeProcedureSuite extends munit.FunSuite:
     assertEquals(after.banners.peoplesFavor.holder, Some(p1))
     assertEquals(after.banners.peoplesFavor.favor, 3)
 
-  test("Wandering Flame: a unique least site takes secrets one at a time, with no site decision"):
-    val board = siteSecrets(challenger.darkestSecret(None, secrets = 3),
+  test("Wandering Flame: an unclaimed banner places half on a unique least site one at a time and burns the rest"):
+    val board = siteSecrets(challenger.secrets(p1, faceUp = 8, faceDown = 4)
+      .darkestSecret(None, secrets = 6),
       "Ancient City" -> 0, "Broken Peaks" -> 1, "Buried Giant" -> 5).ready
-    val done = chooseAmount(atAmount(board, darkestSecretOption), 4)
+    val done = chooseAmount(atAmount(board, darkestSecretOption), 7)
       .getOrElse(fail("the amount must be accepted"))
     val after = Look(done.state)
-    // 3 secrets go one at a time to the least site: 0 -> 1, then the two
-    // least sites at 1 take one each.
+    // 6 secrets: 3 are placed (6 / 2) and 3 burn. The 3 go one at a time to
+    // the least site: 0 -> 1, then the two least sites at 1 take one each.
     assertEquals((after.siteTokens("Ancient City").secrets,
       after.siteTokens("Broken Peaks").secrets,
       after.siteTokens("Buried Giant").secrets), (2, 2, 5))
     assertEquals(banners(done.state).darkestSecret.holder,
       Some(p1))
-    assertEquals(banners(done.state).darkestSecret.secrets, 4)
-    assertEquals(after.faceUpSecrets(p1), 6 - 4)
+    assertEquals(banners(done.state).darkestSecret.secrets, 7)
+    assertEquals(after.faceUpSecrets(p1), 8 - 7)
+
+  test("Wandering Flame: an unclaimed banner's single starting secret burns, with nothing placed"):
+    val board = siteSecrets(challenger.darkestSecret(None, secrets = 1)).ready
+    val done = chooseAmount(atAmount(board, darkestSecretOption), 2)
+      .getOrElse(fail("the amount must be accepted"))
+    val after = Look(done.state)
+    // 1 / 2 places nothing, so no site gains a secret and nothing is asked.
+    assert(Outcomes.ready(done.state).game.current.map.inPlay.forall(site =>
+      after.siteTokens(site).secrets == 10))
+    assertEquals(banners(done.state).darkestSecret.holder, Some(p1))
+    assertEquals(banners(done.state).darkestSecret.secrets, 2)
+    assertEquals(MenuPlay.pendingBeyondMenu(Outcomes.ready(done.state)), None)
 
   test("Wandering Flame: fewer secrets than tied sites parks one choose-many, then finishes"):
     val (a, b, c) = ("Ancient City", "Broken Peaks", "Buried Giant")
-    val board = siteSecrets(challenger.darkestSecret(None, secrets = 2),
+    // 4 secrets on an unclaimed banner: 2 are placed (4 / 2), 2 burn.
+    val board = siteSecrets(challenger.darkestSecret(None, secrets = 4),
       a -> 0, b -> 0, c -> 0).ready
-    val parked = chooseAmount(atAmount(board, darkestSecretOption), 3)
+    val parked = chooseAmount(atAmount(board, darkestSecretOption), 5)
       .getOrElse(fail("the amount must be accepted"))
     parkedOn.assertParked(parked.state, ActionRef.Challenge,
       "challenge.ribbon-site", p1)
