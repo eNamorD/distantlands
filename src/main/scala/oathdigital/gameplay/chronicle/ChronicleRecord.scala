@@ -39,6 +39,6 @@ object ChronicleRecord:
     val added = campaign.lineages.values.toVector
       .filterNot(lineage => known(lineage.id)).sortBy(_.id.value)
       .map(live => LineageState(live.id, seatedBy.get(live.id), live.role,
-        Vector.empty, live.startingAdvisers))
+        Vector.empty, live.startingAdvisers, live.startingRelics))
     campaign.baseline.copy(era = campaign.era,
       oathkeeperGoal = campaign.oathkeeperGoal, lineages = kept ++ added)

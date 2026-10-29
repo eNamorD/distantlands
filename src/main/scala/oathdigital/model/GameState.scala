@@ -31,7 +31,10 @@ final case class LineageState(
     previousPlayer: Option[PlayerId],
     role: Role,
     legacies: Vector[LegacyState],
-    startingAdvisers: Vector[AdviserState]
+    startingAdvisers: Vector[AdviserState],
+    /** Relics the lineage keeps between games, as the TTS player section
+      * stores them. Nothing creates them until Legacies. */
+    startingRelics: Vector[RelicId] = Vector.empty
 )
 
 final case class EraState(

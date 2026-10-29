@@ -51,6 +51,15 @@ class GameStartRulesSuite extends munit.FunSuite:
     assertEquals(ready.game.campaign.baseline, withAbsentLineage)
     assertEquals(ready.game.campaign.evolved, None)
 
+  test("game start refuses a lineage's starting relics until Legacies"):
+    val relic = chronicle.relicDeck.head
+    val keeping = chronicle.copy(relicDeck = chronicle.relicDeck.tail,
+      lineages = Vector(LineageState(LineageId("l9"), None, Role.Exile,
+        Vector.empty, Vector.empty, startingRelics = Vector(relic))))
+    assertEquals(GameStartRules.evolve(catalog, keeping, orders),
+      Left(OathViolation.UnsupportedChronicle(
+        "starting relics require Legacies")))
+
   test("game start takes the era and Oathkeeper goal from the Chronicle"):
     val scored = chronicle.copy(
       era = EraState(15, Map(LineageId("l9") -> 6)),

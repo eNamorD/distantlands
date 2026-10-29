@@ -22,7 +22,8 @@ object ChronicleAccounting:
     val sites = (chronicle.atlasBox ++ chronicle.world).map(_.site)
     val items = (chronicle.atlasBox ++ chronicle.world).flatMap(_.items)
     val advisers = chronicle.lineages.flatMap(_.startingAdvisers).map(_.id)
-    val stored = items ++ advisers
+    val keptRelics = chronicle.lineages.flatMap(_.startingRelics)
+    val stored = items ++ advisers ++ keptRelics
     val denizens = chronicle.worldDeck ++ chronicle.dispossessed ++
       stored.collect { case id: DenizenId => id }
     val relics = chronicle.relicDeck ++ chronicle.reliquary ++
@@ -58,7 +59,8 @@ object ChronicleAccounting:
     def relics(chronicle: Chronicle): Vector[RelicId] =
       chronicle.relicDeck ++ chronicle.reliquary ++
         (chronicle.atlasBox ++ chronicle.world).flatMap(_.items)
-          .collect { case id: RelicId => id }
+          .collect { case id: RelicId => id } ++
+        chronicle.lineages.flatMap(_.startingRelics)
     val (beforeSites, afterSites) = (sites(baseline), sites(evolved).toSet)
     val (beforeRelics, afterRelics) = (relics(baseline), relics(evolved).toSet)
     first(Vector(
