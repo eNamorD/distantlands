@@ -239,6 +239,16 @@ span.color-swatch { display: inline-block; width: 1.25rem; height: 1.25rem; padd
 .chronicle-back { margin: 0 0 1rem; }
 .chronicle-name { font: inherit; padding: 0.5rem; }
 .chronicle-continued { margin: 0; font-weight: 700; }
+/* The table's Chronicle section and its save dialog. */
+.game-table .table-chronicle { margin: 0 0 12px; display: grid; gap: 6px; }
+.game-table .table-chronicle p { margin: 0; }
+.table-chronicle-note { color: var(--brass); }
+.chronicle-save-prompt { position: fixed; inset: 0; z-index: 60; display: grid;
+  place-items: center; padding: 16px; background: #000a; }
+.chronicle-save-panel { width: min(30rem, 100%); display: grid; gap: 0.75rem;
+  padding: 18px; background: #211d17; border: 1px solid var(--brass);
+  border-radius: 12px; }
+.chronicle-save-name { font: inherit; padding: 0.5rem; }
 
 #app {
   max-width: 1280px;

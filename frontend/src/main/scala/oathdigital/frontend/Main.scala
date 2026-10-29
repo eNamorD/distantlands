@@ -21,7 +21,8 @@ object Main:
     val startPage = pathname == "/" || pathname == ChroniclePages.NewGamePath
     ServerUiSupport.canonicalGameId(pathname) match
       case Some(gameId) =>
-        ServerModeUi.start(mount, new TrustedHttpGameClient(transport), Some(gameId))
+        ServerModeUi.start(mount, new TrustedHttpGameClient(transport), Some(gameId),
+          transport = transport, devices = devices)
       case None if trustedAlpha && startPage =>
         ChroniclePages.start(mount, pathname, transport, devices)
       case None if trustedAlpha => mount.textContent = "Open your assigned seat link."
@@ -31,4 +32,5 @@ object Main:
         ChroniclePages.start(mount, pathname, transport, devices, Some(created =>
           navigate(ServerUiSupport.sessionUrl(created.gameId, created.seats.head.playerId))))
       case None => ServerModeUi.start(mount, new HttpGameClient(transport),
-        startOver = () => navigate(DevelopmentStartUrl))
+        startOver = () => navigate(DevelopmentStartUrl), transport = transport,
+        devices = devices)
