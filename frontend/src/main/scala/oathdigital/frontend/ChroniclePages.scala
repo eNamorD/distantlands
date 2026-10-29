@@ -18,6 +18,7 @@ private[frontend] object ChroniclePages:
       devices.storage.getOrElse(new MemoryChronicleStorage()), devices.now)
     val client = new ChronicleClient(transport)
     var choice = Option.empty[HostChronicle]
+    var creating: () => Boolean = () => false
     // The table's stylesheet fixes the page to the viewport; the start pages
     // are long, so they scroll inside it.
     mount.classList.add("start-page")
@@ -31,17 +32,23 @@ private[frontend] object ChroniclePages:
           choice = None
           devices.history.replace("/")
           show("/")
-        case Some(chosen) => TrustedHostUi.start(mount, transport, chosen,
-          shelf, () => { devices.history.push("/"); show("/") }, openCreated)
+        case Some(chosen) => creating = TrustedHostUi.start(mount, transport,
+          chosen, shelf, () => { devices.history.push("/"); show("/") },
+          openCreated)
         case None =>
           devices.history.replace("/")
           show("/")
-      else ChroniclePage.render(mount, shelf, kept, client, devices.files,
-        chosen => {
-          choice = Some(chosen)
-          devices.history.push(NewGamePath)
-          show(NewGamePath)
-        })
+      else
+        creating = () => false
+        ChroniclePage.render(mount, shelf, kept, client, devices.files,
+          chosen => {
+            choice = Some(chosen)
+            devices.history.push(NewGamePath)
+            show(NewGamePath)
+          })
 
-    devices.history.onPop(show)
+    // The browser's Back or Forward while a game is being created would
+    // lose its seat links: player selection stays, at its own path.
+    devices.history.onPop(path =>
+      if creating() then devices.history.push(NewGamePath) else show(path))
     show(pathname)

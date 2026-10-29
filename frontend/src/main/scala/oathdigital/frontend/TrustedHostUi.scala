@@ -36,9 +36,13 @@ private[frontend] object TrustedHostUi:
 
   private final case class PlayerRow(color: PlayerColor, node: dom.Element, input: dom.html.Input)
 
+  /** Draws the page and answers whether a game is being created, while
+    * which the page must not be left: the seat links live only in its
+    * result. */
   def start(mount: dom.Element, transport: JsonTransport,
       chronicle: HostChronicle, shelf: ChronicleShelf, back: () => Unit,
-      openCreated: Option[TrustedGameCreateResponse => Unit] = None): Unit =
+      openCreated: Option[TrustedGameCreateResponse => Unit] = None)
+      : () => Boolean =
     mount.textContent = ""
     val backLink = button("Back", "chronicle-back")
     backLink.setAttribute("type", "button")
@@ -170,6 +174,7 @@ private[frontend] object TrustedHostUi:
 
     LineageColors.take(MinPlayers).foreach(addRow)
 
+    var creating = false
     val create = button("Create game", "create-trusted-game")
     create.setAttribute("type", "submit")
     def submit(): Unit =
@@ -198,9 +203,11 @@ private[frontend] object TrustedHostUi:
       create.disabled = true
       // Leaving now would lose the seat links, which only this page shows.
       backLink.disabled = true
+      creating = true
       status.textContent = "Creating game…"
       transport.request("POST", "/games", Some(TrustedGameCreateRequestCodec.encode(request)))
         .foreach { result =>
+          creating = false
           val decoded = result.left.map(_.message).flatMap { response =>
             if response.status >= 200 && response.status < 300 then
               TrustedGameCreateResponseCodec.decode(response.body).left.map(error =>
@@ -226,9 +233,6 @@ private[frontend] object TrustedHostUi:
             case Right(created) if openCreated.nonEmpty =>
               status.textContent = "Game created. Opening it…"
               openCreated.foreach(_(created))
-            // The browser's Back left this page while the game was created:
-            // the page now drawn is not this one's to change.
-            case Right(_) if form.parentNode == null => ()
             case Right(created) =>
               mount.removeChild(form)
               mount.removeChild(backLink)
@@ -266,6 +270,7 @@ private[frontend] object TrustedHostUi:
     form.appendChild(create)
     mount.appendChild(form)
     mount.appendChild(status)
+    () => creating
 
   private def swatch(color: PlayerColor): dom.Element =
     val node = element("span", s"color-swatch ${PlayerColorCss.of(color)}")

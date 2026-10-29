@@ -198,8 +198,8 @@ class ChroniclePagesSuite extends munit.FunSuite:
       assertEquals(history.pushed.toVector, Vector("/new-game"))
       assert(shows(browser, "create-trusted-game"))
 
-  test("a game created after the browser's Back leaves the Chronicle page " +
-      "drawn"):
+  test("the browser's Back while the game is being created stays on player " +
+      "selection, which then shows the seat links"):
     TestBrowser.use(): browser =>
       val history = FakePageHistory()
       val pending = Promise[Either[GameClientFailure, TransportResponse]]()
@@ -209,11 +209,25 @@ class ChroniclePagesSuite extends munit.FunSuite:
       browser.click("new-chronicle")
       browser.click("create-trusted-game")
       history.back("/")
+      assertEquals(history.pushed.toVector, Vector("/new-game", "/new-game"))
+      assert(!shows(browser, "new-chronicle"))
       pending.success(Right(TransportResponse(201,
         seatLinksResponse(TrustedHostUi.defaultChronicleName()))))
       browser.settle.map { _ =>
+        assertEquals(browser.byClass("seat-link").size, 2)
+      }
+
+  test("the browser's Back after a refused game returns to the Chronicle " +
+      "page"):
+    TestBrowser.use(): browser =>
+      val history = FakePageHistory()
+      startPages(browser, "/", ChronicleFixtures.devices(history = history),
+        refusal = Some("the Chronicle is not supported"))
+      browser.click("new-chronicle")
+      browser.click("create-trusted-game")
+      browser.settle.map { _ =>
+        history.back("/")
         assert(shows(browser, "new-chronicle"))
-        assertEquals(browser.byClass("seat-link"), Vector.empty)
       }
 
   test("an import that answers after New Chronicle leaves player " +
