@@ -2,6 +2,7 @@ package oathdigital.model
 
 class DomainValidationSuite extends munit.FunSuite:
   import TestGameFixtures._
+  import oathdigital.testkit.Table
 
   test("campaign maps retain their structural identities and required slots"):
     // Patched with copy, not a Table step: the state is invalid on purpose.
@@ -107,20 +108,32 @@ class DomainValidationSuite extends munit.FunSuite:
 
   test("an Imperial player never holds the Usurper side of the title"):
     // Built with Table steps, then validated: the state breaks a rule
-    // on purpose. Becoming a Citizen flips the title back to its
+    // on purpose. Becoming Imperial flips the title back to its
     // Oathkeeper side (Empire slice 3), so no rule can reach it.
-    val usurperCitizen = oathdigital.testkit.Table.start
-      .imperial(oathdigital.testkit.Table.p1, oathdigital.testkit.Table.p2)
-      .oathkeeper(Some(oathdigital.testkit.Table.p2), TitleSide.Usurper)
-      .ready.game
-    assertEquals(DomainValidation.validate(usurperCitizen)
-      .collect { case problem: DomainProblem.ImperialUsurper => problem },
-      Vector(DomainProblem.ImperialUsurper(oathdigital.testkit.Table.p2)))
+    val usurperCitizen = Table.start.imperial(Table.p1, Table.p2)
+      .oathkeeper(Some(Table.p2), TitleSide.Usurper).ready.game
+    assertEquals(imperialUsurpers(usurperCitizen),
+      Vector(DomainProblem.ImperialUsurper(Table.p2)))
+
+  test("a Chancellor holding the Usurper side is flagged outside the Chronicle"):
+    val usurperChancellor = Table.start.imperial(Table.p2)
+      .turn(Table.p2, Phase.Act)
+      .oathkeeper(Some(Table.p2), TitleSide.Usurper).ready.game
+    assertEquals(imperialUsurpers(usurperChancellor),
+      Vector(DomainProblem.ImperialUsurper(Table.p2)))
+
+  test("the Chronicle Phase may hold an Imperial player on the Usurper side"):
+    // The Chronicle crowns the Usurper winner after the game has ended.
+    val crowned = Table.start.imperial(Table.p2)
+      .turn(Table.p2, Phase.Chronicle)
+      .oathkeeper(Some(Table.p2), TitleSide.Usurper).ready.game
+    assertEquals(imperialUsurpers(crowned), Vector.empty)
 
   test("an Imperial player may hold the Oathkeeper side"):
-    val oathkeeperCitizen = oathdigital.testkit.Table.start
-      .imperial(oathdigital.testkit.Table.p1, oathdigital.testkit.Table.p2)
-      .oathkeeper(Some(oathdigital.testkit.Table.p2))
-      .ready.game
-    assert(!DomainValidation.validate(oathkeeperCitizen)
-      .exists(_.isInstanceOf[DomainProblem.ImperialUsurper]))
+    val oathkeeperCitizen = Table.start.imperial(Table.p1, Table.p2)
+      .oathkeeper(Some(Table.p2)).ready.game
+    assertEquals(imperialUsurpers(oathkeeperCitizen), Vector.empty)
+
+  private def imperialUsurpers(game: OathGame): Vector[DomainProblem] =
+    DomainValidation.validate(game)
+      .collect { case problem: DomainProblem.ImperialUsurper => problem }
