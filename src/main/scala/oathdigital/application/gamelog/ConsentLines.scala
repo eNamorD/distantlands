@@ -49,10 +49,19 @@ private[gamelog] final class ConsentLines(words: LogWords,
                 else " decide whether ") +: used(request))) :+
             Text(" works."))
         case ConsentRequested(request) =>
-          // A payer is asked to pay and travel; every other ask, to ignore
-          // (catalog batch 8, slice 15).
-          val (paying, ignoring) = request.asks.partition(ask =>
+          // A payer is asked to pay and travel; a Warband Transfers partner,
+          // to let the transfer happen, with no selection to name since the
+          // partner is the granter; every other ask, to ignore (catalog
+          // batch 8, slice 15).
+          val (transferring, others) = request.asks.partition(ask =>
+            ask.powers.forall(_ == ImperialLaws.warbandTransfers))
+          val (paying, ignoring) = others.partition(ask =>
             ask.powers.forall(powers.paying))
+          val transfers = transferring.map(ask =>
+            Vector(Text("Asked "), words.player(ask.granter),
+              Text(" for consent to use "), Text(
+                ImperialLaws.names(ImperialLaws.warbandTransfers)),
+              Text(".")))
           val ignored = Option.when(ignoring.nonEmpty)(
             (Text("Asked ") +: LogWords.join(ignoring.map(ask =>
               Vector(words.player(ask.granter))))) ++
@@ -68,7 +77,7 @@ private[gamelog] final class ConsentLines(words: LogWords,
                 case ConsentKey(_, _, _, site: DecisionOptionRef.Site) =>
                   site }.getOrElse(request.target),
               before, after, viewer))) :+ Text("."))
-          (ignored.toVector ++ paid).flatMap(line)
+          (ignored.toVector ++ paid ++ transfers).flatMap(line)
         case ConsentAnswered(granter, granted) =>
           before.consent.pending.filter(_.use.nonEmpty) match
             // "{Red} let {Tyrant} work." or "{Red} deactivated {Tyrant}

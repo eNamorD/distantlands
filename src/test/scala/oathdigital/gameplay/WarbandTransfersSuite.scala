@@ -116,3 +116,27 @@ class WarbandTransfersSuite extends munit.FunSuite:
       ChooseAmountAnswer(2))
     assertEquals(boardWarbands(done, p1), 7)
     assertEquals(boardWarbands(done, p2), 0)
+
+  test("an amount outside what the giving board holds is rejected"):
+    val (service, _) = imperialsTogether.service()
+    val asked = asking(service)
+    val yes = accepted(service.handle(gameId, asked.nextSequence,
+      GameCommand.AnswerConsent(p2, ConsentChoice.Yes)))
+    val gave = answer(service, yes, WarbandTransfers.directionDecisionId,
+      ChooseOneAnswer(WarbandTransfers.give))
+    Vector(0, 6).foreach: amount =>
+      assert(service.handle(gameId, gave.nextSequence,
+        GameCommand.ResolveWalker(p1, TreeDecision(
+          WarbandTransfers.amountDecisionId, ChooseAmountAnswer(amount))))
+        .isLeft, s"amount $amount was accepted")
+
+  test("a way whose giving board is empty is disabled with its reason"):
+    val (service, _) = imperialsTogether.boardWarbands(p2, 0).service()
+    val asked = asking(service)
+    val yes = accepted(service.handle(gameId, asked.nextSequence,
+      GameCommand.AnswerConsent(p2, ConsentChoice.Yes)))
+    val taking = present(projector.project(gameId, yes.loaded, p1)
+      .walkerDecision.flatMap(_.query).toVector.flatMap(_.offeredOptions)
+      .find(_.id == WarbandTransfers.take.wireId), "the take row")
+    assertEquals(taking.state, "unavailable")
+    assertEquals(taking.reason, Some("No warbands on their board"))
