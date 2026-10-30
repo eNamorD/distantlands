@@ -196,6 +196,11 @@ Act (except the Campaign action) and Rest.
 
 ## Slice 1b: Imperial Campaign
 
+Slice 1b ships as two plans: 1b-i, the Imperial Campaign without shared
+battle plans, then 1b-ii, Imperial Tactics.
+
+### 1b-i: Imperial Infighting
+
 - **Defender.** `CampaignDefender` gains no case. `defenderAt` resolves an
   Imperial site's defender to a player: for a conquest target it is always
   the Chancellor (Steward of Imperial Domains, Imperial Infighting). A target
@@ -211,19 +216,24 @@ Act (except the Campaign action) and Rest.
   becomes Imperial. A Citizen who wins against Imperial sites may place no
   warbands and leave the bandits to rule them, through the existing choice of
   whether to place.
-- **Imperial Tactics.** An Imperial player may use battle plans in any
-  Imperial player's play area with that player's consent, and at Imperial
-  sites with the Chancellor's consent. The attacker and defender cannot use
-  the same plan. Any Imperial player may pay a plan's costs or meet its
-  requirements, split between players: each contributor consents to their
-  share before the plan resolves, as an extension of the existing
-  cost-gathering step. The Oathkeeper title is a defensive plan shared the
-  same way.
-- **Cards.** Military Parade's Imperial Allies clause; Siege Engines with an
-  Imperial owner.
-- **UI.** Imperial-site targets; shared battle plans labelled with their
-  owner; the split-cost picker; consent prompts for each contributor and for
-  plans at Imperial sites.
+- **Cards.** Military Parade counts only the one enemy's advisers (ruling
+  R9). Siege Engines killing purple warbands logs "Killed 2 Imperial
+  warbands at {site}."
+- **UI.** Imperial-site targets in the Conquest targets question.
+- **Docs.** Traceability row 104, in part.
+
+### 1b-ii: Imperial Tactics
+
+- An Imperial player may use battle plans in any Imperial player's play area
+  with that player's consent, and plans at Imperial sites with the
+  Chancellor's consent (ruling R10). The attacker and defender cannot use the
+  same plan.
+- Any Imperial player may pay a plan's costs, including a variable amount
+  such as Unstable Summon's X, or meet its requirements, split between
+  players (rulings R11, R12). Each contributor consents to their share.
+- The Oathkeeper title is a defensive plan shared the same way.
+- The interaction design (how allies offer plans and shares with little back
+  and forth) is settled before the 1b-ii plan is written.
 - **Docs.** Traceability row 104.
 
 ## Slice 2: Empire endings
@@ -394,6 +404,19 @@ legacies stay refused (see [Out of scope](#out-of-scope)).
   after the way and the amount are chosen, so the ask names them. Each
   consent covers one exact transfer; a refusal stops only that one for the
   turn.
+- **R9, Military Parade.** The New Foundations card applies to the one
+  enemy only. Its "including Imperial Allies" text is a base-game concept and
+  is ignored.
+- **R10, plans at Imperial sites.** In a Campaign, plans at Imperial sites
+  belong to the Chancellor's side on every turn. The Chancellor uses them
+  freely; any other Imperial needs the Chancellor's consent, even on their
+  own turn.
+- **R11, split costs.** Every cost of a battle plan may be split between
+  Imperial players, including a variable amount. The warband sacrifice still
+  comes from the defender's force.
+- **R12, shared requirements.** Any Imperial player who meets a plan's
+  requirement (holding the Darkest Secret, ruling cards of a suit) may meet it
+  for the plan's user, with that player's consent.
 - **Defender is the attacker.** A Campaign target whose defender resolves to
   the attacker is not legal.
 - **First game.** "Become a Citizen" powers are ignored in a first game by a
@@ -412,7 +435,9 @@ legacies stay refused (see [Out of scope](#out-of-scope)).
 - **One scenario per slice** through `OathDriver`, in the style of the
   existing end-to-end suites:
   - 1a: a Citizen's turn in which Toll Roads pays the Citizen;
-  - 1b: a Citizen conquers an Imperial site and leaves it to the bandits;
+  - 1b-i: a Citizen conquers an Imperial site and leaves it to the bandits;
+  - 1b-ii: a Citizen defender uses the Chancellor's plan, paid in part by
+    the Chancellor;
   - 2: Stable Regime with a Successor taking the win;
   - 3: an Exile accepts Citizenship in a deal and later exiles themself;
   - 4: a Chronicle evolved from game 1 starts game 2 with the Empire. The
