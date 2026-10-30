@@ -1,6 +1,6 @@
 package oathdigital.application
 
-import oathdigital.gameplay.actions.BannerRules
+import oathdigital.gameplay.actions.{BannerRules, ImperialLaws}
 import oathdigital.gameplay.powers.ConsentPowers
 import oathdigital.model._
 import oathdigital.protocol.projection._
@@ -18,7 +18,8 @@ private[application] final class ConsentNames(
     case Some(PowerSourceRef.Card(card)) =>
       presentation.cardDetails(card, None, hidden = false).name
     case Some(PowerSourceRef.Banner(banner)) => BannerRules.displayName(banner)
-    case None => presentation.safeLabel(id.value)
+    case None => ImperialLaws.names.getOrElse(id,
+      presentation.safeLabel(id.value))
 
 /** The consent parts of a viewer's projection (consent design,
   * "Projection"): the requester's waiting notice in place of the decision,
