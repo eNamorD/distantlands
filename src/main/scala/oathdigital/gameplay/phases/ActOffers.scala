@@ -51,6 +51,13 @@ object ActOffers:
     minor(ActionRef.MoveWarbands, "Move warbands"),
     minor(ActionRef.TransferWarbands, "Transfer warbands"))
 
+  /** The options `actor`'s Act menu lists. Warband Transfers is an
+    * Imperial law, so an Exile's menu leaves it out rather than showing an
+    * option their role can never use. */
+  def offeredTo(ready: ReadyGame, actor: PlayerId): Vector[ActOffer] =
+    all.filter(offer => offer.procedure != ActionRef.TransferWarbands ||
+      Imperials.isImperial(ready, actor))
+
   /** Why an Act action cannot start, in the player's words, when its
     * refusal is not about Supply or favor. */
   def reason(procedure: StartableRef, violation: OathViolation): String =

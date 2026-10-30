@@ -126,7 +126,6 @@ class PhasePowerMenuSuite extends munit.FunSuite:
     assertEquals(bandOf("travel"), Some("major"))
     assertEquals(bandOf("trade.favor"), Some("major"))
     assertEquals(bandOf("move-warbands"), Some("minor"))
-    assertEquals(bandOf("transfer-warbands"), Some("minor"))
     assertEquals(bandOf("end-act"), Some("ending"))
 
   test("a League Treaty park shows the ruler the favor banks or decline and " +

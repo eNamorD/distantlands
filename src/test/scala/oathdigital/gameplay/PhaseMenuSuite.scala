@@ -170,7 +170,8 @@ class PhaseMenuSuite extends munit.FunSuite:
     // are the menu's own.
     assertEquals(options(acting().phaseMenuParked.state).map(_.ref)
       .filter(_.isInstanceOf[DecisionOptionRef.Button]),
-      ActOffers.all.map(_.ref) :+ PhaseMenu.Menu.Act.endingOption)
+      ActOffers.all.map(_.ref).filterNot(_ == act(ActionRef.TransferWarbands))
+        :+ PhaseMenu.Menu.Act.endingOption)
     assertEquals(ActOffers.all.map(_.ref.wireId), Vector("search", "travel",
       "campaign", "muster", "trade.favor", "trade.secret", "forge",
       "recover", "challenge", "place-banner-resource", "negotiation",
@@ -196,10 +197,18 @@ class PhaseMenuSuite extends munit.FunSuite:
       .getOrElse(fail("no menu lists Trade"))), Some(OptionGroup.Major))
     assertEquals(bandAt(act(ActionRef.Negotiation)), Some(OptionGroup.Minor))
     assertEquals(bandAt(act(ActionRef.MoveWarbands)), Some(OptionGroup.Minor))
-    assertEquals(bandAt(act(ActionRef.TransferWarbands)),
-      Some(OptionGroup.Minor))
     assertEquals(bandAt(PhaseMenu.Menu.Act.endingOption),
       Some(OptionGroup.Ending))
+
+  test("an Exile's Act menu leaves out Warband Transfers"):
+    assert(!options(acting().phaseMenuParked.state).map(_.ref)
+      .contains(act(ActionRef.TransferWarbands)))
+
+  test("an Imperial player's Act menu lists Warband Transfers as a minor " +
+      "action"):
+    val banded = bandedOptions(acting().imperial(p1).phaseMenuParked.state)
+    assertEquals(banded.find(_.ref == act(ActionRef.TransferWarbands))
+      .flatMap(bandOf), Some(OptionGroup.Minor))
 
   test("an Act option carries its start's price"):
     val state = acting().phaseMenuParked.state
