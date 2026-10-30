@@ -145,3 +145,10 @@ class ForgottenVaultSuite extends munit.FunSuite:
     assert(!options.contains(DecisionOptionRef.Relic(relic)),
       options.toString)
     assert(options.contains(DecisionOptionRef.Banner(Banner.PeoplesFavor)))
+    val hidden = optionsIncludingUnavailableAt(kind, ActionRef.Campaign)
+      .collectFirst:
+        case DecisionOption.Unavailable(option, reason)
+            if option.ref == DecisionOptionRef.Relic(relic) => reason
+    assertEquals(hidden, Some(OptionReason.Noted(power.id,
+      ForgottenVault.shielded(PowerSourceRef.Card(vault),
+        NoteArg.Player(p2)))))
