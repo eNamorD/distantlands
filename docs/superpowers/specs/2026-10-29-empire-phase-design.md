@@ -224,16 +224,44 @@ battle plans, then 1b-ii, Imperial Tactics.
 
 ### 1b-ii: Imperial Tactics
 
-- An Imperial player may use battle plans in any Imperial player's play area
-  with that player's consent, and plans at Imperial sites with the
-  Chancellor's consent (ruling R10). The attacker and defender cannot use the
-  same plan.
-- Any Imperial player may pay a plan's costs, including a variable amount
-  such as Unstable Summon's X, or meet its requirements, split between
-  players (rulings R11, R12). Each contributor consents to their share.
-- The Oathkeeper title is a defensive plan shared the same way.
-- The interaction design (how allies offer plans and shares with little back
-  and forth) is settled before the 1b-ii plan is written.
+An Imperial player may use battle plans in any Imperial player's play area
+with that player's consent, and plans at Imperial sites with the
+Chancellor's consent (ruling R10). Any Imperial player may pay a plan's
+costs, including a variable amount such as Unstable Summon's X, or meet its
+requirements, split between players (rulings R11, R12). The Oathkeeper title
+is a defensive plan shared the same way. Consent takes the form of offers, so
+no one approves anything.
+
+- **Offers.** While an Imperial player's battle-plan decision is open, any
+  other Imperial player may submit or withdraw offers at any time, even the
+  user's enemy. An Exile neither offers nor receives them. An offer holds:
+  - faceup plans the ally rules: their play area, the Oathkeeper title when
+    they hold it, and, for the Chancellor, plans at Imperial sites. Only the
+    acting player may reveal a facedown card, so a facedown plan cannot be
+    offered;
+  - requirements the ally meets: holding the Darkest Secret, ruling cards of
+    a suit;
+  - four amounts: favor to pay, secrets to pay, favor to burn, secrets to
+    burn.
+
+  The offer is the consent.
+- **Using offers.** An offered plan is choosable in the user's normal plan
+  window, labelled with its owner. A plan whose requirement an offer meets
+  becomes usable. A chosen plan's costs, fixed and variable, are paid from
+  the allies' offered amounts first, in turn order starting after the user,
+  then by the user.
+- **The window.** An Imperial user's plan window is asked when the user has
+  a plan they could use with aid, even one they cannot pay for alone, or an
+  ally has a faceup plan the user could use. Otherwise it is skipped as
+  today.
+- **Withdrawing.** An ally may withdraw any unused part of an offer. Spent
+  amounts and chosen plans are no longer theirs to withdraw.
+- **Lifetime.** Offers belong to one side's plan window and end when it
+  finishes; unused amounts stay with the ally. The attacker and defender
+  cannot use the same plan: a plan one side used is shown unavailable to the
+  other, with the reason "The attacker used this plan".
+- **Log.** Each offer and withdrawal writes a public line, such as "p2
+  offered Military Parade and 2 favor to pay."
 - **Docs.** Traceability row 104.
 
 ## Slice 2: Empire endings
