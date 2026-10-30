@@ -116,3 +116,18 @@ class HallOfMinistersConsentSuite extends munit.FunSuite:
     val row = errandBoyRow(accepted(use(ready, power, source)))
     assertEquals(row.state, "unavailable")
     assertEquals(row.reason, Some("Protected by the Hall of Ministers"))
+
+  test("a Citizen's discard at an Empire site on an Exile's turn is " +
+      "askable of the Chancellor"):
+    val p3 = Table.p3
+    val ready = Table.start.imperial(p1, p2).turn(p3, Phase.Act)
+      .denizen(errandBoy, at = peaks)
+      .edifice(hall, EdificeSide.Intact, at = woods)
+      .warbandsAt(woods, p1, 1).warbandsAt(peaks, p1, 1).ready
+    val discard = Discard.Denizen(errandBoy,
+      PositionedLocation(Location.Site(peaks)), Region.Cradle, Suit.Order,
+      favor = 0, secrets = 0, actingPlayer = p2)
+    val reason = present(HallOfMinisters.reason(ready, discard),
+      "the Hall's reason")
+    assertEquals(reason.code, "discard-immune")
+    assertEquals(HallOfMinisters.granter(ready), Some(p1))

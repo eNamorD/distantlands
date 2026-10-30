@@ -224,11 +224,8 @@ final case class NarrowPassSitePower(id: PowerId, site: SiteId,
         passRegion <- map.regionOf(site)
       yield pawnRegion != targetRegion && targetRegion == passRegion &&
         target != site
-      val ruledByActor = map.sites.get(site).exists(pass =>
-        SiteRule.ruler(pass.forces, current.players) match {
-          case Right(SiteRuler.Player(player)) => player == ctx.actor
-          case _ => false
-        })
+      val ruledByActor = SiteRule.rulingPlayer(ctx.state, site)
+        .contains(SiteRuler.Player(ctx.actor))
       Option.when(outside.contains(true) && !ruledByActor)(
         OathViolation.CampaignUnavailable(
           s"a Pass prevents targeting '${target.value}' from the " +
@@ -237,13 +234,12 @@ final case class NarrowPassSitePower(id: PowerId, site: SiteId,
 
   private def blocked(ctx: PowerCtx): Option[OathViolation] =
     TravelRoute.pawnMove(ctx.operation).flatMap { route =>
-      val map = ctx.state.game.current.map
       val coastRoute = coastSites.contains(route.source) &&
         coastOrIslandSites.contains(route.destination)
       if coastRoute then None
-      else SiteRule.ruler(map.sites(site).forces, ctx.state.game.current.players) match
-        case Right(SiteRuler.Player(player)) if player == route.player => None
-        case Right(_) | Left(_) =>
+      else SiteRule.rulingPlayer(ctx.state, site) match
+        case Some(SiteRuler.Player(player)) if player == route.player => None
+        case _ =>
           Some(OathViolation.TravelPassBlocked(site, route.destination))
     }
 

@@ -54,10 +54,9 @@ private[gameplay] object PowerAccess:
     }).map(_.player)
 
   def ruledSites(ready: ReadyGame, actor: PlayerId): Set[SiteId] =
-    val current = ready.game.current
-    current.map.inPlay.filter(id => current.map.sites.get(id).exists(state =>
-      SiteRule.ruler(state.forces, current.players).toOption
-        .contains(SiteRuler.Player(actor)))).toSet
+    ready.game.current.map.inPlay.filter(site =>
+      SiteRule.rulingPlayer(ready, site)
+        .contains(SiteRuler.Player(actor))).toSet
 
   /** The decision a modifier asks to name the site its user acts as if at
     * for the rest of the action. Only one such modifier is picked per

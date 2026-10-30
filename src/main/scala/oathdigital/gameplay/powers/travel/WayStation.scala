@@ -21,7 +21,6 @@ object WayStationCard extends Denizen(DenizenId("169"), "Way Station", Suit.Noma
 /** Way Station (card 169), a persistent rule of a faceup site card: a Travel
   * to its site spends no Supply for Way Station's ruler, and for anyone else
   * who chooses to give 1 favor to that ruler, or burn it when bandits rule.
-  * Empire rulers are not supported.
   *
   * It rewrites the Travel's cost node `Late`, after every other Travel power,
   * so it sees the Supply they leave. It reads the payments the node lists

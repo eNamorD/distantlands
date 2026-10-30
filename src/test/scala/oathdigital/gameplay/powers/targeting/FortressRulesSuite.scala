@@ -9,7 +9,7 @@ import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
 import oathdigital.testkit.{CatalogNames, Table}
-import oathdigital.testkit.Table.{p1, p2}
+import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, as}
 import oathdigital.testkit.StartPreview
 
@@ -217,3 +217,15 @@ class FortressRulesSuite extends munit.FunSuite:
     val ready = on(b)(_.edifice(fortress, EdificeSide.Ruined,
       at = b.extras.head))
     assertEquals(hidden(rotting, accepted(startOf(ready))), Vector.empty)
+
+  test("an Empire Oaken Fortress shields a Citizen at its site from an " +
+      "Exile's Challenge"):
+    // p1 challenges at Ancient City, where p2, a Citizen, stands holding
+    // People's Favor; p3 is the Chancellor and the Empire rules the site.
+    val site = CatalogNames.site("Ancient City")
+    val ready = Table.from(challengeTable.ready).imperial(p3, p2)
+      .edifice(fortress, EdificeSide.Intact, at = site)
+      .warbandsAt(site, p3, 2).ready
+    assertEquals(optionsAt(accepted(start(ready, ActionRef.Challenge, p1)),
+      ActionRef.Challenge),
+      Vector[DecisionOptionRef](DecisionOptionRef.Banner(Banner.DarkestSecret)))

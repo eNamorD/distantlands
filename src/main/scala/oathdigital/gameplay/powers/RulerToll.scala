@@ -6,7 +6,7 @@ import oathdigital.model._
 /** The toll Curfew and Forced Labor charge an enemy of their ruler, on top
   * of the action's own cost: 1 favor given to the ruling player, or burnt
   * when bandits rule. The rule card's ruler is the ruler of the site holding
-  * it faceup; Empire rulers are not supported.
+  * it faceup.
   *
   * The payment is required, so an enemy who cannot pay, and is not let off,
   * is refused. When a player rules the card, the payer is asked first to

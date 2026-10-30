@@ -56,8 +56,8 @@ final case class LeagueTreatyContribution private (catalog: ExecutableCatalog)
           case DenizenState(`cardId`, Orientation.FaceUp, _) => true
           case _ => false
         }))
-      ruler <- SiteRule.ruler(current.map.sites(site).forces, current.players)
-        .toOption.collect { case SiteRuler.Player(player) => player }
+      ruler <- SiteRule.rulingPlayer(ready, site)
+        .collect { case SiteRuler.Player(player) => player }
       region <- current.map.regionOf(site)
       holdings = current.map.inPlay.filter(current.map.regionOf(_)
           .contains(region)).flatMap { id =>

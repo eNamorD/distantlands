@@ -17,9 +17,11 @@ object ForgeRules:
     val site = game.current.map.sites.get(siteId)
     for
       s <- site.toRight(SiteNotInPlay(siteId))
-      ruled <- SiteRule.ruledBy(s.forces, game.current.players, player.player)
+      raw <- SiteRule.ruler(s.forces, game.current.players)
         .left.map(x => ForgeUnavailable(s"cannot derive site ruler: $x"))
-      _ <- Either.cond(ruled, (), ForgeUnavailable("actor does not rule their pawn site"))
+      _ <- Either.cond(SiteRule.governed(ready, raw) ==
+        SiteRuler.Player(player.player), (),
+        ForgeUnavailable("actor does not rule their pawn site"))
       cost <- definition.flatMap(_.forgeRequirements)
         .toRight(ForgeUnavailable("site has no printed Forge cost"))
       empty = s.denizens.collect { case d: DenizenState if d.orientation == Orientation.FaceUp && d.tokens == Tokens.empty =>
