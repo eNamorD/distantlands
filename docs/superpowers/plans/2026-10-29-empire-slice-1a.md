@@ -529,7 +529,8 @@ git commit -m "feat(empire): read every site ruler through the turn-aware resolv
 - Modify: `src/main/scala/oathdigital/gameplay/phases/rest/FinishRestProcedure.scala:142-145` (`turnOrder`)
 - Modify: `src/main/scala/oathdigital/gameplay/phases/rest/BeginRestProcedure.scala:7-25`
 - Modify: `src/main/scala/oathdigital/gameplay/actions/minor/MinorActionProcedures.scala:265-282` (`started`, `supported`)
-- Test: `src/test/scala/oathdigital/gameplay/StateBasedEvaluationSuite.scala`, `src/test/scala/oathdigital/gameplay/EmpireTurnSuite.scala` (new)
+- Modify: `src/main/scala/oathdigital/model/DomainValidation.scala` (new `ImperialUsurper` problem)
+- Test: `src/test/scala/oathdigital/model/DomainValidationSuite.scala`, `src/test/scala/oathdigital/gameplay/StateBasedEvaluationSuite.scala`, `src/test/scala/oathdigital/gameplay/EmpireTurnSuite.scala` (new)
 
 **Interfaces:**
 - Consumes: `Imperials.chancellor`, `Imperials.isImperial`, `Table.imperial`
@@ -564,11 +565,6 @@ class EmpireTurnSuite extends munit.FunSuite:
       .oathkeeper(Some(p3)).state
     assertEquals(StateBasedEvaluation.atWake(state), Right(None))
 
-  test("an Imperial on the Usurper side does not win at Wake"):
-    val state = chancellorSecondInSeat.turn(p3, Phase.Wake)
-      .oathkeeper(Some(p3), TitleSide.Usurper).state
-    assertEquals(StateBasedEvaluation.atWake(state), Right(None))
-
   test("an Exile Oathkeeper still flips with an Empire at the table"):
     val state = chancellorSecondInSeat.turn(p1, Phase.Wake)
       .oathkeeper(Some(p1)).state
@@ -586,6 +582,30 @@ class EmpireTurnSuite extends munit.FunSuite:
 because of it, add `.update(r => r.updateCurrent(c => c.copy(tracks =
 c.tracks.copy(usurperLimited = false))))` with a comment saying the
 Usurper Limiter is off in an Empire game (ruling R5).
+
+In `src/test/scala/oathdigital/model/DomainValidationSuite.scala`:
+
+```scala
+  test("an Imperial player never holds the Usurper side of the title"):
+    // Built with Table steps, then validated: the state breaks a rule
+    // on purpose. Becoming a Citizen flips the title back to its
+    // Oathkeeper side (Empire slice 3), so no rule can reach it.
+    val usurperCitizen = oathdigital.testkit.Table.start
+      .imperial(oathdigital.testkit.Table.p1, oathdigital.testkit.Table.p2)
+      .oathkeeper(Some(oathdigital.testkit.Table.p2), TitleSide.Usurper)
+      .ready.game
+    assertEquals(DomainValidation.validate(usurperCitizen)
+      .collect { case problem: DomainProblem.ImperialUsurper => problem },
+      Vector(DomainProblem.ImperialUsurper(oathdigital.testkit.Table.p2)))
+
+  test("an Imperial player may hold the Oathkeeper side"):
+    val oathkeeperCitizen = oathdigital.testkit.Table.start
+      .imperial(oathdigital.testkit.Table.p1, oathdigital.testkit.Table.p2)
+      .oathkeeper(Some(oathdigital.testkit.Table.p2))
+      .ready.game
+    assert(!DomainValidation.validate(oathkeeperCitizen)
+      .exists(_.isInstanceOf[DomainProblem.ImperialUsurper]))
+```
 
 In `StateBasedEvaluationSuite`, find the test that expects
 `UnsupportedWakeVictoryState` for a non-Exile role (grep the suite for
@@ -699,6 +719,26 @@ object BeginRestProcedure:
     else Right(())
 ```
 
+`DomainValidation.scala`: add the problem beside `MultipleChancellors`,
+
+```scala
+  /** The Usurper side is an Exile's only (CR p. 16): a player who becomes
+    * a Citizen flips it back to Oathkeeper at once (CR p. 34). */
+  final case class ImperialUsurper(player: PlayerId) extends DomainProblem
+```
+
+and check it after the Chancellor count:
+
+```scala
+    game.current.title match
+      case OathkeeperState(Some(holder), TitleSide.Usurper) =>
+        game.current.players.find(_.player == holder)
+          .flatMap(player => game.campaign.lineages.get(player.lineage))
+          .filter(_.role.isImperial)
+          .foreach(_ => problems += ImperialUsurper(holder))
+      case _ => ()
+```
+
 `MinorActionProcedures`: the gate message becomes "minor actions are
 limited to the fixed unaltered foundations", and `supported` drops the
 role clause:
@@ -714,13 +754,13 @@ role clause:
 
 - [ ] **Step 4: Run tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.EmpireTurnSuite oathdigital.gameplay.StateBasedEvaluationSuite oathdigital.gameplay.MinorActionsSuite oathdigital.gameplay.powers.whenplayed.*"`
+Run: `./sbtw "testOnly oathdigital.model.DomainValidationSuite oathdigital.gameplay.EmpireTurnSuite oathdigital.gameplay.StateBasedEvaluationSuite oathdigital.gameplay.MinorActionsSuite oathdigital.gameplay.powers.whenplayed.*"`
 Expected: PASS (Dissent and Revelation read `turnOrder`).
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/main/scala/oathdigital/gameplay/TurnOrder.scala src/main/scala/oathdigital/gameplay/StateBasedEvaluation.scala src/main/scala/oathdigital/gameplay/phases/rest/FinishRestProcedure.scala src/main/scala/oathdigital/gameplay/phases/rest/BeginRestProcedure.scala src/main/scala/oathdigital/gameplay/actions/minor/MinorActionProcedures.scala src/test/scala/oathdigital/gameplay/EmpireTurnSuite.scala src/test/scala/oathdigital/gameplay/StateBasedEvaluationSuite.scala src/test/scala/oathdigital/gameplay/MinorActionsSuite.scala
+git add src/main/scala/oathdigital/gameplay/TurnOrder.scala src/main/scala/oathdigital/gameplay/StateBasedEvaluation.scala src/main/scala/oathdigital/gameplay/phases/rest/FinishRestProcedure.scala src/main/scala/oathdigital/gameplay/phases/rest/BeginRestProcedure.scala src/main/scala/oathdigital/gameplay/actions/minor/MinorActionProcedures.scala src/test/scala/oathdigital/gameplay/EmpireTurnSuite.scala src/test/scala/oathdigital/gameplay/StateBasedEvaluationSuite.scala src/test/scala/oathdigital/gameplay/MinorActionsSuite.scala src/main/scala/oathdigital/model/DomainValidation.scala src/test/scala/oathdigital/model/DomainValidationSuite.scala
 git commit -m "feat(empire): start rounds with the Chancellor and keep Wake wins for Exiles"
 ```
 
