@@ -21,16 +21,17 @@ class EmpireInPlayScenarioSuite extends munit.FunSuite:
   private val peaks = CatalogNames.site("Broken Peaks")
   private val otherEmpireSite = Table.otherSiteInRegionOf(peaks)
 
-  /** p1 is the Chancellor and p2 a Citizen, who is active in Act at Broken
-    * Peaks; p3 is an Exile at Buried Giant with 1 favor and 7 Supply. The
+  /** p2 is the Chancellor and p3 a Citizen, who is active in Act at Broken
+    * Peaks; p1 is an Exile at Buried Giant with 1 favor and 7 Supply. The
     * Empire holds Broken Peaks (2 warbands) and a second site in its region,
-    * where Toll Roads stands. p1's Supply marker reads 5 and p2 carries 3
+    * where Toll Roads stands. p2's Supply marker reads 5 and p3 carries 3
     * unspent. */
-  private val empireTable: Table = Table.start.imperial(p1, p2)
-    .turn(p2, Phase.Act).pawn(p2, at = peaks)
-    .boardWarbands(p2, 3).warbandsAt(peaks, p2, 2)
-    .warbandsAt(otherEmpireSite, p1, 2).denizen(toll, at = otherEmpireSite)
-    .supply(p1, 5).supply(p2, 3).favor(p1, 0).favor(p3, 1).supply(p3, 7)
+  private val empireTable: Table = Table.start.imperial(p2, p3)
+    .turn(p3, Phase.Act).pawn(p3, at = peaks)
+    .pawn(p1, at = "Buried Giant")
+    .boardWarbands(p3, 3).warbandsAt(peaks, p3, 2)
+    .warbandsAt(otherEmpireSite, p2, 2).denizen(toll, at = otherEmpireSite)
+    .supply(p2, 5).supply(p3, 3).favor(p2, 0).favor(p1, 1).supply(p1, 7)
 
   private def look(at: GameAccepted): Look = Look(Outcomes.ready(at.state))
 
@@ -43,41 +44,44 @@ class EmpireInPlayScenarioSuite extends munit.FunSuite:
       "that starts with the Chancellor"):
     val (service, _) = empireTable.service()
     val start = accepted(service.handle(gameId, 0L,
-      MenuPlay.starting(p2, ActionRef.MoveWarbands)))
+      MenuPlay.starting(p3, ActionRef.MoveWarbands)))
     val direction = accepted(service.handle(gameId, start.nextSequence,
-      GameCommand.ResolveWalker(p2, TreeDecision(
+      GameCommand.ResolveWalker(p3, TreeDecision(
         MinorActionProcedures.directionDecisionId,
         ChooseOneAnswer(MinorActionProcedures.toSite)))))
     val moved = accepted(service.handle(gameId, direction.nextSequence,
-      GameCommand.ResolveWalker(p2, TreeDecision(
+      GameCommand.ResolveWalker(p3, TreeDecision(
         MinorActionProcedures.amountDecisionId, ChooseAmountAnswer(1)))))
-    // One warband went from p2's board to the Empire site at their pawn.
-    assertEquals(look(moved).boardWarbands(p2), 2)
+    // One warband went from p3's board to the Empire site at their pawn.
+    assertEquals(look(moved).boardWarbands(p3), 2)
     assertEquals(siteWarbands(moved, peaks), 3)
 
     val rested = accepted(service.handle(gameId, moved.nextSequence,
-      MenuPlay.starting(p2, PhaseTransitionRef.BeginRest)))
-    // p1's Supply of 5 plus p2's 3 unspent, capped at 7.
-    assertEquals(look(rested).supply(p2), 7)
-    assertEquals(look(rested).supply(p1), 5)
-    assertEquals(look(rested).active, p3)
+      MenuPlay.starting(p3, PhaseTransitionRef.BeginRest)))
+    // p2's Supply of 5 plus p3's 3 unspent, capped at 7.
+    assertEquals(look(rested).supply(p3), 7)
+    assertEquals(look(rested).supply(p2), 5)
+    assertEquals(look(rested).active, p1)
 
     assertEquals(look(rested).phase, Phase.Act)
     val started = accepted(service.handle(gameId, rested.nextSequence,
-      MenuPlay.starting(p3, ActionRef.Travel)))
+      MenuPlay.starting(p1, ActionRef.Travel)))
     val parked = accepted(service.handle(gameId, started.nextSequence,
-      GameCommand.ResolveWalker(p3, TreeDecision(
+      GameCommand.ResolveWalker(p1, TreeDecision(
         TravelProcedure.destinationDecisionId,
         TravelPlay.destination(otherEmpireSite)))))
     val paid = accepted(service.handle(gameId, parked.nextSequence,
-      GameCommand.ResolveWalker(p3, TreeDecision(TollRoads.decisionId,
+      GameCommand.ResolveWalker(p1, TreeDecision(TollRoads.decisionId,
         ChooseOneAnswer(PayOrAsk.pay)))))
-    assertEquals(look(paid).pawn(p3), otherEmpireSite)
-    assertEquals(look(paid).favor(p3), 0)
-    assertEquals(look(paid).favor(p1), 1)
+    assertEquals(look(paid).pawn(p1), otherEmpireSite)
+    assertEquals(look(paid).favor(p1), 0)
+    assertEquals(look(paid).favor(p2), 1)
 
     val next = accepted(service.handle(gameId, paid.nextSequence,
-      MenuPlay.starting(p3, PhaseTransitionRef.BeginRest)))
-    assertEquals(look(next).active, p1)
-    // Wake has nothing to ask the Chancellor, so p1's turn is in Act.
+      MenuPlay.starting(p1, PhaseTransitionRef.BeginRest)))
+    // The Chancellor, seated second, starts the round; p1 is first player.
+    assertEquals(look(next).active, p2)
+    assertEquals(TurnOrder.order(Outcomes.ready(next.state)),
+      Vector(p2, p3, p1))
+    // Wake has nothing to ask the Chancellor, so p2's turn is in Act.
     assertEquals(look(next).phase, Phase.Act)
