@@ -124,10 +124,17 @@ class TollRoadsSuite extends munit.FunSuite:
     val started = accepted(TravelPlay.travelled(rules, OathState.Ready(ready),
       exile, pass, Vector.empty))
     // The Travel parks on the pay-or-ask step, whose ruler is the
-    // Chancellor; an Exile's Travel cannot finish in this game yet.
+    // Chancellor.
     assertEquals(parkedDecision(started.state).decisionId,
       TollRoads.decisionId)
     assertEquals(rules.consentAsk(started.state, exile, TollRoads.decisionId,
       TollRoads.free(pass)).toOption.collect {
         case OptionReason.Askable(_, _, asks, _) => asks.map { case ConsentAsk(who, _, _, _) => who } },
       Some(Vector(Table.p1)))
+    // Paying the toll sends the favor to the Chancellor.
+    val done = accepted(rules.resolveWalker(started.state, exile,
+      TollRoads.decisionId, DecisionAnswer.ChooseOneAnswer(PayOrAsk.pay)))
+    val result = Outcomes.ready(done.state)
+    assertEquals(Look(result).player(exile).pawnSite, Some(pass))
+    assertEquals(Look(result).favor(exile), 0)
+    assertEquals(Look(result).favor(Table.p1), Look(ready).favor(Table.p1) + 1)

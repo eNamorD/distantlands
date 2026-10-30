@@ -37,6 +37,11 @@ object DomainProblem:
       extends DomainProblem
   final case class MultipleChancellors(lineages: Vector[LineageId])
       extends DomainProblem
+  /** A Citizen never holds the Usurper side (CR p. 16): a player who
+    * becomes a Citizen flips it back to Oathkeeper at once (CR p. 34). The
+    * Chancellor is exempt, since the Chronicle crowns the Usurper winner
+    * while the title is still on that side. */
+  final case class ImperialUsurper(player: PlayerId) extends DomainProblem
   final case class CardProblem(problem: CardIndexProblem) extends DomainProblem
 
 object DomainValidation:
@@ -152,6 +157,14 @@ object DomainValidation:
       .sortBy(_.value)
     if chancellors.size > 1 then
       problems += MultipleChancellors(chancellors)
+
+    game.current.title match
+      case OathkeeperState(Some(holder), TitleSide.Usurper) =>
+        game.current.players.find(_.player == holder)
+          .flatMap(player => game.campaign.lineages.get(player.lineage))
+          .filter(_.role == Role.Citizen)
+          .foreach(_ => problems += ImperialUsurper(holder))
+      case _ => ()
 
     CardIndex.from(game, expectedCards) match
       case Left(cardProblems) =>

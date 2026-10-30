@@ -104,3 +104,23 @@ class DomainValidationSuite extends munit.FunSuite:
         DomainProblem.DuplicatePlayer(PlayerId("zeta"))
       )
     )
+
+  test("an Imperial player never holds the Usurper side of the title"):
+    // Built with Table steps, then validated: the state breaks a rule
+    // on purpose. Becoming a Citizen flips the title back to its
+    // Oathkeeper side (Empire slice 3), so no rule can reach it.
+    val usurperCitizen = oathdigital.testkit.Table.start
+      .imperial(oathdigital.testkit.Table.p1, oathdigital.testkit.Table.p2)
+      .oathkeeper(Some(oathdigital.testkit.Table.p2), TitleSide.Usurper)
+      .ready.game
+    assertEquals(DomainValidation.validate(usurperCitizen)
+      .collect { case problem: DomainProblem.ImperialUsurper => problem },
+      Vector(DomainProblem.ImperialUsurper(oathdigital.testkit.Table.p2)))
+
+  test("an Imperial player may hold the Oathkeeper side"):
+    val oathkeeperCitizen = oathdigital.testkit.Table.start
+      .imperial(oathdigital.testkit.Table.p1, oathdigital.testkit.Table.p2)
+      .oathkeeper(Some(oathdigital.testkit.Table.p2))
+      .ready.game
+    assert(!DomainValidation.validate(oathkeeperCitizen)
+      .exists(_.isInstanceOf[DomainProblem.ImperialUsurper]))

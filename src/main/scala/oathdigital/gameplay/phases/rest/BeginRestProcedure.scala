@@ -6,22 +6,16 @@ import oathdigital.model._
 
 /** Begin Rest: the supported-state gate and the phase change, nothing else.
   *
-  * Cleanup waits for Finish Rest so REST powers can be used in between. The
-  * exile-only check stays here because Rest's cleanup and Supply bands
-  * are reviewed only for that game.
+  * Cleanup waits for Finish Rest so REST powers can be used in between.
   */
 object BeginRestProcedure:
   def validateSupportedState(catalog: ExecutableCatalog,
       ready: ReadyGame): Either[OathViolation, Unit] =
-    val game = ready.game
-    val missing = game.current.players.iterator
-      .map(player => ForceKind.Exile(player.lineage)).toVector.distinct
+    val missing = ready.game.current.players
+      .flatMap(PlayerForceKind.of(ready, _)).distinct
       .filterNot(ready.banks.warbandSupply.contains)
-    if game.campaign.lineages.values.exists(_.role != Role.Exile) then
-      Left(UnsupportedRestState("Rest is limited to the exile-only first game"))
-    else if missing.nonEmpty then
-      Left(UnsupportedRestState(
-        s"no bounded warband supply for ${missing.mkString(", ")}"))
+    if missing.nonEmpty then Left(UnsupportedRestState(
+      s"no bounded warband supply for ${missing.mkString(", ")}"))
     else Right(())
 
   /** One leaf, so it finishes in the command that starts it; resume never

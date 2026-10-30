@@ -1,7 +1,7 @@
 package oathdigital.gameplay.phases.rest
 
 import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.NoteSupport
+import oathdigital.gameplay.{NoteSupport, TurnOrder}
 import oathdigital.model.OathViolation._
 import oathdigital.gameplay.actions.ProcedureNotes
 import oathdigital.gameplay.phases.RestCleanup
@@ -139,7 +139,4 @@ object FinishRestProcedure:
       Right(Vector(BeginTurn(order.head, Phase.RoundEnd)))
     else Right(Vector(BeginTurn(order(index + 1), Phase.Wake)))
 
-  def turnOrder(ready: ReadyGame): Vector[PlayerId] =
-    val participants = ready.game.current.players.map(_.player)
-    val index = participants.indexOf(ready.setup.firstPlayer)
-    participants.drop(index) ++ participants.take(index)
+  def turnOrder(ready: ReadyGame): Vector[PlayerId] = TurnOrder.order(ready)

@@ -269,14 +269,12 @@ object MinorActionProcedures:
         s"walker procedure ${action.key} takes no start selection, got " +
           args.map(_.kind).mkString(", ")))
       _ <- Either.cond(supported(ready), (), MinorActionUnavailable(
-        "minor actions are limited to fixed unaltered all-Exile " +
-          "first-game rules"))
+        "minor actions are limited to the fixed unaltered foundations"))
     yield ()
 
   private def supported(ready: ReadyGame): Boolean =
     ready.setup.foundationProfile ==
       FirstGameFoundationProfile.FixedUnaltered &&
-      ready.game.campaign.lineages.values.forall(_.role == Role.Exile) &&
       ready.game.campaign.foundations.values.forall(foundation =>
         foundation.face == FoundationFace.Normal &&
           foundation.alterationSources.isEmpty)
