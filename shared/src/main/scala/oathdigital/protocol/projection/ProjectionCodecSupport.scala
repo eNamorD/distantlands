@@ -70,6 +70,15 @@ private[protocol] object ProjectionCodecSupport:
     default(value, name, path, fallback)(int)
   def boolOr(value: ujson.Obj, name: String, path: String, fallback: Boolean) =
     default(value, name, path, fallback)(bool)
+  /** A Rest table row, as the game's and each board's bands carry it. */
+  def encodeBand(band: SupplyBandProjection): ujson.Value = ujson.Obj(
+    "from" -> band.from, "to" -> intOption(band.to), "supply" -> band.supply)
+  def decodeBand(raw: ujson.Value, path: String): Result[SupplyBandProjection] =
+    for
+      row <- obj(raw, path); _ <- exact(row, Set("from", "to", "supply"), path)
+      from <- int(row, "from", path); to <- optionalAbsent(row, "to", path)(int)
+      supply <- int(row, "supply", path)
+    yield SupplyBandProjection(from, to, supply)
   def optionalString(value: ujson.Obj, name: String, path: String) =
     optional(value, name, path)(string)
   def optionalInt(value: ujson.Obj, name: String, path: String) =

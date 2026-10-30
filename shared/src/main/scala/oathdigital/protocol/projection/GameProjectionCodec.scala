@@ -64,8 +64,7 @@ object GameProjectionCodec:
     "walkerDecision" -> option(value.walkerDecision)(encodeWalkerDecision),
     "walkerWaiting" -> option(value.walkerWaiting)(encodeWalkerWaiting),
     "supplyMaximum" -> value.supplyMaximum,
-    "supplyBands" -> encoded(value.supplyBands)(b => ujson.Obj(
-      "from" -> b.from, "to" -> intOption(b.to), "supply" -> b.supply)),
+    "supplyBands" -> encoded(value.supplyBands)(encodeBand),
     "undo" -> option(value.undo)(offer => ujson.Obj("note" -> offer.note)),
     "redo" -> option(value.redo)(offer => ujson.Obj("note" -> offer.note)),
     "logRevision" -> option(value.logRevision)(revision =>
@@ -123,11 +122,7 @@ object GameProjectionCodec:
     viewer <- optionalAbsent(value, "viewerPlayerId", path)(string)
     supplyMaximum <- intOr(value, "supplyMaximum", path, 0)
     bandRaws <- default(value, "supplyBands", path, Vector.empty[ujson.Value])(array)
-    bands <- traverse(bandRaws, s"$path.supplyBands") { (raw, child) => for
-      row <- obj(raw, child); _ <- exact(row, Set("from", "to", "supply"), child)
-      from <- int(row, "from", child); to <- optionalAbsent(row, "to", child)(int)
-      supply <- int(row, "supply", child)
-    yield SupplyBandProjection(from, to, supply) }
+    bands <- traverse(bandRaws, s"$path.supplyBands")(decodeBand)
     undo <- optionalAbsent(value, "undo", path)(decodeStepOffer)
     redo <- optionalAbsent(value, "redo", path)(decodeStepOffer)
     logRevision <- value.value.get("logRevision") match

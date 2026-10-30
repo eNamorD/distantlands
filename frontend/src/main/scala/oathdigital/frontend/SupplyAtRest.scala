@@ -21,11 +21,13 @@ private[frontend] object SupplyAtRest:
   final case class Panel(bank: String, elsewhere: String,
       track: SupplyTracker.Track, rest: String)
 
-  def isExile(role: String): Boolean = role.equalsIgnoreCase("exile")
+  /** Whether a seat's Supply follows its own band track: an Exile's and the
+    * Chancellor's do; a Citizen's copies the Chancellor's. */
+  def readsTrack(role: String): Boolean = !role.equalsIgnoreCase("citizen")
 
   def note(role: String, board: PlayerBoard): String =
     val bank = s"Warbands in bank: ${board.bankedWarbands}"
-    if isExile(role) then
+    if readsTrack(role) then
       s"$bank\nSupply gain at Rest: +${board.restSupplyBase}"
     else s"$bank\n$citizen"
 

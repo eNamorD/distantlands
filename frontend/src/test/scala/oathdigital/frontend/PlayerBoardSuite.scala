@@ -284,6 +284,26 @@ class PlayerBoardSuite extends munit.FunSuite:
     assertEquals(opened.map(_.track.color), Vector(PlayerColor.Red))
     assertEquals(opened.map(_.elsewhere), Vector("(0 on your board, 0 on sites)"))
 
+  test("a Chancellor's Supply button opens the track of their own bands"):
+    var opened = Vector.empty[SupplyAtRest.Panel]
+    CardInspection.onOpen:
+      case CardInspection.Request.Supply(panel, _) => opened :+= panel
+      case _ => ()
+    val chancellorBands = Vector(SupplyBand(18, None, 6),
+      SupplyBand(11, Some(17), 5), SupplyBand(4, Some(10), 4),
+      SupplyBand(0, Some(3), 3))
+    val redChancellor = GamePlayer("red", "Red", "chancellor", PlayerColor.Red)
+    val node = WorldBoardRenderer.playerBoards(
+      TestProjections.actingProjection(players = Vector(redChancellor))
+        .copy(playerBoards = Vector(board.copy(supplyBands = chancellorBands)),
+          supplyMaximum = 7,
+          supplyBands = Vector(SupplyBand(9, None, 6))),
+      "red")
+    as[dom.html.Button](firstMatch(node, ".resources .supply-open")
+      .getOrElse(fail("no Supply button"))).click()
+    CardInspection.clear()
+    assertEquals(opened.map(_.track.bands), Vector(chancellorBands))
+
   test("the Supply note names the bank and the Supply the next Rest gains"):
     val banked = board.copy(bankedWarbands = 5, restSupplyBase = 5)
     val supply = firstMatch(render(banked, supplyMaximum = 7),

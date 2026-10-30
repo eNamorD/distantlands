@@ -37,7 +37,8 @@ class ProjectionProtocolSuite extends munit.FunSuite:
     worldDeckCount = 5,
     worldDeckTopCardKind = Some("denizen"),
     playerBoards = Vector(PlayerBoardProjection("red", 3, 2, 1, 1, 2, 4, 4,
-      Some("site:a"), advisers = Vector(hidden), Vector(known), None)),
+      Some("site:a"), advisers = Vector(hidden), Vector(known), None,
+      supplyBands = Vector.empty)),
     // A decided game and an unheld banner: the optional fields the other
     // fixtures leave empty.
     oathkeeper = Some(OathkeeperProjection("supremacy", Some("red"), "oathkeeper",
@@ -174,6 +175,17 @@ class ProjectionProtocolSuite extends munit.FunSuite:
     assertEquals(decoded.map(_.supplyBands), Right(Vector.empty))
     assertEquals(decoded.map(_.playerBoards.map(_.bankedWarbands)),
       Right(projection.playerBoards.map(_ => 0)))
+
+  test("a board's own Supply bands round-trip"):
+    val withBands = projection.copy(
+      playerBoards = projection.playerBoards.map(_.copy(supplyBands = Vector(
+        SupplyBandProjection(18, None, 6), SupplyBandProjection(0, Some(17), 4)))))
+    assertRoundTrips(withBands)
+
+  test("a board payload without its Supply bands is refused"):
+    val raw = ujson.read(GameProjectionCodec.encode(projection))
+    raw("playerBoards").arr.foreach(board => board.obj.remove("supplyBands"))
+    assert(GameProjectionCodec.decode(ujson.write(raw)).isLeft)
 
   test("a payload without discard cards decodes to an empty pile"):
     val raw = ujson.read(GameProjectionCodec.encode(projection))
