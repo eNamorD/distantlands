@@ -190,6 +190,9 @@ Foundation mutation, Legacy activation and scoring, and era scoring.
 - [ ] **Foundations.** Fills the Beacon's empty Shape Foundation window.
   Game start also sets every foundation to its normal face and ignores the
   Chronicle's stored faces.
+  After Empire slice 4, game start also refuses a later game with no
+  Chancellor and no Citizen seated, which needs Foundation I's altered face,
+  Wide Horizons, and its Explore action.
 - [ ] **The Grand Council and Festival banner faces.** Legacies that set
   Foundation V or VI turn the banners to these faces. Their ids are in
   `RuleSourceIndex`, and the faces have no behaviour.
@@ -203,17 +206,40 @@ Foundation mutation, Legacy activation and scoring, and era scoring.
 
 ### Phase - Empire
 
-After the Chronicle steps phase, implement Chancellor/Citizen roles, Imperial
-forces, Grand Scepter and Reliquary behavior, Citizenship through Negotiation,
-Successor goals, forced and self-exile, Imperial setup/turn/end rules, and the
-remaining production authentication work needed for broader hosting. Empire
-defenders in a Campaign are not modelled either.
+After the Chronicle steps phase, implement the Chancellor and Citizen roles,
+Imperial warbands and Campaign, the Stable Regime and Successor endings,
+Citizenship and exile, and the Empire part of later-game setup. Design:
+[Empire phase design](superpowers/specs/2026-10-29-empire-phase-design.md).
+Each slice gets its own plan, in this order.
 
-- [ ] **Saved-campaign continuation.** Start game 2 from the Chronicle that the
-  Chronicle Phase journals: the later-game setup of CR pp. 8-13. Game start
-  refuses a non-empty world, any Imperial role and a seated lineage's
-  starting advisers until it exists.
-- [ ] **Offer Citizenship.** The Throne's step is an empty window.
+- [ ] **Slice 1a, Empire in play outside the Campaign.** The turn-aware
+  ruler, purple warbands, turn order from the Chancellor, Exile-only Wake
+  wins, the Vision slot, the Empire under Supremacy, the Chancellor's and
+  Citizens' Supply, Chancellor's Eye and Warband Transfers.
+- [ ] **Slice 1b, Imperial Campaign.** The Chancellor defends Imperial sites,
+  Imperial Infighting and Imperial Tactics.
+- [ ] **Slice 2, Empire endings.** Stable Regime, War Exhaustion with an
+  Empire, and Successor goals.
+- [ ] **Slice 3, Role changes in play.** Becoming a Citizen or the
+  Chancellor, exile, the Grand Scepter's powers, the five "become a Citizen"
+  denizens, the first-game toggle, and the Throne's Offer Citizenship step,
+  now an empty window.
+- [ ] **Slice 4, Later-game setup.** Start game 2 from the Chronicle that the
+  Chronicle Phase journals (CR pp. 8-13). Game start refuses a non-empty
+  world, any Imperial role and a seated lineage's starting advisers until it
+  exists.
+
+### Phase - Settings Feature
+
+Settings players can change during a game.
+
+- [ ] **Ignore Citizenship powers.** Toggle the first-game option that
+  ignores "become a Citizen" powers (Empire phase, slice 3).
+- [ ] **Hover warnings.** Show warnings on hover, turn them off, or disable
+  the options that carry a warning.
+- [ ] **Hide disabled options.** Hide options instead of showing them
+  disabled with a reason.
+- [ ] **Names.** Change lineage and player names.
 
 ### Phase - Gameplay completeness gate
 
