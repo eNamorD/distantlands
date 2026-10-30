@@ -153,11 +153,14 @@ Act (except the Campaign action) and Rest.
   consent checks for "Enemies cannot" powers, which test enmity against the
   resolved player. Curfew, Forced Labor, Toll Roads and Way Station then
   work unchanged.
-- **Empire-shared powers.** "If ruled by the Empire, all Imperials have this
-  power" is a separate access rule: a card flagged `empireShared` grants its
-  power to every Imperial player while the Empire rules its site. Forgotten
-  Vault and Oaken Fortress use it now; Hall of Debate and Tome Guardians use
-  it when they are implemented.
+- **Empire-shared protections.** "If ruled by the Empire, all Imperials
+  have this power" extends a protection printed at a site: while the Empire
+  rules its site, it covers every Imperial player. `SiteRulers.protectedAt`
+  returns those players. Forgotten Vault and Oaken Fortress use it now;
+  Hall of Debate and Tome Guardians use it when they are implemented.
+- **Hall of Ministers.** It no longer treats all Imperials as one side: the
+  Hall's site resolves to its ruling player, and every other player is an
+  enemy (ruling R1).
 - **Warband kind.** Move Warbands, Begin Rest and Finish Rest take a
   player's warband kind from `PlayerForceKind.of`, and read the purple bank
   for an Imperial player.
@@ -390,10 +393,10 @@ legacies stay refused (see [Out of scope](#out-of-scope)).
 
 ## Testing
 
-- **Fixtures.** A shared `EmpireFixtures` test helper seats a Chancellor and
-  Citizens on a ready game through the real operations (`RoleChanged`,
-  `ImperialWarbandsTaken`) rather than by copying state. Slices 1a to 3 test
-  through it; slice 4 adds real game starts.
+- **Fixtures.** A `Table.imperial(chancellor, citizens*)` test step seats
+  a Chancellor and Citizens and puts the purple bank on the table, as every
+  `Table` step edits state directly. Slices 1a to 3 test through it; slice 4
+  adds real game starts.
 - **Unit suites** for each rule: the resolver's three cases; the Supply bands
   with a Citizen's surplus; a defender resolving to the attacker; the end die
   at each round with a seeded roll; Successor for each goal; becoming a
