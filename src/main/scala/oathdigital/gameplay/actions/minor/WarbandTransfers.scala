@@ -7,12 +7,14 @@ import oathdigital.model.OathViolation._
 
 /** Warband Transfers (CR p. 35): as a minor action, an Imperial player
   * moves warbands to or from another Imperial player's board, when that
-  * player's pawn is at their site and that player consents. The partner is
-  * chosen first; choosing them asks their consent. */
+  * player's pawn is at their site and that player consents. The actor picks the
+  * partner, the way and the amount, then confirms; confirming asks the
+  * partner's consent to that exact transfer, so the ask names it. */
 object WarbandTransfers:
   val partnerDecisionId: String = "minor.transfer-partner"
   val directionDecisionId: String = "minor.transfer-direction"
   val amountDecisionId: String = "minor.transfer-amount"
+  val confirmDecisionId: String = "minor.transfer-confirm"
   val give: DecisionOptionRef.Button = DecisionOptionRef.Button("give")
   val take: DecisionOptionRef.Button = DecisionOptionRef.Button("take")
 
@@ -29,9 +31,25 @@ object WarbandTransfers:
     NotePart.Arg(1)))
   def keys: Vector[NoteKey] = notes.declared
 
-  def partnerKey(actor: PlayerId, partner: PlayerId): ConsentKey =
-    ConsentKey(ImperialLaws.warbandTransfers, actor, partnerDecisionId,
-      DecisionOptionRef.Player(partner))
+  /** The confirm button for moving `amount` warbands `way`: "give.3". */
+  def confirmation(way: DecisionOptionRef.Button, amount: Int)
+      : DecisionOptionRef.Button =
+    DecisionOptionRef.Button(s"${way.key}.$amount")
+
+  /** The way and amount a confirm button names, for the consent ask's log
+    * line. */
+  def confirmed(ref: DecisionOptionRef)
+      : Option[(DecisionOptionRef.Button, Int)] = ref match
+    case DecisionOptionRef.Button(key) => key.split('.') match
+      case Array(way, amount) if Set(give.key, take.key).contains(way) =>
+        amount.toIntOption.filter(_ > 0)
+          .map(DecisionOptionRef.Button(way) -> _)
+      case _ => None
+    case _ => None
+
+  def confirmKey(actor: PlayerId, way: DecisionOptionRef.Button,
+      amount: Int): ConsentKey = ConsentKey(ImperialLaws.warbandTransfers,
+    actor, confirmDecisionId, confirmation(way, amount))
 
   val build: MinorActionProcedures.Build = (_, ready, actor, args) =>
     for
@@ -56,7 +74,8 @@ object WarbandTransfers:
   private def tree(ready: ReadyGame, actor: PlayerId): Operation =
     Sequence(Vector(
       Decide(partnerDecisionId, actor, DecisionQuery.ChooseOne(
-        partners(ready, actor).map(partnerOption(ready, actor, _)),
+        partners(ready, actor).map(other =>
+          DecisionOption.Player(DecisionOptionRef.Player(other))),
         heading = Some("Transfer warbands with")),
         presentation = DecisionPresentation.Panel),
       Branch((live, pending) => partner(pending.answered).toVector.map(
@@ -72,24 +91,34 @@ object WarbandTransfers:
         if max > 0
       yield Decide(amountDecisionId, actor, DecisionQuery.ChooseAmount(1,
         max, Some("Transfer how many warbands?"), "Transfer"))).toVector),
+      Branch((live, pending) => (for
+        other <- partner(pending.answered)
+        picked <- direction(pending.answered)
+        count <- amount(pending.answered)
+      yield Decide(confirmDecisionId, actor, DecisionQuery.ChooseOne(
+        Vector(confirmOption(live, actor, other, picked, count)),
+        heading = Some("Transfer warbands")),
+        presentation = DecisionPresentation.Panel)).toVector),
       BuildOps((_, pending) => Right((for
         other <- partner(pending.answered)
         picked <- direction(pending.answered)
-        amount <- pending.answered.collectFirst {
-          case Answered(`amountDecisionId`,
-              DecisionAnswer.ChooseAmountAnswer(value), _) => value
-        }
-      yield transfer(actor, other, picked, amount)).toVector),
+        count <- amount(pending.answered)
+        if pending.answered.exists(_.decisionId == confirmDecisionId)
+      yield transfer(actor, other, picked, count)).toVector),
         required = true),
       Note(ProcedureNotes.id(ActionRef.TransferWarbands),
         transferredNote(actor))))
 
-  /** The partner, askable until they consent (CR p. 35: Warband Transfers
-    * needs the other player's consent). */
-  private def partnerOption(ready: ReadyGame, actor: PlayerId,
-      other: PlayerId): DecisionOption =
-    val shown = DecisionOption.Player(DecisionOptionRef.Player(other))
-    val key = partnerKey(actor, other)
+  /** The confirm button, askable until the partner consents to this exact
+    * transfer (CR p. 35: Warband Transfers needs the other player's
+    * consent). */
+  private def confirmOption(ready: ReadyGame, actor: PlayerId,
+      other: PlayerId, way: DecisionOptionRef.Button, count: Int)
+      : DecisionOption =
+    val noun = if count == 1 then "warband" else "warbands"
+    val shown = DecisionOption.Button(confirmation(way, count),
+      if way == give then s"Give $count $noun" else s"Take $count $noun")
+    val key = confirmKey(actor, way, count)
     ready.consent.answer(key, Some(other), ConsentTurn.of(ready)) match
       case Some(ConsentAnswer.Granted) => shown
       case Some(ConsentAnswer.Refused) => DecisionOption.Unavailable(shown,
@@ -128,6 +157,12 @@ object WarbandTransfers:
     answered.collectFirst {
       case Answered(`partnerDecisionId`, DecisionAnswer.ChooseOneAnswer(
           DecisionOptionRef.Player(other)), _) => other
+    }
+
+  private def amount(answered: Vector[Answered]): Option[Int] =
+    answered.collectFirst {
+      case Answered(`amountDecisionId`,
+          DecisionAnswer.ChooseAmountAnswer(value), _) => value
     }
 
   private def direction(answered: Vector[Answered])

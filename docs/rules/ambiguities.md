@@ -50,6 +50,8 @@ R3. **A Citizen's Supply.** A Citizen refreshes to the Chancellor's current Supp
 
 R7. **No Imperial Usurper in play.** An Imperial player never holds the Usurper side of the Oathkeeper title during play. An Exile who holds it and becomes a Citizen flips it to Oathkeeper at once (Empire slice 3 implements the flip), so domain validation rejects an Imperial player on the Usurper side outside the Chronicle phase. The check is suspended in the Chronicle phase, where the Chronicle crowns the Usurper winner after the game has ended.
 
+R8. **Warband Transfers consent names the transfer.** The partner is asked after the player has chosen the way and the amount, so the ask names them: "Asked {Blue} for consent to give them 3 warbands." Each consent covers one exact transfer. A refusal stops only that way and amount for the turn; the player may ask about a different one.
+
 ## Chronicle rulings
 
 Rulings given by the project owner for the Chronicle Phase ([chronicle.md](chronicle.md)). The rev1 task cards are slightly older than the CR; where they disagree, the CR governs.

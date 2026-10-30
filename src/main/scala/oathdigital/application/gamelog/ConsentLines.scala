@@ -1,6 +1,7 @@
 package oathdigital.application.gamelog
 
 import oathdigital.gameplay.actions.ImperialLaws
+import oathdigital.gameplay.actions.minor.WarbandTransfers
 import oathdigital.gameplay.powers.ConsentPowers
 import oathdigital.model._
 import oathdigital.model.OathEvent.{ConsentAnswered, ConsentPreferenceSet,
@@ -50,17 +51,15 @@ private[gamelog] final class ConsentLines(words: LogWords,
             Text(" works."))
         case ConsentRequested(request) =>
           // A payer is asked to pay and travel; a Warband Transfers partner,
-          // to let the transfer happen, with no selection to name since the
-          // partner is the granter; every other ask, to ignore (catalog
-          // batch 8, slice 15).
+          // to let the transfer its confirm button names happen; every other
+          // ask, to ignore (catalog batch 8, slice 15).
           val (transferring, others) = request.asks.partition(ask =>
             ask.powers.forall(_ == ImperialLaws.warbandTransfers))
           val (paying, ignoring) = others.partition(ask =>
             ask.powers.forall(powers.paying))
           val transfers = transferring.map(ask =>
             Vector(Text("Asked "), words.player(ask.granter),
-              Text(" for consent to use "), Text(
-                ImperialLaws.names(ImperialLaws.warbandTransfers)),
+              Text(" for consent to "), Text(transferWords(request.target)),
               Text(".")))
           val ignored = Option.when(ignoring.nonEmpty)(
             (Text("Asked ") +: LogWords.join(ignoring.map(ask =>
@@ -112,3 +111,13 @@ private[gamelog] final class ConsentLines(words: LogWords,
             Text(" were reset."))
         case _ => Vector.empty
     ).getOrElse(Vector.empty)
+
+  /** "give them 3 warbands" or "take 3 warbands from their board", from a
+    * Warband Transfers confirm button. */
+  private def transferWords(target: DecisionOptionRef): String =
+    WarbandTransfers.confirmed(target).fold(
+      s"use ${ImperialLaws.names(ImperialLaws.warbandTransfers)}"):
+      (way, count) =>
+        val noun = if count == 1 then "warband" else "warbands"
+        if way == WarbandTransfers.give then s"give them $count $noun"
+        else s"take $count $noun from their board"

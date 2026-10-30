@@ -9,7 +9,7 @@ import oathdigital.model._
 import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
 import oathdigital.model.OathEvent.{ConsentAnswered, ConsentRequested}
 import oathdigital.protocol.projection._
-import oathdigital.testkit.{MenuPlay, Outcomes, ParkedNode, Table}
+import oathdigital.testkit.{MenuPlay, Outcomes, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, present}
 
@@ -28,29 +28,52 @@ class WarbandTransfersSuite extends munit.FunSuite:
     .turn(p1, Phase.Act).pawn(p1, at = "Broken Peaks")
     .pawn(p2, at = "Broken Peaks").boardWarbands(p1, 5).boardWarbands(p2, 2)
 
-  private val request = ConsentRequest(p1, WarbandTransfers.partnerDecisionId,
-    partner, Vector(ConsentAsk(p2, Vector(ImperialLaws.warbandTransfers))),
-    Vector(WarbandTransfers.partnerKey(p1, p2)))
+  private val giveThree = WarbandTransfers.confirmation(WarbandTransfers.give,
+    3)
 
-  /** p1 starts the transfer, then asks p2 to let them. */
-  private def asking(service: GameApplicationService)(using munit.Location)
-      : GameAccepted =
-    val started = accepted(service.handle(gameId, 0L,
-      MenuPlay.starting(p1, ActionRef.TransferWarbands)))
-    accepted(service.handle(gameId, started.nextSequence,
-      GameCommand.RequestConsent(p1, WarbandTransfers.partnerDecisionId,
-        partner)))
-
-  private def partnerRow(at: GameAccepted)(using munit.Location)
-      : DecisionOptionProjection =
-    present(projector.project(gameId, at.loaded, p1).walkerDecision
-      .flatMap(_.query).toVector.flatMap(_.offeredOptions)
-      .find(_.id == partner.wireId), "the partner row")
+  private val request = ConsentRequest(p1, WarbandTransfers.confirmDecisionId,
+    giveThree, Vector(ConsentAsk(p2, Vector(ImperialLaws.warbandTransfers))),
+    Vector(WarbandTransfers.confirmKey(p1, WarbandTransfers.give, 3)))
 
   private def answer(service: GameApplicationService, at: GameAccepted,
       decisionId: String, value: DecisionAnswer)(using munit.Location)
       : GameAccepted = accepted(service.handle(gameId, at.nextSequence,
     GameCommand.ResolveWalker(p1, TreeDecision(decisionId, value))))
+
+  /** p1 starts the transfer and picks p2 as the partner. */
+  private def withPartner(service: GameApplicationService)
+      (using munit.Location): GameAccepted =
+    val started = accepted(service.handle(gameId, 0L,
+      MenuPlay.starting(p1, ActionRef.TransferWarbands)))
+    answer(service, started, WarbandTransfers.partnerDecisionId,
+      ChooseOneAnswer(partner))
+
+  /** p1 picks p2, then `way` and `count`, and stops at the confirm button. */
+  private def confirming(service: GameApplicationService,
+      way: DecisionOptionRef.Button, count: Int)(using munit.Location)
+      : GameAccepted =
+    val picked = answer(service, withPartner(service),
+      WarbandTransfers.directionDecisionId, ChooseOneAnswer(way))
+    answer(service, picked, WarbandTransfers.amountDecisionId,
+      ChooseAmountAnswer(count))
+
+  /** p1 confirms giving 3, which asks p2 to let them. */
+  private def asking(service: GameApplicationService)(using munit.Location)
+      : GameAccepted =
+    val confirm = confirming(service, WarbandTransfers.give, 3)
+    accepted(service.handle(gameId, confirm.nextSequence,
+      GameCommand.RequestConsent(p1, WarbandTransfers.confirmDecisionId,
+        giveThree)))
+
+  private def row(at: GameAccepted, ref: DecisionOptionRef)
+      (using munit.Location): DecisionOptionProjection =
+    present(projector.project(gameId, at.loaded, p1).walkerDecision
+      .flatMap(_.query).toVector.flatMap(_.offeredOptions)
+      .find(_.id == ref.wireId), s"the ${ref.wireId} row")
+
+  private def granted(service: GameApplicationService, at: GameAccepted)
+      (using munit.Location): GameAccepted = accepted(service.handle(gameId,
+    at.nextSequence, GameCommand.AnswerConsent(p2, ConsentChoice.Yes)))
 
   private def boardWarbands(at: GameAccepted, player: PlayerId): Int =
     Outcomes.ready(at.state).game.current.players.find(_.player == player)
@@ -80,61 +103,54 @@ class WarbandTransfersSuite extends munit.FunSuite:
     assert(rules.startWalker(table.state, ActionRef.TransferWarbands, p1)
       .isLeft)
 
-  test("the partner must consent before the transfer goes on"):
+  test("the confirm button waits on the partner's consent"):
+    val (service, _) = imperialsTogether.service()
+    val confirm = confirming(service, WarbandTransfers.give, 3)
+    assertEquals(row(confirm, giveThree).state, "askable")
+    assertEquals(row(confirm, giveThree).label, "Give 3 warbands")
+
+  test("confirming asks the partner about that exact transfer"):
     val (service, _) = imperialsTogether.service()
     val asked = asking(service)
     assertEquals(asked.events, Vector(ConsentRequested(request)))
     assertEquals(projector.project(gameId, asked.loaded, p2).consentPrompt
       .map(_.powers), Some(Vector("Warband Transfers")))
 
-  test("a refusal leaves the partner unavailable, with the refusal"):
+  test("a refusal leaves the confirm button unavailable, with the refusal"):
     val (service, _) = imperialsTogether.service()
     val asked = asking(service)
     val no = accepted(service.handle(gameId, asked.nextSequence,
       GameCommand.AnswerConsent(p2, ConsentChoice.No)))
     assertEquals(no.events, Vector(ConsentAnswered(p2, granted = false)))
-    assertEquals(partnerRow(no).state, "unavailable")
-    assertEquals(partnerRow(no).reason, Some("p2 refused this turn."))
+    assertEquals(row(no, giveThree).state, "unavailable")
+    assertEquals(row(no, giveThree).reason, Some("p2 refused this turn."))
 
-  test("once the partner consented, warbands move between the boards"):
+  test("a refusal covers only the transfer it was asked about"):
+    assertNotEquals(WarbandTransfers.confirmKey(p1, WarbandTransfers.give, 3),
+      WarbandTransfers.confirmKey(p1, WarbandTransfers.give, 2))
+    assertNotEquals(WarbandTransfers.confirmKey(p1, WarbandTransfers.give, 3),
+      WarbandTransfers.confirmKey(p1, WarbandTransfers.take, 3))
+
+  test("once the partner consents, the warbands move"):
     val (service, _) = imperialsTogether.service()
-    val asked = asking(service)
-    val yes = accepted(service.handle(gameId, asked.nextSequence,
-      GameCommand.AnswerConsent(p2, ConsentChoice.Yes)))
-    // The grant picks the partner, so the walk asks which way next.
-    ParkedNode.of(yes.state, catalog) match
-      case Right(Some(node)) =>
-        assertEquals(node.decisionId, WarbandTransfers.directionDecisionId)
-      case other => fail(s"expected the direction decision, got $other")
-    val gave = answer(service, yes, WarbandTransfers.directionDecisionId,
-      ChooseOneAnswer(WarbandTransfers.give))
-    ParkedNode.of(gave.state, catalog) match
-      case Right(Some(node)) =>
-        assertEquals(node.decisionId, WarbandTransfers.amountDecisionId)
-      case other => fail(s"expected the amount decision, got $other")
-    val done = answer(service, gave, WarbandTransfers.amountDecisionId,
-      ChooseAmountAnswer(3))
+    val done = granted(service, asking(service))
     assertEquals(boardWarbands(done, p1), 2)
     assertEquals(boardWarbands(done, p2), 5)
 
   test("taking moves warbands from the partner's board to the actor's"):
     val (service, _) = imperialsTogether.service()
-    val asked = asking(service)
-    val yes = accepted(service.handle(gameId, asked.nextSequence,
-      GameCommand.AnswerConsent(p2, ConsentChoice.Yes)))
-    val took = answer(service, yes, WarbandTransfers.directionDecisionId,
-      ChooseOneAnswer(WarbandTransfers.take))
-    val done = answer(service, took, WarbandTransfers.amountDecisionId,
-      ChooseAmountAnswer(2))
+    val confirm = confirming(service, WarbandTransfers.take, 2)
+    val asked = accepted(service.handle(gameId, confirm.nextSequence,
+      GameCommand.RequestConsent(p1, WarbandTransfers.confirmDecisionId,
+        WarbandTransfers.confirmation(WarbandTransfers.take, 2))))
+    val done = granted(service, asked)
     assertEquals(boardWarbands(done, p1), 7)
     assertEquals(boardWarbands(done, p2), 0)
 
   test("an amount outside what the giving board holds is rejected"):
     val (service, _) = imperialsTogether.service()
-    val asked = asking(service)
-    val yes = accepted(service.handle(gameId, asked.nextSequence,
-      GameCommand.AnswerConsent(p2, ConsentChoice.Yes)))
-    val gave = answer(service, yes, WarbandTransfers.directionDecisionId,
+    val gave = answer(service, withPartner(service),
+      WarbandTransfers.directionDecisionId,
       ChooseOneAnswer(WarbandTransfers.give))
     Vector(0, 6).foreach: amount =>
       assert(service.handle(gameId, gave.nextSequence,
@@ -144,11 +160,12 @@ class WarbandTransfersSuite extends munit.FunSuite:
 
   test("a way whose giving board is empty is disabled with its reason"):
     val (service, _) = imperialsTogether.boardWarbands(p2, 0).service()
-    val asked = asking(service)
-    val yes = accepted(service.handle(gameId, asked.nextSequence,
-      GameCommand.AnswerConsent(p2, ConsentChoice.Yes)))
-    val taking = present(projector.project(gameId, yes.loaded, p1)
-      .walkerDecision.flatMap(_.query).toVector.flatMap(_.offeredOptions)
-      .find(_.id == WarbandTransfers.take.wireId), "the take row")
+    val taking = row(withPartner(service), WarbandTransfers.take)
     assertEquals(taking.state, "unavailable")
     assertEquals(taking.reason, Some("No warbands on their board"))
+
+  test("a confirm button reads back as its way and amount"):
+    assertEquals(WarbandTransfers.confirmed(giveThree),
+      Some(WarbandTransfers.give -> 3))
+    assertEquals(WarbandTransfers.confirmed(DecisionOptionRef.Button("give")),
+      None)

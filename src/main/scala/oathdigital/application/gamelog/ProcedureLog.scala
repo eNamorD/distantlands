@@ -269,10 +269,13 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
     case ActionRef.MoveWarbands => ProcedureLog(tag = None,
       lines = ActionLineSource.Notes(),
       narrated = Vector(Told(MinorActionProcedures.directionDecisionId)))
-    // The transfer line names the partner, so it tells the direction pick.
+    // The consent ask and the transfer line name the partner, the way and
+    // the amount, so they tell the partner, direction and confirm picks.
     case ActionRef.TransferWarbands => ProcedureLog(tag = None,
       lines = ActionLineSource.Notes(),
-      narrated = Vector(Told(WarbandTransfers.directionDecisionId)))
+      narrated = Vector(Told(WarbandTransfers.partnerDecisionId),
+        Told(WarbandTransfers.directionDecisionId),
+        Told(WarbandTransfers.confirmDecisionId)))
     // A power that plays a card as if searched (Oracle) posts where the card
     // went, as a Search does, and tells the same card-play decisions.
     case ActionRef.UsePower(power) => ProcedureLog(tag = None,

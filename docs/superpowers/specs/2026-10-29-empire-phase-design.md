@@ -390,6 +390,10 @@ legacies stay refused (see [Out of scope](#out-of-scope)).
   Usurper side during play. An Exile who becomes a Citizen flips the title to
   Oathkeeper at once (slice 3). The check is suspended in the Chronicle phase,
   where the Chronicle crowns the Usurper winner after the game ends.
+- **R8, Warband Transfers consent names the transfer.** The partner is asked
+  after the way and the amount are chosen, so the ask names them. Each
+  consent covers one exact transfer; a refusal stops only that one for the
+  turn.
 - **Defender is the attacker.** A Campaign target whose defender resolves to
   the attacker is not legal.
 - **First game.** "Become a Citizen" powers are ignored in a first game by a

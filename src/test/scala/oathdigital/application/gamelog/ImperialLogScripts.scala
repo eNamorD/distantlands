@@ -12,8 +12,8 @@ import LogScripts.atTable
   * is at its size limit. */
 object ImperialLogScripts:
   /** p1 is the Chancellor and p2 a Citizen, both at Broken Peaks, with 5
-    * warbands on p1's board. p1 asks p2 to let them transfer, p2 agrees, and
-    * p1 gives 3. */
+    * warbands on p1's board. p1 picks p2, chooses to give 3, asks p2 to let
+    * them, and p2 agrees. */
   def warbandsTransferred(using munit.Location): Script =
     val (service, act) = atTable("warbands-transferred", Table.start
       .imperial(p1, p2).pawn(p1, at = "Broken Peaks")
@@ -22,12 +22,16 @@ object ImperialLogScripts:
     def answer(decisionId: String, value: DecisionAnswer) =
       GameCommand.ResolveWalker(p1, TreeDecision(decisionId, value))
     act.parkedAfter(MenuPlay.start(p1, ActionRef.TransferWarbands))
-      .parkedAfter(GameCommand.RequestConsent(p1,
-        WarbandTransfers.partnerDecisionId, DecisionOptionRef.Player(p2)))
-      .parkedAfter(GameCommand.AnswerConsent(p2, ConsentChoice.Yes))
+      .parkedAfter(answer(WarbandTransfers.partnerDecisionId,
+        ChooseOneAnswer(DecisionOptionRef.Player(p2))))
       .parkedAfter(answer(WarbandTransfers.directionDecisionId,
         ChooseOneAnswer(WarbandTransfers.give)))
-      .after(answer(WarbandTransfers.amountDecisionId, ChooseAmountAnswer(3)))
+      .parkedAfter(answer(WarbandTransfers.amountDecisionId,
+        ChooseAmountAnswer(3)))
+      .parkedAfter(GameCommand.RequestConsent(p1,
+        WarbandTransfers.confirmDecisionId,
+        WarbandTransfers.confirmation(WarbandTransfers.give, 3)))
+      .after(GameCommand.AnswerConsent(p2, ConsentChoice.Yes))
     Script("warbands-transferred", service, p1)
 
   val named: Vector[(String, () => Script)] =
