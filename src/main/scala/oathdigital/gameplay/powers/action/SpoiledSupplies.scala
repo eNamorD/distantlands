@@ -12,8 +12,8 @@ object SpoiledSuppliesCard extends Denizen(DenizenId("228"), "Spoiled Supplies",
   val powers: Vector[PrintedPower] = Vector(power)
 
 /** Spoiled Supplies (card 228), ACTION: place 1 favor on this card, then
-  * every enemy whose pawn is at the player's site loses 1 Supply. Every game
-  * is all-Exile, so every other player is an enemy. Nothing is asked.
+  * every enemy whose pawn is at the player's site loses 1 Supply. Every other
+  * player is an enemy, Imperials included. Nothing is asked.
   *
   * A player with no Supply is skipped rather than charged. Each loss is its
   * own `SpendSupply` followed by its own note, so each line reads the step

@@ -4,7 +4,8 @@ import oathdigital.model._
 
 /** Who rules a site, and where a rule card stands, for the powers whose reach
   * is "the sites this card's ruler rules": Toll Roads, Grasping Vines and
-  * Secret Police. The Empire is covered through `SiteRule.rulingPlayer`. Whether a player is an enemy of a ruler is
+  * Secret Police. The Empire is covered through `SiteRule.rulingPlayer`.
+  * Whether a player is an enemy of a ruler is
   * `SiteRule.enemies(ruler, SiteRuler.Player(player))`, the model's single
   * definition.
   */

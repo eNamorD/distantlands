@@ -291,7 +291,7 @@ object MinorActionProcedures:
 
   /** The legacy handler's gates: no start selection, and the first-game
     * rules. */
-  private def started(ready: ReadyGame, actor: PlayerId,
+  private[minor] def started(ready: ReadyGame, actor: PlayerId,
       args: Vector[DecisionOptionRef], action: ActionRef)
       : Either[OathViolation, Unit] =
     for

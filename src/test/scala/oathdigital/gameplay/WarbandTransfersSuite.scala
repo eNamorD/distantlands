@@ -63,6 +63,18 @@ class WarbandTransfersSuite extends munit.FunSuite:
       .left.map(ActOffers.reason(ActionRef.TransferWarbands, _)),
       Left("Only an Imperial player transfers warbands"))
 
+  test("an altered foundation refuses the transfer as it refuses a move"):
+    val altered = imperialsTogether.update(ready => ready.updateCampaign(
+      campaign => campaign.copy(foundations = campaign.foundations.map {
+        case (number, foundation) =>
+          number -> foundation.copy(face = FoundationFace.Altered)
+      })))
+    val refusal = rules.startWalker(altered.state, ActionRef.MoveWarbands, p1)
+    assertEquals(refusal.left.toOption, Some(OathViolation.MinorActionUnavailable(
+      "minor actions are limited to the fixed unaltered foundations")))
+    assertEquals(rules.startWalker(altered.state, ActionRef.TransferWarbands,
+      p1).left.toOption, refusal.left.toOption)
+
   test("with no Imperial at the site the transfer is unavailable"):
     val table = imperialsTogether.pawn(p2, at = "Ancient City")
     assert(rules.startWalker(table.state, ActionRef.TransferWarbands, p1)

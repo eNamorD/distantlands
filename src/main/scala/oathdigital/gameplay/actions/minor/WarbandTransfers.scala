@@ -35,8 +35,8 @@ object WarbandTransfers:
 
   val build: MinorActionProcedures.Build = (_, ready, actor, args) =>
     for
-      _ <- Either.cond(args.isEmpty, (), InvalidEventOrder(
-        "walker procedure transfer-warbands takes no start selection"))
+      _ <- MinorActionProcedures.started(ready, actor, args,
+        ActionRef.TransferWarbands)
       _ <- Either.cond(Imperials.isImperial(ready, actor), (),
         MinorActionUnavailable("Only an Imperial player transfers warbands"))
       _ <- Either.cond(partners(ready, actor).nonEmpty, (),

@@ -48,13 +48,15 @@ class EmpireTurnSuite extends munit.FunSuite:
       usurper.imperial(p2, p1).state), Right(None))
 
   test("an Imperial player wins no Vision at Wake"):
-    val conquering = Table.start.turn(p1, Phase.Wake)
-      .warbandsAt("Dunes", p1, 1).revealedVision(p1, VisionRules.Conquest)
-      .visionsDrawn(3)
-    assertEquals(StateBasedEvaluation.visionAtWake(conquering.state),
-      Right(Some(VisionVictory(p1, VisionRules.Conquest))))
+    // The People's goal counts no sites, so only the Imperial guard can
+    // stop a Citizen holding it.
+    val rebelling = Table.start.turn(p1, Phase.Wake)
+      .revealedVision(p1, VisionRules.Rebellion)
+      .peoplesFavor(Some(p1), 1).visionsDrawn(3)
+    assertEquals(StateBasedEvaluation.visionAtWake(rebelling.state),
+      Right(Some(VisionVictory(p1, VisionRules.Rebellion))))
     assertEquals(StateBasedEvaluation.visionAtWake(
-      conquering.imperial(p2, p1).state), Right(None))
+      rebelling.imperial(p2, p1).state), Right(None))
 
   test("Rest accepts an Imperial player"):
     val ready = chancellorSecondInSeat.turn(p2, Phase.Act).ready
