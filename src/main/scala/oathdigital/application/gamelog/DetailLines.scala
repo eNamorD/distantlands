@@ -117,7 +117,8 @@ private[gamelog] final class DetailLines(words: LogWords,
       case Move(Piece.Warbands(kind, amount), _,
           PositionedLocation(Location.Site(site), _, _), _, _)
           if run.procedure != ActionRef.Campaign &&
-              run.procedure != ActionRef.MoveWarbands =>
+              run.procedure != ActionRef.MoveWarbands &&
+              run.procedure != ActionRef.TransferWarbands =>
         line(LogSpan.Text(s"Moved $amount ") +:
           (whose(kind, amount, actor, before) ++
             Vector(LogSpan.Text(" to "), words.site(site))))

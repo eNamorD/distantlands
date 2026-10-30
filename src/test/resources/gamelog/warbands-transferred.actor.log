@@ -1,0 +1,7 @@
+0.0 round 0 | Round 1
+0.1 turn 0 | [player:p1|p1]'s turn
+0.2 phase 0 | Act
+6.0 decision 1 | Asked [player:p2|p2] for consent to ignore Warband Transfers and select [player:p2|p2].
+7.0 decision 1 | [player:p2|p2] gave consent.
+9.0 decision 1 transfer-warbands@4 | Chose [player:p2|p2]
+17.0 action 1 transfer-warbands@4 | Gave 3 warbands to [player:p2|p2]

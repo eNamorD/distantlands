@@ -48,7 +48,8 @@ object ActOffers:
     minor(ActionRef.PlayFacedownAdviser, "Play facedown adviser"),
     minor(ActionRef.PeekSiteRelics, "Peek at relics at your site"),
     minor(ActionRef.RevealOwnedRelic, "Reveal a relic"),
-    minor(ActionRef.MoveWarbands, "Move warbands"))
+    minor(ActionRef.MoveWarbands, "Move warbands"),
+    minor(ActionRef.TransferWarbands, "Transfer warbands"))
 
   /** Why an Act action cannot start, in the player's words, when its
     * refusal is not about Supply or favor. */
@@ -63,6 +64,8 @@ object ActOffers:
       case (ActionRef.Negotiation,
           OathViolation.NegotiationUnavailable(detail)) => detail
       case (ActionRef.MoveWarbands,
+          OathViolation.MinorActionUnavailable(detail)) => detail
+      case (ActionRef.TransferWarbands,
           OathViolation.MinorActionUnavailable(detail)) => detail
       case (ActionRef.PeekSiteRelics, _) => "No relics at your site"
       case (ActionRef.RevealOwnedRelic, _) => "You have no facedown relic"

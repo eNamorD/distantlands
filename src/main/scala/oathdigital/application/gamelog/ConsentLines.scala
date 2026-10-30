@@ -1,5 +1,6 @@
 package oathdigital.application.gamelog
 
+import oathdigital.gameplay.actions.ImperialLaws
 import oathdigital.gameplay.powers.ConsentPowers
 import oathdigital.model._
 import oathdigital.model.OathEvent.{ConsentAnswered, ConsentPreferenceSet,
@@ -22,7 +23,8 @@ private[gamelog] final class ConsentLines(words: LogWords,
       after <- journal.readyAfter(at)
     yield
       def source(id: PowerId): Vector[LogSpan] =
-        powers.source(id).fold(Vector[LogSpan](Text(id.value)))(
+        powers.source(id).fold(Vector[LogSpan](Text(
+          ImperialLaws.names.getOrElse(id, id.value))))(
           words.source(_, Vector(before), viewer))
       def named(ids: Vector[PowerId]): Vector[LogSpan] =
         LogWords.join(ids.map(source))

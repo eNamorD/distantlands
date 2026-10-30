@@ -175,7 +175,7 @@ class PhaseMenuSuite extends munit.FunSuite:
       "campaign", "muster", "trade.favor", "trade.secret", "forge",
       "recover", "challenge", "place-banner-resource", "negotiation",
       "play-facedown-adviser", "peek-site-relics", "reveal-owned-relic",
-      "move-warbands"))
+      "move-warbands", "transfer-warbands"))
 
   test("the Wake menu bands Take Wealth apart from its powers and its " +
       "ending"):
@@ -196,6 +196,8 @@ class PhaseMenuSuite extends munit.FunSuite:
       .getOrElse(fail("no menu lists Trade"))), Some(OptionGroup.Major))
     assertEquals(bandAt(act(ActionRef.Negotiation)), Some(OptionGroup.Minor))
     assertEquals(bandAt(act(ActionRef.MoveWarbands)), Some(OptionGroup.Minor))
+    assertEquals(bandAt(act(ActionRef.TransferWarbands)),
+      Some(OptionGroup.Minor))
     assertEquals(bandAt(PhaseMenu.Menu.Act.endingOption),
       Some(OptionGroup.Ending))
 

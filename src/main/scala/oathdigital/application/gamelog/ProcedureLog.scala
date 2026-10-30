@@ -10,7 +10,8 @@ import oathdigital.gameplay.actions.challenge.{ChallengeProcedure,
   PlaceBannerResourceProcedure}
 import oathdigital.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
 import oathdigital.gameplay.actions.forge.ForgeProcedure
-import oathdigital.gameplay.actions.minor.MinorActionProcedures
+import oathdigital.gameplay.actions.minor.{MinorActionProcedures,
+  WarbandTransfers}
 import oathdigital.gameplay.actions.negotiation.NegotiationProcedure
 import oathdigital.gameplay.actions.recover.RecoverProcedure
 import oathdigital.gameplay.actions.search.SearchProcedure
@@ -268,6 +269,10 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
     case ActionRef.MoveWarbands => ProcedureLog(tag = None,
       lines = ActionLineSource.Notes(),
       narrated = Vector(Told(MinorActionProcedures.directionDecisionId)))
+    // The transfer line names the partner, so it tells the direction pick.
+    case ActionRef.TransferWarbands => ProcedureLog(tag = None,
+      lines = ActionLineSource.Notes(),
+      narrated = Vector(Told(WarbandTransfers.directionDecisionId)))
     // A power that plays a card as if searched (Oracle) posts where the card
     // went, as a Search does, and tells the same card-play decisions.
     case ActionRef.UsePower(power) => ProcedureLog(tag = None,
