@@ -59,7 +59,7 @@ object StateBasedEvaluation:
         .filterNot(actor => Imperials.isImperial(ready, actor.player))
         .flatMap { actor =>
         actor.revealedVision.flatMap(v => Option.when(
-          VisionVictoryEligibility.qualifies(actor.player, current))(
+          VisionVictoryEligibility.qualifies(actor.player, ready))(
           VisionVictory(actor.player, v.id)))
       }
     }
@@ -81,7 +81,7 @@ object StateBasedEvaluation:
         case _ => None
       val visionary = visionPriority.iterator.flatMap { vision =>
           current.players.find(p => p.revealedVision.exists(_.id == vision) &&
-            VisionVictoryEligibility.qualifies(p.player, current))
+            VisionVictoryEligibility.qualifies(p.player, ready))
             .map(p => WarExhaustionResolved(p.player, VictoryKind.Visionary,
               Some(vision), Vector.empty))
         }.toSeq.headOption
@@ -181,18 +181,19 @@ object StateBasedEvaluation:
     if current.tracks.round != 8 || current.result.nonEmpty ||
         current.turn.phase != Phase.WarExhaustion then
       Left(InvalidEventOrder("War Exhaustion is only resolved after round eight"))
-    else endRoundWinner(current, TurnOrder.roundStart(ready))
+    else endRoundWinner(ready, TurnOrder.roundStart(ready))
   }
 
-  private def endRoundWinner(current: CurrentGameState, first: PlayerId)
+  private def endRoundWinner(ready: ReadyGame, first: PlayerId)
       : Either[OathViolation, ExpectedWarExhaustion] =
+    val current = ready.game.current
     current.title match
       case OathkeeperState(Some(player), TitleSide.Usurper) => Right(ExactWar(
         WarExhaustionResolved(player, VictoryKind.Usurper, None, Vector.empty)))
       case _ =>
         visionPriority.iterator.flatMap { vision =>
             current.players.find(p => p.revealedVision.exists(_.id == vision) &&
-              VisionVictoryEligibility.qualifies(p.player, current))
+              VisionVictoryEligibility.qualifies(p.player, ready))
               .map(p => WarExhaustionResolved(p.player, VictoryKind.Visionary,
                 Some(vision), Vector.empty))
           }.toSeq.headOption.orElse(current.title.holder.map(player =>

@@ -74,6 +74,9 @@ object CardSlots:
   /** The answer that plays a faceup Conspiracy, which takes no slot. */
   val play: DecisionOptionRef.Button = DecisionOptionRef.Button("play")
 
+  /** Why an Imperial player cannot play a true Vision faceup. */
+  val noVisionSlotReason: String = "An Imperial board has no Vision slot"
+
   /** Why a printed protection refuses a play, by its restriction's code. */
   private val reasons: Map[String, String] = Map(
     "locked" -> "Locked: cannot be discarded",
@@ -96,8 +99,9 @@ object CardSlots:
           playSites(ready, player, rules).flatMap(site =>
             siteSlots(catalog, ready, player, card, origin, site, rules,
               picked)) ++
-          judged(faceup(player, card, origin, rules) ++
-            facedown(player, card, origin, rules)), rules)
+          judged(faceup(ready, player, card, origin, rules)) ++
+          noVisionSlot(ready, player, card) ++
+          judged(facedown(player, card, origin, rules)), rules)
     }
 
   /** `slots` under the placement limits of `rules`: a play a limit
@@ -300,13 +304,31 @@ object CardSlots:
               buried = Some(relic.id))))
       empty.toVector ++ replacing ++ relics).getOrElse(Vector.empty)
 
-  private def faceup(player: PlayerState, card: WorldCardId,
+  private def hasVisionSlot(ready: ReadyGame, player: PlayerState): Boolean =
+    Imperials.role(ready, player.player).forall(_.hasVisionSlot)
+
+  /** The revealed Vision spot, disabled, for a player whose board has no
+    * Vision slot (Empire phase design, "Boards"). */
+  private def noVisionSlot(ready: ReadyGame, player: PlayerState,
+      card: WorldCardId): Vector[CardSlot] = card match
+    case VisionRules.Conspiracy => Vector.empty
+    case _: VisionId if !hasVisionSlot(ready, player) =>
+      Vector(CardSlot(DecisionOption.Unavailable(
+        DecisionOption.RevealedVision(
+          DecisionOptionRef.RevealedVision(player.player)),
+        OptionReason.Written(noVisionSlotReason)),
+        SearchPlacement.Adviser(Orientation.FaceUp, None)))
+    case _ => Vector.empty
+
+  private def faceup(ready: ReadyGame, player: PlayerState,
+      card: WorldCardId,
       origin: CardPlay.Origin, rules: CardPlayRules)
       : Vector[(DecisionOption, SearchPlacement)] =
     val placement = SearchPlacement.Adviser(Orientation.FaceUp, None)
     card match
       case VisionRules.Conspiracy =>
         Vector(DecisionOption.Button(play, "Play") -> placement)
+      case _: VisionId if !hasVisionSlot(ready, player) => Vector.empty
       case _: VisionId =>
         val spot = DecisionOption.RevealedVision(
           DecisionOptionRef.RevealedVision(player.player))

@@ -1,5 +1,6 @@
 package oathdigital.gameplay.oathkeeper
 
+import oathdigital.gameplay.SupremacySites
 import oathdigital.model._
 
 sealed trait OathkeeperOutcome extends Product with Serializable
@@ -19,7 +20,7 @@ object OathkeeperRules:
 
   def outcome(ready: ReadyGame): OathkeeperOutcome =
     val current = ready.game.current
-    val leaders = qualifyingPlayers(ready.game.campaign.oathkeeperGoal, current)
+    val leaders = qualifyingPlayers(ready)
     current.title.holder match
       case Some(holder) if leaders(holder) => NoChange
       case Some(holder) if leaders.size > 1 =>
@@ -28,17 +29,11 @@ object OathkeeperRules:
       case Some(_) => Transfer(None)
       case None => NoChange
 
-  private def qualifyingPlayers(goal: OathkeeperGoal,
-      current: CurrentGameState): Set[PlayerId] =
-    goal match
+  private def qualifyingPlayers(ready: ReadyGame): Set[PlayerId] =
+    val current = ready.game.current
+    ready.game.campaign.oathkeeperGoal match
       case OathkeeperGoal.Supremacy =>
-        leadersWithPositiveCount(current.players.map { player =>
-          player.player -> current.map.sites.values.count(_.forces match {
-            case SiteForces.Occupied(ForceKind.Exile(lineage), _) =>
-              lineage == player.lineage
-            case _ => false
-          })
-        })
+        leadersWithPositiveCount(SupremacySites.counts(ready))
       case OathkeeperGoal.Protection =>
         leadersWithPositiveCount(current.players.map(player =>
           player.player -> player.relics.size))
