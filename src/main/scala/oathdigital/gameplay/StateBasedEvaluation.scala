@@ -11,7 +11,9 @@ import oathdigital.gameplay.operations.{OperationPipeline, OperationPolicy}
 import oathdigital.model.{Move => CoreMove}
 
 /**
- * State-based checks for the fixed, unaltered all-Exile game only.
+ * State-based checks: bandit refill, the Wake victories, the end of a round
+ * and War Exhaustion. The Empire's endings (Stable Regime, the full War
+ * Exhaustion) are slice 2's.
  *
  * CR p.16 gives each goal a strict qualification rule, then gives the current
  * holder two special tie duties: retain a qualifying tie, or choose among tied
@@ -39,11 +41,13 @@ object StateBasedEvaluation:
   def atWake(state: OathState): Either[OathViolation, Option[OathEvent]] =
     supported(state).map { ready =>
       val current = ready.game.current
-      current.title match
+      val active = current.turn.activePlayer
+      if Imperials.isImperial(ready, active) then None
+      else current.title match
         case OathkeeperState(Some(player), TitleSide.Usurper)
-            if player == current.turn.activePlayer => Some(UsurperVictory(player))
+            if player == active => Some(UsurperVictory(player))
         case OathkeeperState(Some(player), TitleSide.Oathkeeper)
-            if player == current.turn.activePlayer && !current.tracks.usurperLimited =>
+            if player == active && !current.tracks.usurperLimited =>
           Some(UsurperFlipped(player))
         case _ => None
     }
@@ -51,9 +55,11 @@ object StateBasedEvaluation:
   def visionAtWake(state: OathState): Either[OathViolation, Option[OathEvent]] =
     supported(state).map { ready =>
       val current = ready.game.current
-      current.players.find(_.player == current.turn.activePlayer).flatMap { actor =>
+      current.players.find(_.player == current.turn.activePlayer)
+        .filterNot(actor => Imperials.isImperial(ready, actor.player))
+        .flatMap { actor =>
         actor.revealedVision.flatMap(v => Option.when(
-          VisionVictoryEligibility.qualifies(actor.player, current))(
+          VisionVictoryEligibility.qualifies(actor.player, ready))(
           VisionVictory(actor.player, v.id)))
       }
     }
@@ -61,9 +67,7 @@ object StateBasedEvaluation:
   def endRound(state: OathState, randomWinner: Vector[PlayerId] => PlayerId)
       : Either[OathViolation, Vector[OathEvent]] = supported(state).flatMap { ready =>
     val current = ready.game.current
-    val order = ready.game.current.players.map(_.player)
-    val firstIndex = order.indexOf(ready.setup.firstPlayer)
-    val turnOrder = order.drop(firstIndex) ++ order.take(firstIndex)
+    val turnOrder = TurnOrder.order(ready)
     if current.turn.phase != Phase.RoundEnd ||
         current.turn.activePlayer != turnOrder.head then
       Left(InvalidEventOrder("round ending requires the completed round's final Rest"))
@@ -77,7 +81,7 @@ object StateBasedEvaluation:
         case _ => None
       val visionary = visionPriority.iterator.flatMap { vision =>
           current.players.find(p => p.revealedVision.exists(_.id == vision) &&
-            VisionVictoryEligibility.qualifies(p.player, current))
+            VisionVictoryEligibility.qualifies(p.player, ready))
             .map(p => WarExhaustionResolved(p.player, VictoryKind.Visionary,
               Some(vision), Vector.empty))
         }.toSeq.headOption
@@ -136,9 +140,7 @@ object StateBasedEvaluation:
         case Ready(ready) =>
           val round = ready.game.current.tracks.round
           val expected = RoundEnded(round, Option.when(round < 8)(round + 1))
-          val players = ready.game.current.players.map(_.player)
-          val firstIndex = players.indexOf(ready.setup.firstPlayer)
-          val first = (players.drop(firstIndex) ++ players.take(firstIndex)).head
+          val first = TurnOrder.roundStart(ready)
           if ready.game.current.turn.phase != Phase.RoundEnd ||
               ready.game.current.turn.activePlayer != first then
             Left(InvalidEventOrder("round-end event is outside the round-end procedure"))
@@ -164,10 +166,7 @@ object StateBasedEvaluation:
       case _ => Left(InvalidEventOrder("not a state-based evaluation event"))
 
   private[gameplay] def supported(state: OathState): Either[OathViolation, ReadyGame] = state match
-    case Ready(ready) if ready.game.campaign.lineages.values.forall(
-      _.role == Role.Exile) => Right(ready)
-    case Ready(_) => Left(UnsupportedWakeVictoryState(
-      "state-based Oathkeeper evaluation is limited to the fixed, unaltered all-Exile game"))
+    case Ready(ready) => Right(ready)
     case _ => Left(GameNotStarted)
 
   private sealed trait ExpectedWarExhaustion
@@ -182,18 +181,19 @@ object StateBasedEvaluation:
     if current.tracks.round != 8 || current.result.nonEmpty ||
         current.turn.phase != Phase.WarExhaustion then
       Left(InvalidEventOrder("War Exhaustion is only resolved after round eight"))
-    else endRoundWinner(current, ready.setup.firstPlayer)
+    else endRoundWinner(ready, TurnOrder.roundStart(ready))
   }
 
-  private def endRoundWinner(current: CurrentGameState, first: PlayerId)
+  private def endRoundWinner(ready: ReadyGame, first: PlayerId)
       : Either[OathViolation, ExpectedWarExhaustion] =
+    val current = ready.game.current
     current.title match
       case OathkeeperState(Some(player), TitleSide.Usurper) => Right(ExactWar(
         WarExhaustionResolved(player, VictoryKind.Usurper, None, Vector.empty)))
       case _ =>
         visionPriority.iterator.flatMap { vision =>
             current.players.find(p => p.revealedVision.exists(_.id == vision) &&
-              VisionVictoryEligibility.qualifies(p.player, current))
+              VisionVictoryEligibility.qualifies(p.player, ready))
               .map(p => WarExhaustionResolved(p.player, VictoryKind.Visionary,
                 Some(vision), Vector.empty))
           }.toSeq.headOption.orElse(current.title.holder.map(player =>

@@ -1,7 +1,7 @@
 package oathdigital.gameplay.phases.rest
 
 import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.NoteSupport
+import oathdigital.gameplay.{NoteSupport, TurnOrder}
 import oathdigital.model.OathViolation._
 import oathdigital.gameplay.actions.ProcedureNotes
 import oathdigital.gameplay.phases.RestCleanup
@@ -27,6 +27,21 @@ object FinishRestProcedure:
     SupplyRefreshBand(InclusiveIntRange(9, Int.MaxValue), 6),
     SupplyRefreshBand(InclusiveIntRange(4, 8), 5),
     SupplyRefreshBand(InclusiveIntRange(0, 3), 4)))
+
+  /** The Chancellor's board: bands by warbands in the purple bank. */
+  val ChancellorSupply: SupplyRules = SupplyRules(SupplyTrack.Maximum, Vector(
+    SupplyRefreshBand(InclusiveIntRange(18, Int.MaxValue), 6),
+    SupplyRefreshBand(InclusiveIntRange(11, 17), 5),
+    SupplyRefreshBand(InclusiveIntRange(4, 10), 4),
+    SupplyRefreshBand(InclusiveIntRange(0, 3), 3)))
+
+  /** The band table of `player`'s board: the Chancellor's or an Exile's. A
+    * Citizen's board has none: it copies the Chancellor's Supply. */
+  def supplyRules(ready: ReadyGame, player: PlayerId): Option[SupplyRules] =
+    Imperials.role(ready, player) match
+      case Some(Role.Citizen) => None
+      case Some(Role.Chancellor) => Some(ChancellorSupply)
+      case _ => Some(ExileSupply)
 
   private val notes = NoteSet(ProcedureNotes.id(PhaseTransitionRef.FinishRest))
   /** "Increased supply from 5 to 7". Both numbers are plain, as the rule
@@ -80,10 +95,28 @@ object FinishRestProcedure:
     */
   private def bankedWarbands(ready: ReadyGame, player: PlayerState)
       : Either[OathViolation, Int] =
-    val kind = ForceKind.Exile(player.lineage)
-    Either.cond(ready.banks.warbandSupply.contains(kind),
-      PlayerFacts.banked(ready, kind),
-      UnsupportedRestState(s"no bounded warband supply for $kind"))
+    for
+      kind <- PlayerForceKind.of(ready, player).toRight(UnsupportedRestState(
+        s"no warband kind for ${player.player}"))
+      banked <- Either.cond(ready.banks.warbandSupply.contains(kind),
+        PlayerFacts.banked(ready, kind),
+        UnsupportedRestState(s"no bounded warband supply for $kind"))
+    yield banked
+
+  /** What Rest adds to the unspent Supply: the board's band for an Exile or
+    * the Chancellor, the Chancellor's current Supply for a Citizen (ruling
+    * R3). */
+  private def baseSupply(ready: ReadyGame, player: PlayerState)
+      : Either[OathViolation, Int] = supplyRules(ready, player.player) match
+    case Some(rules) =>
+      bankedWarbands(ready, player).flatMap(banked =>
+        rules.baseSupplyFor(banked).toRight(UnsupportedRestState(
+          s"no Supply band for $banked banked warbands")))
+    case None => Imperials.chancellor(ready)
+      .flatMap(chancellor => ready.game.current.players
+        .find(_.player == chancellor))
+      .map(_.board.supply.supply)
+      .toRight(UnsupportedRestState("a Citizen's Supply needs a Chancellor"))
 
   private def restingPlayer(ready: ReadyGame, resting: PlayerId)
       : Either[OathViolation, PlayerState] =
@@ -97,10 +130,8 @@ object FinishRestProcedure:
   def supplyAfterRest(ready: ReadyGame, resting: PlayerId)
       : Either[OathViolation, Int] = for
     player <- restingPlayer(ready, resting)
-    banked <- bankedWarbands(ready, player)
-    refreshed <- ExileSupply.refresh(banked, player.board.supply.supply)
-      .toRight(UnsupportedRestState(s"no Supply band for $banked banked warbands"))
-  yield refreshed.supply
+    base <- baseSupply(ready, player)
+  yield math.min(SupplyTrack.Maximum, base + player.board.supply.supply)
 
   /** The Supply the resting player's band returns, BEFORE the track's
     * ceiling takes its cut -- the band's base, which is what Rest adds to
@@ -110,15 +141,12 @@ object FinishRestProcedure:
     * The capped gain (`supplyAfterRest` minus the track) would shrink as the
     * player saved Supply and read as a reason to spend nothing; the band
     * does not move with the track, so it reads as the Supply this Act may
-    * still spend without costing the player anything at Rest.
+    * still spend without costing the player anything at Rest. A Citizen's
+    * base is the Chancellor's Supply.
     */
   def supplyGainAtRest(ready: ReadyGame, resting: PlayerId)
-      : Either[OathViolation, Int] = for
-    player <- restingPlayer(ready, resting)
-    banked <- bankedWarbands(ready, player)
-    base <- ExileSupply.baseSupplyFor(banked)
-      .toRight(UnsupportedRestState(s"no Supply band for $banked banked warbands"))
-  yield base
+      : Either[OathViolation, Int] =
+    restingPlayer(ready, resting).flatMap(baseSupply(ready, _))
 
   private def supplyRefresh(ready: ReadyGame, resting: PlayerId)
       : Either[OathViolation, Vector[CoreOperation]] = for
@@ -139,7 +167,4 @@ object FinishRestProcedure:
       Right(Vector(BeginTurn(order.head, Phase.RoundEnd)))
     else Right(Vector(BeginTurn(order(index + 1), Phase.Wake)))
 
-  def turnOrder(ready: ReadyGame): Vector[PlayerId] =
-    val participants = ready.game.current.players.map(_.player)
-    val index = participants.indexOf(ready.setup.firstPlayer)
-    participants.drop(index) ++ participants.take(index)
+  def turnOrder(ready: ReadyGame): Vector[PlayerId] = TurnOrder.order(ready)

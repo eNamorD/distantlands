@@ -14,6 +14,10 @@ object MaterialBankState:
   val ExileWarbandsPerLineage = 14
   val BanditWarbands = 24
 
+  /** The Chancellor's purple bank, every Imperial player's warband bank
+    * (CR p. 45, "Warband Bank"). */
+  val ImperialWarbands = 24
+
   /** The printed warband inventory: a full supply for each Exile lineage in
     * play, plus the bandits. */
   def printedWarbandSupply(lineages: Iterable[LineageId]): Map[ForceKind, Int] =

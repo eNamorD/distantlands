@@ -81,9 +81,10 @@ private[frontend] object WorldBoardRenderer:
        "resource supply-open")
      HoverTip.set(supply, SupplyAtRest.note(player.role, board))
      supply.onclick = _ =>
-       if SupplyAtRest.isExile(player.role) then
+       if SupplyAtRest.readsTrack(player.role) then
          CardInspection.openSupply(SupplyAtRest.panel(board,
-           value.supplyBands, value.supplyMaximum, player.color,
+           if board.supplyBands.nonEmpty then board.supplyBands
+           else value.supplyBands, value.supplyMaximum, player.color,
            own = player.playerId == playerId), supply)
        else CardInspection.openText(SupplyAtRest.title,
          SupplyAtRest.citizenLines, supply)

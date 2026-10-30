@@ -212,10 +212,6 @@ Citizenship and exile, and the Empire part of later-game setup. Design:
 [Empire phase design](superpowers/specs/2026-10-29-empire-phase-design.md).
 Each slice gets its own plan, in this order.
 
-- [ ] **Slice 1a, Empire in play outside the Campaign.** The turn-aware
-  ruler, purple warbands, turn order from the Chancellor, Exile-only Wake
-  wins, the Vision slot, the Empire under Supremacy, the Chancellor's and
-  Citizens' Supply, Chancellor's Eye and Warband Transfers.
 - [ ] **Slice 1b, Imperial Campaign.** The Chancellor defends Imperial sites,
   Imperial Infighting and Imperial Tactics.
 - [ ] **Slice 2, Empire endings.** Stable Regime, War Exhaustion with an

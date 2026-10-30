@@ -56,8 +56,14 @@ private[application] final class GamePresentationProjector(
 
   def readyPlayers(ready: ReadyGame) = ready.game.current.players.map { player =>
     SetupPlayerProjection(player.player.value, playerLabel(player.player),
-      "exile", ready.playerColors(player.player))
+      roleKey(ready, player.player), ready.playerColors(player.player))
   }
+
+  private def roleKey(ready: ReadyGame, player: PlayerId): String =
+    Imperials.role(ready, player) match
+      case Some(Role.Chancellor) => "chancellor"
+      case Some(Role.Citizen) => "citizen"
+      case _ => "exile"
 
   def readyWorld(ready: ReadyGame, viewer: Option[PlayerId]) =
     val current = ready.game.current
@@ -147,13 +153,18 @@ private[application] final class GamePresentationProjector(
       def identifies(id: CardId, orientation: Orientation,
           area: PlayerCardArea): Boolean = identifiesCard(ready, viewer, id,
         Some(orientation), CardContainer.Player(player.player, area))
-      // The bag is keyed the way Rest keys it for an Exile; a citizen's
-      // kind is Imperial, whose bag is not the Rest table's (out of scope).
       val kind = PlayerForceKind.of(ready, player)
       val printed = kind.fold(0)(ready.banks.warbandSupply.getOrElse(_, 0))
       val atSites = kind.fold(0)(PlayerFacts.atSites(ready, _))
       val banked = kind.fold(0)(PlayerFacts.banked(ready, _))
-      val restBase = FinishRestProcedure.ExileSupply.baseSupplyFor(banked).getOrElse(0)
+      val restBase = FinishRestProcedure.supplyGainAtRest(ready, player.player)
+        .getOrElse(0)
+      val bands = FinishRestProcedure.supplyRules(ready, player.player)
+        .fold(Vector.empty)(_.refreshBands.map(band => SupplyBandProjection(
+          band.warbandsInBank.minimum,
+          Option.when(band.warbandsInBank.maximum != Int.MaxValue)(
+            band.warbandsInBank.maximum),
+          band.baseSupply)))
       PlayerBoardProjection(player.player.value, player.board.warbands,
         player.board.favor, player.board.faceUpSecrets, player.board.faceDownSecrets,
         secrets.committed, secrets.totalSecrets,
@@ -175,7 +186,7 @@ private[application] final class GamePresentationProjector(
         player.revealedVision.map(card => cardDetails(card.id,
           Some(card.orientation), hidden = false)),
         banners(ready).filter(_.holderPlayerId.contains(player.player.value)),
-        banked, printed, atSites, restBase,
+        banked, printed, atSites, restBase, bands,
         AdviserLimit.drawn(catalog, ready, player.player))
     }
 
@@ -190,7 +201,8 @@ private[application] final class GamePresentationProjector(
       player.board.faceUpSecrets + player.board.faceDownSecrets,
       player.board.supply.supply,
       player.pawnSite.map(_.value),
-      player.advisers.map(card => hiddenCard(cardKind(card.id))), Vector.empty, None))
+      player.advisers.map(card => hiddenCard(cardKind(card.id))), Vector.empty, None,
+      supplyBands = Vector.empty))
 
   def banners(ready: ReadyGame): Vector[BannerProjection] =
     val current = ready.game.current

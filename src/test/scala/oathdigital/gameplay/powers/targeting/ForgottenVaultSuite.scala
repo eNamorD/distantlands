@@ -10,7 +10,7 @@ import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome,
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
 import oathdigital.testkit.{CatalogNames, Table}
-import oathdigital.testkit.Table.{p1, p2}
+import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, as, present}
 
 class ForgottenVaultSuite extends munit.FunSuite:
@@ -130,3 +130,25 @@ class ForgottenVaultSuite extends munit.FunSuite:
     assertEquals(walk.options, Vector[DecisionOptionRef](
       DecisionOptionRef.RelicSlot(p2, 0)))
     assertEquals(notes(walk.events), Vector.empty)
+
+  test("an Empire Vault shields a Citizen's relics from an Exile's Raid"):
+    // p1 raids as an Exile; p3 is the Chancellor and p2, the defender, a
+    // Citizen. The Empire holds the Vault's site.
+    val RaidBoard(b, relic) = raidBoard()
+    val afterOrigin = b.ready.game.current.map.inPlay.find(_ != b.origin).get
+    val held = on(b)(table => vaultAt(table.imperial(p3, p2), Some(p3),
+      afterOrigin))
+    val started = accepted(start(held.ready, ActionRef.Campaign, b.actor))
+    val kind = accepted(rules.resolveWalker(started.state, b.actor,
+      CampaignIds.kind, raid))
+    val options = optionsAt(kind, ActionRef.Campaign)
+    assert(!options.contains(DecisionOptionRef.Relic(relic)),
+      options.toString)
+    assert(options.contains(DecisionOptionRef.Banner(Banner.PeoplesFavor)))
+    val hidden = optionsIncludingUnavailableAt(kind, ActionRef.Campaign)
+      .collectFirst:
+        case DecisionOption.Unavailable(option, reason)
+            if option.ref == DecisionOptionRef.Relic(relic) => reason
+    assertEquals(hidden, Some(OptionReason.Noted(power.id,
+      ForgottenVault.shielded(PowerSourceRef.Card(vault),
+        NoteArg.Player(p2)))))

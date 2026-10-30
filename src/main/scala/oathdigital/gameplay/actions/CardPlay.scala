@@ -142,6 +142,10 @@ object CardPlay:
         yield adviserPlan(origin, player, id, orientation, removed)
       case id: VisionId =>
         if !FirstGameRulesData.visions.contains(id) then Left(UnknownWorldCard(id))
+        else if orientation == Orientation.FaceUp &&
+            id != VisionRules.Conspiracy &&
+            !Imperials.role(ready, player.player).forall(_.hasVisionSlot) then
+          Left(InvalidSearchPlacement("an Imperial board has no Vision slot"))
         else planVision(player, origin, id, orientation, replace)
 
   private def sitePlan(ready: ReadyGame, origin: Origin, player: PlayerState,

@@ -8,7 +8,8 @@ import oathdigital.gameplay.actions.challenge.{ChallengeProcedure, PlaceBannerRe
 import oathdigital.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
 import oathdigital.gameplay.actions.forge.ForgeProcedure
 import oathdigital.gameplay.actions.campaign.CampaignProcedure
-import oathdigital.gameplay.actions.minor.MinorActionProcedures
+import oathdigital.gameplay.actions.minor.{MinorActionProcedures,
+  WarbandTransfers}
 import oathdigital.gameplay.actions.negotiation.NegotiationProcedure
 import oathdigital.gameplay.actions.recover.RecoverProcedure
 import oathdigital.gameplay.actions.search.{SearchOptions, SearchProcedure}
@@ -271,6 +272,11 @@ object WalkerProcedureRegistry:
       modifierWindow = None,
       build = MinorActionProcedures.buildMove,
       rebuild = MinorActionProcedures.rebuildMove),
+    ActionRef.TransferWarbands -> Entry(
+      rollDecisionId = None,
+      modifierWindow = None,
+      build = WarbandTransfers.build,
+      rebuild = WarbandTransfers.rebuild),
 
     /** Batch-1 Task 7, and the first entry for an action outside the Act
       * phase. Nothing here says so: the phase is a gate inside

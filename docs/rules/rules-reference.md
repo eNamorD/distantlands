@@ -145,6 +145,15 @@ If Chancellor would win, a Citizen satisfying the current Successor goal wins in
 
 Without Empire, round 8 uses War Exhaustion while skipping Stable Regime and Chancellor steps; if still no winner, Oathkeeper wins, otherwise random (CR p. 19).
 
+## Imperial laws
+
+- **Seal of the Empire.** On an Imperial player's turn, that player rules the Imperial sites (CR p. 35).
+- **Steward of Imperial Domains.** Outside such a turn, the Chancellor rules the Imperial sites (CR p. 35).
+- **Imperial warbands.** Imperial players share one bank of 24 purple warbands, and a killed purple warband returns to it (CR p. 35).
+- **Refreshing Supply.** The Chancellor refreshes by the warbands in the purple bank; a Citizen matches the Chancellor's current Supply and keeps their unspent Supply, capped at 7 (CR p. 35).
+- **Chancellor's Eye.** A Citizen asks the Chancellor's consent to move warbands from their site to their board (CR p. 35).
+- **Warband Transfers.** An Imperial player may move warbands to or from another Imperial player's board when that player's pawn is at their site and that player consents (CR p. 35).
+
 ## Rules precedence and timing
 
 - Card powers may add actions and trigger effects while using glossary-defined terms (CR p. 42).

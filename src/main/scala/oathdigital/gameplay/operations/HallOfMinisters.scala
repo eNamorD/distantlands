@@ -58,17 +58,9 @@ case object HallOfMinisters extends OperationRestriction with WaivableRule:
   override def reason(ready: ReadyGame,
       operation: CoreOperation): Option[OperationReason] =
     discardAt(ready, operation).flatMap { case (site, actor, card) =>
-      val current = ready.game.current
-      val actorSide = current.players.find(_.player == actor).flatMap { player =>
-        ready.game.campaign.lineages.get(player.lineage).map { lineage =>
-          if lineage.role.isImperial then SiteRuler.Empire
-          else SiteRuler.Player(actor)
-        }
-      }
       for
-        sourceSide <- actorSide
         ruler <- siteRuler(ready, site)
-        if SiteRule.enemies(sourceSide, ruler)
+        if SiteRule.enemies(SiteRuler.Player(actor), ruler)
         if hallRuler(ready).contains(ruler)
       yield OperationReason("discard-immune",
         s"cards at site ${site.value} cannot be discarded by ${actor.value}",
@@ -78,7 +70,7 @@ case object HallOfMinisters extends OperationRestriction with WaivableRule:
     }
 
   /** The player who rules the intact Hall, who may consent; `None` when
-    * bandits, the Empire or nobody rules it. */
+    * bandits or nobody rules it. */
   def granter(ready: ReadyGame): Option[PlayerId] =
     hallRuler(ready).collect { case SiteRuler.Player(player) => player }
 
@@ -89,9 +81,7 @@ case object HallOfMinisters extends OperationRestriction with WaivableRule:
     }.flatMap(siteRuler(ready, _))
 
   private def siteRuler(ready: ReadyGame, site: SiteId): Option[SiteRuler] =
-    val current = ready.game.current
-    current.map.sites.get(site).flatMap(state =>
-      SiteRule.ruler(state.forces, current.players).toOption)
+    SiteRule.rulingPlayer(ready, site)
 
   private def intactHall(card: SiteDenizenState): Boolean = card match
     case edifice: EdificeState =>

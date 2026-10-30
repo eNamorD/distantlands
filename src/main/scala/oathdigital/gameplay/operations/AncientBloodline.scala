@@ -17,10 +17,8 @@ import oathdigital.model._
   * The holder may consent outside a Campaign (consent design, ruling 1).
   * A grant covers that card's move by that player for the turn.
   *
-  * An Imperial holder rules through the Empire, which the engine does not
-  * model yet: `PowerAccess.ruledSites` counts only a player ruler, so such
-  * a holder protects nothing. That case is to be handled with the Imperial
-  * rules.
+  * An Imperial holder rules the Empire's sites on their own turn, through
+  * `PowerAccess.ruledSites`.
   */
 case object AncientBloodline extends AsIfLocked with WaivableRule:
   val id: PowerId = AncientBloodlineCard.power.id

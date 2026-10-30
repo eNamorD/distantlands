@@ -358,6 +358,23 @@ class CardSlotsSuite extends munit.FunSuite:
     assertEquals(CardPlay.operations(catalog, ready, p1, conspiracy,
       played.placement, CardPlay.Origin.TemporaryHand), Right(Vector.empty))
 
+  test("an Imperial player sees the Vision spot disabled with its reason"):
+    val faith = VisionRules.Faith
+    // p2 is the Chancellor; the drawing player p1 is a Citizen.
+    val ready = atAncientCity.imperial(p2, p1).hand(p1, faith).ready
+    assertEquals(options(slotsOf(ready, faith)), Vector(pile,
+      refused(spot, CardSlots.noVisionSlotReason),
+      adviserPlay(0, faceup = false)))
+    assert(CardPlay.operations(catalog, ready, p1, faith,
+      SearchPlacement.Adviser(Orientation.FaceUp, None),
+      CardPlay.Origin.TemporaryHand).isLeft)
+
+  test("an Imperial player may still play the Conspiracy"):
+    val conspiracy = VisionRules.Conspiracy
+    val ready = atAncientCity.imperial(p2, p1).hand(p1, conspiracy).ready
+    assertEquals(options(slotsOf(ready, conspiracy)),
+      Vector(pile, play, adviserPlay(0, faceup = false)))
+
   test("a site-only card goes to advisers facedown only; an adviser-only " +
       "card never to a site"):
     assertEquals(options(slotsOf(atAncientCity.hand(p1, curfew).ready, curfew)),

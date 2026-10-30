@@ -38,3 +38,26 @@ class OathkeeperRulesSuite extends munit.FunSuite:
   test("the Usurper side is not consulted"):
     assertEquals(outcome(Vector(p2), holder = Some(p1),
       side = TitleSide.Usurper), Transfer(Some(p2)))
+
+  /** p1 is the Chancellor and p2 a Citizen, with the Empire holding
+    * `empire` sites, and p3, an Exile, holding `exile` sites. Supremacy is
+    * the goal. */
+  private def empireAgainstExile(empire: Int, exile: Int,
+      holder: Option[PlayerId] = None): OathkeeperOutcome =
+    val sites = Vector("Dunes", "Fair Isle", "Deep Woods", "Mountains")
+    val withEmpire = sites.take(empire).foldLeft(
+      Table.start.imperial(p1, p2).oathkeeper(holder))((t, site) =>
+        t.warbandsAt(site, p1, 1))
+    val table = sites.drop(empire).take(exile).foldLeft(withEmpire)(
+      (t, site) => t.warbandsAt(site, p3, 1))
+    OathkeeperRules.outcome(table.ready)
+
+  test("the Chancellor holds Supremacy when the Empire has the most sites"):
+    assertEquals(empireAgainstExile(2, 1), Transfer(Some(p1)))
+
+  test("a Citizen holding Supremacy loses it to the Chancellor"):
+    assertEquals(empireAgainstExile(2, 1, holder = Some(p2)),
+      Transfer(Some(p1)))
+
+  test("an Exile with more sites than the Empire takes Supremacy"):
+    assertEquals(empireAgainstExile(1, 2), Transfer(Some(p3)))

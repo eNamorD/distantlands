@@ -33,8 +33,9 @@ class SupplyAtRestSuite extends munit.FunSuite:
     assertEquals(SupplyAtRest.panel(board, bands, 7, PlayerColor.Red,
       own = false).elsewhere, "(6 on their board, 3 on sites)")
 
-  test("only an Exile reads the track"):
-    assert(SupplyAtRest.isExile("Exile"))
-    assert(!SupplyAtRest.isExile("citizen"))
+  test("the Chancellor reads their own track"):
+    assert(SupplyAtRest.readsTrack("chancellor"))
+    assert(SupplyAtRest.readsTrack("Exile"))
+    assert(!SupplyAtRest.readsTrack("citizen"))
     assertEquals(SupplyAtRest.citizenLines,
       Vector("Citizens copy the Chancellor's Supply."))

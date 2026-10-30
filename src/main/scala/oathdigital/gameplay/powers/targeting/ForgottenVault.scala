@@ -20,7 +20,8 @@ object ForgottenVaultCard extends Denizen(DenizenId("75"), "Forgotten Vault", Su
   * Vault's ruler cannot target relics that ruler holds, as the Circlet of
   * Command protects its holder's relics. The ruler is the ruler of the Vault's
   * site. Ruled by bandits or unruled, it protects nothing, because bandits hold
-  * no relics. Empire rulers are not supported.
+  * no relics. If the Empire rules it, it protects every Imperial player's
+  * relics.
   *
   * "Target" means a Campaign's target selection only (catalog batch 3
   * rulings, "Target protections corrected"). So it restricts a Raid's
@@ -40,32 +41,33 @@ final case class ForgottenVault private (catalog: ExecutableCatalog)
   override def noteKeys: Vector[NoteKey] = ForgottenVault.noteKeys
 
   def contributions: Map[PowerWindow, Vector[Contribution]] = Map(
-    PowerWindow.CampaignTargetSelection ->
-      Vector(OptionRestriction(guard, (ctx, _) => protectedRuler(ctx).map(said))))
+    PowerWindow.CampaignTargetSelection -> Vector(OptionRestriction(guard,
+      (ctx, ref) => shieldedOwner(ctx, ref).map(said))))
 
   private def guard(ctx: PowerCtx, ref: DecisionOptionRef)
-      : Option[OathViolation] = Option.when(shields(ctx, ref))(
+      : Option[OathViolation] = Option.when(shieldedOwner(ctx, ref).nonEmpty)(
     OathViolation.InvalidEventOrder(
       "the Forgotten Vault protects its ruler's relics"))
 
   private def said(ruler: PlayerId): LogNote =
     ForgottenVault.shielded(PowerSourceRef.Card(cardId), NoteArg.Player(ruler))
 
-  /** The Vault's ruler, when the acting player is one of their enemies. */
-  private def protectedRuler(ctx: PowerCtx): Option[PlayerId] =
-    SiteRulers.rulerOfCard(ctx.state, cardId).collect {
-      case ruler @ SiteRuler.Player(owner)
-          if SiteRule.enemies(ruler, SiteRuler.Player(ctx.actor)) => owner
-    }
+  /** The players the Vault protects from the acting player: its site's
+    * ruler, or every Imperial player while the Empire rules it, when they
+    * are enemies of the actor. */
+  private def owners(ctx: PowerCtx): Set[PlayerId] =
+    SiteRulers.siteOf(ctx.state, cardId).fold(Set.empty[PlayerId])(site =>
+      SiteRulers.protectedAt(ctx.state, site)).filter(owner =>
+      SiteRule.enemies(SiteRuler.Player(owner), SiteRuler.Player(ctx.actor)))
 
-  /** Whether `ref` names a relic the protected ruler holds. */
-  private def shields(ctx: PowerCtx, ref: DecisionOptionRef): Boolean =
-    protectedRuler(ctx).exists(owner => ref match
-      case DecisionOptionRef.Relic(relic) =>
-        ctx.state.game.current.players.exists(p =>
-          p.player == owner && p.relics.exists(_.id == relic))
-      case DecisionOptionRef.RelicSlot(slotOwner, _) => slotOwner == owner
-      case _ => false)
+  /** The protected player holding the relic `ref` names. */
+  private def shieldedOwner(ctx: PowerCtx, ref: DecisionOptionRef)
+      : Option[PlayerId] = owners(ctx).find(owner => ref match
+    case DecisionOptionRef.Relic(relic) =>
+      ctx.state.game.current.players.exists(p =>
+        p.player == owner && p.relics.exists(_.id == relic))
+    case DecisionOptionRef.RelicSlot(slotOwner, _) => slotOwner == owner
+    case _ => false)
 
 object ForgottenVault:
   val id: PowerId = ForgottenVaultCard.power.id

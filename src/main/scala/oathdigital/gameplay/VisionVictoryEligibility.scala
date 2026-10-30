@@ -5,17 +5,13 @@ import oathdigital.model._
 
 /** CR pp. 16-17, 19: the one authoritative true-Vision qualification rule. */
 object VisionVictoryEligibility:
-  def qualifies(playerId: PlayerId, current: CurrentGameState): Boolean =
+  def qualifies(playerId: PlayerId, ready: ReadyGame): Boolean =
+    val current = ready.game.current
     current.tracks.visionsDrawn >= 3 && current.players.find(
       _.player == playerId).flatMap(_.revealedVision).exists { revealed =>
       VisionRules.trueGoal(revealed.id).exists:
         case OathkeeperGoal.Supremacy => uniquePositiveLeader(playerId,
-          current.players.map(player => player.player ->
-            current.map.sites.values.count(_.forces match {
-              case SiteForces.Occupied(ForceKind.Exile(lineage), _) =>
-                lineage == player.lineage
-              case _ => false
-            })))
+          SupremacySites.counts(ready))
         case OathkeeperGoal.Protection => uniquePositiveLeader(playerId,
           current.players.map(player => player.player -> player.relics.size))
         case OathkeeperGoal.ThePeople =>

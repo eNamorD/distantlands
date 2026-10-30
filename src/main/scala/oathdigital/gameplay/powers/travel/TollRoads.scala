@@ -21,7 +21,7 @@ object TollRoadsCard extends Denizen(DenizenId("118"), "Toll Roads", Suit.Order)
   * cannot travel to a site ruled by Toll Roads' ruler unless they give 1 favor
   * to that ruler, or burn it when bandits rule. Toll Roads' ruler is the ruler
   * of the site it stands at, and the rule covers every site that ruler holds,
-  * Toll Roads' own included. Empire rulers are not supported.
+  * Toll Roads' own included.
   *
   * When a player rules it, the traveller is asked first to pay or to travel
   * without paying, which its ruler may consent to ([[PayOrAsk]], consent

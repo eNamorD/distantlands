@@ -1,6 +1,6 @@
 # Empire phase design
 
-Status: designed, 2026-10-29. No slice is implemented yet.
+Status: designed, 2026-10-29. Slice 1a implemented, 2026-10-29.
 
 Roadmap item: **Phase - Empire**. Chancellor and Citizen roles in play,
 Imperial warbands, the Imperial Campaign, the Stable Regime and Successor
@@ -386,6 +386,14 @@ legacies stay refused (see [Out of scope](#out-of-scope)).
 - **R6, absent Chancellor.** When a seated Citizen becomes the Chancellor
   because the Chancellor's lineage sits out, that lineage becomes a Citizen
   in the box.
+- **R7, no Imperial Usurper in play.** An Imperial player never holds the
+  Usurper side during play. An Exile who becomes a Citizen flips the title to
+  Oathkeeper at once (slice 3). The check is suspended in the Chronicle phase,
+  where the Chronicle crowns the Usurper winner after the game ends.
+- **R8, Warband Transfers consent names the transfer.** The partner is asked
+  after the way and the amount are chosen, so the ask names them. Each
+  consent covers one exact transfer; a refusal stops only that one for the
+  turn.
 - **Defender is the attacker.** A Campaign target whose defender resolves to
   the attacker is not legal.
 - **First game.** "Become a Citizen" powers are ignored in a first game by a

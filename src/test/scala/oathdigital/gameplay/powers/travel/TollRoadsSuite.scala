@@ -1,5 +1,6 @@
 package oathdigital.gameplay.powers.travel
 
+import oathdigital.gameplay.TravelPlay
 import oathdigital.gameplay.powers.{NoteText, PayOrAsk, PowerFixture}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
@@ -112,3 +113,28 @@ class TollRoadsSuite extends munit.FunSuite:
         covers = false)))
     assertEquals(said(accepted(travel(rivalRules, hinterlandPlains)).events),
       Vector.empty)
+
+  test("an Exile travelling to an Empire site asks the Chancellor for the toll"):
+    // p1 is the Chancellor, so the toll is theirs on p3's turn.
+    val exile = Table.p3
+    val ready = on(board())(_.imperial(Table.p1, Table.p2)
+      .turn(exile, Phase.Act).pawn(exile, at = cradlePlains)
+      .supply(exile, 7).favor(exile, 1).denizen(toll, at = provincePlains)
+      .warbandsAt(provincePlains, Table.p2, 1).warbandsAt(pass, Table.p2, 1))
+    val started = accepted(TravelPlay.travelled(rules, OathState.Ready(ready),
+      exile, pass, Vector.empty))
+    // The Travel parks on the pay-or-ask step, whose ruler is the
+    // Chancellor.
+    assertEquals(parkedDecision(started.state).decisionId,
+      TollRoads.decisionId)
+    assertEquals(rules.consentAsk(started.state, exile, TollRoads.decisionId,
+      TollRoads.free(pass)).toOption.collect {
+        case OptionReason.Askable(_, _, asks, _) => asks.map { case ConsentAsk(who, _, _, _) => who } },
+      Some(Vector(Table.p1)))
+    // Paying the toll sends the favor to the Chancellor.
+    val done = accepted(rules.resolveWalker(started.state, exile,
+      TollRoads.decisionId, DecisionAnswer.ChooseOneAnswer(PayOrAsk.pay)))
+    val result = Outcomes.ready(done.state)
+    assertEquals(Look(result).player(exile).pawnSite, Some(pass))
+    assertEquals(Look(result).favor(exile), 0)
+    assertEquals(Look(result).favor(Table.p1), Look(ready).favor(Table.p1) + 1)

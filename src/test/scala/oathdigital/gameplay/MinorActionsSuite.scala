@@ -199,6 +199,46 @@ class MinorActionsSuite extends munit.FunSuite:
     assert(withPowers.resolveWalker(towardBoard.state, p1,
       MinorActionProcedures.amountDecisionId, ChooseAmountAnswer(2)).isRight)
 
+  /** p1 is the Chancellor and p2 a Citizen on their own turn at Broken
+    * Peaks, which the Empire holds with 3 warbands; p2's board holds 4. */
+  private def citizenAtImperialSite: Table = Table.start.imperial(p1, p2)
+    .turn(p2, Phase.Act).pawn(p2, at = brokenPeaks).boardWarbands(p2, 4)
+    .warbandsAt(brokenPeaks, p2, 3)
+
+  test("a Citizen moves purple warbands to the Empire site they rule"):
+    val asked = accepted(rules.startWalker(citizenAtImperialSite.state,
+      ActionRef.MoveWarbands, p2))
+    val towardSite = accepted(rules.resolveWalker(asked.state, p2,
+      MinorActionProcedures.directionDecisionId, ChooseOneAnswer(toSite)))
+    val atSite = accepted(rules.resolveWalker(towardSite.state, p2,
+      MinorActionProcedures.amountDecisionId, ChooseAmountAnswer(2)))
+    val ready = atSite.state match
+      case Ready(value) => value
+      case other => fail(s"not ready: $other")
+    assertEquals(ready.game.current.map.sites(brokenPeaks).forces,
+      SiteForces.Occupied(ForceKind.Imperial, 5))
+
+  test("a Citizen asks the Chancellor before moving warbands to their board"):
+    val asked = accepted(rules.startWalker(citizenAtImperialSite.state,
+      ActionRef.MoveWarbands, p2))
+    assert(boardWay(asked.state).exists(_.askable), s"${boardWay(asked.state)}")
+
+  test("the Chancellor moves warbands to their board without asking"):
+    val chancellorAtImperialSite = Table.start.imperial(p1, p2)
+      .turn(p1, Phase.Act).pawn(p1, at = brokenPeaks).boardWarbands(p1, 4)
+      .warbandsAt(brokenPeaks, p1, 3)
+    val asked = accepted(rules.startWalker(chancellorAtImperialSite.state,
+      ActionRef.MoveWarbands, p1))
+    assertEquals(boardWay(asked.state),
+      Some(wayButton(toBoard, "To your board")))
+
+  /** The "To your board" option of the parked direction decision. */
+  private def boardWay(state: OathState): Option[DecisionOption] =
+    parkedDecisionQuery(state) match
+      case choose: DecisionQuery.ChooseOne =>
+        choose.options.find(_.ref == toBoard)
+      case other => fail(s"expected a choice, got $other")
+
   test("Move Warbands refuses to start when neither way is open"):
     // Nothing on the board, and only one warband at the site.
     val stuck = minorBoard.boardWarbands(p1, 0)

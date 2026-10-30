@@ -42,7 +42,8 @@ final case class SupplyRefreshBand(
  * Board-specific Supply refresh data.
  *
  * At Rest, find the matching warband bank, then add unspent Supply and cap at
- * `maximum`. Citizens bypass this table and copy the Chancellor's result.
+ * `maximum`. Citizens have no table: they match the Chancellor's Supply and
+ * add their own unspent Supply (`FinishRestProcedure.supplyRules`).
  */
 final case class SupplyRules(
     maximum: Int,

@@ -118,6 +118,7 @@ object ActionRef:
   case object RevealOwnedRelic extends ActionRef:
     val key = "reveal-owned-relic"
   case object MoveWarbands extends ActionRef { val key = "move-warbands" }
+  case object TransferWarbands extends ActionRef { val key = "transfer-warbands" }
 
   /** Uses one phase power. Parameterized, so `all` cannot list it; the key
     * parses directly.
@@ -132,7 +133,8 @@ object ActionRef:
   val all: Vector[ActionRef] = Vector(Search, PlayFacedownAdviser,
     Recover, Forge, Travel, TakeWealth, Muster, Trade, Challenge,
     PlaceBannerResource, Negotiation, Campaign, PeekSiteRelics,
-    RevealOwnedRelic, MoveWarbands)
+    RevealOwnedRelic, MoveWarbands,
+    TransferWarbands)
 
   def usePower(key: String): Option[UsePower] =
     Option.when(key.startsWith(UsePower.Prefix))(key.stripPrefix(UsePower.Prefix))

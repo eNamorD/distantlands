@@ -331,6 +331,9 @@ final case class PlayerBoardProjection(
     /** The Supply the band for `bankedWarbands` returns at Rest, before
       * unspent Supply is added and the track's ceiling applied. */
     restSupplyBase: Int = 0,
+    /** The Rest table this board's Supply follows, or none for a Citizen,
+      * whose Supply copies the Chancellor's. */
+    supplyBands: Vector[SupplyBandProjection],
     /** How many advisers this player may hold: 3, or 2 under Silver Tongue
       * or Insomnia. The board draws that many adviser slots. */
     adviserLimit: Int = 3

@@ -29,8 +29,6 @@ object OathViolation:
       extends OathViolation
   final case class WrongPhase(expected: Phase, actual: Phase)
       extends OathViolation
-  final case class UnsupportedWakeVictoryState(reason: String)
-      extends OathViolation
   final case class PawnSiteMissing(playerId: PlayerId)
       extends OathViolation
   final case class ResourceUnavailable(siteId: SiteId, resource: WakeResource)

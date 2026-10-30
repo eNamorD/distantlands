@@ -2,7 +2,8 @@ package oathdigital.gameplay.actions.minor
 
 import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.NoteSupport
-import oathdigital.gameplay.actions.{ProcedureNotes, VowOfWanderingRule}
+import oathdigital.gameplay.actions.{ImperialLaws, ProcedureNotes,
+  VowOfWanderingRule}
 import oathdigital.model._
 import oathdigital.model.OathViolation.{InvalidEventOrder,
   MinorActionUnavailable, PawnSiteMissing}
@@ -193,8 +194,36 @@ object MinorActionProcedures:
   private def way(ready: ReadyGame, actor: PlayerId,
       ref: DecisionOptionRef.Button, label: String): DecisionOption =
     val option = DecisionOption.Button(ref, label)
-    most(ready, actor, ref).fold(reason => DecisionOption.Unavailable(option,
-      OptionReason.Written(reason)), _ => option)
+    most(ready, actor, ref).fold(
+      reason => DecisionOption.Unavailable(option,
+        OptionReason.Written(reason)),
+      _ => (if ref == toBoard then eye(ready, actor) else None)
+        .fold[DecisionOption](option)(DecisionOption.Unavailable(option, _)))
+
+  /** The key a Chancellor's Eye grant is remembered under. */
+  def eyeKey(actor: PlayerId): ConsentKey =
+    ConsentKey(ImperialLaws.chancellorsEye, actor, directionDecisionId,
+      toBoard)
+
+  /** Chancellor's Eye (CR p. 35): why a Citizen's move to their board
+    * waits, or `None` once the Chancellor granted it or for anyone else. */
+  private def eye(ready: ReadyGame, actor: PlayerId): Option[OptionReason] =
+    if !Imperials.role(ready, actor).contains(Role.Citizen) then None
+    else Imperials.chancellor(ready) match
+      case None => Some(OptionReason.Written(
+        "No Chancellor can consent"))
+      case Some(chancellor) =>
+        ready.consent.answer(eyeKey(actor), Some(chancellor),
+            ConsentTurn.of(ready)) match
+          case Some(ConsentAnswer.Granted) => None
+          case Some(ConsentAnswer.Refused) => Some(OptionReason.Noted(
+            ImperialLaws.chancellorsEye, ImperialLaws.refused.sourceless(
+              NoteArg.Player(chancellor))))
+          case None => Some(OptionReason.Askable(ImperialLaws.chancellorsEye,
+            ImperialLaws.needsChancellor.sourceless(),
+            Vector(ConsentAsk(chancellor,
+              Vector(ImperialLaws.chancellorsEye))),
+            Vector(eyeKey(actor))))
 
   private def chosenWay(answered: Vector[Answered])
       : Option[DecisionOptionRef.Button] = answered.collectFirst {
@@ -211,18 +240,18 @@ object MinorActionProcedures:
     val current = ready.game.current
     current.players.find(_.player == actor).zip(sitedPawn(ready, actor)) match
       case None => Left("Your pawn is not at a site")
-      case Some((player, (_, site))) =>
+      case Some((player, (siteId, site))) =>
         if way == toSite then
-          if !SiteRule.ruledBy(site.forces, current.players, actor)
-              .getOrElse(false) then Left("You do not rule your site")
+          if !SiteRule.rulingPlayer(ready, siteId)
+              .contains(SiteRuler.Player(actor)) then
+            Left("You do not rule your site")
           else if player.board.warbands == 0 then
             Left("No warbands on your board")
           else if VowOfWanderingRule.holds(ready, actor) then
             Left(VowOfWanderingRule.Reason)
           else Right(player.board.warbands)
-        else site.forces match
-          case SiteForces.Occupied(ForceKind.Exile(lineage), count)
-              if lineage == player.lineage =>
+        else (site.forces, PlayerForceKind.of(ready, player)) match
+          case (SiteForces.Occupied(kind, count), Some(own)) if kind == own =>
             if count > 1 then Right(count - 1)
             else Left("One warband must stay at your site")
           case _ => Left("None of your warbands are at your site")
@@ -232,10 +261,11 @@ object MinorActionProcedures:
     for
       player <- ready.game.current.players.find(_.player == actor)
       siteId <- player.pawnSite
+      kind <- PlayerForceKind.of(ready, player)
     yield
       val board = PositionedLocation(Location.PlayArea(actor))
       val site = PositionedLocation(Location.Site(siteId))
-      Move(Piece.Warbands(ForceKind.Exile(player.lineage), amount),
+      Move(Piece.Warbands(kind, amount),
         if way == toSite then board else site,
         if way == toSite then site else board)
 
@@ -261,7 +291,7 @@ object MinorActionProcedures:
 
   /** The legacy handler's gates: no start selection, and the first-game
     * rules. */
-  private def started(ready: ReadyGame, actor: PlayerId,
+  private[minor] def started(ready: ReadyGame, actor: PlayerId,
       args: Vector[DecisionOptionRef], action: ActionRef)
       : Either[OathViolation, Unit] =
     for
@@ -269,14 +299,12 @@ object MinorActionProcedures:
         s"walker procedure ${action.key} takes no start selection, got " +
           args.map(_.kind).mkString(", ")))
       _ <- Either.cond(supported(ready), (), MinorActionUnavailable(
-        "minor actions are limited to fixed unaltered all-Exile " +
-          "first-game rules"))
+        "minor actions are limited to the fixed unaltered foundations"))
     yield ()
 
   private def supported(ready: ReadyGame): Boolean =
     ready.setup.foundationProfile ==
       FirstGameFoundationProfile.FixedUnaltered &&
-      ready.game.campaign.lineages.values.forall(_.role == Role.Exile) &&
       ready.game.campaign.foundations.values.forall(foundation =>
         foundation.face == FoundationFace.Normal &&
           foundation.alterationSources.isEmpty)

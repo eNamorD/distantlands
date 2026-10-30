@@ -2,7 +2,7 @@ package oathdigital.gameplay.powers.targeting
 
 import oathdigital.catalog.{Edifice, EdificeFace, ExecutableCatalog, Locked,
   PrintedPower}
-import oathdigital.gameplay.EffectiveSuit
+import oathdigital.gameplay.{EffectiveSuit, SiteRulers}
 import oathdigital.gameplay.actions.BannerRules
 import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignSetup}
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution, OptionRestriction, PowerCtx, Restriction}
@@ -175,8 +175,8 @@ object FortressRule:
       CampaignIds.all.contains(answered.decisionId)))
 
 /** The Oaken Fortress (E28, intact): while its ruler is at this site, they
-  * cannot be targeted by a Challenge or a Raid. Empire rulers are not
-  * supported.
+  * cannot be targeted by a Challenge or a Raid. While the
+  * Empire rules its site, it shields every Imperial player there.
   */
 final case class OakenFortress private (catalog: ExecutableCatalog)
     extends FortressRule:
@@ -187,9 +187,7 @@ final case class OakenFortress private (catalog: ExecutableCatalog)
   protected def shields(ready: ReadyGame, attacker: PlayerId,
       defender: PlayerId): Boolean = defender != attacker &&
     sites(ready).exists(site => pawnSite(ready, defender).contains(site) &&
-      ready.game.current.map.sites.get(site).flatMap(state =>
-        SiteRule.ruler(state.forces, ready.game.current.players).toOption)
-        .contains(SiteRuler.Player(defender)))
+      SiteRulers.protectedAt(ready, site).contains(defender))
 
 object OakenFortress:
   val id: PowerId = OakenFortressCard.intact.power.id

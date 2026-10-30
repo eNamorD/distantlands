@@ -38,6 +38,20 @@ These are not claimed errors in the rulebook. They are places where an implement
 10. **Chronicle actor availability.** Banner task assignment can target "anyone"; player attendance may change between games. Define whether absent/stored lineages can be assigned tasks or whether "anyone" means current participants (CR p. 36).
     Resolved: only players seated for the game receive tasks ([Chronicle rulings](#chronicle-rulings), ruling 1).
 
+## Empire rulings
+
+Rulings for the Empire in play ([Empire phase design](../superpowers/specs/2026-10-29-empire-phase-design.md), "Rulings"). Slice 1a implements R1 to R3 and the Usurper ruling.
+
+R1. **One ruler.** On an Imperial player's turn only that player rules Imperial sites; the Chancellor does not also rule them. A site has exactly one ruler (CR p. 15).
+
+R2. **The Chancellor outside any turn.** Outside any turn, as in the end-of-round checks and the Chronicle, the Chancellor rules Imperial sites.
+
+R3. **A Citizen's Supply.** A Citizen refreshes to the Chancellor's current Supply, which includes the Chancellor's own carried surplus, plus their own unspent Supply, capped at 7.
+
+R7. **No Imperial Usurper in play.** An Imperial player never holds the Usurper side of the Oathkeeper title during play. An Exile who holds it and becomes a Citizen flips it to Oathkeeper at once (Empire slice 3 implements the flip), so domain validation rejects an Imperial player on the Usurper side outside the Chronicle phase. The check is suspended in the Chronicle phase, where the Chronicle crowns the Usurper winner after the game has ended.
+
+R8. **Warband Transfers consent names the transfer.** The partner is asked after the player has chosen the way and the amount, so the ask names them: "Asked {Blue} for consent to give them 3 warbands." Each consent covers one exact transfer. A refusal stops only that way and amount for the turn; the player may ask about a different one.
+
 ## Chronicle rulings
 
 Rulings given by the project owner for the Chronicle Phase ([chronicle.md](chronicle.md)). The rev1 task cards are slightly older than the CR; where they disagree, the CR governs.

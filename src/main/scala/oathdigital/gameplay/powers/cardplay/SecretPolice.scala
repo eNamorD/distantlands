@@ -19,8 +19,8 @@ object SecretPoliceCard extends Denizen(DenizenId("113"), "Secret Police", Suit.
   * The Police's ruler is the ruler of the site it stands at. A player ruler
   * binds every other player whose pawn is at a site that player rules. A
   * Bandit ruler binds every player at any Bandit-ruled site, the Police site
-  * included, since bandits are every player's enemy. An Empire ruler binds no
-  * one until the Empire phase decides otherwise. The rule binds players who
+  * included, since bandits are every player's enemy. The Empire's sites resolve
+  * to its governor, who binds like any player ruler. The rule binds players who
   * cannot use the card, so the card is found on the map, as Toll Roads is,
   * and not through `PowerAccess`.
   * When the look-ahead hides a faceup placement because of it, it writes

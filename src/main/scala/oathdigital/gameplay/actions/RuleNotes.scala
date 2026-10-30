@@ -16,6 +16,10 @@ object RuleNotes:
     * operation restriction enforces: such a rule is not a power either
     * (consent slice 3). */
   val all: Vector[(PowerId, Vector[NoteKey])] =
-    Vector(homelandDiscard -> Vector(CardPlayRules.discardFirst)) ++
+    Vector(homelandDiscard -> Vector(CardPlayRules.discardFirst),
+      ImperialLaws.chancellorsEye -> Vector(ImperialLaws.needsChancellor,
+        ImperialLaws.refused),
+      ImperialLaws.warbandTransfers -> Vector(ImperialLaws.needsPartner,
+        ImperialLaws.refused)) ++
       OperationRestrictions.printedRules.collect {
         case rule if rule.noteKeys.nonEmpty => rule.id -> rule.noteKeys }

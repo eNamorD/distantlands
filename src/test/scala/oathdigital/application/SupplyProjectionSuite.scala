@@ -6,7 +6,7 @@ import oathdigital.model._
 import oathdigital.model.OathState.Ready
 import oathdigital.protocol.projection.{GameProjection, SupplyBandProjection}
 import oathdigital.testkit.{Look, MenuPlay, Outcomes, Table}
-import oathdigital.testkit.Table.p1
+import oathdigital.testkit.Table.{p1, p2, p3}
 
 /** What the Supply track promises the client.
   *
@@ -20,6 +20,7 @@ import oathdigital.testkit.Table.p1
 class SupplyProjectionSuite extends munit.FunSuite:
   private val rules = new OathRules(catalog)
   private val projector = new GameProjector(catalog)
+  private val presentation = new GamePresentationProjector(catalog)
 
   private def project(ready: ReadyGame, viewer: PlayerId): GameProjection =
     projector.project("supply", LoadedGame(Ready(ready), 4), viewer)
@@ -79,3 +80,24 @@ class SupplyProjectionSuite extends munit.FunSuite:
     assertEquals(project(Table.start.ready, p1).supplyBands, Vector(
       SupplyBandProjection(9, None, 6), SupplyBandProjection(4, Some(8), 5),
       SupplyBandProjection(0, Some(3), 4)))
+
+  private val chancellorBands = Vector(
+    SupplyBandProjection(18, None, 6), SupplyBandProjection(11, Some(17), 5),
+    SupplyBandProjection(4, Some(10), 4), SupplyBandProjection(0, Some(3), 3))
+
+  test("each seat shows its lineage's role"):
+    val ready = Table.start.imperial(p1, p2).ready
+    assertEquals(presentation.readyPlayers(ready).map(_.role),
+      Vector("chancellor", "citizen", "exile"))
+
+  test("each board carries its own Supply bands"):
+    val ready = Table.start.imperial(p1, p2).ready
+    val boards = presentation.playerBoards(ready, Some(p1))
+      .map(board => board.playerId -> board).toMap
+    assertEquals(boards(p1.value).supplyBands, chancellorBands)
+    assertEquals(boards(p2.value).supplyBands, Vector.empty)
+    assertEquals(boards(p3.value).supplyBands, Vector(
+      SupplyBandProjection(9, None, 6), SupplyBandProjection(4, Some(8), 5),
+      SupplyBandProjection(0, Some(3), 4)))
+    // The Chancellor's gain reads the purple bank, not an Exile's bag.
+    assertEquals(boards(p1.value).restSupplyBase, 6)

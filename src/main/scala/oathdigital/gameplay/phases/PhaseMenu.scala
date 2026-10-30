@@ -118,7 +118,7 @@ object PhaseMenu:
           offered.option.available || offered.option.askable)
     val acting: Vector[Offered] =
       if menu != Menu.Act then Vector.empty
-      else ActOffers.all.map(offer => offered(offer.procedure, offer.args,
+      else ActOffers.offeredTo(ready, actor).map(offer => offered(offer.procedure, offer.args,
         DecisionOption.Button(offer.ref, offer.label),
         offer.actionClass match
           case ActionClass.Major => OptionGroup.Major

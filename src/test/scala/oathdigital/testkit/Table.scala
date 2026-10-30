@@ -277,6 +277,22 @@ final case class Table private (private val game: ReadyGame,
     forces(at, n, PlayerForceKind.of(game, playerOf(owner)).getOrElse(
       munit.Assertions.fail(s"$owner has no warbands of their own")))
 
+  /** `chancellor` and `citizens` play Imperial, with the purple bank of
+    * `MaterialBankState.ImperialWarbands` on the table. Their board warbands
+    * become purple ones, since a board's kind follows its role. Seat them
+    * before placing any of their warbands at a site. */
+  def imperial(chancellor: PlayerId, citizens: PlayerId*)(
+      using munit.Location): Table =
+    val roles = (chancellor -> Role.Chancellor) +:
+      citizens.map(_ -> Role.Citizen)
+    roles.foldLeft(this) { case (table, (player, role)) =>
+      val lineage = table.playerOf(player).lineage
+      table.update(_.updateCampaign(campaign => campaign.copy(lineages =
+        campaign.lineages.updatedWith(lineage)(_.map(_.copy(role = role))))))
+    }.update(ready => ready.copy(banks = ready.banks.copy(warbandSupply =
+      ready.banks.warbandSupply.updated(ForceKind.Imperial,
+        MaterialBankState.ImperialWarbands))))
+
   /** A bandit stack of its printed capacity at every empty in-play site that
     * has one: the board real play reaches once the refill after a command
     * has run. A
