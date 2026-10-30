@@ -5,6 +5,10 @@ enum Role(val isImperial: Boolean):
   case Citizen extends Role(true)
   case Chancellor extends Role(true)
 
+  /** Only an Exile's board has a Vision slot, so only an Exile can play a
+    * true Vision faceup (Empire phase design, "Boards"). */
+  def hasVisionSlot: Boolean = !isImperial
+
 sealed trait ForceKind extends Product with Serializable
 object ForceKind:
   final case class Exile(lineage: LineageId) extends ForceKind
@@ -52,6 +56,22 @@ object SiteRule:
   def ruledBy(forces: SiteForces, players: Vector[PlayerState], player: PlayerId)
       : Either[SiteRuleError, Boolean] =
     ruler(forces, players).map(_ == Player(player))
+
+  /** `ruler` as the player who rules for it now (Empire phase design,
+    * "Ruler"): the Empire becomes its governor; any other ruler is
+    * unchanged. The Empire stays the Empire only with no Chancellor. */
+  def governed(ready: ReadyGame, ruler: SiteRuler): SiteRuler = ruler match
+    case Empire => Imperials.governor(ready).fold[SiteRuler](Empire)(Player(_))
+    case other => other
+
+  /** Who rules `site` as a player, for every rule that asks which player
+    * rules a site. `ruler` stays the reading for "does the Empire hold this
+    * site". */
+  def rulingPlayer(ready: ReadyGame, site: SiteId): Option[SiteRuler] =
+    ready.game.current.map.sites.get(site)
+      .flatMap(state => ruler(state.forces, ready.game.current.players)
+        .toOption)
+      .map(governed(ready, _))
 
   def sameRuler(left: SiteForces, right: SiteForces,
       players: Vector[PlayerState]): Either[SiteRuleError, Boolean] =
