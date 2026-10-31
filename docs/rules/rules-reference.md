@@ -153,6 +153,7 @@ Without Empire, round 8 uses War Exhaustion while skipping Stable Regime and Cha
 - **Refreshing Supply.** The Chancellor refreshes by the warbands in the purple bank; a Citizen matches the Chancellor's current Supply and keeps their unspent Supply, capped at 7 (CR p. 35).
 - **Chancellor's Eye.** A Citizen asks the Chancellor's consent to move warbands from their site to their board (CR p. 35).
 - **Warband Transfers.** An Imperial player may move warbands to or from another Imperial player's board when that player's pawn is at their site and that player consents (CR p. 35).
+- **Imperial Infighting.** An Imperial player may raid another Imperial player, and a Citizen may conquer Imperial sites, which the Chancellor defends (CR p. 35).
 
 ## Rules precedence and timing
 
