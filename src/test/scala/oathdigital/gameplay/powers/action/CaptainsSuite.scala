@@ -51,6 +51,20 @@ class CaptainsSuite extends munit.FunSuite:
     (asked, accepted(ActPowerHarness.answer(rules, asked.state,
       Captains.siteDecisionId, DecisionOptionRef.Site(wilds))))
 
+  /** `run` with every plan window finished and no sacrifice, stopping at
+    * the placement question or wherever the Campaign asks something else. */
+  private def finishedPlansAndSacrifice(run: PlanDriver.Run): PlanDriver.Run =
+    if PlanDriver.awaits(run, p1, CampaignIds.attackerPlan) then
+      finishedPlansAndSacrifice(run.pick(p1, CampaignIds.attackerPlan,
+        CampaignIds.finish))
+    else if PlanDriver.awaits(run, p2, CampaignIds.defenderPlan) then
+      finishedPlansAndSacrifice(run.pick(p2, CampaignIds.defenderPlan,
+        CampaignIds.finish))
+    else if PlanDriver.awaits(run, p1, CampaignIds.sacrifice) then
+      finishedPlansAndSacrifice(run.answer(p1, CampaignIds.sacrifice,
+        ChooseAmountAnswer(0)))
+    else run
+
   test("the site question lists the sites the user rules, their own pawn " +
       "site included"):
     val ready = captainsAtHomeWithTheRivalAtARuledSite().ready
@@ -116,3 +130,95 @@ class CaptainsSuite extends munit.FunSuite:
     val (asked, queued) = campaignAtTheWilds(rules, ready)
     assertEquals(ActPowerHarness.replayed(rules, MenuPlay.withoutMenu(ready),
       asked.events ++ queued.events), Outcomes.ready(queued.state))
+
+  /** p1, a Citizen, with Captains at home and 1 board warband; the wilds
+    * hold 3 purple warbands, so on p1's turn p1 rules them and p2, the
+    * Chancellor, defends them. p2 has an empty board, and nobody holds the
+    * Oathkeeper title. */
+  private def citizenWithCaptainsAndTheEmpiresWilds: Table = Table.start
+    .imperial(p2, p1).oathkeeper(None).denizen(card, at = home).favor(p1, 1)
+    .warbandsAt(wilds, p2, 3).boardWarbands(p1, 1).boardWarbands(p2, 0)
+
+  /** Captains used at the wilds and all 4 warbands committed. Only a
+    * Conquest is legal and no other Empire site can be added, so neither
+    * the kind nor the targets is asked. */
+  private def conquestOfTheWildsWithAllFour(rules: OathRules,
+      ready: ReadyGame): PlanDriver.Run =
+    val (_, queued) = campaignAtTheWilds(rules, ready)
+    val start = PlanDriver.Run(rules, queued, queued.events)
+    assertEquals(CampaignSetup.conquestDefender(Outcomes.ready(queued.state),
+      p1), Some(CampaignDefender.Player(p2)))
+    assert(!PlanDriver.awaits(start, p1, CampaignIds.kind))
+    assert(!PlanDriver.awaits(start, p1, CampaignIds.targets))
+    start.answer(p1, CampaignIds.force, ChooseAmountAnswer(4))
+
+  test("a Citizen campaigning from an Empire site adds its warbands to the " +
+      "attack only"):
+    // The wilds' 3 purple warbands join p1's force and not the Chancellor's
+    // defense (ruling R13). Four swords against blank dice and no defending
+    // warbands win; none of the 3 die and none go to p2's board.
+    val rules = ActPowerHarness.rulesWithPrintedRestrictions(
+      PlanDriver.winningDice)
+    val fought = finishedPlansAndSacrifice(conquestOfTheWildsWithAllFour(
+      rules, citizenWithCaptainsAndTheEmpiresWilds.ready))
+    val result = fought.ops.collectFirst { case RecordCampaignResult(r) => r }
+    assertEquals(result.map(_.defenseScore), Some(0), fought.ops.toString)
+    assert(!fought.ops.exists {
+      case Kill(_, PositionedLocation(Location.Site(`wilds`), _, _)) => true
+      case _ => false }, fought.ops.toString)
+    assertEquals(Look(fought.state).forces(wilds),
+      SiteForces.Occupied(ForceKind.Imperial, 3))
+    assertEquals(Look(fought.state).boardWarbands(p2), 0)
+    // Only the board's survivor is placed: the 3 already stand there.
+    assert(PlanDriver.awaits(fought, p1, CampaignIds.placement))
+    parkedDecide(fought.state).query match
+      case amount: DecisionQuery.ChooseAmount => assertEquals(amount.max, 1)
+      case other => fail(s"expected an amount, got $other")
+    val placed = fought.answer(p1, CampaignIds.placement,
+      ChooseAmountAnswer(1))
+    assertEquals(Look(placed.state).forces(wilds),
+      SiteForces.Occupied(ForceKind.Imperial, 4))
+    assertEquals(Look(placed.state).boardWarbands(p1), 0)
+
+  test("a Chancellor's warband sacrifice cannot take the attacker's warbands " +
+      "at the origin"):
+    // Wrestlers sacrifices a defending warband from a target site. The only
+    // target is the Captains origin, whose warbands are the attacker's
+    // (ruling R13), so no plan is left and the Chancellor's window does not
+    // open.
+    val rules = ActPowerHarness.rulesWithPrintedRestrictions(
+      PlanDriver.winningDice)
+    val forced = conquestOfTheWildsWithAllFour(rules,
+      citizenWithCaptainsAndTheEmpiresWilds
+        .adviser(p2, CatalogNames.denizen("Wrestlers")).ready)
+    assert(!PlanDriver.awaits(forced, p2, CampaignIds.defenderPlan))
+    assert(PlanDriver.awaits(forced, p1, CampaignIds.sacrifice))
+
+  test("with a second Empire site added, only that site's warbands defend"):
+    // Broken Peaks also holds 2 purple warbands. The targets question tallies
+    // none defending at the origin; the victory kills only Broken Peaks' 2,
+    // and half of them, rounded up, go back to the Chancellor's board.
+    val peaks = CatalogNames.site("Broken Peaks")
+    val rules = ActPowerHarness.rulesWithPrintedRestrictions(
+      PlanDriver.winningDice)
+    val (_, queued) = campaignAtTheWilds(rules,
+      citizenWithCaptainsAndTheEmpiresWilds.warbandsAt(peaks, p2, 2).ready)
+    val start = PlanDriver.Run(rules, queued, queued.events)
+    assert(PlanDriver.awaits(start, p1, CampaignIds.targets))
+    parkedDecide(start.state).query match
+      case many: DecisionQuery.ChooseMany =>
+        val force = many.tallies.find(_.label == "Defending force")
+          .map(_.perOption)
+        assertEquals(force.flatMap(_.get(DecisionOptionRef.Site(wilds))),
+          Some(0))
+        assertEquals(force.flatMap(_.get(DecisionOptionRef.Site(peaks))),
+          Some(2))
+      case other => fail(s"expected a choose-many, got $other")
+    val fought = finishedPlansAndSacrifice(start.answer(p1,
+      CampaignIds.targets, DecisionAnswer.ChooseManyAnswer(
+        Vector(DecisionOptionRef.Site(peaks))))
+      .answer(p1, CampaignIds.force, ChooseAmountAnswer(4)))
+    assertEquals(Look(fought.state).forces(wilds),
+      SiteForces.Occupied(ForceKind.Imperial, 3))
+    assertEquals(Look(fought.state).forces(peaks), SiteForces.Empty)
+    assertEquals(Look(fought.state).boardWarbands(p2), 1)

@@ -302,7 +302,7 @@ object CampaignProcedure:
             case CampaignKind.Raid =>
               "Also target the defender's faceup relics and banners"
           }), locked = locked,
-          tallies = CampaignTargets.tallies(catalog, ready,
+          tallies = CampaignTargets.tallies(catalog, ready, actor,
             (locked ++ options).map(_.ref)),
           summary = Some(CampaignTargets.summary(kind)),
           confirm = Some(CampaignTargets.confirm(kind))),

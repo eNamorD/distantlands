@@ -27,7 +27,7 @@ private[campaign] object KillWholeForce:
   def returns(ready: ReadyGame, result: CampaignResult): Returns =
     (result.kind, result.defender) match
       case (CampaignKind.Conquest, CampaignDefender.Player(defender)) =>
-        val total = result.targetSites.flatMap(ready.game.current.map.sites.get)
+        val total = result.defendedSites.flatMap(ready.game.current.map.sites.get)
           .map(_.forces).collect {
             case SiteForces.Occupied(_, count) => count }.sum
         Returns(board(ready, defender), total - total / 2)

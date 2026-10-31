@@ -198,3 +198,9 @@ final case class CampaignResult(
     originForce: Option[OriginForce] = None
 ):
   def attackTotal: Int = attackScore + sacrificed * sacrificeWorth
+
+  /** The targets whose warbands are the defender's: every target but a
+    * queued origin whose warbands joined the attack, which a Citizen using
+    * Captains at a site the Empire holds conquers (ruling R13). */
+  def defendedSites: Vector[SiteId] =
+    targetSites.filterNot(site => originForce.exists(_.site == site))

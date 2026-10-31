@@ -3,11 +3,14 @@ package oathdigital.gameplay.actions.campaign
 import oathdigital.model._
 
 /** Step 9 for a Conquest victory: place surviving warbands on the conquered
-  * targets. Unplaced survivors simply stay on the board.
+  * targets. Unplaced survivors simply stay on the board. Survivors that
+  * joined from a queued origin already stand there, so only the board's
+  * are placed.
   */
 private[campaign] object CampaignConquest:
   def steps(actor: PlayerId, result: CampaignResult): Vector[Operation] =
-    val survivors = result.force - result.skullLosses - result.sacrificed
+    val survivors = result.force - result.skullLosses - result.sacrificed -
+      result.originForce.fold(0)(_.atSite)
     if survivors <= 0 then Vector.empty
     else Vector(Sequence(Vector[Operation](
       Decide(CampaignIds.placement, actor, query(result, survivors)),
