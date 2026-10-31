@@ -16,10 +16,11 @@ object QuickExitCard extends Denizen(DenizenId("58"), "Quick Exit", Suit.Arcane)
   * enemy pawn at your site onto any other site.
   *
   * Every other player is an enemy, Imperials included, so every other player
-  * whose pawn stands at the player's site is a candidate, read live after the cost is paid. The player
-  * chooses one, then any site in play other than that site. The pawn moves by
-  * a plain `Move`, as Whistle's does: it does not travel, so no Travel window
-  * runs. With no candidate the cost stays paid and one line says so.
+  * whose pawn stands at the player's site is a candidate, read live after the
+  * cost is paid. The player chooses one, then any site in play other than
+  * that site. The pawn moves by a plain `Move`, as Whistle's does: it does
+  * not travel, so no Travel window runs. With no candidate the cost stays
+  * paid and one line says so.
   */
 case object QuickExit extends PaidAction(QuickExitCard.power):
   val targetDecisionId: String = "power.quick-exit.target"

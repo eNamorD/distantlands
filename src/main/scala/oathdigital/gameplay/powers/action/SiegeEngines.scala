@@ -38,6 +38,12 @@ case object SiegeEngines extends PaidAction(SiegeEnginesCard.power):
     NotePart.Text("Killed "), NotePart.Arg(0),
     NotePart.Plural(0, " bandit warband at ", " bandit warbands at "),
     NotePart.Arg(1), NotePart.Text(".")))
+  /** "Killed {n} Imperial warbands at {site}." Purple warbands are the
+    * Empire's, not one player's. */
+  val imperial: NoteKey = notes.key("used.imperial", Vector(
+    NotePart.Text("Killed "), NotePart.Arg(0),
+    NotePart.Plural(0, " Imperial warband at ", " Imperial warbands at "),
+    NotePart.Arg(1), NotePart.Text(".")))
   /** "{site} had no warband to kill." */
   val spared: NoteKey = notes.key("used.none", Vector(NotePart.Arg(0),
     NotePart.Text(" had no warband to kill.")))
@@ -88,6 +94,8 @@ case object SiegeEngines extends PaidAction(SiegeEnginesCard.power):
         if lost <= 0 then Some(spared(card, NoteArg.Site(site)))
         else if kind == ForceKind.Bandit then
           Some(bandits(card, NoteArg.Number(lost), NoteArg.Site(site)))
+        else if kind == ForceKind.Imperial then
+          Some(imperial(card, NoteArg.Number(lost), NoteArg.Site(site)))
         else owner(step._1, kind).map(whose => killed(card,
           NoteArg.Number(lost), NoteArg.Player(whose), NoteArg.Site(site)))
       case _ => Some(spared(card, NoteArg.Site(site)))
@@ -98,9 +106,8 @@ case object SiegeEngines extends PaidAction(SiegeEnginesCard.power):
       case Some(SiteForces.Occupied(`kind`, count)) => count
       case _ => 0
 
-  /** The player whose warbands are of `kind`. Every game is all-Exile, so
-    * each non-bandit kind has one owner; Imperial warbands, which have none
-    * until Empire rules exist, would leave the kill without a line. */
+  /** The player whose warbands are of `kind`: an Exile kind has one owner.
+    * Purple warbands have none and take their own line. */
   private def owner(ready: ReadyGame, kind: ForceKind): Option[PlayerId] =
     ready.game.current.players.find(p =>
       PlayerForceKind.of(ready, p).contains(kind)).map(_.player)

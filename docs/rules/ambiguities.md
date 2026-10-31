@@ -52,6 +52,8 @@ R7. **No Imperial Usurper in play.** An Imperial player never holds the Usurper 
 
 R8. **Warband Transfers consent names the transfer.** The partner is asked after the player has chosen the way and the amount, so the ask names them: "Asked {Blue} for consent to give them 3 warbands." Each consent covers one exact transfer. A refusal stops only that way and amount for the turn; the player may ask about a different one.
 
+R9. **Military Parade counts one enemy.** The New Foundations card applies to the one enemy only. Its "including Imperial Allies" text is a base-game concept and is ignored.
+
 ## Chronicle rulings
 
 Rulings given by the project owner for the Chronicle Phase ([chronicle.md](chronicle.md)). The rev1 task cards are slightly older than the CR; where they disagree, the CR governs.

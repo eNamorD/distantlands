@@ -258,6 +258,7 @@ denizen.shield-wall killed = {0}'s whole force was killed.
 denizen.shifting-fog moved = Every bank's favor moved to the next bank.
 denizen.siege-engines used = Killed {0} {1}{0? warband at | warbands at }{2}.
 denizen.siege-engines used.bandits = Killed {0}{0? bandit warband at | bandit warbands at }{1}.
+denizen.siege-engines used.imperial = Killed {0}{0? Imperial warband at | Imperial warbands at }{1}.
 denizen.siege-engines used.none = {0} had no warband to kill.
 denizen.signal-trees added = Revealed and discarded {0}; added {1}{1? attack die.| attack dice.}
 denizen.signal-trees none = Nothing was revealed.

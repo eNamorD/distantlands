@@ -21,11 +21,12 @@ object MilitaryParadeCard extends Denizen(DenizenId("109"), "Military Parade", S
   * It is free. Once the Campaign has resolved, its user gains one favor if they
   * won for each faceup adviser the enemy holds then, from that adviser's suit
   * bank (`FavorBySuit`). A facedown adviser has no suit and gives nothing.
-  * Every game is all-Exile, so the Imperial Allies clause does nothing. Bandits
-  * hold no advisers, so an attacker is not offered it against bandits. A
-  * bandit defender applies it by itself, since it is free, and when the
-  * bandits win the favor moves from the banks to the shared bank. The gains
-  * write the generic gain lines, so it writes no line of its own.
+  * The Imperial Allies clause is a base-game rule; in New Foundations the
+  * plan counts only the one enemy's advisers (ruling R9). Bandits hold no
+  * advisers, so an attacker is not offered it against bandits. A bandit
+  * defender applies it by itself, since it is free, and when the bandits win
+  * the favor moves from the banks to the shared bank. The gains write the
+  * generic gain lines, so it writes no line of its own.
   */
 final case class MilitaryParade private (catalog: ExecutableCatalog)
     extends BattlePlan:
