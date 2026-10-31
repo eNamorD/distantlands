@@ -126,7 +126,7 @@ case object PeaceEnvoy extends BattlePlan:
     * before the losses run. */
   private def spared(ctx: PowerCtx, use: PlanUse,
       losses: Vector[Operation]): Vector[Operation] =
-    val atTargets = use.result.fold(0)(result => result.targetSites
+    val atTargets = use.result.fold(0)(result => result.defendedSites
       .flatMap(use.ready.game.current.map.sites.get).map(_.forces).collect {
         case SiteForces.Occupied(_, count) => count }.sum)
     LossRewrite(ctx, losses) {

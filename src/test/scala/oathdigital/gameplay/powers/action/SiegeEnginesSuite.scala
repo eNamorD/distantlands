@@ -92,6 +92,18 @@ class SiegeEnginesSuite extends munit.FunSuite:
       NoteText.Said("used.bandits",
         s"Killed 2 bandit warbands at ${neighbour.value}.", covers = false)))
 
+  test("purple warbands it kills are logged as the Empire's"):
+    val Killed(_, t, done) = killAt(neighbour,
+      _.imperial(victim).warbandsAt(neighbour, victim, 3))
+    assertEquals(forcesAt(after(done), neighbour),
+      SiteForces.Occupied(ForceKind.Imperial, 1))
+    assertEquals(warbandBank(after(done), ForceKind.Imperial),
+      warbandBank(after(t), ForceKind.Imperial) + 2)
+    assertEquals(NoteText.said(SiegeEngines, done.events), Vector(
+      NoteText.Said("used.imperial",
+        s"Killed 2 Imperial warbands at ${neighbour.value}.",
+        covers = false)))
+
   test("a site with no warband loses none, and the line says so"):
     // The quiet table leaves Broken Peaks empty.
     val done = killAt(neighbour, identity).answered

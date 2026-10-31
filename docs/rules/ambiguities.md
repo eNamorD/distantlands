@@ -52,6 +52,20 @@ R7. **No Imperial Usurper in play.** An Imperial player never holds the Usurper 
 
 R8. **Warband Transfers consent names the transfer.** The partner is asked after the player has chosen the way and the amount, so the ask names them: "Asked {Blue} for consent to give them 3 warbands." Each consent covers one exact transfer. A refusal stops only that way and amount for the turn; the player may ask about a different one.
 
+R9. **Military Parade counts one enemy.** The New Foundations card applies to the one enemy only. Its "including Imperial Allies" text is a base-game concept and is ignored.
+
+R10. **Plans at Imperial sites.** In a Campaign, plans at Imperial sites belong to the Chancellor's side on every turn. The Chancellor uses them freely; any other Imperial needs the Chancellor's consent, even on their own turn (Empire slice 1b-ii).
+
+R11. **Split costs.** Every cost of a battle plan may be split between Imperial players, including a variable amount. The warband sacrifice still comes from the defender's force (Empire slice 1b-ii).
+
+R12. **Shared requirements.** Any Imperial player who meets a plan's requirement (holding the Darkest Secret, ruling cards of a suit) may meet it for the plan's user, with that player's consent (Empire slice 1b-ii).
+
+R13. **Captains and Wild Allies at an Empire site.** A Citizen may use Captains or Wild Allies to campaign from a site the Empire holds, against the Chancellor. The site's warbands join the attack and count once, for the attacker, never in the defense; they do not die in the victory, and only the board's survivors are placed. This follows the Captains FAQ in the BGS card library; Wild Allies has no FAQ but the same wording. The FAQ's "you do not need to target the site" refers to a base-game rule and does not apply in New Foundations.
+
+R14. **Keep.** Keep's site is used by whoever defends it in the Campaign, so a defeated Chancellor keeps Keep at an Empire site even on a Citizen's turn.
+
+R15. **Hospital.** Hospital saves warbands only if its user rules its site by the turn's ruler at the Campaign's end, as its FAQ in the BGS card library says ("if you rule it at the end"). A Chancellor defending on a Citizen's turn may choose it at an Empire site (R10), but it saves nothing; a Citizen using it on their own turn has theirs saved.
+
 ## Chronicle rulings
 
 Rulings given by the project owner for the Chronicle Phase ([chronicle.md](chronicle.md)). The rev1 task cards are slightly older than the CR; where they disagree, the CR governs.

@@ -2,6 +2,7 @@ package oathdigital.gameplay.powers.campaign
 
 import oathdigital.catalog.{Denizen, PrintedPower, SiteOnly}
 import oathdigital.gameplay.SiteRulers
+import oathdigital.gameplay.actions.campaign.CampaignSetup
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerCtx, PowerUse, Transform}
 import oathdigital.model._
@@ -18,8 +19,9 @@ object KeepCard extends Denizen(DenizenId("5"), "Keep", Suit.Order) with SiteOnl
   * a raid, after the attacker takes what they targeted, place your pawn at
   * this site and end the action. Do not burn favor, move pawn, etc."
   *
-  * It applies when the Raid's defeated defender rules Keep's site once the
-  * battle's losses are made. The takes stand. The Raid's consequences (the
+  * It applies when the Raid's defeated defender defends Keep's site once the
+  * battle's losses are made: its ruler, or for a site the Empire holds the
+  * Chancellor, on every turn (`CampaignSetup.defenderAt`, ruling R14). The takes stand. The Raid's consequences (the
   * facedown discards, the set-aside relics, the half-favor burn) are
   * dropped, and the relocation question is replaced: the defender's pawn
   * moves to Keep's site, or stays when it is already there. Nothing else in
@@ -59,15 +61,16 @@ case object KeepRule extends ContributingPower:
     kept(ctx.state).map((defender, _) =>
       PowerUse.automatic(defender, id, cardId))
 
-  /** The Raid's defeated defender and Keep's site, when that defender rules
-    * it. Both windows Keep folds come only after a Raid's victory, so the
-    * recorded result is this Raid's. */
+  /** The Raid's defeated defender and Keep's site, when that defender
+    * defends it. Both windows Keep folds come only after a Raid's victory,
+    * so the recorded result is this Raid's. */
   def kept(ready: ReadyGame): Option[(PlayerId, SiteId)] = for
     result <- ready.game.current.lastCampaignResult
     defender <- Some(result.defender).collect {
       case CampaignDefender.Player(player) => player }
     site <- SiteRulers.siteOf(ready, cardId)
-    if SiteRulers.rulerOf(ready, site).contains(SiteRuler.Player(defender))
+    if CampaignSetup.defenderAt(ready, site)
+      .contains(CampaignDefender.Player(defender))
   yield (defender, site)
 
   /** The defender's pawn placed at `site`, unless it stands there, then the

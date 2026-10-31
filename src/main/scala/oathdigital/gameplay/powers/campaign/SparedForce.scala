@@ -102,11 +102,11 @@ private[campaign] object SparedForce:
       Vector(move.copy(piece = Piece.Warbands(kind, atTargets)))
     case other => Vector(other)
 
-  /** The user's warbands at the Campaign's target sites. A Raid targets no
-    * site. */
+  /** The user's warbands at the Campaign's defended target sites. A Raid
+    * targets no site. */
   private def targetForce(ready: ReadyGame, result: CampaignResult,
       kind: ForceKind): Int =
-    result.targetSites.flatMap(ready.game.current.map.sites.get)
+    result.defendedSites.flatMap(ready.game.current.map.sites.get)
       .map(_.forces).collect {
         case SiteForces.Occupied(`kind`, count) => count }.sum
 

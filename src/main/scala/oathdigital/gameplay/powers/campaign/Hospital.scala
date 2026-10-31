@@ -18,7 +18,9 @@ object HospitalCard extends Denizen(DenizenId("149"), "Hospital", Suit.Hearth) w
 /** Hospital (card 149, site-only), a battle plan for either side: "If any of
   * your warbands would be killed, place them on Hospital's site instead if
   * you still rule it." Its FAQ sets when: at the end of the Campaign, if its
-  * user rules the site then.
+  * user rules the site then, by the turn's ruler. A Chancellor defending an
+  * Empire site on a Citizen's turn may choose it but saves nothing (ruling
+  * R15).
   *
   * It is free and used by the player who rules Hospital's site; a bandit
   * defender never uses it. Once it is chosen, each kill of its user's

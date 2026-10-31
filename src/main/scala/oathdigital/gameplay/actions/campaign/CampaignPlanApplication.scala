@@ -131,14 +131,16 @@ final class CampaignPlanApplication(catalog: ExecutableCatalog,
     BuildOps((_, _) => Left(OathViolation.InvalidEventOrder(detail)))
 
   /** The forces a warband can be sacrificed from: a Raid defender's board, or
-    * each target site the defender rules and holds a warband on.
+    * each target site the defender rules and holds a warband on, but not
+    * a queued origin whose warbands are the attacker's (ruling R13).
     */
   private def sacrificeFrom(ready: ReadyGame, player: PlayerId)
       : Vector[Location] = setup.kind match
     case CampaignKind.Raid => ready.game.current.players
       .find(_.player == player).filter(_.board.warbands > 0)
       .map(_ => Location.PlayArea(player): Location).toVector
-    case CampaignKind.Conquest => setup.targetSites.filter(site =>
+    case CampaignKind.Conquest => CampaignBattle.defendedSites(ready,
+        setup.actor, setup.targetSites).filter(site =>
       CampaignSetup.defenderAt(ready, site).contains(
         CampaignDefender.Player(player)) &&
         ready.game.current.map.sites.get(site).exists(_.forces match {
@@ -177,7 +179,7 @@ final class CampaignPlanApplication(catalog: ExecutableCatalog,
       case Location.Site(site) => ready.game.current.map.sites.get(site)
         .map(_.forces).collect { case SiteForces.Occupied(force, _) => force }
       case _ => ready.game.current.players.find(_.player == player)
-        .map(p => ForceKind.Exile(p.lineage))
+        .flatMap(PlayerForceKind.of(ready, _))
     kind.toRight(OathViolation.InvalidEventOrder(
       "the plan's sacrifice has no warband to kill")).map(force =>
       Vector[CoreOperation](Sacrifice(player, Piece.Warbands(force, 1),

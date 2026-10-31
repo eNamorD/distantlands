@@ -3,11 +3,14 @@ package oathdigital.gameplay.actions.campaign
 import oathdigital.model._
 
 /** Step 9 for a Conquest victory: place surviving warbands on the conquered
-  * targets. Unplaced survivors simply stay on the board.
+  * targets. Unplaced survivors simply stay on the board. Survivors that
+  * joined from a queued origin already stand there, so only the board's
+  * are placed.
   */
 private[campaign] object CampaignConquest:
   def steps(actor: PlayerId, result: CampaignResult): Vector[Operation] =
-    val survivors = result.force - result.skullLosses - result.sacrificed
+    val survivors = result.force - result.skullLosses - result.sacrificed -
+      result.originForce.fold(0)(_.atSite)
     if survivors <= 0 then Vector.empty
     else Vector(Sequence(Vector[Operation](
       Decide(CampaignIds.placement, actor, query(result, survivors)),
@@ -27,10 +30,11 @@ private[campaign] object CampaignConquest:
 
   private def placements(ready: ReadyGame, actor: PlayerId, result: CampaignResult,
       pending: PendingTree): Either[OathViolation, Vector[CoreOperation]] =
-    ready.game.current.players.find(_.player == actor).toRight(
+    ready.game.current.players.find(_.player == actor)
+      .flatMap(PlayerForceKind.of(ready, _)).toRight(
       OathViolation.InvalidEventOrder("the Campaign's attacker is not in the game"))
-      .map(attacker => CampaignAnswers.placements(pending, result.targetSites)
+      .map(kind => CampaignAnswers.placements(pending, result.targetSites)
         .filter(_._2 > 0).map { case (site, count) => Move(
-          Piece.Warbands(ForceKind.Exile(attacker.lineage), count),
+          Piece.Warbands(kind, count),
           PositionedLocation(Location.PlayArea(actor)),
           PositionedLocation(Location.Site(site))): CoreOperation })

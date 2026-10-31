@@ -120,3 +120,18 @@ class KeepSuite extends munit.FunSuite:
     assertEquals(Look(done.state).player(b.rival).board.favor, 5)
     assertEquals(Look(done.state).faceUpSecrets(b.rival), 1)
     assertEquals(Look(done.state).faceDownSecrets(b.rival), 0)
+
+  test("a defeated Chancellor keeps Keep at an Empire site on a Citizen's " +
+      "turn"):
+    // The actor is a Citizen and rules the Empire's sites on their turn,
+    // but the Chancellor defends them, so Keep is the Chancellor's.
+    val raid = raidBoard()
+    val site = keepSite(raid.board)
+    val b = on(raid.board)(_.imperial(raid.board.rival, raid.board.actor)
+      .denizen(keep, at = site).warbandsAt(site, raid.board.rival, 2))
+    val done = raidOnRelicAndPeoplesFavor(b, raid.relic)
+    assertEquals(done.winner, Some(true))
+    assertEquals(Look(done.state).player(b.rival).pawnSite, Some(site))
+    assertEquals(Look(done.state).player(b.rival).board.favor, 5)
+    assertEquals(said(KeepRule, done.events),
+      Vector(keepLine(b.rival, site, covers = true)))

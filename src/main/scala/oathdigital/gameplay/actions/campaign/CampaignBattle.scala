@@ -76,16 +76,26 @@ object CampaignBattle:
     }
 
   /** The force a defender adds to its dice: the warbands at every target, or a
-    * Raid defender's board.
+    * Raid defender's board. A queued origin's warbands are the attacker's and
+    * join the attack only, even where the origin is a Conquest target: a
+    * Citizen using Captains at a site the Empire holds (ruling R13).
     */
   def defenderForce(ready: ReadyGame, setup: CampaignSetup): Int =
     setup.kind match
-      case CampaignKind.Conquest => setup.targetSites
-        .map(site => forceOf(ready, DecisionOptionRef.Site(site))).sum
+      case CampaignKind.Conquest =>
+        defendedSites(ready, setup.actor, setup.targetSites)
+          .map(site => forceOf(ready, DecisionOptionRef.Site(site))).sum
       case CampaignKind.Raid => setup.defender match
         case CampaignDefender.Player(player) =>
           forceOf(ready, DecisionOptionRef.Player(player))
         case CampaignDefender.Bandits => 0
+
+  /** `targets` but a queued origin whose warbands joined `actor`'s force,
+    * before the result records it (`CampaignResult.defendedSites`). */
+  def defendedSites(ready: ReadyGame, actor: PlayerId,
+      targets: Vector[SiteId]): Vector[SiteId] =
+    val attackers = CampaignSetup.originForce(ready, actor).map(_.site)
+    targets.filterNot(attackers.contains)
 
   /** The warbands one target brings to the defense: those at a site, or a
     * Raid defender's board for their pawn. A relic or a banner brings none.
@@ -201,11 +211,10 @@ object CampaignBattle:
   def attackerKills(ready: ReadyGame, attacker: PlayerId, id: String,
       origin: Option[OriginForce], deaths: Int, pending: PendingTree)
       : Either[OathViolation, Vector[CoreOperation]] =
-    ready.game.current.players.find(_.player == attacker).toRight(
+    ready.game.current.players.find(_.player == attacker)
+      .flatMap(PlayerForceKind.of(ready, _)).toRight(
       OathViolation.InvalidEventOrder(
-        "the Campaign's attacker is not in the game")).map { player =>
-      val kind = PlayerForceKind.of(ready, player)
-        .getOrElse(ForceKind.Exile(player.lineage))
+        "the Campaign's attacker is not in the game")).map { kind =>
       val fromSite = origin.fold(0) { at =>
         val (least, most) = originDeathRange(at, deaths)
         CampaignAnswers.originDeaths(pending, id)
@@ -244,9 +253,9 @@ object CampaignBattle:
   /** Step 8: kill the defeated warbands. The attacker loses half the
     * survivors on a defeat unless a plan spared them, split by the answer
     * to `originDeaths` when a queued origin's warbands are in the force.
-    * On a victory every warband at every target dies, a player defender's
-    * survivors return from the supply to their board, and a Raid defender
-    * loses half its board.
+    * On a victory every warband at every target dies, except the attacker's
+    * own at a queued origin; a player defender's survivors return from the
+    * supply to their board, and a Raid defender loses half its board.
     */
   def losses(ready: ReadyGame, result: CampaignResult, pending: PendingTree)
       : Either[OathViolation, Vector[CoreOperation]] =
@@ -260,8 +269,8 @@ object CampaignBattle:
 
   private def conquestLosses(ready: ReadyGame, result: CampaignResult)
       : Vector[CoreOperation] =
-    val sites = result.targetSites.flatMap(site =>
-      ready.game.current.map.sites.get(site).map(state => site -> state.forces))
+    val sites = result.defendedSites.flatMap(site =>
+        ready.game.current.map.sites.get(site).map(state => site -> state.forces))
     val kills: Vector[CoreOperation] = sites.collect:
       case (site, SiteForces.Occupied(force, count)) if count > 0 => Kill(
         Piece.Warbands(force, count), PositionedLocation(Location.Site(site)))
@@ -283,7 +292,7 @@ object CampaignBattle:
       ready.game.current.players.find(_.player == player).toVector.flatMap:
         defender =>
           val killed = defender.board.warbands / 2
-          Option.when(killed > 0)(Kill(Piece.Warbands(
-            ForceKind.Exile(defender.lineage), killed),
-            PositionedLocation(Location.PlayArea(player)))).toVector
+          PlayerForceKind.of(ready, defender).filter(_ => killed > 0)
+            .map(kind => Kill(Piece.Warbands(kind, killed),
+              PositionedLocation(Location.PlayArea(player)))).toVector
     case CampaignDefender.Bandits => Vector.empty

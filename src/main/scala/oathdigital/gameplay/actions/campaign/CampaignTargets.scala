@@ -25,13 +25,17 @@ private[campaign] object CampaignTargets:
   /** The printed defense and the defending force of each target, from the
     * same sources the battle reads (`CampaignBattle`).
     */
-  def tallies(catalog: ExecutableCatalog, ready: ReadyGame,
+  def tallies(catalog: ExecutableCatalog, ready: ReadyGame, actor: PlayerId,
       targets: Vector[DecisionOptionRef]): Vector[DecisionTally] =
+    val defended = CampaignBattle.defendedSites(ready, actor,
+      targets.collect { case DecisionOptionRef.Site(site) => site })
     Vector(
       DecisionTally(DefenseLabel, "defense", targets.map(target =>
         target -> CampaignBattle.defenseOf(catalog, target)).toMap),
       DecisionTally(ForceLabel, "warbands", targets.map(target =>
-        target -> CampaignBattle.forceOf(ready, target)).toMap))
+        target -> (target match
+          case DecisionOptionRef.Site(site) if !defended.contains(site) => 0
+          case _ => CampaignBattle.forceOf(ready, target))).toMap))
 
   def summary(kind: CampaignKind): DecisionSummary = kind match
     case CampaignKind.Conquest => DecisionSummary("Target", "site", "sites")

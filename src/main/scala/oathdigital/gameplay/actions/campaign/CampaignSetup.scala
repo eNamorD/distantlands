@@ -127,8 +127,14 @@ object CampaignSetup:
       player <- playerOf(ready, actor)
     yield OriginForce(site, atSite, player.board.warbands)
 
-  /** Who rules `site` as a Campaign defender. `None` when the site is
-    * unruled, Imperial or its rule is corrupt.
+  /** Who defends `site` in a Campaign: its ruling player, the bandits, or
+    * for a site the Empire holds the Chancellor, on every turn (Steward of
+    * Imperial Domains, Imperial Infighting). A Campaign does not ask
+    * `SiteRule.rulingPlayer`: on a Citizen's turn the Citizen rules the
+    * Empire's sites, but the Chancellor still defends them, and their
+    * battle plans are the Chancellor's side's (ruling R10). `None` when the
+    * site is unruled or its rule is corrupt, and for a purple site with no
+    * Chancellor seated.
     */
   def defenderAt(ready: ReadyGame, site: SiteId): Option[CampaignDefender] =
     ready.game.current.map.sites.get(site).flatMap(state =>
@@ -136,6 +142,8 @@ object CampaignSetup:
       .flatMap:
         case SiteRuler.Bandits => Some(CampaignDefender.Bandits)
         case SiteRuler.Player(player) => Some(CampaignDefender.Player(player))
+        case SiteRuler.Empire => Imperials.chancellor(ready)
+          .map(CampaignDefender.Player(_))
         case _ => None
 
   def conquestDefender(ready: ReadyGame, actor: PlayerId)

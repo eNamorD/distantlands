@@ -221,3 +221,22 @@ class HospitalSuite extends munit.FunSuite:
     assertEquals(Look(done.state).forces(hospitalSite),
       SiteForces.Occupied(kind(b, b.actor), 2))
     assertEquals(lines(done), Vector.empty)
+
+  test("a Chancellor raided on a Citizen's turn may choose it at an Empire " +
+      "site, but it saves nothing"):
+    // The Chancellor defends the Empire's sites and so may choose it, but
+    // at the end the Citizen rules them on their own turn (ruling R15).
+    val base = withEnemyAtOrigin(board(warbands = 4, supply = 7))
+    val seated = on(base)(_.imperial(base.rival, base.actor))
+    val b = on(hospitalFor(seated, base.rival, hospitalSite))(
+      _.boardWarbands(base.rival, 3))
+    val won = commit(rules(winningDice), b, 4, raid = true)
+      .pick(b.rival, CampaignIds.defenderPlan, ref).finishPlanWindows
+    assert(awaits(won, b.actor, CampaignIds.relocation))
+    val done = won.pick(b.actor, CampaignIds.relocation,
+      won.offered(b.actor).head)
+    assertEquals(done.winner, Some(true))
+    assertEquals(Look(done.state).player(b.rival).board.warbands, 2)
+    assertEquals(Look(done.state).forces(hospitalSite),
+      SiteForces.Occupied(ForceKind.Imperial, 2))
+    assertEquals(lines(done), Vector.empty)
