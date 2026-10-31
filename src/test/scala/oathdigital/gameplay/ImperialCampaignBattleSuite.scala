@@ -49,14 +49,17 @@ class ImperialCampaignBattleSuite extends munit.FunSuite:
     val exile = seated()
     val b = on(exile)(_.warbandsAt(exile.origin, p2, 2).boardWarbands(p2, 0))
     val run = commit(rules(winningDice), b, 4)
-    val fought = (if awaits(run, p2, CampaignIds.defenderPlan) then
-      run.pick(p2, CampaignIds.defenderPlan, CampaignIds.finish) else run)
-      .declineSacrifice(p1)
-    assertEquals(Look(fought.state).forces(b.origin), SiteForces.Empty)
+    assert(!awaits(run, p2, CampaignIds.defenderPlan))
+    val fought = run.declineSacrifice(p1)
     // The two that died at the site: one of them returns to p2's board.
     assertEquals(Look(fought.state).boardWarbands(p2), 1)
     assert(fought.ops.contains(Kill(purple(2),
       PositionedLocation(Location.Site(b.origin)))), fought.ops.toString)
+    assert(awaits(fought, p1, CampaignIds.placement))
+    val placed = fought.answer(p1, CampaignIds.placement, ChooseAmountAnswer(2))
+    assertEquals(Look(placed.state).forces(b.origin),
+      SiteForces.Occupied(Look(placed.state).forceKind(p1), 2))
+    assertNotEquals(Look(placed.state).forceKind(p1), ForceKind.Imperial)
 
   test("an Exile who raids a Citizen kills half of the Citizen's purple " +
       "board"):
@@ -64,9 +67,8 @@ class ImperialCampaignBattleSuite extends munit.FunSuite:
     // p3's 2 board warbands defend: 4 swords beat 2.
     val b = on(exile)(_.pawn(p3, at = exile.origin).boardWarbands(p3, 2))
     val run = commit(rules(winningDice), b, 4, raid = true)
-    val fought = (if awaits(run, p3, CampaignIds.defenderPlan) then
-      run.pick(p3, CampaignIds.defenderPlan, CampaignIds.finish) else run)
-      .declineSacrifice(p1)
+    assert(!awaits(run, p3, CampaignIds.defenderPlan))
+    val fought = run.declineSacrifice(p1)
     assert(fought.ops.contains(Kill(purple(1), boardOf(p3))),
       fought.ops.toString)
 
