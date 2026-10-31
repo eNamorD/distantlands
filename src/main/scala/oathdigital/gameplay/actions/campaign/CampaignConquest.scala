@@ -27,10 +27,11 @@ private[campaign] object CampaignConquest:
 
   private def placements(ready: ReadyGame, actor: PlayerId, result: CampaignResult,
       pending: PendingTree): Either[OathViolation, Vector[CoreOperation]] =
-    ready.game.current.players.find(_.player == actor).toRight(
+    ready.game.current.players.find(_.player == actor)
+      .flatMap(PlayerForceKind.of(ready, _)).toRight(
       OathViolation.InvalidEventOrder("the Campaign's attacker is not in the game"))
-      .map(attacker => CampaignAnswers.placements(pending, result.targetSites)
+      .map(kind => CampaignAnswers.placements(pending, result.targetSites)
         .filter(_._2 > 0).map { case (site, count) => Move(
-          Piece.Warbands(ForceKind.Exile(attacker.lineage), count),
+          Piece.Warbands(kind, count),
           PositionedLocation(Location.PlayArea(actor)),
           PositionedLocation(Location.Site(site))): CoreOperation })

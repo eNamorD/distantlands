@@ -177,7 +177,7 @@ final class CampaignPlanApplication(catalog: ExecutableCatalog,
       case Location.Site(site) => ready.game.current.map.sites.get(site)
         .map(_.forces).collect { case SiteForces.Occupied(force, _) => force }
       case _ => ready.game.current.players.find(_.player == player)
-        .map(p => ForceKind.Exile(p.lineage))
+        .flatMap(PlayerForceKind.of(ready, _))
     kind.toRight(OathViolation.InvalidEventOrder(
       "the plan's sacrifice has no warband to kill")).map(force =>
       Vector[CoreOperation](Sacrifice(player, Piece.Warbands(force, 1),

@@ -317,9 +317,7 @@ object CampaignNotes:
       : Option[ForceKind] = owner match
     case None => Some(ForceKind.Bandit)
     case Some(player) => ready.game.current.players
-      .find(_.player == player).map(state =>
-        PlayerForceKind.of(ready, state).getOrElse(
-          ForceKind.Exile(state.lineage)))
+      .find(_.player == player).flatMap(PlayerForceKind.of(ready, _))
 
   /** Every warband of `kind` the owner holds: their board, and every site.
     * The warband bank is not counted, so a warband returned from the

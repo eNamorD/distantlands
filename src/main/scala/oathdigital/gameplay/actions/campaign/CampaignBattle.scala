@@ -201,11 +201,10 @@ object CampaignBattle:
   def attackerKills(ready: ReadyGame, attacker: PlayerId, id: String,
       origin: Option[OriginForce], deaths: Int, pending: PendingTree)
       : Either[OathViolation, Vector[CoreOperation]] =
-    ready.game.current.players.find(_.player == attacker).toRight(
+    ready.game.current.players.find(_.player == attacker)
+      .flatMap(PlayerForceKind.of(ready, _)).toRight(
       OathViolation.InvalidEventOrder(
-        "the Campaign's attacker is not in the game")).map { player =>
-      val kind = PlayerForceKind.of(ready, player)
-        .getOrElse(ForceKind.Exile(player.lineage))
+        "the Campaign's attacker is not in the game")).map { kind =>
       val fromSite = origin.fold(0) { at =>
         val (least, most) = originDeathRange(at, deaths)
         CampaignAnswers.originDeaths(pending, id)
@@ -283,7 +282,7 @@ object CampaignBattle:
       ready.game.current.players.find(_.player == player).toVector.flatMap:
         defender =>
           val killed = defender.board.warbands / 2
-          Option.when(killed > 0)(Kill(Piece.Warbands(
-            ForceKind.Exile(defender.lineage), killed),
-            PositionedLocation(Location.PlayArea(player)))).toVector
+          PlayerForceKind.of(ready, defender).filter(_ => killed > 0)
+            .map(kind => Kill(Piece.Warbands(kind, killed),
+              PositionedLocation(Location.PlayArea(player)))).toVector
     case CampaignDefender.Bandits => Vector.empty
