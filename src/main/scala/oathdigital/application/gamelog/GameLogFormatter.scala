@@ -48,6 +48,7 @@ private[application] final class GameLogFormatter(catalog: ExecutableCatalog,
   private val takenBack = new TakenBackGroups(words)
   private val consent = new ConsentLines(words, choices,
     ConsentPowers.default(catalog))
+  private val planAid = new PlanAidLines(words)
 
   /** Taken-back moves (undo design, "Game Log"). The live entries are the
     * live journal formatted alone, so no line reads a voided event or a
@@ -180,8 +181,7 @@ private[application] final class GameLogFormatter(catalog: ExecutableCatalog,
       case OathEvent.WarExhaustionResolved(winner, kind, vision, _) =>
         (Vector(victory(winner, exhaustion(kind, vision))), run)
       case _: ConsentEvent => (consent.lines(journal, at, viewer), run)
-      // Task 7 of slice 1b-ii gives the offers their lines.
-      case _: PlanAidEvent => (Vector.empty, run)
+      case _: PlanAidEvent => (planAid.lines(journal, at, viewer), run)
       // Undo's facts post no line of their own; `format` keeps markers out
       // of every journal it formats.
       case _: OathEvent.CommandAccepted | _: OathEvent.StepTakenBack |
