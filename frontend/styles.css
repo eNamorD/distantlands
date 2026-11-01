@@ -1438,6 +1438,23 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 .consent-question { margin: 0; }
 .consent-answers { display: flex; flex-wrap: wrap; gap: 6px; }
 .consent-notice { margin: 0; color: var(--ink-dim); font-size: .82rem; }
+/* An Imperial ally's offer panel (Empire phase design, "Offer panel"):
+   a pending removal is struck through, a used item and the amount tags
+   sit in the helper ink. */
+.plan-aid-prompt { display: grid; gap: 8px; }
+.plan-aid-heading { margin: 0; }
+.plan-aid-items { list-style: none; margin: 0; padding: 0; display: grid;
+  gap: 2px; }
+.plan-aid-item { display: flex; gap: 6px; align-items: baseline; }
+.plan-aid-removed .plan-aid-name { text-decoration: line-through;
+  color: var(--ink-dim); }
+.plan-aid-used, .plan-aid-tag, .plan-aid-empty { color: var(--ink-dim);
+  font-size: .82rem; }
+.plan-aid-empty { margin: 0; }
+.plan-aid-amount { display: flex; flex-wrap: wrap; gap: 6px;
+  align-items: center; }
+.plan-aid-amount-name { flex: 1 1 auto; }
+.plan-aid-amount-value { min-width: 1.5em; text-align: center; }
 /* A pane with nothing to show yet says so in the helper ink, at the top of
    the pane like any first line. On the map, which is transform-scaled, the
    line is set against the scale so it reads at one size whatever Fit came
