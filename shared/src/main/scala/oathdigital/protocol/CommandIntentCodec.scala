@@ -18,6 +18,14 @@ private[protocol] object CommandIntentCodec:
     case SetConsentPreference(power, requester, setting) =>
       tagged("setConsentPreference", "powerId" -> power,
         "requesterId" -> requester, "setting" -> setting)
+    case SavePlanAid(plans, requirements, favor, secrets, favorBurnt,
+        secretsBurnt) => tagged("savePlanAid",
+      "plans" -> ujson.Arr.from(
+        plans.map(CommandNestedCodecs.encodeStartArgWire)),
+      "requirements" -> ujson.Arr.from(
+        requirements.map(CommandNestedCodecs.encodeStartArgWire)),
+      "favor" -> favor, "secrets" -> secrets, "favorBurnt" -> favorBurnt,
+      "secretsBurnt" -> secretsBurnt)
 
   def decode(value: ujson.Value, path: String): Either[ProtocolDecodeFailure, GameIntent] =
     obj(value, path).flatMap { value =>

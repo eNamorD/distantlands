@@ -3,6 +3,7 @@ package oathdigital.gameplay
 import oathdigital.catalog.ExecutableCatalog
 import oathdigital.engine.EventEvolution
 import oathdigital.model._
+import oathdigital.gameplay.actions.campaign.{CampaignIds, PlanAid}
 import oathdigital.gameplay.powerresolver.{ContributingPower, PhasePowers}
 import oathdigital.gameplay.walker.{DeltaPayload, FollowUpOffer,
   FollowUpSkipped, ModifierOffers, ParkedUses, ProcedureWalker,
@@ -216,6 +217,44 @@ private[gameplay] trait OathRulesWalker:
     parked.toOption.flatten.exists(decide =>
       decide.decisionId == decisionId && decide.owner == requester &&
         decide.query.isInstanceOf[DecisionQuery.ChooseOne])
+
+  /** The plan window aid reaches now: an Imperial user's parked battle-plan
+    * decision (Empire phase design, "1b-ii"). */
+  def planAidWindow(state: OathState): Option[AidWindow] =
+    parkedPlanDecision(state).flatMap((ready, decide, side) =>
+      PlanAid.window(ready, ready.game.current.walkActor, side, decide.owner))
+
+  /** What `ally` may offer at the parked window: the user's options that
+    * `ally` lends, whether available or awaiting the offer, and the
+    * requirements `ally` meets. */
+  def planAidOfferable(state: OathState, ally: PlayerId)
+      : Option[(Vector[DecisionOption], Vector[DecisionOptionRef])] =
+    parkedPlanDecision(state).collect {
+      case (ready, decide, _) if decide.owner != ally &&
+          Imperials.isImperial(ready, ally) =>
+        (offered(decide).filter(DecisionOption.lender(_).contains(ally)),
+          PlanAid.requirementsOf(ready, ally))
+    }
+
+  /** The parked battle-plan decision with its side. Only a walk at a table
+    * with Imperial players can park one aid reaches, so no other tree is
+    * rebuilt. */
+  private def parkedPlanDecision(state: OathState)
+      : Option[(ReadyGame, Decide, CampaignPlanSide)] =
+    val imperial = state match
+      case Ready(ready) => ready.game.current.walkerPending.nonEmpty &&
+        ready.game.current.players.exists(player =>
+          Imperials.isImperial(ready, player.player))
+      case _ => false
+    if !imperial then None
+    else walkerResumeContext(state).toOption.flatMap {
+      case (ready, _, tree, pending, powers, _) =>
+        walkerCall(Right(ProcedureWalker.parkedDecide(ready, tree, pending,
+          powers))).toOption.flatten.flatMap(decide =>
+          CampaignPlanSide.values.find(side =>
+            CampaignIds.planDecision(side) == decide.decisionId)
+            .map((ready, decide, _)))
+    }
 
   /** The automatic use whose power-use step the walk is parked at, if it
     * is (automatic power consent design, "Reaching the step"). */
