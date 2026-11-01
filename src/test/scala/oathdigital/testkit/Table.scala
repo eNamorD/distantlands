@@ -405,6 +405,11 @@ final case class Table private (private val game: ReadyGame,
     * fact three suites need becomes a step. */
   def update(f: ReadyGame => ReadyGame): Table = copy(game = f(game))
 
+  /** `ally`'s saved Imperial Tactics offer for `window`. */
+  def aid(ally: PlayerId, window: AidWindow, offer: AidOffer): Table =
+    update(ready => ready.copy(planAid = ready.planAid.saved(ally, window,
+      offer)))
+
   /** The state, after checking that no card is lost or in two places and
     * that no force outnumbers its printed supply. */
   def ready(using munit.Location): ReadyGame =
