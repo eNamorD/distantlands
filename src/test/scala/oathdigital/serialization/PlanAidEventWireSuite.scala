@@ -1,5 +1,6 @@
 package oathdigital.serialization
 
+import oathdigital.testkit.CatalogNames
 import oathdigital.model._
 
 /** The Imperial Tactics facts round-trip through the envelope (Empire phase
@@ -12,10 +13,11 @@ class PlanAidEventWireSuite extends munit.FunSuite:
   private val window = AidWindow(PlayerId("p1"), CampaignPlanSide.Defender,
     PlayerId("p3"))
   private val offer = AidOffer(
-    plans = Vector(DecisionOptionRef.Denizen(DenizenId("108")),
+    plans = Vector(
+      DecisionOptionRef.Denizen(CatalogNames.denizen("Shield Wall")),
       DecisionOptionRef.Button("title")),
     requirements = Vector(DecisionOptionRef.Banner(Banner.DarkestSecret),
-      DecisionOptionRef.Relic(RelicId("R40")),
+      DecisionOptionRef.Relic(CatalogNames.relic("Yew Staff")),
       DecisionOptionRef.Player(PlayerId("p2"))),
     amounts = AidAmounts(favor = 2, secrets = 1, favorBurnt = 0,
       secretsBurnt = 3))

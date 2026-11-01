@@ -68,6 +68,14 @@ class PlanAidProjectionSuite extends munit.FunSuite:
       favor = 1))
     assertEquals(prompt.used, PlanAidOfferProjection(Vector(key),
       favor = 1))
+    // The user chose it, so their window lists it no longer; the panel
+    // still shows it, to lock it.
+    assertEquals(keys(prompt.plans), Vector(key))
+
+  test("a Chancellor holding the title may offer its defense"):
+    val (_, at) = parkedAtCitizenPlans(table.oathkeeper(Some(p2)))
+    assert(keys(view(at, p2).planAidPrompt.get.plans)
+      .contains("button:title"))
 
   test("the user, an Exile and a bystander outside any window see no prompt"):
     val (_, at) = parkedAtCitizenPlans()

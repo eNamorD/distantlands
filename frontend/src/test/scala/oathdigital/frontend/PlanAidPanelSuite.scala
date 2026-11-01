@@ -84,8 +84,9 @@ class PlanAidPanelSuite extends munit.FunSuite:
   test("the button reads Offer, Save changes or Offered"):
     val fresh = prompt()
     val draft = PlanAidDraft.fresh(context, fresh)
-    assertEquals(saveButton(pane(fresh, draft, new RecordingControls()))
-      .textContent, "Offered")
+    val untouched = saveButton(pane(fresh, draft, new RecordingControls()))
+    assertEquals(untouched.textContent, "Offer")
+    assert(untouched.disabled, "nothing to offer yet")
     assertEquals(saveButton(pane(fresh, draft.toggled(fresh, "denizen:108"),
       new RecordingControls())).textContent, "Offer")
     val saved = prompt(PlanAidOfferProjection(Vector("denizen:108")))
@@ -113,3 +114,17 @@ class PlanAidPanelSuite extends munit.FunSuite:
       .asInstanceOf[dom.html.Button].click()
     assertEquals(ui.staged, Vector[Draft](Draft.Aid(Some(draft.copy(
       favor = 1)))))
+
+  test("the title's defense is listed with its own toggle"):
+    val title = DecisionOptionState("button", "title",
+      "Oathkeeper title: add 1 defense die")
+    val open = prompt().copy(plans = Vector(title))
+    val draft = PlanAidDraft.fresh(context, open)
+    val ui = new RecordingControls()
+    val panel = pane(open, draft, ui)
+    assertEquals(all(panel, ".plan-aid-offerable .plan-aid-name")
+      .map(_.textContent), Vector("Oathkeeper title: add 1 defense die"))
+    panel.querySelector(".plan-aid-toggle").asInstanceOf[dom.html.Button]
+      .click()
+    assertEquals(ui.staged, Vector[Draft](Draft.Aid(Some(draft.copy(
+      plans = Vector("button:title"))))))

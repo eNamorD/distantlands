@@ -21,18 +21,21 @@ private[application] final class PlanAidDesk(rules: OathRules):
       unavailable("a player cannot aid their own plans"))
     offerable <- rules.planAidOfferable(state, ally)
       .toRight(unavailable(s"${ally.value} is not an Imperial ally"))
-    (lendable, requirements) = offerable
+    (_, lendable, requirements) = offerable
     used = PlanAid.usedRefs(ready, window, ally)
     spent = PlanAid.used(ready, window, ally)
+    _ <- Either.cond(offer.plans.distinct == offer.plans &&
+      offer.requirements.distinct == offer.requirements, (),
+      unavailable("an offer names each plan and requirement once"))
     _ <- offer.plans.find(ref => !used.contains(ref) &&
       !lendable.exists(_.ref == ref)).toLeft(()).left.map(ref =>
       unavailable(s"${ref.wireId} is not a plan ${ally.value} can lend"))
     _ <- offer.requirements.find(ref => !used.contains(ref) &&
       !requirements.contains(ref)).toLeft(()).left.map(ref =>
       unavailable(s"${ally.value} does not meet ${ref.wireId}"))
-    _ <- used.find(ref => !offer.plans.contains(ref) &&
-      !offer.requirements.contains(ref)).toLeft(()).left.map(ref =>
-      unavailable(s"${ref.wireId} was used and cannot be withdrawn"))
+    _ <- used.find(ref => !keeps(offer, ready, window, ally, ref))
+      .toLeft(()).left.map(ref =>
+        unavailable(s"${ref.wireId} was used and cannot be withdrawn"))
     _ <- Either.cond(offer.amounts.atLeast(spent), (),
       unavailable("an offer cannot go below what was used"))
     _ <- fits(ready, ally, offer.amounts - spent)
@@ -44,7 +47,8 @@ private[application] final class PlanAidDesk(rules: OathRules):
     * while it is parked elsewhere inside the Campaign, such as at a plan's
     * amount question, the offers stand, since the plan's payment still
     * reads them; nobody can change them until the plan decision is parked
-    * again. */
+    * again. A walk holds one Campaign, so the answers name only its
+    * window. */
   def stale(state: OathState): Vector[OathEvent] = state match
     case OathState.Ready(ready) => ready.planAid.window.filter { window =>
       val parked = rules.planAidWindow(state)
@@ -53,6 +57,16 @@ private[application] final class PlanAidDesk(rules: OathRules):
       parked.exists(_ != window) || (parked.isEmpty && !answered)
     }.map(_ => PlanAidCleared).toVector
     case _ => Vector.empty
+
+  /** Whether `offer` still holds `ref`, which was used, where it was
+    * offered: a used plan among the plans, a used requirement among the
+    * requirements. */
+  private def keeps(offer: AidOffer, ready: ReadyGame, window: AidWindow,
+      ally: PlayerId, ref: DecisionOptionRef): Boolean =
+    if ready.planAid.window.contains(window) &&
+        ready.planAid.offerOf(ally).requirements.contains(ref) then
+      offer.requirements.contains(ref)
+    else offer.plans.contains(ref)
 
   /** What is left to spend fits what the ally holds now. */
   private def fits(ready: ReadyGame, ally: PlayerId, left: AidAmounts)

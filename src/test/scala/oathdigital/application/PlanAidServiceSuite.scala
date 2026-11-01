@@ -126,11 +126,13 @@ class PlanAidServiceSuite extends munit.FunSuite:
     val (service, _) = table.service(campaignDice = Dice.raid)
     val at = toCitizenDefenderPlans(service)
     refusedFor(save(service, at, p2, AidOffer(plans =
-      Vector(DecisionOptionRef.Denizen(DenizenId("999"))))))
+      Vector(DecisionOptionRef.Denizen(DenizenId("no-such-card"))))))
     refusedFor(save(service, at, p2, AidOffer(requirements =
       Vector(PlanAid.darkestSecret))))
     refusedFor(save(service, at, p2, AidOffer(amounts =
       AidAmounts(favor = 3))))
+    refusedFor(save(service, at, p2, AidOffer(plans =
+      Vector(shieldWall, shieldWall))))
 
   test("an offer cannot drop what has been used"):
     // p3 holds the title, so the window stays open after Shield Wall.
@@ -142,6 +144,8 @@ class PlanAidServiceSuite extends munit.FunSuite:
       ChooseOneAnswer(shieldWall))
     refusedFor(save(service, picked, p2, AidOffer()))
     refusedFor(save(service, picked, p2, AidOffer(plans = Vector(shieldWall))))
+    refusedFor(save(service, picked, p2, shieldWallAndFavor.copy(
+      plans = Vector.empty, requirements = Vector(shieldWall))))
     accepted(save(service, picked, p2, shieldWallAndFavor))
 
   test("the offers clear when the Campaign's walk ends"):

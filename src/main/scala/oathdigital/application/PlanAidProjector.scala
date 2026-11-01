@@ -23,20 +23,36 @@ private[application] final class PlanAidProjector(rules: OathRules,
       decisions.optionProjection(ready, context.viewer, index, option)
     for
       ally <- context.viewer
-      window <- rules.planAidWindow(state)
-      (plans, requirements) <- rules.planAidOfferable(state, ally)
+      (window, plans, requirements) <- rules.planAidOfferable(state, ally)
       held <- ready.game.current.players.find(_.player == ally)
     yield
       val saved = if ready.planAid.window.contains(window) then
         ready.planAid.offerOf(ally) else AidOffer()
       val used = PlanAid.usedRefs(ready, window, ally)
+      // A saved or used item the window no longer lists (a plan the user
+      // chose, a requirement no longer met) stays in the panel, so it can
+      // be shown locked or taken out.
+      def kept(listed: Vector[DecisionOption], refs: Vector[DecisionOptionRef])
+          : Vector[DecisionOption] = listed ++ refs.distinct
+        .filterNot(ref => listed.exists(_.ref == ref)).flatMap(standalone)
+      val offerablePlans = plans.map(offerable)
       PlanAidPromptProjection(window.user.value, side(window.side),
-        plans.map(offerable).flatMap(row),
-        requirements.flatMap(DecisionOption.forRef).flatMap(row),
+        kept(offerablePlans, saved.plans ++ used.filter(saved.plans.contains))
+          .flatMap(row),
+        kept(requirements.flatMap(DecisionOption.forRef),
+          saved.requirements).flatMap(row),
         offer(saved), offer(AidOffer(used.filter(saved.plans.contains),
           used.filter(saved.requirements.contains),
           PlanAid.used(ready, window, ally))),
         held.board.favor, held.board.faceUpSecrets)
+
+  /** An item's option without the window's: the title's button keeps its
+    * name. */
+  private def standalone(ref: DecisionOptionRef): Option[DecisionOption] =
+    ref match
+      case button: DecisionOptionRef.Button =>
+        Some(DecisionOption.Button(button, "Oathkeeper title's defense"))
+      case other => DecisionOption.forRef(other)
 
   /** The user's option as the ally may offer it: whether the user may
     * choose it yet, and whose it is, are the user's concern. */

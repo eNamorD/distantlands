@@ -21,8 +21,9 @@ private[frontend] object PlanAidPanel:
   /** "Offer", "Save changes" or "Offered", and whether it may be pressed. */
   def action(prompt: PlanAidPromptState, draft: PlanAidDraft)
       : (String, Boolean) =
-    if draft.matchesSaved(prompt) then ("Offered", false)
-    else if prompt.saved == PlanAidOfferProjection() then ("Offer", true)
+    if prompt.saved == PlanAidOfferProjection() then
+      ("Offer", !draft.matchesSaved(prompt))
+    else if draft.matchesSaved(prompt) then ("Offered", false)
     else ("Save changes", true)
 
   def render(value: GameProjection, canControl: Boolean, panel: dom.Element,
@@ -33,11 +34,13 @@ private[frontend] object PlanAidPanel:
     do
       val section = element("section", "plan-aid-prompt")
       section.appendChild(text("p", "plan-aid-heading", heading(value, prompt)))
+      def toggle(key: String): Unit =
+        controls.stage(Draft.Aid(Some(draft.toggled(prompt, key))))
       section.appendChild(list("Plans", prompt.plans, draft.plans,
-        prompt.saved.plans, prompt.used.plans))
+        prompt.saved.plans, prompt.used.plans, canControl, toggle))
       section.appendChild(list("Requirements", prompt.requirements,
         draft.requirements, prompt.saved.requirements,
-        prompt.used.requirements))
+        prompt.used.requirements, canControl, toggle))
       section.appendChild(amounts(prompt, draft, canControl, controls))
       val (label, enabled) = action(prompt, draft)
       val save = button(label, "plan-aid-save")
@@ -46,18 +49,23 @@ private[frontend] object PlanAidPanel:
       section.appendChild(save)
       panel.appendChild(section)
 
-  /** The drafted and saved items, in the prompt's order. */
+  /** The drafted and saved items, in the prompt's order. A button option,
+    * the title's defense, has nothing on the board to click, so it is
+    * listed always, with its own toggle. */
   private def list(title: String, options: Vector[DecisionOptionState],
-      drafted: Vector[String], saved: Vector[String], used: Vector[String])
-      : dom.Element =
+      drafted: Vector[String], saved: Vector[String], used: Vector[String],
+      canControl: Boolean, toggle: String => Unit): dom.Element =
     val block = element("div", "plan-aid-list")
     block.appendChild(text("h3", "plan-aid-list-title", title))
     val rows = element("ul", "plan-aid-items")
-    options.filter(option => drafted.contains(BoardOptionViews.key(option)) ||
+    options.filter(option => option.kind == "button" ||
+      drafted.contains(BoardOptionViews.key(option)) ||
       saved.contains(BoardOptionViews.key(option))).foreach { option =>
       val key = BoardOptionViews.key(option)
+      val listed = drafted.contains(key) || saved.contains(key)
       val (state, mark) =
         if used.contains(key) then ("plan-aid-used", Some("🔒 used"))
+        else if !listed then ("plan-aid-offerable", None)
         else if !drafted.contains(key) then ("plan-aid-removed", None)
         else if saved.contains(key) then ("plan-aid-saved", Some("✓"))
         else ("plan-aid-pending", None)
@@ -65,6 +73,14 @@ private[frontend] object PlanAidPanel:
       row.appendChild(text("span", "plan-aid-name", option.label))
       mark.foreach(word => row.appendChild(text("span", "plan-aid-mark",
         word)))
+      if option.kind == "button" && !used.contains(key) then
+        val chosen = drafted.contains(key)
+        val flip = button(if chosen then "Take out" else "Offer it",
+          "plan-aid-toggle")
+        flip.setAttribute("aria-pressed", chosen.toString)
+        flip.disabled = !canControl
+        flip.onclick = _ => toggle(key)
+        row.appendChild(flip)
       rows.appendChild(row)
     }
     if rows.childNodes.length == 0 then

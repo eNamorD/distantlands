@@ -3,7 +3,8 @@ package oathdigital.gameplay
 import oathdigital.catalog.ExecutableCatalog
 import oathdigital.engine.EventEvolution
 import oathdigital.model._
-import oathdigital.gameplay.actions.campaign.{CampaignIds, PlanAid}
+import oathdigital.gameplay.actions.campaign.{CampaignIds,
+  CampaignPlanChoice, PlanAid}
 import oathdigital.gameplay.powerresolver.{ContributingPower, PhasePowers}
 import oathdigital.gameplay.walker.{DeltaPayload, FollowUpOffer,
   FollowUpSkipped, ModifierOffers, ParkedUses, ProcedureWalker,
@@ -224,27 +225,41 @@ private[gameplay] trait OathRulesWalker:
     parkedPlanDecision(state).flatMap((ready, decide, side) =>
       PlanAid.window(ready, ready.game.current.walkActor, side, decide.owner))
 
-  /** What `ally` may offer at the parked window: the user's options that
-    * `ally` lends, whether available or awaiting the offer, and the
-    * requirements `ally` meets. */
+  /** What `ally` may offer at the parked window, with the window: the
+    * user's options that `ally` lends, whether available or awaiting the
+    * offer, but not one the attacker used; and the requirements `ally`
+    * meets. Nothing when `ally` is not an Imperial ally of the user. */
   def planAidOfferable(state: OathState, ally: PlayerId)
-      : Option[(Vector[DecisionOption], Vector[DecisionOptionRef])] =
-    parkedPlanDecision(state).collect {
-      case (ready, decide, _) if decide.owner != ally &&
-          Imperials.isImperial(ready, ally) =>
-        (offered(decide).filter(DecisionOption.lender(_).contains(ally)),
-          PlanAid.requirementsOf(ready, ally))
+      : Option[(AidWindow, Vector[DecisionOption],
+        Vector[DecisionOptionRef])] =
+    val attackerUsed = OptionReason.Written(CampaignPlanChoice.attackerUsed)
+    val allied = state match
+      case Ready(ready) => Imperials.isImperial(ready, ally)
+      case _ => false
+    Option.when(allied)(parkedPlanDecision(state)).flatten.flatMap {
+      case (ready, decide, side) if decide.owner != ally =>
+        PlanAid.window(ready, ready.game.current.walkActor, side,
+          decide.owner).map(window => (window, offered(decide).filter(
+            option => DecisionOption.lender(option).contains(ally) &&
+              !(option match
+                case DecisionOption.Badged(DecisionOption.Unavailable(_,
+                    reason), _) => reason == attackerUsed
+                case DecisionOption.Unavailable(_, reason) =>
+                  reason == attackerUsed
+                case _ => false)),
+          PlanAid.requirementsOf(ready, ally)))
+      case _ => None
     }
 
   /** The parked battle-plan decision with its side. Only a walk at a table
-    * with Imperial players can park one aid reaches, so no other tree is
-    * rebuilt. */
+    * with two Imperial players can park one aid reaches, so no other tree
+    * is rebuilt. */
   private def parkedPlanDecision(state: OathState)
       : Option[(ReadyGame, Decide, CampaignPlanSide)] =
     val imperial = state match
       case Ready(ready) => ready.game.current.walkerPending.nonEmpty &&
-        ready.game.current.players.exists(player =>
-          Imperials.isImperial(ready, player.player))
+        ready.game.current.players.count(player =>
+          Imperials.isImperial(ready, player.player)) >= 2
       case _ => false
     if !imperial then None
     else walkerResumeContext(state).toOption.flatMap {

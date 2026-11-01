@@ -1,5 +1,6 @@
 package oathdigital.gameplay.actions.campaign
 
+import oathdigital.testkit.CatalogNames
 import oathdigital.model._
 import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2, p3}
@@ -75,7 +76,8 @@ class PlanAidSuite extends munit.FunSuite:
       OathViolation.GameNotStarted))
 
   test("a lent plan's use reads back from its marker"):
-    val shieldWall = DecisionOptionRef.Denizen(DenizenId("108"))
+    val shieldWall =
+      DecisionOptionRef.Denizen(CatalogNames.denizen("Shield Wall"))
     val pool = PlanAid.lentUse(defending, p2, shieldWall) match
       case ModifyDicePool(pool, _, _) => pool
       case other => fail(s"not a pool marker: $other")

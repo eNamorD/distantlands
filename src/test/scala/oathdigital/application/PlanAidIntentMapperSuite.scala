@@ -1,5 +1,6 @@
 package oathdigital.application
 
+import oathdigital.testkit.CatalogNames
 import oathdigital.model._
 import oathdigital.protocol.{GameIntent, WalkerStartArgWire}
 
@@ -10,11 +11,12 @@ class PlanAidIntentMapperSuite extends munit.FunSuite:
 
   test("an aid offer binds its sender as the ally"):
     assertEquals(GameIntentMapper.bind(red, GameIntent.SavePlanAid(
-      Vector(WalkerStartArgWire("denizen", "108")),
+      Vector(WalkerStartArgWire("denizen",
+        CatalogNames.denizen("Shield Wall").value)),
       Vector(WalkerStartArgWire("banner", "peoples-favor"),
         WalkerStartArgWire("player", "red")), 2, 1, 0, 3)),
       Right(GameCommand.SavePlanAid(red, AidOffer(
-        Vector(DecisionOptionRef.Denizen(DenizenId("108"))),
+        Vector(DecisionOptionRef.Denizen(CatalogNames.denizen("Shield Wall"))),
         Vector(DecisionOptionRef.Banner(Banner.PeoplesFavor),
           DecisionOptionRef.Player(red)),
         AidAmounts(favor = 2, secrets = 1, secretsBurnt = 3)))))
