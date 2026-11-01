@@ -182,17 +182,24 @@ case object PeaceEnvoy extends BattlePlan:
     BuildOps((ready, _) => {
       val dice = ready.game.current.rollPools.get(CampaignIds.defensePool)
         .fold(0)(_.count)
-      val parts = PlanAid.payments(ready, window, user, Cost(favor = dice))
-      val owed = parts.collectFirst { case (`user`, part) => part.favor }
-        .getOrElse(0)
+      // The enemy never gives to themselves: an enemy's offer stays theirs.
+      val lent = PlanAid.payments(ready, window, user, Cost(favor = dice))
+        .filter((payer, _) => payer != user && payer != enemy)
+      val owed = dice - lent.map(_._2.favor).sum
       val held = favor(ready, user)
+      val parts = lent ++ Option.when(owed > 0)(user -> Cost(favor = owed))
       if dice == 0 then Right(Vector.empty)
       else if held < owed then Left(OathViolation.InsufficientFavor(
         before - held + owed, before))
-      else Right(parts.flatMap((payer, part) => Give(Piece.Favor(part.favor),
-        payer, Location.PlayArea(payer), Location.PlayArea(enemy),
-        required = true) +: window.filter(_ => payer != user).toVector
-        .flatMap(PlanAid.spent(_, payer, part))))
+      else lent.find((ally, part) => favor(ready, ally) < part.favor)
+        .fold(Right(parts.flatMap((payer, part) => Give(
+          Piece.Favor(part.favor), payer, Location.PlayArea(payer),
+          Location.PlayArea(enemy), required = true) +:
+          window.filter(_ => payer != user).toVector
+            .flatMap(PlanAid.spent(_, payer, part))))) { (ally, part) =>
+          Left(OathViolation.InsufficientFavor(part.favor,
+            favor(ready, ally)))
+        }
     })
 
   /** The gift's line, from what the enemy gained. A defender is named. */

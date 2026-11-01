@@ -170,14 +170,17 @@ object PlanAid:
       required - available <= spare(ready, window).favor
     case OathViolation.InsufficientSecrets(required, available) =>
       required - available <= spare(ready, window).secrets
+    // The printed cost is the whole of it, so the allies' reach is what
+    // they hold unoffered and what their offers have left.
     case _: OathViolation.CoreOperationRejected =>
       player(ready, window.user).exists { held =>
         val favor = printed.favor + printed.favorBurnt - held.board.favor
         val secrets = printed.secrets + printed.secretsBurnt -
           held.board.faceUpSecrets
-        val left = spare(ready, window)
-        (favor > 0 || secrets > 0) && favor <= left.favor &&
-          secrets <= left.secrets
+        val reach = allies(ready, window.user).map(remaining(ready, window, _))
+          .foldLeft(spare(ready, window))(_ + _)
+        (favor > 0 || secrets > 0) && favor <= reach.favor + reach.favorBurnt &&
+          secrets <= reach.secrets + reach.secretsBurnt
       }
     case _ => false
 

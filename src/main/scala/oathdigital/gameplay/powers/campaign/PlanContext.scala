@@ -63,14 +63,14 @@ final case class PlanContext(ready: ReadyGame, setup: CampaignSetup,
   private def lenders: Vector[PlayerId] = aidWindow.fold(
     Vector.empty[PlayerId])(window => PlanAid.allies(ready, window.user))
 
-  /** Whether `ally` lends `ref`: by their saved offer, or, in the full
-    * view, as any ally may. */
+  /** Whether `ally` lends the plan `ref`: by their saved offer, or, in
+    * the full view, as any ally may. Requirements are lent through
+    * `lentRequirement`. */
   private def lends(ally: PlayerId, ref: DecisionOptionRef): Boolean =
     aidWindow.exists(window =>
       if full then lenders.contains(ally)
       else PlanAid.offers(ready, window).exists((lender, offer) =>
-        lender == ally && (offer.plans.contains(ref) ||
-          offer.requirements.contains(ref))))
+        lender == ally && offer.plans.contains(ref)))
 
   /** The secrets to pay the allies offer and have not used, or, in the
     * full view, hold. */
@@ -83,14 +83,15 @@ final case class PlanContext(ready: ReadyGame, setup: CampaignSetup,
   def lendsTitle(holder: PlayerId): Boolean = lenders.contains(holder) &&
     lends(holder, DecisionOptionRef.Button("title"))
 
-  /** The ally whose source `source` is, when it is not the user's. */
+  /** The ally whose source `source` is, when it is not the user's and aid
+    * reaches the window. */
   def lentBy(source: CampaignPlanSource): Option[PlayerId] =
-    val owner = source match
+    val owner = aidWindow.flatMap(_ => source match
       case CampaignPlanSource.Adviser(player, _) => Some(player)
       case CampaignPlanSource.Relic(player, _) => Some(player)
       case CampaignPlanSource.Title(player) => Some(player)
       case CampaignPlanSource.SiteCard(site, _) => rulerOf(site)
-      case CampaignPlanSource.SiteEdifice(site, _) => rulerOf(site)
+      case CampaignPlanSource.SiteEdifice(site, _) => rulerOf(site))
     owner.filter(owner => !user.contains(owner))
 
   private def rulerOf(site: SiteId): Option[PlayerId] =

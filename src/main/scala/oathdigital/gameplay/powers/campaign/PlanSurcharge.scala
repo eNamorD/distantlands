@@ -14,10 +14,11 @@ import oathdigital.model._
   *
   * While the holder is in a Campaign, as the attacker or as a player defender,
   * every plan the opposing side chooses costs `cost` more, paid like the plan's
-  * own cost: onto the plan's source card, by an Imperial user's allies first,
-  * and settled at once outside its user's turn. The title has no card, so its plan pays `onTitle` instead. The
-  * added cost is part of the plan's application, so a plan the user cannot
-  * afford with it is not offered, and the option's price includes it. Bandits
+  * own cost: onto the plan's source card, by an Imperial user's allies
+  * first, and settled at once outside its user's turn. The title has no
+  * card, so its plan pays `onTitle` instead. The added cost is part of the
+  * plan's application, so a plan the user cannot afford with it is not
+  * offered, and the option's price includes it. Bandits
   * are enemies too, but they hold nothing and cannot pay, so while a holder
   * attacks, a bandit defender applies no plan at all.
   *

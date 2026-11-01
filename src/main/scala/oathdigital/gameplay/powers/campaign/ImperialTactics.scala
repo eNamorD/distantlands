@@ -16,9 +16,10 @@ case object ImperialTactics extends ContributingPower:
   /** "{p2} may offer this plan." */
   val awaitsPlanKey: NoteKey = notes.key("awaits-plan", Vector(
     NotePart.Arg(0), NotePart.Text(" may offer this plan.")))
-  /** "An Imperial ally may meet what this plan needs." */
+  /** "An Imperial ally may offer what this plan needs.": a requirement, or
+    * favor or secrets to pay. */
   val awaitsNeedKey: NoteKey = notes.key("awaits-need", Vector(
-    NotePart.Text("An Imperial ally may meet what this plan needs.")))
+    NotePart.Text("An Imperial ally may offer what this plan needs.")))
   override def noteKeys: Vector[NoteKey] = notes.declared
 
   def awaitsPlan(owner: PlayerId): OptionReason =

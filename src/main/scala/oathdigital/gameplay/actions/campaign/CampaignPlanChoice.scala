@@ -87,14 +87,21 @@ final class CampaignPlanChoice(catalog: ExecutableCatalog, val actor: PlayerId,
       if side != CampaignPlanSide.Defender then Set.empty
       else CampaignAnswers.picks(pending,
         CampaignIds.planDecision(CampaignPlanSide.Attacker)).toSet
-    val listed = offers.filterNot(offered =>
+    val unchosen = offers.filterNot(offered =>
       chosen.contains(CampaignPlans.refOf(offered.offer.source)))
-      .map(offered => offered.offer.withheld match
-        case _ if attackerUsed(CampaignPlans.refOf(offered.offer.source)) =>
+    def usedByAttacker(offered: OfferedPlan): Boolean =
+      attackerUsed(CampaignPlans.refOf(offered.offer.source))
+    // Each offered plan's dry run, once: the options and the window's gate
+    // read it. A withheld plan is not dry-run.
+    val dryRuns = unchosen.map(offered => offered ->
+      offered.offer.withheld.toLeft(pass.applies(applicationOf(setup,
+        offered))))
+    val listed = dryRuns.map((offered, dryRun) => dryRun match
+        case _ if usedByAttacker(offered) =>
           unavailable(offered,
             OptionReason.Written(CampaignPlanChoice.attackerUsed))
-        case Some(reason) => unavailable(offered, reason)
-        case None => pass.applies(applicationOf(setup, offered)) match
+        case Left(reason) => unavailable(offered, reason)
+        case Right(applied) => applied match
           case Right(operations) => warned(offered, PlanPrice.priced(
             CampaignPlans.optionOf(offered), offered.offer, operations,
             Some(user)))
@@ -106,15 +113,11 @@ final class CampaignPlanChoice(catalog: ExecutableCatalog, val actor: PlayerId,
     // While the decision waits only the offers change, and this reads the
     // allies' holdings and the full-aid view, not what they offered, so the
     // parked decision stays put as they offer and withdraw.
-    val unchosen = offers.filterNot(offered =>
-      chosen.contains(CampaignPlans.refOf(offered.offer.source)))
     val aidable = PlanAid.window(pass.state, actor, side, user).exists(at =>
-      unchosen.exists(offered => offered.offer.awaitsAid &&
-        !attackerUsed(CampaignPlans.refOf(offered.offer.source))) ||
-      unchosen.exists(offered => offered.offer.withheld.isEmpty &&
-        pass.applies(applicationOf(setup, offered)).left.exists(
+      dryRuns.exists((offered, dryRun) => !usedByAttacker(offered) &&
+        (offered.offer.awaitsAid || dryRun.exists(_.left.exists(
           PlanAid.couldCover(pass.state, at, _,
-            PlanAid.printed(offered.offer.costs)))))
+            PlanAid.printed(offered.offer.costs)))))))
     val playable = listed.exists(_.available)
     val asked = playable || aidable
     if !asked && !pass.resuming then Vector.empty
