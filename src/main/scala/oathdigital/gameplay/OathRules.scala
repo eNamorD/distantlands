@@ -2,6 +2,7 @@ package oathdigital.gameplay
 
 import oathdigital.catalog.ExecutableCatalog
 import oathdigital.engine.EventEvolution
+import oathdigital.gameplay.aid.PlanAidEvolution
 import oathdigital.gameplay.consent.ConsentEvolution
 import oathdigital.gameplay.phases.rest.WarExhaustionRandomPort
 import oathdigital.model._
@@ -70,6 +71,10 @@ final class OathRules(protected val catalog: ExecutableCatalog,
         StateBasedEvaluation.evolve(catalog, state, event, outsideActions)
       case event: ConsentEvent => state match
         case Ready(ready) => ConsentEvolution.evolve(ready, event)
+          .map(Ready.apply)
+        case _ => Left(GameNotStarted)
+      case event: PlanAidEvent => state match
+        case Ready(ready) => PlanAidEvolution.evolve(ready, event)
           .map(Ready.apply)
         case _ => Left(GameNotStarted)
       // Undo's facts (undo design, "Storage"). A batch's opening fact

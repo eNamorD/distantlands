@@ -96,10 +96,11 @@ private[application] final class JournalFold(
             case _ => Left(EventReplayFailure(record.index,
               OathViolation.InvalidEventOrder(s"restored [$from, $until) " +
                 s"by ${by.value} is not the latest taken-back batch")))
-        // A consent fact opens no batch and joins none (consent design,
-        // "Events"): it closes the open batch, as a batch opening does, so
-        // a whole-journal replay batches exactly as live appends did.
-        case event: ConsentEvent =>
+        // A consent or aid fact opens no batch and joins none (consent
+        // design, "Events"; Empire phase design, "1b-ii"): it closes the
+        // open batch, as a batch opening does, so a whole-journal replay
+        // batches exactly as live appends did.
+        case event @ (_: ConsentEvent | _: PlanAidEvent) =>
           val settled = closedAt(record.index)
           evolve(settled.state, event).left
             .map(EventReplayFailure(record.index, _))
@@ -111,9 +112,12 @@ private[application] final class JournalFold(
 private[application] object JournalFold:
   /** `target`, a state an undo or a redo returns to, with the consent
     * ledger of `current` minus any waiting request (consent design,
-    * "Undo"): grants, refusals and preferences outlive the rewind. */
+    * "Undo"): grants, refusals and preferences outlive the rewind. The
+    * standing Imperial Tactics offers of `current` outlive it too (Empire
+    * phase design, "1b-ii"). */
   def carried(target: OathState, current: OathState): OathState =
     (target, current) match
       case (OathState.Ready(game), OathState.Ready(now)) =>
-        OathState.Ready(game.copy(consent = now.consent.carried))
+        OathState.Ready(game.copy(consent = now.consent.carried,
+          planAid = now.planAid))
       case _ => target

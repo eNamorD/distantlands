@@ -180,6 +180,8 @@ private[application] final class GameLogFormatter(catalog: ExecutableCatalog,
       case OathEvent.WarExhaustionResolved(winner, kind, vision, _) =>
         (Vector(victory(winner, exhaustion(kind, vision))), run)
       case _: ConsentEvent => (consent.lines(journal, at, viewer), run)
+      // Task 7 of slice 1b-ii gives the offers their lines.
+      case _: PlanAidEvent => (Vector.empty, run)
       // Undo's facts post no line of their own; `format` keeps markers out
       // of every journal it formats.
       case _: OathEvent.CommandAccepted | _: OathEvent.StepTakenBack |
