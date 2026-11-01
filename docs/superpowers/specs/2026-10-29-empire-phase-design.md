@@ -239,8 +239,9 @@ no one approves anything.
     they hold it, and, for the Chancellor, plans at Imperial sites. Only the
     acting player may reveal a facedown card, so a facedown plan cannot be
     offered;
-  - requirements the ally meets: holding the Darkest Secret, ruling cards of
-    a suit;
+  - requirements the ally meets: holding the Darkest Secret (the banner, or
+    the Yew Staff faceup), holding the People's Favor, or having their pawn
+    at a site (ruling R16);
   - four amounts: favor to pay, secrets to pay, favor to burn, secrets to
     burn.
 
@@ -260,8 +261,25 @@ no one approves anything.
   finishes; unused amounts stay with the ally. The attacker and defender
   cannot use the same plan: a plan one side used is shown unavailable to the
   other, with the reason "The attacker used this plan".
-- **Log.** Each offer and withdrawal writes a public line, such as "p2
-  offered Military Parade and 2 favor to pay."
+- **Offer panel.** Each other Imperial player sees a panel headed "You may
+  offer your battle plans, to pay costs and to meet requirements for p3".
+  They build the offer the way a plan is chosen: the plans and requirement
+  sources they could offer (faceup advisers and relics, cards at Imperial
+  sites for the Chancellor, the Darkest Secret, the Yew Staff, the People's
+  Favor, their pawn) are highlighted on the board, and a click adds one to
+  the panel's Plans or Requirements list, or takes it out again. Facedown
+  cards are never highlighted. Below the lists, four steppers set the
+  amounts. A pending addition shows no mark, a saved item a check mark, a
+  pending removal is struck through, and a used item shows a lock and can no
+  longer be clicked; a saved amount shows how much is offered and how much is
+  used, and cannot go below what is used. The button reads "Offer" before
+  the first offer, "Save changes" while anything is pending and "Offered",
+  disabled, otherwise. Saving sends the whole offer, which replaces the one
+  before it. The user needs no panel: offered plans are options of the
+  normal plan window.
+- **Log.** Each saved offer writes one public line naming what it added and
+  what it took back, such as "p2 offered Military Parade and 2 favor to
+  pay." or "p2 withdrew Towering Rampart."
 - **Docs.** Traceability row 104.
 
 ## Slice 2: Empire endings
@@ -443,8 +461,10 @@ legacies stay refused (see [Out of scope](#out-of-scope)).
   Imperial players, including a variable amount. The warband sacrifice still
   comes from the defender's force.
 - **R12, shared requirements.** Any Imperial player who meets a plan's
-  requirement (holding the Darkest Secret, ruling cards of a suit) may meet it
-  for the plan's user, with that player's consent.
+  requirement (holding the Darkest Secret, holding the People's Favor, having
+  their pawn at a site) may meet it for the plan's user, with that player's
+  consent. A requirement met this way for a plan that checks it at the end of
+  the Campaign (Hearts and Minds) stays met until then.
 - **R13, Captains and Wild Allies at an Empire site.** A Citizen may use
   Captains or Wild Allies to campaign from a site the Empire holds, against
   the Chancellor. The site's warbands join the attack and count once, for the
@@ -458,6 +478,11 @@ legacies stay refused (see [Out of scope](#out-of-scope)).
   by the turn's ruler at the Campaign's end (Hospital FAQ). A Chancellor
   defending on a Citizen's turn may choose it at an Empire site (R10), but it
   saves nothing; a Citizen using it on their own turn has theirs saved.
+- **R16, what aid covers.** Imperial Tactics lets an ally pay a plan's
+  costs and meet its requirements, and nothing more. A plan that counts what
+  its user rules or holds (Great Crusade, Pledge of Defense, Kindred Warriors,
+  Nature Worship) counts only the user's own cards. An ally's pawn at a site
+  meets "your pawn is at this site" (Towering Rampart).
 - **Defender is the attacker.** A Campaign target whose defender resolves to
   the attacker is not legal.
 - **First game.** "Become a Citizen" powers are ignored in a first game by a
