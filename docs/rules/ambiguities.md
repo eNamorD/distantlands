@@ -58,13 +58,15 @@ R10. **Plans at Imperial sites.** In a Campaign, plans at Imperial sites belong 
 
 R11. **Split costs.** Every cost of a battle plan may be split between Imperial players, including a variable amount. The warband sacrifice still comes from the defender's force (Empire slice 1b-ii).
 
-R12. **Shared requirements.** Any Imperial player who meets a plan's requirement (holding the Darkest Secret, ruling cards of a suit) may meet it for the plan's user, with that player's consent (Empire slice 1b-ii).
+R12. **Shared requirements.** Any Imperial player who meets a plan's requirement (holding the Darkest Secret, holding the People's Favor, having their pawn at a site) may meet it for the plan's user, with that player's consent. A requirement met this way for a plan that checks it at the end of the Campaign (Hearts and Minds) stays met until then (CR p. 35; Empire slice 1b-ii).
 
 R13. **Captains and Wild Allies at an Empire site.** A Citizen may use Captains or Wild Allies to campaign from a site the Empire holds, against the Chancellor. The site's warbands join the attack and count once, for the attacker, never in the defense; they do not die in the victory, and only the board's survivors are placed. This follows the Captains FAQ in the BGS card library; Wild Allies has no FAQ but the same wording. The FAQ's "you do not need to target the site" refers to a base-game rule and does not apply in New Foundations.
 
 R14. **Keep.** Keep's site is used by whoever defends it in the Campaign, so a defeated Chancellor keeps Keep at an Empire site even on a Citizen's turn.
 
 R15. **Hospital.** Hospital saves warbands only if its user rules its site by the turn's ruler at the Campaign's end, as its FAQ in the BGS card library says ("if you rule it at the end"). A Chancellor defending on a Citizen's turn may choose it at an Empire site (R10), but it saves nothing; a Citizen using it on their own turn has theirs saved.
+
+R16. **What aid covers.** Imperial Tactics lets an ally pay a plan's costs and meet its requirements, and nothing more. A plan that counts what its user rules or holds (Great Crusade, Pledge of Defense, Kindred Warriors, Nature Worship) counts only the user's own cards. An ally's pawn at a site meets "your pawn is at this site" (Towering Rampart) (CR p. 35; Empire slice 1b-ii).
 
 ## Chronicle rulings
 

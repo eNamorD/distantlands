@@ -212,9 +212,6 @@ Citizenship and exile, and the Empire part of later-game setup. Design:
 [Empire phase design](superpowers/specs/2026-10-29-empire-phase-design.md).
 Each slice gets its own plan, in this order.
 
-- [ ] **Slice 1b-ii, Imperial Tactics.** Shared battle plans, split costs
-  and requirements, and the shared title, each with the contributor's
-  consent.
 - [ ] **Slice 2, Empire endings.** Stable Regime, War Exhaustion with an
   Empire, and Successor goals.
 - [ ] **Slice 3, Role changes in play.** Becoming a Citizen or the
