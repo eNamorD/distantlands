@@ -134,3 +134,15 @@ class PlanAidSuite extends munit.FunSuite:
       full = true), Some(p2 -> DecisionOptionRef.Player(p2)))
     assertEquals(PlanAid.lentNeed(ready, defending,
       PlanNeed.PawnAt(SiteId("nowhere")), full = true), None)
+
+  test("a shortfall the pipeline reports by code is read against the price"):
+    val ready = Table.start.imperial(p2, p1, p3).favor(p3, 0).favor(p1, 0)
+      .favor(p2, 2).ready
+    val rejected = OathViolation.CoreOperationRejected("insufficient-pieces",
+      "player play area contains 0 of requested favor")
+    assert(PlanAid.couldCover(ready, defending, rejected,
+      PlanAid.printed(Vector(CampaignPlanCost.Favor(1)))))
+    assert(!PlanAid.couldCover(ready, defending, rejected,
+      PlanAid.printed(Vector(CampaignPlanCost.Favor(3)))))
+    assert(!PlanAid.couldCover(ready, defending, rejected,
+      PlanAid.printed(Vector(CampaignPlanCost.SacrificeWarband))))

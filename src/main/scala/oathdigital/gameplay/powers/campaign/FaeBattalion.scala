@@ -37,7 +37,7 @@ case object FaeBattalion extends BattlePlan:
     context.denizen(cardId).filter(_ => context.holdsDarkestSecret)
       .map(source => CampaignPlanOffer(source,
         "Fae Battalion: count hollow swords as swords", Vector.empty,
-        Vector.empty))
+        Vector.empty, requires = Vector(PlanNeed.DarkestSecret)))
 
   override def later: Map[PowerWindow, PlanUse => Vector[Operation]] = Map(
     PowerWindow.CampaignAttackResult -> (use => Vector(

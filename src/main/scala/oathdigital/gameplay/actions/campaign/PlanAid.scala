@@ -150,13 +150,35 @@ object PlanAid:
             held.board.faceUpSecrets - left.secrets - left.secretsBurnt))
     }).foldLeft(AidAmounts.none)(_ + _)
 
-  /** Whether the allies could still cover what a dry run found short. */
+  /** What a plan prints it costs. */
+  def printed(costs: Vector[CampaignPlanCost]): AidAmounts =
+    costs.foldLeft(AidAmounts.none)((sum, cost) => sum + (cost match
+      case CampaignPlanCost.Favor(n) => AidAmounts(favor = n)
+      case CampaignPlanCost.Secret(n) => AidAmounts(secrets = n)
+      case CampaignPlanCost.FavorBurnt(n) => AidAmounts(favorBurnt = n)
+      case CampaignPlanCost.SecretBurnt(n) => AidAmounts(secretsBurnt = n)
+      case _ => AidAmounts.none))
+
+  /** Whether the allies could still cover what a dry run found short. A
+    * payment that fails inside the operation pipeline reports only a code,
+    * so the shortfall is then read off the user's board against `printed`,
+    * what the plan prints, as `PlanPrice.shortfall` reads it. */
   def couldCover(ready: ReadyGame, window: AidWindow,
-      violation: OathViolation): Boolean = violation match
+      violation: OathViolation, printed: AidAmounts = AidAmounts.none)
+      : Boolean = violation match
     case OathViolation.InsufficientFavor(required, available) =>
       required - available <= spare(ready, window).favor
     case OathViolation.InsufficientSecrets(required, available) =>
       required - available <= spare(ready, window).secrets
+    case _: OathViolation.CoreOperationRejected =>
+      player(ready, window.user).exists { held =>
+        val favor = printed.favor + printed.favorBurnt - held.board.favor
+        val secrets = printed.secrets + printed.secretsBurnt -
+          held.board.faceUpSecrets
+        val left = spare(ready, window)
+        (favor > 0 || secrets > 0) && favor <= left.favor &&
+          secrets <= left.secrets
+      }
     case _ => false
 
   /** Whether `user` meets `need` with no aid: the Darkest Secret by the

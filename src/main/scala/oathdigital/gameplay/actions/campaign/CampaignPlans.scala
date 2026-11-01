@@ -69,7 +69,8 @@ object CampaignPlans:
         DecisionOptionRef.Button("title"), offered.offer.label)
       case source => DecisionOption.forRef(refOf(source)).getOrElse(
         throw new IllegalStateException(s"no option for plan source $source"))
-    badgeOf(offered.offer.sides).fold(inner)(DecisionOption.Badged(inner, _))
+    val owned = offered.offer.lender.fold(inner)(DecisionOption.Lent(inner, _))
+    badgeOf(offered.offer.sides).fold(owned)(DecisionOption.Badged(owned, _))
 
   /** The title first, then advisers, relics, and cards at sites. */
   private def order(source: CampaignPlanSource): Int = source match

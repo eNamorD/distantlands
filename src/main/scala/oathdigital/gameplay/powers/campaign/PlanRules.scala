@@ -32,6 +32,7 @@ import oathdigital.gameplay.powerresolver.ContributingPower
 object PlanRules:
   def forCatalog(catalog: ExecutableCatalog): Vector[ContributingPower] =
     Vector(StickyFire) ++
+      Vector(ImperialTactics) ++
       Vector(WarningSignals.forCatalog(catalog)) ++
       Vector(GleamingArmor.forCatalog(catalog)) ++
       Vector(InsectSwarm.forCatalog(catalog)) ++

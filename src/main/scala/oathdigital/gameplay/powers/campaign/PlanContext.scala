@@ -3,7 +3,7 @@ package oathdigital.gameplay.powers.campaign
 import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.EffectiveSuit
 import oathdigital.gameplay.actions.BannerRules
-import oathdigital.gameplay.actions.campaign.{CampaignAnswers, CampaignIds, CampaignPlans, CampaignSetup}
+import oathdigital.gameplay.actions.campaign.{CampaignAnswers, CampaignIds, CampaignPlans, CampaignSetup, PlanAid}
 import oathdigital.gameplay.powerresolver.PowerCtx
 import oathdigital.gameplay.powers.banner.CardPowerBanners
 import oathdigital.gameplay.powers.RuledCards
@@ -16,9 +16,17 @@ import oathdigital.model._
   * a card stands: an adviser of the plan's user, a relic held faceup by the
   * user, or a card at a site the user rules. A bandit defender is the ruler of
   * the sites Bandits rule and holds nothing else.
+  *
+  * An Imperial user may also use what an Imperial ally lends (Imperial
+  * Tactics, CR p. 35; Empire phase design, "1b-ii"): an ally's faceup
+  * adviser or relic, a faceup card or edifice at a site the ally rules, the
+  * title's defense when the ally holds the title, and the Darkest Secret or
+  * a pawn the ally offers. The user's own sources are always found first.
+  * `full` supposes every ally lends everything they could, which is how the
+  * window finds the plans that wait on an offer.
   */
 final case class PlanContext(ready: ReadyGame, setup: CampaignSetup,
-    side: CampaignPlanSide):
+    side: CampaignPlanSide, full: Boolean = false):
   /** The player who would use the plan; `None` for a bandit defender. */
   def user: Option[PlayerId] = CampaignPlans.userOf(setup, side)
 
@@ -31,49 +39,124 @@ final case class PlanContext(ready: ReadyGame, setup: CampaignSetup,
   def rules(site: SiteId): Boolean =
     CampaignSetup.defenderAt(ready, site).contains(ruler)
 
-  private def held: Option[PlayerState] = user.flatMap(player =>
-    ready.game.current.players.find(_.player == player))
+  private def playerState(id: PlayerId): Option[PlayerState] =
+    ready.game.current.players.find(_.player == id)
+
+  private def held: Option[PlayerState] = user.flatMap(playerState)
 
   private def sitesRuled: Vector[(SiteId, SiteState)] =
-    ready.game.current.map.inPlay.filter(rules).flatMap(site =>
-      ready.game.current.map.sites.get(site).map(site -> _))
+    sitesOf(ruler)
+
+  private def sitesOf(who: CampaignDefender): Vector[(SiteId, SiteState)] =
+    ready.game.current.map.inPlay
+      .filter(CampaignSetup.defenderAt(ready, _).contains(who))
+      .flatMap(site => ready.game.current.map.sites.get(site).map(site -> _))
+
+  /** The window aid reaches, when the user is Imperial. */
+  def aidWindow: Option[AidWindow] =
+    user.flatMap(PlanAid.window(ready, setup.actor, side, _))
+
+  /** The same context as if every ally offered every plan and requirement
+    * they could: what the window shows as awaiting an offer. */
+  def fullAid: PlanContext = copy(full = true)
+
+  private def lenders: Vector[PlayerId] = aidWindow.fold(
+    Vector.empty[PlayerId])(window => PlanAid.allies(ready, window.user))
+
+  /** Whether `ally` lends `ref`: by their saved offer, or, in the full
+    * view, as any ally may. */
+  private def lends(ally: PlayerId, ref: DecisionOptionRef): Boolean =
+    aidWindow.exists(window =>
+      if full then lenders.contains(ally)
+      else PlanAid.offers(ready, window).exists((lender, offer) =>
+        lender == ally && (offer.plans.contains(ref) ||
+          offer.requirements.contains(ref))))
+
+  /** Whether `holder`, an ally, lends the title's defense. */
+  def lendsTitle(holder: PlayerId): Boolean = lenders.contains(holder) &&
+    lends(holder, DecisionOptionRef.Button("title"))
+
+  /** The ally whose source `source` is, when it is not the user's. */
+  def lentBy(source: CampaignPlanSource): Option[PlayerId] =
+    val owner = source match
+      case CampaignPlanSource.Adviser(player, _) => Some(player)
+      case CampaignPlanSource.Relic(player, _) => Some(player)
+      case CampaignPlanSource.Title(player) => Some(player)
+      case CampaignPlanSource.SiteCard(site, _) => rulerOf(site)
+      case CampaignPlanSource.SiteEdifice(site, _) => rulerOf(site)
+    owner.filter(owner => !user.contains(owner))
+
+  private def rulerOf(site: SiteId): Option[PlayerId] =
+    CampaignSetup.defenderAt(ready, site).collect {
+      case CampaignDefender.Player(player) => player }
+
+  /** An ally's requirement that meets `need`, with the ref that meets it:
+    * what the plan's application records as used. */
+  def lentRequirement(need: PlanNeed): Option[(PlayerId, DecisionOptionRef)] =
+    aidWindow.flatMap(PlanAid.lentNeed(ready, _, need, full))
+
+  private def faceUpAt(state: SiteState, id: DenizenId): Boolean =
+    state.denizens.exists {
+      case card: DenizenState =>
+        card.id == id && card.orientation == Orientation.FaceUp
+      case _ => false
+    }
 
   /** A denizen the user holds as an adviser, in either orientation, or one that
-    * is faceup at a site the user rules.
+    * is faceup at a site the user rules. Else an ally's that the ally lends:
+    * a faceup adviser, or a faceup card at a site the ally rules. A
+    * facedown card is never lent.
     */
   def denizen(id: DenizenId): Option[CampaignPlanSource] =
+    val ref = DecisionOptionRef.Denizen(id)
     held.flatMap(player => player.advisers.collectFirst {
       case card: DenizenState if card.id == id =>
         CampaignPlanSource.Adviser(player.player, id): CampaignPlanSource
     }).orElse(sitesRuled.collectFirst {
-      case (site, state) if state.denizens.exists {
-        case card: DenizenState =>
-          card.id == id && card.orientation == Orientation.FaceUp
-        case _ => false
-      } => CampaignPlanSource.SiteCard(site, id): CampaignPlanSource
-    })
+      case (site, state) if faceUpAt(state, id) =>
+        CampaignPlanSource.SiteCard(site, id): CampaignPlanSource
+    }).orElse(lenders.filter(lends(_, ref)).iterator.flatMap { ally =>
+      playerState(ally).flatMap(_.advisers.collectFirst {
+        case DenizenState(`id`, Orientation.FaceUp, _) =>
+          CampaignPlanSource.Adviser(ally, id): CampaignPlanSource
+      }).orElse(sitesOf(CampaignDefender.Player(ally)).collectFirst {
+        case (site, state) if faceUpAt(state, id) =>
+          CampaignPlanSource.SiteCard(site, id): CampaignPlanSource
+      })
+    }.nextOption())
 
-  /** A relic the user holds faceup. A relic at a site is facedown, and a plan
-    * cannot use it.
+  /** A relic the user holds faceup, else one an ally holds faceup and
+    * lends. A relic at a site is facedown, and a plan cannot use it.
     */
-  def relic(id: RelicId): Option[CampaignPlanSource] = held.flatMap(player =>
-    player.relics.collectFirst {
+  def relic(id: RelicId): Option[CampaignPlanSource] =
+    def faceUp(player: PlayerState) = player.relics.collectFirst {
       case card if card.id == id && card.orientation == Orientation.FaceUp =>
         CampaignPlanSource.Relic(player.player, id): CampaignPlanSource
-    })
+    }
+    held.flatMap(faceUp).orElse(lenders
+      .filter(lends(_, DecisionOptionRef.Relic(id)))
+      .iterator.flatMap(ally => playerState(ally).flatMap(faceUp))
+      .nextOption())
 
-  /** An edifice on the given face at a site the user rules. */
+  /** An edifice on the given face at a site the user rules, else at a site
+    * an ally rules who lends it. */
   def edifice(id: EdificeId, face: EdificeSide)
-      : Option[CampaignPlanSource.SiteEdifice] = sitesRuled.collectFirst:
-    case (site, state) if state.denizens.exists {
-      case card: EdificeState => card.id == id && card.side == face
-      case _ => false
-    } => CampaignPlanSource.SiteEdifice(site, id)
+      : Option[CampaignPlanSource.SiteEdifice] =
+    def at(sites: Vector[(SiteId, SiteState)]) = sites.collectFirst:
+      case (site, state) if state.denizens.exists {
+        case card: EdificeState => card.id == id && card.side == face
+        case _ => false
+      } => CampaignPlanSource.SiteEdifice(site, id)
+    at(sitesRuled).orElse(lenders
+      .filter(lends(_, DecisionOptionRef.Edifice(id)))
+      .iterator.flatMap(ally => at(sitesOf(CampaignDefender.Player(ally))))
+      .nextOption())
 
   /** Whether the plan's user has their pawn, or campaigns from a queued
-    * origin, at `site`. */
+    * origin, at `site`; or an ally lends their pawn there (ruling R16). */
   def pawnAt(site: SiteId): Boolean = user.exists(player =>
-    CampaignSetup.originOf(ready, player).contains(site))
+    CampaignSetup.originOf(ready, player).contains(site)) ||
+    lentRequirement(PlanNeed.PawnAt(site)).nonEmpty
 
   /** Whether `site` is a target of the Campaign. */
   def targets(site: SiteId): Boolean = setup.targetSites.contains(site)
@@ -108,10 +191,11 @@ final case class PlanContext(ready: ReadyGame, setup: CampaignSetup,
     BannerRules.holder(ready.game.current, banner).contains(held.player))
 
   /** Whether the plan's user holds the Darkest Secret, as the card powers
-    * they use see it (`CardPowerBanners`). A bandit defender holds
-    * none. */
+    * they use see it (`CardPowerBanners`), or an ally lends it. A bandit
+    * defender holds none. */
   def holdsDarkestSecret: Boolean =
-    user.exists(CardPowerBanners.holdsDarkestSecret(ready, _))
+    user.exists(CardPowerBanners.holdsDarkestSecret(ready, _)) ||
+      lentRequirement(PlanNeed.DarkestSecret).nonEmpty
 
   /** The cards of `suit` that `who` rules (`RuledCards`): the plan's user
     * (`ruler`), the enemy or the Campaign's defender. */

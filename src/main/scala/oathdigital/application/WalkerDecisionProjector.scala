@@ -353,6 +353,11 @@ private[application] final class WalkerDecisionProjector(
       // whichever order a caller wraps price and badge in.
       case DecisionOption.Badged(inner, badge) => optionProjection(ready,
         viewer, index, inner, details).map(_.copy(badge = Some(badge)))
+      // Imperial Tactics: whose plan it is, as a detail line, since the
+      // badge already says which side's plan it is.
+      case DecisionOption.Lent(inner, owner) => optionProjection(ready,
+        viewer, index, inner,
+        details :+ s"${presentation.playerLabel(owner)}'s plan")
       // The band is set after the wrapped option is described, for the reason
       // the badge is: a caller may wrap band and price in either order.
       case DecisionOption.Grouped(inner, group) => optionProjection(ready,

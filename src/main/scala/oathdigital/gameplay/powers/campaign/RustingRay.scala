@@ -38,7 +38,8 @@ case object RustingRay extends BattlePlan:
     context.denizen(cardId).filter(_ => context.holdsDarkestSecret)
       .map(source => CampaignPlanOffer(source,
         "Rusting Ray: the attack's hollow swords score nothing",
-        Vector(CampaignPlanCost.Secret(1)), Vector.empty))
+        Vector(CampaignPlanCost.Secret(1)), Vector.empty,
+        requires = Vector(PlanNeed.DarkestSecret)))
 
   override def later: Map[PowerWindow, PlanUse => Vector[Operation]] = Map(
     PowerWindow.CampaignAttackResult -> (use => Vector(

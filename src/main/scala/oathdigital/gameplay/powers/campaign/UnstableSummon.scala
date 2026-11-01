@@ -55,8 +55,9 @@ case object UnstableSummon extends BattlePlan:
         Vector.empty)
       if !context.holdsDarkestSecret || secrets < 1 then
         offer.copy(withheld = Some(OptionReason.Written(noBanner)))
-      else offer.copy(amount = Some(PlanAmounts.range(decisionId, 1,
-        secrets, heading, confirm)(summon(context.setup.actor))))
+      else offer.copy(requires = Vector(PlanNeed.DarkestSecret),
+        amount = Some(PlanAmounts.range(decisionId, 1, secrets, heading,
+          confirm)(summon(context.setup.actor))))
     }
 
   /** X secrets the attacker burns from the banner, X attack dice, and the

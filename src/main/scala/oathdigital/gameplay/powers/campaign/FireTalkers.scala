@@ -31,4 +31,5 @@ case object FireTalkers extends BattlePlan:
       .map(source => CampaignPlanOffer(source,
         PlanDice.label("Fire Talkers", context.side, FireTalkers.Dice),
         Vector(CampaignPlanCost.Secret(1)),
-        Vector(PlanDice.effect(context.side, FireTalkers.Dice))))
+        Vector(PlanDice.effect(context.side, FireTalkers.Dice)),
+        requires = Vector(PlanNeed.DarkestSecret)))
