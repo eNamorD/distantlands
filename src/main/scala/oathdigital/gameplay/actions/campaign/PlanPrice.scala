@@ -7,7 +7,9 @@ import oathdigital.model._
   * not from the offer, so a power that adds to the cost (a surcharge on the
   * enemy's plans) shows in it: a payment is a `PayCost` whether it is placed or
   * burnt, a secret paid by turning it facedown is a `FlipSecrets`, and favor
-  * the plan gives another player (Peace Envoy's gift) is a `Give`.
+  * the plan gives another player (Peace Envoy's gift) is a `Give`. Given a
+  * user, only what the user pays counts: what an Imperial ally pays for
+  * them is not their price (Imperial Tactics).
   *
   * A warband sacrifice is read from the offer. The dry run stops at the decision
   * that asks which force pays, before the warband is killed, so it may not have
@@ -15,17 +17,20 @@ import oathdigital.model._
   * dry run stops at, so they are read from the offer and priced as X.
   */
 private[campaign] object PlanPrice:
-  def of(offer: CampaignPlanOffer, operations: Vector[CoreOperation])
-      : OptionPrice =
+  def of(offer: CampaignPlanOffer, operations: Vector[CoreOperation],
+      user: Option[PlayerId] = None): OptionPrice =
+    def theirs(payer: PlayerId) = user.forall(_ == payer)
     val paid = operations.foldLeft(OptionPrice()):
-      case (price, PayCost(_, _, cost, _, _, _)) => price.copy(
-        favor = price.favor + cost.favor,
-        secrets = price.secrets + cost.secret,
-        favorBurnt = price.favorBurnt + cost.favorBurnt,
-        secretsBurnt = price.secretsBurnt + cost.secretBurnt)
-      case (price, FlipSecrets(_, amount, SecretSide.FaceUp, SecretSide.FaceDown)) =>
+      case (price, PayCost(payer, _, cost, _, _, _)) if theirs(payer) =>
+        price.copy(favor = price.favor + cost.favor,
+          secrets = price.secrets + cost.secret,
+          favorBurnt = price.favorBurnt + cost.favorBurnt,
+          secretsBurnt = price.secretsBurnt + cost.secretBurnt)
+      case (price, FlipSecrets(payer, amount, SecretSide.FaceUp,
+          SecretSide.FaceDown)) if theirs(payer) =>
         price.copy(secrets = price.secrets + amount)
-      case (price, Give(Piece.Favor(count), _, _, _, _)) =>
+      case (price, Give(Piece.Favor(count), giver, _, _, _))
+          if theirs(giver) =>
         price.copy(favor = price.favor + count)
       case (price, _) => price
     val sacrificed =
@@ -38,8 +43,9 @@ private[campaign] object PlanPrice:
 
   /** The option, carrying its price when it has one. */
   def priced(option: DecisionOption, offer: CampaignPlanOffer,
-      operations: Vector[CoreOperation]): DecisionOption =
-    val price = of(offer, operations)
+      operations: Vector[CoreOperation], user: Option[PlayerId] = None)
+      : DecisionOption =
+    val price = of(offer, operations, user)
     if price.isFree then option else DecisionOption.Priced(option, price)
 
   /** Why a plan's dry run could not pay for it, as player text. The payment

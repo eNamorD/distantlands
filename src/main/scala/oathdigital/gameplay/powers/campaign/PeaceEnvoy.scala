@@ -3,7 +3,7 @@ package oathdigital.gameplay.powers.campaign
 import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
 import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.actions.campaign.{CampaignAnswers, CampaignIds,
-  CampaignSetup}
+  CampaignSetup, PlanAid}
 import oathdigital.gameplay.powerresolver.{OptionRestriction, PowerCtx}
 import oathdigital.model._
 
@@ -89,7 +89,7 @@ case object PeaceEnvoy extends BattlePlan:
       parties(context) match
         case Some((user, enemy)) => offer.copy(effects = Vector(
           CampaignPlanEffect.Run(Vector(
-            gift(user, enemy, favor(context.ready, user)),
+            gift(user, enemy, favor(context.ready, user), context.aidWindow),
             giftNote(context.side, user, enemy),
             // Nothing is rolled and the losses kill nothing, so the
             // attacker's dead are none, at the origin too (slice 13).
@@ -171,21 +171,28 @@ case object PeaceEnvoy extends BattlePlan:
   private def favor(ready: ReadyGame, player: PlayerId): Int =
     ready.game.current.players.find(_.player == player).fold(0)(_.board.favor)
 
-  /** One favor per die in the defense pool, from `user` to `enemy`. It
-    * runs after the payments, so its shortfall is reported against
-    * `before`, the user's favor when the plan was offered: everything the
-    * payments took (the favor placed onto the card, and any surcharge, as
-    * Insect Swarm's) is added back. */
-  private def gift(user: PlayerId, enemy: PlayerId, before: Int): Operation =
+  /** One favor per die in the defense pool, from `user` to `enemy`, given
+    * first by an Imperial user's allies from what they offered (Imperial
+    * Tactics). It runs after the payments, so its shortfall is reported
+    * against `before`, the user's favor when the plan was offered:
+    * everything the payments took (the favor placed onto the card, and any
+    * surcharge, as Insect Swarm's) is added back. */
+  private def gift(user: PlayerId, enemy: PlayerId, before: Int,
+      window: Option[AidWindow]): Operation =
     BuildOps((ready, _) => {
       val dice = ready.game.current.rollPools.get(CampaignIds.defensePool)
         .fold(0)(_.count)
+      val parts = PlanAid.payments(ready, window, user, Cost(favor = dice))
+      val owed = parts.collectFirst { case (`user`, part) => part.favor }
+        .getOrElse(0)
       val held = favor(ready, user)
       if dice == 0 then Right(Vector.empty)
-      else if held < dice then Left(OathViolation.InsufficientFavor(
-        before - held + dice, before))
-      else Right(Vector[CoreOperation](Give(Piece.Favor(dice), user,
-        Location.PlayArea(user), Location.PlayArea(enemy), required = true)))
+      else if held < owed then Left(OathViolation.InsufficientFavor(
+        before - held + owed, before))
+      else Right(parts.flatMap((payer, part) => Give(Piece.Favor(part.favor),
+        payer, Location.PlayArea(payer), Location.PlayArea(enemy),
+        required = true) +: window.filter(_ => payer != user).toVector
+        .flatMap(PlanAid.spent(_, payer, part))))
     })
 
   /** The gift's line, from what the enemy gained. A defender is named. */

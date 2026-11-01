@@ -96,7 +96,8 @@ final class CampaignPlanChoice(catalog: ExecutableCatalog, val actor: PlayerId,
         case Some(reason) => unavailable(offered, reason)
         case None => pass.applies(applicationOf(setup, offered)) match
           case Right(operations) => warned(offered, PlanPrice.priced(
-            CampaignPlans.optionOf(offered), offered.offer, operations))
+            CampaignPlans.optionOf(offered), offered.offer, operations,
+            Some(user)))
           case Left(violation) =>
             unavailable(offered, OptionReason.Written(PlanPrice.shortfall(
               pass.state, user, offered.offer, violation))))

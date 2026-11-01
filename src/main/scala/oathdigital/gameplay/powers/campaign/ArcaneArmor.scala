@@ -2,7 +2,7 @@ package oathdigital.gameplay.powers.campaign
 
 import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
 import oathdigital.gameplay.actions.campaign.{CampaignIds,
-  CampaignProcedure, PlanAmounts}
+  CampaignProcedure, PlanAid, PlanAmounts}
 import oathdigital.gameplay.powers.PowerAnswers
 import oathdigital.model._
 
@@ -56,7 +56,8 @@ case object ArcaneArmor extends BattlePlan:
 
   def plan(context: PlanContext): Option[CampaignPlanOffer] =
     context.denizen(cardId).map { source =>
-      val secrets = context.user.fold(0)(faceUpSecrets(context.ready, _))
+      val secrets = context.user.fold(0)(faceUpSecrets(context.ready, _)) +
+        context.aidSecrets
       val dice = pool(context.ready)
       val offer = CampaignPlanOffer(source,
         "Arcane Armor: set defense dice to double shields", Vector.empty,
@@ -74,7 +75,11 @@ case object ArcaneArmor extends BattlePlan:
     * (Gleaming Armor) has taken its secret by then. */
   private def bounds(ready: ReadyGame, user: PlayerId)
       : Either[OathViolation, (Int, Int)] =
-    val secrets = faceUpSecrets(ready, user)
+    // What the allies offered to pay and have not used (Imperial Tactics).
+    val aided = ready.planAid.window.filter(_.user == user).fold(0)(window =>
+      PlanAid.allies(ready, user).map(PlanAid.remaining(ready, window, _)
+        .secrets).sum)
+    val secrets = faceUpSecrets(ready, user) + aided
     if secrets < 1 then Left(OathViolation.InsufficientSecrets(1, secrets))
     else Right(1 -> math.min(secrets, pool(ready)))
 

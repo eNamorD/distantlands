@@ -72,6 +72,13 @@ final case class PlanContext(ready: ReadyGame, setup: CampaignSetup,
         lender == ally && (offer.plans.contains(ref) ||
           offer.requirements.contains(ref))))
 
+  /** The secrets to pay the allies offer and have not used, or, in the
+    * full view, hold. */
+  def aidSecrets: Int = aidWindow.fold(0)(window =>
+    if full then PlanAid.spare(ready, window).secrets +
+      lenders.map(PlanAid.remaining(ready, window, _).secrets).sum
+    else lenders.map(PlanAid.remaining(ready, window, _).secrets).sum)
+
   /** Whether `holder`, an ally, lends the title's defense. */
   def lendsTitle(holder: PlayerId): Boolean = lenders.contains(holder) &&
     lends(holder, DecisionOptionRef.Button("title"))
