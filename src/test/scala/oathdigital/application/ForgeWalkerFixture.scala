@@ -1,9 +1,9 @@
 package oathdigital.application
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.action.DowsingSticksCard
 import oathdigital.gameplay.powers.campaign.MercenariesCard
 import oathdigital.gameplay.powers.search.MushroomsCard
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.testkit.MenuPlay
 import oathdigital.model._

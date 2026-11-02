@@ -2,6 +2,7 @@ package oathdigital.gameplay.powers.travel
 
 import oathdigital.gameplay.{ModifierPlay, OathRules}
 import oathdigital.gameplay.actions.travel.TravelProcedure
+import oathdigital.gameplay.cards.NarrowPassSite
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   Restriction}
 import oathdigital.gameplay.powers.{PowerFixture, WalkerPowerCatalog}

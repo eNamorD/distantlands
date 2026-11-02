@@ -5,7 +5,8 @@ import oathdigital.gameplay.{SearchPlay, TravelPlay}
 import oathdigital.gameplay.actions.recover.RecoverProcedure
 import oathdigital.gameplay.actions.search.SearchProcedure
 import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.cards.{BuriedGiantSite, DeepWoodsSite}
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite, DeepWoodsSite}
 import oathdigital.gameplay.oathkeeper.OathkeeperProcedure
 import oathdigital.gameplay.phases.PhaseMenu
 import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
@@ -14,8 +15,6 @@ import oathdigital.gameplay.powers.campaign.{CursedCauldronCard, StickyFireCard,
 import oathdigital.gameplay.powers.economy.BirdsongCard
 import oathdigital.gameplay.powers.rest.{LeagueTreatyCard,
   LeagueTreatyContribution, SilverTongue, SilverTongueCard}
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.powers.whenplayed.BanditChiefCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.gameplay.walker.{ParkedDecisionAssertions, WalkerParked}

@@ -1,11 +1,11 @@
 package oathdigital.application
 
+import oathdigital.gameplay.cards.NarrowPassSite
 import oathdigital.testkit.MenuPlay
 import oathdigital.gameplay.CampaignConsentFixture
 import oathdigital.gameplay.CampaignConsentFixture.{deepWoodsRef,
   onlyWoodsExtra, passRuledByP2}
 import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.travel.NarrowPassSite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.OathEvent.{ConsentAnswered, ConsentPreferenceSet,

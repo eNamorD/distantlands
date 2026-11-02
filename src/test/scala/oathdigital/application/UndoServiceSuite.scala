@@ -1,12 +1,12 @@
 package oathdigital.application
 
-import oathdigital.gameplay.powers.wake.AncientCitySite
+import oathdigital.gameplay.cards.{AncientCitySite, FairIsleSite}
 import oathdigital.testkit.MenuPlay
 import oathdigital.gameplay.ModifierPlay
 import oathdigital.gameplay.powers.economy.{GolemLegions, GolemLegionsCard}
 import oathdigital.gameplay.powers.recover.{CatacombsCard, RelicWorship,
   RelicWorshipCard}
-import oathdigital.gameplay.powers.travel.{FairIsleSite, Tents, TentsCard}
+import oathdigital.gameplay.powers.travel.{Tents, TentsCard}
 import oathdigital.model._
 import oathdigital.model.OathEvent.StepTakenBack
 import oathdigital.testkit.Table

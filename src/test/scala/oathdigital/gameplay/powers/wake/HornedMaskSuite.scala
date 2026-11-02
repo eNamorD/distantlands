@@ -1,5 +1,6 @@
 package oathdigital.gameplay.powers.wake
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.operations.OperationRestrictions
 import oathdigital.gameplay.powerresolver.PhasePowers
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}

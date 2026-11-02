@@ -1,10 +1,9 @@
 package oathdigital.gameplay.powers.economy
 
-import oathdigital.gameplay.cards.BuriedGiantSite
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite}
 import oathdigital.gameplay.powers.action.AlchemistCard
 import oathdigital.gameplay.powers.campaign.VowOfPeaceCard
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.testkit.MenuPlay
 import oathdigital.gameplay.{FollowUpPlay, ModifierPlay, OathRules,
   WalkerDiceFixture}

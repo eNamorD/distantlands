@@ -3,13 +3,12 @@ package oathdigital.gameplay.powers.search
 import oathdigital.gameplay.PowerAccess
 import oathdigital.gameplay.actions.CardPlayRules
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.cards.BuriedGiantSite
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite}
 import oathdigital.gameplay.powers.{NoteText, SearchFixture, WalkerPowerCatalog}
 import oathdigital.gameplay.powers.action.MessengerCard
 import oathdigital.gameplay.powers.campaign.{CodeOfHonorCard, ShieldWallCard,
   WrestlersCard}
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{ActPowerHarness, Look, PlacementPicks, Table}

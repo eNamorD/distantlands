@@ -2,10 +2,9 @@ package oathdigital.application.gamelog
 
 import oathdigital.application._
 import oathdigital.engine.{RecordedEvent, ReplayStep}
-import oathdigital.gameplay.cards.BuriedGiantSite
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite}
 import oathdigital.gameplay.phases.rest.FinishRestProcedure
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{LogNoted, WalkerCompleted}
 import oathdigital.model._

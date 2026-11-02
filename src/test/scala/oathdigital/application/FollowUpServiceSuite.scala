@@ -1,10 +1,9 @@
 package oathdigital.application
 
 import oathdigital.gameplay.FollowUpPlay
-import oathdigital.gameplay.cards.BuriedGiantSite
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite}
 import oathdigital.gameplay.powers.economy.KnightsErrantCard
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.walker.{FollowUpOffer, FollowUpSkipped}
 import oathdigital.model._
 import oathdigital.testkit.Table

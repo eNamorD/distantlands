@@ -1,7 +1,7 @@
 package oathdigital.gameplay
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.campaign.{StickyFireCard, WrestlersCard}
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture
 import oathdigital.model._
 import oathdigital.testkit.Table

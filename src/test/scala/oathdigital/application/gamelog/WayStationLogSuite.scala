@@ -2,9 +2,8 @@ package oathdigital.application.gamelog
 
 import oathdigital.application.{GameApplicationService,
   ParkedServiceFixture, TreeDecision}
-import oathdigital.gameplay.powers.travel.{BrokenPeaksSite, WayStation,
-  WayStationCard}
-import oathdigital.gameplay.powers.wake.AncientCitySite
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import oathdigital.gameplay.powers.travel.{WayStation, WayStationCard}
 import oathdigital.model._
 import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2}

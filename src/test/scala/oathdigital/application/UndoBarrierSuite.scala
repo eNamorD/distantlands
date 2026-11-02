@@ -1,7 +1,7 @@
 package oathdigital.application
 
+import oathdigital.gameplay.cards.BrokenPeaksSite
 import oathdigital.gameplay.powers.campaign.StickyFireCard
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
 import oathdigital.gameplay.walker.{DeltaPayload, RollPayload,
   WalkerStepRecorded}
 import oathdigital.model._

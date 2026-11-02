@@ -4,11 +4,11 @@ import oathdigital.gameplay.{FacedownAdviserPlay, OathRules, PlacementFixture,
   SearchPlay}
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import oathdigital.gameplay.actions.search.SearchProcedure
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.action.{BanditPaymasterCard,
   DarkEnforcerCard, ScryerCard, SpoiledSuppliesCard}
 import oathdigital.gameplay.powers.campaign.{SecondWindCard, UnstableSummonCard}
 import oathdigital.gameplay.powers.economy.DefameCard
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.powers.whenplayed.BlackmailCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerPowers

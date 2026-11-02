@@ -4,9 +4,9 @@ import oathdigital.gameplay.powers.economy.HallowedSpringCard
 import oathdigital.catalog.holding.{AutumnWindCard, BrackenCard, GlamorCard}
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignPlans}
-import oathdigital.gameplay.cards.{BuriedGiantSite, DeepWoodsSite}
+import oathdigital.gameplay.cards.{BrokenPeaksSite, BuriedGiantSite,
+  DeepWoodsSite, DesolateShoreSite}
 import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.powers.travel.{BrokenPeaksSite, DesolateShoreSite}
 import oathdigital.model._
 
 /** Walled Garden: a free, site-only defender's plan for one defense die per

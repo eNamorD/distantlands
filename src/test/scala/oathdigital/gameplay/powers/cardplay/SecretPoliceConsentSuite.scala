@@ -3,9 +3,9 @@ package oathdigital.gameplay.powers.cardplay
 import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.actions.cardplay.{CardPlayProcedure, CardSlots}
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.{PowerFixture, SearchFixture,
   WalkerPowerCatalog}
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.protocol.projection.ConsentAskProjection

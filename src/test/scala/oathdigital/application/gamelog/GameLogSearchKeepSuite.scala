@@ -1,10 +1,10 @@
 package oathdigital.application.gamelog
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.action.{FaeMerchantCard, HomesteadersCard,
   SecondChanceCard}
 import oathdigital.gameplay.powers.campaign.WrestlersCard
 import oathdigital.gameplay.powers.economy.DefameCard
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.testkit.MenuPlay
 import oathdigital.gameplay.ModifierPlay

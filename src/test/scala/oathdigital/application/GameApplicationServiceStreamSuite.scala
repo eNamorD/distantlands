@@ -1,10 +1,9 @@
 package oathdigital.application
 
-import oathdigital.gameplay.cards.BuriedGiantSite
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite, MinesSite}
 import oathdigital.gameplay.powers.campaign.NatureWorshipCard
 import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.powers.travel.{BrokenPeaksSite, MinesSite}
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.powers.whenplayed.WizardsConclaveCard
 import scala.concurrent.duration.{Duration, DurationInt}
 

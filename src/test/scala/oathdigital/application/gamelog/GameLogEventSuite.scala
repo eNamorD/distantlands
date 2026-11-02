@@ -1,7 +1,6 @@
 package oathdigital.application.gamelog
 
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.model._
 import oathdigital.protocol.projection.{LogEntry, LogKind, LogSpan}
 import oathdigital.testkit.Table.p3

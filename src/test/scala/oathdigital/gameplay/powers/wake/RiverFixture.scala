@@ -1,8 +1,8 @@
 package oathdigital.gameplay.powers.wake
 
-import oathdigital.gameplay.cards.BuriedGiantSite
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite, RiverbankSite, TidalMarshesSite}
 import oathdigital.gameplay.powers.PowerFixture
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
 import oathdigital.model._
 import oathdigital.testkit.Table
 

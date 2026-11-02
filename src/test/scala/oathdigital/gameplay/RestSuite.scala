@@ -2,15 +2,14 @@ package oathdigital.gameplay
 
 import oathdigital.catalog.holding.{ArbiterCard, BanditCrownCard,
   CrackedHornCard, NaysayersCard}
-import oathdigital.gameplay.cards.{BuriedGiantSite, DunesSite, GoldenValleySite}
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite, DunesSite, GoldenValleySite}
 import oathdigital.gameplay.phases.{PhaseMenu, RestCleanupPlan}
 import oathdigital.gameplay.powers.action.{DowsingSticksCard, MessengerCard}
 import oathdigital.gameplay.powers.campaign.{CodeOfHonorCard, RainBootsCard,
   WrestlersCard}
 import oathdigital.gameplay.powers.search.ErrandBoyCard
 import oathdigital.gameplay.powers.setup.HallOfDebateCard
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.gameplay.walker.WalkerCompleted
 import oathdigital.model._

@@ -1,7 +1,7 @@
 package oathdigital.application.gamelog
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.action.{FaeMerchantCard, SecondChanceCard}
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.testkit.MenuPlay
 import oathdigital.gameplay.ModifierPlay

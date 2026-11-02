@@ -1,12 +1,11 @@
 package oathdigital.gameplay
 
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.powers.economy.HallowedSpringCard
 import oathdigital.catalog.holding.MagiciansCodeCard
 import oathdigital.gameplay.actions.economy.{MusterProcedure, MusterSource}
 import oathdigital.gameplay.powers.action.AlchemistCard
 import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{ProcedureWalker, WalkerPowers}
 import oathdigital.model._

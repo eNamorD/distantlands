@@ -1,8 +1,7 @@
 package oathdigital.application.gamelog
 
-import oathdigital.gameplay.cards.BuriedGiantSite
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite}
 import oathdigital.testkit.MenuPlay
 import oathdigital.application.{GameAccepted, GameApplicationService,
   ParkedServiceFixture, TreeDecision}

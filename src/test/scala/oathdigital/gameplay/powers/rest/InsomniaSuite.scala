@@ -3,11 +3,11 @@ package oathdigital.gameplay.powers.rest
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import oathdigital.gameplay.PlacementFixture
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.{AdviserLimit, NoteText, PhasePowerCatalog,
   WalkerPowerCatalog}
 import oathdigital.gameplay.powers.action.HomesteadersCard
 import oathdigital.gameplay.powers.search.{LandWardenCard, NewsFromAfarCard}
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._

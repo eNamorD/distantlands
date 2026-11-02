@@ -1,11 +1,10 @@
 package oathdigital.gameplay
 
 import oathdigital.catalog.holding.{CouncilArbiterCard, GrandMaskCard}
-import oathdigital.gameplay.cards.DunesSite
+import oathdigital.gameplay.cards.{BrokenPeaksSite, DunesSite}
 import oathdigital.gameplay.powers.action.BrassHorseCard
 import oathdigital.gameplay.powers.campaign.StickyFireCard
 import oathdigital.gameplay.powers.search.{ErrandBoyCard, TruthfulHarpCard}
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
 import oathdigital.testkit.MenuPlay
 import oathdigital.gameplay.actions.negotiation.NegotiationDeal
 import oathdigital.gameplay.setup.FirstGameSetupFixture._

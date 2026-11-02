@@ -1,10 +1,10 @@
 package oathdigital.gameplay.powers
 
 import oathdigital.catalog.Denizen
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powerresolver.{Contribution, ModifierPicks,
   PowerCtx}
 import oathdigital.gameplay.powers.travel.TentsCard
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.Table

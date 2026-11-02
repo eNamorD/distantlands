@@ -1,7 +1,7 @@
 package oathdigital.gameplay
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.walker.{DeltaPayload, ProcedureWalker,
   WalkerStepRecorded}
 import oathdigital.model._

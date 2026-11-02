@@ -3,9 +3,9 @@ package oathdigital.application
 import oathdigital.catalog.holding.MagiciansCodeCard
 import oathdigital.gameplay.{EconomyFixture, OathRules}
 import oathdigital.gameplay.actions.economy.TradeProcedure
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.action.AlchemistCard
 import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._

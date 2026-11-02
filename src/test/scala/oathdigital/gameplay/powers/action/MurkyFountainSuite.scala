@@ -2,10 +2,10 @@ package oathdigital.gameplay.powers.action
 
 import oathdigital.gameplay.WalkerDiceFixture.scripted
 import oathdigital.gameplay.actions.dice.RerollChoice
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
 import oathdigital.gameplay.powers.dice.JinxCard
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.{AncientCitySite, MarbleFountainsCard}
+import oathdigital.gameplay.powers.wake.MarbleFountainsCard
 import oathdigital.model._
 import oathdigital.testkit.{ActPowerHarness, Look, PhasePowerHarness, Refusals,
   Table}

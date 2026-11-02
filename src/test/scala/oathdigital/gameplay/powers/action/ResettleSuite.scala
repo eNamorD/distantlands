@@ -1,12 +1,11 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.catalog.holding.PilgrimageCard
-import oathdigital.gameplay.cards.BuriedGiantSite
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite}
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.{MountainGiantCard, WildMountsCard}
 import oathdigital.gameplay.powers.search.{ErrandBoyCard, LandWardenCard}
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.powers.whenplayed.FaithfulFriendCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._

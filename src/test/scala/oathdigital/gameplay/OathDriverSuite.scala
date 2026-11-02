@@ -1,14 +1,13 @@
 package oathdigital.gameplay
 
-import oathdigital.gameplay.cards.{BuriedGiantSite, DunesSite}
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite, DunesSite, FairIsleSite}
 import oathdigital.gameplay.oathkeeper.OathkeeperProcedure
 import oathdigital.gameplay.phases.PhaseMenu
 import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
 import oathdigital.gameplay.powers.action.BrassHorseCard
 import oathdigital.gameplay.powers.economy.KnightsErrantCard
 import oathdigital.gameplay.powers.rest.InsomniaCard
-import oathdigital.gameplay.powers.travel.{BrokenPeaksSite, FairIsleSite}
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{ActionBoundaryRan, WalkerCompleted}

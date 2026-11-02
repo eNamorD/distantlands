@@ -1,10 +1,10 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog}
 import oathdigital.gameplay.powers.banner.YewStaffCard
 import oathdigital.gameplay.powers.rest.InsomniaCard
 import oathdigital.gameplay.powers.search.LandWardenCard
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{Look, ParkedNode, PhasePowerHarness, Table}

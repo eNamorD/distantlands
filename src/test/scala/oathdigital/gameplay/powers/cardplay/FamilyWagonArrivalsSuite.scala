@@ -1,12 +1,11 @@
 package oathdigital.gameplay.powers.cardplay
 
-import oathdigital.gameplay.cards.BuriedGiantSite
+import oathdigital.gameplay.cards.{AncientCitySite, BuriedGiantSite}
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.action.{EldersCard, Enchantress,
   EnchantressCard, PiedPiper, PiedPiperCard, WaysideInnCard}
 import oathdigital.gameplay.powers.campaign.{LancersCard, RainBootsCard}
-import oathdigital.gameplay.powers.wake.{AncientCitySite, HornedMask,
-  HornedMaskCard}
+import oathdigital.gameplay.powers.wake.{HornedMask, HornedMaskCard}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.LogNoted
 import oathdigital.model._

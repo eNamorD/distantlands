@@ -2,11 +2,10 @@ package oathdigital.gameplay.powers.action
 
 import oathdigital.catalog.Site
 import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.cards.{BuriedGiantSite, DeepWoodsSite, DunesSite}
+import oathdigital.gameplay.cards.{AncientCitySite, BuriedGiantSite,
+  DeepWoodsSite, DesolateShoreSite, DunesSite}
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
 import oathdigital.gameplay.powers.campaign.{InsectSwarmCard, VowOfUnionCard}
-import oathdigital.gameplay.powers.travel.DesolateShoreSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{Look, PhasePowerHarness, Refusals, Table}

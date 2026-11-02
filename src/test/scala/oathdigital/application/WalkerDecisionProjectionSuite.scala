@@ -1,7 +1,7 @@
 package oathdigital.application
 
+import oathdigital.gameplay.cards.BrokenPeaksSite
 import oathdigital.gameplay.powers.campaign.{CursedCauldronCard, StickyFireCard}
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
 import oathdigital.testkit.MenuPlay
 import oathdigital.model._
 import oathdigital.gameplay.{ModifierPlay, OathRules, WalkerDiceFixture}

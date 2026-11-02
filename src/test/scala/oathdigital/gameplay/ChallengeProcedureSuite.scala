@@ -2,11 +2,10 @@ package oathdigital.gameplay
 
 import oathdigital.catalog.Site
 import oathdigital.gameplay.actions.BannerRules
-import oathdigital.gameplay.cards.{BuriedGiantSite, DunesSite}
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite, DunesSite, FairIsleSite}
 import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.powers.travel.{BrokenPeaksSite, FairIsleSite,
-  TentsCard}
-import oathdigital.gameplay.powers.wake.AncientCitySite
+import oathdigital.gameplay.powers.travel.TentsCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.gameplay.actions.challenge.ChallengeProcedure
 import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,

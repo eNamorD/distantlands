@@ -2,10 +2,9 @@ package oathdigital.gameplay
 
 import oathdigital.gameplay.powers.economy.HallowedSpringCard
 import oathdigital.catalog.holding.{ArbiterCard, IronHandCard}
-import oathdigital.gameplay.cards.DeepWoodsSite
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  DeepWoodsSite}
 import oathdigital.gameplay.powers.campaign.{StickyFireCard, WrestlersCard}
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.model._
 import oathdigital.testkit.Table

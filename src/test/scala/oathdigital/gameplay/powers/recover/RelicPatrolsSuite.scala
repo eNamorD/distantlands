@@ -1,8 +1,7 @@
 package oathdigital.gameplay.powers.recover
 
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.powers.action.DowsingSticksCard
-import oathdigital.gameplay.powers.wake.AncientCitySite
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.OathState.Ready

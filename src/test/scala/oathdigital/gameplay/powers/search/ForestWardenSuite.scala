@@ -5,12 +5,11 @@ import oathdigital.gameplay.{PlacementFixture, PowerAccess}
 import oathdigital.gameplay.actions.{CardPlayRules, RuleNotes}
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.cards.DeepWoodsSite
+import oathdigital.gameplay.cards.{AncientCitySite, DeepWoodsSite}
 import oathdigital.gameplay.operations.{AncientBloodlineCard,
   HallOfMinistersCard}
 import oathdigital.gameplay.powers.{NoteText, SearchFixture, WalkerPowerCatalog}
 import oathdigital.gameplay.powers.campaign.CodeOfHonorCard
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{ActPowerHarness, Look, PlacementPicks, Table}

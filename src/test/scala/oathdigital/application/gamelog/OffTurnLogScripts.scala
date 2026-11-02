@@ -2,9 +2,8 @@ package oathdigital.application.gamelog
 
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.cards.BuriedGiantSite
+import oathdigital.gameplay.cards.{AncientCitySite, BuriedGiantSite}
 import oathdigital.gameplay.powers.campaign.{SecondWindCard, SneakAttackCard}
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.walker.FollowUpOffer
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer,

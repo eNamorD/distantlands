@@ -1,8 +1,7 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.gameplay.cards.DunesSite
+import oathdigital.gameplay.cards.{AncientCitySite, DunesSite}
 import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
 import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips

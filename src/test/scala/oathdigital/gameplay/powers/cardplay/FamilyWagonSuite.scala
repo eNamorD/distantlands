@@ -3,11 +3,11 @@ package oathdigital.gameplay.powers.cardplay
 import oathdigital.gameplay.PlacementFixture
 import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.action.EldersCard
 import oathdigital.gameplay.powers.campaign.{LancersCard, RainBootsCard,
   WrestlersCard}
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.powers.whenplayed.{ASmallFavor, ASmallFavorCard,
   FaithfulFriend, FaithfulFriendCard}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog

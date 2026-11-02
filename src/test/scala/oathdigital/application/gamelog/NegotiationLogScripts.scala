@@ -2,8 +2,8 @@ package oathdigital.application.gamelog
 
 import oathdigital.application._
 import oathdigital.gameplay.actions.negotiation.NegotiationDeal
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.economy.BirdsongCard
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.{AcceptDeal, DeclineDeal, ProposeTerms}
 import oathdigital.testkit.{MenuPlay, Situation, Table}

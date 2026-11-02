@@ -2,9 +2,9 @@ package oathdigital.gameplay.powers.recover
 
 import oathdigital.gameplay.{ModifierPlay, OathRules, WalkerDiceFixture}
 import oathdigital.gameplay.actions.recover.RecoverProcedure
+import oathdigital.gameplay.cards.FairIsleSite
 import oathdigital.gameplay.powers.WalkerPowerCatalog
 import oathdigital.gameplay.powers.action.DowsingSticksCard
-import oathdigital.gameplay.powers.travel.FairIsleSite
 import oathdigital.gameplay.walker.{DeltaPayload, WalkerDice,
   WalkerStepRecorded}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog

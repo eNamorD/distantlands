@@ -1,9 +1,10 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.gameplay.actions.VisionRules
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
 import oathdigital.gameplay.powers.campaign.{BattleHonorsCard, WrestlersCard}
-import oathdigital.gameplay.powers.wake.{AncientCitySite, MarbleFountainsCard}
+import oathdigital.gameplay.powers.wake.MarbleFountainsCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{Look, PhasePowerHarness, Refusals, Table}

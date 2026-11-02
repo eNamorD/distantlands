@@ -3,6 +3,7 @@ package oathdigital.gameplay.powers.travel
 import oathdigital.gameplay.{CampaignConsentFixture, PassMap}
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.actions.travel.TravelProcedure
+import oathdigital.gameplay.cards.NarrowPassSite
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   OptionRestriction}
 import oathdigital.gameplay.powers.action.WildAlliesCard

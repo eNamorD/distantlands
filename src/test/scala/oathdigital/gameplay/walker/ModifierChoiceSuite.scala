@@ -1,12 +1,12 @@
 package oathdigital.gameplay.walker
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.operations.Costs
 import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,
   ModifierPicks, OfferReason, OptionRestriction, PowerCtx, Transform}
 import oathdigital.gameplay.powers.action.HomesteadersCard
 import oathdigital.gameplay.powers.campaign.{MercenariesCard, WrestlersCard}
 import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{Outcomes, RecordedOps, Table}

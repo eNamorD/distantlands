@@ -1,8 +1,7 @@
 package oathdigital.gameplay
 
-import oathdigital.gameplay.cards.BuriedGiantSite
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite}
 import oathdigital.model.OathState.Ready
 import oathdigital.gameplay.phases.PhaseMenu
 import oathdigital.gameplay.powers.PhasePowerCatalog

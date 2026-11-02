@@ -1,9 +1,8 @@
 package oathdigital.model
 
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.operations.HallOfMinistersCard
 import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
 
 class DecisionOptionRefSuite extends munit.FunSuite:
   private val hall = DecisionOptionRef.Edifice(

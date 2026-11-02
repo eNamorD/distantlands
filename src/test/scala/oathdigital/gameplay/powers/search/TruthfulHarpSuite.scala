@@ -2,8 +2,8 @@ package oathdigital.gameplay.powers.search
 
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import oathdigital.gameplay.actions.search.SearchProcedure
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.{NoteText, PowerFixture, SearchFixture}
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
 import oathdigital.testkit.{ActPowerHarness, Look, PowerRules, Table}
