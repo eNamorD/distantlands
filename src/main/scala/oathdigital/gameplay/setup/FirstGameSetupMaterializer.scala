@@ -43,7 +43,8 @@ final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
       BannersState(
         PeoplesFavorState(PeoplesFavorFace.Mob, None, 1),
         DarkestSecretState(DarkestSecretFace.WanderingFlame, None, 1)),
-      GameTracks(1, 0, usurperLimited = true), favorBanks(plan),
+      GameTracks(1, 0, usurperLimited = true,
+        roundStarter = plan.firstPlayer), favorBanks(plan),
       temporaryHands = plan.participants.map(p =>
         p.playerId -> handFor(plan, p.playerId)).toMap)
 

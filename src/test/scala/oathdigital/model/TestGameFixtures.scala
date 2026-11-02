@@ -145,7 +145,8 @@ object TestGameFixtures:
     ),
     title = OathkeeperState(None, TitleSide.Oathkeeper),
     turn = TurnState(playerId, Phase.Wake, Set.empty),
-    tracks = GameTracks(round = 1, visionsDrawn = 0, usurperLimited = true),
+    tracks = GameTracks(round = 1, visionsDrawn = 0, usurperLimited = true,
+      roundStarter = playerId),
     result = None
   )
 

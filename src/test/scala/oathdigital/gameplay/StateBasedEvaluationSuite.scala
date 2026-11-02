@@ -57,6 +57,15 @@ class StateBasedEvaluationSuite extends munit.FunSuite:
     // No Table step sets the campaign's Oathkeeper goal.
     ready.updateCampaign(_.copy(oathkeeperGoal = goal))
 
+  test("the next round starts with a Chancellor who appeared mid-round"):
+    // p1 began round 1; p3 became the Chancellor during it (ruling R4).
+    val ready = atRoundEnd(Table.start.imperial(p3).roundStarter(p1))
+    val after = Outcomes.ready(accepted(rules.evolve(Ready(ready),
+      RoundEnded(1, Some(2)))))
+    assertEquals(after.game.current.tracks.roundStarter, p3)
+    assertEquals(after.game.current.turn.activePlayer, p3)
+    assertEquals(after.game.current.turn.phase, Phase.Wake)
+
   test("all four printed goals qualify from their authoritative holdings"):
     val cases = Vector(
       // p1 rules Dunes.
