@@ -1,10 +1,10 @@
 package oathdigital.gameplay
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.WalkerPowerCatalog
 import oathdigital.gameplay.powers.action.OracularPigCard
 import oathdigital.gameplay.powers.campaign.BattlePlan
 import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.gameplay.walker.{QueuedStart, WalkerDice, WalkerPowers}
 import oathdigital.model._

@@ -1,11 +1,10 @@
 package oathdigital.gameplay.powers.poweruse
 
-import oathdigital.gameplay.cards.DeepWoodsSite
+import oathdigital.gameplay.cards.{AncientCitySite, DeepWoodsSite}
 import oathdigital.gameplay.powerresolver.ModifierPicks
 import oathdigital.gameplay.powers.{SearchFixture, WalkerPowerCatalog}
 import oathdigital.gameplay.powers.campaign.WrestlersCard
 import oathdigital.gameplay.powers.search.MushroomsCard
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.OathState.Ready

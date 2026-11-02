@@ -1,11 +1,10 @@
 package oathdigital.gameplay.powers.travel
 
-import oathdigital.gameplay.cards.DeepWoodsSite
+import oathdigital.gameplay.cards.{AncientCitySite, DeepWoodsSite}
 import oathdigital.gameplay.powers.PowerFixture
 import oathdigital.gameplay.powers.action.{BloodPactCard, EldersCard,
   FaeMerchantCard, MessengerCard, SiegeEnginesCard, WolvesCard}
 import oathdigital.gameplay.powers.setup.GreatForgeCard
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
 import oathdigital.testkit.{ActPowerHarness, Look, Outcomes, PhasePowerHarness}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips

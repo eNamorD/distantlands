@@ -1,7 +1,7 @@
 package oathdigital.application
 
-import oathdigital.gameplay.powers.travel.{MinesSite, NarrowPassSite,
-  TravelFixture}
+import oathdigital.gameplay.cards.{MinesSite, NarrowPassSite}
+import oathdigital.gameplay.powers.travel.TravelFixture
 import oathdigital.model._
 import oathdigital.model.OathEvent.{ConsentPreferenceSet,
   ConsentPreferencesCleared}

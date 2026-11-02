@@ -1,12 +1,11 @@
 package oathdigital.application
 
 import oathdigital.application.gamelog.LogScripts.{formatter, texts}
-import oathdigital.gameplay.cards.DeepWoodsSite
+import oathdigital.gameplay.cards.{BrokenPeaksSite, DeepWoodsSite}
 import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
 import oathdigital.gameplay.powers.campaign.{RainBootsCard, WrestlersCard}
 import oathdigital.gameplay.powers.poweruse.{CityWall, CityWallCard,
   ForestCouncil, ForestCouncilCard}
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
 import oathdigital.gameplay.powers.wake.{Hunger, HungerCard}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._

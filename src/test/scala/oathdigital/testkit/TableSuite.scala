@@ -6,15 +6,14 @@ import oathdigital.application.{GameApplicationService,
 import oathdigital.catalog.holding.MagiciansCodeCard
 import oathdigital.gameplay.StateBasedEvaluation
 import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.cards.{BuriedGiantSite, DunesSite}
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite, DunesSite, FairIsleSite}
 import oathdigital.gameplay.phases.rest.FinishRestProcedure
 import oathdigital.gameplay.powers.action.{AlchemistCard, BrassHorseCard,
   DowsingSticksCard, EldersCard, WolvesCard}
 import oathdigital.gameplay.powers.campaign.StickyFireCard
 import oathdigital.gameplay.powers.search.ForcedLaborCard
 import oathdigital.gameplay.powers.targeting.CircletOfCommandCard
-import oathdigital.gameplay.powers.travel.{BrokenPeaksSite, FairIsleSite}
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.gameplay.setup.{FirstGameSetupFixture, GameStartRules}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog

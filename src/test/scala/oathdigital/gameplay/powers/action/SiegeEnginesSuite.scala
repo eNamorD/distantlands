@@ -1,9 +1,8 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.gameplay.cards.BuriedGiantSite
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite}
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
 import oathdigital.testkit.{Look, PhasePowerHarness, Refusals, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips

@@ -2,7 +2,7 @@ package oathdigital.gameplay.walker
 
 import oathdigital.gameplay.{OathRules, WalkerDiceFixture}
 import oathdigital.gameplay.actions.recover.RecoverProcedure
-import oathdigital.gameplay.powers.travel.FairIsleSite
+import oathdigital.gameplay.cards.FairIsleSite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.Table

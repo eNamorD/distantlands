@@ -2,12 +2,11 @@ package oathdigital.gameplay.powers.action
 
 import oathdigital.gameplay.WalkerDiceFixture.scripted
 import oathdigital.gameplay.actions.dice.RerollChoice
-import oathdigital.gameplay.cards.BuriedGiantSite
+import oathdigital.gameplay.cards.{AncientCitySite, BuriedGiantSite}
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.dice.JinxCard
 import oathdigital.gameplay.powers.search.TruthfulHarpCard
 import oathdigital.gameplay.powers.targeting.LostTongueCard
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerDice
 import oathdigital.model._

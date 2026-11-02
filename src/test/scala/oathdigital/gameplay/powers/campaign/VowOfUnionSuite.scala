@@ -2,11 +2,10 @@ package oathdigital.gameplay.powers.campaign
 
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.cards.BuriedGiantSite
+import oathdigital.gameplay.cards.{BrokenPeaksSite, BuriedGiantSite}
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.action.WildAlliesCard
 import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer,
   DistributeAnswer}

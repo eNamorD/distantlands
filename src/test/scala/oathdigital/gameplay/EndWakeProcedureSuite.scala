@@ -1,7 +1,7 @@
 package oathdigital.gameplay
 
 import oathdigital.engine.{EventReplayEngine, RecordedEvent}
-import oathdigital.gameplay.powers.wake.AncientCitySite
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.model.OathEvent._
 import oathdigital.model.OathState.Ready
 import oathdigital.model.OathViolation._

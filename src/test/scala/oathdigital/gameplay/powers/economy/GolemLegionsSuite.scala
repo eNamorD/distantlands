@@ -3,9 +3,9 @@ package oathdigital.gameplay.powers.economy
 import oathdigital.catalog.holding.MagiciansCodeCard
 import oathdigital.gameplay.ModifierPlay
 import oathdigital.gameplay.actions.economy.MusterProcedure
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.campaign.WrestlersCard
 import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer

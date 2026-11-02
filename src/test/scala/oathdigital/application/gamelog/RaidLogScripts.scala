@@ -2,9 +2,9 @@ package oathdigital.application.gamelog
 
 import oathdigital.application._
 import oathdigital.gameplay.actions.campaign.CampaignIds
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.campaign.CarefulPlansCard
 import oathdigital.gameplay.powers.economy.{BirdsongCard, KnightsErrantCard}
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.walker.FollowUpOffer
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}

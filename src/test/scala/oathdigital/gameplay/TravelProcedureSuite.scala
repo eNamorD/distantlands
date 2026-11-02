@@ -1,9 +1,8 @@
 package oathdigital.gameplay
 
-import oathdigital.gameplay.cards.{BuriedGiantSite, DunesSite, SaltFlatsSite,
+import oathdigital.gameplay.cards.{BrokenPeaksSite, BuriedGiantSite,
+  DesolateShoreSite, DunesSite, FairIsleSite, NarrowPassSite, SaltFlatsSite,
   ShroudedWoodsSite}
-import oathdigital.gameplay.powers.travel.{BrokenPeaksSite, DesolateShoreSite,
-  FairIsleSite, NarrowPassSite}
 import oathdigital.testkit.MenuPlay
 import oathdigital.gameplay.actions.travel.TravelProcedure
 import oathdigital.gameplay.powers.travel.TravelFixture.destinationNotOffered

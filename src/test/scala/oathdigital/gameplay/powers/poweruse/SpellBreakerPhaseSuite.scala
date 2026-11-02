@@ -1,11 +1,10 @@
 package oathdigital.gameplay.powers.poweruse
 
-import oathdigital.gameplay.cards.DeepWoodsSite
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  DeepWoodsSite}
 import oathdigital.gameplay.powers.action.{RovingTerror, RovingTerrorCard,
   WardOfSilence}
 import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{MenuPlay, PhasePowerHarness, Table}

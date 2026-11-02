@@ -4,13 +4,13 @@ import oathdigital.gameplay.CampaignFixture.{on, raidBoard, rules,
   withAdviser, withAdviserFor}
 import oathdigital.gameplay.actions.BannerRules
 import oathdigital.gameplay.actions.campaign.CampaignIds
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.action.{DemonTail, DemonTailCard}
 import oathdigital.gameplay.powers.campaign.BookBurningCard
 import oathdigital.gameplay.powers.campaign.PlanDriver.{awaits, commit,
   winningDice}
 import oathdigital.gameplay.powers.targeting.TargetingFixture
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{ActPowerHarness, Look, MenuPlay, Outcomes, Table}

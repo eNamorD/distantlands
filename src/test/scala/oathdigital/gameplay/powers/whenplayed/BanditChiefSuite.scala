@@ -1,9 +1,8 @@
 package oathdigital.gameplay.powers.whenplayed
 
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.cards.BuriedGiantSite
+import oathdigital.gameplay.cards.{BrokenPeaksSite, BuriedGiantSite}
 import oathdigital.gameplay.powers.{NoteText, SearchFixture}
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{Look, Outcomes, Table}

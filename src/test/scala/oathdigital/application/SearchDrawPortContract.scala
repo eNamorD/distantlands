@@ -1,9 +1,9 @@
 package oathdigital.application
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.action.{AlchemistCard, HomesteadersCard}
 import oathdigital.gameplay.powers.campaign.WrestlersCard
 import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model.{Region, SearchSource}
 import oathdigital.testkit.Table
 import oathdigital.testkit.Table.p1

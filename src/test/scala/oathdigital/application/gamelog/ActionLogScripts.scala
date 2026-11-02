@@ -7,15 +7,14 @@ import oathdigital.application._
 import oathdigital.gameplay.ModifierPlay
 import oathdigital.gameplay.actions.minor.MinorActionProcedures
 import oathdigital.gameplay.actions.recover.RecoverProcedure
-import oathdigital.gameplay.cards.{BuriedGiantSite, DeepWoodsSite}
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite, DeepWoodsSite}
 import oathdigital.gameplay.powers.action.{FaeMerchantCard, SecondChanceCard}
 import oathdigital.gameplay.powers.campaign.StickyFireCard
 import oathdigital.gameplay.powers.economy.{GolemLegions, GolemLegionsCard,
   InitiationRiteCard, VowOfWanderingCard}
 import oathdigital.gameplay.powers.recover.{RelicWorship, RelicWorshipCard}
 import oathdigital.gameplay.powers.search.ForcedLaborCard
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.powers.whenplayed.{ThreateningRoarCard,
   WizardsConclaveCard}
 import oathdigital.model._

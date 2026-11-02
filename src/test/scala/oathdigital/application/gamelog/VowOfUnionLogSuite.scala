@@ -1,10 +1,9 @@
 package oathdigital.application.gamelog
 
 import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.cards.BuriedGiantSite
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite}
 import oathdigital.gameplay.powers.campaign.{VowOfUnion, VowOfUnionCard}
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.{ChooseOneAnswer, DistributeAnswer}
 import oathdigital.testkit.{Answers, Dice, MenuPlay, Table}

@@ -1,5 +1,6 @@
 package oathdigital.gameplay
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.operations.{GrandScepter, HallOfMinisters,
   HallOfMinistersCard, LockedCards, OperationConsent, OperationPipeline,
   OperationPolicy, OperationRestrictions, RestrictionIcons,
@@ -9,7 +10,6 @@ import oathdigital.gameplay.powers.cardplay.WildCryCard
 import oathdigital.gameplay.powers.economy.MountedLibraryCard
 import oathdigital.gameplay.powers.search.{CropRotationCard, ErrandBoyCard}
 import oathdigital.gameplay.powers.travel.DragonskinDrumCard
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.model._
 import oathdigital.testkit.Table

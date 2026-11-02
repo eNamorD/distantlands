@@ -2,8 +2,8 @@ package oathdigital.gameplay.powers.cardplay
 
 import oathdigital.gameplay.PlacementFixture
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.walker.{WalkerOutcome, WalkerPowers}
 import oathdigital.model._
 import oathdigital.testkit.{Look, Table}

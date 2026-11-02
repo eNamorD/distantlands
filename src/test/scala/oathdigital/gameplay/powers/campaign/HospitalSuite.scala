@@ -2,10 +2,10 @@ package oathdigital.gameplay.powers.campaign
 
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignPlans}
+import oathdigital.gameplay.cards.BrokenPeaksSite
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.gameplay.powers.economy.VowOfWanderingCard
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseAmountAnswer
 import oathdigital.testkit.Look

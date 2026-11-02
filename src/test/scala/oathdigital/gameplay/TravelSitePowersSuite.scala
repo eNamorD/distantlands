@@ -1,10 +1,10 @@
 package oathdigital.gameplay
 
-import oathdigital.gameplay.cards.{BuriedGiantSite, DunesSite}
+import oathdigital.gameplay.cards.{BrokenPeaksSite, BuriedGiantSite,
+  DesolateShoreSite, DunesSite, FairIsleSite, NarrowPassSite, RockyCoastSite}
 import oathdigital.gameplay.powerresolver._
 import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.travel.{BrokenPeaksSite, DesolateShoreSite,
-  FairIsleSite, NarrowPassSite, RockyCoastSite, TravelSitePowers}
+import oathdigital.gameplay.powers.travel.TravelSitePowers
 import oathdigital.gameplay.setup.FirstGameSetupFixture
 import oathdigital.model._
 import oathdigital.testkit.{Look, Table, TestCards}

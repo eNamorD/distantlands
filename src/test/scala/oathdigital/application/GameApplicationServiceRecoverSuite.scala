@@ -1,10 +1,9 @@
 package oathdigital.application
 
-import oathdigital.gameplay.cards.{DunesSite, SaltFlatsSite}
+import oathdigital.gameplay.cards.{BrokenPeaksSite, DunesSite, SaltFlatsSite}
 import oathdigital.gameplay.powers.action.DowsingSticksCard
 import oathdigital.gameplay.powers.campaign.StickyFireCard
 import oathdigital.gameplay.powers.recover.CatacombsCard
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
 import oathdigital.testkit.MenuPlay
 import oathdigital.model._
 import oathdigital.gameplay.actions.RecoverRules

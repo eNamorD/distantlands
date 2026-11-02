@@ -6,14 +6,13 @@ import oathdigital.gameplay.WalkerDiceFixture.scripted
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.actions.dice.RerollChoice
 import oathdigital.gameplay.actions.recover.RecoverProcedure
-import oathdigital.gameplay.cards.DeepWoodsSite
+import oathdigital.gameplay.cards.{DeepWoodsSite, FairIsleSite}
 import oathdigital.gameplay.powers.WalkerPowerCatalog
 import oathdigital.gameplay.powers.action.DowsingSticksCard
 import oathdigital.gameplay.powers.campaign.{ArcaneArmorCard, BattleHonorsCard,
   FireTalkersCard, GleamingArmorCard, WatchdogCard}
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.gameplay.powers.dice.JinxCard
-import oathdigital.gameplay.powers.travel.FairIsleSite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.OathState.Ready

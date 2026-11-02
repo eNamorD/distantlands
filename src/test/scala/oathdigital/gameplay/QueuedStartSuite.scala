@@ -1,12 +1,11 @@
 package oathdigital.gameplay
 
 import oathdigital.gameplay.actions.economy.TradeProcedure
-import oathdigital.gameplay.cards.BuriedGiantSite
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite, FairIsleSite}
 import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
 import oathdigital.gameplay.powers.action.{AlchemistCard, DowsingSticksCard,
   FaeMerchantCard, SecondChanceCard}
-import oathdigital.gameplay.powers.travel.{BrokenPeaksSite, FairIsleSite}
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{PricedOptions, QueuedStart, WalkerPowers}

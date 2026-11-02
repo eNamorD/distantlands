@@ -2,14 +2,13 @@ package oathdigital.application.gamelog
 
 import oathdigital.gameplay.powers.economy.HallowedSpringCard
 import oathdigital.application._
-import oathdigital.gameplay.cards.DeepWoodsSite
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  DeepWoodsSite}
 import oathdigital.gameplay.phases.PhaseMenu
 import oathdigital.gameplay.phases.wake.TakeWealthProcedure
 import oathdigital.gameplay.powers.campaign.StickyFireCard
 import oathdigital.gameplay.powers.economy.BirdsongCard
 import oathdigital.gameplay.powers.rest.InsomniaCard
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.powers.whenplayed.WizardsConclaveCard
 import oathdigital.gameplay.setup.{FirstGameSetupFixture, SetupProcedure}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog

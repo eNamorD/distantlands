@@ -1,6 +1,7 @@
 package oathdigital.gameplay
 
-import oathdigital.gameplay.cards.BuriedGiantSite
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite}
 import oathdigital.gameplay.phases.{ActOffers, PhaseMenu, PhasePowerProcedure}
 import oathdigital.gameplay.actions.economy.TradeProcedure
 import oathdigital.gameplay.phases.rest.FinishRestProcedure
@@ -11,8 +12,7 @@ import oathdigital.gameplay.powers.banner.{WanderingFlameMove,
   WanderingFlamePlace}
 import oathdigital.gameplay.powers.campaign.WrestlersCard
 import oathdigital.gameplay.powers.rest.{Insomnia, InsomniaCard}
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.{AncientCitySite, TakeWealthLimit}
+import oathdigital.gameplay.powers.wake.TakeWealthLimit
 import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,

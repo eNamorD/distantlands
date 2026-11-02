@@ -1,8 +1,7 @@
 package oathdigital.gameplay.powers.economy
 
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
 import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look, PowerRules,
   Table}

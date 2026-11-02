@@ -2,6 +2,7 @@ package oathdigital.gameplay.powers.travel
 
 import oathdigital.gameplay.OathRules
 import oathdigital.gameplay.actions.travel.TravelProcedure
+import oathdigital.gameplay.cards.NarrowPassSite
 import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
 import oathdigital.gameplay.powers.action.PalanquinCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog

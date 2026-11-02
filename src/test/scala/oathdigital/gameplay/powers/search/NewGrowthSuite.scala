@@ -1,11 +1,10 @@
 package oathdigital.gameplay.powers.search
 
 import oathdigital.gameplay.FacedownAdviserPlay
-import oathdigital.gameplay.cards.DeepWoodsSite
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  DeepWoodsSite}
 import oathdigital.gameplay.powers.{SearchFixture, WalkerPowerCatalog}
 import oathdigital.gameplay.powers.campaign.CodeOfHonorCard
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.OathState.Ready

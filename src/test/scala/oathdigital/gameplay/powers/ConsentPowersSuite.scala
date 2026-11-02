@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers
 
-import oathdigital.gameplay.cards.DeepWoodsSite
+import oathdigital.gameplay.cards.{AncientCitySite, DeepWoodsSite, MinesSite,
+  NarrowPassSite}
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   OptionRestriction, Waiver}
 import oathdigital.gameplay.operations.{GrandScepter, HallOfMinisters,
@@ -8,9 +9,8 @@ import oathdigital.gameplay.operations.{GrandScepter, HallOfMinisters,
 import oathdigital.gameplay.powers.cardplay.{SecretPolice, SecretPoliceCard}
 import oathdigital.gameplay.powers.economy.Curfew
 import oathdigital.gameplay.powers.search.ForcedLabor
-import oathdigital.gameplay.powers.travel.{GraspingVines, MinesSite,
-  NarrowPassSite, NarrowPassSitePower, TollRoads, TollRoadsCard, TravelFixture}
-import oathdigital.gameplay.powers.wake.AncientCitySite
+import oathdigital.gameplay.powers.travel.{GraspingVines, NarrowPassSitePower,
+  TollRoads, TollRoadsCard, TravelFixture}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.Table

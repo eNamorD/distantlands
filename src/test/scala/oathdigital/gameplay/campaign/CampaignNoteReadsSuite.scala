@@ -2,11 +2,10 @@ package oathdigital.gameplay.campaign
 
 import oathdigital.gameplay.CampaignFixture
 import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignNotes}
-import oathdigital.gameplay.cards.BuriedGiantSite
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite}
 import oathdigital.gameplay.powers.economy.BirdsongCard
 import oathdigital.gameplay.powers.search.WineOfWelcomeCard
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
 import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2}

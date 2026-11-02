@@ -1,10 +1,9 @@
 package oathdigital.gameplay.powers.setup
 
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import oathdigital.gameplay.powers.action.DowsingSticksCard
 import oathdigital.gameplay.powers.campaign.{CursedCauldronCard, StickyFireCard}
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.{FirstGameSetupFixture, SetupProcedure, SetupWalkDriver}
 import oathdigital.gameplay.actions.ProcedureNotes
 import oathdigital.gameplay.walker.{LogNoted, WalkerPowers}

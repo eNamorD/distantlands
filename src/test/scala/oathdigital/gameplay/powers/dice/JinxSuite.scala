@@ -6,10 +6,10 @@ import oathdigital.gameplay.WalkerDiceFixture.scripted
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.actions.dice.RerollChoice
 import oathdigital.gameplay.actions.recover.RecoverProcedure
+import oathdigital.gameplay.cards.{BrokenPeaksSite, FairIsleSite}
 import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import oathdigital.gameplay.powers.action.DowsingSticksCard
 import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.powers.travel.{BrokenPeaksSite, FairIsleSite}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.OathState.Ready

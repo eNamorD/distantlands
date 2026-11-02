@@ -1,12 +1,11 @@
 package oathdigital.gameplay.powers.whenplayed
 
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.action.HomesteadersCard
 import oathdigital.gameplay.powers.economy.DefameCard
 import oathdigital.gameplay.powers.rest.LeagueTreatyCard
 import oathdigital.gameplay.powers.search.PaintedTrumpetCard
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.walker.{LogNoted, WalkerStepRecorded}
 import oathdigital.model._
 import oathdigital.testkit.{Look, Outcomes, Table}

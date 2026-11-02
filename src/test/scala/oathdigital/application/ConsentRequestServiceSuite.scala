@@ -1,8 +1,9 @@
 package oathdigital.application
 
 import oathdigital.gameplay.actions.travel.TravelProcedure
+import oathdigital.gameplay.cards.NarrowPassSite
 import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.travel.{NarrowPassSite, TravelFixture}
+import oathdigital.gameplay.powers.travel.TravelFixture
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._

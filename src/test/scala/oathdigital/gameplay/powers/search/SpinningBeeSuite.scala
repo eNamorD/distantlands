@@ -2,12 +2,12 @@ package oathdigital.gameplay.powers.search
 
 import oathdigital.gameplay.{ModifierPlay, PlacementFixture}
 import oathdigital.gameplay.actions.search.SearchProcedure
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powerresolver.ModifierPicks
 import oathdigital.gameplay.powers.{SearchFixture, WalkerPowerCatalog}
 import oathdigital.gameplay.powers.action.HomesteadersCard
 import oathdigital.gameplay.powers.campaign.WrestlersCard
 import oathdigital.gameplay.powers.economy.DefameCard
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerCompleted
 import oathdigital.model._

@@ -3,9 +3,9 @@ package oathdigital.gameplay.powers.economy
 import oathdigital.catalog.holding.BrackenCard
 import oathdigital.gameplay.actions.ProcedureNotes
 import oathdigital.gameplay.actions.economy.TradeProcedure
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.{HorseArchersCard, WrestlersCard}
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
 import oathdigital.testkit.{EconomyActions, PowerRules, Table}
 import oathdigital.testkit.Table.p1

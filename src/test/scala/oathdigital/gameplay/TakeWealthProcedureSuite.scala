@@ -1,7 +1,7 @@
 package oathdigital.gameplay
 
-import oathdigital.gameplay.cards.BuriedGiantSite
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite}
 import oathdigital.model.OathEvent._
 import oathdigital.model.OathState.Ready
 import oathdigital.model.OathViolation._
@@ -10,7 +10,7 @@ import oathdigital.gameplay.phases.wake.TakeWealthProcedure
 import oathdigital.gameplay.powerresolver.PhasePowers
 import oathdigital.gameplay.powers.WalkerPowerCatalog
 import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.gameplay.powers.wake.{AncientCitySite, TakeWealthLimit}
+import oathdigital.gameplay.powers.wake.TakeWealthLimit
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.gameplay.walker.{DeltaPayload, ParkedDecisionAssertions,
   WalkerPowers, WalkerStepRecorded}

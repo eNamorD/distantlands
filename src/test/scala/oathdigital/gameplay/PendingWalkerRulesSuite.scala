@@ -1,10 +1,9 @@
 package oathdigital.gameplay
 
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.powers.campaign.RainBootsCard
 import oathdigital.gameplay.powers.economy.GolemLegionsCard
 import oathdigital.gameplay.powers.search.DisciplesCard
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.powers.whenplayed.BanditChiefCard
 import oathdigital.model.OathState.Ready
 import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}

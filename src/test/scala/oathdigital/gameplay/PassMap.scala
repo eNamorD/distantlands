@@ -1,9 +1,8 @@
 package oathdigital.gameplay
 
-import oathdigital.gameplay.cards.{BuriedGiantSite, DeepWoodsSite, DunesSite}
-import oathdigital.gameplay.powers.travel.{BrokenPeaksSite, DesolateShoreSite,
-  FairIsleSite, NarrowPassSite}
-import oathdigital.gameplay.powers.wake.AncientCitySite
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite, DeepWoodsSite, DesolateShoreSite, DunesSite, FairIsleSite,
+  NarrowPassSite}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.Table

@@ -1,11 +1,11 @@
 package oathdigital.gameplay.walker
 
 import oathdigital.gameplay.actions.economy.MusterProcedure
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.operations.OperationConsent
 import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower}
 import oathdigital.gameplay.powers.action.AlchemistCard
 import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{Look, Outcomes, Table}

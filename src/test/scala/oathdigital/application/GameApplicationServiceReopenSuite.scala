@@ -1,9 +1,8 @@
 package oathdigital.application
 
-import oathdigital.gameplay.cards.BuriedGiantSite
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite}
 import oathdigital.gameplay.powers.campaign.StickyFireCard
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.powers.whenplayed.WizardsConclaveCard
 import oathdigital.testkit.MenuPlay
 import java.nio.file.Files

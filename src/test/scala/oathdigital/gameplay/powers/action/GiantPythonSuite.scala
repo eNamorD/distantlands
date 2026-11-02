@@ -1,12 +1,11 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.gameplay.cards.DeepWoodsSite
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  DeepWoodsSite}
 import oathdigital.gameplay.operations.AncientBloodlineCard
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.banner.YewStaffCard
 import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{Look, PhasePowerHarness, Table}

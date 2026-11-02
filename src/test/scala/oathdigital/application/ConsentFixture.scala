@@ -1,7 +1,8 @@
 package oathdigital.application
 
 import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.powers.travel.{NarrowPassSite, TravelFixture}
+import oathdigital.gameplay.cards.NarrowPassSite
+import oathdigital.gameplay.powers.travel.TravelFixture
 import oathdigital.model._
 import oathdigital.testkit.{Outcomes, Table}
 import oathdigital.testkit.Table.{p1, p2}

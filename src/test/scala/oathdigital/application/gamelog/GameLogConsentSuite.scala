@@ -2,7 +2,8 @@ package oathdigital.application.gamelog
 
 import oathdigital.application.{ConsentFixture, GameAccepted,
   GameApplicationService, GameCommand, TollConsentFixture}
-import oathdigital.gameplay.powers.travel.{NarrowPassSite, TravelFixture}
+import oathdigital.gameplay.cards.NarrowPassSite
+import oathdigital.gameplay.powers.travel.TravelFixture
 import oathdigital.model._
 import oathdigital.protocol.projection.{LogEntry, LogTakenBack}
 import oathdigital.testkit.Table.{p1, p2, p3}

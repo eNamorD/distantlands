@@ -1,7 +1,7 @@
 package oathdigital.application
 
+import oathdigital.gameplay.cards.BrokenPeaksSite
 import oathdigital.gameplay.powers.campaign.StickyFireCard
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
 import oathdigital.testkit.MenuPlay
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._

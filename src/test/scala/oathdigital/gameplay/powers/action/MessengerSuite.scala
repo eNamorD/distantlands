@@ -1,9 +1,8 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.gameplay.cards.DeepWoodsSite
+import oathdigital.gameplay.cards.{AncientCitySite, DeepWoodsSite}
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.economy.VowOfWanderingCard
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
 import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips

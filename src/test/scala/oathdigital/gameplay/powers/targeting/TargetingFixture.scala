@@ -1,8 +1,8 @@
 package oathdigital.gameplay.powers.targeting
 
 import oathdigital.gameplay.OathRules
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{ProcedureWalker, WalkerPowers,
   WalkerProcedureRegistry}

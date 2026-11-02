@@ -1,11 +1,10 @@
 package oathdigital.gameplay.powers.poweruse
 
-import oathdigital.gameplay.cards.DeepWoodsSite
+import oathdigital.gameplay.cards.{AncientCitySite, DeepWoodsSite}
 import oathdigital.gameplay.powerresolver.PowerUse
 import oathdigital.gameplay.powers.action.{GiantPythonCard, RovingTerror,
   RovingTerrorCard}
 import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{MenuPlay, Table}

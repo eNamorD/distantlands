@@ -5,12 +5,12 @@ import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import oathdigital.gameplay.actions.minor.MinorActionProcedures
 import oathdigital.gameplay.actions.minor.MinorActionProcedures.{toBoard,
   toSite}
+import oathdigital.gameplay.cards.BrokenPeaksSite
 import oathdigital.gameplay.powers.WalkerPowerCatalog
 import oathdigital.gameplay.powers.action.DowsingSticksCard
 import oathdigital.gameplay.powers.campaign.{CursedCauldronCard,
   SealingWardCard, StickyFireCard}
 import oathdigital.gameplay.powers.economy.{VowOfWandering, VowOfWanderingCard}
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
 import oathdigital.gameplay.walker.ActionBoundaryRan
 import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
 import oathdigital.testkit.{ParkedNode, PowerStubs}

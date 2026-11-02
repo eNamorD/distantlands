@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.poweruse
 
 import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.cards.DeepWoodsSite
+import oathdigital.gameplay.cards.{AncientCitySite, DeepWoodsSite}
 import oathdigital.gameplay.operations.PowerUseRules
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerUse, PowerUseRefusal, PowerUseRestriction, PowerUseStep}
@@ -9,7 +9,6 @@ import oathdigital.gameplay.powers.campaign.WrestlersCard
 import oathdigital.gameplay.powers.economy.{VowOfBeastkin,
   VowOfWanderingMuster}
 import oathdigital.gameplay.powers.travel.{Hospitality, Tyrant}
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.powers.whenplayed.{ConspiracyWhenPlayed,
   ThreateningRoar, ThreateningRoarCard}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog

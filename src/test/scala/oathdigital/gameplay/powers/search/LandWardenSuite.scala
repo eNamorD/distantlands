@@ -4,10 +4,10 @@ import oathdigital.gameplay.{PlacementFixture, SearchPlay}
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import oathdigital.gameplay.actions.search.SearchProcedure
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.{SearchFixture, WalkerPowerCatalog}
 import oathdigital.gameplay.powers.action.AncientBindingCard
 import oathdigital.gameplay.powers.campaign.{RainBootsCard, WrestlersCard}
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.OathState.Ready

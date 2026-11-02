@@ -1,13 +1,12 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignSetup}
-import oathdigital.gameplay.cards.DeepWoodsSite
+import oathdigital.gameplay.cards.{AncientCitySite, DeepWoodsSite,
+  DesolateShoreSite}
 import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog,
   WalkerPowerCatalog}
 import oathdigital.gameplay.powers.poweruse.{CityWall, CityWallCard}
 import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.powers.travel.DesolateShoreSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{ActPowerHarness, Look, MenuPlay, Outcomes,

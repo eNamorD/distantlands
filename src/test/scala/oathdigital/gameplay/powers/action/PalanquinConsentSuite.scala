@@ -1,9 +1,10 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.gameplay.actions.travel.TravelProcedure
+import oathdigital.gameplay.cards.NarrowPassSite
 import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.travel.{NarrowPassSite, TollRoads,
-  TollRoadsCard, TravelFixture}
+import oathdigital.gameplay.powers.travel.{TollRoads, TollRoadsCard,
+  TravelFixture}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{ActPowerHarness, Look, Outcomes, ParkedNode, Table}

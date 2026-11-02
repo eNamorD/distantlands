@@ -3,8 +3,8 @@ package oathdigital.gameplay
 import oathdigital.catalog.holding.{BanditCrownCard, CrackedHornCard}
 import oathdigital.gameplay.actions.RecoverRules
 import oathdigital.gameplay.actions.recover.RecoverProcedure
+import oathdigital.gameplay.cards.FairIsleSite
 import oathdigital.gameplay.powers.action.DowsingSticksCard
-import oathdigital.gameplay.powers.travel.FairIsleSite
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.gameplay.WalkerDiceFixture.scripted
 import oathdigital.gameplay.walker.{ChoicePayload, DeltaPayload, LogNoted,

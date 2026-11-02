@@ -1,8 +1,8 @@
 package oathdigital.gameplay
 
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.powerresolver._
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.{AncientCitySite, TakeWealthLimit}
+import oathdigital.gameplay.powers.wake.TakeWealthLimit
 import oathdigital.model._
 import oathdigital.testkit.Table
 

@@ -2,9 +2,9 @@ package oathdigital.application
 
 import java.nio.file.{Files, Paths}
 import oathdigital.gameplay.actions.recover.RecoverProcedure
+import oathdigital.gameplay.cards.MinesSite
 import oathdigital.gameplay.oathkeeper.OathkeeperProcedure
 import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.travel.MinesSite
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.gameplay.walker.ParkedDecisionAssertions
 import oathdigital.model._

@@ -6,10 +6,9 @@ import java.nio.file.Files
 import oathdigital.application._
 import oathdigital.application.MembershipRole._
 import oathdigital.catalog.SiteOnly
-import oathdigital.gameplay.cards.BuriedGiantSite
+import oathdigital.gameplay.cards.{AncientCitySite, BuriedGiantSite}
 import oathdigital.gameplay.powers.campaign.NatureWorshipCard
 import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.powers.whenplayed.WizardsConclaveCard
 import oathdigital.persistence.HsqldbDatabaseOwner
 import oathdigital.gameplay.setup.SetupProcedure

@@ -2,9 +2,8 @@ package oathdigital.gameplay
 
 import oathdigital.gameplay.powers.economy.HallowedSpringCard
 import oathdigital.catalog.holding.MagiciansCodeCard
-import oathdigital.gameplay.cards.DunesSite
+import oathdigital.gameplay.cards.{AncientCitySite, DunesSite}
 import oathdigital.gameplay.powers.action.AlchemistCard
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.testkit.MenuPlay
 import oathdigital.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog

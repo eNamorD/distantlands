@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.wake
 
+import oathdigital.gameplay.cards.BrokenPeaksSite
 import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture}
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{Look, PhasePowerHarness, Refusals, Table}

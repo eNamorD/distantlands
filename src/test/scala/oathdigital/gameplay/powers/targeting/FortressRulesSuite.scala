@@ -2,12 +2,11 @@ package oathdigital.gameplay.powers.targeting
 
 import oathdigital.gameplay.CampaignFixture
 import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.cards.BuriedGiantSite
+import oathdigital.gameplay.cards.{AncientCitySite, BuriedGiantSite}
 import oathdigital.gameplay.powerresolver.{PowerCtx, Restriction}
 import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import oathdigital.gameplay.powers.action.{HomesteadersCard, WildAlliesCard}
 import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._

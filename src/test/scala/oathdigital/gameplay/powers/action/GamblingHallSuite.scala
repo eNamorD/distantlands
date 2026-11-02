@@ -2,9 +2,9 @@ package oathdigital.gameplay.powers.action
 
 import oathdigital.gameplay.WalkerDiceFixture.scripted
 import oathdigital.gameplay.actions.dice.RerollChoice
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.PowerFixture
 import oathdigital.gameplay.powers.dice.JinxCard
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.walker.LogNoted
 import oathdigital.model._
 import oathdigital.testkit.{ActPowerHarness, Look, PhasePowerHarness, Refusals,

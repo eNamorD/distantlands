@@ -1,10 +1,9 @@
 package oathdigital.application
 
+import oathdigital.gameplay.cards.{AncientCitySite, NarrowPassSite}
 import oathdigital.gameplay.powers.cardplay.SecretPoliceCard
 import oathdigital.gameplay.powers.poweruse.{CityWall, CityWallCard}
-import oathdigital.gameplay.powers.travel.{NarrowPassSite, TravelFixture,
-  TyrantCard}
-import oathdigital.gameplay.powers.wake.AncientCitySite
+import oathdigital.gameplay.powers.travel.{TravelFixture, TyrantCard}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.protocol.projection._

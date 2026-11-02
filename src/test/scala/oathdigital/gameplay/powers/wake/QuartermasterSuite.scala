@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.wake
 
-import oathdigital.gameplay.cards.DeepWoodsSite
+import oathdigital.gameplay.cards.{AncientCitySite, DeepWoodsSite}
 import oathdigital.testkit.MenuPlay
 import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
