@@ -59,6 +59,11 @@ object EffectiveSuit:
     if pledged(ready, card) then Some(Suit.Discord)
     else catalog.suitOf(card)
 
+  /** The same for a power that holds its own card object, which answers
+    * the printed suit without a catalog. */
+  def of(ready: ReadyGame, card: Denizen): Suit =
+    if pledged(ready, card.id) then Suit.Discord else card.suit
+
   /** `player`'s faceup advisers of `suit`, each by its weight. */
   def count(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
       suit: Suit): Int =

@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, PrintedPower}
 import oathdigital.gameplay.actions.campaign.{CampaignProcedure, CampaignSetup}
 import oathdigital.gameplay.powers.{PowerAnswers, WarbandArrangement}
 import oathdigital.gameplay.powers.economy.VowOfWandering
@@ -33,10 +33,20 @@ object WarningSignalsCard extends Denizen(DenizenId("25"), "Warning Signals", Su
   * where it was. The discard writes "Discarded after the Campaign.", as every
   * plan that says "At end, discard" does.
   */
-final case class WarningSignals private (catalog: ExecutableCatalog)
-    extends BattlePlan with DiscardedAtEnd:
-  val cardId: DenizenId = WarningSignalsCard.id
-  def id: PowerId = WarningSignals.id
+case object WarningSignals extends BattlePlan with DiscardedAtEnd:
+  val id: PowerId = WarningSignalsCard.power.id
+  /** Under the Campaign's prefix, so a parked question is a Campaign decision. */
+  val decisionId: String = CampaignProcedure.decisionPrefix + "warning-signals"
+  private val notes = NoteSet(id)
+  /** "{Blue} redistributed their warbands." */
+  val redistributed: NoteKey = notes.key("redistributed",
+    Vector(NotePart.Arg(0),
+      NotePart.Text(" redistributed their warbands.")))
+  /** This plan's own keys. Its `noteKeys` adds the discard's
+    * line, which `DiscardedAtEnd` owns, not this object. */
+  def ownNoteKeys: Vector[NoteKey] = notes.declared
+
+  val card: Denizen = WarningSignalsCard
   def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Defender)
   override def planNoteKeys: Vector[NoteKey] = WarningSignals.ownNoteKeys
@@ -68,19 +78,3 @@ final case class WarningSignals private (catalog: ExecutableCatalog)
         WarningSignals.decisionId)).flatMap(rows => WarbandArrangement.moves(
         state, user, defended(state, user), rows))))
   })
-
-object WarningSignals:
-  val id: PowerId = WarningSignalsCard.power.id
-  /** Under the Campaign's prefix, so a parked question is a Campaign decision. */
-  val decisionId: String = CampaignProcedure.decisionPrefix + "warning-signals"
-  private val notes = NoteSet(id)
-  /** "{Blue} redistributed their warbands." */
-  val redistributed: NoteKey = notes.key("redistributed",
-    Vector(NotePart.Arg(0),
-      NotePart.Text(" redistributed their warbands.")))
-  /** This plan's own keys. Its `noteKeys` adds the discard's
-    * line, which `DiscardedAtEnd` owns, not this object. */
-  def ownNoteKeys: Vector[NoteKey] = notes.declared
-
-  def forCatalog(catalog: ExecutableCatalog): WarningSignals =
-    new WarningSignals(catalog)

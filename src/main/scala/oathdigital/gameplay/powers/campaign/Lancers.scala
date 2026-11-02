@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, PrintedPower}
 import oathdigital.gameplay.actions.campaign.CampaignBattle
 import oathdigital.model._
 
@@ -21,10 +21,17 @@ object LancersCard extends Denizen(DenizenId("154"), "Lancers", Suit.Nomad):
   *
   * When the attack rolled a die it writes "The attack roll was doubled."
   */
-final case class Lancers private (catalog: ExecutableCatalog)
-    extends BattlePlan with DiscardedAtEnd:
-  val cardId: DenizenId = LancersCard.id
-  def id: PowerId = Lancers.id
+case object Lancers extends BattlePlan with DiscardedAtEnd:
+  val id: PowerId = LancersCard.power.id
+  private val notes = NoteSet(id)
+  /** This plan's own keys. Its `noteKeys` adds the discard's
+    * line, which `DiscardedAtEnd` owns, not this object. */
+  def ownNoteKeys: Vector[NoteKey] = notes.declared
+  /** "The attack roll was doubled." */
+  val doubled: NoteKey = notes.key("doubled",
+    Vector(NotePart.Text("The attack roll was doubled.")))
+
+  val card: Denizen = LancersCard
   def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Attacker)
   override def planNoteKeys: Vector[NoteKey] = Lancers.ownNoteKeys
@@ -40,15 +47,3 @@ final case class Lancers private (catalog: ExecutableCatalog)
       Note(id, states => Option.when(
         CampaignBattle.attackFacesOf(states.now).nonEmpty)(
         Lancers.doubled(PowerSourceRef.Card(cardId)))))))
-
-object Lancers:
-  val id: PowerId = LancersCard.power.id
-  private val notes = NoteSet(id)
-  /** This plan's own keys. Its `noteKeys` adds the discard's
-    * line, which `DiscardedAtEnd` owns, not this object. */
-  def ownNoteKeys: Vector[NoteKey] = notes.declared
-  /** "The attack roll was doubled." */
-  val doubled: NoteKey = notes.key("doubled",
-    Vector(NotePart.Text("The attack roll was doubled.")))
-
-  def forCatalog(catalog: ExecutableCatalog): Lancers = new Lancers(catalog)

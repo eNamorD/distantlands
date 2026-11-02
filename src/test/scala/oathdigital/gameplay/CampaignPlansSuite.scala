@@ -4,7 +4,6 @@ import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.{CampaignPlans, CampaignSetup}
 import oathdigital.gameplay.powers.campaign.{BattlePlans, BrassArmy, Outriders,
   PlanContext, TitleDefensePlan, Watchdog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.CatalogNames
 import oathdigital.testkit.Unwrap.present
@@ -217,7 +216,7 @@ class CampaignPlansSuite extends munit.FunSuite:
 
   test("the four ported plans register through one object, and are automatic " +
       "whatever the catalog flag"):
-    val plans = BattlePlans.forCatalog(catalog)
+    val plans = BattlePlans.all
     assertEquals(plans.size, 4)
     plans.foreach(plan =>
       assertEquals(plan.resolution, PowerResolution.Automatic))

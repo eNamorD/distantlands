@@ -110,7 +110,7 @@ object WalkerPowerCatalog:
       Vector(Marriage) ++
       Vector(PledgeToDiscord) ++
       Vector(Jinx.forCatalog(catalog)) ++
-      BattlePlans.forCatalog(catalog) ++
+      BattlePlans.all ++
       PlanRules.forCatalog(catalog) ++
       SimplePlans.forCatalog(catalog) ++
       PlanRestrictions.forCatalog(catalog) ++
