@@ -1,8 +1,8 @@
 # Catalog Batch 9: Edifice Faces
 
-**Status:** designed 2026-11-02. Slices 1 to 3 landed on 2026-11-02; their
+**Status:** designed 2026-11-02. Slices 1 to 7 landed on 2026-11-02; their
 rulings are under [Rulings made while implementing](#rulings-made-while-implementing).
-Slices 4 to 10 are not implemented yet.
+Slices 8 to 10 are not implemented yet.
 
 **Builds on** [Catalog batch 8](2026-10-12-catalog-batch-8-design.md), whose
 vocabulary, cost rules, walker shapes and log-line rules apply unchanged.
@@ -542,6 +542,53 @@ the questions above.
   bandit site. Both faces are inert on the other face's reach. The rule
   reads the Recover's site as `RecoverProcedure.actorSite` reads it, the
   pawn site.
+- **Slice 4: Forbidden Forest is askable after all.** Its refusal is not
+  a start refusal: it reads the route, so the destination decision carries
+  it, as the Narrow Pass's does. The destination is hidden with "Forbidden
+  Forest: Cannot travel here without a Beast adviser or ruler's consent."
+  and askable of the player ruler; a grant is keyed on the destination
+  answer, and under bandits the plain reason shows. The Patrols' deferral
+  stands, since a Recover has no such decision.
+- **Slice 4.** Boiling Lake's line is "Killed 2 {Blue} warbands." (question
+  9's default), with no site. It kills nothing and writes nothing from an
+  empty board, kills one from a board of one, and follows the pawn that
+  moves, so Palanquin's sent traveller suffers it.
+- **Slice 5: Still Boiling Lake is a printed rule.** Card play judges its
+  slots with the catalog's printed operation restrictions
+  (`OperationRestrictions.forCatalog`), not with the walker powers'
+  `operationRestrictions`, so a power-declared ban would have hidden the
+  slot silently where the look-ahead refused it. Still Boiling Lake
+  therefore joins Ancient Bloodline and the Hall of Ministers in
+  `OperationRestrictions.printedRules`, in `gameplay/operations`, with its
+  card object beside it (its intact face, Boiling Lake, stays a Travel
+  power). Card play's reason map (`CardSlots`) gains its code, so the
+  site's slots read "Still Boiling Lake: Cards cannot be played to this
+  site." Two lines outside `gameplay/powers/`, both in the lists the Hall
+  of Ministers already sits in.
+- **Slice 5.** Hallowed Spring rewrites only a payment of exactly one
+  placed and one burnt favor onto a card at its site, the Trade for
+  secrets' printed cost; a Trade for favor, and a Trade with a card
+  elsewhere, are untouched. No line: the payment's generic line shows the
+  2 favor placed.
+- **Slice 6.** Stone Portal from a ruled site asks nothing and places the
+  pawn at the Portal; from the Portal it asks over every other site. Hidden
+  Passages' consent is a `PowerUseRestriction` the power declares on its
+  own use (City Wall's shape): the Wake menu shows "Hidden Passages: Needs
+  its ruler's consent." askable, "Hidden Passages: Bandits rule this
+  site." under bandits (question 7's default), and nothing at an unruled
+  site or for the ruler; a refusal keeps the first reason. Sinking Passages
+  burns its favor as the power's cost, before the question. All three
+  write the movement relics' line, "{Blue} placed at {site}.", and the
+  placement is a `Move`, not a Travel, so Boiling Lake and the Forest do
+  not read it.
+- **Slice 7.** Spiral Castle is offered in a Raid only, to the ruler of its
+  site, and `wraps` the Raid's relocation as Keep does; Keep folds after
+  it, so with both the pawn ends at Keep's site and the Supply loss stands
+  (question 3's default). Spiral Dungeons fires at the Campaign's root
+  after the outcome in a Conquest or a Raid (question 4's default), and a
+  bandit defender applies it at a site bandits rule, as Battle Axes is
+  applied. Both write "Sent {Red}'s pawn to {site}; they lost 2 Supply.",
+  covering the move, and the loss is cut to the Supply held.
 
 ## Seams used for the first time
 
@@ -553,8 +600,9 @@ owner.
 - A `Restriction` at `RecoverActionEligibility` (Relic Patrols; without
   the `Waiver`, see the rulings).
 - A `Kill` from a player's board inside an `AutomaticUse` (Boiling Lake).
-- An `operationRestrictions` refusing a `Play` by destination (Still
-  Boiling Lake).
+- A printed operation restriction refusing a `Play` by destination (Still
+  Boiling Lake; a printed rule, not a power's `operationRestrictions`, see
+  the rulings).
 - A power's own `PowerUseRestriction` with a `Waiver`, judged at the Wake
   menu (Hidden Passages).
 - A battle plan `wrapping` the Raid's relocation (Spiral Castle) and a
@@ -611,11 +659,11 @@ What remains after this batch, for the roadmap's engine-blocked item.
   and the last-warband minor action.
 - **Favor source redirection** (Vow of Kinship): every cost, take, burn
   and resource read is against the board.
-- **An askable Act action** (the Patrols' consent, Forbidden Forest's
-  start refusal): the Act menu asks consent for phase powers and queued
-  starts only, and a tree-level `Restriction` is waived only through a
-  grant keyed on an answered decision, which a refusal at an action's
-  start has none of.
+- **An askable Act action** (the Patrols' consent): the Act menu asks
+  consent for phase powers and queued starts only, and a tree-level
+  `Restriction` is waived only through a grant keyed on an answered
+  decision, which a refusal at an action's start has none of. Forbidden
+  Forest does not need it: its refusal rides the destination decision.
 - **Challenge** (School of Vines, Sigil of the Eye, Sigil of the Heart,
   Favored Son, Magician's Code): unchanged from batch 8.
 - **Unchanged from batch 8:** Search Party, Bracken, Cracked Horn, Ring of
