@@ -118,18 +118,19 @@ object CatalogNames:
 final case class Table private (private val game: ReadyGame,
     private val expected: Set[CardId]):
   import Table.*
+  import CardRefs.*
 
   def turn(player: PlayerId, phase: Phase): Table =
     update(_.updateCurrent(_.copy(turn = TurnState(player, phase, Set.empty))))
 
-  def pawn(player: PlayerId, at: String | SiteId)(using munit.Location): Table =
-    val site = CatalogNames.site(at)
+  def pawn(player: PlayerId, at: SiteRef)(using munit.Location): Table =
+    val site = CardRefs.siteId(at)
     onPlayer(player)(_.copy(pawnSite = Some(site)))
 
   /** `card` as `player`'s adviser: a denizen, or a Vision by its id. */
-  def adviser(player: PlayerId, card: String | WorldCardId,
+  def adviser(player: PlayerId, card: WorldCardRef,
       facedown: Boolean = false)(using munit.Location): Table =
-    val id = CatalogNames.worldCard(card)
+    val id = CardRefs.worldCardId(card)
     val state: AdviserState = id match
       case denizen: DenizenId => DenizenState(denizen, orientation(facedown),
         Tokens.empty)
@@ -144,30 +145,30 @@ final case class Table private (private val game: ReadyGame,
       case vision: VisionState => vision.id }
     worldDeckBottom(held*)
 
-  def relic(player: PlayerId, card: String | RelicId,
+  def relic(player: PlayerId, card: RelicRef,
       facedown: Boolean = false)(using munit.Location): Table =
-    val id = CatalogNames.relic(card)
+    val id = CardRefs.relicId(card)
     moving(id).onPlayer(player)(p => p.copy(relics = p.relics :+
       RelicState(id, orientation(facedown), Tokens.empty)))
 
-  def denizen(card: String | DenizenId, at: String | SiteId,
+  def denizen(card: DenizenRef, at: SiteRef,
       facedown: Boolean = false)(using munit.Location): Table =
-    val id = CatalogNames.denizen(card)
-    moving(id).onSite(CatalogNames.site(at))(s => s.copy(denizens =
+    val id = CardRefs.denizenId(card)
+    moving(id).onSite(CardRefs.siteId(at))(s => s.copy(denizens =
       s.denizens :+ DenizenState(id, orientation(facedown), Tokens.empty)))
 
   /** A relic at a site. Relics at sites lie facedown in play. */
-  def relicAt(card: String | RelicId, at: String | SiteId,
+  def relicAt(card: RelicRef, at: SiteRef,
       facedown: Boolean = true)(using munit.Location): Table =
-    val id = CatalogNames.relic(card)
-    moving(id).onSite(CatalogNames.site(at))(s => s.copy(relics = s.relics :+
+    val id = CardRefs.relicId(card)
+    moving(id).onSite(CardRefs.siteId(at))(s => s.copy(relics = s.relics :+
       RelicState(id, orientation(facedown), Tokens.empty)))
 
   /** An edifice at a site on `side`. Named by a face, it must be the face
     * `side` shows. */
-  def edifice(card: String | EdificeId, side: EdificeSide,
-      at: String | SiteId)(using munit.Location): Table =
-    val id = CatalogNames.edifice(card)
+  def edifice(card: EdificeRef, side: EdificeSide,
+      at: SiteRef)(using munit.Location): Table =
+    val id = CardRefs.edificeId(card)
     card match
       case name: String =>
         val definition = FirstGameSetupFixture.catalog.edifice(id).get
@@ -177,13 +178,13 @@ final case class Table private (private val game: ReadyGame,
         if shown != name then munit.Assertions.fail(
           s"\"$name\" is not the $side face; that face is \"$shown\"")
       case _ => ()
-    moving(id).onSite(CatalogNames.site(at))(s => s.copy(denizens =
+    moving(id).onSite(CardRefs.siteId(at))(s => s.copy(denizens =
       s.denizens :+ EdificeState(id, side, Tokens.empty)))
 
   /** Sets the tokens on `card`, wherever it sits. */
-  def tokens(card: String | CardId, favor: Int = 0, secrets: Int = 0)(
+  def tokens(card: CardRef, favor: Int = 0, secrets: Int = 0)(
       using munit.Location): Table =
-    val id = CatalogNames.card(card)
+    val id = CardRefs.cardId(card)
     val set = Tokens(favor, secrets)
     update(_.updateCurrent(c => c.copy(
       map = c.map.copy(sites = c.map.sites.view.mapValues(s => s.copy(
@@ -202,42 +203,42 @@ final case class Table private (private val game: ReadyGame,
 
   /** `cards` in `player`'s hand, after any already there: the hand a
     * Search draws into and a card play takes from. */
-  def hand(player: PlayerId, cards: (String | WorldCardId)*)(
+  def hand(player: PlayerId, cards: WorldCardRef*)(
       using munit.Location): Table =
-    val ids = cards.toVector.map(CatalogNames.worldCard)
+    val ids = cards.toVector.map(CardRefs.worldCardId)
     ids.foldLeft(this)(_.moving(_)).update(_.updateCurrent(c => c.copy(
       temporaryHands = c.temporaryHands.updated(player,
         c.temporaryHands.getOrElse(player, Vector.empty) ++ ids))))
 
   /** `cards` in `region`'s discard pile, in order: the last named is its
     * top. */
-  def discarded(region: Region, cards: (String | WorldCardId)*)(
+  def discarded(region: Region, cards: WorldCardRef*)(
       using munit.Location): Table =
-    val ids = cards.toVector.map(CatalogNames.worldCard)
+    val ids = cards.toVector.map(CardRefs.worldCardId)
     ids.foldLeft(this)(_.moving(_)).update(_.updateCurrent(c => c.copy(
       commonCards = c.commonCards.copy(regionalDiscards =
         c.commonCards.regionalDiscards.updated(region,
           c.commonCards.discard(region) ++ ids)))))
 
   /** These cards on top of the world deck, first named on top. */
-  def worldDeckTop(cards: (String | WorldCardId)*)(using munit.Location): Table =
-    val ids = cards.toVector.map(CatalogNames.worldCard)
+  def worldDeckTop(cards: WorldCardRef*)(using munit.Location): Table =
+    val ids = cards.toVector.map(CardRefs.worldCardId)
     ids.foldLeft(this)(_.moving(_)).update(_.updateCurrent(c => c.copy(
       commonCards = c.commonCards.copy(worldDeck = ids ++
         c.commonCards.worldDeck))))
 
   /** These cards at the bottom of the world deck, last named at the
     * bottom. */
-  def worldDeckBottom(cards: (String | WorldCardId)*)(
+  def worldDeckBottom(cards: WorldCardRef*)(
       using munit.Location): Table =
-    val ids = cards.toVector.map(CatalogNames.worldCard)
+    val ids = cards.toVector.map(CardRefs.worldCardId)
     ids.foldLeft(this)(_.moving(_)).update(_.updateCurrent(c => c.copy(
       commonCards = c.commonCards.copy(worldDeck =
         c.commonCards.worldDeck ++ ids))))
 
   /** These relics on top of the relic deck, first named on top. */
-  def relicDeckTop(cards: (String | RelicId)*)(using munit.Location): Table =
-    val ids = cards.toVector.map(CatalogNames.relic)
+  def relicDeckTop(cards: RelicRef*)(using munit.Location): Table =
+    val ids = cards.toVector.map(CardRefs.relicId)
     ids.foldLeft(this)(_.moving(_)).update(_.updateCurrent(c => c.copy(
       commonCards = c.commonCards.copy(relicDeck = ids ++
         c.commonCards.relicDeck))))
@@ -263,11 +264,11 @@ final case class Table private (private val game: ReadyGame,
       s"$player's board and bank hold ${board + n}, fewer than $n")
     boardWarbands(player, board)
 
-  def bandits(at: String | SiteId, n: Int)(using munit.Location): Table =
+  def bandits(at: SiteRef, n: Int)(using munit.Location): Table =
     forces(at, n, ForceKind.Bandit)
 
   /** `n` of `owner`'s warbands at a site, which `owner` then rules. */
-  def warbandsAt(at: String | SiteId, owner: PlayerId, n: Int)(
+  def warbandsAt(at: SiteRef, owner: PlayerId, n: Int)(
       using munit.Location): Table =
     forces(at, n, PlayerForceKind.of(game, playerOf(owner)).getOrElse(
       munit.Assertions.fail(s"$owner has no warbands of their own")))
@@ -286,9 +287,9 @@ final case class Table private (private val game: ReadyGame,
       else table
     }
 
-  def siteTokens(at: String | SiteId, favor: Int = 0, secrets: Int = 0)(
+  def siteTokens(at: SiteRef, favor: Int = 0, secrets: Int = 0)(
       using munit.Location): Table =
-    onSite(CatalogNames.site(at))(_.copy(tokens = Tokens(favor, secrets)))
+    onSite(CardRefs.siteId(at))(_.copy(tokens = Tokens(favor, secrets)))
 
   /** The People's Favor held by `holder` with `favor` on it, showing
     * `face`; the quiet table shows the Mob. */
@@ -307,12 +308,12 @@ final case class Table private (private val game: ReadyGame,
         secrets = secrets)))))
 
   /** `viewer` knows `card`, a relic lying at `at`, as a peek records it. */
-  def knowsRelicAt(viewer: PlayerId, card: String | RelicId,
-      at: String | SiteId)(using munit.Location): Table =
-    val id = CatalogNames.relic(card)
-    val site = CatalogNames.site(at)
+  def knowsRelicAt(viewer: PlayerId, card: RelicRef,
+      at: SiteRef)(using munit.Location): Table =
+    val id = CardRefs.relicId(card)
+    val site = CardRefs.siteId(at)
     if !game.game.current.map.sites(site).relics.exists(_.id == id) then
-      munit.Assertions.fail(s"${CatalogNames.nameOf(id)} is not at $site")
+      munit.Assertions.fail(s"${CardRefs.nameOf(id)} is not at $site")
     update(r => r.copy(knowledge = r.knowledge.copy(siteRelics =
       r.knowledge.siteRelics.updated(viewer, r.knowledge.siteRelics
         .getOrElse(viewer, Map.empty).updatedWith(site)(known =>
@@ -470,9 +471,9 @@ final case class Table private (private val game: ReadyGame,
     update(_.updateCurrent(c => c.copy(map = c.map.copy(sites =
       c.map.sites.updated(site, f(c.map.sites(site)))))))
 
-  private def forces(at: String | SiteId, n: Int, kind: ForceKind)(
+  private def forces(at: SiteRef, n: Int, kind: ForceKind)(
       using munit.Location): Table =
-    onSite(CatalogNames.site(at))(_.copy(forces =
+    onSite(CardRefs.siteId(at))(_.copy(forces =
       if n == 0 then SiteForces.Empty else SiteForces.Occupied(kind, n)))
 
   private def playerOf(player: PlayerId)(using munit.Location): PlayerState =
@@ -489,7 +490,7 @@ object Table:
 
   /** Where the quiet table stands `player`'s pawn. */
   def quietPawnSite(player: PlayerId)(using munit.Location): SiteId =
-    CatalogNames.site(homes.getOrElse(player, munit.Assertions.fail(
+    CardRefs.siteId(homes.getOrElse(player, munit.Assertions.fail(
       s"no player $player at the table")))
 
   /** Another site the quiet table has in play in `site`'s region. */
@@ -613,7 +614,7 @@ object Table:
 
   private def describe(problem: CardIndexProblem): String = problem match
     case CardIndexProblem.DuplicateCard(id, locations) =>
-      s"${CatalogNames.nameOf(id)} is in ${locations.size} places: " +
+      s"${CardRefs.nameOf(id)} is in ${locations.size} places: " +
         locations.mkString(", ")
     case CardIndexProblem.MissingCard(id) =>
-      s"${CatalogNames.nameOf(id)} is missing"
+      s"${CardRefs.nameOf(id)} is missing"
