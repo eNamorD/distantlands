@@ -13,7 +13,7 @@ import oathdigital.model._
   * Its line names the new role: "Became a Citizen." */
 case object GrandScepterAction extends PaidAction(TheGrandScepterCard.action):
   private val notes = NoteSet(id)
-  val became: RoleNotes = RoleNotes.declare(notes)
+  val roleNotes: RoleNotes = RoleNotes.declare(notes)
   override def noteKeys: Vector[NoteKey] = notes.declared
 
   override def listed(ready: ReadyGame, player: PlayerId): Boolean =
@@ -31,7 +31,7 @@ case object GrandScepterAction extends PaidAction(TheGrandScepterCard.action):
     case DecisionOptionRef.Relic(TheGrandScepterCard.id) =>
       Right(Sequence(Vector(Citizenship.become(player),
         Note(id, states => PowerSourceRef.of(source).flatMap(
-          became.became(states, player, _))))))
+          roleNotes.became(states, player, _))))))
     case other => Left(OathViolation.InvalidEventOrder(
       s"${other.kind} is not the Grand Scepter"))
 

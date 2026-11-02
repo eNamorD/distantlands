@@ -1,19 +1,10 @@
 package oathdigital.catalog.holding
 
-import oathdigital.catalog.{AdviserOnly, Denizen, Locked, PrintedPower,
-  SiteOnly}
+import oathdigital.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
 import oathdigital.model.{Cost, DenizenId, PowerId, Suit}
 
 // Generated from the retired runtime JSON (card classes slice 1).
 // Hand-edited from here on; a card moves out when it is implemented.
-
-object MartialCultureCard extends Denizen(DenizenId("10"), "Martial Culture", Suit.Order) with SiteOnly:
-  val power = PrintedPower(PowerId("denizen.martial-culture"),
-    persistent = false, cost = Cost.free,
-    text = "If you're an Exile and defeat another Exile, you may become " +
-      "a Citizen. _Follow the steps in the rules and end your Act " +
-      "Phase._")
-  val powers: Vector[PrintedPower] = Vector(power)
 
 object CouncilSeatCard extends Denizen(DenizenId("123"), "Council Seat", Suit.Order) with Locked with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.council-seat"),

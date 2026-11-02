@@ -11,7 +11,6 @@ denizen.favored-son
 denizen.glamor
 denizen.long-lost-heir
 denizen.magicians-code
-denizen.martial-culture
 denizen.master-of-disguise
 denizen.naysayers
 denizen.pilgrimage
@@ -115,7 +114,6 @@ relic.obsidian-cage.action
 relic.obsidian-cage.campaign
 relic.sigil-of-the-eye
 relic.sigil-of-the-heart
-relic.the-grand-scepter.campaign
 relic.the-grand-scepter.negotiation
 relic.whispering-stone
 site.ancient-city.enduring
