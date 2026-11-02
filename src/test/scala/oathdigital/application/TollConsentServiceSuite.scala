@@ -9,6 +9,7 @@ import oathdigital.protocol.projection._
 import oathdigital.testkit.{Look, Outcomes}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.{accepted, present}
+import oathdigital.testkit.Commands
 
 /** Asking a toll's ruler to travel without paying, through the service
   * (consent design, "Toll and penalty steps", rulings 7 and 10 to 13). */
@@ -27,7 +28,7 @@ class TollConsentServiceSuite extends munit.FunSuite:
   private def answering(service: GameApplicationService, at: GameAccepted,
       choice: ConsentChoice)(using munit.Location): GameAccepted =
     accepted(service.handle(gameId, at.nextSequence,
-      GameCommand.AnswerConsent(p2, choice)))
+      Commands.answerConsent(p2, choice)))
 
   /** The rows of the decision p1 is shown. */
   private def rows(at: GameAccepted): Vector[DecisionOptionProjection] =
@@ -75,7 +76,7 @@ class TollConsentServiceSuite extends munit.FunSuite:
     assertEquals(row.reason, Some(
       "Toll Roads: Cannot travel to its ruler's sites without giving favor."))
     val paid = accepted(service.handle(gameId, no.nextSequence,
-      GameCommand.ResolveWalker(p1, TreeDecision(TollRoads.decisionId,
+      Commands.resolveWalker(p1, TreeDecision(TollRoads.decisionId,
         DecisionAnswer.ChooseOneAnswer(PayOrAsk.pay)))))
     assertEquals(Look(Outcomes.ready(paid.state)).favor(p1), 0)
 
@@ -92,7 +93,7 @@ class TollConsentServiceSuite extends munit.FunSuite:
     assert(rows(no).nonEmpty && rows(no).forall(!_.choosable), rows(no))
     assert(projector.project(gameId, no.loaded, p1).undo.nonEmpty)
     val undone = accepted(service.handle(gameId, no.nextSequence,
-      GameCommand.Undo(p1)))
+      Commands.undo(p1)))
     val coastRow = present(rows(undone).find(_.id == coast.value),
       "the coast row")
     assertEquals(coastRow.state, "unavailable")

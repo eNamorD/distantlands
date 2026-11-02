@@ -7,12 +7,13 @@ import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{Situation, Table}
 import oathdigital.testkit.Table.{p1, p2}
+import oathdigital.testkit.Commands
 
 /** Real batches that undo never takes back (undo design, "Barriers"). */
 class UndoBarrierPlaySuite extends munit.FunSuite:
   private def nothingToUndo(service: GameApplicationService, gameId: String,
       at: Long, player: PlayerId)(using munit.Location): Unit =
-    assertEquals(service.handle(gameId, at, GameCommand.Undo(player)),
+    assertEquals(service.handle(gameId, at, Commands.undo(player)),
       Left(GameApplicationError.CommandRejected(OathViolation.NothingToUndo)))
 
   test("a Recover's start rolls, so it cannot be taken back"):

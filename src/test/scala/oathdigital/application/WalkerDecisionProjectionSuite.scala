@@ -22,6 +22,7 @@ import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.{accepted, present}
 import oathdigital.application.ParkedServiceFixture.loaded
 import oathdigital.testkit.Outcomes
+import oathdigital.testkit.Commands
 
 /** Task 7 (Recover slice, controller ruling (b)) established the
   * application-projector surface: [[WalkerDecisionProjector]] plus the
@@ -144,7 +145,7 @@ class WalkerDecisionProjectionSuite extends munit.FunSuite:
     // The projected labels are the query's own declarative copy, and they
     // never affect legality: the engine accepts the button KEY.
     val stopped = rolled.service.handle(gameId, rolled.started.nextSequence,
-      GameCommand.ResolveWalker(p1, TreeDecision(
+      Commands.resolveWalker(p1, TreeDecision(
         RecoverProcedure.choiceDecisionId, DecisionAnswer.ChooseOneAnswer(
           DecisionOptionRef.Button(choiceQuery.options.last.id)))))
     // The engine accepts a projected button option.
@@ -247,7 +248,7 @@ class WalkerDecisionProjectionSuite extends munit.FunSuite:
     // diverging from the option set the declared query accepts.
     val chosen = RelicId(relicQuery.options.head.id)
     val resolved = rolled.service.handle(gameId, rolled.started.nextSequence,
-      GameCommand.ResolveWalker(p1, TreeDecision(
+      Commands.resolveWalker(p1, TreeDecision(
         RecoverProcedure.relicDecisionId,
         DecisionAnswer.ChooseOneAnswer(DecisionOptionRef.Relic(chosen)))))
     accepted(resolved)

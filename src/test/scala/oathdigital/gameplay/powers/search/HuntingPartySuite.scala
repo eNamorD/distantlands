@@ -5,7 +5,7 @@ import oathdigital.gameplay.powers.campaign.{CodeOfHonorCard, MercenariesCard,
   ShieldWallCard, WrestlersCard}
 import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.testkit.MenuPlay
-import oathdigital.application.{GameCommand, GameProjector, LoadedGame,
+import oathdigital.application.{GameProjector, LoadedGame,
   TreeDecision}
 import oathdigital.gameplay.ModifierPlay
 import oathdigital.gameplay.walker.{FollowUpOffer, FollowUpSkipped}
@@ -17,6 +17,7 @@ import oathdigital.model.DecisionAnswer.ChooseOneAnswer
 import oathdigital.protocol.projection.DecisionQueryProjection
 import oathdigital.testkit.{Situation, Table}
 import oathdigital.testkit.Table.p1
+import oathdigital.testkit.Commands
 
 /** Hunting Party (card 122): after a Search of the world deck, a Campaign is
   * owed, spending no Supply; a discard pile warns and stays choosable
@@ -75,7 +76,7 @@ class HuntingPartySuite extends munit.FunSuite:
     // starts by itself and parks on its source.
     val parked = board.situation(rules)
       .parkedAfter(MenuPlay.start(p1, ActionRef.Search))
-      .parkedAfter(GameCommand.ResolveWalker(p1, TreeDecision(
+      .parkedAfter(Commands.resolveWalker(p1, TreeDecision(
         ModifierPicks.decisionId(PowerWindow.SearchModifierSelection),
         ModifierPlay.pick(HuntingParty.id))))
     val shown = new GameProjector(catalog).project("hunting",

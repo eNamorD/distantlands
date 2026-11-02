@@ -92,7 +92,7 @@ sealed trait SituationDriver:
             catch case error: Exception =>
               failed(s"answering ${decide.decisionId} ($form) of " +
                 s"$procedure awaiting $awaiting threw $error")
-          GameCommand.ResolveWalker(awaiting,
+          Commands.resolveWalker(awaiting,
             TreeDecision(decide.decisionId, answer))
       situation = apply(situation, Step.Command(resume)).fold(violation =>
         failed(s"answering ${parked.get.decisionId} awaiting " +

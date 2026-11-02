@@ -20,6 +20,7 @@ import oathdigital.testkit.{Look, Outcomes, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, present}
 import ParkedServiceFixture.{loaded, replayingSecond}
+import oathdigital.testkit.Commands
 
 /** A game reopened from HSQL keeps its Rest cleanup, private relic
   * knowledge and Negotiation state.
@@ -125,7 +126,7 @@ class GameApplicationServiceReopenSuite extends munit.FunSuite:
   /** `by` answers the open deal decision with `answer`. */
   private def answerDeal(service: GameApplicationService, gameId: String,
       from: GameAccepted, by: PlayerId, answer: DecisionAnswer) =
-    service.handle(gameId, from.nextSequence, GameCommand.ResolveWalker(by,
+    service.handle(gameId, from.nextSequence, Commands.resolveWalker(by,
       TreeDecision(NegotiationDeal.dealDecisionId, answer)))
 
   test("HSQL reopen preserves a parked Negotiation deal"):

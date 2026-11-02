@@ -8,6 +8,7 @@ import oathdigital.model._
 import oathdigital.testkit.Table
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
+import oathdigital.testkit.Commands
 
 /** The source decision through the service: Undo takes back the start, and
   * the answer draws, so nothing takes it back (search source design,
@@ -22,7 +23,7 @@ class SearchSourceServiceSuite extends munit.FunSuite:
     val started = accepted(service.handle("g", 0L,
       ParkedServiceFixture.startSearch(p1)))
     val undone = accepted(service.handle("g", started.nextSequence,
-      GameCommand.Undo(p1)))
+      Commands.undo(p1)))
     assertEquals(undone.state, table.phaseMenuParked.state)
 
   test("Undo takes back a pick, and then the start"):
@@ -31,13 +32,13 @@ class SearchSourceServiceSuite extends munit.FunSuite:
     val started = accepted(service.handle("g", 0L,
       ParkedServiceFixture.startSearch(p1)))
     val picked = accepted(service.handle("g", started.nextSequence,
-      GameCommand.ResolveWalker(p1, TreeDecision("search.modifiers",
+      Commands.resolveWalker(p1, TreeDecision("search.modifiers",
         ModifierPlay.pick(NewsFromAfar.id)))))
     val unpicked = accepted(service.handle("g", picked.nextSequence,
-      GameCommand.Undo(p1)))
+      Commands.undo(p1)))
     assertEquals(unpicked.state, started.state)
     val undone = accepted(service.handle("g", unpicked.nextSequence,
-      GameCommand.Undo(p1)))
+      Commands.undo(p1)))
     assertEquals(undone.state, withNews.phaseMenuParked.state)
 
   test("the source answer draws, so it cannot be taken back"):
@@ -46,5 +47,5 @@ class SearchSourceServiceSuite extends munit.FunSuite:
       ParkedServiceFixture.startSearch(p1)))
     val picked = accepted(service.handle("g", started.nextSequence,
       ParkedServiceFixture.pickSearchSource(p1, SearchSource.WorldDeck)))
-    assertEquals(service.handle("g", picked.nextSequence, GameCommand.Undo(p1)),
+    assertEquals(service.handle("g", picked.nextSequence, Commands.undo(p1)),
       Left(GameApplicationError.CommandRejected(OathViolation.NothingToUndo)))

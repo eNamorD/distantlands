@@ -1,6 +1,6 @@
 package oathdigital.application.gamelog
 
-import oathdigital.application.{GameApplicationService, GameCommand,
+import oathdigital.application.{GameApplicationService,
   ParkedServiceFixture, TreeDecision}
 import oathdigital.gameplay.powers.travel.{BrokenPeaksSite, WayStation,
   WayStationCard}
@@ -10,6 +10,7 @@ import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.{accepted, present}
 import LogScripts.formatter
+import oathdigital.testkit.Commands
 
 /** How a Travel through Way Station reads in the Game Log: the question posts
   * no "Chose" line, the favor answer posts the toll lines, and the Travel tag
@@ -30,7 +31,7 @@ class WayStationLogSuite extends munit.FunSuite:
     val picked = accepted(service.handle("g", started.nextSequence,
       ParkedServiceFixture.pickTravelDestination(p1, destination)))
     accepted(service.handle("g", picked.nextSequence,
-      GameCommand.ResolveWalker(p1, TreeDecision(WayStation.decisionId,
+      Commands.resolveWalker(p1, TreeDecision(WayStation.decisionId,
         DecisionAnswer.ChooseOneAnswer(answer)))))
     texts(service)
 

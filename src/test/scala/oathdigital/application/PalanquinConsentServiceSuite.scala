@@ -9,6 +9,7 @@ import oathdigital.protocol.projection._
 import oathdigital.testkit.{Look, MenuPlay, Outcomes}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, present}
+import oathdigital.testkit.Commands
 
 /** Palanquin's toll asked of the target or the ruler, through the service
   * (catalog batch 8, slice 15, rulings 8, 13, 14 and 17). */
@@ -33,20 +34,20 @@ class PalanquinConsentServiceSuite extends munit.FunSuite:
       ActionRef.UsePower(Palanquin.id),
       Vector(DecisionOptionRef.Denizen(PalanquinCard.id)))))
     accepted(service.handle(gameId, used.nextSequence,
-      GameCommand.ResolveWalker(p1, TreeDecision(Palanquin.targetDecisionId,
+      Commands.resolveWalker(p1, TreeDecision(Palanquin.targetDecisionId,
         DecisionAnswer.ChooseOneAnswer(DecisionOptionRef.Player(p3))))))
 
   private def asking(service: GameApplicationService,
       granters: Vector[PlayerId])(using munit.Location): GameAccepted =
     accepted(service.handle(gameId, atTheDestination(service).nextSequence,
-      GameCommand.RequestConsent(p1, Palanquin.destinationDecisionId,
+      Commands.requestConsent(p1, Palanquin.destinationDecisionId,
         coastRef, granters)))
 
   private def answering(service: GameApplicationService, at: GameAccepted,
       granter: PlayerId, choice: ConsentChoice)(using munit.Location)
       : GameAccepted =
     accepted(service.handle(gameId, at.nextSequence,
-      GameCommand.AnswerConsent(granter, choice)))
+      Commands.answerConsent(granter, choice)))
 
   private def coastRow(at: GameAccepted)(using munit.Location)
       : DecisionOptionProjection =

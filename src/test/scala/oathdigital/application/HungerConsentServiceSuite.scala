@@ -13,6 +13,7 @@ import oathdigital.model._
 import oathdigital.testkit.{Look, MenuPlay, Outcomes, ParkedNode, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, present}
+import oathdigital.testkit.Commands
 
 /** Hunger refused by City Wall and Forest Council: every ruler is asked
   * at once, and the first deactivation settles it (automatic power
@@ -45,7 +46,7 @@ class HungerConsentServiceSuite extends munit.FunSuite:
   private def answering(service: GameApplicationService, at: GameAccepted,
       choice: ConsentChoice, granter: PlayerId)(using munit.Location)
       : GameAccepted = accepted(service.handle(gameId, at.nextSequence,
-    GameCommand.AnswerConsent(granter, choice)))
+    Commands.answerConsent(granter, choice)))
 
   private def readyAfter(at: GameAccepted)(using munit.Location)
       : ReadyGame = Outcomes.ready(at.state)
@@ -134,5 +135,5 @@ class HungerConsentServiceSuite extends munit.FunSuite:
       assertEquals(projector.project(gameId, waiting.loaded, viewer).undo,
         None)
     assertEquals(service.handle(gameId, waiting.nextSequence,
-      GameCommand.Undo(p1)), Left(GameApplicationError.CommandRejected(
+      Commands.undo(p1)), Left(GameApplicationError.CommandRejected(
         OathViolation.ConsentPending)))

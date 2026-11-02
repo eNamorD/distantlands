@@ -1,6 +1,6 @@
 package oathdigital.application.gamelog
 
-import oathdigital.application.{GameApplicationService, GameCommand,
+import oathdigital.application.{GameApplicationService,
   ParkedServiceFixture, TreeDecision}
 import oathdigital.gameplay.powers.action.{EldersCard, MessengerCard,
   SiegeEnginesCard}
@@ -12,6 +12,7 @@ import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.{accepted, present}
 import LogScripts.formatter
+import oathdigital.testkit.Commands
 
 /** How Hospitality's question reads in the Game Log: no "Chose" line and no
   * line of its own; the generic gain line names the bank. */
@@ -34,7 +35,7 @@ class HospitalityLogSuite extends munit.FunSuite:
     val picked = accepted(service.handle("g", started.nextSequence,
       ParkedServiceFixture.pickTravelDestination(p1, destination)))
     accepted(service.handle("g", picked.nextSequence,
-      GameCommand.ResolveWalker(p1, TreeDecision(Hospitality.decisionId,
+      Commands.resolveWalker(p1, TreeDecision(Hospitality.decisionId,
         DecisionAnswer.ChooseOneAnswer(
           DecisionOptionRef.FavorBank(Suit.Order))))))
     texts(service)

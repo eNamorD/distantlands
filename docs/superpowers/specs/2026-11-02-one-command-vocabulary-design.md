@@ -1,11 +1,17 @@
 # One command vocabulary
 
-> Status: design note, 2026-11-02, for the roadmap's architecture candidate
-> "One command vocabulary" (architecture scans of 2026-10-23). It
-> re-measures the candidate at `0d1ae92`, names the seven files a command
-> is written in, defines "an actor plus a model-typed intent", shows one
-> command before and after, and slices the change. Nothing here is
-> implemented. Companion notes: the
+> Status: implemented, 2026-11-02, in three commits on the day it was
+> written, one per slice below, with the recommended defaults for every
+> question for the owner: `Begin` stays a `GameCommand` beside `Issued`,
+> the test aliases were retired through `testkit.Commands`, and
+> `PlayerIntent` is a top-level trait in `GameCommands.scala`. The counts
+> below are as measured at `0d1ae92`, before the change; at the sweep the
+> test construction sites had grown to 221 in 56 files. Written for the
+> roadmap's architecture candidate "One command vocabulary" (architecture
+> scans of 2026-10-23). It re-measures the candidate at `0d1ae92`, names
+> the seven files a command is written in, defines "an actor plus a
+> model-typed intent", shows one command before and after, and slices the
+> change. Companion notes: the
 > [wire codecs](2026-11-02-derive-wire-codecs-design.md) and the
 > [HTTP gateway](2026-11-02-one-http-gateway-design.md).
 

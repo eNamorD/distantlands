@@ -8,6 +8,7 @@ import oathdigital.model._
 import oathdigital.testkit.{MenuPlay, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.accepted
+import oathdigital.testkit.Commands
 
 /** A phase menu through the service (walker-driven game loop design,
   * rulings 11 and 12). */
@@ -29,7 +30,7 @@ class PhaseMenuServiceSuite extends munit.FunSuite:
     val taken = accepted(service.handle("game", 0L,
       MenuPlay.picking(p1, favor)))
     val undone = accepted(service.handle("game", taken.nextSequence,
-      GameCommand.Undo(p1)))
+      Commands.undo(p1)))
     assertEquals(MenuPlay.parked(undone.state), Some(PhaseMenu.Menu.Wake))
 
   test("Undo after an Act pick returns to the Act menu"):
@@ -39,5 +40,5 @@ class PhaseMenuServiceSuite extends munit.FunSuite:
     val taken = accepted(service.handle("game", 0L,
       MenuPlay.starting(p1, ActionRef.Search)))
     val undone = accepted(service.handle("game", taken.nextSequence,
-      GameCommand.Undo(p1)))
+      Commands.undo(p1)))
     assertEquals(MenuPlay.parked(undone.state), Some(PhaseMenu.Menu.Act))

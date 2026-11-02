@@ -14,6 +14,7 @@ import oathdigital.model.OathEvent.{CommandAccepted, ConsentAnswered,
 import oathdigital.testkit.{Look, Outcomes, Table}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
+import oathdigital.testkit.Commands
 
 /** Asking the Hall of Ministers' ruler through the service (consent design,
   * slice 3): a grant covers the card, and Roving Terror takes it as p1's
@@ -45,7 +46,7 @@ class HallOfMinistersConsentServiceSuite extends munit.FunSuite:
       : GameAccepted =
     val used = accepted(service.handle(gameId, 0L, useTerror))
     accepted(service.handle(gameId, used.nextSequence,
-      GameCommand.RequestConsent(p1, RovingTerror.decisionId,
+      Commands.requestConsent(p1, RovingTerror.decisionId,
         errandBoySlot)))
 
   test("Yes lets Roving Terror take the card, as p1's own step, and the " +
@@ -54,7 +55,7 @@ class HallOfMinistersConsentServiceSuite extends munit.FunSuite:
     val asked = asking(service)
     assertEquals(asked.events, Vector(ConsentRequested(request)))
     val yes = accepted(service.handle(gameId, asked.nextSequence,
-      GameCommand.AnswerConsent(p2, ConsentChoice.Yes)))
+      Commands.answerConsent(p2, ConsentChoice.Yes)))
     assertEquals(yes.events.head, ConsentAnswered(p2, true))
     assert(!yes.events.exists(_.isInstanceOf[CommandAccepted]))
     // The discard is p1's batch: it opens right after the answer.
@@ -69,7 +70,7 @@ class HallOfMinistersConsentServiceSuite extends munit.FunSuite:
   test("No leaves the card where it is, and p1 still chooses"):
     val (service, _) = board.service()
     val no = accepted(service.handle(gameId, asking(service).nextSequence,
-      GameCommand.AnswerConsent(p2, ConsentChoice.No)))
+      Commands.answerConsent(p2, ConsentChoice.No)))
     assertEquals(no.events, Vector(ConsentAnswered(p2, false)))
     assert(Outcomes.ready(no.state).game.current.walkerPending.nonEmpty)
     assert(Look(Outcomes.ready(no.state)).cardsAt(woods).contains(errandBoy))

@@ -57,41 +57,5 @@ object GameCommand:
     case Issued(actor, intent) if intent.opensBatch => Some(actor)
     case _ => None
 
-  // The old one-case-per-intent spellings, kept while the test suites still
-  // write them; the next slice retires them. Each builds and matches the
-  // `Issued` it stands for.
-  object Undo:
-    def apply(actor: PlayerId): GameCommand = Issued(actor, PlayerIntent.Undo)
-    def unapply(command: GameCommand): Option[PlayerId] = command match
-      case Issued(actor, PlayerIntent.Undo) => Some(actor)
-      case _ => None
-  object Redo:
-    def apply(actor: PlayerId): GameCommand = Issued(actor, PlayerIntent.Redo)
-    def unapply(command: GameCommand): Option[PlayerId] = command match
-      case Issued(actor, PlayerIntent.Redo) => Some(actor)
-      case _ => None
-  object ResolveWalker:
-    def apply(actor: PlayerId, treeDecision: TreeDecision): GameCommand =
-      Issued(actor, PlayerIntent.ResolveWalker(treeDecision))
-    def unapply(command: GameCommand): Option[(PlayerId, TreeDecision)] =
-      command match
-        case Issued(actor, PlayerIntent.ResolveWalker(treeDecision)) =>
-          Some((actor, treeDecision))
-        case _ => None
-  object SetConsentPreference:
-    def apply(granter: PlayerId, power: PowerId, requester: PlayerId,
-        setting: ConsentSetting): GameCommand =
-      Issued(granter, PlayerIntent.SetConsentPreference(power, requester,
-        setting))
-  object RequestConsent:
-    def apply(requester: PlayerId, decisionId: String,
-        target: DecisionOptionRef,
-        granters: Vector[PlayerId] = Vector.empty): GameCommand =
-      Issued(requester, PlayerIntent.RequestConsent(decisionId, target,
-        granters))
-  object AnswerConsent:
-    def apply(granter: PlayerId, choice: ConsentChoice): GameCommand =
-      Issued(granter, PlayerIntent.AnswerConsent(choice))
-
 /** One answer to the currently parked generic walker decision. */
 final case class TreeDecision(decisionId: String, answer: DecisionAnswer)

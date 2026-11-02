@@ -11,6 +11,7 @@ import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
 import oathdigital.testkit.{Answers, Dice, Look, MenuPlay, Park, Situation}
 import oathdigital.testkit.Table.{p1, p2}
 import LogScriptSupport.{atTable, tableWithOnePawnPerSite}
+import oathdigital.testkit.Commands
 
 /** The Raid scripts: the plain Raid the goldens read, the same under
   * Careful Plans, and the Raid run as a Campaign Knights Errant offered, and
@@ -71,7 +72,7 @@ object RaidLogScripts:
     Some(PowerSourceRef.Card(KnightsErrantCard.id)),
     QueueKind.Offer)
 
-  private def takeOffer: GameCommand = GameCommand.ResolveWalker(p1,
+  private def takeOffer: GameCommand = Commands.resolveWalker(p1,
     TreeDecision(FollowUpOffer.decisionId, ChooseOneAnswer(FollowUpOffer.take)))
 
   /** The `raid` table with Knights Errant held by p1, a Campaign offer

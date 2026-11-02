@@ -5,6 +5,7 @@ import oathdigital.model.OathEvent.StepRestored
 import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.accepted
+import oathdigital.testkit.Commands
 
 /** The redo stack, as the service folds its journal (undo design, "Replay:
   * one forward fold" and "Redo"). Restore markers are written by journal
@@ -22,11 +23,11 @@ class JournalFoldRedoSuite extends munit.FunSuite:
       first.picked.nextSequence, p1, p2)
     assertEquals(second.picked.redo, None)
     val once = accepted(service.handle("g", second.picked.nextSequence,
-      GameCommand.Undo(p1)))
+      Commands.undo(p1)))
     assertEquals(once.redo.map(range), Some((p1, second.started.nextSequence,
       second.picked.nextSequence)))
     val twice = accepted(service.handle("g", once.nextSequence,
-      GameCommand.Undo(p1)))
+      Commands.undo(p1)))
     assertEquals(twice.redo.map(range), Some((p1, first.picked.nextSequence,
       second.started.nextSequence)))
 
@@ -35,7 +36,7 @@ class JournalFoldRedoSuite extends munit.FunSuite:
     val travel = ParkedServiceFixture.travelToPawnOf(service, "g", 0L, p1, p3)
     val moved = travel.picked
     val undone = accepted(service.handle("g", moved.nextSequence,
-      GameCommand.Undo(p1)))
+      Commands.undo(p1)))
     val events = UndoJournals.events(repository, "g")
     // The undone batch opened at travel.started.nextSequence; this marker
     // claims it opened one event earlier.
@@ -56,7 +57,7 @@ class JournalFoldRedoSuite extends munit.FunSuite:
     val travel = ParkedServiceFixture.travelToPawnOf(service, "g", 0L, p1, p3)
     val moved = travel.picked
     val undone = accepted(service.handle("g", moved.nextSequence,
-      GameCommand.Undo(p1)))
+      Commands.undo(p1)))
     val again = accepted(service.handle("g", undone.nextSequence, pickOther(p2)))
     assertEquals(UndoJournals.replayFailureIndex(service,
         UndoJournals.rewritten(UndoJournals.events(repository, "g") :+
@@ -70,9 +71,9 @@ class JournalFoldRedoSuite extends munit.FunSuite:
     val second = ParkedServiceFixture.travelToPawnOf(service, "g",
       first.picked.nextSequence, p1, p2)
     val once = accepted(service.handle("g", second.picked.nextSequence,
-      GameCommand.Undo(p1)))
+      Commands.undo(p1)))
     val twice = accepted(service.handle("g", once.nextSequence,
-      GameCommand.Undo(p1)))
+      Commands.undo(p1)))
     // The second start is on top of the redo stack; the second pick lies
     // under it.
     assertEquals(UndoJournals.replayFailureIndex(service,
@@ -87,11 +88,11 @@ class JournalFoldRedoSuite extends munit.FunSuite:
     val second = ParkedServiceFixture.travelToPawnOf(service, "g",
       first.picked.nextSequence, p1, p2)
     val once = accepted(service.handle("g", second.picked.nextSequence,
-      GameCommand.Undo(p1)))
+      Commands.undo(p1)))
     val twice = accepted(service.handle("g", once.nextSequence,
-      GameCommand.Undo(p1)))
+      Commands.undo(p1)))
     val redone = accepted(service.handle("g", twice.nextSequence,
-      GameCommand.Redo(p1)))
+      Commands.redo(p1)))
     assertEquals(redone.redo.map(range), Some((p1, second.started.nextSequence,
       second.picked.nextSequence)))
     val again = accepted(service.handle("g", redone.nextSequence, pickOther(p2)))

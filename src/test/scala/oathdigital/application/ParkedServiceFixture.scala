@@ -23,6 +23,7 @@ import oathdigital.model._
 import oathdigital.testkit.{Dice, Look, MenuPlay, Outcomes, PlacementPicks,
   Situation, SituationDriver, Table, Unwrap}
 import oathdigital.testkit.Table.{p1, p2, p3}
+import oathdigital.testkit.Commands
 
 /** Real games parked on a walker through the application service.
   *
@@ -46,7 +47,7 @@ object ParkedServiceFixture:
 
   /** `actor` answers the facedown-adviser pick with their adviser `card`. */
   def pickFacedownAdviser(actor: PlayerId, card: WorldCardId): GameCommand =
-    GameCommand.ResolveWalker(actor, TreeDecision(
+    Commands.resolveWalker(actor, TreeDecision(
       CardPlayProcedure.facedownAdviserDecisionId,
       DecisionAnswer.ChooseOneAnswer(PlacementPicks.optionNaming(card))))
 
@@ -57,7 +58,7 @@ object ParkedServiceFixture:
 
   /** `actor` answers the destination decision with `site`. */
   def pickTravelDestination(actor: PlayerId, site: SiteId): GameCommand =
-    GameCommand.ResolveWalker(actor, TreeDecision(
+    Commands.resolveWalker(actor, TreeDecision(
       TravelProcedure.destinationDecisionId, TravelPlay.destination(site)))
 
   /** `actor` starts a Search; the walk parks on the source. */
@@ -66,7 +67,7 @@ object ParkedServiceFixture:
 
   /** `actor` answers the source decision with `pile`. */
   def pickSearchSource(actor: PlayerId, pile: SearchSource): GameCommand =
-    GameCommand.ResolveWalker(actor, TreeDecision(
+    Commands.resolveWalker(actor, TreeDecision(
       SearchProcedure.sourceDecisionId, SearchPlay.source(pile)))
 
   /** A Travel played through the service: its start and its pick, the two
@@ -331,6 +332,6 @@ object ParkedServiceFixture:
     * tied leaders, as the recipient. */
   def holderPicksLeader(park: OathkeeperTiePark, leader: PlayerId)
       : GameCommand =
-    GameCommand.ResolveWalker(park.holder, TreeDecision(
+    Commands.resolveWalker(park.holder, TreeDecision(
       OathkeeperProcedure.recipientDecisionId,
       DecisionAnswer.ChooseOneAnswer(DecisionOptionRef.Player(leader))))

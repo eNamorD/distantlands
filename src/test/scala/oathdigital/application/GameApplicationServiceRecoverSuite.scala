@@ -21,6 +21,7 @@ import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.{accepted, present}
 import ParkedServiceFixture.{firstPlayer, loaded, parkedAssertions,
   replayingSecond, setupViaService}
+import oathdigital.testkit.Commands
 
 /** The application service drives a walker Recover, its dice and Catacombs
   * through persisted parks and reloads.
@@ -104,7 +105,7 @@ class GameApplicationServiceRecoverSuite extends munit.FunSuite:
 
     val finished = accepted(walkerService.handle("walker-recover",
       reloadedAtRelic.nextSequence,
-        GameCommand.ResolveWalker(actor, TreeDecision(RecoverProcedure.relicDecisionId,
+        Commands.resolveWalker(actor, TreeDecision(RecoverProcedure.relicDecisionId,
           ChooseOneAnswer(DecisionOptionRef.Relic(relic))))))
     val afterWalker = Outcomes.ready(finished.state)
     assert(finished.events.exists(_.isInstanceOf[WalkerCompleted]))
@@ -160,7 +161,7 @@ class GameApplicationServiceRecoverSuite extends munit.FunSuite:
     // which fails again and parks the same choice: the continuation names
     // the parked node's own decision id either way.
     val continued = accepted(service.handle("walker-continue",
-      failed.nextSequence, GameCommand.ResolveWalker(actor, TreeDecision(
+      failed.nextSequence, Commands.resolveWalker(actor, TreeDecision(
         RecoverProcedure.choiceDecisionId,
         ChooseOneAnswer(DecisionOptionRef.Button("continue"))))))
     assertEquals(dice.calls, 2)
@@ -245,7 +246,7 @@ class GameApplicationServiceRecoverSuite extends munit.FunSuite:
     // roll, which is the accumulation under test.
     val walkerSecond = accepted(walkerService.handle(
       "walker-cross-roll-doubler", walkerFirstReloaded.nextSequence,
-      GameCommand.ResolveWalker(actor, TreeDecision(RecoverProcedure.choiceDecisionId,
+      Commands.resolveWalker(actor, TreeDecision(RecoverProcedure.choiceDecisionId,
         ChooseOneAnswer(DecisionOptionRef.Button("continue"))))))
     val walkerAfterSecond = Outcomes.ready(walkerSecond.state)
     assertEquals(walkerAfterSecond.game.current.rollOutcomes(
@@ -267,7 +268,7 @@ class GameApplicationServiceRecoverSuite extends munit.FunSuite:
       .relics.head.id, walkerRelic)
     val walkerFinished = accepted(walkerService.handle(
       "walker-cross-roll-doubler", walkerSecondReloaded.nextSequence,
-      GameCommand.ResolveWalker(actor, TreeDecision(RecoverProcedure.relicDecisionId,
+      Commands.resolveWalker(actor, TreeDecision(RecoverProcedure.relicDecisionId,
         ChooseOneAnswer(DecisionOptionRef.Relic(walkerRelic))))))
     val walkerFinal = Outcomes.ready(walkerFinished.state)
     val actorState = Look(walkerFinal).player(actor)
@@ -300,7 +301,7 @@ class GameApplicationServiceRecoverSuite extends munit.FunSuite:
     // Catacombs is the one modifier p1 can pick, so the start asks for it,
     // and picking it starts the Recover.
     val started = service.handle(gameId, begun.nextSequence,
-      GameCommand.ResolveWalker(actor, TreeDecision("recover.modifiers",
+      Commands.resolveWalker(actor, TreeDecision("recover.modifiers",
         ModifierPlay.pick(catacombsPower)))) match
       case Right(accepted) => accepted
       case Left(error) =>
@@ -348,7 +349,7 @@ class GameApplicationServiceRecoverSuite extends munit.FunSuite:
     assertEquals(atRelic.game.current.map.sites(siteId).relics.head.id,
       topRelic)
     val finished = accepted(service.handle(gameId, reloaded.nextSequence,
-      GameCommand.ResolveWalker(actor, TreeDecision(RecoverProcedure.relicDecisionId,
+      Commands.resolveWalker(actor, TreeDecision(RecoverProcedure.relicDecisionId,
         ChooseOneAnswer(DecisionOptionRef.Relic(topRelic))))))
     assert(finished.events.exists(_.isInstanceOf[WalkerCompleted]))
     assertEquals(loaded(replayingSecond(service, repository).load(gameId)

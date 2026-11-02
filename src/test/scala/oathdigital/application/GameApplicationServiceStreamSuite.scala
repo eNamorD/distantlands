@@ -22,6 +22,7 @@ import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, as, rejected}
 import ParkedServiceFixture.{firstPlayer, loaded, pickFacedownAdviser,
   playFacedownAdviser, replayingSecond, setupViaService}
+import oathdigital.testkit.Commands
 
 /** The application service's stream: what it appends, at which position,
   * and what it refuses to append or replay.
@@ -76,7 +77,7 @@ class GameApplicationServiceStreamSuite extends munit.FunSuite:
         position = accepted(service.handle("powered-playability",
           position.nextSequence, pickFacedownAdviser(actor, adviser)))
         position = accepted(service.handle("powered-playability",
-          position.nextSequence, GameCommand.ResolveWalker(actor, TreeDecision(
+          position.nextSequence, Commands.resolveWalker(actor, TreeDecision(
             s"cardplay.place.${adviser.kind}.${adviser.value}",
             PlacementPicks.parkedAnswer(position.state, PlayedAs.Faceup,
               WalkerPowerCatalog.default(catalog))))))
@@ -197,7 +198,7 @@ class GameApplicationServiceStreamSuite extends munit.FunSuite:
     service.handle(
       "game-stale-v2",
       1L,
-      GameCommand.ResolveWalker(firstPlayer, TreeDecision(
+      Commands.resolveWalker(firstPlayer, TreeDecision(
         SetupProcedure.pawnDecisionId(firstPlayer),
         ChooseOneAnswer(DecisionOptionRef.Site(
           AncientCitySite.id)))))
@@ -206,7 +207,7 @@ class GameApplicationServiceStreamSuite extends munit.FunSuite:
       service.handle(
         "game-stale-v2",
         1L,
-        GameCommand.ResolveWalker(firstPlayer, TreeDecision(
+        Commands.resolveWalker(firstPlayer, TreeDecision(
           SetupProcedure.adviserDecisionId(firstPlayer),
           // p2 keeps Wizard's Conclave from its dealt hand.
           PartitionAnswer(Vector(

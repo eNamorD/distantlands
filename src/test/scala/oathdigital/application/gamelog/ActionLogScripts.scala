@@ -25,6 +25,7 @@ import oathdigital.testkit.{Dice, Look, MenuPlay, PlacementPicks, Situation,
 import oathdigital.testkit.Table.{p1, p2, p3}
 import LogScriptSupport.{arrangedForNext, atTable, start,
   tableWithOnePawnPerSite}
+import oathdigital.testkit.Commands
 
 /** The scripts that play one major or minor action with no power in the
   * way: Search, a facedown adviser played, Muster, Trade, Recover and the
@@ -136,7 +137,7 @@ object ActionLogScripts:
     val (service, act) = recovering("recover-failed",
       Dice.blanks)
     val actor = Look(act.ready).active
-    def answer(key: String) = GameCommand.ResolveWalker(actor, TreeDecision(
+    def answer(key: String) = Commands.resolveWalker(actor, TreeDecision(
       RecoverProcedure.choiceDecisionId,
       ChooseOneAnswer(DecisionOptionRef.Button(key))))
     act.parkedAfter(MenuPlay.start(actor, ActionRef.Recover))
@@ -176,7 +177,7 @@ object ActionLogScripts:
       .pawn(p1, at = BrokenPeaksSite).boardWarbands(p1, 4)
       .warbandsAt(BrokenPeaksSite, p1, 3).banditsRefilled)
     def answer(decisionId: String, value: DecisionAnswer) =
-      GameCommand.ResolveWalker(p1, TreeDecision(decisionId, value))
+      Commands.resolveWalker(p1, TreeDecision(decisionId, value))
     def moved(from: Situation, way: DecisionOptionRef.Button,
         amount: Int): Situation =
       from.parkedAfter(MenuPlay.start(p1, ActionRef.MoveWarbands))

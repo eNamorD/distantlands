@@ -11,6 +11,7 @@ import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
 import ParkedServiceFixture.loaded
 import oathdigital.testkit.Unwrap.{accepted, present, rejected}
+import oathdigital.testkit.Commands
 
 /** The application half of the pending-walker invariant (spec, Testing).
   * Over each of the spec's four parked contexts, one instance of every
@@ -29,15 +30,15 @@ class PendingWalkerInvariantSuite extends munit.FunSuite:
   /** One instance of every `GameCommand` constructor, bound to `actor`. */
   private def everyCommand(actor: PlayerId): Vector[GameCommand] = Vector(
     GameCommand.Begin(chronicle, orders),
-    GameCommand.ResolveWalker(actor, TreeDecision("not-parked",
+    Commands.resolveWalker(actor, TreeDecision("not-parked",
       ChooseOneAnswer(DecisionOptionRef.Button("go")))),
-    GameCommand.Undo(actor), GameCommand.Redo(actor),
-    GameCommand.SetConsentPreference(actor,
+    Commands.undo(actor), Commands.redo(actor),
+    Commands.setConsentPreference(actor,
       MinesSite.mountain,
       PlayerId("p2"), ConsentSetting.Always),
-    GameCommand.RequestConsent(actor, "not-parked",
+    Commands.requestConsent(actor, "not-parked",
       DecisionOptionRef.Button("go")),
-    GameCommand.AnswerConsent(actor, ConsentChoice.Yes))
+    Commands.answerConsent(actor, ConsentChoice.Yes))
 
   private def isStepCommand(command: GameCommand): Boolean = command match
     case GameCommand.Issued(_, PlayerIntent.Undo | PlayerIntent.Redo) => true
@@ -93,7 +94,7 @@ class PendingWalkerInvariantSuite extends munit.FunSuite:
     val ParkedServiceFixture.RecoverChoicePark(game, actor, players) =
       ParkedServiceFixture.recoverChoicePark("invariant-recover")
     assertOnlyItsResume(game, "invariant-recover", players,
-      GameCommand.ResolveWalker(actor, TreeDecision(
+      Commands.resolveWalker(actor, TreeDecision(
         RecoverProcedure.choiceDecisionId,
         ChooseOneAnswer(DecisionOptionRef.Button("stop")))))
 
@@ -101,7 +102,7 @@ class PendingWalkerInvariantSuite extends munit.FunSuite:
     val ParkedServiceFixture.OathkeeperTiePark(game, _, holder, leaderB) =
       ParkedServiceFixture.oathkeeperTiePark("invariant-oathkeeper")
     assertOnlyItsResume(game, "invariant-oathkeeper", everyone,
-      GameCommand.ResolveWalker(holder, TreeDecision(
+      Commands.resolveWalker(holder, TreeDecision(
         OathkeeperProcedure.recipientDecisionId,
         ChooseOneAnswer(DecisionOptionRef.Player(leaderB)))))
 
@@ -112,7 +113,7 @@ class PendingWalkerInvariantSuite extends munit.FunSuite:
     val decision = present(parkedAssertions.parkedDecision(game.accepted.state),
       "the parked decision").decision
     assertOnlyItsResume(game, "invariant-league-treaty", everyone,
-      GameCommand.ResolveWalker(ruler, TreeDecision(decision,
+      Commands.resolveWalker(ruler, TreeDecision(decision,
         ChooseOneAnswer(DecisionOptionRef.Button("decline")))))
 
   test("over a Silver Tongue bank choice in Rest, only its answer is accepted"):
@@ -121,5 +122,5 @@ class PendingWalkerInvariantSuite extends munit.FunSuite:
     val decision = present(parkedAssertions.parkedDecision(game.accepted.state),
       "the parked decision").decision
     assertOnlyItsResume(game, "invariant-silver-tongue", everyone,
-      GameCommand.ResolveWalker(active, TreeDecision(decision,
+      Commands.resolveWalker(active, TreeDecision(decision,
         ChooseOneAnswer(DecisionOptionRef.FavorBank(bank)))))

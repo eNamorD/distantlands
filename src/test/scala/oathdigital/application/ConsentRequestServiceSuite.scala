@@ -11,6 +11,7 @@ import oathdigital.model.OathEvent.{CommandAccepted, ConsentAnswered,
 import oathdigital.testkit.{Look, MenuPlay, Outcomes, PlacementPicks}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, present}
+import oathdigital.testkit.Commands
 
 /** Asking for consent and answering through the service (consent design,
   * user story, rulings 10 to 14, "Commands"). */
@@ -34,7 +35,7 @@ class ConsentRequestServiceSuite extends munit.FunSuite:
   private def answering(service: GameApplicationService, at: GameAccepted,
       choice: ConsentChoice)(using munit.Location): GameAccepted =
     accepted(service.handle(gameId, at.nextSequence,
-      GameCommand.AnswerConsent(p2, choice)))
+      Commands.answerConsent(p2, choice)))
 
   private def pawnOfP1(at: GameAccepted)(using munit.Location)
       : Option[SiteId] =
@@ -129,7 +130,7 @@ class ConsentRequestServiceSuite extends munit.FunSuite:
     val (service, _) = ConsentFixture.service()
     val yes = answering(service, asking(service), ConsentChoice.Yes)
     val undone = accepted(service.handle(gameId, yes.nextSequence,
-      GameCommand.Undo(p1)))
+      Commands.undo(p1)))
     assert(parked(undone))
     assert(dunesOffered(undone).available)
     val picked = accepted(service.handle(gameId, undone.nextSequence,
@@ -143,7 +144,7 @@ class ConsentRequestServiceSuite extends munit.FunSuite:
     val (service, _) = ConsentFixture.service()
     val no = answering(service, asking(service), ConsentChoice.No)
     val undone = accepted(service.handle(gameId, no.nextSequence,
-      GameCommand.Undo(p1)))
+      Commands.undo(p1)))
     assert(!parked(undone))
     val again = startTravel(service, undone.nextSequence)
     assert(refusedPlainly(dunesOffered(again)))
@@ -153,7 +154,7 @@ class ConsentRequestServiceSuite extends munit.FunSuite:
     val (service, _) = ConsentFixture.service()
     val asked = asking(service)
     val withdrawn = accepted(service.handle(gameId, asked.nextSequence,
-      GameCommand.Undo(p1)))
+      Commands.undo(p1)))
     assertEquals(withdrawn.events, Vector(ConsentRequestWithdrawn(p1)))
     assertEquals(consent(withdrawn), ConsentState())
     assert(parked(withdrawn))
@@ -169,12 +170,12 @@ class ConsentRequestServiceSuite extends munit.FunSuite:
       rejected(OathViolation.ConsentPending))
     assertEquals(service.handle(gameId, at, requestDunes),
       rejected(OathViolation.ConsentPending))
-    assertEquals(service.handle(gameId, at, GameCommand.AnswerConsent(p3,
+    assertEquals(service.handle(gameId, at, Commands.answerConsent(p3,
       ConsentChoice.Yes)), rejected(OathViolation.ConsentUnavailable(
       "p3 has not been asked for consent")))
-    assertEquals(service.handle(gameId, at, GameCommand.Undo(p3)),
+    assertEquals(service.handle(gameId, at, Commands.undo(p3)),
       rejected(OathViolation.ConsentPending))
-    assertEquals(service.handle(gameId, at, GameCommand.Redo(p1)),
+    assertEquals(service.handle(gameId, at, Commands.redo(p1)),
       rejected(OathViolation.ConsentPending))
     // A preference changed while prompted leaves the prompt open (ruling 19).
     val set = accepted(service.handle(gameId, at,
@@ -185,6 +186,6 @@ class ConsentRequestServiceSuite extends munit.FunSuite:
     val (service, _) = ConsentFixture.service()
     val started = startTravel(service)
     assertEquals(service.handle(gameId, started.nextSequence,
-      GameCommand.AnswerConsent(p2, ConsentChoice.Yes)),
+      Commands.answerConsent(p2, ConsentChoice.Yes)),
       rejected(OathViolation.ConsentUnavailable(
         "no consent request is waiting")))

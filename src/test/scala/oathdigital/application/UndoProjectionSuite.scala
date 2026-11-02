@@ -7,6 +7,7 @@ import oathdigital.protocol.projection.StepOfferProjection
 import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.accepted
+import oathdigital.testkit.Commands
 
 /** Who is offered the Undo and the Redo, and what they say (undo design,
   * "Controls" and "Projection"). */
@@ -43,7 +44,7 @@ class UndoProjectionSuite extends munit.FunSuite:
     val (service, _) = table.service()
     val moved = travelledToP3(service)
     val undone = accepted(service.handle("g", moved.nextSequence,
-      GameCommand.Undo(p1)))
+      Commands.undo(p1)))
     assertEquals(projector.project("g", undone.loaded, p1).logRevision,
       Some(moved.nextSequence))
     assertEquals(projector.project("g", undone.loaded, p2).logRevision,
@@ -55,7 +56,7 @@ class UndoProjectionSuite extends munit.FunSuite:
     val (service, _) = table.service()
     val moved = travelledToP3(service)
     val undone = accepted(service.handle("g", moved.nextSequence,
-      GameCommand.Undo(p1)))
+      Commands.undo(p1)))
     assertEquals(projector.project("g", undone.loaded, p1).redo,
       Some(StepOfferProjection("Redo: Travelled to Buried Giant")))
     assertEquals(projector.project("g", undone.loaded, p2).redo, None)
@@ -65,7 +66,7 @@ class UndoProjectionSuite extends munit.FunSuite:
     val (service, _) = table.service()
     val moved = travelledToP3(service)
     val undone = accepted(service.handle("g", moved.nextSequence,
-      GameCommand.Undo(p1)))
+      Commands.undo(p1)))
     val lineless = undone.loaded.copy(
       redo = undone.loaded.redo.map(_.copy(note = None)))
     assertEquals(projector.project("g", lineless, p1).redo,
@@ -75,9 +76,9 @@ class UndoProjectionSuite extends munit.FunSuite:
     val (service, _) = table.service()
     val moved = travelledToP3(service)
     val undone = accepted(service.handle("g", moved.nextSequence,
-      GameCommand.Undo(p1)))
+      Commands.undo(p1)))
     val redone = accepted(service.handle("g", undone.nextSequence,
-      GameCommand.Redo(p1)))
+      Commands.redo(p1)))
     assertEquals(projector.project("g", redone.loaded, p1).logRevision,
       Some(undone.nextSequence))
     assertEquals(projector.project("g", redone.loaded, p2).logRevision,

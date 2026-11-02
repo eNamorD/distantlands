@@ -15,7 +15,7 @@ import oathdigital.model.OathState.Ready
 object MenuPlay:
   /** The command that picks `option` from the parked menu as `player`. */
   def picking(player: PlayerId, option: DecisionOptionRef): GameCommand =
-    GameCommand.ResolveWalker(player, TreeDecision(PhaseMenu.decisionId,
+    Commands.resolveWalker(player, TreeDecision(PhaseMenu.decisionId,
       DecisionAnswer.ChooseOneAnswer(option)))
 
   /** Picks `option` through the rules directly. */

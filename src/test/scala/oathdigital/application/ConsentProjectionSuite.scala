@@ -11,6 +11,7 @@ import oathdigital.protocol.projection._
 import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, present}
+import oathdigital.testkit.Commands
 
 /** What each viewer is shown of consent (consent design, "Projection" and
   * "Testing", hidden information). */
@@ -50,7 +51,7 @@ class ConsentProjectionSuite extends munit.FunSuite:
   private def answering(service: GameApplicationService, at: GameAccepted,
       choice: ConsentChoice)(using munit.Location): GameAccepted =
     accepted(service.handle(gameId, at.nextSequence,
-      GameCommand.AnswerConsent(p2, choice)))
+      Commands.answerConsent(p2, choice)))
 
   test("a destination its ruler may be asked about is askable, with the " +
       "consent reason and whom to ask"):
@@ -158,10 +159,10 @@ class ConsentProjectionSuite extends munit.FunSuite:
         tyrantBesideAWalledCoast)
       val manual = accepted(manualService.handle(gameId,
         travelledToTheWalledCoast(manualService, 0L).nextSequence,
-        GameCommand.AnswerConsent(p2, choice)))
+        Commands.answerConsent(p2, choice)))
       val (autoService, _) = ConsentFixture.service(tyrantBesideAWalledCoast)
       val set = accepted(autoService.handle(gameId, 0L,
-        GameCommand.SetConsentPreference(p2, CityWall.id, p1, setting)))
+        Commands.setConsentPreference(p2, CityWall.id, p1, setting)))
       val automatic = travelledToTheWalledCoast(autoService,
         set.nextSequence)
       assertEquals(view(automatic, p1).copy(nextSequence = 0L),

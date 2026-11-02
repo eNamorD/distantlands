@@ -6,6 +6,7 @@ import oathdigital.model._
 import oathdigital.testkit.{Outcomes, Table}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
+import oathdigital.testkit.Commands
 
 /** A game for consent through the service: TravelFixture's board with the
   * Narrow Pass ruled by p2. p1 is active at the Cradle's plains, and the
@@ -28,11 +29,11 @@ object ConsentFixture:
 
   def setPreference(setting: ConsentSetting, granter: PlayerId = p2,
       requester: PlayerId = p1): GameCommand =
-    GameCommand.SetConsentPreference(granter, NarrowPassSite.pass, requester,
+    Commands.setConsentPreference(granter, NarrowPassSite.pass, requester,
       setting)
 
   /** p1 asks for consent to travel to Dunes. */
-  val requestDunes: GameCommand = GameCommand.RequestConsent(p1,
+  val requestDunes: GameCommand = Commands.requestConsent(p1,
     TravelProcedure.destinationDecisionId, dunes)
 
   def consent(accepted: GameAccepted)(using munit.Location): ConsentState =

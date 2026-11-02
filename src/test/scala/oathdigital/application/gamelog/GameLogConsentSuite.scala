@@ -1,13 +1,14 @@
 package oathdigital.application.gamelog
 
 import oathdigital.application.{ConsentFixture, GameAccepted,
-  GameApplicationService, GameCommand, TollConsentFixture}
+  GameApplicationService, TollConsentFixture}
 import oathdigital.gameplay.powers.travel.{NarrowPassSite, TravelFixture}
 import oathdigital.model._
 import oathdigital.protocol.projection.{LogEntry, LogTakenBack}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, present}
 import LogScripts.{formatter, texts}
+import oathdigital.testkit.Commands
 
 /** What the Game Log says about consent, and to whom (consent design,
   * "Game Log"). */
@@ -29,7 +30,7 @@ class GameLogConsentSuite extends munit.FunSuite:
   private def answering(service: GameApplicationService, at: GameAccepted,
       choice: ConsentChoice)(using munit.Location): GameAccepted =
     accepted(service.handle(gameId, at.nextSequence,
-      GameCommand.AnswerConsent(p2, choice)))
+      Commands.answerConsent(p2, choice)))
 
   test("the request and a grant read the same to every player"):
     val (service, _) = ConsentFixture.service()
@@ -75,7 +76,7 @@ class GameLogConsentSuite extends munit.FunSuite:
     val (service, _) = ConsentFixture.service()
     val waiting = asking(service)
     accepted(service.handle(gameId, waiting.nextSequence,
-      GameCommand.Undo(p1)))
+      Commands.undo(p1)))
     val entry = present(log(service, p1).find(LogScripts.text(_) == asked),
       "the request line")
     assertEquals(entry.takenBack,

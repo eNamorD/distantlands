@@ -28,6 +28,7 @@ import oathdigital.testkit.{Look, MenuPlay, Outcomes, PlacementPicks, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, present}
 import ParkedServiceFixture.firstPlayer
+import oathdigital.testkit.Commands
 
 /** The application service's projections: who sees which decision, site,
   * hand and preview.
@@ -240,7 +241,7 @@ class GameApplicationServiceProjectionSuite extends munit.FunSuite:
       .temporaryHandPreview, Vector.empty)
 
     val placed = accepted(service.handle("game-hand", begun.nextSequence,
-      GameCommand.ResolveWalker(holder, TreeDecision(
+      Commands.resolveWalker(holder, TreeDecision(
         SetupProcedure.pawnDecisionId(holder),
         ChooseOneAnswer(DecisionOptionRef.Site(ancientCity))))))
     val asked = projector.project("game-hand",
@@ -277,7 +278,7 @@ class GameApplicationServiceProjectionSuite extends munit.FunSuite:
       DecisionPlacement(PlacementPicks.optionNaming(merchant), "discard"),
       DecisionPlacement(PlacementPicks.optionNaming(secondChance), "discard"))
     val chosen = accepted(service.handle(gameId, started.nextSequence,
-      GameCommand.ResolveWalker(actor, TreeDecision("search.cards",
+      Commands.resolveWalker(actor, TreeDecision("search.cards",
         DecisionAnswer.PartitionAnswer(assignments)))))
     val placing = new GameProjector(catalog).project(gameId,
       LoadedGame(chosen.state, chosen.nextSequence), actor)
@@ -327,7 +328,7 @@ class GameApplicationServiceProjectionSuite extends munit.FunSuite:
     val begun = accepted(service.handle(gameId, 0L,
       GameCommand.Begin(chronicle, orders)))
     accepted(service.handle(gameId, begun.nextSequence,
-      GameCommand.ResolveWalker(firstPlayer, TreeDecision(
+      Commands.resolveWalker(firstPlayer, TreeDecision(
         SetupProcedure.pawnDecisionId(firstPlayer),
         ChooseOneAnswer(DecisionOptionRef.Site(ancientCity))))))
 
@@ -371,7 +372,7 @@ class GameApplicationServiceProjectionSuite extends munit.FunSuite:
     val placed = askedForAdvisers(service, "game-next-seat")
     // p2 keeps Wizard's Conclave and discards the other two.
     val chosen = accepted(service.handle("game-next-seat", placed.nextSequence,
-      GameCommand.ResolveWalker(firstPlayer, TreeDecision(
+      Commands.resolveWalker(firstPlayer, TreeDecision(
         SetupProcedure.adviserDecisionId(firstPlayer),
         PartitionAnswer(Vector(
           DecisionPlacement(DecisionOptionRef.Denizen(wizardsConclave),
@@ -390,7 +391,7 @@ class GameApplicationServiceProjectionSuite extends munit.FunSuite:
     assert(!GameHttpWire.encodeProjection(waiting)
       .contains(wizardsConclave.value))
     val revealing = accepted(service.handle("game-next-seat",
-      chosen.nextSequence, GameCommand.ResolveWalker(firstPlayer,
+      chosen.nextSequence, Commands.resolveWalker(firstPlayer,
         TreeDecision(SetupProcedure.revealDecisionId(firstPlayer),
           ChooseManyAnswer(Vector.empty)))))
     val continuedPublic = projector.projectPublic("game-next-seat",

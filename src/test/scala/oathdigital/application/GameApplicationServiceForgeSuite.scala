@@ -19,6 +19,7 @@ import oathdigital.testkit.{Look, Outcomes}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.present
 import ParkedServiceFixture.{loaded, parkedAssertions, replayingSecond}
+import oathdigital.testkit.Commands
 
 /** The application service drives a walker Forge through
   * `StartWalker`/`ResolveWalker` alone, and its journal replays to the same
@@ -96,7 +97,7 @@ class GameApplicationServiceForgeSuite extends munit.FunSuite:
       using munit.Location): GameAccepted =
     val placements = placementsFor(promptIn(projected(run, gameId, p1)))
     run.service.handle(gameId, run.started.nextSequence,
-      GameCommand.ResolveWalker(p1, TreeDecision(
+      Commands.resolveWalker(p1, TreeDecision(
         ForgeProcedure.assignmentDecisionId,
         PartitionAnswer(placements))))
       .fold(error => fail(s"walker Forge answer rejected: $error"), identity)
@@ -164,15 +165,15 @@ class GameApplicationServiceForgeSuite extends munit.FunSuite:
     val placements = placementsFor(promptIn(projected(run, gameId, actor)))
     val beforeRejected = loaded(run.repository.load(gameId)).records
     Vector[GameCommand](
-      GameCommand.ResolveWalker(actor, TreeDecision("forge.stale",
+      Commands.resolveWalker(actor, TreeDecision("forge.stale",
         PartitionAnswer(placements))),
-      GameCommand.ResolveWalker(p2, TreeDecision(
+      Commands.resolveWalker(p2, TreeDecision(
         ForgeProcedure.assignmentDecisionId,
         PartitionAnswer(placements))),
-      GameCommand.ResolveWalker(actor, TreeDecision(
+      Commands.resolveWalker(actor, TreeDecision(
         ForgeProcedure.assignmentDecisionId,
         PartitionAnswer(placements.updated(1, placements.head)))),
-      GameCommand.ResolveWalker(actor, TreeDecision(
+      Commands.resolveWalker(actor, TreeDecision(
         ForgeProcedure.assignmentDecisionId, PartitionAnswer(
           placements.map(_.copy(sectionKey = ForgeProcedure.secretSectionKey))))),
       MenuPlay.starting(actor, PhaseTransitionRef.BeginRest)

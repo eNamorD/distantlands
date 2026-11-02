@@ -9,6 +9,7 @@ import oathdigital.model.DecisionAnswer.{AcceptDeal, DeclineDeal, ProposeTerms}
 import oathdigital.testkit.{MenuPlay, Situation, Table}
 import oathdigital.testkit.Table.{p1, p2}
 import LogScriptSupport.{atTable, tableWithOnePawnPerSite}
+import oathdigital.testkit.Commands
 
 /** The Negotiation scripts: a deal declined, a deal agreed, and a facedown
   * adviser disclosed. Reached through `LogScripts`.
@@ -25,7 +26,7 @@ object NegotiationLogScripts:
     (service, act.parkedAfter(MenuPlay.start(p1, ActionRef.Negotiation)), p1, p2)
 
   private def deal(by: PlayerId, answer: DecisionAnswer): GameCommand =
-    GameCommand.ResolveWalker(by, TreeDecision(NegotiationDeal.dealDecisionId,
+    Commands.resolveWalker(by, TreeDecision(NegotiationDeal.dealDecisionId,
       answer))
 
   def negotiationDeclined(using munit.Location): Script =
