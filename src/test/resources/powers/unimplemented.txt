@@ -23,7 +23,6 @@ denizen.the-gathering
 denizen.tracker
 denizen.traveling-negotiator
 denizen.vow-of-kinship
-edifice.e01.intact
 edifice.e03.intact
 edifice.e03.ruined
 edifice.e04.intact
@@ -48,7 +47,6 @@ edifice.e14.ruined
 edifice.e16.ruined
 edifice.e17.intact
 edifice.e17.ruined
-edifice.e18.intact
 edifice.e19.intact
 edifice.e19.ruined
 edifice.e21.intact

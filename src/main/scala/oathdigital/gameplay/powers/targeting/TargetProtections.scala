@@ -14,4 +14,5 @@ object TargetProtections:
       Vector(ForgottenVault.forCatalog(catalog)) ++
       Vector(LostTongue.forCatalog(catalog)) ++
       Vector(OakenFortress.forCatalog(catalog)) ++
-      Vector(RottingFortress.forCatalog(catalog))
+      Vector(RottingFortress.forCatalog(catalog)) ++
+      Vector(HallOfDebate, TomeGuardians)
