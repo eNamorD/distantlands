@@ -12,7 +12,7 @@ object TurnBoundary:
       randomPort: RoundEndRandomPort,
       restrictions: Vector[OperationRestriction])
       : Either[OathViolation, OathTransition] =
-    StateBasedEvaluation.endRound(transition.state, randomPort.choose)
+    StateBasedEvaluation.endRound(transition.state, randomPort)
       .flatMap(_.foldLeft[Either[OathViolation, OathTransition]](
         Right(transition)) {
         case (Right(current), event) =>

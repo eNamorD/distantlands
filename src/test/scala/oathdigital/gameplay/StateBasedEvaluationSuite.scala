@@ -8,7 +8,8 @@ import oathdigital.model._
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.model.OathEvent._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, Table}
+import oathdigital.testkit.{CatalogNames, Look, Outcomes, RoundEndChoices,
+  Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, as}
 
@@ -49,7 +50,8 @@ class StateBasedEvaluationSuite extends munit.FunSuite:
   /** The last event `endRound` journals for `table` at Round End. */
   private def lastEventAtRoundEnd(table: Table,
       pick: Vector[PlayerId] => PlayerId): OathEvent =
-    accepted(StateBasedEvaluation.endRound(Ready(atRoundEnd(table)), pick)).last
+    accepted(StateBasedEvaluation.endRound(Ready(atRoundEnd(table)),
+      RoundEndChoices.picking(pick))).last
 
   private def withGoal(ready: ReadyGame, goal: OathkeeperGoal): ReadyGame =
     // No Table step sets the campaign's Oathkeeper goal.
@@ -185,7 +187,7 @@ class StateBasedEvaluationSuite extends munit.FunSuite:
     (1 to 7).foreach { round =>
       val state = preparedTable(Vector.empty, round = round)
       val events = accepted(StateBasedEvaluation.endRound(
-        Ready(atRoundEnd(state)), pickFirstCandidate))
+        Ready(atRoundEnd(state)), RoundEndChoices.firstCandidate))
       assertEquals(events, Vector(RoundEnded(round, Some(round + 1))), clue(round))
     }
 
