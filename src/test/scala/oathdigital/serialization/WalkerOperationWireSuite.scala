@@ -77,6 +77,19 @@ class WalkerOperationWireSuite extends munit.FunSuite:
     val encoded = accepted(GameEventWire.encodeEvent("walker", 0, event))
     assertEquals(GameEventWire.decode(encoded).map(_.event), Right(event))
 
+  test("a replace names its performer on the wire, and one nobody " +
+      "performs writes none (R20)"):
+    val replace = Replace(Piece.Warbands(ForceKind.Bandit, 1),
+      Piece.Warbands(ForceKind.Imperial, 1),
+      PositionedLocation(Location.Site(SiteId("site"))), by = Some(Table.p1))
+    val event = recordedOperation(replace)
+    val encoded = accepted(GameEventWire.encodeEvent("walker", 0, event))
+    assertEquals(GameEventWire.decode(encoded).map(_.event), Right(event))
+    val nobody = accepted(GameEventWire.encodeEvent("walker", 0,
+      recordedOperation(replace.copy(by = None))))
+    assert(!ujson.read(ujson.write(nobody))("payload")("step")("ops")(0)
+      .obj.contains("by"))
+
   test("a swap names its mover on the wire"):
     val swap = Swap(DenizenId("D1"),
       PositionedLocation(Location.Site(SiteId("here"))), DenizenId("D2"),
@@ -387,6 +400,9 @@ class WalkerOperationWireSuite extends munit.FunSuite:
       Replace(Piece.Warbands(ForceKind.Imperial, 2),
         Piece.Warbands(ForceKind.Exile(lineage), 2),
         PositionedLocation(Location.Site(site))),
+      Replace(Piece.Warbands(ForceKind.Imperial, 2),
+        Piece.Warbands(ForceKind.Exile(lineage), 2),
+        PositionedLocation(Location.Site(site)), by = Some(player)),
       Reveal(denizen, Location.Site(site)),
       Sacrifice(player, Piece.Warbands(ForceKind.Exile(lineage), 1),
         PositionedLocation(Location.Site(site))),
@@ -418,6 +434,7 @@ class WalkerOperationWireSuite extends munit.FunSuite:
       Shuffle(ShufflePile.SetAsideRelics,
         Some(Vector(RelicId("R1")))),
       Shuffle(ShufflePile.ChronicleGathering, Some(Vector(denizen))),
+      Shuffle(ShufflePile.Reliquary),
       Shuffle(ShufflePile.SuitedReserve(Suit.Beast),
         Some(Vector(CatalogNames.denizen("Fae Merchant")))),
       SetOathkeeper(Some(PlayerId("red"))),
@@ -430,6 +447,8 @@ class WalkerOperationWireSuite extends munit.FunSuite:
       ChronicleTaskAssigned(ChronicleTask.Beacon, PlayerId("red")),
       GrandScepterFromBox(PlayerId("red")),
       ImperialWarbandsTaken(8),
+      WarbandsAdded(ForceKind.Imperial, 2),
+      WarbandsAdded(ForceKind.Exile(LineageId("l1")), 3),
       UsurperLimiterRemoved,
       LineagePointsScored(LineageId("lineage:red"), 3),
       EdificeBuilt(CatalogNames.edifice("Great Market"), site),

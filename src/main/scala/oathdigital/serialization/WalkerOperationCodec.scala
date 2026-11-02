@@ -44,8 +44,8 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
     ModifyDicePool | Roll | ModifyRollOutcome | Reroll | SetDieFaces |
     QueueProcedure | Defer | TakeDeferred | ActAsIf | OpenPick | ClosePick
   private type ChronicleOperation = RoleChanged | ChronicleTaskAssigned |
-    GrandScepterFromBox | ImperialWarbandsTaken | LineagePointsScored |
-    EdificeBuilt | SuitedReserveFromBox
+    GrandScepterFromBox | ImperialWarbandsTaken | WarbandsAdded |
+    LineagePointsScored | EdificeBuilt | SuitedReserveFromBox
 
   protected final def encodeOperation(operation: CoreOperation): ujson.Value =
     operation match
@@ -66,6 +66,9 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
       "kind" -> "grand-scepter-from-box", "player" -> player.value)
     case ImperialWarbandsTaken(count) => ujson.Obj(
       "kind" -> "imperial-warbands-taken", "count" -> count)
+    case WarbandsAdded(force, count) => ujson.Obj(
+      "kind" -> "warbands-added", "force" -> encodeForceKind(force),
+      "count" -> count)
     case LineagePointsScored(lineage, points) => ujson.Obj(
       "kind" -> "lineage-points-scored", "lineage" -> lineage.value,
       "points" -> points)
@@ -178,10 +181,10 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
       case Kill(warbands, from) => ujson.Obj("kind" -> "kill",
         "warbands" -> encodePiece(warbands),
         "from" -> encodePositionedLocation(from))
-      case Replace(removed, replacements, at, _) => ujson.Obj(
+      case Replace(removed, replacements, at, _, by) => withMover(ujson.Obj(
         "kind" -> "replace", "removed" -> encodePiece(removed),
         "replacements" -> encodePiece(replacements),
-        "at" -> encodePositionedLocation(at))
+        "at" -> encodePositionedLocation(at)), by)
       case Sacrifice(player, warbands, from) => ujson.Obj(
         "kind" -> "sacrifice", "playerId" -> player.value,
         "warbands" -> encodePiece(warbands),
@@ -425,6 +428,7 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
       ujson.Obj("kind" -> "chronicle-gathering")
     case ShufflePile.SuitedReserve(suit) =>
       ujson.Obj("kind" -> "suited-reserve", "suit" -> suit.key)
+    case ShufflePile.Reliquary => ujson.Obj("kind" -> "reliquary")
 
   private def decodeShufflePile(value: ujson.Value, path: String)
       : Either[WireError, ShufflePile] =
@@ -432,6 +436,7 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
       case Some("edifice-deck") => Right(ShufflePile.EdificeDeck)
       case Some("set-aside-relics") => Right(ShufflePile.SetAsideRelics)
       case Some("chronicle-gathering") => Right(ShufflePile.ChronicleGathering)
+      case Some("reliquary") => Right(ShufflePile.Reliquary)
       case Some("suited-reserve") => decodeSuit(value("suit").str,
         s"$path.suit").map(ShufflePile.SuitedReserve.apply)
       case _ => decodeSearchSource(value, path).map(ShufflePile.Search.apply)
@@ -491,7 +496,7 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
         InvalidValue(path, "replace must exchange equal numbers of warbands"))
       _ <- Either.cond(removed.kind != replacements.kind, (),
         InvalidValue(path, "replacement warbands must have a new color"))
-    yield Replace(removed, replacements, at)
+    yield Replace(removed, replacements, at, by = decodeMover(value))
     case "sacrifice" => for
       piece <- decodePiece(value("warbands"), s"$path.warbands")
       warbands <- asWarbands(piece, s"$path.warbands")
@@ -559,6 +564,10 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
     case "imperial-warbands-taken" => for
       count <- positive(value, "count", path)
     yield ImperialWarbandsTaken(count)
+    case "warbands-added" => for
+      force <- decodeForceKind(value("force"), s"$path.force")
+      count <- positive(value, "count", path)
+    yield WarbandsAdded(force, count)
     case "lineage-points-scored" => for
       points <- positive(value, "points", path)
     yield LineagePointsScored(LineageId(value("lineage").str), points)

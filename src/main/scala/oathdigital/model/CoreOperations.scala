@@ -408,10 +408,14 @@ final case class Play(card: CardId, from: PositionedLocation,
     Piece.Card(card), from, PositionedLocation(destination),
     resultingOrientation = Some(orientation)))
 
-/** Swaps warbands for a new color. This is distinct from kill and sacrifice. */
+/** Swaps warbands for a new color. This is distinct from kill and sacrifice.
+  * `by` is the player who performs it, as for `Move`; `None` when nobody
+  * does, as for a role change (ruling R20), so no restriction against a
+  * player holds. */
 final case class Replace(removed: Piece.Warbands,
     replacements: Piece.Warbands, at: PositionedLocation,
-    override val required: Boolean = false)
+    override val required: Boolean = false,
+    by: Option[PlayerId] = None)
     extends CoreOperation:
   require(removed.amount == replacements.amount,
     "replace must exchange equal numbers of warbands")
@@ -420,9 +424,10 @@ final case class Replace(removed: Piece.Warbands,
 
   override val children: Vector[Operation] = Vector(
     Move(removed, at,
-      PositionedLocation(Location.WarbandBank(removed.kind))),
+      PositionedLocation(Location.WarbandBank(removed.kind)), by = by),
     Move(replacements,
-      PositionedLocation(Location.WarbandBank(replacements.kind)), at))
+      PositionedLocation(Location.WarbandBank(replacements.kind)), at,
+      by = by))
   override val simultaneous: Boolean = true
 
 /** Flips a card faceup without triggering When Played powers. */
@@ -593,6 +598,13 @@ final case class SuitedReserveFromBox(suit: Suit, cards: Vector[DenizenId])
   * warbands, unless the game already has an Imperial supply. */
 final case class ImperialWarbandsTaken(count: Int) extends PrimitiveOperation:
   require(count > 0, "the Imperial supply must be positive")
+
+/** Adds warbands of `kind` to a supply that exists. A Chronicle step that
+  * places one warband per site assumes an unlimited supply and adds what
+  * the bank lacks (Chronicle rulings 20 and 22). */
+final case class WarbandsAdded(kind: ForceKind, count: Int)
+    extends PrimitiveOperation:
+  require(count > 0, "added warbands must be positive")
 
 /** Adds lineage points to a lineage's era score (Score Lineage Points,
   * CR p. 37). */

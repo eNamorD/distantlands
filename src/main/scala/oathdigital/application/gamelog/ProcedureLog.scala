@@ -2,7 +2,8 @@ package oathdigital.application.gamelog
 
 import oathdigital.gameplay.chronicle.{ChronicleBeginProcedure,
   ChronicleSunProcedure, BuildEdifice, IntroduceNewcomers, LineageScoring,
-  ProtectAndDispossess, ShapeEmpire, SwearOath, WelcomeStranger,
+  OfferCitizenship, ProtectAndDispossess, ShapeEmpire, SwearOath,
+  WelcomeStranger,
   ChronicleStarsProcedure}
 import oathdigital.gameplay.actions.campaign.CampaignNotes
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
@@ -256,7 +257,10 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
         NegotiationProcedure.gaveFavor -> LogKind.Delta,
         NegotiationProcedure.gaveCard -> LogKind.Delta,
         NegotiationProcedure.showed -> LogKind.Delta,
-        NegotiationProcedure.wasShown -> LogKind.Delta)),
+        NegotiationProcedure.wasShown -> LogKind.Delta,
+        NegotiationProcedure.offeredCitizenship -> LogKind.Delta,
+        NegotiationProcedure.becameCitizen -> LogKind.Delta,
+        NegotiationProcedure.becameChancellor -> LogKind.Delta)),
       narratedPrefixes = Vector("negotiation."))
     case ActionRef.PeekSiteRelics => ProcedureLog(tag = None,
       lines = ActionLineSource.Notes())
@@ -344,8 +348,12 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
         BuildEdifice.built -> LogKind.Decision,
         LineageScoring.scored -> LogKind.Delta,
         LineageScoring.gave -> LogKind.Decision,
-        SwearOath.swore -> LogKind.Decision)),
-      narratedPrefixes = Vector("chronicle.shape-empire.",
+        SwearOath.swore -> LogKind.Decision,
+        OfferCitizenship.offered -> LogKind.Decision,
+        OfferCitizenship.accepted -> LogKind.Decision,
+        OfferCitizenship.declined -> LogKind.Decision)),
+      narratedPrefixes = Vector("chronicle.throne.offer",
+        "chronicle.throne.citizenship.", "chronicle.shape-empire.",
         "chronicle.build-edifice.", "chronicle.stock-reliquary.",
         "chronicle.score-lineage.", "chronicle.swear-oath."),
       isSection = false)

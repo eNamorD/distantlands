@@ -46,7 +46,8 @@ final case class WalkerStartArgWire(optionKind: String, optionId: String)
 final case class WorldCard(kind: String, id: String)
 final case class NegotiationTerms(
     transfers: Vector[NegotiationTransfer],
-    disclosures: Vector[NegotiationDisclosure]
+    disclosures: Vector[NegotiationDisclosure],
+    citizenshipPlayerIds: Vector[String] = Vector.empty
 )
 final case class NegotiationTransfer(
     recipientPlayerId: String, favor: Int, relicIds: Vector[String])

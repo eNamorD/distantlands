@@ -32,15 +32,6 @@ object AncientBloodlineCard extends Denizen(DenizenId("165"), "Ancient Bloodline
       "rule are **locked**.")
   val powers: Vector[PrintedPower] = Vector(power)
 
-object AncientPactCard extends Denizen(DenizenId("166"), "Ancient Pact", Suit.Nomad) with Locked with AdviserOnly:
-  val power = PrintedPower(PowerId("denizen.ancient-pact"),
-    persistent = false, cost = Cost.free,
-    text = "**WHEN PLAYED,** if you're an Exile and hold the Darkest " +
-      "Secret, you may take a random relic from the Reliquary and " +
-      "become a Citizen. _Follow the steps in the rules and end " +
-      "your Act Phase._")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object SearchPartyCard extends Denizen(DenizenId("240"), "Search Party", Suit.Nomad):
   val power = PrintedPower(PowerId("denizen.search-party"),
     persistent = false, cost = Cost.free,

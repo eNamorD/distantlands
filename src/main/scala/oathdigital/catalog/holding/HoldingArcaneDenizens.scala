@@ -37,15 +37,6 @@ object ActingTroupeCard extends Denizen(DenizenId("36"), "Acting Troupe", Suit.A
       "card instead.")
   val powers: Vector[PrintedPower] = Vector(power)
 
-object BewitchCard extends Denizen(DenizenId("67"), "Bewitch", Suit.Arcane):
-  val power = PrintedPower(PowerId("denizen.bewitch"),
-    persistent = false, cost = Cost.free,
-    text = "**WHEN PLAYED,** if you're an Exile and have the most " +
-      "[secret] _(even on cards)_, you may take a random relic " +
-      "from the Reliquary and become a Citizen. _Follow the steps " +
-      "in the rules and end your Act Phase._")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object MasterOfDisguiseCard extends Denizen(DenizenId("78"), "Master of Disguise", Suit.Arcane) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.master-of-disguise"),
     persistent = false, cost = Cost(secret = 1),

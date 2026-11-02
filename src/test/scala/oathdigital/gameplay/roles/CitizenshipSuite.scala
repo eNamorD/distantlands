@@ -40,3 +40,16 @@ class CitizenshipSuite extends munit.FunSuite:
   test("the first-game option is on unless a table turns it off"):
     assert(Citizenship.ignored(Table.start.ready))
     assert(!Citizenship.ignored(Table.start.allowingCitizenshipPowers.ready))
+
+  test("each player's split has its own decision, so one tree may make " +
+      "several players Imperial"):
+    assertEquals(Citizenship.replaceDecisionId(p3),
+      "role.replace-warbands.p3")
+    assertNotEquals(Citizenship.replaceDecisionId(p1),
+      Citizenship.replaceDecisionId(p3))
+
+  test("a bank short for warbands all in one place asks nothing"):
+    val boardOnly = Table.start.imperial(p1).turn(p3, Phase.Act)
+      .boardWarbands(p3, 2)
+      .boardWarbands(p1, MaterialBankState.ImperialWarbands - 1).ready
+    assertEquals(Citizenship.query(boardOnly, p3), None)

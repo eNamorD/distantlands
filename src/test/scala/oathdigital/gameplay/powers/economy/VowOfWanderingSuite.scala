@@ -107,12 +107,27 @@ class VowOfWanderingSuite extends munit.FunSuite:
         placing.reason(ready, moved(mine, from, Location.Site(home))),
         refusal, from.toString))
 
-  test("a Replace that brings them to a site is refused too"):
+  test("a Replace the holder performs that brings them to a site is " +
+      "refused too"):
     val ready = holdingVowInAct.ready
     assertEquals(placing.reason(ready, Replace(
       Piece.Warbands(ForceKind.Bandit, 2),
       Piece.Warbands(Look(ready).forceKind(p1), 2),
-      PositionedLocation(Location.Site(home)))), refusal)
+      PositionedLocation(Location.Site(home)), by = Some(p1))), refusal)
+
+  test("a Replace no player performs places nobody's warbands (R20)"):
+    // A Citizen holder on their own turn: Imperial warbands count as theirs,
+    // but a role change's Replace names no one.
+    val ready = asCitizen(holdingVowInAct.ready, p1)
+    assertEquals(placing.reason(ready, Replace(
+      Piece.Warbands(Look(ready).forceKind(p2), 1),
+      Piece.Warbands(ForceKind.Imperial, 1),
+      PositionedLocation(Location.Site(home)))), None)
+
+  test("in the Chronicle the Vow refuses nothing: its steps have no actor"):
+    val ready = holdingVowInAct.turn(p1, Phase.Chronicle).ready
+    assertEquals(placing.reason(ready, moved(Look(ready).forceKind(p1),
+      Location.PlayArea(p1), Location.Site(home))), None)
 
   test("moving them back to the board, and other players' warbands, are " +
       "allowed"):

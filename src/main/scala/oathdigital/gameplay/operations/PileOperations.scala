@@ -30,6 +30,8 @@ private[operations] object PileOperations:
     case ShufflePile.SuitedReserve(suit) => ready.updateCampaign(campaign =>
       campaign.copy(suitedReserves = campaign.suitedReserves.updated(suit,
         cards.collect { case id: DenizenId => id })))
+    case ShufflePile.Reliquary => ready.updateCampaign(_.copy(
+      reliquary = cards.collect { case id: RelicId => id }))
     case other => ready.updateCurrent(current => other match
       case ShufflePile.Search(source) => current.copy(commonCards =
         current.commonCards.withPile(source,
@@ -41,4 +43,4 @@ private[operations] object PileOperations:
         setAsideRelics = cards.collect { case id: RelicId => id })
       case ShufflePile.ChronicleGathering => current.copy(chronicleGathering =
         cards.collect { case id: WorldCardId => id })
-      case ShufflePile.SuitedReserve(_) => current)
+      case ShufflePile.SuitedReserve(_) | ShufflePile.Reliquary => current)

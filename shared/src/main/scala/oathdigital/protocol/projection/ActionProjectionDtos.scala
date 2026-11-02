@@ -346,12 +346,19 @@ final case class NegotiationDisclosureProjection(authorPlayerId: String,
     card: Option[CardDetailsProjection])
 final case class NegotiationSiteRelicProjection(siteId: String,
     card: CardDetailsProjection)
+/** An author's offer of Citizenship to a recipient (the Grand Scepter). */
+final case class NegotiationCitizenshipProjection(authorPlayerId: String,
+    recipientPlayerId: String)
 /** What the viewer may put into the deal: present only for a participant. */
 final case class NegotiationEditingProjection(editableFavor: Int,
     editableRelics: Vector[CardDetailsProjection],
     editableAdvisers: Vector[CardDetailsProjection],
     editableSiteRelics: Vector[NegotiationSiteRelicProjection],
-    canAccept: Boolean)
+    canAccept: Boolean,
+    /** The participants the viewer may offer Citizenship, and why they may
+      * offer none while holding the Scepter. */
+    editableCitizenship: Vector[String] = Vector.empty,
+    citizenshipRefused: Option[String] = None)
 
 /** A parked negotiation as one viewer sees it. Everyone sees the participants,
   * who has accepted, favor amounts, relic counts and faceup relic details, and
@@ -363,4 +370,5 @@ final case class NegotiationDealProjection(participantPlayerIds: Vector[String],
     acceptedPlayerIds: Vector[String],
     transfers: Vector[NegotiationTransferProjection],
     disclosures: Vector[NegotiationDisclosureProjection],
-    editing: Option[NegotiationEditingProjection] = None)
+    editing: Option[NegotiationEditingProjection] = None,
+    citizenship: Vector[NegotiationCitizenshipProjection] = Vector.empty)

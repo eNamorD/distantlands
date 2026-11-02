@@ -212,9 +212,9 @@ Citizenship and exile, and the Empire part of later-game setup. Design:
 [Empire phase design](superpowers/specs/2026-10-29-empire-phase-design.md).
 Each slice gets its own plan, in this order.
 
-- [ ] **Slice 3b, Citizenship sources.** The Grand Scepter's battle plan
-  and its "becomes a Citizen" deal term, the five "become a Citizen"
-  denizens, and the Throne's Offer Citizenship step, now an empty window.
+- [ ] **Simultaneous Throne answers.** Build the walker's Simultaneous node
+  (negotiation walker design, "Simultaneous decisions") so the Exiles
+  offered Citizenship at the Throne answer at once instead of in seat order.
 - [ ] **Slice 4, Later-game setup.** Start game 2 from the Chronicle that the
   Chronicle Phase journals (CR pp. 8-13). Game start refuses a non-empty
   world, any Imperial role and a seated lineage's starting advisers until it

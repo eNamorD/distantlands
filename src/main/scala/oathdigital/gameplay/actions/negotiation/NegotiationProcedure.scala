@@ -2,6 +2,7 @@ package oathdigital.gameplay.actions.negotiation
 
 import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.actions.ProcedureNotes
+import oathdigital.gameplay.roles.Citizenship
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.DeclineDeal
 
@@ -42,6 +43,16 @@ object NegotiationProcedure:
   val wasShown: NoteKey = notes.key("was-shown", Vector(
     NotePart.Arg(0), NotePart.Text(" was shown "), NotePart.Arg(1),
     NotePart.Text(" at "), NotePart.Arg(2)))
+  /** "p1 offered Citizenship to p2 and p3." */
+  val offeredCitizenship: NoteKey = notes.key("offered-citizenship", Vector(
+    NotePart.Arg(0), NotePart.Text(" offered Citizenship to "),
+    NotePart.Arg(1), NotePart.Text(".")))
+  /** "p2 became a Citizen.", after an agreed offer. */
+  val becameCitizen: NoteKey = notes.key("became-citizen", Vector(
+    NotePart.Arg(0), NotePart.Text(" became a Citizen.")))
+  /** "p2 became the Chancellor.", in a game that had no Empire. */
+  val becameChancellor: NoteKey = notes.key("became-chancellor", Vector(
+    NotePart.Arg(0), NotePart.Text(" became the Chancellor.")))
   def noteKeys: Vector[NoteKey] = notes.declared
 
   def build(catalog: ExecutableCatalog, state: ReadyGame, actor: PlayerId,
@@ -105,9 +116,18 @@ object NegotiationProcedure:
           if !deal.agreed then Vector.empty
           else BuildOps((state, _) => NegotiationDeal.settle(state, deal),
             window = Some(PowerWindow.NegotiationSettlement)) +:
-            (disclosed(deal) ++ transferred(deal)).map(note =>
+            (disclosed(deal) ++ transferred(deal) ++ offered(deal)).map(note =>
               Note(ProcedureNotes.id(ActionRef.Negotiation), _ => Some(note)))
-        opening ++ settlement
+        // Each Exile offered Citizenship becomes Imperial after the
+        // transfers, in participant order; each may be asked their own
+        // warband split (CR p. 34).
+        val citizenship: Vector[Operation] =
+          if !deal.agreed then Vector.empty
+          else NegotiationDeal.citizens(deal).flatMap(citizen => Vector(
+            Citizenship.become(citizen),
+            Note(ProcedureNotes.id(ActionRef.Negotiation),
+              becameNote(_, citizen))))
+        opening ++ settlement ++ citizenship
       })))
 
   private def endedNote(states: NoteStates): Option[LogNote] =
@@ -143,3 +163,17 @@ object NegotiationProcedure:
           transfer.relics.map(relic => gaveCard.sourceless(
             NoteArg.Player(author), NoteArg.Card(relic),
             NoteArg.Player(transfer.recipient)))))
+
+  /** The line for `citizen`'s new role, once the change has run. */
+  private def becameNote(states: NoteStates, citizen: PlayerId)
+      : Option[LogNote] = Imperials.role(states.now, citizen).collect {
+    case Role.Chancellor => becameChancellor.sourceless(NoteArg.Player(citizen))
+    case Role.Citizen => becameCitizen.sourceless(NoteArg.Player(citizen))
+  }
+
+  /** One line per author who offered Citizenship. */
+  private def offered(deal: DealState): Vector[LogNote] =
+    deal.participants.flatMap(author =>
+      Option.when(deal.terms(author).citizenship.nonEmpty)(
+        offeredCitizenship.sourceless(NoteArg.Player(author),
+          NoteArg.Players(deal.terms(author).citizenship))).toVector)

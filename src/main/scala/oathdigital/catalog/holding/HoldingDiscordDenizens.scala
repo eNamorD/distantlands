@@ -35,12 +35,3 @@ object FalseProphetCard extends Denizen(DenizenId("85"), "False Prophet", Suit.D
       "revealed. If it is ever discarded, kill the warband and " +
       "play or discard the Vision as if you had searched.")
   val powers: Vector[PrintedPower] = Vector(power)
-
-object RoyalAmbitionsCard extends Denizen(DenizenId("88"), "Royal Ambitions", Suit.Discord) with Locked with AdviserOnly:
-  val power = PrintedPower(PowerId("denizen.royal-ambitions"),
-    persistent = false, cost = Cost.free,
-    text = "**WHEN PLAYED,** if you're an Exile and rule the most " +
-      "sites, you may take a random relic from the Reliquary and " +
-      "become a Citizen. _Follow the steps in the rules and end " +
-      "your Act Phase._")
-  val powers: Vector[PrintedPower] = Vector(power)

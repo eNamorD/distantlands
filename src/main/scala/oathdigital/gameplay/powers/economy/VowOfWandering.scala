@@ -47,8 +47,11 @@ case object VowOfWanderingMuster extends ContributingPower:
   *
   *  - **The restriction.** An operation restriction refuses any move that
   *    puts the holder's warbands on a site: from the board, the bank or
-  *    another site. It reads the leaves of a composite, so a `Replace` is
-  *    refused too. A move from a site to the board stays legal. Warbands are
+  *    another site. It reads the leaves of a composite, so a `Replace` the
+  *    holder performs is refused too; a `Replace` no player performs, such
+  *    as a role change's, is not (ruling R20). A move from a site to the
+  *    board stays legal. Chronicle steps have no actor (Chronicle ruling 7),
+  *    so it refuses nothing in the Chronicle phase. Warbands are
   *    the holder's when they leave the holder's board, or when they are of
   *    the holder's kind. The Chancellor and the Citizens share Imperial
   *    warbands, so those count only while the holder is the active player.
@@ -113,10 +116,20 @@ case object VowOfWandering extends ContributingPower:
   private object placing extends OperationRestriction:
     def reason(ready: ReadyGame, operation: CoreOperation)
         : Option[OperationReason] = holderOf(ready)
+      .filter(_ => ready.game.current.turn.phase != Phase.Chronicle)
       .filter(holder =>
-        Operation.flatten(operation).exists(places(ready, holder, _)))
+        leaves(holder, operation).exists(places(ready, holder, _)))
       .map(_ => OperationReason("vow-of-wandering", Reason,
         OperationReasonKind.Impossible))
+
+  /** The leaves the holder performs: a `Replace` counts only when its `by`
+    * names the holder (ruling R20). */
+  private def leaves(holder: PlayerId, step: Operation): Vector[Operation] =
+    step match
+      case replace: Replace =>
+        if replace.by.contains(holder) then replace.children else Vector.empty
+      case _: LeafOperation => Vector(step)
+      case _ => step.children.flatMap(leaves(holder, _))
 
   /** Whether `step` puts `holder`'s warbands on a site. */
   private def places(ready: ReadyGame, holder: PlayerId, step: Operation)

@@ -11,8 +11,8 @@ import oathdigital.gameplay.powerresolver.ContributingPower
   * Encirclement, Disgraced Captain, Battle Axes, Field Promotion, Tribute
   * Spoils, Military Parade, Scouts, Zealots (the sacrifice's worth recorded
   * when applied), Bear Traps, Signal Trees (the top of a discard pile revealed
-  * and discarded) and Second Wind, registered together. Each names its
-  * card, so all are always present.
+  * and discarded), Second Wind, the Grand Scepter and Martial Culture,
+  * registered together. Each names its card, so all are always present.
   */
 object SimplePlans:
   def forCatalog(catalog: ExecutableCatalog): Vector[ContributingPower] =
@@ -43,4 +43,6 @@ object SimplePlans:
       Vector(SecondWind) ++
       Vector(Zealots) ++
       Vector(BearTraps) ++
-      Vector(SignalTrees.forCatalog(catalog))
+      Vector(SignalTrees.forCatalog(catalog)) ++
+      Vector(GrandScepterPlan) ++
+      Vector(MartialCulture)

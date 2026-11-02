@@ -72,6 +72,9 @@ object ShufflePile:
   case object SetAsideRelics extends ShufflePile
   case object ChronicleGathering extends ShufflePile
   final case class SuitedReserve(suit: Suit) extends ShufflePile
+  /** The Reliquary, for a random relic (Bewitch, Ancient Pact, Royal
+    * Ambitions). */
+  case object Reliquary extends ShufflePile
 
   /** The pile's cards in stored order. */
   def cards(pile: ShufflePile, game: OathGame): Vector[CardId] =
@@ -82,6 +85,7 @@ object ShufflePile:
       case ChronicleGathering => game.current.chronicleGathering
       case SuitedReserve(suit) =>
         game.campaign.suitedReserves.getOrElse(suit, Vector.empty)
+      case Reliquary => game.campaign.reliquary
 
   /** How a failure names the pile. */
   def name(pile: ShufflePile): String = pile match
@@ -90,3 +94,4 @@ object ShufflePile:
     case SetAsideRelics => "set-aside relics"
     case ChronicleGathering => "gathered denizens"
     case SuitedReserve(suit) => s"${suit.key} reserve"
+    case Reliquary => "Reliquary"

@@ -1,6 +1,6 @@
 package oathdigital.catalog.holding
 
-import oathdigital.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
+import oathdigital.catalog.{Denizen, PrintedPower}
 import oathdigital.model.{Cost, DenizenId, PowerId, Suit}
 
 // Generated from the retired runtime JSON (card classes slice 1).
@@ -19,12 +19,4 @@ object AutumnWindCard extends Denizen(DenizenId("213"), "Autumn Wind", Suit.Beas
     text = "**WHEN PLAYED,** shuffle together all discard piles, then " +
       "deal these cards to the discard piles as evenly as " +
       "possible. You decide ties.")
-  val powers: Vector[PrintedPower] = Vector(power)
-
-object LongLostHeirCard extends Denizen(DenizenId("44"), "Long-Lost Heir", Suit.Beast) with Locked with AdviserOnly:
-  val power = PrintedPower(PowerId("denizen.long-lost-heir"),
-    persistent = false, cost = Cost.free,
-    text = "**WHEN PLAYED,** if you're an Exile, you may become a " +
-      "Citizen. _Follow the steps in the rules and end your Act " +
-      "Phase._")
   val powers: Vector[PrintedPower] = Vector(power)

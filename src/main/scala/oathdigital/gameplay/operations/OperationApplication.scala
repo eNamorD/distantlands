@@ -236,6 +236,8 @@ private[gameplay] object OperationApplication:
           cards))
       case (result, ImperialWarbandsTaken(count)) =>
         result.map(ChronicleStateOperations.imperialWarbandsTaken(_, count))
+      case (result, WarbandsAdded(kind, count)) =>
+        result.flatMap(ChronicleStateOperations.warbandsAdded(_, kind, count))
       case (result, LineagePointsScored(lineage, points)) =>
         result.flatMap(ChronicleStateOperations.lineagePointsScored(_, lineage,
           points))

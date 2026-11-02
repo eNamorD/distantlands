@@ -2,6 +2,7 @@ package oathdigital.frontend
 
 import oathdigital.protocol.{DecisionAnswerWire, GameIntent => Intent,
   NegotiationTerms, NegotiationTransfer}
+import oathdigital.protocol.projection.NegotiationCitizenshipProjection
 import oathdigital.testkit.Unwrap.as
 import ParkedDecision.Surface
 import org.scalajs.dom
@@ -260,3 +261,35 @@ class NegotiationDealPanelSuite extends munit.FunSuite:
     val opened = cardsOpenedBy:
       button(row, "button.card-link").click()
     assertEquals(opened, Vector("Bone Dice"))
+
+  /** Red holds the Grand Scepter and may offer blue, an Exile, Citizenship;
+    * `refused` is the first-game option's reason. */
+  private def scepterDeal(refused: Option[String] = None) =
+    NegotiationDealState(Vector("red", "blue"), Vector.empty, Vector.empty,
+      Vector.empty, Some(NegotiationEditingState(0, Vector.empty, Vector.empty,
+        Vector.empty, canAccept = false, editableCitizenship = Vector("blue"),
+        citizenshipRefused = refused)),
+      Vector(NegotiationCitizenshipProjection("red", "blue")))
+
+  private def citizenshipBox(panel: dom.Element): dom.html.Input =
+    input(panel, "input[aria-label='Offer Citizenship to blue']")
+
+  test("the Scepter's holder offers Citizenship from a checkbox, and Save " +
+      "sends it"):
+    val ui = new RecordingControls()
+    val panel = render(owner(scepterDeal()), ui)
+    assertEquals(Dom.one(panel, ".negotiation-citizenship").textContent,
+      "red offers blue Citizenship")
+    assert(citizenshipBox(panel).checked)
+    button(panel, ".negotiation-save").click()
+    assertEquals(ui.submitted, Vector[Intent](Intent.ResolveWalker(
+      "negotiation.deal", DecisionAnswerWire.ProposeTermsWire(NegotiationTerms(
+        Vector(NegotiationTransfer("blue", 0, Vector.empty)), Vector.empty,
+        Vector("blue"))))))
+
+  test("under the first-game option the offer is disabled with its reason"):
+    val reason = "Citizenship is ignored due to setup option"
+    val panel = render(owner(scepterDeal(Some(reason))),
+      new RecordingControls())
+    assert(citizenshipBox(panel).disabled)
+    assertEquals(citizenshipBox(panel).title, reason)

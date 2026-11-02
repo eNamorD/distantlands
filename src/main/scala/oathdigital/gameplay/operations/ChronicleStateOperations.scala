@@ -62,6 +62,15 @@ private[operations] object ChronicleStateOperations:
       ready.banks.warbandSupply.updatedWith(ForceKind.Imperial)(
         _.orElse(Some(count)))))
 
+  /** Raises an existing supply of `kind` by `count` (Chronicle rulings 20
+    * and 22). */
+  def warbandsAdded(ready: ReadyGame, kind: ForceKind, count: Int)
+      : Either[OperationError, ReadyGame] =
+    ready.banks.warbandSupply.get(kind).toRight(
+      InvalidDescription(s"there is no $kind supply to add to"))
+      .map(supply => ready.copy(banks = ready.banks.copy(warbandSupply =
+        ready.banks.warbandSupply.updated(kind, supply + count))))
+
   /** Only a seated lineage scores (gifts go to seated players, Chronicle
     * ruling 13). The game's first points open its scorepad row: an entry
     * per seated lineage, in seating order, at its total before this game

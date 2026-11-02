@@ -16,7 +16,7 @@ class GreatCrusadeSuite extends munit.FunSuite:
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
   private val nomads = planless("Search Party", "Vow of Kinship",
     "The Gathering")
-  private val order = planlessCard("Martial Culture")
+  private val order = planlessCard("Council Seat")
   private val line = NoteText.Said("discarded", "Discarded after the Campaign.",
     covers = false)
 

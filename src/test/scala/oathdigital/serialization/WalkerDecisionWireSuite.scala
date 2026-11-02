@@ -41,7 +41,8 @@ class WalkerDecisionWireSuite extends munit.FunSuite:
         NegotiationDisclosure(blue,
           NegotiationDisclosureRef.HeldRelic(red, RelicId("r2"))),
         NegotiationDisclosure(blue,
-          NegotiationDisclosureRef.SiteRelic(SiteId("s1"), RelicId("r3")))))
+          NegotiationDisclosureRef.SiteRelic(SiteId("s1"), RelicId("r3")))),
+      Vector(blue))
     val events = Vector[DecisionAnswer](DecisionAnswer.ProposeTerms(terms),
       DecisionAnswer.AcceptDeal, DecisionAnswer.DeclineDeal).map(answer =>
       WalkerStepRecorded("0.0.0", ChoicePayload("negotiation.deal", answer,

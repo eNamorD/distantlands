@@ -1,6 +1,6 @@
 package oathdigital.gameplay.operations
 
-import oathdigital.catalog.{PrintedPower, Relic}
+import oathdigital.catalog.{ModifierMark, PrintedPower, Relic}
 import oathdigital.model._
 
 object TheGrandScepterCard extends Relic(RelicId("grand-scepter"), "The Grand Scepter", value = 0, defense = 3):
@@ -9,9 +9,10 @@ object TheGrandScepterCard extends Relic(RelicId("grand-scepter"), "The Grand Sc
     text = "This relic **cannot** be removed from play or added to a " +
       "lineage.")
   val campaign = PrintedPower(PowerId("relic.the-grand-scepter.campaign"),
-    persistent = false, cost = Cost.free,
+    persistent = false, cost = Cost(favorBurnt = 3),
+    modifier = Some(ModifierMark.EitherSidePlan),
     text = "[favor-burnt][favor-burnt][favor-burnt] If you are Imperial " +
-      "and victorious against a Citizen, you exile them.")
+      "and victorious against a Citizen, you may exile them.")
   val action = PrintedPower(PowerId("relic.the-grand-scepter.action"),
     persistent = false, cost = Cost.free,
     text = "**ACTION:** You may become a Citizen if an Exile. **IN " +
@@ -48,6 +49,15 @@ case object GrandScepter extends OperationRestriction with PrintedRule:
         !OperationRestrictions.inPlay(to.location)
     case Bury(BuryableCard.Relic(buried), _, _) => buried == relic
     case _ => false
+
+/** The Grand Scepter's "IN NEGOTIATION: May offer Citizenship." No power
+  * runs it: the Negotiation procedure's bounds offer its holder the
+  * Citizenship term (`NegotiationDeal`), and the deal's settlement makes
+  * each named Exile a Citizen. Listed among the printed rules so that the
+  * power reads as implemented. */
+case object GrandScepterNegotiation extends PrintedRule:
+  val id: PowerId = TheGrandScepterCard.negotiation.id
+  val source: PowerSourceRef = PowerSourceRef.Card(TheGrandScepterCard.id)
 
 /** Where a new Chancellor takes the Grand Scepter from: its holder, the
   * site it lies at, or faceup from the box when it is in neither (Chronicle

@@ -1,7 +1,5 @@
 denizen.acting-troupe
-denizen.ancient-pact
 denizen.autumn-wind
-denizen.bewitch
 denizen.bracken
 denizen.council-arbiter
 denizen.council-seat
@@ -9,15 +7,12 @@ denizen.deed-writer
 denizen.false-prophet
 denizen.favored-son
 denizen.glamor
-denizen.long-lost-heir
 denizen.magicians-code
-denizen.martial-culture
 denizen.master-of-disguise
 denizen.naysayers
 denizen.pilgrimage
 denizen.relic-hunter
 denizen.reliquary-raid
-denizen.royal-ambitions
 denizen.search-party
 denizen.the-gathering
 denizen.tracker
@@ -115,8 +110,6 @@ relic.obsidian-cage.action
 relic.obsidian-cage.campaign
 relic.sigil-of-the-eye
 relic.sigil-of-the-heart
-relic.the-grand-scepter.campaign
-relic.the-grand-scepter.negotiation
 relic.whispering-stone
 site.ancient-city.enduring
 site.buried-giant.plains

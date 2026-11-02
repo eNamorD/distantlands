@@ -46,7 +46,10 @@ private[application] final class NegotiationDealProjector(
     NegotiationDealProjection(query.participants.map(_.value),
       query.participants.filter(query.accepted).map(_.value), transfers,
       disclosures, viewer.filter(query.participants.contains)
-        .map(editing(ready, query, _)))
+        .map(editing(ready, query, _)),
+      query.participants.flatMap(author => query.terms(author).citizenship
+        .map(recipient => NegotiationCitizenshipProjection(author.value,
+          recipient.value))))
 
   private def editing(ready: ReadyGame, query: DecisionQuery.Negotiate,
       viewer: PlayerId): NegotiationEditingProjection =
@@ -70,4 +73,5 @@ private[application] final class NegotiationDealProjector(
             presentation.cardDetails(relic, Some(state.orientation),
               hidden = false)))
       },
-      query.acceptors.contains(viewer))
+      query.acceptors.contains(viewer), own.citizenship.map(_.value),
+      own.citizenshipRefused)

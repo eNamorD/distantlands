@@ -101,6 +101,49 @@ class ChronicleSunSuite extends munit.FunSuite:
     assertEquals(after.banks.warbandSupply.get(ForceKind.Imperial),
       Some(after.game.current.map.inPlay.size))
 
+  test("a broken Empire leaves each of its sites one warband of the former " +
+      "Chancellor's colour (Chronicle ruling 20)"):
+    val peaks = CatalogNames.site("Broken Peaks")
+    val after = sunEnded(ChronicleWalk.chronicleWonByP1.imperial(p2)
+      .warbandsAt("Ancient City", p2, 3).warbandsAt(peaks, p2, 1))
+    assertEquals(roleOf(after, p2), Role.Exile)
+    val colour = ForceKind.Exile(lineageOf(after, p2))
+    Vector(ancientCity, peaks).foreach(site => assertEquals(
+      after.game.current.map.sites(site).forces,
+      SiteForces.Occupied(colour, 1), site.value))
+
+  test("a former Chancellor's bank, short by their board, is topped up so " +
+      "each of the Empire's sites takes one warband"):
+    // 13 purple board warbands turn to p2's colour, leaving 1 in the bank.
+    val peaks = CatalogNames.site("Broken Peaks")
+    val after = sunEnded(ChronicleWalk.chronicleWonByP1.imperial(p2)
+      .boardWarbands(p2, 13).warbandsAt("Ancient City", p2, 1)
+      .warbandsAt(peaks, p2, 1))
+    val colour = ForceKind.Exile(lineageOf(after, p2))
+    Vector(ancientCity, peaks).foreach(site => assertEquals(
+      after.game.current.map.sites(site).forces,
+      SiteForces.Occupied(colour, 1), site.value))
+    assertEquals(after.banks.warbandSupply.get(colour),
+      Some(MaterialBankState.ExileWarbandsPerLineage + 1))
+
+  test("a boxed former Chancellor leaves the Empire's sites empty"):
+    val table = withBoxedLineage(ChronicleWalk.chronicleWonByP1,
+      Role.Chancellor).update(state => state.copy(banks = state.banks.copy(
+        warbandSupply = state.banks.warbandSupply.updated(
+          ForceKind.Imperial, 24)))).warbandsAt("Ancient City", p3, 1)
+      .update(state => state.updateCurrent(current => current.copy(map =
+        current.map.copy(sites = current.map.sites.updatedWith(ancientCity)(
+          _.map(_.copy(forces = SiteForces.Occupied(ForceKind.Imperial, 2))))))))
+    val after = sunEnded(table)
+    assertEquals(after.game.current.map.sites(ancientCity).forces,
+      SiteForces.Empty)
+
+  test("a former Chancellor holding Vow of Wandering still takes the sites"):
+    val after = sunEnded(ChronicleWalk.chronicleWonByP1.imperial(p2)
+      .adviser(p2, "Vow of Wandering").warbandsAt("Ancient City", p2, 2))
+    assertEquals(after.game.current.map.sites(ancientCity).forces,
+      SiteForces.Occupied(ForceKind.Exile(lineageOf(after, p2)), 1))
+
   test("the winner takes the Grand Scepter from the box, faceup"):
     val after = sunEnded(ChronicleWalk.chronicleWonByP1)
     assertEquals(relicsOf(after, p1).last, RelicState(TheGrandScepterCard.id,

@@ -29,6 +29,9 @@ private[frontend] object NegotiationDealPanel:
         .contains(id) then "accepted" else "reviewing"}").mkString(" · ")))
     deal.transfers.foreach(t => panel.appendChild(transferLine(t)))
     deal.disclosures.foreach(d => panel.appendChild(disclosureLine(d)))
+    deal.citizenship.foreach(offer => panel.appendChild(text("p",
+      "negotiation-citizenship", s"${offer.authorPlayerId} offers " +
+        s"${offer.recipientPlayerId} Citizenship")))
 
   /** What the author gives, named where the viewer can see it: favor, each
     * relic the projection carries, and a count of the facedown rest.
@@ -102,6 +105,27 @@ private[frontend] object NegotiationDealPanel:
     row.appendChild(cardLink(card))
     row
 
+  /** The Grand Scepter's offer of Citizenship to `recipient`, an Exile: a
+    * checkbox, disabled with its reason under the first-game option. */
+  private def citizenshipItem(deal: NegotiationDealState,
+      editing: NegotiationEditingState, me: String, recipient: String,
+      panel: dom.Element): dom.html.Input =
+    val check = input("checkbox")
+    check.setAttribute("aria-label", s"Offer Citizenship to $recipient")
+    check.checked = deal.citizenship.exists(offer =>
+      offer.authorPlayerId == me && offer.recipientPlayerId == recipient)
+    editing.citizenshipRefused.foreach { reason =>
+      check.disabled = true
+      check.title = reason
+    }
+    val row = dom.document.createElement("label").asInstanceOf[dom.html.Label]
+    row.className = "negotiation-item"
+    row.appendChild(check)
+    row.appendChild(text("span", "negotiation-item-label", "Offer Citizenship"))
+    editing.citizenshipRefused.foreach(reason => row.title = reason)
+    panel.appendChild(row)
+    check
+
   private def editor(decisionId: String, deal: NegotiationDealState,
       editing: NegotiationEditingState, me: String, canControl: Boolean,
       panel: dom.Element, controls: TableControls): Unit =
@@ -110,6 +134,8 @@ private[frontend] object NegotiationDealPanel:
       (String, String, dom.html.Input)]
     val disclosures = scala.collection.mutable.ArrayBuffer.empty[
       (String, DisclosureOffer, dom.html.Input)]
+    val citizenship = scala.collection.mutable.ArrayBuffer.empty[
+      (String, dom.html.Input)]
     deal.participantPlayerIds.filterNot(_ == me).foreach { recipient =>
       panel.appendChild(text("h3", "", s"Your terms for $recipient"))
       val favor = input("number")
@@ -143,6 +169,9 @@ private[frontend] object NegotiationDealPanel:
         panel.appendChild(cardItem(check, "Show ", offer.card))
         disclosures += ((recipient, offer, check))
       }
+      if editing.editableCitizenship.contains(recipient) then
+        citizenship += recipient -> citizenshipItem(deal, editing, me,
+          recipient, panel)
     }
     val save = button("Save Deal Changes", "negotiation-save")
     save.disabled = !canControl
@@ -155,7 +184,8 @@ private[frontend] object NegotiationDealPanel:
           if check.checked => NegotiationDisclosureInput(recipient, offer.kind,
         Option.when(offer.kind != "site-relic")(me), offer.siteId,
         Option.when(offer.kind == "adviser")(offer.card.cardKind),
-        offer.card.cardId) }.toVector)
+        offer.card.cardId) }.toVector, citizenship.collect {
+          case (recipient, check) if check.checked => recipient }.toVector)
       controls.submitCommand(GameCommand.ResolveWalker(decisionId,
         DecisionAnswerWire.ProposeTermsWire(protocolNegotiationTerms(terms))))
     }
