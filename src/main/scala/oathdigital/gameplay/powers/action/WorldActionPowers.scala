@@ -13,14 +13,9 @@ object WorldActionPowers:
   def forCatalog(catalog: ExecutableCatalog): Vector[PhasePower] =
     Vector[PhasePower](Storyteller, Firebrand, Levelers, MemoryOfHome,
       PlagueEngines, BanditPaymaster, TerrorSpells, AncientBinding, Convoys,
-      TheRedSeer) ++
-      Vector(MemoryOfNature.forCatalog(catalog)) ++
-      Vector(BallotBox.forCatalog(catalog)) ++
-      Vector(DarkEnforcer.forCatalog(catalog)) ++
-      Vector(TamingCharm.forCatalog(catalog)) ++
-      Vector(GreatFeast.forCatalog(catalog)) ++
-      Vector(RovingTerror.forCatalog(catalog)) ++
-      Vector(GiantPython.forCatalog(catalog)) ++
-      Vector(SingingMask.forCatalog(catalog)) ++
-      Vector(WildAllies.forCatalog(catalog)) ++
-      Vector(Captains)
+      TheRedSeer, MemoryOfNature.forCatalog(catalog),
+      BallotBox.forCatalog(catalog), DarkEnforcer.forCatalog(catalog),
+      TamingCharm.forCatalog(catalog), GreatFeast.forCatalog(catalog),
+      RovingTerror.forCatalog(catalog), GiantPython.forCatalog(catalog),
+      SingingMask.forCatalog(catalog), WildAllies.forCatalog(catalog),
+      Captains)

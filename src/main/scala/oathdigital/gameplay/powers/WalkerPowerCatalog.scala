@@ -109,7 +109,7 @@ object WalkerPowerCatalog:
       Vector(KnightsErrant) ++
       Vector(Marriage) ++
       Vector(PledgeToDiscord) ++
-      Vector(Jinx.forCatalog(catalog)) ++
+      Vector(Jinx) ++
       BattlePlans.all ++
       PlanRules.forCatalog(catalog) ++
       SimplePlans.forCatalog(catalog) ++

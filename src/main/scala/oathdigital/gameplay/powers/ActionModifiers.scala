@@ -22,47 +22,18 @@ import oathdigital.gameplay.powers.search.{Augury, Baron, CropRotation,
   */
 object ActionModifiers:
   def forCatalog(catalog: ExecutableCatalog): Vector[ContributingPower] =
-    Vector(Augury) ++
-      Vector(TruthfulHarp) ++
-      Vector(Disciples) ++
-      Vector(CropRotation) ++
-      Vector(Baron) ++
-      Vector(NewGrowth.forCatalog(catalog)) ++
-      Vector(ForestWarden.forCatalog(catalog)) ++
-      Vector(NewsFromAfar) ++
-      Vector(HuntingParty) ++
-      Vector(Observatory) ++
-      Vector(ErrandBoy) ++
-      Vector(Mushrooms) ++
-      Vector(WineOfWelcome) ++
-      Vector(PaintedTrumpet) ++
-      Vector(SpinningBee.forCatalog(catalog)) ++
-      Vector(LandWarden) ++
-      Vector(CupOfPlenty.forCatalog(catalog)) ++
-      Vector(AnimalPlaymates.forCatalog(catalog)) ++
-      Vector(Birdsong.forCatalog(catalog)) ++
-      Vector(TheOldOak) ++
-      Vector(RowdyPub) ++
-      Vector(VillageIdiot) ++
-      Vector(Downtrodden.forCatalog(catalog)) ++
-      Vector(SpitefulMirror) ++
-      Vector(MovingMarket.forCatalog(catalog)) ++
-      Vector(AwaitedReturn) ++
-      Vector(MountedLibrary.forCatalog(catalog)) ++
-      Vector(Defame.forCatalog(catalog)) ++
-      Vector(GolemLegions) ++
-      Vector(MapLibrary.forCatalog(catalog)) ++
-      Vector(SkilledMerchants.forCatalog(catalog)) ++
-      Vector(SmallFriends.forCatalog(catalog),
-        FriendlyFamiliar.forCatalog(catalog),
-        SecretSignal) ++
-      Vector(Pressgangs) ++
-      Vector(OldSongs) ++
-      Vector(Curfew.forCatalog(catalog)) ++
-      Vector(ForcedLabor) ++
-      Vector(InitiationRite) ++
-      Vector(VowOfBeastkin.forCatalog(catalog)) ++
-      Vector(VowOfWanderingMuster, VowOfWandering) ++
-      Vector(VowOfPoverty) ++
-      Vector(RelicWorship) ++
-      Vector(SilverCharm)
+    Vector[ContributingPower](Augury, TruthfulHarp, Disciples, CropRotation,
+      Baron, NewGrowth.forCatalog(catalog), ForestWarden.forCatalog(catalog),
+      NewsFromAfar, HuntingParty, Observatory, ErrandBoy, Mushrooms,
+      WineOfWelcome, PaintedTrumpet, SpinningBee.forCatalog(catalog),
+      LandWarden, CupOfPlenty.forCatalog(catalog),
+      AnimalPlaymates.forCatalog(catalog), Birdsong.forCatalog(catalog),
+      TheOldOak, RowdyPub, VillageIdiot, Downtrodden.forCatalog(catalog),
+      SpitefulMirror, MovingMarket.forCatalog(catalog), AwaitedReturn,
+      MountedLibrary.forCatalog(catalog), Defame.forCatalog(catalog),
+      GolemLegions, MapLibrary.forCatalog(catalog),
+      SkilledMerchants.forCatalog(catalog), SmallFriends.forCatalog(catalog),
+      FriendlyFamiliar.forCatalog(catalog), SecretSignal, Pressgangs,
+      OldSongs, Curfew.forCatalog(catalog), ForcedLabor, InitiationRite,
+      VowOfBeastkin.forCatalog(catalog), VowOfWanderingMuster,
+      VowOfWandering, VowOfPoverty, RelicWorship, SilverCharm)

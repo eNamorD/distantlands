@@ -11,9 +11,7 @@ import oathdigital.gameplay.powerresolver.PhasePower
 object SelfActionPowers:
   def forCatalog(catalog: ExecutableCatalog): Vector[PhasePower] =
     Vector[PhasePower](Tutor, ShiftingMap, DemonTail, WizardSchool,
-      SpiritSnare, ClayRattle, Scryer, OracularPig) ++
-      Vector(Oracle.forCatalog(catalog)) ++
-      Vector[PhasePower](BloodPact, ArcaneBrokers, Bog, RelicBreaker,
-        TavernSongs, TinkersFair, SkeletonKey, Messenger) ++
-      Vector(BedOfRoots.forCatalog(catalog)) ++
-      Vector(Homesteaders.forCatalog(catalog))
+      SpiritSnare, ClayRattle, Scryer, OracularPig,
+      Oracle.forCatalog(catalog), BloodPact, ArcaneBrokers, Bog,
+      RelicBreaker, TavernSongs, TinkersFair, SkeletonKey, Messenger,
+      BedOfRoots.forCatalog(catalog), Homesteaders.forCatalog(catalog))
