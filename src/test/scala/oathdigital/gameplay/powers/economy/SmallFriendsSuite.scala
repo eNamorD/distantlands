@@ -8,7 +8,6 @@ import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.action.AlchemistCard
 import oathdigital.gameplay.powers.campaign.WrestlersCard
 import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
 import oathdigital.model.OathState.Ready
@@ -20,7 +19,7 @@ import oathdigital.testkit.Unwrap.accepted
 
 class SmallFriendsSuite extends munit.FunSuite:
   private val friends = SmallFriendsCard.id
-  private val power = SmallFriends.forCatalog(catalog)
+  private val power = SmallFriends
   private val map = Table.start.ready.game.current.map
   /** p1's pawn site. */
   private val home = AncientCitySite.id

@@ -115,7 +115,8 @@ final class ModifierChoice(val actor: PlayerId, modifierWindow: PowerWindow,
     }.flatMap(ref => ModifierPicks.powerFor(powers.pool, modifierWindow, ref)
       .map(ref -> _)).toVector.flatMap((ref, power) =>
         (OpenPick(decisionId, ref) +: paying(power) +:
-          power.selectionQuestions(ready, actor)) :+ ClosePick()))
+          power.selectionQuestions(powers.catalog, ready, actor)) :+
+          ClosePick()))
 
   private def price(shown: DecisionOption, operations: Vector[CoreOperation])
       : DecisionOption =

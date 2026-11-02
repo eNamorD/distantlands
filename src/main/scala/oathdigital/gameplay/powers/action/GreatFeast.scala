@@ -26,21 +26,21 @@ final case class GreatFeast private (catalog: ExecutableCatalog)
     extends PaidAction(GreatFeastCard.power):
   import GreatFeast._
 
-  private val cards = new SiteCards(catalog, Set(Suit.Beast))
+  private val cards = new SiteCards(Set(Suit.Beast))
   override def noteKeys: Vector[NoteKey] = GreatFeast.noteKeys
   override def narratedDecisions: Set[String] = Set(decisionId)
 
   def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
       source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
-    Branch((live, _) => cards.ask(live, player, decisionId,
+    Branch((live, _) => cards.ask(catalog, live, player, decisionId,
       "Great Feast: discard a Beast card at your site")),
     BuildOps((live, pending) => feast(live, player, pending), required = true),
     Note(this.id, feastNote(_, player, source), covers = true))))
 
   private def feast(ready: ReadyGame, player: PlayerId, pending: PendingTree)
       : Either[OathViolation, Vector[CoreOperation]] =
-    cards.chosen(ready, player, pending, decisionId) match
+    cards.chosen(catalog, ready, player, pending, decisionId) match
       case None => Right(Vector.empty)
       case Some((site, card, suit)) => meal(ready, player, site, card, suit)
 
@@ -65,7 +65,7 @@ final case class GreatFeast private (catalog: ExecutableCatalog)
             NoteUnit.Supply)))
         case None => PowerAccess.pawnSite(states.now, player).map(site =>
           // A card was there, but a refusal kept it: it was not discarded.
-          if cards.at(states.now, site).nonEmpty then
+          if cards.at(catalog, states.now, site).nonEmpty then
             kept(card, NoteArg.Site(site))
           else bare(card, NoteArg.Site(site))))
 

@@ -29,24 +29,33 @@ object DefameCard extends Denizen(DenizenId("102"), "Defame", Suit.Discord):
   * Its line names the chosen player, the actor included: "Burned {1 favor}
   * from {Blue}'s board." No generic line exists for a burn.
   */
-final case class Defame private (catalog: ExecutableCatalog)
-    extends SelectedModifier:
-  import Defame._
+case object Defame extends SelectedModifier:
+  val id: PowerId = DefameCard.power.id
+  /** Under the `trade.` prefix, as Moving Market's is. */
+  val decisionId: String = "trade.defame.burn"
+  val skip: DecisionOptionRef.Button = DecisionOptionRef.Button("skip")
+  val Burned: Int = 1
+  private val notes = NoteSet(id)
+  /** "Burned {1 favor} from {Blue}'s board." */
+  val burned: NoteKey = notes.key("burned", Vector(NotePart.Text("Burned "),
+    NotePart.Arg(0), NotePart.Text(" from "), NotePart.Arg(1),
+    NotePart.Text("'s board.")))
+  override def noteKeys: Vector[NoteKey] = notes.declared
 
   val card: Denizen = DefameCard
-  def id: PowerId = Defame.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Trade)
-  override def noteKeys: Vector[NoteKey] = Defame.noteKeys
   override def narratedDecisions: Set[String] = Set(decisionId)
 
   def effects: Map[PowerWindow, Vector[Contribution]] = Map(
     PowerWindow.TradeActionEligibility -> Vector(Transform((ctx, children) =>
-      children :+ offer(ctx.actor))))
+      children :+ offer(ctx.catalog, ctx.actor))))
 
-  private def offer(actor: PlayerId): Operation = Branch((ready, pending) =>
+  private def offer(catalog: ExecutableCatalog,
+      actor: PlayerId): Operation = Branch((ready, pending) =>
     val players = ready.game.current.players
     val holding = players.filter(_.board.favor > 0).map(_.player)
-    if !discordSource(ready, pending) || holding.isEmpty then Vector.empty
+    if !discordSource(catalog, ready, pending) || holding.isEmpty then
+      Vector.empty
     else
       val options: Vector[DecisionOption] = holding.map(player =>
         DecisionOption.Player(DecisionOptionRef.Player(player))) ++
@@ -58,7 +67,8 @@ final case class Defame private (catalog: ExecutableCatalog)
         BuildOps((_, answered) => burn(actor, answered)),
         Note(id, burnedNote)))
 
-  private def discordSource(ready: ReadyGame, pending: PendingTree)
+  private def discordSource(catalog: ExecutableCatalog,
+      ready: ReadyGame, pending: PendingTree)
       : Boolean = PowerAnswers.one(pending, TradeProcedure.decisionId)
     .flatMap(EffectiveSuit.traded(catalog, ready, pending.answered, _))
     .contains(Suit.Discord)
@@ -83,18 +93,3 @@ final case class Defame private (catalog: ExecutableCatalog)
     if amount > 0
   yield burned(PowerSourceRef.Card(cardId),
     NoteArg.Amount(amount, NoteUnit.Favor), NoteArg.Player(target))
-
-object Defame:
-  val id: PowerId = DefameCard.power.id
-  /** Under the `trade.` prefix, as Moving Market's is. */
-  val decisionId: String = "trade.defame.burn"
-  val skip: DecisionOptionRef.Button = DecisionOptionRef.Button("skip")
-  val Burned: Int = 1
-  private val notes = NoteSet(id)
-  /** "Burned {1 favor} from {Blue}'s board." */
-  val burned: NoteKey = notes.key("burned", Vector(NotePart.Text("Burned "),
-    NotePart.Arg(0), NotePart.Text(" from "), NotePart.Arg(1),
-    NotePart.Text("'s board.")))
-  def noteKeys: Vector[NoteKey] = notes.declared
-
-  def forCatalog(catalog: ExecutableCatalog): Defame = new Defame(catalog)

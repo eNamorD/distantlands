@@ -181,7 +181,6 @@ catalog_parameter = re.compile(
     r"(?:class|trait|object)\s+\w+[^\n(]*\(\s*catalog: ExecutableCatalog"
     r"|def forCatalog\b|def catalog: ExecutableCatalog")
 powers_reading_the_catalog = {
-    "ActionModifiers.scala": "registry: threads the catalog to the powers below that read it",
     "action/ArmedMob.scala": "reads other cards' suits",
     "action/Assassin.scala": "reads other cards' suits",
     "action/BallotBox.scala": "reads other cards' suits",
@@ -207,8 +206,6 @@ powers_reading_the_catalog = {
     "action/TempleOfAncestors.scala": "plays a card through the card-play procedure",
     "action/SelfActionPowers.scala": "registry: threads the catalog to the powers below that read it",
     "action/SingingMask.scala": "reads other cards' suits",
-    "action/SiteCards.scala": "helper: the cards at a site, by suit",
-    "action/SiteSlotMoves.scala": "helper: site capacity and the cards at a site",
     "action/TamingCharm.scala": "reads other cards' suits",
     "action/TargetPowers.scala": "registry: threads the catalog to the powers below that read it",
     "action/WildAllies.scala": "reads other cards' suits",
@@ -236,20 +233,6 @@ powers_reading_the_catalog = {
     "campaign/TrueNames.scala": "reads other cards' suits",
     "campaign/WalledGarden.scala": "reads other cards' suits",
     "campaign/WildMounts.scala": "reads other cards' suits",
-    "economy/ActingSite.scala": "reads the suits of the cards at the chosen site",
-    "economy/AnimalPlaymates.scala": "reads the suit of the card mustered from (SuitSupplyWaiver)",
-    "economy/Birdsong.scala": "reads the suit of the card traded from (SuitSupplyWaiver)",
-    "economy/CupOfPlenty.scala": "reads other cards' suits",
-    "economy/Curfew.scala": "reads other cards' suits",
-    "economy/Defame.scala": "reads other cards' suits",
-    "economy/Downtrodden.scala": "reads other cards' suits",
-    "economy/FriendlyFamiliar.scala": "reads other cards' suits",
-    "economy/MapLibrary.scala": "reads other cards' suits",
-    "economy/MountedLibrary.scala": "reads other cards' suits",
-    "economy/MovingMarket.scala": "reads a site's capacity",
-    "economy/SkilledMerchants.scala": "reads other cards' suits",
-    "economy/SmallFriends.scala": "reads other cards' suits",
-    "economy/VowOfBeastkin.scala": "reads other cards' suits",
 }
 for path in scala_sources(ROOT / POWERS_ROOT):
     rel = relative(path)[len(POWERS_ROOT) + 1:]

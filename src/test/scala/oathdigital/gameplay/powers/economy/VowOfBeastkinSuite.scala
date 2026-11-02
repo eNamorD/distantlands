@@ -6,7 +6,6 @@ import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.action.MessengerCard
 import oathdigital.gameplay.powers.campaign.WrestlersCard
 import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
 import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look,
@@ -18,7 +17,7 @@ import oathdigital.testkit.AppendedAutomaticUses
 
 class VowOfBeastkinSuite extends munit.FunSuite:
   private val vow = VowOfBeastkinCard.id
-  private val power = VowOfBeastkin.forCatalog(catalog)
+  private val power = VowOfBeastkin
   private val home = AncientCitySite.id
   /** A plain Beast denizen to Muster on. */
   private val errandBoy = ErrandBoyCard.id

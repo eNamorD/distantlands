@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.economy
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
-  PrintedPower}
+import oathdigital.catalog.{AdviserOnly, Denizen, PrintedPower}
 import oathdigital.gameplay.powerresolver.{Contribution, Transform}
 import oathdigital.gameplay.powers.SelectedModifier
 import oathdigital.model._
@@ -23,19 +22,13 @@ object SkilledMerchantsCard extends Denizen(DenizenId("238"), "Skilled Merchants
   * It writes no line: the start line names it, and the Trade's own line
   * names the source.
   */
-final case class SkilledMerchants private (catalog: ExecutableCatalog)
-    extends SelectedModifier:
+case object SkilledMerchants extends SelectedModifier:
+  val id: PowerId = SkilledMerchantsCard.power.id
+
   val card: Denizen = SkilledMerchantsCard
-  def id: PowerId = SkilledMerchants.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Trade)
 
   def effects: Map[PowerWindow, Vector[Contribution]] = Map(
     PowerWindow.TradeSourceSelection -> Vector(Transform((ctx, operations) =>
       EconomySources.widened(ctx, operations,
-        EconomySources.inPawnRegion(catalog, ctx.state, ctx.actor)))))
-
-object SkilledMerchants:
-  val id: PowerId = SkilledMerchantsCard.power.id
-
-  def forCatalog(catalog: ExecutableCatalog): SkilledMerchants =
-    new SkilledMerchants(catalog)
+        EconomySources.inPawnRegion(ctx.catalog, ctx.state, ctx.actor)))))

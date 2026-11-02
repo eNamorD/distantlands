@@ -19,7 +19,7 @@ import oathdigital.testkit.Unwrap.accepted
 
 class MovingMarketSuite extends munit.FunSuite:
   private val market = MovingMarketCard.id
-  private val power = MovingMarket.forCatalog(catalog)
+  private val power = MovingMarket
   private val modifiers = Vector(MovingMarket.id)
   /** p1's pawn site, and two other sites in play. */
   private val home = AncientCitySite.id

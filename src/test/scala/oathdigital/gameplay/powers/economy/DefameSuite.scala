@@ -5,7 +5,6 @@ import oathdigital.gameplay.actions.economy.TradeProcedure
 import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.{MercenariesCard, WrestlersCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
 import oathdigital.model.OathState.Ready
@@ -17,7 +16,7 @@ import oathdigital.testkit.Unwrap.accepted
 
 class DefameSuite extends munit.FunSuite:
   private val defame = DefameCard.id
-  private val power = Defame.forCatalog(catalog)
+  private val power = Defame
   private val modifiers = Vector(Defame.id)
   private val home = AncientCitySite.id
   /** A plain Discord denizen to Trade with. */

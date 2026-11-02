@@ -109,7 +109,7 @@ object WalkerPowerCatalog:
       Vector(TwinBrother) ++
       WhenPlayedPowers.all ++
       Vector(ChaosCult) ++
-      ActionModifiers.forCatalog(catalog) ++
+      ActionModifiers.all ++
       TargetProtections.all ++
       Vector(KnightsErrant) ++
       Vector(Marriage) ++

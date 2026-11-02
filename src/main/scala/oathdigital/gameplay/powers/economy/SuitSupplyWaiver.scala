@@ -24,20 +24,21 @@ import oathdigital.model._
   * `SupplyStrip`, still finds the payment inside it.
   */
 private[economy] object SuitSupplyWaiver:
-  def effects(window: PowerWindow, decisionId: String,
-      catalog: ExecutableCatalog)(free: (ReadyGame, PlayerId, Suit) => Boolean)
+  def effects(window: PowerWindow, decisionId: String)(
+      free: (ExecutableCatalog, ReadyGame, PlayerId, Suit) => Boolean)
       : Map[PowerWindow, Vector[Contribution]] = Map(
     window -> Vector(Transform((ctx, operations) =>
       OperationRewrite.nodes(ctx, operations)((_, _) => {
         case pay @ SpendSupply(player, _, _) if player == ctx.actor =>
-          Vector(unlessFree(pay, decisionId, catalog, free))
+          Vector(unlessFree(pay, decisionId, ctx.catalog, free))
       }))))
 
   private def unlessFree(pay: SpendSupply, decisionId: String,
-      catalog: ExecutableCatalog, free: (ReadyGame, PlayerId, Suit) => Boolean)
+      catalog: ExecutableCatalog,
+      free: (ExecutableCatalog, ReadyGame, PlayerId, Suit) => Boolean)
       : Operation = BuildOps((ready, pending) => Right(
     if suitOf(ready, pending, decisionId, catalog)
-      .exists(free(ready, pay.player, _))
+      .exists(free(catalog, ready, pay.player, _))
     then Vector.empty
     else Vector[CoreOperation](pay)))
 

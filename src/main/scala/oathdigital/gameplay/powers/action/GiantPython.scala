@@ -38,7 +38,7 @@ final case class GiantPython private (catalog: ExecutableCatalog)
     extends PaidAction(GiantPythonCard.action):
   import GiantPython._
 
-  private val slots = new SiteSlotMoves(catalog, GiantPythonCard.id,
+  private val slots = new SiteSlotMoves(GiantPythonCard.id,
     empty = true)
   override def noteKeys: Vector[NoteKey] = GiantPython.noteKeys
   override def narratedDecisions: Set[String] = Set(decisionId)
@@ -46,13 +46,13 @@ final case class GiantPython private (catalog: ExecutableCatalog)
   override def usable(catalog: ExecutableCatalog, ready: ReadyGame,
       player: PlayerId, source: DecisionOptionRef): Boolean =
     CardPowerBanners.holdsDarkestSecret(ready, player) &&
-      slots.options(ready, player).exists(_.available)
+      slots.options(catalog, ready, player).exists(_.available)
 
   def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
       source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     Branch((live, _) => Vector(Decide(decisionId, player,
-      DecisionQuery.ChooseOne(slots.options(live, player),
+      DecisionQuery.ChooseOne(slots.options(catalog, live, player),
         heading = Some(heading)), passWhenEmpty = true))),
     BuildOps((live, pending) => move(live, player, pending),
       required = true),
@@ -63,7 +63,7 @@ final case class GiantPython private (catalog: ExecutableCatalog)
       pending: PendingTree): Either[OathViolation, Vector[CoreOperation]] =
     PowerAnswers.one(pending, decisionId) match
       case None => Right(Vector.empty)
-      case Some(ref) => slots.chosen(ready, ref).toRight(
+      case Some(ref) => slots.chosen(catalog, ready, ref).toRight(
           OathViolation.InvalidEventOrder(
             s"${ref.wireId} is not a slot Giant Python can move to"))
         .flatMap(slots.operations(ready, actor, _))
@@ -76,7 +76,7 @@ final case class GiantPython private (catalog: ExecutableCatalog)
       card <- PowerSourceRef.of(source)
       ref <- NoteSupport.answer(states, decisionId)
       (before, _) <- states.previous
-      chosen <- slots.chosen(before, ref)
+      chosen <- slots.chosen(catalog, before, ref)
       if SiteRulers.siteOf(states.now, GiantPythonCard.id)
         .contains(chosen.site)
     yield chosen.replaced.fold(moved(card,

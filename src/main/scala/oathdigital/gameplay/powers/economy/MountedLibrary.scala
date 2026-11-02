@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.economy
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
+import oathdigital.catalog.{Denizen, PrintedPower, SiteOnly}
 import oathdigital.gameplay.{NoteSupport, SiteRulers}
 import oathdigital.gameplay.actions.economy.TradeProcedure
 import oathdigital.gameplay.powerresolver.{Contribution, Deferred,
@@ -37,17 +37,24 @@ object MountedLibraryCard extends Denizen(DenizenId("248"), "Mounted Library", S
   * A selected modifier is held in play until its action ends, so it declares
   * `discardsItself` to be exempt from the active-modifier rule.
   */
-final case class MountedLibrary private (catalog: ExecutableCatalog)
-    extends SelectedModifier:
-  import MountedLibrary._
+case object MountedLibrary extends SelectedModifier:
+  val id: PowerId = MountedLibraryCard.power.id
+  /** The Trade's secret gain, recorded as it runs. */
+  val deferred: DeferralKey = DeferralKey("mounted-library")
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "Gained {n} more secrets." */
+  val doubled: NoteKey = notes.key("doubled", Vector(NotePart.Text("Gained "),
+    NotePart.Arg(0), NotePart.Plural(0, " more secret.", " more secrets.")))
+  /** "Discarded after the Trade." */
+  val discarded: NoteKey = notes.key("discarded", Vector(
+    NotePart.Text("Discarded after the Trade.")))
 
   val card: Denizen = MountedLibraryCard
-  def id: PowerId = MountedLibrary.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Trade)
   override def discardsItself: Boolean = true
-  override def noteKeys: Vector[NoteKey] = MountedLibrary.noteKeys
 
-  private val nomadCards = new SiteCards(catalog, Set(Suit.Nomad))
+  private val nomadCards = new SiteCards(Set(Suit.Nomad))
 
   def effects: Map[PowerWindow, Vector[Contribution]] = Map(
     PowerWindow.TradeGain -> Vector(Transform((ctx, operations) =>
@@ -102,19 +109,3 @@ final case class MountedLibrary private (catalog: ExecutableCatalog)
     if SiteRulers.siteOf(before, card.id).nonEmpty &&
       SiteRulers.siteOf(after, card.id).isEmpty
   yield discarded(PowerSourceRef.Card(cardId))
-
-object MountedLibrary:
-  val id: PowerId = MountedLibraryCard.power.id
-  /** The Trade's secret gain, recorded as it runs. */
-  val deferred: DeferralKey = DeferralKey("mounted-library")
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "Gained {n} more secrets." */
-  val doubled: NoteKey = notes.key("doubled", Vector(NotePart.Text("Gained "),
-    NotePart.Arg(0), NotePart.Plural(0, " more secret.", " more secrets.")))
-  /** "Discarded after the Trade." */
-  val discarded: NoteKey = notes.key("discarded", Vector(
-    NotePart.Text("Discarded after the Trade.")))
-
-  def forCatalog(catalog: ExecutableCatalog): MountedLibrary =
-    new MountedLibrary(catalog)

@@ -33,7 +33,7 @@ final case class RovingTerror private (catalog: ExecutableCatalog)
     extends PaidAction(RovingTerrorCard.power):
   import RovingTerror._
 
-  private val slots = new SiteSlotMoves(catalog, RovingTerrorCard.id,
+  private val slots = new SiteSlotMoves(RovingTerrorCard.id,
     empty = false)
   override def noteKeys: Vector[NoteKey] = RovingTerror.noteKeys
   override def narratedDecisions: Set[String] = Set(decisionId)
@@ -51,7 +51,7 @@ final case class RovingTerror private (catalog: ExecutableCatalog)
     * askable slot still asks (catalog batch 8, slice 10, part 2b). */
   private def ask(ready: ReadyGame, actor: PlayerId): Vector[Operation] =
     Vector(Decide(decisionId, actor, DecisionQuery.ChooseOne(
-      slots.options(ready, actor), heading = Some(heading)),
+      slots.options(catalog, ready, actor), heading = Some(heading)),
       passWhenEmpty = true))
 
   /** No answer means no card could be replaced. */
@@ -59,7 +59,7 @@ final case class RovingTerror private (catalog: ExecutableCatalog)
       pending: PendingTree): Either[OathViolation, Vector[CoreOperation]] =
     PowerAnswers.one(pending, decisionId) match
       case None => Right(Vector.empty)
-      case Some(ref) => slots.chosen(ready, ref).toRight(
+      case Some(ref) => slots.chosen(catalog, ready, ref).toRight(
           OathViolation.InvalidEventOrder(
             s"${ref.wireId} is not a slot Roving Terror can move to"))
         .flatMap(slots.operations(ready, actor, _))
@@ -71,7 +71,7 @@ final case class RovingTerror private (catalog: ExecutableCatalog)
     PowerSourceRef.of(source).map(card => (for
       ref <- NoteSupport.answer(states, decisionId)
       (before, _) <- states.previous
-      move <- slots.chosen(before, ref)
+      move <- slots.chosen(catalog, before, ref)
       replacedCard <- move.replaced
       if SiteRulers.siteOf(states.now, RovingTerrorCard.id)
         .contains(move.site)

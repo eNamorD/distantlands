@@ -29,7 +29,7 @@ final case class SingingMask private (catalog: ExecutableCatalog)
     extends PaidAction(SingingMaskCard.power):
   import SingingMask._
 
-  private val siteCards = new SiteCards(catalog, Suit.all.toSet)
+  private val siteCards = new SiteCards(Suit.all.toSet)
   private val banner =
     PositionedLocation(Location.OnBanner(Banner.PeoplesFavor))
 
@@ -56,7 +56,7 @@ final case class SingingMask private (catalog: ExecutableCatalog)
   private def cards(ready: ReadyGame, actor: PlayerId)
       : Vector[(SiteDenizenState, Suit)] =
     PowerAccess.pawnSite(ready, actor).toVector
-      .flatMap(siteCards.at(ready, _))
+      .flatMap(siteCards.at(catalog, ready, _))
       .filter((_, suit) => stock(ready, suit) > 0 || onBanner(ready) > 0)
 
   private def askCard(ready: ReadyGame, actor: PlayerId): Vector[Operation] =

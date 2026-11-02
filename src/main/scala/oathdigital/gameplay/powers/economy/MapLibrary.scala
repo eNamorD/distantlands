@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.economy
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
+import oathdigital.catalog.{Denizen, PrintedPower, SiteOnly}
 import oathdigital.gameplay.{PowerAccess, SiteRulers}
 import oathdigital.gameplay.powerresolver.{Contribution, Transform}
 import oathdigital.gameplay.powers.SelectedModifier
@@ -25,16 +25,16 @@ object MapLibraryCard extends Denizen(DenizenId("76"), "Map Library", Suit.Arcan
   * region. It writes no line: the start line names it, and the Trade's
   * own line names the source.
   */
-final case class MapLibrary private (catalog: ExecutableCatalog)
-    extends SelectedModifier:
+case object MapLibrary extends SelectedModifier:
+  val id: PowerId = MapLibraryCard.power.id
+
   val card: Denizen = MapLibraryCard
-  def id: PowerId = MapLibrary.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Trade)
 
   def effects: Map[PowerWindow, Vector[Contribution]] = Map(
     PowerWindow.TradeSourceSelection -> Vector(Transform((ctx, operations) =>
       EconomySources.widened(ctx, operations,
-        EconomySources.inPawnRegion(catalog, ctx.state, ctx.actor)))))
+        EconomySources.inPawnRegion(ctx.catalog, ctx.state, ctx.actor)))))
 
   /** The rulebook's access, and the pawn at Map Library's site, or the
     * player acting as if there: ruling the site is not enough. */
@@ -42,9 +42,3 @@ final case class MapLibrary private (catalog: ExecutableCatalog)
     super.selectable(ready, actor) &&
       PowerAccess.presentSite(ready, actor).exists(site =>
         SiteRulers.siteOf(ready, card.id).contains(site))
-
-object MapLibrary:
-  val id: PowerId = MapLibraryCard.power.id
-
-  def forCatalog(catalog: ExecutableCatalog): MapLibrary =
-    new MapLibrary(catalog)

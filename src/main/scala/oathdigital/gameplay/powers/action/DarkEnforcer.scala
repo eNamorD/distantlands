@@ -26,7 +26,7 @@ final case class DarkEnforcer private (catalog: ExecutableCatalog)
     extends PaidAction(DarkEnforcerCard.power):
   import DarkEnforcer._
 
-  private val cards = new SiteCards(catalog, Set(Suit.Order, Suit.Hearth))
+  private val cards = new SiteCards(Set(Suit.Order, Suit.Hearth))
   override def noteKeys: Vector[NoteKey] = DarkEnforcer.noteKeys
 
   def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
@@ -38,7 +38,7 @@ final case class DarkEnforcer private (catalog: ExecutableCatalog)
   private def discards(ready: ReadyGame, player: PlayerId)
       : Either[OathViolation, Vector[CoreOperation]] =
     PowerAccess.pawnSite(ready, player).toVector.flatMap(here =>
-      cards.at(ready, here).map((card, suit) =>
+      cards.at(catalog, ready, here).map((card, suit) =>
         cards.discard(ready, here, card, suit, player, required = false)))
       .foldLeft[Either[OathViolation, Vector[CoreOperation]]](
         Right(Vector.empty))((done, next) =>
@@ -52,7 +52,8 @@ final case class DarkEnforcer private (catalog: ExecutableCatalog)
     site <- PowerAccess.pawnSite(states.now, player)
   yield
     val gone: Vector[CardId] = states.previous.toVector.flatMap(
-      (before, after) => cards.at(before, site).map(_._1.id).filterNot(id =>
+      (before, after) => cards.at(catalog, before, site).map(_._1.id)
+        .filterNot(id =>
         after.game.current.map.sites.get(site)
           .exists(_.denizens.exists(_.id == id))))
     if gone.nonEmpty then discarded(card, NoteArg.Cards(gone))

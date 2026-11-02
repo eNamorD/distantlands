@@ -20,7 +20,7 @@ import oathdigital.testkit.StartPreview
   * (`RulerToll`); its bandit case is pinned here only. */
 class CurfewSuite extends munit.FunSuite:
   private val curfew = CurfewCard.id
-  private val power = Curfew.forCatalog(catalog)
+  private val power = Curfew
   /** p1's pawn site, where p1 trades. */
   private val home = AncientCitySite.id
   /** Where Curfew stands. */

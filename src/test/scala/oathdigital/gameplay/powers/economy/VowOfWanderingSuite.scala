@@ -55,7 +55,7 @@ class VowOfWanderingSuite extends munit.FunSuite:
       Look(ready).boardWarbands(p1) + 5)
     assertEquals(wanderingSaid(done.journal.events), Vector(gainedLine(2)))
     assertEquals(NoteText.said(VowOfBeastkin.id,
-      VowOfBeastkin.forCatalog(catalog).noteKeys, done.journal.events),
+      VowOfBeastkin.noteKeys, done.journal.events),
       Vector(gainedLine(1)))
 
   test("a short bank gives what it holds, and the line says what came"):

@@ -16,19 +16,14 @@ object SmallFriendsCard extends Denizen(DenizenId("177"), "Small Friends", Suit.
   * use Trade modifiers there.)" It offers the sites in play, other than the
   * pawn site, that hold a card of the Beast suit ([[ActingSite]]).
   */
-final case class SmallFriends private (catalog: ExecutableCatalog)
-    extends ActingSite:
+case object SmallFriends extends ActingSite:
+  val id: PowerId = SmallFriendsCard.power.id
+
   val card: Denizen = SmallFriendsCard
-  def id: PowerId = SmallFriends.id
   val noSite: String = "No other site has a Beast card"
   val heading: String = "Small Friends: act as if at which site?"
 
-  def sites(ready: ReadyGame, actor: PlayerId): Vector[SiteId] =
+  def sites(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId): Vector[SiteId] =
     ActingSite.otherSites(ready, actor)(card =>
       catalog.suitOf(card.id).contains(Suit.Beast))
-
-object SmallFriends:
-  val id: PowerId = SmallFriendsCard.power.id
-
-  def forCatalog(catalog: ExecutableCatalog): SmallFriends =
-    new SmallFriends(catalog)

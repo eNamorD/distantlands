@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.economy
 
-import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
+import oathdigital.catalog.{PrintedPower, Relic}
 import oathdigital.gameplay.actions.economy.{MusterSource, TradeProcedure}
 import oathdigital.gameplay.powerresolver.Contribution
 import oathdigital.gameplay.powers.SelectedModifier
@@ -18,19 +18,13 @@ object CupOfPlentyCard extends Relic(RelicId("R07"), "Cup of Plenty", value = 96
   * Supply. A facedown adviser does not count, and a player with no faceup
   * adviser trades free. The waiver is [[SuitSupplyWaiver]].
   */
-final case class CupOfPlenty private (catalog: ExecutableCatalog)
-    extends SelectedModifier:
+case object CupOfPlenty extends SelectedModifier:
+  val id: PowerId = CupOfPlentyCard.power.id
+
   val card: Relic = CupOfPlentyCard
-  def id: PowerId = CupOfPlenty.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Trade)
 
   def effects: Map[PowerWindow, Vector[Contribution]] = SuitSupplyWaiver.effects(
-    PowerWindow.TradeCost, TradeProcedure.decisionId, catalog)(
-    (ready, actor, suit) =>
+    PowerWindow.TradeCost, TradeProcedure.decisionId)(
+    (catalog, ready, actor, suit) =>
       MusterSource.matching(catalog, ready, actor, suit) == 0)
-
-object CupOfPlenty:
-  val id: PowerId = CupOfPlentyCard.power.id
-
-  def forCatalog(catalog: ExecutableCatalog): CupOfPlenty =
-    new CupOfPlenty(catalog)

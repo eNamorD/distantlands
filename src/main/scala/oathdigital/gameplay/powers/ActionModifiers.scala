@@ -1,6 +1,5 @@
 package oathdigital.gameplay.powers
 
-import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.powerresolver.ContributingPower
 import oathdigital.gameplay.powers.economy.{AnimalPlaymates, AwaitedReturn,
   Birdsong, CupOfPlenty, Curfew, Defame, Downtrodden, FriendlyFamiliar,
@@ -21,19 +20,19 @@ import oathdigital.gameplay.powers.search.{Augury, Baron, CropRotation,
   * all are always present.
   */
 object ActionModifiers:
-  def forCatalog(catalog: ExecutableCatalog): Vector[ContributingPower] =
+  val all: Vector[ContributingPower] =
     Vector[ContributingPower](Augury, TruthfulHarp, Disciples, CropRotation,
       Baron, NewGrowth, ForestWarden,
       NewsFromAfar, HuntingParty, Observatory, ErrandBoy, Mushrooms,
       WineOfWelcome, PaintedTrumpet, SpinningBee,
-      LandWarden, CupOfPlenty.forCatalog(catalog),
-      AnimalPlaymates.forCatalog(catalog), Birdsong.forCatalog(catalog),
-      TheOldOak, RowdyPub, VillageIdiot, Downtrodden.forCatalog(catalog),
-      SpitefulMirror, MovingMarket.forCatalog(catalog), AwaitedReturn,
-      MountedLibrary.forCatalog(catalog), Defame.forCatalog(catalog),
-      GolemLegions, MapLibrary.forCatalog(catalog),
-      SkilledMerchants.forCatalog(catalog), SmallFriends.forCatalog(catalog),
-      FriendlyFamiliar.forCatalog(catalog), SecretSignal, Pressgangs,
-      OldSongs, Curfew.forCatalog(catalog), ForcedLabor, InitiationRite,
-      VowOfBeastkin.forCatalog(catalog), VowOfWanderingMuster,
+      LandWarden, CupOfPlenty,
+      AnimalPlaymates, Birdsong,
+      TheOldOak, RowdyPub, VillageIdiot, Downtrodden,
+      SpitefulMirror, MovingMarket, AwaitedReturn,
+      MountedLibrary, Defame,
+      GolemLegions, MapLibrary,
+      SkilledMerchants, SmallFriends,
+      FriendlyFamiliar, SecretSignal, Pressgangs,
+      OldSongs, Curfew, ForcedLabor, InitiationRite,
+      VowOfBeastkin, VowOfWanderingMuster,
       VowOfWandering, VowOfPoverty, RelicWorship, SilverCharm)

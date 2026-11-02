@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.economy
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog, Locked,
-  PrintedPower}
+import oathdigital.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
 import oathdigital.gameplay.{EffectiveSuit, PowerAccess}
 import oathdigital.gameplay.actions.economy.MusterSource
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
@@ -30,13 +29,16 @@ object VowOfBeastkinCard extends Denizen(DenizenId("196"), "Vow of Beastkin", Su
   * `persistent: false`, but it is a must, so it keeps the default automatic
   * resolution.
   */
-final case class VowOfBeastkin private (catalog: ExecutableCatalog)
-    extends ContributingPower:
-  val cardId: DenizenId = VowOfBeastkinCard.id
-  def id: PowerId = VowOfBeastkin.id
-  def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
+case object VowOfBeastkin extends ContributingPower:
+  val id: PowerId = VowOfBeastkinCard.power.id
+  val Warbands: Int = 1
+  /** "Gained {n} more warband." */
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  val gained: NoteKey = notes.borrow(ExtraWarbands.gained)
 
-  override def noteKeys: Vector[NoteKey] = VowOfBeastkin.noteKeys
+  val cardId: DenizenId = VowOfBeastkinCard.id
+  def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
 
   def contributions: Map[PowerWindow, Vector[Contribution]] = Map(
     PowerWindow.MusterSourceSelection -> Vector(OptionRestriction(refused)),
@@ -55,8 +57,8 @@ final case class VowOfBeastkin private (catalog: ExecutableCatalog)
   private def refused(ctx: PowerCtx, ref: DecisionOptionRef)
       : Option[OathViolation] = for
     card <- cardOf(ref)
-    suit <- EffectiveSuit.traded(catalog, ctx.state, ctx.answered, ref)
-    if MusterSource.matching(catalog, ctx.state, ctx.actor, suit) == 0
+    suit <- EffectiveSuit.traded(ctx.catalog, ctx.state, ctx.answered, ref)
+    if MusterSource.matching(ctx.catalog, ctx.state, ctx.actor, suit) == 0
     site <- PowerAccess.pawnSite(ctx.state, ctx.actor)
   yield OathViolation.EconomyCardUnavailable(site, card)
 
@@ -64,14 +66,3 @@ final case class VowOfBeastkin private (catalog: ExecutableCatalog)
     case DecisionOptionRef.Denizen(card) => Some(card)
     case DecisionOptionRef.Edifice(card) => Some(card)
     case _ => None
-
-object VowOfBeastkin:
-  val id: PowerId = VowOfBeastkinCard.power.id
-  val Warbands: Int = 1
-  /** "Gained {n} more warband." */
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  val gained: NoteKey = notes.borrow(ExtraWarbands.gained)
-
-  def forCatalog(catalog: ExecutableCatalog): VowOfBeastkin =
-    new VowOfBeastkin(catalog)

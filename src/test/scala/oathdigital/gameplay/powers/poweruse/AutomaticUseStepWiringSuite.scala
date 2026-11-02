@@ -12,7 +12,6 @@ import oathdigital.gameplay.powers.economy.{VowOfBeastkin,
 import oathdigital.gameplay.powers.travel.{Hospitality, Tyrant}
 import oathdigital.gameplay.powers.whenplayed.{ConspiracyWhenPlayed,
   ThreateningRoar, ThreateningRoarCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{ParkedUses, LogNoted, ProcedureWalker,
   WalkerOutcome, WalkerPowers}
 import oathdigital.model._
@@ -74,7 +73,7 @@ class AutomaticUseStepWiringSuite extends munit.FunSuite:
     ("Tyrant", Tyrant, PowerWindow.TravelCost, p2Travels),
     ("Hospitality", Hospitality, PowerWindow.TravelCost,
       p2Travels),
-    ("Vow of Beastkin", VowOfBeastkin.forCatalog(catalog),
+    ("Vow of Beastkin", VowOfBeastkin,
       PowerWindow.MusterGain, p1MusterGain),
     ("Vow of Wandering", VowOfWanderingMuster, PowerWindow.MusterGain,
       p1MusterGain))

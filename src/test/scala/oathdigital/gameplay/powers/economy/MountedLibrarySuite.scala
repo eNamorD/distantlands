@@ -4,7 +4,6 @@ import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powerresolver.{FoldPhase, Transform}
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.{HorseArchersCard, WrestlersCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look, PowerRules,
   Table}
@@ -13,7 +12,7 @@ import oathdigital.testkit.Table.p1
 
 class MountedLibrarySuite extends munit.FunSuite:
   private val library = MountedLibraryCard.id
-  private val power = MountedLibrary.forCatalog(catalog)
+  private val power = MountedLibrary
   private val modifiers = Vector(MountedLibrary.id)
   private val home = AncientCitySite.id
   /** A Nomad adviser, so a Trade with Mounted Library gains 1 secret, or 1

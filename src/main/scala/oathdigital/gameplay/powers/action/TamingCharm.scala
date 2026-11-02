@@ -31,14 +31,14 @@ final case class TamingCharm private (catalog: ExecutableCatalog)
     extends PaidAction(TamingCharmCard.power):
   import TamingCharm._
 
-  private val cards = new SiteCards(catalog, Set(Suit.Beast, Suit.Nomad))
+  private val cards = new SiteCards(Set(Suit.Beast, Suit.Nomad))
   override def noteKeys: Vector[NoteKey] = TamingCharm.noteKeys
   override def narratedDecisions: Set[String] = Set(decisionId)
 
   def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
       source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
-    Branch((live, _) => cards.ask(live, player, decisionId,
+    Branch((live, _) => cards.ask(catalog, live, player, decisionId,
       "Taming Charm: discard a Beast or Nomad card at your site")),
     BuildOps((live, pending) => discard(live, player, pending),
       required = true),
@@ -47,7 +47,7 @@ final case class TamingCharm private (catalog: ExecutableCatalog)
 
   private def discard(ready: ReadyGame, player: PlayerId, pending: PendingTree)
       : Either[OathViolation, Vector[CoreOperation]] =
-    cards.chosen(ready, player, pending, decisionId) match
+    cards.chosen(catalog, ready, player, pending, decisionId) match
       case None => Right(Vector.empty)
       case Some((site, card, suit)) => cards.discard(ready, site, card, suit,
         player, required = true).map(Vector(_))
@@ -70,7 +70,7 @@ final case class TamingCharm private (catalog: ExecutableCatalog)
         case Some(chosen) => Some(line(states, card, player, chosen))
         case None => PowerAccess.pawnSite(states.now, player).map(site =>
           // A card was there, but a refusal kept it: it was not discarded.
-          if cards.at(states.now, site).nonEmpty then
+          if cards.at(catalog, states.now, site).nonEmpty then
             kept(card, NoteArg.Site(site))
           else bare(card, NoteArg.Site(site))))
 
