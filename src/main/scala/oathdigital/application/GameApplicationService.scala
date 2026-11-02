@@ -3,7 +3,6 @@ package oathdigital.application
 import oathdigital.catalog.ExecutableCatalog
 import oathdigital.engine.{RecordedEvent, ReplayStep}
 import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.actions.search.SearchProcedure
 import oathdigital.gameplay.powerresolver.PowerUseStep
 import oathdigital.gameplay.powers.{ConsentPowers, PhasePowerCatalog,
   WalkerPowerCatalog}
@@ -87,7 +86,6 @@ object GameApplicationError:
 final class GameApplicationService(
     catalog: ExecutableCatalog,
     repository: EventStreamRepository,
-    searchDrawPort: SearchDrawPort = SearchDrawPort.authoritative,
     campaignDicePort: CampaignDicePort = CampaignDicePort.random,
     warExhaustionRandomPort: WarExhaustionRandomPort =
       WarExhaustionRandomPort.random,
@@ -478,41 +476,17 @@ final class GameApplicationService(
     command match
       case GameCommand.Begin(chronicle, orders) =>
         rules.beginGame(state, chronicle, orders)
-      case Issued(actor, intent) => applyIntent(state, actor, intent)
-
-  private def applyIntent(state: OathState, actor: PlayerId,
-      intent: PlayerIntent): Either[OathViolation, OathTransition] =
-    intent match
-      // The source answer is where a Search draws, so the prepared draw is
-      // checked there, against the pile the answer names.
-      case PlayerIntent.ResolveWalker(
-          TreeDecision(SearchProcedure.sourceDecisionId, answer)) =>
-        state match
-          case OathState.Ready(ready)
-              if ready.game.current.walkerProcedure.contains(ActionRef.Search) =>
-            for
-              source <- SearchProcedure.sourceOf(answer)
-              prepared <- searchDrawPort.prepare(ready, source)
-              authoritative = oathdigital.gameplay.actions.SearchRules.draw(
-                ready, source)
-              _ <- Either.cond(prepared == authoritative, (),
-                OathViolation.SearchDrawMismatch(
-                  "prepared draw does not match authoritative source order"))
-              result <- rules.resolveWalker(state, actor,
-                SearchProcedure.sourceDecisionId, answer)
-            yield result
-          case _ => rules.resolveWalker(state, actor,
-            SearchProcedure.sourceDecisionId, answer)
-      case PlayerIntent.ResolveWalker(treeDecision) =>
+      case Issued(actor, PlayerIntent.ResolveWalker(treeDecision)) =>
         rules.resolveWalker(state, actor, treeDecision.decisionId,
           treeDecision.answer)
       // `routed` sends Undo and Redo to the fold on every stream; these arms
       // only keep the match exhaustive.
-      case PlayerIntent.Undo => Left(OathViolation.NothingToUndo)
-      case PlayerIntent.Redo => Left(OathViolation.NothingToRedo)
+      case Issued(_, PlayerIntent.Undo) => Left(OathViolation.NothingToUndo)
+      case Issued(_, PlayerIntent.Redo) => Left(OathViolation.NothingToRedo)
       // `routed` sends these to the consent desk; none reaches the rules.
-      case _: PlayerIntent.Consent => Left(OathViolation.InvalidEventOrder(
-        "a consent command never reaches the rules"))
+      case Issued(_, _: PlayerIntent.Consent) => Left(
+        OathViolation.InvalidEventOrder(
+          "a consent command never reaches the rules"))
 
   private def isWalkerResume(command: GameCommand): Boolean = command match
     case Issued(_, _: PlayerIntent.ResolveWalker) => true

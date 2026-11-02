@@ -239,28 +239,6 @@ class GameApplicationServiceActionsSuite extends munit.FunSuite:
       record.contains(edificeId.value)),
       "the journalled answer must spell the edifice kind and id")
 
-  test("Search draw port cannot inject card identities inconsistent with state"):
-    /** Stub of SearchDrawPort: always draws DenizenId("denizen:tampered"). */
-    val port = new SearchDrawPort:
-      def prepare(ready: ReadyGame, source: SearchSource)
-          : Either[OathViolation, Vector[WorldCardId]] =
-        Right(Vector(DenizenId("denizen:tampered")))
-    // Built by hand: `Table#service` takes no draw port.
-    val repository = new InMemoryEventStreamRepository
-    val table = Table.start
-    val service = new GameApplicationService(catalog, repository, port,
-      genesis = table.phaseMenuParked.state)
-    val active = p1
-    val started = accepted(service.handle("game-search-tamper", 0L,
-      ParkedServiceFixture.startSearch(active)))
-    assertEquals(service.handle("game-search-tamper", started.nextSequence,
-      ParkedServiceFixture.pickSearchSource(active, SearchSource.WorldDeck))
-      .left.toOption, Some(GameApplicationError.CommandRejected(
-        OathViolation.SearchDrawMismatch(
-          "prepared draw does not match authoritative source order"))))
-    assertEquals(loaded(service.load("game-search-tamper")).nextSequence,
-      started.nextSequence)
-
   test("walker Search persists its card choice and completes after reload"):
     // Three denizens on top of the world deck, so the Search offers a choice.
     val (service, repository) = Table.start

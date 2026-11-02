@@ -5,9 +5,10 @@
 > candidate at `0d1ae92`, describes the three transports and the service
 > calls each writes, defines the seam for actor resolution, settles the
 > public-only projection scope and `SearchDrawPort`, and slices the change.
-> Nothing here is implemented. Companion notes: the
-> [command vocabulary](2026-11-02-one-command-vocabulary-design.md), which
-> should land first, and the [wire codecs](2026-11-02-derive-wire-codecs-design.md).
+> Slice 0 (the command vocabulary note) and slice 1 (the `SearchDrawPort`
+> fold) landed on 2026-11-02; slices 2 to 5 are not implemented. Companion
+> notes: the [command vocabulary](2026-11-02-one-command-vocabulary-design.md),
+> which landed first, and the [wire codecs](2026-11-02-derive-wire-codecs-design.md).
 
 Vocabulary: a **transport** is one set of HTTP routes plus the gateway
 class behind it that turns a request into service calls. The **actor** is

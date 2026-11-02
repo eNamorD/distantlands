@@ -415,9 +415,9 @@ before treating the numbers below as current.
   production, and the authenticated stack mounts only in development, with no
   session issuer. One gateway behind a seam for how the actor is resolved
   would serve both. The authenticated stack's public-only projection scope is
-  the one behaviour the seat transport lacks. `SearchDrawPort`, a port checked
-  against itself, can fold away with the service arm it guards. Design
-  note: [one HTTP gateway](superpowers/specs/2026-11-02-one-http-gateway-design.md).
+  the one behaviour the seat transport lacks. Design note:
+  [one HTTP gateway](superpowers/specs/2026-11-02-one-http-gateway-design.md),
+  whose slice 1 (the `SearchDrawPort` fold) is done.
 - [ ] **`ConsentDesk` settles a batch.** Its seven verbs have one caller,
   which owns their order at nine sites; the last five consent commits all
   edited the service. The desk could take a batch and return it settled.
