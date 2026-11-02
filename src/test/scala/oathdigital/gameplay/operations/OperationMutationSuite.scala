@@ -49,13 +49,16 @@ class OperationMutationSuite extends munit.FunSuite:
     assertEquals(set(titled(Some(p1), TitleSide.Usurper), None),
       Right(OathkeeperState(None, TitleSide.Oathkeeper)))
 
-  test("SetOathkeeper rejects leaving the holder unchanged, whatever the side"):
-    Vector(TitleSide.Oathkeeper, TitleSide.Usurper).foreach { side =>
-      assertEquals(set(titled(Some(p1), side), Some(p1)).left.map(_.code),
-        Left("oathkeeper-unchanged"))
-    }
+  test("SetOathkeeper rejects leaving an Oathkeeper-side holder unchanged"):
+    assertEquals(set(titled(Some(p1), TitleSide.Oathkeeper), Some(p1))
+      .left.map(_.code), Left("oathkeeper-unchanged"))
     assertEquals(set(titled(None, TitleSide.Oathkeeper), None).left.map(_.code),
       Left("oathkeeper-unchanged"))
+
+  test("SetOathkeeper turns an unchanged holder's Usurper title back"):
+    // Becoming a Citizen flips the title to its Oathkeeper side (CR p. 34).
+    assertEquals(set(titled(Some(p1), TitleSide.Usurper), Some(p1)),
+      Right(OathkeeperState(Some(p1), TitleSide.Oathkeeper)))
 
   private def setGoal(from: OathkeeperGoal, to: OathkeeperGoal) =
     new OperationExecutor().executeAll(
