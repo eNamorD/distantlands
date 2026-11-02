@@ -33,7 +33,7 @@ final case class Defame private (catalog: ExecutableCatalog)
     extends SelectedModifier:
   import Defame._
 
-  val cardId: DenizenId = DefameCard.id
+  val card: Denizen = DefameCard
   def id: PowerId = Defame.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Trade)
   override def noteKeys: Vector[NoteKey] = Defame.noteKeys

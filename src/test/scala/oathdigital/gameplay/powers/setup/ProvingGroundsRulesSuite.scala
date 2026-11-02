@@ -48,7 +48,7 @@ class ProvingGroundsRulesSuite extends munit.FunSuite:
     SetupWalkDriver.driveWithEvents(ready, tree, TriggeredProcedureRef.Setup,
       powers).events
 
-  private val proving = ProvingGrounds.forCatalog(catalog)
+  private val proving = ProvingGrounds
 
   private val empty = EmptyGrounds.forCatalog(catalog)
 

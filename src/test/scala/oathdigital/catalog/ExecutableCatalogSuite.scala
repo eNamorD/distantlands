@@ -1,9 +1,9 @@
 package oathdigital.catalog
 
-import oathdigital.catalog.holding.HallOfDebateCard
 import oathdigital.gameplay.cards.NewFoundations
 import oathdigital.gameplay.powers.action.AlchemistCard
 import oathdigital.gameplay.powers.campaign.StickyFireCard
+import oathdigital.gameplay.powers.setup.HallOfDebateCard
 import oathdigital.model.{DenizenId, EdificeId, LegacyId, PowerId, RelicId,
   SiteId, Suit}
 import oathdigital.testkit.TestCards

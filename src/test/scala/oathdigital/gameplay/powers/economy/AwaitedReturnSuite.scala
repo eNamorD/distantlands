@@ -3,7 +3,6 @@ package oathdigital.gameplay.powers.economy
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.WrestlersCard
 import oathdigital.gameplay.powers.wake.AncientCitySite
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look, PowerRules,
   Table}
@@ -13,7 +12,7 @@ import oathdigital.testkit.Unwrap.accepted
 
 class AwaitedReturnSuite extends munit.FunSuite:
   private val awaited = AwaitedReturnCard.id
-  private val power = AwaitedReturn.forCatalog(catalog)
+  private val power = AwaitedReturn
   private val modifiers = Vector(AwaitedReturn.id)
   private val home = AncientCitySite.id
   /** A plain Order denizen to Trade with. */

@@ -1,7 +1,7 @@
 package oathdigital.gameplay.setup
 
-import oathdigital.catalog.holding.HallOfDebateCard
 import oathdigital.gameplay.cards.GreatSlumSite
+import oathdigital.gameplay.powers.setup.HallOfDebateCard
 import oathdigital.model._
 import oathdigital.testkit.Unwrap.{accepted, as, rejected}
 

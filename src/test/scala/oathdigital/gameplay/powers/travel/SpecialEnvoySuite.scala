@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.travel
 
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{ActPowerHarness, Look, Outcomes, PhasePowerHarness}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
@@ -13,7 +12,7 @@ class SpecialEnvoySuite extends munit.FunSuite:
 
   private val envoy = SpecialEnvoyCard.id
   private val drum = DragonskinDrumCard.id
-  private val power = SpecialEnvoy.forCatalog(catalog)
+  private val power = SpecialEnvoy
   private val modifiers = Vector(SpecialEnvoy.id)
 
   /** The actor holds Special Envoy faceup and 7 Supply, at Buried Giant, the

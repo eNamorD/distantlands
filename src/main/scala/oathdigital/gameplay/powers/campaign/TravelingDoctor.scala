@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, PrintedPower}
 import oathdigital.gameplay.powerresolver.{ContributingPower, PowerCtx}
 import oathdigital.model._
 
@@ -22,10 +22,10 @@ object TravelingDoctorCard extends Denizen(DenizenId("51"), "Traveling Doctor", 
   * bandit defender applies it too: bandits are no player, so the rule spares
   * nothing and every targeted bandit still dies, and the card is discarded.
   */
-final case class TravelingDoctor private (catalog: ExecutableCatalog)
-    extends BattlePlan with DiscardedAtEnd:
-  val cardId: DenizenId = TravelingDoctorCard.id
-  def id: PowerId = TravelingDoctor.id
+case object TravelingDoctor extends BattlePlan with DiscardedAtEnd:
+  val id: PowerId = TravelingDoctorCard.power.id
+
+  val card: Denizen = TravelingDoctorCard
 
   def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] =
@@ -46,14 +46,8 @@ final case class TravelingDoctor private (catalog: ExecutableCatalog)
 
   override def endDiscard: PlanUse => Vector[Operation] = use =>
     if use.won.contains(false) then
-      PlanDiscard.afterCampaign(catalog, id, use, cardId)
+      PlanDiscard.afterCampaign(id, use, card)
     else Vector.empty
 
   override def ignores(ctx: PowerCtx, other: ContributingPower): Boolean =
     SparedForce.ignores(ctx, this, other)
-
-object TravelingDoctor:
-  val id: PowerId = TravelingDoctorCard.power.id
-
-  def forCatalog(catalog: ExecutableCatalog): TravelingDoctor =
-    new TravelingDoctor(catalog)

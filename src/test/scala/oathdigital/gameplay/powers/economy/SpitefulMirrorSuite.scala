@@ -6,7 +6,6 @@ import oathdigital.gameplay.powerresolver.ModifierPicks
 import oathdigital.gameplay.powers.{NoteText, SearchFixture}
 import oathdigital.gameplay.powers.campaign.WrestlersCard
 import oathdigital.gameplay.powers.wake.AncientCitySite
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
 import oathdigital.model.OathState.Ready
@@ -18,7 +17,7 @@ import oathdigital.testkit.Unwrap.accepted
 
 class SpitefulMirrorSuite extends munit.FunSuite:
   private val mirror = SpitefulMirrorCard.id
-  private val power = SpitefulMirror.forCatalog(catalog)
+  private val power = SpitefulMirror
   private val home = AncientCitySite.id
   /** A plain Order denizen. */
   private val wrestlers = WrestlersCard.id

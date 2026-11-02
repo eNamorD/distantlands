@@ -5,7 +5,6 @@ import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.powers.{NoteText, PowerFixture, SearchFixture}
 import oathdigital.gameplay.powers.action.{ArcaneBrokersCard, WardOfSilenceCard}
 import oathdigital.gameplay.powers.campaign.ArcaneArmorCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{ActPowerHarness, Look, Table}
 
@@ -37,7 +36,7 @@ class GossipSuite extends munit.FunSuite:
   private def discordBank(ready: ReadyGame): Int =
     ready.banks.favor.getOrElse(Suit.Discord, 0)
 
-  private val power = Gossip.forCatalog(catalog)
+  private val power = Gossip
 
   private def said(events: Vector[OathEvent]): Vector[NoteText.Said] =
     NoteText.said(power.id, power.noteKeys, events)

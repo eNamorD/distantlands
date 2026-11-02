@@ -24,13 +24,17 @@ campaign-continuity and Empire rules.
 
 Left behind by earlier phases:
 
-- [ ] **Shrink cached catalog fields.**
-  [Card classes](superpowers/specs/2026-10-01-card-classes-design.md) made powers
-  read their cards from card objects, yet many classes still take a
-  `catalog: ExecutableCatalog` constructor parameter (power classes, the
-  projectors, the Game Log and the Campaign plan files), and many
-  `forCatalog(catalog)` constructors thread it, often only to pass it on.
-  Sweep them out; a standing rule stops new ones.
+- [ ] **Put the catalog on `PowerCtx`.** The sweep of 2026-11-02 made every
+  power that only threaded the catalog a case object
+  ([Card classes](superpowers/specs/2026-10-01-card-classes-design.md)), and
+  `scripts/check-architecture.py` lists the 119 power files that still take
+  `catalog: ExecutableCatalog`, each with its reason: they look other cards
+  up, mostly another card's suit through `EffectiveSuit`, or a site's
+  capacity. Those parameters, and the registries' `forCatalog` constructors
+  that thread to them, go away only once the walker hands the catalog to
+  powers through `PowerCtx` (or `ReadyGame`) instead of construction. The
+  projectors, the Game Log and the action procedures take it for genuine
+  lookups and stay as they are.
 - [ ] **Show that the action pane scrolls at 1024×700.** At that size the
   action pane is about 330px tall, and the Keep and Discard zones of the
   starting-adviser decision sit wholly below the sticky confirm button with
@@ -78,7 +82,11 @@ did":
 Cards that need an engine change first, grouped by the missing mechanism.
 [Catalog batch 8](superpowers/specs/2026-10-12-catalog-batch-8-design.md#out-of-scope)
 left these out: each costs a slice or more per card, or belongs with another
-phase.
+phase. The
+[catalog batch 9 design](superpowers/specs/2026-11-02-catalog-batch-9-design.md)
+(2026-11-02) triaged every remaining power, took 22 edifice faces whose
+mechanisms exist, and its "Out of scope" section is the refreshed version of
+this list.
 
 - **Search Party:** a card played after its WHEN PLAYED, as if searched.
   Nested inside the WHEN PLAYED, the played card fires neither its own WHEN
@@ -467,9 +475,11 @@ before treating the numbers below as current.
 
 - New code reads cards from their card objects. A new class takes no
   `catalog: ExecutableCatalog` parameter and adds no `forCatalog`
-  constructor only to pass the catalog on, and a new test names cards and
-  sites by their card objects (`AlchemistCard`, `DeepWoodsSite`), never by a
-  printed name looked up at run time (BackendArchitectureSuite checks).
+  constructor only to pass the catalog on (`scripts/check-architecture.py`
+  lists the powers allowed one, each with its reason), and a new test names
+  cards and sites by their card objects (`AlchemistCard`, `DeepWoodsSite`),
+  never by a printed name looked up at run time (BackendArchitectureSuite
+  checks).
 - The verification gate is the complete JVM and Scala.js suites, the optimized
   Scala.js linker, the card catalog suite, the architecture and documentation-link
   checks, and diff validation.

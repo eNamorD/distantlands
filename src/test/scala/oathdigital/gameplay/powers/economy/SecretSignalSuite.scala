@@ -7,7 +7,6 @@ import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.action.AlchemistCard
 import oathdigital.gameplay.powers.campaign.WrestlersCard
 import oathdigital.gameplay.powers.wake.AncientCitySite
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
 import oathdigital.model.OathState.Ready
@@ -19,7 +18,7 @@ import oathdigital.testkit.Unwrap.accepted
 
 class SecretSignalSuite extends munit.FunSuite:
   private val signal = SecretSignalCard.id
-  private val power = SecretSignal.forCatalog(catalog)
+  private val power = SecretSignal
   private val selected = Vector(SecretSignal.id)
   /** p1's pawn site. */
   private val home = AncientCitySite.id

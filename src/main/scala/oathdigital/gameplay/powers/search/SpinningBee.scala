@@ -42,7 +42,7 @@ object SpinningBeeCard extends Denizen(DenizenId("232"), "Spinning Bee", Suit.He
   */
 final case class SpinningBee private (catalog: ExecutableCatalog)
     extends SelectedModifier:
-  val cardId: DenizenId = SpinningBeeCard.id
+  val card: Denizen = SpinningBeeCard
   def id: PowerId = SpinningBee.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Search)
   override def noteKeys: Vector[NoteKey] = SpinningBee.noteKeys

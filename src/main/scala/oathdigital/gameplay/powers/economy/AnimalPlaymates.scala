@@ -20,7 +20,7 @@ object AnimalPlaymatesCard extends Denizen(DenizenId("40"), "Animal Playmates", 
   */
 final case class AnimalPlaymates private (catalog: ExecutableCatalog)
     extends SelectedModifier:
-  val cardId: DenizenId = AnimalPlaymatesCard.id
+  val card: Denizen = AnimalPlaymatesCard
   def id: PowerId = AnimalPlaymates.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Muster)
 

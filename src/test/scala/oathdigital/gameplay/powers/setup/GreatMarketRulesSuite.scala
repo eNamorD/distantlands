@@ -42,9 +42,9 @@ class GreatMarketRulesSuite extends munit.FunSuite:
     SetupWalkDriver.driveWithEvents(ready, tree, TriggeredProcedureRef.Setup,
       powers).events
 
-  private val great = GreatMarket.forCatalog(catalog)
+  private val great = GreatMarket
 
-  private val bandit = BanditMarket.forCatalog(catalog)
+  private val bandit = BanditMarket
 
   test("Great Market places one favor per denizen in its region, itself included"):
     val staged = stagedAt(EdificeSide.Intact)

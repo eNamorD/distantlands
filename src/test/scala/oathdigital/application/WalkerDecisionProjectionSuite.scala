@@ -119,7 +119,7 @@ class WalkerDecisionProjectionSuite extends munit.FunSuite:
         .started.state)
     val owner = ScopedProjectionContext(ready, Some(p1))
     val viewer = ScopedProjectionContext(ready, Some(p2))
-    val pendingProjector = new PendingProjector(catalog, presentation,
+    val pendingProjector = new PendingProjector(presentation,
       walkerDecisions)
     assertEquals(pendingProjector.project(owner).phase, "recover-walker-decision")
     assertEquals(pendingProjector.project(viewer).phase, "recover-walker-waiting")
@@ -217,7 +217,7 @@ class WalkerDecisionProjectionSuite extends munit.FunSuite:
         .started.state)
     val owner = ScopedProjectionContext(ready, Some(p1))
     val viewer = ScopedProjectionContext(ready, Some(p2))
-    val pendingProjector = new PendingProjector(catalog, presentation,
+    val pendingProjector = new PendingProjector(presentation,
       walkerDecisions)
     assertEquals(pendingProjector.project(owner).phase, "recover-walker-decision")
     assertEquals(pendingProjector.project(viewer).phase, "recover-walker-waiting")

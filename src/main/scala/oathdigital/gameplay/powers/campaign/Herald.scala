@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
-  PrintedPower}
+import oathdigital.catalog.{AdviserOnly, Denizen, PrintedPower}
 import oathdigital.gameplay.actions.campaign.CampaignProcedure
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   Transform}
@@ -35,14 +34,22 @@ object HeraldCard extends Denizen(DenizenId("143"), "Herald", Suit.Hearth) with 
   * Its line, "{Blue} gained 1 favor from the Order bank.", covers the Gain
   * line and names the bank, so its decision is narrated.
   */
-final case class Herald private (catalog: ExecutableCatalog)
-    extends ContributingPower:
+case object Herald extends ContributingPower:
+  val id: PowerId = HeraldCard.power.id
+  /** The favor gained. */
+  val Favor: Int = 1
+  /** Under the Campaign's prefix, so a parked question is a Campaign
+    * decision. */
+  val decisionId: String = CampaignProcedure.decisionPrefix + "herald"
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "{Blue} gained {1 favor} from {the Order bank}." */
+  val gained: NoteKey = NoteSupport.gainedFromKey(notes, "gained")
+
   val cardId: DenizenId = HeraldCard.id
-  def id: PowerId = Herald.id
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
   override lazy val resolution: PowerResolution =
-    CatalogResolution.of(catalog, id)
-  override def noteKeys: Vector[NoteKey] = Herald.noteKeys
+    CatalogResolution.of(HeraldCard.power)
   override def narratedDecisions: Set[String] = Set(Herald.decisionId)
 
   def contributions: Map[PowerWindow, Vector[Contribution]] = Map(
@@ -64,17 +71,3 @@ final case class Herald private (catalog: ExecutableCatalog)
 
   private def holderOf(ready: ReadyGame): Option[PlayerId] =
     PowerAccess.faceupAdviserHolder(ready, cardId)
-
-object Herald:
-  val id: PowerId = HeraldCard.power.id
-  /** The favor gained. */
-  val Favor: Int = 1
-  /** Under the Campaign's prefix, so a parked question is a Campaign
-    * decision. */
-  val decisionId: String = CampaignProcedure.decisionPrefix + "herald"
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "{Blue} gained {1 favor} from {the Order bank}." */
-  val gained: NoteKey = NoteSupport.gainedFromKey(notes, "gained")
-
-  def forCatalog(catalog: ExecutableCatalog): Herald = new Herald(catalog)

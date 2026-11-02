@@ -41,7 +41,7 @@ final case class MountedLibrary private (catalog: ExecutableCatalog)
     extends SelectedModifier:
   import MountedLibrary._
 
-  val cardId: DenizenId = MountedLibraryCard.id
+  val card: Denizen = MountedLibraryCard
   def id: PowerId = MountedLibrary.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Trade)
   override def discardsItself: Boolean = true
@@ -73,14 +73,14 @@ final case class MountedLibrary private (catalog: ExecutableCatalog)
 
   private def tradedWith(pending: PendingTree): Boolean =
     PowerAnswers.one(pending, TradeProcedure.decisionId)
-      .contains(DecisionOptionRef.Denizen(cardId))
+      .contains(DecisionOptionRef.Denizen(card.id))
 
   /** The secrets the doubling's step gained, when it was the source. */
   private def doubledNote(states: NoteStates, actor: PlayerId)
       : Option[LogNote] = for
     step <- states.previous
     if NoteSupport.answer(states, TradeProcedure.decisionId)
-      .contains(DecisionOptionRef.Denizen(cardId))
+      .contains(DecisionOptionRef.Denizen(card.id))
     gained = NoteSupport.secrets(step, actor)
     if gained > 0
   yield doubled(PowerSourceRef.Card(cardId), NoteArg.Number(gained))
@@ -88,7 +88,7 @@ final case class MountedLibrary private (catalog: ExecutableCatalog)
   /** The standard discard of the card from the site it stands at. */
   private def discard(actor: PlayerId): Operation = BuildOps((ready, _) =>
     (for
-      site <- SiteRulers.siteOf(ready, cardId)
+      site <- SiteRulers.siteOf(ready, card.id)
       card <- ready.game.current.map.sites.get(site)
         .flatMap(_.denizens.find(_.id == cardId))
     yield nomadCards.discard(ready, site, card, Suit.Nomad, actor,
@@ -99,8 +99,8 @@ final case class MountedLibrary private (catalog: ExecutableCatalog)
   /** Written when the step before took the card off its site. */
   private def discardedNote(states: NoteStates): Option[LogNote] = for
     (before, after) <- states.previous
-    if SiteRulers.siteOf(before, cardId).nonEmpty &&
-      SiteRulers.siteOf(after, cardId).isEmpty
+    if SiteRulers.siteOf(before, card.id).nonEmpty &&
+      SiteRulers.siteOf(after, card.id).isEmpty
   yield discarded(PowerSourceRef.Card(cardId))
 
 object MountedLibrary:

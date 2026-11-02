@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.travel
 
 import oathdigital.gameplay.powers.{NoteText, PayOrAsk, PowerFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{ActPowerHarness, Look, Outcomes, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
@@ -23,7 +22,7 @@ class TollRoadsSuite extends munit.FunSuite:
       .favor(actor, 1).warbandsAt(provincePlains, rival, 1)
       .warbandsAt(coast, rival, 1))
 
-  private val power = TollRoads.forCatalog(catalog)
+  private val power = TollRoads
 
   private def said(events: Vector[OathEvent]): Vector[NoteText.Said] =
     NoteText.said(power.id, power.noteKeys, events)

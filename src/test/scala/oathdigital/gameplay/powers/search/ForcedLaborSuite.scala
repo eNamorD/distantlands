@@ -21,7 +21,7 @@ class ForcedLaborSuite extends munit.FunSuite:
   import SearchFixture.rules
 
   private val labor = ForcedLaborCard.id
-  private val power = ForcedLabor.forCatalog(catalog)
+  private val power = ForcedLabor
   /** p1's pawn site. */
   private val home = AncientCitySite.id
   /** Where Forced Labor stands. */

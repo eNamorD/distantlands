@@ -77,6 +77,7 @@ object WalkerPowerCatalog:
   private[powers] def contributing(catalog: ExecutableCatalog)
       : Vector[ContributingPower] =
     Vector(CatacombsContribution.forCatalog(catalog)) ++
+      Vector(RelicPatrols, BanditPatrols) ++
       Vector(VowOfPeaceContribution) ++
       Vector(VowOfSilence, VowOfDivision) ++
       Vector(BrassArmyMoves) ++
@@ -106,19 +107,20 @@ object WalkerPowerCatalog:
       Vector(ChaosCult) ++
       ActionModifiers.forCatalog(catalog) ++
       TargetProtections.forCatalog(catalog) ++
-      Vector(KnightsErrant.forCatalog(catalog)) ++
+      Vector(KnightsErrant) ++
       Vector(Marriage) ++
       Vector(PledgeToDiscord) ++
-      Vector(Jinx.forCatalog(catalog)) ++
-      BattlePlans.forCatalog(catalog) ++
+      Vector(Jinx) ++
+      BattlePlans.all ++
       PlanRules.forCatalog(catalog) ++
       SimplePlans.forCatalog(catalog) ++
       PlanRestrictions.forCatalog(catalog) ++
       PlanRewrites.forCatalog(catalog) ++
       CardPlayTriggers.forCatalog(catalog) ++
       BannerFacePowers.contributions ++
-      Vector(Dazzle.forCatalog(catalog), GreatMarket.forCatalog(catalog),
-        BanditMarket.forCatalog(catalog), GreatForge.forCatalog(catalog),
-        BrokenForge.forCatalog(catalog), ProvingGrounds.forCatalog(catalog),
-        EmptyGrounds.forCatalog(catalog), TakeWealthLimit,
+      Vector(Dazzle.forCatalog(catalog), GreatMarket,
+        BanditMarket, GreatForge,
+        BrokenForge, ProvingGrounds,
+        EmptyGrounds.forCatalog(catalog), HallOfMockery, LostGuardians,
+        RuinedSchool, BrokenHorn, TakeWealthLimit,
         ConspiracyWhenPlayed)

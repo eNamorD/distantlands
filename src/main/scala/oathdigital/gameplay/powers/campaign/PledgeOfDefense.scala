@@ -21,7 +21,7 @@ object PledgeOfDefenseCard extends Denizen(DenizenId("243"), "Pledge of Defense"
   */
 final case class PledgeOfDefense private (catalog: ExecutableCatalog)
     extends BattlePlan with DiscardedAtEnd:
-  val cardId: DenizenId = PledgeOfDefenseCard.id
+  val card: Denizen = PledgeOfDefenseCard
   def id: PowerId = PledgeOfDefense.id
   def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Defender)

@@ -1,5 +1,6 @@
 package oathdigital.gameplay.powers
 
+import oathdigital.catalog.Denizen
 import oathdigital.gameplay.powerresolver.{Contribution, ModifierPicks,
   PowerCtx}
 import oathdigital.gameplay.powers.travel.TentsCard
@@ -18,15 +19,14 @@ class SelectedModifierSuite extends munit.FunSuite:
 
   private val card = TentsCard.id
 
-  /** Stub of SelectedModifier: on a catalog modifier id (the Tents id unless
-    * `idValue` says another), so its resolution is the catalog's; the card,
-    * cost and actions are the ones passed in, its effects are empty, and
-    * `appliesAt` answers `applies`. */
-  private final case class Probe(cardId: CardId, override val cost: Cost,
+  /** Stub of SelectedModifier: on a modifier id (the Tents id unless
+    * `idValue` says another), so its resolution is Tents' printed one; the
+    * card, cost and actions are the ones passed in, its effects are empty,
+    * and `appliesAt` answers `applies`. */
+  private final case class Probe(card: Denizen, override val cost: Cost,
       actions: Set[MajorActionType], idValue: String = "denizen.tents",
       applies: Boolean = true)
       extends SelectedModifier:
-    def catalog = oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
     def id: PowerId = PowerId(idValue)
     def effects: Map[PowerWindow, Vector[Contribution]] = Map.empty
     override def appliesAt(ctx: PowerCtx): Boolean = applies
@@ -40,7 +40,7 @@ class SelectedModifierSuite extends munit.FunSuite:
     power.applicable(ctx(ready, power, window))
 
   private val travel: Set[MajorActionType] = Set(MajorActionType.Travel)
-  private def free = Probe(card, Cost.free, travel)
+  private def free = Probe(TentsCard, Cost.free, travel)
   /** p1's Act at Ancient City with Tents at the site and `favor` favor. */
   private def tentsAtAncientCity(favor: Int = 1): Table =
     Table.start.pawn(p1, AncientCitySite).denizen(card, at = AncientCitySite)
@@ -61,14 +61,14 @@ class SelectedModifierSuite extends munit.FunSuite:
       .ready, free))
 
   test("a cost must be payable: enough favor, and an empty card"):
-    val priced = Probe(card, Cost(favor = 1), travel)
+    val priced = Probe(TentsCard, Cost(favor = 1), travel)
     assert(selectable(tentsAtAncientCity(1).ready, priced))
     assert(!selectable(tentsAtAncientCity(0).ready, priced))
     val occupied = tentsAtAncientCity(1).tokens(card, favor = 1).ready
     assert(!selectable(occupied, priced))
 
   test("inside the walk it asks only about its own node"):
-    val priced = Probe(card, Cost(favor = 1), travel)
+    val priced = Probe(TentsCard, Cost(favor = 1), travel)
     // No card and no favor, yet the fold at a walk window still applies it,
     // because a walk window must not depend on what the action spends.
     val broke = Table.start.favor(p1, 0).ready
@@ -76,17 +76,17 @@ class SelectedModifierSuite extends munit.FunSuite:
 
   test("a modifier contributes only its effects: its cost is paid at the " +
       "pick"):
-    val priced = Probe(card, Cost(favor = 1), MajorActionType.values.toSet)
+    val priced = Probe(TentsCard, Cost(favor = 1), MajorActionType.values.toSet)
     assertEquals(priced.contributions,
       Map.empty[PowerWindow, Vector[Contribution]])
     // Outside its selection windows it asks only `appliesAt`, at the
     // action's eligibility window too.
-    val idle = Probe(card, Cost(favor = 1), travel, applies = false)
+    val idle = Probe(TentsCard, Cost(favor = 1), travel, applies = false)
     assert(!idle.applicable(ctx(quietTable, idle,
       PowerWindow.TravelActionEligibility)))
 
   test("the payment is what picking it pays"):
-    val priced = Probe(card, Cost(favor = 1), travel)
+    val priced = Probe(TentsCard, Cost(favor = 1), travel)
     val ready = tentsAtAncientCity(1).ready
     assertEquals(priced.selectionPayments(ready, actor), Vector(
       oathdigital.gameplay.operations.Costs.onCard(actor, card, Cost(favor = 1),
@@ -94,7 +94,7 @@ class SelectedModifierSuite extends munit.FunSuite:
     assertEquals(free.selectionPayments(ready, actor), Vector.empty)
 
   test("its option names its card, at its actions' selection windows"):
-    val both = Probe(card, Cost.free,
+    val both = Probe(TentsCard, Cost.free,
       Set(MajorActionType.Travel, MajorActionType.Search))
     assertEquals(both.selectionCard, Some(card))
     assertEquals(both.selectionWindows, Set[PowerWindow](
@@ -103,7 +103,7 @@ class SelectedModifierSuite extends munit.FunSuite:
 
   test("once picked it applies at its selection window, though it could not " +
       "be paid for again"):
-    val priced = Probe(card, Cost(favor = 1), travel)
+    val priced = Probe(TentsCard, Cost(favor = 1), travel)
     // The card now holds the favor the pick paid, so a second payment would
     // be refused; the pick still applies, for its option restrictions.
     val paid = tentsAtAncientCity(0).tokens(card, favor = 1).ready

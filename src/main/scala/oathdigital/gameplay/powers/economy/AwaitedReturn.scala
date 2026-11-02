@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.economy
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, PrintedPower}
 import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.operations.SupplyStrip
 import oathdigital.gameplay.powerresolver.{Contribution, Transform}
@@ -26,12 +26,18 @@ object AwaitedReturnCard extends Denizen(DenizenId("150"), "Awaited Return", Sui
   * Its line, "Spent no Supply after sacrificing {1} warband.", reads the
   * kill's step. No generic line exists for a kill.
   */
-final case class AwaitedReturn private (catalog: ExecutableCatalog)
-    extends SelectedModifier:
-  val cardId: DenizenId = AwaitedReturnCard.id
-  def id: PowerId = AwaitedReturn.id
+case object AwaitedReturn extends SelectedModifier:
+  val id: PowerId = AwaitedReturnCard.power.id
+  val Sacrificed: Int = 1
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "Spent no Supply after sacrificing {n} warband." */
+  val sacrificed: NoteKey = notes.key("sacrificed", Vector(
+    NotePart.Text("Spent no Supply after sacrificing "), NotePart.Arg(0),
+    NotePart.Plural(0, " warband.", " warbands.")))
+
+  val card: Denizen = AwaitedReturnCard
   def actions: Set[MajorActionType] = Set(MajorActionType.Trade)
-  override def noteKeys: Vector[NoteKey] = AwaitedReturn.noteKeys
 
   def effects: Map[PowerWindow, Vector[Contribution]] = Map(
     PowerWindow.TradeCost -> Vector(Transform((ctx, operations) =>
@@ -57,16 +63,3 @@ final case class AwaitedReturn private (catalog: ExecutableCatalog)
     if lost > 0
   yield AwaitedReturn.sacrificed(PowerSourceRef.Card(cardId),
     NoteArg.Number(lost))
-
-object AwaitedReturn:
-  val id: PowerId = AwaitedReturnCard.power.id
-  val Sacrificed: Int = 1
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "Spent no Supply after sacrificing {n} warband." */
-  val sacrificed: NoteKey = notes.key("sacrificed", Vector(
-    NotePart.Text("Spent no Supply after sacrificing "), NotePart.Arg(0),
-    NotePart.Plural(0, " warband.", " warbands.")))
-
-  def forCatalog(catalog: ExecutableCatalog): AwaitedReturn =
-    new AwaitedReturn(catalog)

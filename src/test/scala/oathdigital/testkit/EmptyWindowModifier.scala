@@ -1,6 +1,6 @@
 package oathdigital.testkit
 
-import oathdigital.catalog.ExecutableCatalog
+import oathdigital.catalog.Denizen
 import oathdigital.gameplay.powerresolver.Contribution
 import oathdigital.gameplay.powers.SelectedModifier
 import oathdigital.gameplay.powers.travel.TentsCard
@@ -13,12 +13,11 @@ import oathdigital.model._
   * (modifier walker design, ruling 11).
   */
 object EmptyWindowModifier:
-  /** Stub of SelectedModifier: free, printed on Tents (whose catalog power
+  /** Stub of SelectedModifier: free, printed on Tents (whose printed power
     * is player-selected), picked for `actions`, with no effect. */
   final case class OnTents(actions: Set[MajorActionType])
       extends SelectedModifier:
-    def catalog: ExecutableCatalog = FirstGameSetupFixture.catalog
-    val cardId: CardId = TentsCard.id
+    val card: Denizen = TentsCard
     def id: PowerId = PowerId("denizen.tents")
     def effects: Map[PowerWindow, Vector[Contribution]] = Map.empty
 

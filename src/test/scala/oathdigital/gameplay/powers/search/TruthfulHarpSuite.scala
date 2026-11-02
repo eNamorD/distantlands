@@ -4,7 +4,6 @@ import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import oathdigital.gameplay.actions.search.SearchProcedure
 import oathdigital.gameplay.powers.{NoteText, PowerFixture, SearchFixture}
 import oathdigital.gameplay.powers.wake.AncientCitySite
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
 import oathdigital.testkit.{ActPowerHarness, Look, PowerRules, Table}
@@ -34,7 +33,7 @@ class TruthfulHarpSuite extends munit.FunSuite:
       : Vector[WorldCardId] = SearchFixture.after(transition).knowledge
     .advisers.getOrElse(viewer, Vector.empty)
 
-  private val power = TruthfulHarp.forCatalog(catalog)
+  private val power = TruthfulHarp
 
   private def said(events: Vector[OathEvent]): Vector[NoteText.Said] =
     NoteText.said(power.id, power.noteKeys, events)

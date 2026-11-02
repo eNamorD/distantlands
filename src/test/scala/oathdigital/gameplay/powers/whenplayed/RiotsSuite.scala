@@ -1,10 +1,10 @@
 package oathdigital.gameplay.powers.whenplayed
 
-import oathdigital.catalog.holding.RelicPatrolsCard
 import oathdigital.gameplay.operations.HallOfMinistersCard
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.action.HomesteadersCard
 import oathdigital.gameplay.powers.campaign.WildMountsCard
+import oathdigital.gameplay.powers.recover.RelicPatrolsCard
 import oathdigital.gameplay.powers.search.{ErrandBoyCard, LandWardenCard}
 import oathdigital.model._
 import oathdigital.testkit.{Look, Outcomes, Table}

@@ -9,9 +9,6 @@ import oathdigital.gameplay.powerresolver.ContributingPower
   */
 object TargetProtections:
   def forCatalog(catalog: ExecutableCatalog): Vector[ContributingPower] =
-    Vector(CircletOfCommand.forCatalog(catalog)) ++
-      Vector(Diplomat.forCatalog(catalog)) ++
-      Vector(ForgottenVault.forCatalog(catalog)) ++
-      Vector(LostTongue.forCatalog(catalog)) ++
-      Vector(OakenFortress.forCatalog(catalog)) ++
-      Vector(RottingFortress.forCatalog(catalog))
+    Vector(CircletOfCommand, Diplomat.forCatalog(catalog), ForgottenVault,
+      LostTongue.forCatalog(catalog), OakenFortress.forCatalog(catalog),
+      RottingFortress.forCatalog(catalog), HallOfDebate, TomeGuardians)

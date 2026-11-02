@@ -24,7 +24,7 @@ object WildCryCard extends Denizen(DenizenId("189"), "Wild Cry", Suit.Beast):
   */
 final case class WildCry private (catalog: ExecutableCatalog)
     extends SelectedModifier:
-  val cardId: DenizenId = WildCryCard.id
+  val card: Denizen = WildCryCard
   def id: PowerId = WildCry.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Search)
 

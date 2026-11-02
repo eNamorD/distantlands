@@ -51,7 +51,7 @@ class MasterAtArmsSuite extends munit.FunSuite:
       ChooseAmountAnswer(1)).finishPlanWindows
     assertEquals(done.result.attackFaces,
       Vector[AttackDieFace](TwoSwordsSkull, OneSword, HollowSword))
-    assertEquals(said(MasterAtArms.forCatalog(catalog), done.events),
+    assertEquals(said(MasterAtArms, done.events),
       Vector(rerolled("1 hollow sword")))
 
   test("its reroll is a button naming the hollow swords, with no cost"):

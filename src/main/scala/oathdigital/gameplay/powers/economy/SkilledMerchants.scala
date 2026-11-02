@@ -25,7 +25,7 @@ object SkilledMerchantsCard extends Denizen(DenizenId("238"), "Skilled Merchants
   */
 final case class SkilledMerchants private (catalog: ExecutableCatalog)
     extends SelectedModifier:
-  val cardId: DenizenId = SkilledMerchantsCard.id
+  val card: Denizen = SkilledMerchantsCard
   def id: PowerId = SkilledMerchants.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Trade)
 

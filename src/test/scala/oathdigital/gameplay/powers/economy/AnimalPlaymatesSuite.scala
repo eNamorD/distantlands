@@ -1,10 +1,10 @@
 package oathdigital.gameplay.powers.economy
 
-import oathdigital.catalog.holding.SchoolOfVinesCard
 import oathdigital.gameplay.powers.SearchFixture
 import oathdigital.gameplay.powers.action.AlchemistCard
 import oathdigital.gameplay.powers.campaign.WrestlersCard
 import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.setup.SchoolOfVinesCard
 import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
 import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look, Table}

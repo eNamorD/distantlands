@@ -20,7 +20,7 @@ object CupOfPlentyCard extends Relic(RelicId("R07"), "Cup of Plenty", value = 96
   */
 final case class CupOfPlenty private (catalog: ExecutableCatalog)
     extends SelectedModifier:
-  val cardId: RelicId = CupOfPlentyCard.id
+  val card: Relic = CupOfPlentyCard
   def id: PowerId = CupOfPlenty.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Trade)
 

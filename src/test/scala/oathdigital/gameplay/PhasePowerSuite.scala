@@ -1,9 +1,9 @@
 package oathdigital.gameplay
 
-import oathdigital.catalog.holding.HallOfDebateCard
 import oathdigital.gameplay.cards.DunesSite
 import oathdigital.gameplay.powers.action.BrassHorseCard
 import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.setup.HallOfDebateCard
 import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model.OathState.Ready
 import oathdigital.catalog.PrintedPower

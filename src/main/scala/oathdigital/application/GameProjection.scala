@@ -19,8 +19,8 @@ final class GameProjector(catalog: ExecutableCatalog, phasePowers: PhasePowers):
   private val walkerDecisions = new WalkerDecisionProjector(catalog,
     presentation, WalkerPowerCatalog.default(catalog),
     WalkerDecisionProjector.declaredTree, phasePowers)
-  private val pendingProjector = new PendingProjector(catalog,
-    presentation, walkerDecisions)
+  private val pendingProjector =
+    new PendingProjector(presentation, walkerDecisions)
   private val consent = new ConsentProjector(presentation, walkerDecisions,
     ConsentPowers.default(catalog))
 

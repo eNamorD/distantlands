@@ -1,9 +1,9 @@
 package oathdigital.gameplay.powers.rest
 
-import oathdigital.catalog.holding.HallOfDebateCard
 import oathdigital.gameplay.powers.action.{ConvoysCard, HomesteadersCard}
 import oathdigital.gameplay.powers.campaign.RainBootsCard
 import oathdigital.gameplay.powers.search.DisciplesCard
+import oathdigital.gameplay.powers.setup.HallOfDebateCard
 import oathdigital.gameplay.powers.travel.BrokenPeaksSite
 import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.powers.whenplayed.BanditChiefCard

@@ -1,11 +1,11 @@
 package oathdigital.application
 
-import oathdigital.catalog.holding.HallOfDebateCard
 import oathdigital.gameplay.phases.PhaseMenu
 import oathdigital.gameplay.powerresolver.PhasePowers
 import oathdigital.gameplay.powers.action.WhistleCard
 import oathdigital.gameplay.powers.economy.GolemLegionsCard
 import oathdigital.gameplay.powers.rest.{SilverTongueCard, SilverTongueFixture}
+import oathdigital.gameplay.powers.setup.HallOfDebateCard
 import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.gameplay.walker.WalkerPowers

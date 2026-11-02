@@ -146,7 +146,7 @@ class MercenariesSuite extends munit.FunSuite:
 
   // ---- Lines ----
 
-  private val power = Mercenaries.forCatalog(catalog)
+  private val power = Mercenaries
   test("a defeated user's discard is written as the Mercenaries' line"):
     val b = attackerBoard
     val done = commit(rules(losingDice), b, 0)

@@ -7,7 +7,6 @@ import oathdigital.gameplay.powers.{PowerFixture, SearchFixture}
 import oathdigital.gameplay.powers.action.{ArcaneBrokersCard, WardOfSilenceCard}
 import oathdigital.gameplay.powers.campaign.ArcaneArmorCard
 import oathdigital.gameplay.powers.wake.AncientCitySite
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{ActPowerHarness, Look, Table}
 
@@ -96,7 +95,7 @@ class WelcomingPartySuite extends munit.FunSuite:
     assertEquals(hearthBank(unselected), hearthBank(ready))
 
   test("it applies only to another denizen played faceup from a Search"):
-    val power = WelcomingParty.forCatalog(catalog)
+    val power = WelcomingParty
     val vision = CardPlayedFaceup(VisionRules.Faith,
       RuleSourceRef.Adviser(actor, VisionRules.Faith))
     val ctx = PowerCtx(Table.start.denizen(party, at = home).ready, actor,

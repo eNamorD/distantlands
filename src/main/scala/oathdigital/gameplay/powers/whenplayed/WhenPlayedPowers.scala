@@ -8,23 +8,11 @@ import oathdigital.gameplay.powerresolver.ContributingPower
   * always present. */
 object WhenPlayedPowers:
   def forCatalog(catalog: ExecutableCatalog): Vector[ContributingPower] =
-    Vector[ContributingPower]() ++
-      Vector(ThreateningRoar.forCatalog(catalog)) ++
-      Vector(Riots.forCatalog(catalog)) ++
-      Vector(AnimalHost.forCatalog(catalog)) ++
-      Vector(Charlatan) ++
-      Vector(KeyToTheCity) ++
-      Vector(BanditPrince) ++
-      Vector(SaladDays) ++
-      Vector(FabledFeast.forCatalog(catalog)) ++
-      Vector(TownMeeting.forCatalog(catalog)) ++
-      Vector(GreatHerd.forCatalog(catalog)) ++
-      Vector(RoyalTax) ++
-      Vector(Revelation) ++
-      Vector(Blackmail.forCatalog(catalog)) ++
-      Vector(Dissent.forCatalog(catalog)) ++
-      Vector(WizardsConclave.forCatalog(catalog)) ++
-      Vector(BanditChief) ++
-      Vector(ARoundOfAle.forCatalog(catalog)) ++
-      Vector(CallForHelp.forCatalog(catalog)) ++
-      Vector(TrueOath.forCatalog(catalog))
+    Vector[ContributingPower](ThreateningRoar.forCatalog(catalog),
+      Riots.forCatalog(catalog), AnimalHost.forCatalog(catalog), Charlatan,
+      KeyToTheCity, BanditPrince, SaladDays, FabledFeast.forCatalog(catalog),
+      TownMeeting.forCatalog(catalog), GreatHerd.forCatalog(catalog),
+      RoyalTax, Revelation, Blackmail.forCatalog(catalog),
+      Dissent.forCatalog(catalog), WizardsConclave.forCatalog(catalog),
+      BanditChief, ARoundOfAle.forCatalog(catalog),
+      CallForHelp.forCatalog(catalog), TrueOath.forCatalog(catalog))

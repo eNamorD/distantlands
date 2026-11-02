@@ -1,10 +1,10 @@
 package oathdigital.gameplay.powers.whenplayed
 
-import oathdigital.catalog.holding.SchoolOfVinesCard
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.action.{FaeMerchantCard, HomesteadersCard}
 import oathdigital.gameplay.powers.campaign.WildMountsCard
 import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.setup.SchoolOfVinesCard
 import oathdigital.gameplay.powers.targeting.OakenFortressCard
 import oathdigital.model._
 import oathdigital.testkit.{Look, Outcomes}
