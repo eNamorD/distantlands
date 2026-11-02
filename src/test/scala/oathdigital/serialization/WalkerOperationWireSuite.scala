@@ -77,6 +77,19 @@ class WalkerOperationWireSuite extends munit.FunSuite:
     val encoded = accepted(GameEventWire.encodeEvent("walker", 0, event))
     assertEquals(GameEventWire.decode(encoded).map(_.event), Right(event))
 
+  test("a replace names its performer on the wire, and one nobody " +
+      "performs writes none (R20)"):
+    val replace = Replace(Piece.Warbands(ForceKind.Bandit, 1),
+      Piece.Warbands(ForceKind.Imperial, 1),
+      PositionedLocation(Location.Site(SiteId("site"))), by = Some(Table.p1))
+    val event = recordedOperation(replace)
+    val encoded = accepted(GameEventWire.encodeEvent("walker", 0, event))
+    assertEquals(GameEventWire.decode(encoded).map(_.event), Right(event))
+    val nobody = accepted(GameEventWire.encodeEvent("walker", 0,
+      recordedOperation(replace.copy(by = None))))
+    assert(!ujson.read(ujson.write(nobody))("payload")("step")("ops")(0)
+      .obj.contains("by"))
+
   test("a swap names its mover on the wire"):
     val swap = Swap(DenizenId("D1"),
       PositionedLocation(Location.Site(SiteId("here"))), DenizenId("D2"),
