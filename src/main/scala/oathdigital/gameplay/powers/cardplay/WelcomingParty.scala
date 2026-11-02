@@ -28,7 +28,7 @@ object WelcomingPartyCard extends Denizen(DenizenId("50"), "Welcoming Party", Su
   * empty Hearth bank gives nothing.
   */
 case object WelcomingParty extends SelectedModifier:
-  def id: PowerId = WelcomingPartyCard.power.id
+  val id: PowerId = WelcomingPartyCard.power.id
   val Favor: Int = 1
 
   val card: Denizen = WelcomingPartyCard

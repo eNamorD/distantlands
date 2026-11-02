@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.economy
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
-  PrintedPower}
+import oathdigital.catalog.{AdviserOnly, Denizen, PrintedPower}
 import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.actions.economy.TradeProcedure
 import oathdigital.gameplay.powerresolver.{Contribution, Deferred,
@@ -36,14 +35,22 @@ object SecretSignalCard extends Denizen(DenizenId("55"), "Secret Signal", Suit.A
   * and so the gain, is chosen after the modifiers. Its line, "Gained 1 more
   * favor.", covers the extra gain's generic line.
   */
-final case class SecretSignal private (catalog: ExecutableCatalog)
-    extends SelectedModifier:
+case object SecretSignal extends SelectedModifier:
+  val id: PowerId = SecretSignalCard.power.id
+  /** The whole gain that earns the extra favor. */
+  val Only: Int = 1
+  val Extra: Int = 1
+  val noFavor: String = "A Trade for secrets gains no favor"
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "Gained {n} more favor." */
+  val gained: NoteKey = notes.key("gained", Vector(NotePart.Text("Gained "),
+    NotePart.Arg(0), NotePart.Text(" more favor.")))
+
   import SecretSignal._
 
   val card: Denizen = SecretSignalCard
-  def id: PowerId = SecretSignal.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Trade)
-  override def noteKeys: Vector[NoteKey] = SecretSignal.noteKeys
 
   def effects: Map[PowerWindow, Vector[Contribution]] = Map(
     PowerWindow.TradeGain -> Vector(Transform((ctx, operations) =>
@@ -82,18 +89,3 @@ final case class SecretSignal private (catalog: ExecutableCatalog)
     amount = NoteSupport.favor(step, actor)
     if amount > 0
   yield gained(PowerSourceRef.Card(cardId), NoteArg.Number(amount))
-
-object SecretSignal:
-  val id: PowerId = SecretSignalCard.power.id
-  /** The whole gain that earns the extra favor. */
-  val Only: Int = 1
-  val Extra: Int = 1
-  val noFavor: String = "A Trade for secrets gains no favor"
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "Gained {n} more favor." */
-  val gained: NoteKey = notes.key("gained", Vector(NotePart.Text("Gained "),
-    NotePart.Arg(0), NotePart.Text(" more favor.")))
-
-  def forCatalog(catalog: ExecutableCatalog): SecretSignal =
-    new SecretSignal(catalog)

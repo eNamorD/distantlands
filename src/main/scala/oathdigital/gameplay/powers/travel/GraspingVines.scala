@@ -29,7 +29,7 @@ object GraspingVinesCard extends Denizen(DenizenId("178"), "Grasping Vines", Sui
   * Travelling free writes "Killed nothing, with {Blue}'s consent."
   */
 case object GraspingVines extends ContributingPower:
-  def id: PowerId = GraspingVinesCard.power.id
+  val id: PowerId = GraspingVinesCard.power.id
   val Warbands: Int = 1
   private val notes = NoteSet(id)
   override def noteKeys: Vector[NoteKey] = notes.declared

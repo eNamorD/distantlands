@@ -29,7 +29,7 @@ object DisciplesCard extends Denizen(DenizenId("205"), "Disciples", Suit.Arcane)
   * what was paid, so it writes no line.
   */
 case object Disciples extends SelectedModifier:
-  def id: PowerId = DisciplesCard.power.id
+  val id: PowerId = DisciplesCard.power.id
   /** What a world-deck Search costs its user while holding the Darkest
     * Secret. */
   val Supply: Int = 2

@@ -29,7 +29,7 @@ object ForgottenVaultCard extends Denizen(DenizenId("75"), "Forgotten Vault", Su
   * The Game Log posts identical notes once per action.
   */
 case object ForgottenVault extends ContributingPower:
-  def id: PowerId = ForgottenVaultCard.power.id
+  val id: PowerId = ForgottenVaultCard.power.id
 
   private val notes = NoteSet(id)
   override def noteKeys: Vector[NoteKey] = notes.declared

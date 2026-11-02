@@ -20,7 +20,7 @@ object ObservatoryCard extends Denizen(DenizenId("64"), "Observatory", Suit.Arca
   * line names the pile.
   */
 case object Observatory extends SelectedModifier:
-  def id: PowerId = ObservatoryCard.power.id
+  val id: PowerId = ObservatoryCard.power.id
 
   val card: Denizen = ObservatoryCard
   def actions: Set[MajorActionType] = Set(MajorActionType.Search)

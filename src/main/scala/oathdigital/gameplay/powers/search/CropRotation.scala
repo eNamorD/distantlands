@@ -29,7 +29,7 @@ object CropRotationCard extends Denizen(DenizenId("128"), "Crop Rotation", Suit.
   * permission, and card play writes it for the discard it allowed.
   */
 case object CropRotation extends SelectedModifier:
-  def id: PowerId = CropRotationCard.power.id
+  val id: PowerId = CropRotationCard.power.id
 
   val card: Denizen = CropRotationCard
   def actions: Set[MajorActionType] = Set(MajorActionType.Search)

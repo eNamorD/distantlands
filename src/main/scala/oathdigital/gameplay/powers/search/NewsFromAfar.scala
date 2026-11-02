@@ -21,7 +21,7 @@ object NewsFromAfarCard extends Denizen(DenizenId("134"), "News from Afar", Suit
   * The start line's cost span shows what was paid, so it writes no line.
   */
 case object NewsFromAfar extends SelectedModifier:
-  def id: PowerId = NewsFromAfarCard.power.id
+  val id: PowerId = NewsFromAfarCard.power.id
   val Favor: Int = 2
 
   val card: Denizen = NewsFromAfarCard

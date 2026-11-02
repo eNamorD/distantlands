@@ -57,7 +57,7 @@ object MarketRule:
   def favor(amount: Int): NoteArg = NoteArg.Amount(amount, NoteUnit.Favor)
 
 case object GreatMarket extends MarketRule:
-  def id: PowerId = GreatMarketCard.intact.power.id
+  val id: PowerId = GreatMarketCard.intact.power.id
   private val notes = NoteSet(id)
   override def noteKeys: Vector[NoteKey] = notes.declared
   /** "Placed {3 favor} on {site}." */
@@ -88,7 +88,7 @@ case object GreatMarket extends MarketRule:
       PositionedLocation(Location.SharedBank), PositionedLocation(Location.Site(at))))
 
 case object BanditMarket extends MarketRule:
-  def id: PowerId = GreatMarketCard.ruined.power.id
+  val id: PowerId = GreatMarketCard.ruined.power.id
   private val notes = NoteSet(id)
   override def noteKeys: Vector[NoteKey] = notes.declared
   /** "Placed {2 favor} on the bandit sites and burned {6 favor} from the

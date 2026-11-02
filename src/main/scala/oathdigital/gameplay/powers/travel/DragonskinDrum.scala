@@ -20,7 +20,7 @@ object DragonskinDrumCard extends Relic(RelicId("R20"), "Dragonskin Drum", value
   * Its line, "{Red} gained 1 warband.", reads the gain's step.
   */
 case object DragonskinDrum extends SelectedModifier:
-  def id: PowerId = DragonskinDrumCard.power.id
+  val id: PowerId = DragonskinDrumCard.power.id
   val Warbands: Int = 1
   private val notes = NoteSet(id)
   override def noteKeys: Vector[NoteKey] = notes.declared

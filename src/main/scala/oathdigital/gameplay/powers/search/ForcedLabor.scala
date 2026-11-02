@@ -28,7 +28,7 @@ object ForcedLaborCard extends Denizen(DenizenId("112"), "Forced Labor", Suit.Or
   * the payment's step.
   */
 case object ForcedLabor extends ContributingPower:
-  def id: PowerId = ForcedLaborCard.power.id
+  val id: PowerId = ForcedLaborCard.power.id
   val decisionId: String = "power.forced-labor.toll"
   private val notes = NoteSet(id)
   override def noteKeys: Vector[NoteKey] = notes.declared

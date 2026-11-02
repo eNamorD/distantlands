@@ -30,7 +30,7 @@ object BaronCard extends Denizen(DenizenId("250"), "Baron", Suit.Order):
   * permission, and card play writes it for the discard it allowed.
   */
 case object Baron extends SelectedModifier:
-  def id: PowerId = BaronCard.power.id
+  val id: PowerId = BaronCard.power.id
 
   /** Whether `actor` rules the site, on the board the play is planned
     * on. */

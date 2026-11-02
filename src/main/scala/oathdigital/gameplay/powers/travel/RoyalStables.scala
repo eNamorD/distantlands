@@ -21,7 +21,7 @@ object RoyalStablesCard extends Denizen(DenizenId("245"), "Royal Stables", Suit.
   * first: they all sort at priority 0, and Royal Stables sorts after them.
   */
 case object RoyalStables extends SelectedModifier:
-  def id: PowerId = RoyalStablesCard.power.id
+  val id: PowerId = RoyalStablesCard.power.id
   val Reduction: Int = 1
   val Minimum: Int = 1
   /** Folds after every Travel power at the default priority 0. */

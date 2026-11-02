@@ -30,7 +30,7 @@ object LandWardenCard extends Denizen(DenizenId("130"), "Land Warden", Suit.Hear
   * play has its own line.
   */
 case object LandWarden extends SelectedModifier:
-  def id: PowerId = LandWardenCard.power.id
+  val id: PowerId = LandWardenCard.power.id
   val Favor: Int = 1
   /** How many cards the keep decision may hold. */
   val Kept: Int = 2

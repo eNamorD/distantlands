@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.economy
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
-  PrintedPower}
+import oathdigital.catalog.{AdviserOnly, Denizen, PrintedPower}
 import oathdigital.gameplay.powerresolver.{Contribution, Transform}
 import oathdigital.gameplay.powers.SelectedModifier
 import oathdigital.model._
@@ -27,10 +26,10 @@ object GolemLegionsCard extends Denizen(DenizenId("199"), "Golem Legions", Suit.
   * already counts. It writes no line: the start line names it, and the
   * Muster's own line names it as the source.
   */
-final case class GolemLegions private (catalog: ExecutableCatalog)
-    extends SelectedModifier:
+case object GolemLegions extends SelectedModifier:
+  val id: PowerId = GolemLegionsCard.power.id
+
   val card: Denizen = GolemLegionsCard
-  def id: PowerId = GolemLegions.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Muster)
 
   def effects: Map[PowerWindow, Vector[Contribution]] = Map(
@@ -45,9 +44,3 @@ final case class GolemLegions private (catalog: ExecutableCatalog)
       .flatMap(_.advisers).collect {
         case card: DenizenState if card.id == cardId => card
       }
-
-object GolemLegions:
-  val id: PowerId = GolemLegionsCard.power.id
-
-  def forCatalog(catalog: ExecutableCatalog): GolemLegions =
-    new GolemLegions(catalog)

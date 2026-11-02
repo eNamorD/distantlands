@@ -106,7 +106,7 @@ object WalkerPowerCatalog:
       Vector(ChaosCult) ++
       ActionModifiers.forCatalog(catalog) ++
       TargetProtections.forCatalog(catalog) ++
-      Vector(KnightsErrant.forCatalog(catalog)) ++
+      Vector(KnightsErrant) ++
       Vector(Marriage) ++
       Vector(PledgeToDiscord) ++
       Vector(Jinx.forCatalog(catalog)) ++

@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.economy
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
+import oathdigital.catalog.{Denizen, PrintedPower, SiteOnly}
 import oathdigital.gameplay.actions.economy.MusterProcedure
 import oathdigital.gameplay.powerresolver.{Contribution, Transform}
 import oathdigital.gameplay.powers.{PowerAnswers, SelectedModifier}
@@ -21,10 +21,11 @@ object VillageIdiotCard extends Denizen(DenizenId("231"), "Village Idiot", Suit.
   * when Village Idiot is the card. The favor is best-effort: an empty Hearth
   * bank gives nothing. The generic gain line tells it, so it writes no line.
   */
-final case class VillageIdiot private (catalog: ExecutableCatalog)
-    extends SelectedModifier:
+case object VillageIdiot extends SelectedModifier:
+  val id: PowerId = VillageIdiotCard.power.id
+  val Favor: Int = 1
+
   val card: Denizen = VillageIdiotCard
-  def id: PowerId = VillageIdiot.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Muster)
 
   def effects: Map[PowerWindow, Vector[Contribution]] = Map(
@@ -36,10 +37,3 @@ final case class VillageIdiot private (catalog: ExecutableCatalog)
         .contains(DecisionOptionRef.Denizen(card.id)) then
       Vector[CoreOperation](Gain.Favor(actor, Suit.Hearth, VillageIdiot.Favor))
     else Vector.empty))
-
-object VillageIdiot:
-  val id: PowerId = VillageIdiotCard.power.id
-  val Favor: Int = 1
-
-  def forCatalog(catalog: ExecutableCatalog): VillageIdiot =
-    new VillageIdiot(catalog)

@@ -25,7 +25,7 @@ object ErrandBoyCard extends Denizen(DenizenId("11"), "Errand Boy", Suit.Beast):
   * pile.
   */
 case object ErrandBoy extends SelectedModifier:
-  def id: PowerId = ErrandBoyCard.power.id
+  val id: PowerId = ErrandBoyCard.power.id
   val Favor: Int = 1
   val idle: String = "Errand Boy does nothing here"
 

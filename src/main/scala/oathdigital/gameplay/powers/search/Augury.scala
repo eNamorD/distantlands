@@ -16,7 +16,7 @@ object AuguryCard extends Denizen(DenizenId("56"), "Augury", Suit.Arcane):
   * Vision.
   */
 case object Augury extends SelectedModifier:
-  def id: PowerId = AuguryCard.power.id
+  val id: PowerId = AuguryCard.power.id
   val More: Int = 1
 
   val card: Denizen = AuguryCard

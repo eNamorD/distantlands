@@ -41,28 +41,28 @@ object ActionModifiers:
       Vector(CupOfPlenty.forCatalog(catalog)) ++
       Vector(AnimalPlaymates.forCatalog(catalog)) ++
       Vector(Birdsong.forCatalog(catalog)) ++
-      Vector(TheOldOak.forCatalog(catalog)) ++
-      Vector(RowdyPub.forCatalog(catalog)) ++
-      Vector(VillageIdiot.forCatalog(catalog)) ++
+      Vector(TheOldOak) ++
+      Vector(RowdyPub) ++
+      Vector(VillageIdiot) ++
       Vector(Downtrodden.forCatalog(catalog)) ++
-      Vector(SpitefulMirror.forCatalog(catalog)) ++
+      Vector(SpitefulMirror) ++
       Vector(MovingMarket.forCatalog(catalog)) ++
-      Vector(AwaitedReturn.forCatalog(catalog)) ++
+      Vector(AwaitedReturn) ++
       Vector(MountedLibrary.forCatalog(catalog)) ++
       Vector(Defame.forCatalog(catalog)) ++
-      Vector(GolemLegions.forCatalog(catalog)) ++
+      Vector(GolemLegions) ++
       Vector(MapLibrary.forCatalog(catalog)) ++
       Vector(SkilledMerchants.forCatalog(catalog)) ++
       Vector(SmallFriends.forCatalog(catalog),
         FriendlyFamiliar.forCatalog(catalog),
-        SecretSignal.forCatalog(catalog)) ++
-      Vector(Pressgangs.forCatalog(catalog)) ++
-      Vector(OldSongs.forCatalog(catalog)) ++
+        SecretSignal) ++
+      Vector(Pressgangs) ++
+      Vector(OldSongs) ++
       Vector(Curfew.forCatalog(catalog)) ++
       Vector(ForcedLabor) ++
       Vector(InitiationRite) ++
       Vector(VowOfBeastkin.forCatalog(catalog)) ++
       Vector(VowOfWanderingMuster, VowOfWandering) ++
       Vector(VowOfPoverty) ++
-      Vector(RelicWorship.forCatalog(catalog)) ++
-      Vector(SilverCharm.forCatalog(catalog))
+      Vector(RelicWorship) ++
+      Vector(SilverCharm)

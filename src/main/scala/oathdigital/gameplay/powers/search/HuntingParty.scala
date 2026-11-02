@@ -19,7 +19,7 @@ object HuntingPartyCard extends Denizen(DenizenId("122"), "Hunting Party", Suit.
   * choosable while it is selected, with a warning that it queues nothing.
   */
 case object HuntingParty extends SelectedModifier:
-  def id: PowerId = HuntingPartyCard.power.id
+  val id: PowerId = HuntingPartyCard.power.id
   val discardWarning: String = "Hunting Party needs the world deck"
 
   /** The Campaign, when the answered source is the world deck. */

@@ -26,7 +26,7 @@ object ProvingGroundsCard extends Edifice(EdificeId("E22"), Suit.Hearth):
   * `MarketRule` for the `WhenExplored`/window-sharing rationale.
   */
 case object ProvingGrounds extends ContributingPower:
-  def id: PowerId = ProvingGroundsCard.intact.power.id
+  val id: PowerId = ProvingGroundsCard.intact.power.id
   private val notes = NoteSet(id)
   override def noteKeys: Vector[NoteKey] = notes.declared
   /** "{player} gained {3 warbands}." */

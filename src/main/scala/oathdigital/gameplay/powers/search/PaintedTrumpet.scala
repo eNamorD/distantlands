@@ -35,7 +35,7 @@ object PaintedTrumpetCard extends Relic(RelicId("R23"), "Painted Trumpet", value
   * journal their own notes, slice 3 plan-time ruling 5).
   */
 case object PaintedTrumpet extends SelectedModifier:
-  def id: PowerId = PaintedTrumpetCard.power.id
+  val id: PowerId = PaintedTrumpetCard.power.id
   private val notes = NoteSet(id)
   override def noteKeys: Vector[NoteKey] = notes.declared
   /** "Painted Trumpet: Drawing the top card of each discard pile

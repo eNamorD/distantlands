@@ -29,7 +29,7 @@ object BookBindersCard extends Denizen(DenizenId("140"), "Book Binders", Suit.He
   * live state.
   */
 case object BookBinders extends ContributingPower:
-  def id: PowerId = BookBindersCard.power.id
+  val id: PowerId = BookBindersCard.power.id
   val Favor: Int = 2
   private val notes = NoteSet(id)
   override def noteKeys: Vector[NoteKey] = notes.declared

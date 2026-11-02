@@ -48,7 +48,7 @@ case object WayStation extends ContributingPower:
         step.owner == traveller => TollRoads.Favor
   }.sum + RulerToll.favorTaken(operations, traveller)
 
-  def id: PowerId = WayStationCard.power.id
+  val id: PowerId = WayStationCard.power.id
   val Favor: Int = 1
   /** Under the `travel.` prefix, so the Game Log narrates it. */
   val decisionId: String = "travel.way-station"

@@ -27,7 +27,7 @@ object TruthfulHarpCard extends Relic(RelicId("R04"), "Truthful Harp", value = 3
   * generic peek lines.
   */
 case object TruthfulHarp extends SelectedModifier:
-  def id: PowerId = TruthfulHarpCard.power.id
+  val id: PowerId = TruthfulHarpCard.power.id
   val More: Int = 2
   private val notes = NoteSet(id)
   override def noteKeys: Vector[NoteKey] = notes.declared

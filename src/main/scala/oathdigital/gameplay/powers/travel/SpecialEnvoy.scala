@@ -26,7 +26,7 @@ object SpecialEnvoyCard extends Denizen(DenizenId("158"), "Special Envoy", Suit.
   * ruling 5).
   */
 case object SpecialEnvoy extends SelectedModifier:
-  def id: PowerId = SpecialEnvoyCard.power.id
+  val id: PowerId = SpecialEnvoyCard.power.id
   /** Folds after every Travel power, Royal Stables included. */
   val Priority: Int = RoyalStables.Priority + 1
   private val notes = NoteSet(id)

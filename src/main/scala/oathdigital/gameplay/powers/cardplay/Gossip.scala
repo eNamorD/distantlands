@@ -26,7 +26,7 @@ object GossipCard extends Denizen(DenizenId("99"), "Gossip", Suit.Discord) with 
   * nothing.
   */
 case object Gossip extends ContributingPower:
-  def id: PowerId = GossipCard.power.id
+  val id: PowerId = GossipCard.power.id
   val Favor: Int = 1
   private val notes = NoteSet(id)
   override def noteKeys: Vector[NoteKey] = notes.declared

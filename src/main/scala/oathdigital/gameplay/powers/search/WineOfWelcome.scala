@@ -32,7 +32,7 @@ object WineOfWelcomeCard extends Relic(RelicId("R33"), "Wine of Welcome", value 
   * ruling 5).
   */
 case object WineOfWelcome extends SelectedModifier:
-  def id: PowerId = WineOfWelcomeCard.power.id
+  val id: PowerId = WineOfWelcomeCard.power.id
   private val notes = NoteSet(id)
   override def noteKeys: Vector[NoteKey] = notes.declared
   /** "Wine of Welcome: Drawing from the bottom of the World Deck", before

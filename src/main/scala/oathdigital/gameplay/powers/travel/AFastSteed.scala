@@ -24,7 +24,7 @@ object AFastSteedCard extends Denizen(DenizenId("172"), "A Fast Steed", Suit.Nom
   * it writes no line. The catalog's id carries a typo, `old-fast-steed`.
   */
 case object AFastSteed extends SelectedModifier:
-  def id: PowerId = AFastSteedCard.power.id
+  val id: PowerId = AFastSteedCard.power.id
   val Favor: Int = 1
   /** The most warbands on the board for which Travel is free. */
   val MostWarbands: Int = 3

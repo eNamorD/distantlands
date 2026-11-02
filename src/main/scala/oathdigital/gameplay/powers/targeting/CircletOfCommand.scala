@@ -30,7 +30,7 @@ object CircletOfCommandCard extends Relic(RelicId("R15"), "Circlet of Command", 
   * hidden options").
   */
 case object CircletOfCommand extends ContributingPower:
-  def id: PowerId = CircletOfCommandCard.power.id
+  val id: PowerId = CircletOfCommandCard.power.id
 
   private val notes = NoteSet(id)
   override def noteKeys: Vector[NoteKey] = notes.declared

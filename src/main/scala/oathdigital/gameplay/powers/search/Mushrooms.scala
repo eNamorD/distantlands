@@ -36,7 +36,7 @@ object MushroomsCard extends Denizen(DenizenId("183"), "Mushrooms", Suit.Beast) 
   * journal their own notes, slice 3 plan-time ruling 5).
   */
 case object Mushrooms extends SelectedModifier:
-  def id: PowerId = MushroomsCard.power.id
+  val id: PowerId = MushroomsCard.power.id
   private val notes = NoteSet(id)
   override def noteKeys: Vector[NoteKey] = notes.declared
   /** "Mushrooms: Drawing one card from the bottom of the Cradle

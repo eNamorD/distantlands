@@ -23,4 +23,4 @@ object WorldActionPowers:
       Vector(GiantPython.forCatalog(catalog)) ++
       Vector(SingingMask.forCatalog(catalog)) ++
       Vector(WildAllies.forCatalog(catalog)) ++
-      Vector(Captains.forCatalog(catalog))
+      Vector(Captains)

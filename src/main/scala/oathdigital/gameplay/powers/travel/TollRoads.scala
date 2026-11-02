@@ -39,7 +39,7 @@ object TollRoadsCard extends Denizen(DenizenId("118"), "Toll Roads", Suit.Order)
   * favor is burnt, as for any Travel.
   */
 case object TollRoads extends ContributingPower:
-  def id: PowerId = TollRoadsCard.power.id
+  val id: PowerId = TollRoadsCard.power.id
   val Favor: Int = 1
   /** Exposed: other powers write this power's lines and include this
     * set to declare them. */

@@ -52,7 +52,7 @@ sealed abstract class ForgeRule extends ContributingPower:
     Map(PowerWindow.SetupPawnPlaced -> effect, PowerWindow.WhenExplored -> effect)
 
 case object GreatForge extends ForgeRule:
-  def id: PowerId = GreatForgeCard.intact.power.id
+  val id: PowerId = GreatForgeCard.intact.power.id
 
   val edifice: EdificeId = GreatForgeCard.id
   protected def side: EdificeSide = EdificeSide.Intact
@@ -69,7 +69,7 @@ case object GreatForge extends ForgeRule:
     Right(RelicDraws.takeTop(ready, actor))
 
 case object BrokenForge extends ForgeRule:
-  def id: PowerId = GreatForgeCard.ruined.power.id
+  val id: PowerId = GreatForgeCard.ruined.power.id
 
   /** Every relic at a site in play, in map order. */
   private def siteRelics(ready: ReadyGame): Vector[CardId] =

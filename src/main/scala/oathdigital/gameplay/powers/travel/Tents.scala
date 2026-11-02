@@ -23,7 +23,7 @@ object TentsCard extends Denizen(DenizenId("29"), "Tents", Suit.Nomad):
   * only when it is.
   */
 case object Tents extends SelectedModifier:
-  def id: PowerId = TentsCard.power.id
+  val id: PowerId = TentsCard.power.id
   val Favor: Int = 1
 
   val card: Denizen = TentsCard
