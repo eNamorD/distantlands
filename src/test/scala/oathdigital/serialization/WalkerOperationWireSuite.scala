@@ -1,13 +1,16 @@
 package oathdigital.serialization
 
 import oathdigital.gameplay.actions.VisionRules
+import oathdigital.gameplay.cards.DeepWoodsSite
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.economy.KnightsErrantCard
 import oathdigital.model._
 import oathdigital.gameplay.operations.{OperationPipeline, OperationPolicy}
 import oathdigital.gameplay.walker.{DeltaPayload, RollPayload,
   WalkerStepRecorded}
 import oathdigital.serialization.WalkerWireEvents.{encodedStream,
   encodedStreamThatRoundTrips, recordedOperation}
-import oathdigital.testkit.{CatalogNames, RecordedOps, Table}
+import oathdigital.testkit.{RecordedOps, Table}
 import oathdigital.testkit.Unwrap.{accepted, as}
 
 /** Walker step events on the wire: the operations, locations, pieces and
@@ -394,7 +397,7 @@ class WalkerOperationWireSuite extends munit.FunSuite:
       SetOathkeeperGoal(OathkeeperGoal.ThePeople),
       QueueProcedure(QueuedProcedure(PlayerId("p1"), ActionRef.Campaign,
           Vector.empty,
-          Some(PowerSourceRef.Card(CatalogNames.denizen("Knights Errant"))),
+          Some(PowerSourceRef.Card(KnightsErrantCard.id)),
           QueueKind.Offer)),
       QueueProcedure(QueuedProcedure(PlayerId("p1"), ActionRef.Trade,
         Vector(DecisionOptionRef.Button("favor")), None, QueueKind.Run),
@@ -519,7 +522,7 @@ class WalkerOperationWireSuite extends munit.FunSuite:
       OpenPick("campaign.defender-plan", DecisionOptionRef.Button("title"),
         Some("Oathkeeper title: add 1 defense die")),
       OpenPick("search.modifiers",
-        DecisionOptionRef.Denizen(CatalogNames.denizen("Wrestlers"))),
+        DecisionOptionRef.Denizen(WrestlersCard.id)),
       ClosePick()).foreach { op =>
       val event = recordedOperation(op)
       val encoded = accepted(GameEventWire.encodeEvent("walker", 0, event))
@@ -527,7 +530,7 @@ class WalkerOperationWireSuite extends munit.FunSuite:
     }
 
   test("an as-if site round trips"):
-    val event = recordedOperation(ActAsIf(CatalogNames.site("Deep Woods")))
+    val event = recordedOperation(ActAsIf(DeepWoodsSite.id))
     val encoded = accepted(GameEventWire.encodeEvent("walker", 0, event))
     assertEquals(GameEventWire.decode(encoded).map(_.event), Right(event))
     assertEquals(ujson.read(encoded)("payload")("step")("ops")(0)("kind").str,

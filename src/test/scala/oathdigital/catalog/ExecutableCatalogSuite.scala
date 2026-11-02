@@ -1,9 +1,12 @@
 package oathdigital.catalog
 
+import oathdigital.catalog.holding.HallOfDebateCard
 import oathdigital.gameplay.cards.NewFoundations
+import oathdigital.gameplay.powers.action.AlchemistCard
+import oathdigital.gameplay.powers.campaign.StickyFireCard
 import oathdigital.model.{DenizenId, EdificeId, LegacyId, PowerId, RelicId,
   SiteId, Suit}
-import oathdigital.testkit.{CatalogNames, TestCards}
+import oathdigital.testkit.TestCards
 import oathdigital.testkit.Unwrap.present
 
 class ExecutableCatalogSuite extends munit.FunSuite:
@@ -53,14 +56,14 @@ class ExecutableCatalogSuite extends munit.FunSuite:
       catalog.printedPower(PowerId("site.deep-woods.homeland-beast")), None)
 
   test("suitOf reads denizens and edifices only"):
-    assertEquals(catalog.suitOf(CatalogNames.denizen("Alchemist")),
+    assertEquals(catalog.suitOf(AlchemistCard.id),
       Some(Suit.Arcane))
-    assertEquals(catalog.suitOf(CatalogNames.edifice("Hall of Debate")),
+    assertEquals(catalog.suitOf(HallOfDebateCard.id),
       Some(Suit.Discord))
-    assertEquals(catalog.suitOf(CatalogNames.relic("Sticky Fire")), None)
+    assertEquals(catalog.suitOf(StickyFireCard.id), None)
 
   test("a copied catalog indexes its own components"):
-    val alchemistId = CatalogNames.denizen("Alchemist")
+    val alchemistId = AlchemistCard.id
     val alchemist = present(catalog.denizen(alchemistId), "the Alchemist")
     val renamed = catalog.copy(denizens = catalog.denizens.map(d =>
       if d.id == alchemist.id then TestCards.denizenLike(d)(name = "Renamed")
@@ -69,7 +72,7 @@ class ExecutableCatalogSuite extends munit.FunSuite:
     assertEquals(catalog.denizen(alchemistId).map(_.name), Some("Alchemist"))
 
   test("the first of two components sharing an ID wins, as a scan would"):
-    val alchemistId = CatalogNames.denizen("Alchemist")
+    val alchemistId = AlchemistCard.id
     val alchemist = present(catalog.denizen(alchemistId), "the Alchemist")
     val shadowed = catalog.copy(denizens =
       alchemist +: (TestCards.denizenLike(alchemist)(name = "Shadow") +: catalog.denizens))

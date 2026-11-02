@@ -3,6 +3,7 @@ package oathdigital.testkit
 import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.powerresolver.Contribution
 import oathdigital.gameplay.powers.SelectedModifier
+import oathdigital.gameplay.powers.travel.TentsCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._
@@ -17,7 +18,7 @@ object EmptyWindowModifier:
   final case class OnTents(actions: Set[MajorActionType])
       extends SelectedModifier:
     def catalog: ExecutableCatalog = FirstGameSetupFixture.catalog
-    val cardId: CardId = CatalogNames.denizen("Tents")
+    val cardId: CardId = TentsCard.id
     def id: PowerId = PowerId("denizen.tents")
     def effects: Map[PowerWindow, Vector[Contribution]] = Map.empty
 

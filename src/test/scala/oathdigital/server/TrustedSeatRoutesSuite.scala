@@ -1,5 +1,6 @@
 package oathdigital.server
 
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model.PlayerColor
 
 import java.net.{CookieManager, CookiePolicy, URI}
@@ -10,7 +11,7 @@ import oathdigital.application._
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.gameplay.setup.SetupProcedure
 import oathdigital.protocol._
-import oathdigital.testkit.{CatalogNames, HttpTestServer}
+import oathdigital.testkit.HttpTestServer
 import oathdigital.testkit.ChronicleShuffles.reversing
 import oathdigital.testkit.Table.p2
 import oathdigital.testkit.Unwrap.{accepted, present}
@@ -48,7 +49,7 @@ class TrustedSeatRoutesSuite extends munit.FunSuite:
   /** p2's answer to its pawn placement: Ancient City. */
   private def placeP2Pawn(afterBegin: Long): ActorlessCommandRequest =
     val pawnDecision = SetupProcedure.pawnDecisionId(p2)
-    val ancientCity = CatalogNames.site("Ancient City").value
+    val ancientCity = AncientCitySite.id.value
     accepted(GameHttpWire.decodeCommand(
       s"""{"expectedNextSequence":$afterBegin,""" +
         s""""intent":{"type":"resolveWalker",""" +
