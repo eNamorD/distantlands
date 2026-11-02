@@ -176,12 +176,23 @@ private[operations] object TurnStateOperations:
       current => current.copy(turn = current.turn.copy(phase = phase))),
       PhaseAlreadyEntered(phase))
 
+  /** Gives the title to `holder` on its Oathkeeper side. An unchanged
+    * holder is refused, unless the title is on its Usurper side: becoming a
+    * Citizen turns it back (CR p. 34). */
   def setOathkeeper(ready: ReadyGame,
       holder: Option[PlayerId]): Either[OperationError, ReadyGame] =
-    Either.cond(ready.game.current.title.holder != holder,
+    val title = ready.game.current.title
+    Either.cond(title.holder != holder || title.side == TitleSide.Usurper,
       ready.updateCurrent(current => current.copy(
         title = OathkeeperState(holder, TitleSide.Oathkeeper))),
       OathkeeperUnchanged(holder))
+
+  def usurperLimiterRemoved(ready: ReadyGame)
+      : Either[OperationError, ReadyGame] =
+    Either.cond(ready.game.current.tracks.usurperLimited,
+      ready.updateCurrent(current => current.copy(tracks =
+        current.tracks.copy(usurperLimited = false))),
+      InvalidDescription("the Usurper Limiter is already off the round track"))
 
   def setOathkeeperGoal(ready: ReadyGame,
       goal: OathkeeperGoal): Either[OperationError, ReadyGame] =

@@ -630,6 +630,10 @@ final case class QueueProcedure(entry: QueuedProcedure,
 final case class BeginTurn(player: PlayerId, phase: Phase)
     extends PrimitiveOperation
 
+/** Takes the Usurper Limiter off the round track. It is removed at the end
+  * of round 3, or at once when an Empire starts in play (ruling R5). */
+case object UsurperLimiterRemoved extends PrimitiveOperation
+
 /** Advances Visions Drawn by one after a world-deck Vision is drawn. */
 case object AdvanceVisionsDrawn extends PrimitiveOperation:
   override val required: Boolean = true
