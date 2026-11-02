@@ -1,8 +1,7 @@
 package oathdigital.gameplay.walker
 
 import oathdigital.gameplay.powers.{DeclaredNotes, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.campaign.{WarningSignals,
-  WarningSignalsCard}
+import oathdigital.gameplay.powers.campaign.{WarningSignals, WarningSignalsCard}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.actions.ProcedureNotes
 import oathdigital.gameplay.actions.economy.MusterProcedure

@@ -2,11 +2,12 @@ package oathdigital.gameplay
 
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.{CampaignPlans, CampaignSetup}
-import oathdigital.gameplay.powers.campaign.{BattlePlans, BrassArmy, Outriders,
-  PlanContext, TitleDefensePlan, Watchdog}
+import oathdigital.gameplay.powers.campaign.{BattlePlans, BrassArmy,
+  BrassArmyCard, Outriders, OutridersCard, PlanContext, TitleDefensePlan,
+  Watchdog, WatchdogCard}
+import oathdigital.gameplay.powers.search.AuguryCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.CatalogNames
 import oathdigital.testkit.Unwrap.present
 
 /** What the ported plans offer, asked directly: where a plan's card must stand,
@@ -30,9 +31,9 @@ class CampaignPlansSuite extends munit.FunSuite:
   private val outriders = Outriders
   private val brass = BrassArmy
   private val watchdog = Watchdog
-  private val outridersCard = CatalogNames.denizen("Outriders")
-  private val brassCard = CatalogNames.relic("Brass Army")
-  private val watchdogCard = CatalogNames.denizen("Watchdog")
+  private val outridersCard = OutridersCard.id
+  private val brassCard = BrassArmyCard.id
+  private val watchdogCard = WatchdogCard.id
 
   test("Outriders is an attacker's plan from any adviser of the attacker, in " +
       "either orientation"):
@@ -226,7 +227,7 @@ class CampaignPlansSuite extends munit.FunSuite:
 
   test("a bandit's applied-plan marker reads back to the plan's source"):
     Vector[DecisionOptionRef](
-      DecisionOptionRef.Denizen(CatalogNames.denizen("Augury")),
+      DecisionOptionRef.Denizen(AuguryCard.id),
       DecisionOptionRef.Edifice(EdificeId("edifice:homeland-arcane")),
       DecisionOptionRef.Relic(RelicId("relic:circlet")),
       DecisionOptionRef.Button("title")).foreach { ref =>

@@ -1,17 +1,23 @@
 package oathdigital.gameplay
 
+import oathdigital.catalog.holding.MagiciansCodeCard
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import oathdigital.gameplay.actions.minor.MinorActionProcedures
 import oathdigital.gameplay.actions.minor.MinorActionProcedures.{toBoard,
   toSite}
 import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.economy.VowOfWandering
+import oathdigital.gameplay.powers.action.DowsingSticksCard
+import oathdigital.gameplay.powers.campaign.{CursedCauldronCard,
+  SealingWardCard, StickyFireCard}
+import oathdigital.gameplay.powers.economy.{VowOfWandering, VowOfWanderingCard}
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
 import oathdigital.gameplay.walker.ActionBoundaryRan
 import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
 import oathdigital.testkit.{ParkedNode, PowerStubs}
 import oathdigital.gameplay.walker.ParkedDecisionAssertions
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Journal, Look, Outcomes, PlacementPicks, PowerRules, Table}
+import oathdigital.testkit.{Journal, Look, Outcomes, PlacementPicks, PowerRules,
+  Table}
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.gameplay.setup._
@@ -23,10 +29,10 @@ class MinorActionsSuite extends munit.FunSuite:
   private val rules = new OathRules(catalog)
   private val parked = new ParkedDecisionAssertions(catalog)
 
-  private val brokenPeaks = CatalogNames.site("Broken Peaks")
-  private val magiciansCode = CatalogNames.denizen("Magician's Code")
-  private val stickyFire = CatalogNames.relic("Sticky Fire")
-  private val cursedCauldron = CatalogNames.relic("Cursed Cauldron")
+  private val brokenPeaks = BrokenPeaksSite.id
+  private val magiciansCode = MagiciansCodeCard.id
+  private val stickyFire = StickyFireCard.id
+  private val cursedCauldron = CursedCauldronCard.id
 
   /** p1 in Act at Broken Peaks (where p2 also stands), ruling it with 3
     * warbands and holding 4 more, a facedown Magician's Code and a facedown
@@ -40,7 +46,7 @@ class MinorActionsSuite extends munit.FunSuite:
 
   private def base: ReadyGame = minorBoard.ready
 
-  private val dowsingSticks = CatalogNames.relic("Dowsing Sticks")
+  private val dowsingSticks = DowsingSticksCard.id
 
   /** p1's warbands on the board, and the forces at Broken Peaks. The rest
     * of the state is not compared: the action boundary may refill bandits
@@ -185,7 +191,7 @@ class MinorActionsSuite extends munit.FunSuite:
   test("Vow of Wandering blocks the way to the site with its reason, and " +
       "leaves the way back open"):
     val holding = minorBoard.adviser(p1,
-      CatalogNames.denizen("Vow of Wandering")).state
+      VowOfWanderingCard.id).state
     val withPowers = PowerRules.withWalkerPowers
     val asked = accepted(withPowers.startWalker(holding,
       ActionRef.MoveWarbands, p1))
@@ -254,7 +260,7 @@ class MinorActionsSuite extends munit.FunSuite:
   // OperationRestrictionsSuite's; this is the facedown side of it.
   test("a locked adviser held facedown can still be played and discarded"):
     // Sealing Ward is Locked and adviser-only; p1 holds only it.
-    val locked = CatalogNames.denizen("Sealing Ward")
+    val locked = SealingWardCard.id
     val modified = Table.start.pawn(p1, at = brokenPeaks)
       .adviser(p1, locked, facedown = true).ready
     val started = accepted(FacedownAdviserPlay.parkedOnPlacement(rules,

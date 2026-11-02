@@ -1,6 +1,8 @@
 package oathdigital.gameplay.oathkeeper
 
+import oathdigital.gameplay.cards.DunesSite
 import oathdigital.gameplay.oathkeeper.OathkeeperOutcome._
+import oathdigital.gameplay.powers.travel.FairIsleSite
 import oathdigital.model._
 import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2, p3}
@@ -10,7 +12,7 @@ class OathkeeperRulesSuite extends munit.FunSuite:
     * second Fair Isle. `holder` holds the title on `side`. */
   private def outcome(rulers: Vector[PlayerId],
       holder: Option[PlayerId] = None, side: TitleSide = TitleSide.Oathkeeper) =
-    val table = rulers.zip(Vector("Dunes", "Fair Isle")).foldLeft(
+    val table = rulers.zip(Vector(DunesSite, FairIsleSite)).foldLeft(
       Table.start.oathkeeper(holder, side)) { case (t, (ruler, site)) =>
         t.warbandsAt(site, ruler, 1) }
     OathkeeperRules.outcome(table.ready)

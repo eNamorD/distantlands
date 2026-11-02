@@ -2,16 +2,18 @@ package oathdigital.gameplay.walker
 
 import oathdigital.gameplay.powerresolver.{AdviserArrival, AdviserArrivals,
   ArrivalFollowUp, ContributingPower, Contribution}
+import oathdigital.gameplay.powers.action.EldersCard
+import oathdigital.gameplay.powers.campaign.{RainBootsCard, WrestlersCard}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, Table}
+import oathdigital.testkit.{Look, Outcomes, Table}
 import oathdigital.testkit.Table.{p1, p2}
 
 /** The adviser arrival pass (catalog batch 5, "The arrival pass"), driven by
   * stub rules over one leaf. */
 class AdviserArrivalPassSuite extends munit.FunSuite:
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
-  private val elders = CatalogNames.denizen("Elders")
-  private val rainBoots = CatalogNames.denizen("Rain Boots")
+  private val wrestlers = WrestlersCard.id
+  private val elders = EldersCard.id
+  private val rainBoots = RainBootsCard.id
   /** "{cards}": the arrivals a stub heard. */
   /** This suite's own keys: a test declares what it writes,
     * as a power does. */

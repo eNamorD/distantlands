@@ -1,10 +1,15 @@
 package oathdigital.gameplay.operations
 
-import oathdigital.gameplay.powers.action.RovingTerror
+import oathdigital.gameplay.cards.DeepWoodsSite
+import oathdigital.gameplay.powers.action.{RovingTerror, RovingTerrorCard}
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.protocol.projection.ConsentAskProjection
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.{accepted, present}
 
@@ -14,15 +19,15 @@ import oathdigital.testkit.Unwrap.{accepted, present}
 class HallOfMinistersConsentSuite extends munit.FunSuite:
   import PhasePowerHarness._
 
-  private val terror = CatalogNames.denizen("Roving Terror")
+  private val terror = RovingTerrorCard.id
   private val source = DecisionOptionRef.Denizen(terror)
   private val power = RovingTerror.forCatalog(catalog)
-  private val home = CatalogNames.site("Ancient City")
-  private val woods = CatalogNames.site("Deep Woods")
-  private val peaks = CatalogNames.site("Broken Peaks")
-  private val errandBoy = CatalogNames.denizen("Errand Boy")
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
-  private val hall = CatalogNames.edifice("Hall of Ministers")
+  private val home = AncientCitySite.id
+  private val woods = DeepWoodsSite.id
+  private val peaks = BrokenPeaksSite.id
+  private val errandBoy = ErrandBoyCard.id
+  private val wrestlers = WrestlersCard.id
+  private val hall = HallOfMinistersCard.id
   private val errandBoyRef = DecisionOptionRef.Denizen(errandBoy)
   /** Errand Boy's slot at Deep Woods, Roving Terror's answer for it. */
   private val errandBoySlot = DecisionOptionRef.SiteSlot(woods, 0)

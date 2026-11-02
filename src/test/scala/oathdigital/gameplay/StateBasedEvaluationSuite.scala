@@ -1,5 +1,10 @@
 package oathdigital.gameplay
 
+import oathdigital.catalog.holding.CrackedHornCard
+import oathdigital.gameplay.cards.DunesSite
+import oathdigital.gameplay.powers.action.{BrassHorseCard, DowsingSticksCard}
+import oathdigital.gameplay.powers.travel.{BrokenPeaksSite, FairIsleSite}
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.testkit.MenuPlay
 import oathdigital.application.{GameProjector, LoadedGame}
 import oathdigital.gameplay.actions.VisionRules
@@ -8,7 +13,7 @@ import oathdigital.model._
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.model.OathEvent._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, Table}
+import oathdigital.testkit.{Look, Outcomes, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, as}
 
@@ -30,8 +35,8 @@ class StateBasedEvaluationSuite extends munit.FunSuite:
       round: Int = 1,
       limited: Boolean = true
   ): Table =
-    rulers.zip(Vector("Dunes", "Fair Isle")).foldLeft(
-      Table.start.pawn(p1, at = "Ancient City").turn(p1, Phase.Wake)
+    rulers.zip(Vector(DunesSite, FairIsleSite)).foldLeft(
+      Table.start.pawn(p1, at = AncientCitySite).turn(p1, Phase.Wake)
         .oathkeeper(holder, side)) {
         case (table, (ruler, site)) => table.warbandsAt(site, ruler, 1) }
       // The round track is the subject here, and no other suite sets it.
@@ -61,7 +66,7 @@ class StateBasedEvaluationSuite extends munit.FunSuite:
       OathkeeperGoal.Supremacy -> (preparedTable(Vector(p1)) -> p1),
       // p2 holds a relic.
       OathkeeperGoal.Protection -> (preparedTable(Vector.empty)
-        .relic(p2, "Brass Horse", facedown = true) -> p2),
+        .relic(p2, BrassHorseCard, facedown = true) -> p2),
       // p3 holds the People's Favor.
       OathkeeperGoal.ThePeople -> (preparedTable(Vector.empty)
         .peoplesFavor(Some(p3), favor = 1) -> p3),
@@ -85,8 +90,8 @@ class StateBasedEvaluationSuite extends munit.FunSuite:
 
     // p1 holds the title, and p1 and p2 hold one relic each.
     val tied = withGoal(preparedTable(Vector.empty, holder = Some(p1))
-      .relic(p1, "Brass Horse", facedown = true)
-      .relic(p2, "Cracked Horn", facedown = true).ready,
+      .relic(p1, BrassHorseCard, facedown = true)
+      .relic(p2, CrackedHornCard, facedown = true).ready,
       OathkeeperGoal.Protection)
     assertEquals(OathkeeperRules.outcome(tied), OathkeeperOutcome.NoChange)
 
@@ -123,7 +128,7 @@ class StateBasedEvaluationSuite extends munit.FunSuite:
 
     endWake(holder)
     // p1 travels from Ancient City to Broken Peaks.
-    val destination = CatalogNames.site("Broken Peaks")
+    val destination = BrokenPeaksSite.id
     accept(TravelPlay.travelled(rules, state, holder, destination))
     assertEquals(Outcomes.ready(state).game.current.title,
       OathkeeperState(Some(holder), TitleSide.Usurper))
@@ -143,7 +148,7 @@ class StateBasedEvaluationSuite extends munit.FunSuite:
     val cases = Vector(
       VisionRules.Conquest -> preparedTable(Vector(p1)),
       VisionRules.Sanctuary -> preparedTable(Vector.empty)
-        .relic(p1, "Dowsing Sticks", facedown = true),
+        .relic(p1, DowsingSticksCard, facedown = true),
       VisionRules.Rebellion -> preparedTable(Vector.empty)
         .peoplesFavor(Some(p1), favor = 1),
       VisionRules.Faith -> preparedTable(Vector.empty)
@@ -223,7 +228,7 @@ class StateBasedEvaluationSuite extends munit.FunSuite:
       VisionRules.Conquest -> conquestTable,
       VisionRules.Rebellion -> rebellionTable,
       VisionRules.Sanctuary -> preparedTable(Vector.empty, round = 8)
-        .relic(p1, "Dowsing Sticks", facedown = true),
+        .relic(p1, DowsingSticksCard, facedown = true),
       VisionRules.Faith -> preparedTable(Vector.empty, round = 8)
         .darkestSecret(Some(p1), secrets = 1)
     )
@@ -285,7 +290,7 @@ class StateBasedEvaluationSuite extends munit.FunSuite:
 
   test("state-based operation policy permits only bandit-bank refills"):
     // Ancient City, capacity 3, holds no forces on the quiet table.
-    val site = CatalogNames.site("Ancient City")
+    val site = AncientCitySite.id
     val empty = Table.start.bandits(site, 0).ready
     val refill = Move(
       Piece.Warbands(ForceKind.Bandit, 1),

@@ -1,9 +1,10 @@
 package oathdigital.gameplay
 
+import oathdigital.gameplay.cards.DeepWoodsSite
 import oathdigital.gameplay.operations.{OperationPipeline, OperationPolicy}
 import oathdigital.gameplay.walker.{ProcedureWalker, WalkerCompleted}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Outcomes, RecordedOps}
+import oathdigital.testkit.{Outcomes, RecordedOps}
 import oathdigital.testkit.Outcomes.{finished, parked, recorded}
 import oathdigital.testkit.ProcedureWalkerFixture._
 import oathdigital.testkit.Unwrap.accepted
@@ -12,7 +13,7 @@ import oathdigital.testkit.Unwrap.accepted
   * actor acts as if at, a parked walk keeps it, and the walk's end clears
   * it, live and on replay. */
 class ActAsIfSuite extends munit.FunSuite:
-  private val site = CatalogNames.site("Deep Woods")
+  private val site = DeepWoodsSite.id
 
   /** `state` after `ActAsIf(site)` ran through the pipeline. */
   private def afterActingAsIf(state: ReadyGame): ReadyGame =

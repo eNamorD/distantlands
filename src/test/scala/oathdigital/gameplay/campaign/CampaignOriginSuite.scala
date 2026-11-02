@@ -3,17 +3,18 @@ package oathdigital.gameplay.campaign
 import oathdigital.gameplay.CampaignFixture
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignSetup}
+import oathdigital.gameplay.powers.action.WildAlliesCard
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.QueuedStart
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseAmountAnswer
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes}
+import oathdigital.testkit.{ActPowerHarness, Look, Outcomes}
 
 class CampaignOriginSuite extends munit.FunSuite:
   private val source =
-    PowerSourceRef.Card(CatalogNames.denizen("Wild Allies"))
+    PowerSourceRef.Card(WildAlliesCard.id)
 
   /** The parked question's decision id, if any. */
   private def parkedDecision(run: Run): Option[String] =

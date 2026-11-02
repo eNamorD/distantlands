@@ -5,12 +5,15 @@ import oathdigital.gameplay.actions.search.SearchProcedure
 import oathdigital.gameplay.actions.travel.TravelProcedure
 import oathdigital.gameplay.powerresolver.ModifierPicks
 import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.economy.{AnimalPlaymates, Birdsong}
-import oathdigital.gameplay.powers.search.NewsFromAfar
-import oathdigital.gameplay.powers.travel.{Tents, TravelFixture}
+import oathdigital.gameplay.powers.economy.{AnimalPlaymates,
+  AnimalPlaymatesCard, Birdsong, BirdsongCard}
+import oathdigital.gameplay.powers.search.{ErrandBoyCard, NewsFromAfar,
+  NewsFromAfarCard}
+import oathdigital.gameplay.powers.travel.{Tents, TentsCard, TravelFixture}
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, MenuPlay, ParkedNode, Table}
+import oathdigital.testkit.{MenuPlay, ParkedNode, Table}
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.{accepted, rejected}
 
@@ -41,7 +44,7 @@ class ModifierMenuOptionsSuite extends munit.FunSuite:
   private def broke(favor: Int, tents: Boolean)(
       using munit.Location): ReadyGame =
     val table = Table.from(board(supply = 0)).favor(actor, favor)
-    (if tents then table.adviser(actor, CatalogNames.denizen("Tents"))
+    (if tents then table.adviser(actor, TentsCard.id)
       else table).ready
 
   test("Travel is available at 0 Supply when Tents would make it free; the " +
@@ -83,11 +86,11 @@ class ModifierMenuOptionsSuite extends munit.FunSuite:
   /** p1 at Ancient City, which holds Errand Boy, a beast card to muster on,
     * with 4 favor and no Supply. */
   private def beastMuster(playmates: Boolean): ReadyGame =
-    val table = Table.start.pawn(p1, at = "Ancient City")
-      .denizen(CatalogNames.denizen("Errand Boy"), at = "Ancient City")
+    val table = Table.start.pawn(p1, at = AncientCitySite)
+      .denizen(ErrandBoyCard.id, at = AncientCitySite)
       .favor(p1, 4).supply(p1, 0)
     (if playmates then table.adviser(p1,
-      CatalogNames.denizen("Animal Playmates")) else table).ready
+      AnimalPlaymatesCard.id) else table).ready
 
   test("Muster is available at 0 Supply when Animal Playmates waives it; the " +
       "start asks for the modifier, and picking it reaches the source"):
@@ -119,10 +122,10 @@ class ModifierMenuOptionsSuite extends munit.FunSuite:
   /** p1 at Ancient City, which holds Errand Boy, a beast card to trade with,
     * with 4 favor, 2 faceup secrets and no Supply. */
   private def beastTrade(birdsong: Boolean): ReadyGame =
-    val table = Table.start.pawn(p1, at = "Ancient City")
-      .denizen(CatalogNames.denizen("Errand Boy"), at = "Ancient City")
+    val table = Table.start.pawn(p1, at = AncientCitySite)
+      .denizen(ErrandBoyCard.id, at = AncientCitySite)
       .favor(p1, 4).secrets(p1, faceUp = 2).supply(p1, 0)
-    (if birdsong then table.adviser(p1, CatalogNames.denizen("Birdsong"))
+    (if birdsong then table.adviser(p1, BirdsongCard.id)
       else table).ready
 
   test("Trade is available at 0 Supply when Birdsong waives it; the start " +
@@ -158,7 +161,7 @@ class ModifierMenuOptionsSuite extends munit.FunSuite:
     * `news`. */
   private def brokeSearcher(news: Boolean, favor: Int): ReadyGame =
     val table = Table.start.supply(p1, 0).favor(p1, favor)
-    (if news then table.adviser(p1, CatalogNames.denizen("News from Afar"))
+    (if news then table.adviser(p1, NewsFromAfarCard.id)
       else table).ready
 
   test("Search is available when News from Afar would make it free; the " +

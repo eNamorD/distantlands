@@ -3,9 +3,12 @@ package oathdigital.gameplay.walker
 import oathdigital.gameplay.actions.economy.MusterProcedure
 import oathdigital.gameplay.operations.OperationConsent
 import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower}
+import oathdigital.gameplay.powers.action.AlchemistCard
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, Table}
+import oathdigital.testkit.{Look, Outcomes, Table}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.{accepted, present}
 
@@ -13,9 +16,9 @@ import oathdigital.testkit.Unwrap.{accepted, present}
   * operation refusals stop its path and a grant would open it (catalog
   * batch 8, slice 10, part 2). */
 class OperationAsksSuite extends munit.FunSuite:
-  private val alchemist = CatalogNames.denizen("Alchemist")
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
-  private val ancientCity = CatalogNames.site("Ancient City")
+  private val alchemist = AlchemistCard.id
+  private val wrestlers = WrestlersCard.id
+  private val ancientCity = AncientCitySite.id
   private val alchemistRef = DecisionOptionRef.Denizen(alchemist)
   private val wrestlersRef = DecisionOptionRef.Denizen(wrestlers)
   private val ban = PowerId("test.no-favor-on-alchemist")

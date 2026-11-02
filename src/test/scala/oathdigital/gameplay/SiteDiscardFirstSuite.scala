@@ -2,9 +2,15 @@ package oathdigital.gameplay
 
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import oathdigital.gameplay.operations.HallOfMinistersCard
+import oathdigital.gameplay.powers.action.AncientBindingCard
+import oathdigital.gameplay.powers.campaign.{BattleHonorsCard, RainBootsCard,
+  WrestlersCard}
+import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.walker.{WalkerOutcome, WalkerPowers}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PlacementPicks, Table}
+import oathdigital.testkit.{Look, PlacementPicks, Table}
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.as
 
@@ -20,12 +26,12 @@ class SiteDiscardFirstSuite extends munit.FunSuite:
 
   private val powers = WalkerPowers(Vector(discardFirst))
   /** No Homeland, room for three, in the Cradle. */
-  private val home = CatalogNames.site("Ancient City")
+  private val home = AncientCitySite.id
   /** The Beast card p1 plays. The other cards are plain and of other suits. */
-  private val card = CatalogNames.denizen("Errand Boy")
-  private val kept = CatalogNames.denizen("Rain Boots")
-  private val other = CatalogNames.denizen("Ancient Binding")
-  private val hall = CatalogNames.edifice("Hall of Ministers")
+  private val card = ErrandBoyCard.id
+  private val kept = RainBootsCard.id
+  private val other = AncientBindingCard.id
+  private val hall = HallOfMinistersCard.id
 
   /** p1 stands at Ancient City, which holds `cards`, with Errand Boy in hand. */
   private def playing(cards: DenizenId*): Table =
@@ -62,7 +68,7 @@ class SiteDiscardFirstSuite extends munit.FunSuite:
 
   test("a full site takes the play only through a Replace slot, and only " +
       "under the permission"):
-    val fillers = Vector(kept, other, CatalogNames.denizen("Wrestlers"))
+    val fillers = Vector(kept, other, WrestlersCard.id)
     val ready = playing(fillers*).ready
     val tree = build(ready, p1, card)
     def siteSlots(under: WalkerPowers) = PlacementPicks.siteSlotRefs(
@@ -81,8 +87,8 @@ class SiteDiscardFirstSuite extends munit.FunSuite:
     assertEquals(done.game.current.commonCards.edificeDeck.last, hall)
 
   test("the permission composes with an adviser limit through the walker"):
-    val ready = playing(kept).adviser(p1, "Wrestlers", facedown = true)
-      .adviser(p1, "Battle Honors", facedown = true).ready
+    val ready = playing(kept).adviser(p1, WrestlersCard, facedown = true)
+      .adviser(p1, BattleHonorsCard, facedown = true).ready
     val both = WalkerPowers(Vector(discardFirst, limitTwo))
     val tree = build(ready, p1, card)
     val offered = options(ready, tree, park(ready, tree, both), both)

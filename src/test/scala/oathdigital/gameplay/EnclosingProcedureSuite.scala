@@ -1,5 +1,7 @@
 package oathdigital.gameplay
 
+import oathdigital.gameplay.powers.action.AlchemistCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import scala.collection.mutable.ArrayBuffer
 
 import oathdigital.gameplay.actions.economy.MusterProcedure
@@ -8,7 +10,7 @@ import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
 
@@ -47,8 +49,8 @@ class EnclosingProcedureSuite extends munit.FunSuite:
   /** p1 stands at Ancient City with the Alchemist; the start's 1 favor and
     * 7 Supply pay for a Muster from it. */
   private def staged: ReadyGame =
-    Table.start.pawn(p1, at = "Ancient City")
-      .denizen("Alchemist", at = "Ancient City").ready
+    Table.start.pawn(p1, at = AncientCitySite)
+      .denizen(AlchemistCard, at = AncientCitySite).ready
 
   test("a modifier is selected for the procedure that will run it"):
     seen.clear()
@@ -66,6 +68,6 @@ class EnclosingProcedureSuite extends munit.FunSuite:
     accepted(walkingRules.resolveWalker(started.state, p1,
       MusterProcedure.decisionId,
       DecisionAnswer.ChooseOneAnswer(DecisionOptionRef.Denizen(
-        CatalogNames.denizen("Alchemist")))))
+        AlchemistCard.id))))
     assert(seen.contains(PowerWindow.MusterCost -> Some(ActionRef.Muster)),
       seen.toString)

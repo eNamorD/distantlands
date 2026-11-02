@@ -2,8 +2,13 @@ package oathdigital.gameplay.campaign
 
 import oathdigital.gameplay.CampaignFixture
 import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignNotes}
+import oathdigital.gameplay.cards.BuriedGiantSite
+import oathdigital.gameplay.powers.economy.BirdsongCard
+import oathdigital.gameplay.powers.search.WineOfWelcomeCard
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2}
 
 /** What a Campaign's note builders read from the step they restate, with
@@ -61,13 +66,13 @@ class CampaignNoteReadsSuite extends munit.FunSuite:
     assertEquals(sacrificeAttack(worth = Some(3), count = 2), 8)
 
   test("a Conquest defender's loss is net of the half that came back"):
-    val site = CatalogNames.site("Broken Peaks")
-    val seats = Table.start.pawn(p1, "Ancient City")
-      .pawn(p2, "Broken Peaks")
+    val site = BrokenPeaksSite.id
+    val seats = Table.start.pawn(p1, AncientCitySite)
+      .pawn(p2, BrokenPeaksSite)
     val result = conquestWon(p2, Vector(site))
     // Four of p2's warbands stood at the target; all four die and half
     // come back to p2's board, which is a loss of two.
-    val before = withResult(seats.warbandsAt("Broken Peaks", p2, 4)
+    val before = withResult(seats.warbandsAt(BrokenPeaksSite, p2, 4)
       .boardWarbands(p2, 0).ready, result)
     val after = withResult(seats.boardWarbands(p2, 2).ready, result)
     val note = CampaignNotes.lossNote(
@@ -79,13 +84,13 @@ class CampaignNoteReadsSuite extends munit.FunSuite:
   test("a loss counts two sites that held the same number as two"):
     val result = CampaignResult(p1, CampaignKind.Conquest,
       CampaignDefender.Bandits,
-      targetSites = Vector(CatalogNames.site("Broken Peaks"),
-        CatalogNames.site("Buried Giant")),
+      targetSites = Vector(BrokenPeaksSite.id,
+        BuriedGiantSite.id),
       raidTargets = Vector.empty, force = 6, attackFaces = Vector.empty,
       attackScore = 7, skullLosses = 0, sacrificed = 0,
       defenseFaces = Vector.empty, defenseScore = 1, attackerWins = true)
-    val seats = Table.start.pawn(p1, "Ancient City")
-    val held = seats.bandits("Broken Peaks", 2).bandits("Buried Giant", 2)
+    val seats = Table.start.pawn(p1, AncientCitySite)
+    val held = seats.bandits(BrokenPeaksSite, 2).bandits(BuriedGiantSite, 2)
     val before = withResult(held.ready, result)
     val after = withResult(seats.ready, result)
     val note = CampaignNotes.lossNote(
@@ -98,9 +103,9 @@ class CampaignNoteReadsSuite extends munit.FunSuite:
 
   test("a defeated Raid defender's clauses read the burn, the discards " +
       "and the relics set aside"):
-    val adviser = CatalogNames.denizen("Birdsong")
-    val relic = CatalogNames.relic("Wine of Welcome")
-    val held = Table.start.pawn(p1, "Ancient City").pawn(p2, "Ancient City")
+    val adviser = BirdsongCard.id
+    val relic = WineOfWelcomeCard.id
+    val held = Table.start.pawn(p1, AncientCitySite).pawn(p2, AncientCitySite)
       .adviser(p2, adviser, facedown = true)
       .relic(p2, relic, facedown = true).favor(p2, 2)
     val result = raidWon(p2)

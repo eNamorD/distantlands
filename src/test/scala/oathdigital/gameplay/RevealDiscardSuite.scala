@@ -1,8 +1,10 @@
 package oathdigital.gameplay
 
 import oathdigital.gameplay.operations.{OperationPipeline, OperationPolicy}
+import oathdigital.gameplay.powers.campaign.{RainBootsCard, WrestlersCard}
+import oathdigital.gameplay.powers.search.ErrandBoyCard
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 
 /** Revealing the top card of a regional discard shows it to the table: a
   * discarded card has no orientation state, so only what the players know
@@ -13,10 +15,10 @@ class RevealDiscardSuite extends munit.FunSuite:
   private val at = Location.RegionalDiscard(region)
   /** Errand Boy tops the Cradle's discard; Wrestlers lies in the Provinces'. */
   private val base = Table.start
-    .discarded(Region.Cradle, "Rain Boots", "Errand Boy")
-    .discarded(Region.Provinces, "Wrestlers")
+    .discarded(Region.Cradle, RainBootsCard, ErrandBoyCard)
+    .discarded(Region.Provinces, WrestlersCard)
     .ready
-  private val top = CatalogNames.denizen("Errand Boy")
+  private val top = ErrandBoyCard.id
   private def run(ops: CoreOperation*) = OperationPipeline.run(base,
     ops.toVector, OperationPolicy.Permissive, Vector.empty)(Right(_))
 
@@ -29,7 +31,7 @@ class RevealDiscardSuite extends munit.FunSuite:
     assertEquals(result.executed, Vector(Reveal(top, at)))
 
   test("a card that is not in that discard cannot be revealed there"):
-    val other = CatalogNames.denizen("Wrestlers")
+    val other = WrestlersCard.id
     assertEquals(run(Reveal(other, at)).left.toOption, Some(OathViolation.CoreOperationRejected("missing-piece",
       "denizen card is not present at regional discard")))
 

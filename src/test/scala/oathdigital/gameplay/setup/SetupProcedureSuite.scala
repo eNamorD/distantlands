@@ -1,9 +1,12 @@
 package oathdigital.gameplay.setup
 
 import oathdigital.catalog.SiteOnly
+import oathdigital.catalog.holding.MartialCultureCard
+import oathdigital.gameplay.powers.campaign.{StickyFireCard, WrestlersCard}
+import oathdigital.gameplay.powers.economy.DefameCard
 import oathdigital.gameplay.walker.{ProcedureWalker, WalkerPowers}
 import oathdigital.model._
-import oathdigital.testkit.{Answers, CatalogNames, Outcomes, Situation}
+import oathdigital.testkit.{Answers, Outcomes, Situation}
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.{accepted, as, present}
 
@@ -99,11 +102,11 @@ class SetupProcedureSuite extends munit.FunSuite:
     // Walks the real setup to p1's dealt hand, then replaces it below; the
     // reveal options of a setup in progress are the subject.
     val woken = Situation.wake(Situation.rules(catalog))
-    val siteOnly = CatalogNames.denizen("Martial Culture")
+    val siteOnly = MartialCultureCard.id
     assert(catalog.denizen(siteOnly).exists(_.isInstanceOf[SiteOnly]))
-    val open = CatalogNames.denizen("Wrestlers")
-    val faceup = CatalogNames.denizen("Defame")
-    val relic = CatalogNames.relic("Sticky Fire")
+    val open = WrestlersCard.id
+    val faceup = DefameCard.id
+    val relic = StickyFireCard.id
     // No Table step clears a player's advisers and relics, and p1's dealt
     // adviser must not stay, so p1's hand is replaced wholesale.
     val staged = woken.ready.updateCurrent(current => current.copy(

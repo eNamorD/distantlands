@@ -1,13 +1,18 @@
 package oathdigital.gameplay
 
+import oathdigital.catalog.holding.{HallowedSpringCard, MagiciansCodeCard}
 import oathdigital.gameplay.actions.economy.{MusterProcedure, MusterSource}
+import oathdigital.gameplay.powers.action.AlchemistCard
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{ProcedureWalker, WalkerPowers}
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
 import oathdigital.model.OathState.Ready
 import oathdigital.model.OathViolation._
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, Table}
+import oathdigital.testkit.{Look, Outcomes, Table}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.{accepted, present}
 import oathdigital.testkit.StartPreview
@@ -15,14 +20,14 @@ import oathdigital.testkit.StartPreview
 class MusterProcedureSuite extends munit.FunSuite:
   import EconomyFixture.{AddSource, AskAtGain, FreePayment}
 
-  private val alchemist = CatalogNames.denizen("Alchemist")
-  private val magiciansCode = CatalogNames.denizen("Magician's Code")
-  private val hallowedSpring = CatalogNames.edifice("Hallowed Spring")
+  private val alchemist = AlchemistCard.id
+  private val magiciansCode = MagiciansCodeCard.id
+  private val hallowedSpring = HallowedSpringCard.id
 
-  private val ancientCity = CatalogNames.site("Ancient City")
-  private val brokenPeaks = CatalogNames.site("Broken Peaks")
+  private val ancientCity = AncientCitySite.id
+  private val brokenPeaks = BrokenPeaksSite.id
   /** A plain Order denizen. */
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
+  private val wrestlers = WrestlersCard.id
 
   /** p1 stands at Ancient City, which holds the token-free Alchemist
     * (Arcane) and nothing else; p1 has 4 favor, 7 Supply and 3 warbands on
@@ -163,7 +168,7 @@ class MusterProcedureSuite extends munit.FunSuite:
 
   test("matching counts a faceup Marriage as two Hearth advisers"):
     assertEquals(MusterSource.matching(catalog,
-      atAlchemist.adviser(p1, "Marriage").ready, p1, Suit.Hearth), 2)
+      atAlchemist.adviser(p1, MarriageCard).ready, p1, Suit.Hearth), 2)
 
   test("a power that adds the actor's adviser to the source decision has " +
       "it accepted, and the favor is placed on the adviser"):

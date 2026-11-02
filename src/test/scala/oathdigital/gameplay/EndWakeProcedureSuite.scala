@@ -1,6 +1,7 @@
 package oathdigital.gameplay
 
 import oathdigital.engine.{EventReplayEngine, RecordedEvent}
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model.OathEvent._
 import oathdigital.model.OathState.Ready
 import oathdigital.model.OathViolation._
@@ -31,7 +32,7 @@ class EndWakeProcedureSuite extends munit.FunSuite:
     * phase; End Wake reads nothing about the board, so no other fact is
     * stated here. */
   private def p1Wake: Table = Table.start.turn(p1, Phase.Wake)
-    .pawn(p1, "Ancient City")
+    .pawn(p1, AncientCitySite)
 
   private def endWake(state: OathState, actor: PlayerId) =
     MenuPlay.started(rules, state, actor, PhaseTransitionRef.EndWake)
@@ -39,7 +40,7 @@ class EndWakeProcedureSuite extends munit.FunSuite:
   test("ending Wake journals a phase change and enters Act action selection"):
     // Both other players stand at p1's site: End Wake must journal only its
     // own two events and stay legal, since nothing in it reads other pawns.
-    val state = p1Wake.pawn(p2, "Ancient City").pawn(p3, "Ancient City").state
+    val state = p1Wake.pawn(p2, AncientCitySite).pawn(p3, AncientCitySite).state
     val ended = accepted(endWake(state, p1))
     // The Act menu is parked once End Wake is done.
     assertEquals(ended.events.map(_.productPrefix),
@@ -60,7 +61,7 @@ class EndWakeProcedureSuite extends munit.FunSuite:
     // board is set up to make it fire and the first assertion proves it
     // would; without that, the second passes for the wrong reason. Ancient
     // City, capacity 3, is emptied of its bandits.
-    val state = p1Wake.bandits("Ancient City", 0).state
+    val state = p1Wake.bandits(AncientCitySite, 0).state
 
     assert(StateBasedEvaluation.banditRefill(catalog, state)
       .toOption.flatten.nonEmpty,
@@ -88,7 +89,7 @@ class EndWakeProcedureSuite extends munit.FunSuite:
   test("the Wake menu offers End Wake exactly when the command accepts it"):
     // End Wake reads nothing about the board, so enemy pawns at the site do
     // not close the option.
-    Vector(p1Wake, p1Wake.pawn(p2, "Ancient City").pawn(p3, "Ancient City"))
+    Vector(p1Wake, p1Wake.pawn(p2, AncientCitySite).pawn(p3, AncientCitySite))
       .foreach { table =>
         val offered = MenuPlay.options(table.phaseMenuParked.state, catalog)
         assertEquals(offered.find(_.ref == PhaseMenu.Menu.Wake.endingOption)

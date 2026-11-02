@@ -1,10 +1,12 @@
 package oathdigital.gameplay
 
 import oathdigital.gameplay.powers.WalkerPowerCatalog
+import oathdigital.gameplay.powers.campaign.{HorseArchersCard, SealingWardCard}
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.DecisionOptions.button
 
@@ -20,9 +22,9 @@ import oathdigital.testkit.DecisionOptions.button
   */
 class HiddenOutcomeDepthSuite extends munit.FunSuite:
   private val powers = WalkerPowerCatalog.default(catalog)
-  private val lockedCard = CatalogNames.denizen("Sealing Ward")
-  private val facedownCard = CatalogNames.denizen("Horse Archers")
-  private val peaks = CatalogNames.site("Broken Peaks")
+  private val lockedCard = SealingWardCard.id
+  private val facedownCard = HorseArchersCard.id
+  private val peaks = BrokenPeaksSite.id
   private val onward = "onward"
   private val stop = "stop"
 

@@ -1,18 +1,24 @@
 package oathdigital.gameplay
 
+import oathdigital.catalog.holding.GrandMaskCard
 import oathdigital.gameplay.actions.negotiation.NegotiationDeal
+import oathdigital.gameplay.cards.DunesSite
+import oathdigital.gameplay.powers.action.BrassHorseCard
+import oathdigital.gameplay.powers.campaign.StickyFireCard
+import oathdigital.gameplay.powers.search.TruthfulHarpCard
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.{AcceptDeal, ChooseManyAnswer, DeclineDeal, ProposeTerms}
 import oathdigital.model.OathViolation.InsufficientFavor
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2, p3}
 
 /** The deal as a pure function of the answers recorded so far. */
 class NegotiationDealSuite extends munit.FunSuite:
-  private val site = CatalogNames.site("Broken Peaks")
-  private val p1Relic = CatalogNames.relic("Brass Horse")
-  private val p2Relic = CatalogNames.relic("Truthful Harp")
-  private val siteRelic = CatalogNames.relic("Sticky Fire")
+  private val site = BrokenPeaksSite.id
+  private val p1Relic = BrassHorseCard.id
+  private val p2Relic = TruthfulHarpCard.id
+  private val siteRelic = StickyFireCard.id
 
   /** Every player stands at Broken Peaks with 5 favor and one facedown
     * relic: p1 holds Brass Horse with a secret on it, p2 Truthful Harp and
@@ -22,7 +28,7 @@ class NegotiationDealSuite extends munit.FunSuite:
     .favor(p1, 5).favor(p2, 5).favor(p3, 5)
     .relic(p1, p1Relic, facedown = true).tokens(p1Relic, secrets = 1)
     .relic(p2, p2Relic, facedown = true)
-    .relic(p3, "Grand Mask", facedown = true)
+    .relic(p3, GrandMaskCard, facedown = true)
     .relicAt(siteRelic, at = site)
     .knowsRelicAt(p1, siteRelic, at = site)
 
@@ -68,9 +74,9 @@ class NegotiationDealSuite extends munit.FunSuite:
   test("eligible lists the other players at the actor's site, in table order"):
     assertEquals(NegotiationDeal.eligible(ready, p1), Vector(p2, p3))
     assertEquals(NegotiationDeal.eligible(
-      gathered.pawn(p3, at = "Dunes").ready, p1), Vector(p2))
+      gathered.pawn(p3, at = DunesSite).ready, p1), Vector(p2))
     assertEquals(NegotiationDeal.eligible(
-      gathered.pawn(p2, at = "Dunes").pawn(p3, at = "Dunes").ready, p1),
+      gathered.pawn(p2, at = DunesSite).pawn(p3, at = DunesSite).ready, p1),
       Vector.empty[PlayerId])
 
   test("participants come from the negotiator answer, else the one candidate"):
@@ -78,7 +84,7 @@ class NegotiationDealSuite extends munit.FunSuite:
       NegotiationDeal.negotiatorsDecisionId,
       ChooseManyAnswer(Vector(DecisionOptionRef.Player(p3))), p1)))
     assertEquals(NegotiationDeal.participants(ready, p1, chosen), Vector(p1, p3))
-    val forced = gathered.pawn(p3, at = "Dunes")   // p2 is the one candidate
+    val forced = gathered.pawn(p3, at = DunesSite)   // p2 is the one candidate
     assertEquals(NegotiationDeal.participants(forced.ready, p1,
       PendingTree(Vector.empty, Vector.empty)), Vector(p1, p2))
 

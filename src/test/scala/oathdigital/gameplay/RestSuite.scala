@@ -1,9 +1,19 @@
 package oathdigital.gameplay
 
+import oathdigital.catalog.holding.{ArbiterCard, BanditCrownCard,
+  CrackedHornCard, HallOfDebateCard, NaysayersCard}
+import oathdigital.gameplay.cards.{BuriedGiantSite, DunesSite, GoldenValleySite}
 import oathdigital.gameplay.phases.{PhaseMenu, RestCleanupPlan}
+import oathdigital.gameplay.powers.action.{DowsingSticksCard, MessengerCard}
+import oathdigital.gameplay.powers.campaign.{CodeOfHonorCard, RainBootsCard,
+  WrestlersCard}
+import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
+import oathdigital.gameplay.powers.wake.AncientCitySite
+import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.gameplay.walker.WalkerCompleted
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, MenuPlay, Outcomes, Table,
+import oathdigital.testkit.{Look, MenuPlay, Outcomes, Table,
   WarExhaustionChoices}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
@@ -13,18 +23,18 @@ import oathdigital.testkit.Unwrap.{accepted, present, rejected}
 
 class RestSuite extends munit.FunSuite:
   private val rules = new OathRules(catalog)
-  private val ancientCity = CatalogNames.site("Ancient City")
+  private val ancientCity = AncientCitySite.id
 
   /** p1's Act on the quiet table. p1 stands at Ancient City, p2 at Broken
     * Peaks and p3 at Buried Giant. Broken Peaks holds two secrets, so p2,
     * waking next, has wealth to take and the Wake waits. */
   private def restBoard: Table = Table.start
-    .pawn(p1, at = "Ancient City").pawn(p2, at = "Broken Peaks")
-    .pawn(p3, at = "Buried Giant")
-    .siteTokens("Broken Peaks", secrets = 2)
+    .pawn(p1, at = AncientCitySite).pawn(p2, at = BrokenPeaksSite)
+    .pawn(p3, at = BuriedGiantSite)
+    .siteTokens(BrokenPeaksSite, secrets = 2)
 
   /** `restBoard`, with Wrestlers as p1's adviser. */
-  private def act: ReadyGame = restBoard.adviser(p1, "Wrestlers").ready
+  private def act: ReadyGame = restBoard.adviser(p1, WrestlersCard).ready
 
   private def rest(state: OathState, player: PlayerId,
       under: OathRules = rules) =
@@ -34,10 +44,10 @@ class RestSuite extends munit.FunSuite:
     Table.from(ready).turn(p1, Phase.Rest).ready
 
   test("Rest returns controlled resources reveals secrets refreshes and wakes next"):
-    val siteCard = CatalogNames.denizen("Errand Boy")
-    val heldRelic = CatalogNames.relic("Dowsing Sticks")
-    val prepared = restBoard.adviser(p1, "Wrestlers")
-      .tokens("Wrestlers", favor = 1, secrets = 2)
+    val siteCard = ErrandBoyCard.id
+    val heldRelic = DowsingSticksCard.id
+    val prepared = restBoard.adviser(p1, WrestlersCard)
+      .tokens(WrestlersCard, favor = 1, secrets = 2)
       .denizen(siteCard, at = ancientCity)
       .tokens(siteCard, favor = 2, secrets = 1).warbandsAt(ancientCity, p1, 2)
       .relic(p1, heldRelic).tokens(heldRelic, secrets = 3)
@@ -77,17 +87,17 @@ class RestSuite extends munit.FunSuite:
     // p1 neither stands at nor rules. The denizens and the edifice span four
     // suits (Beast, Nomad, Order, Discord), so their returned favor reaches
     // more than one bank.
-    val ruled = CatalogNames.site("Dunes")
-    val outside = CatalogNames.site("Golden Valley")
-    val adviser = CatalogNames.denizen("Errand Boy")         // Beast
-    val pawnCard = CatalogNames.denizen("Rain Boots")        // Nomad
-    val ruledCard = CatalogNames.denizen("Code of Honor")    // Order
-    val outsideCard = CatalogNames.denizen("Messenger")      // Order
-    val otherAdviser = CatalogNames.denizen("Wrestlers")     // Order
-    val pawnEdifice = CatalogNames.edifice("Hall of Debate")
-    val relic = CatalogNames.relic("Dowsing Sticks")
-    val otherRelic = CatalogNames.relic("Cracked Horn")
-    val siteRelic = CatalogNames.relic("Bandit Crown")
+    val ruled = DunesSite.id
+    val outside = GoldenValleySite.id
+    val adviser = ErrandBoyCard.id         // Beast
+    val pawnCard = RainBootsCard.id        // Nomad
+    val ruledCard = CodeOfHonorCard.id    // Order
+    val outsideCard = MessengerCard.id      // Order
+    val otherAdviser = WrestlersCard.id     // Order
+    val pawnEdifice = HallOfDebateCard.id
+    val relic = DowsingSticksCard.id
+    val otherRelic = CrackedHornCard.id
+    val siteRelic = BanditCrownCard.id
     val prepared = restBoard.adviser(p1, adviser)
       .tokens(adviser, favor = 1, secrets = 1).relic(p1, relic)
       .tokens(relic, favor = 7, secrets = 2)
@@ -165,9 +175,8 @@ class RestSuite extends munit.FunSuite:
   test("unrelated active powers and the end-die Arbiter legacy do not block"):
     // p1's lineage holds the Arbiter legacy, active, and p1 holds Threatening
     // Roar, whose power is none of the Rest handlers.
-    val arbiter = present(catalog.legacies.find(_.name == "Arbiter")
-      .map(_.id), "the Arbiter legacy")
-    val base = restBoard.adviser(p1, "Threatening Roar").ready
+    val arbiter = ArbiterCard.id
+    val base = restBoard.adviser(p1, ThreateningRoarCard).ready
     val lineage = base.game.campaign.lineages(Look(base).player(p1).lineage)
     // No Table step reaches legacies.
     val supported = base.updateCampaign(_.copy(lineages =
@@ -178,9 +187,9 @@ class RestSuite extends munit.FunSuite:
   test("an unimplemented Rest power, held or at the site, does not block Rest"):
     // Naysayers is not implemented; Insomnia's and Vow of Poverty's RESTs
     // run as phase powers.
-    val held = restBoard.adviser(p1, "Naysayers").ready
+    val held = restBoard.adviser(p1, NaysayersCard).ready
     accepted(rest(Ready(held), p1))
-    val atSite = Table.from(act).denizen("Naysayers", at = ancientCity).ready
+    val atSite = Table.from(act).denizen(NaysayersCard, at = ancientCity).ready
     accepted(rest(Ready(atSite), p1))
 
   test("an altered banner face and an altered Foundation do not block Rest"):

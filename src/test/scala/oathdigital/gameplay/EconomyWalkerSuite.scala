@@ -1,12 +1,16 @@
 package oathdigital.gameplay
 
+import oathdigital.catalog.holding.{HallowedSpringCard, MagiciansCodeCard}
+import oathdigital.gameplay.cards.DunesSite
+import oathdigital.gameplay.powers.action.AlchemistCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.testkit.MenuPlay
 import oathdigital.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{ParkedDecisionAssertions, WalkerCompleted}
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, Table}
+import oathdigital.testkit.{Look, Outcomes, Table}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -18,19 +22,19 @@ class EconomyWalkerSuite extends munit.FunSuite:
   private val parked = new ParkedDecisionAssertions(catalog)
   private val favor = Vector[DecisionOptionRef](DecisionOptionRef.Button("favor"))
   private val secret = Vector[DecisionOptionRef](DecisionOptionRef.Button("secret"))
-  private val alchemist = CatalogNames.denizen("Alchemist")
+  private val alchemist = AlchemistCard.id
   private val card = DecisionOptionRef.Denizen(alchemist)
 
   /** p1 stands at Ancient City, which holds the token-free Alchemist
     * (Arcane) and nothing else. p1 has 4 favor, 2 faceup secrets, 7 Supply
     * and 3 warbands on the board. */
   private def atAlchemist: Table = Table.start
-    .pawn(p1, at = "Ancient City")
-    .denizen(alchemist, at = "Ancient City")
+    .pawn(p1, at = AncientCitySite)
+    .denizen(alchemist, at = AncientCitySite)
     .favor(p1, 4).secrets(p1, faceUp = 2).supply(p1, 7).boardWarbands(p1, 3)
 
   /** Magician's Code is Arcane, like Alchemist. */
-  private def withMatchingAdviser: Table = atAlchemist.adviser(p1, "Magician's Code")
+  private def withMatchingAdviser: Table = atAlchemist.adviser(p1, MagiciansCodeCard)
 
   private def start(ready: ReadyGame, action: StartableRef = ActionRef.Muster,
       args: Vector[DecisionOptionRef] = Vector.empty) =
@@ -74,7 +78,7 @@ class EconomyWalkerSuite extends munit.FunSuite:
   test("the action boundary starts the Oathkeeper procedure within the " +
       "answering command"):
     // p2 rules a site and p1 none, so p2 leads the Oath.
-    val started = accepted(start(atAlchemist.warbandsAt("Dunes", p2, 1).ready))
+    val started = accepted(start(atAlchemist.warbandsAt(DunesSite, p2, 1).ready))
     val answered = accepted(
       answer(started.state, p1, MusterProcedure.decisionId, card))
     assert(answered.events.contains(
@@ -128,7 +132,7 @@ class EconomyWalkerSuite extends munit.FunSuite:
     assertEquals(answer(started.state, p2, MusterProcedure.decisionId, card)
       .left.toOption, Some(OathViolation.WrongPlayer(p1, p2)))
     assertEquals(answer(started.state, p1, MusterProcedure.decisionId,
-      DecisionOptionRef.Denizen(CatalogNames.denizen("Magician's Code")))
+      DecisionOptionRef.Denizen(MagiciansCodeCard.id))
       .left.toOption, Some(OathViolation.InvalidEventOrder(
         "decision muster.source does not offer the selected option")))
     val mustered = accepted(answer(started.state, p1,
@@ -136,12 +140,12 @@ class EconomyWalkerSuite extends munit.FunSuite:
     assertEquals(MenuPlay.pendingBeyondMenu(current(mustered.state)), None)
 
   test("an unimplemented optional Economy power does not block a base Trade"):
-    val board = Table.start.pawn(p1, at = "Ancient City")
+    val board = Table.start.pawn(p1, at = AncientCitySite)
       .favor(p1, 4).secrets(p1, faceUp = 2)
-      .edifice("Hallowed Spring", EdificeSide.Intact, at = "Ancient City").ready
+      .edifice(HallowedSpringCard, EdificeSide.Intact, at = AncientCitySite).ready
     val started = start(board, ActionRef.Trade, secret)
       .getOrElse(fail("the Trade must start"))
     val finished = answer(started.state, p1, TradeProcedure.decisionId,
-      DecisionOptionRef.Edifice(CatalogNames.edifice("Hallowed Spring")))
+      DecisionOptionRef.Edifice(HallowedSpringCard.id))
     // The base Trade runs to its end: nothing is left pending.
     assertEquals(MenuPlay.pendingBeyondMenu(current(accepted(finished).state)), None)

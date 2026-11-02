@@ -1,8 +1,14 @@
 package oathdigital.gameplay
 
+import oathdigital.catalog.holding.MartialCultureCard
 import oathdigital.gameplay.actions.ForgeRules
 import oathdigital.gameplay.actions.forge.ForgeProcedure
+import oathdigital.gameplay.cards.DeepWoodsSite
 import oathdigital.gameplay.powerresolver.ModifierPicks
+import oathdigital.gameplay.powers.action.MessengerCard
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.travel.{BrokenPeaksSite, TentsCard}
+import oathdigital.gameplay.powers.whenplayed.BanditChiefCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.gameplay.walker.{ChoicePayload, DecisionQueries,
   LogNoted, ProcedureWalker, WalkerOutcome, WalkerPowers,
@@ -10,8 +16,8 @@ import oathdigital.gameplay.walker.{ChoicePayload, DecisionQueries,
 import oathdigital.model.DecisionAnswer.PartitionAnswer
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, EmptyWindowModifier, Look, Outcomes,
-  RecordedOps, Table, TestCards}
+import oathdigital.testkit.{EmptyWindowModifier, Look, Outcomes, RecordedOps,
+  Table, TestCards}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.{accepted, as, present}
 
@@ -33,10 +39,10 @@ class ForgeProcedureSuite extends munit.FunSuite
   // Deep Woods prints a Forge cost of 1 favor and 2 secrets. A cost naming
   // both resources parks and prompts; a cost of three of one resource does
   // not (see [[ForgeProcedure.parks]]).
-  private val forgeSite = CatalogNames.site("Deep Woods")
+  private val forgeSite = DeepWoodsSite.id
   // Three denizens whose powers these tests do not use.
-  private val forgeDenizens = Vector("Wrestlers", "Martial Culture",
-    "Bandit Chief").map(CatalogNames.denizen(_))
+  private val forgeDenizens = Vector(WrestlersCard.id, MartialCultureCard.id,
+    BanditChiefCard.id)
 
   /** p1, in Act, stands at Deep Woods and rules it with one warband, with 5
     * favor, 5 faceup secrets and the quiet table's 7 Supply. Deep Woods holds
@@ -159,7 +165,7 @@ class ForgeProcedureSuite extends munit.FunSuite
   test("build rejects a site with no printed Forge cost"):
     val f = forgeable
     // Broken Peaks prints no Forge cost.
-    val plain = CatalogNames.site("Broken Peaks")
+    val plain = BrokenPeaksSite.id
     assertEquals(catalog.site(plain).flatMap(_.forgeRequirements), None)
     val state = Table.from(f.ready).warbandsAt(plain, actor, 1)
       .pawn(actor, plain).ready
@@ -346,7 +352,7 @@ class ForgeProcedureSuite extends munit.FunSuite
 
     // Messenger is not a card at the Forge site.
     val stale = legal.updated(2, DecisionPlacement(DecisionOptionRef.Denizen(
-      CatalogNames.denizen("Messenger")), legal(2).sectionKey))
+      MessengerCard.id), legal(2).sectionKey))
     assert(rejection(resolveWith(f, atPark, tree, pending, stale))
       .contains("does not offer a placed option"))
 
@@ -599,7 +605,7 @@ class ForgeProcedureSuite extends munit.FunSuite
 
   test("a modifier for the Forge is asked about first, beside Start Forge"):
     val powers = EmptyWindowModifier.powersFor(MajorActionType.Forge)
-    val board = forgeBoard().adviser(actor, "Tents").ready
+    val board = forgeBoard().adviser(actor, TentsCard).ready
     val started = accepted(new OathRules(catalog, walkerPowerCatalog = powers)
       .startWalker(Ready(board), ActionRef.Forge, actor))
     assertEquals(

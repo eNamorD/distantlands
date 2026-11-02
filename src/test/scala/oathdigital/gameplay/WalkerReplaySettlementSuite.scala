@@ -1,9 +1,11 @@
 package oathdigital.gameplay
 
+import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.walker.{DeltaPayload, ProcedureWalker,
   WalkerStepRecorded}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Table}
+import oathdigital.testkit.{Look, Table}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.model.OathState.Ready
 
@@ -16,7 +18,7 @@ import oathdigital.model.OathState.Ready
 class WalkerReplaySettlementSuite extends munit.FunSuite:
   private val active = p1
   private val payer = p2
-  private val denizen = CatalogNames.denizen("Errand Boy")
+  private val denizen = ErrandBoyCard.id
   /** Errand Boy is a Beast. */
   private val suit = Suit.Beast
 
@@ -24,7 +26,7 @@ class WalkerReplaySettlementSuite extends munit.FunSuite:
     * Errand Boy stands at Ancient City with nothing on it. */
   private val arranged: ReadyGame = Table.start
     .favor(p1, 3).secrets(p1, faceUp = 3).favor(p2, 3).secrets(p2, faceUp = 3)
-    .denizen(denizen, at = "Ancient City").ready
+    .denizen(denizen, at = AncientCitySite).ready
 
   private def replay(pay: PayCost): ReadyGame = ProcedureWalker.applyRecorded(
     Ready(arranged), WalkerStepRecorded("0",

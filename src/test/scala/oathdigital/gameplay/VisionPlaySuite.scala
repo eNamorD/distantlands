@@ -1,5 +1,8 @@
 package oathdigital.gameplay
 
+import oathdigital.gameplay.cards.BuriedGiantSite
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.testkit.MenuPlay
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import oathdigital.application.{GameProjector, LoadedGame}
@@ -10,7 +13,7 @@ import oathdigital.gameplay.walker.{ParkedDecisionAssertions, ProcedureWalker,
   WalkerPowers, WalkerProcedureRegistry}
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, PlacementPicks, Table}
+import oathdigital.testkit.{Look, Outcomes, PlacementPicks, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, present}
 
@@ -31,7 +34,7 @@ class VisionPlaySuite extends munit.FunSuite:
   private def placeId(card: VisionId) =
     PlacementFixture.cardPlayDecisionId(card, "place")
   private val actor = p1
-  private val home = "Ancient City"
+  private val home = AncientCitySite
 
   /** The quiet table with p1's pawn stated at Ancient City, in the Cradle:
     * its next region is the Provinces, where p1's discards go. */
@@ -140,7 +143,7 @@ class VisionPlaySuite extends munit.FunSuite:
       "with nothing to take is boxed"):
     // p1 holds Conspiracy facedown; p2 and p3 stand elsewhere, so no one
     // shares p1's site and it has nothing to take.
-    val staged = atHome.pawn(p2, at = "Broken Peaks").pawn(p3, at = "Buried Giant")
+    val staged = atHome.pawn(p2, at = BrokenPeaksSite).pawn(p3, at = BuriedGiantSite)
       .adviser(actor, conspiracy, facedown = true).ready
     val started = accepted(FacedownAdviserPlay.parkedOnPlacement(rules,
       OathState.Ready(staged), actor, conspiracy))
@@ -173,6 +176,6 @@ class VisionPlaySuite extends munit.FunSuite:
   test("a Vision answer naming a site slot is rejected -- it is not offered"):
     val state = visionInTemporaryHand()
     assertEquals(answerPlacementResult(state, DecisionOptionRef.SiteSlot(
-      CatalogNames.site("Ancient City"), 0)).left.toOption,
+      AncientCitySite.id, 0)).left.toOption,
       Some(OathViolation.InvalidEventOrder(
         s"decision ${placeId(newVision)} does not offer the selected option")))

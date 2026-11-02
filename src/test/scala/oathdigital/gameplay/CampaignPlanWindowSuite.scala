@@ -6,15 +6,15 @@ import oathdigital.gameplay.actions.campaign.{CampaignIds,
 import oathdigital.gameplay.operations.Costs
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   Transform}
-import oathdigital.gameplay.powers.campaign.{BattlePlan, PlanContext,
-  PlanDriver, PlanUse}
+import oathdigital.gameplay.powers.campaign.{BattlePlan, OutridersCard,
+  PlanContext, PlanDriver, PlanUse, WatchdogCard}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{ParkedDecisionAssertions, ProcedureWalker,
   WalkerPowers}
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, RecordedOps}
+import oathdigital.testkit.{ActPowerHarness, Look, RecordedOps}
 import oathdigital.testkit.Outcomes.{assertWireRoundTrips, ready}
 import oathdigital.testkit.Unwrap.{accepted, present}
 
@@ -25,8 +25,8 @@ import oathdigital.testkit.Unwrap.{accepted, present}
   */
 class CampaignPlanWindowSuite extends munit.FunSuite:
   // The suite's plans sit on these cards; their printed plans play no part.
-  private val outriders = CatalogNames.denizen("Outriders")
-  private val watchdog = CatalogNames.denizen("Watchdog")
+  private val outriders = OutridersCard.id
+  private val watchdog = WatchdogCard.id
 
   /** Stub of BattlePlan: offers the costs and effects the test names, from a
     * denizen of its user.

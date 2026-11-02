@@ -1,5 +1,7 @@
 package oathdigital.gameplay.operations
 
+import oathdigital.gameplay.powers.action.{FaeMerchantCard, SecondChanceCard}
+import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.model._
 import oathdigital.testkit.Table
 import oathdigital.testkit.Unwrap.accepted
@@ -10,7 +12,7 @@ class ShuffleOperationSuite extends munit.FunSuite:
 
   /** The Cradle discard pile holds three cards from the world deck. */
   private val discarded = Table.start.discarded(Region.Cradle,
-    "Threatening Roar", "Fae Merchant", "Second Chance").ready
+    ThreateningRoarCard, FaeMerchantCard, SecondChanceCard).ready
   private def zones(ready: ReadyGame): CardZones = ready.game.current.commonCards
   private val pile = zones(discarded).discard(Region.Cradle)
   private val deck = zones(discarded).worldDeck

@@ -1,5 +1,9 @@
 package oathdigital.gameplay
 
+import oathdigital.gameplay.cards.{BuriedGiantSite, DunesSite, SaltFlatsSite,
+  ShroudedWoodsSite}
+import oathdigital.gameplay.powers.travel.{BrokenPeaksSite, DesolateShoreSite,
+  FairIsleSite, NarrowPassSite}
 import oathdigital.testkit.MenuPlay
 import oathdigital.gameplay.actions.travel.TravelProcedure
 import oathdigital.gameplay.powers.travel.TravelFixture.destinationNotOffered
@@ -11,7 +15,7 @@ import oathdigital.model.OathViolation._
 import oathdigital.gameplay.walker.{WalkerPowers, WalkerSimulation}
 import oathdigital.gameplay.walker.WalkerSimulation.PreviewedOption
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, Table}
+import oathdigital.testkit.{Look, Outcomes, Table}
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.{accepted, present, rejected}
 
@@ -26,14 +30,14 @@ class TravelProcedureSuite extends munit.FunSuite:
 
   private val actor = p1
   // The terrain sites, and four Plains sites.
-  private val coast = CatalogNames.site("Desolate Shore")
-  private val island = CatalogNames.site("Fair Isle")
-  private val mountain = CatalogNames.site("Broken Peaks")
-  private val pass = CatalogNames.site("Narrow Pass")
-  private val cradlePlains = CatalogNames.site("Buried Giant")
-  private val provincePlains = CatalogNames.site("Dunes")
-  private val hinterlandPlains = CatalogNames.site("Salt Flats")
-  private val secondHinterlandPlains = CatalogNames.site("Shrouded Woods")
+  private val coast = DesolateShoreSite.id
+  private val island = FairIsleSite.id
+  private val mountain = BrokenPeaksSite.id
+  private val pass = NarrowPassSite.id
+  private val cradlePlains = BuriedGiantSite.id
+  private val provincePlains = DunesSite.id
+  private val hinterlandPlains = SaltFlatsSite.id
+  private val secondHinterlandPlains = ShroudedWoodsSite.id
 
   /** The site whose handler names the terrain `power`. */
   private def terrainSite(power: String): Option[SiteId] = catalog.sites.find(

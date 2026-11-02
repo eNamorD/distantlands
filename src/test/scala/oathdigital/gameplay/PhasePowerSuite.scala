@@ -1,5 +1,10 @@
 package oathdigital.gameplay
 
+import oathdigital.catalog.holding.HallOfDebateCard
+import oathdigital.gameplay.cards.DunesSite
+import oathdigital.gameplay.powers.action.BrassHorseCard
+import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model.OathState.Ready
 import oathdigital.catalog.PrintedPower
 import oathdigital.gameplay.phases.{PhaseMenu, PhasePowerProcedure}
@@ -7,8 +12,7 @@ import oathdigital.gameplay.powerresolver.{PhasePower, PhasePowers}
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.gameplay.walker.{ParkedDecisionAssertions, WalkerPowers}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, MenuPlay, Outcomes, Table,
-  TestCards}
+import oathdigital.testkit.{Look, MenuPlay, Outcomes, Table, TestCards}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.{accepted, present}
 import oathdigital.testkit.PhasePowerHarness
@@ -73,7 +77,7 @@ class PhasePowerSuite extends munit.FunSuite:
   test("a use is scoped to its source card: the same power stays usable " +
       "from a second card"):
     // Errand Boy stands in as a second card printed with the same power.
-    val second = CatalogNames.denizen("Errand Boy")
+    val second = ErrandBoyCard.id
     val twice = catalog.copy(denizens = catalog.denizens.map(d =>
       if d.id.value == second.value then
         TestCards.denizenLike(d)(powers = d.powers :+ printed)
@@ -116,15 +120,15 @@ class PhasePowerSuite extends munit.FunSuite:
       "site is not"):
     val power = TestPower(powerId, PowerTiming.Act)
     // The card lies at Dunes, away from p1's pawn at Ancient City.
-    val atDunes = Table.start.pawn(p1, at = "Ancient City")
-      .denizen(card, at = "Dunes")
+    val atDunes = Table.start.pawn(p1, at = AncientCitySite)
+      .denizen(card, at = DunesSite)
     val powers = PhasePowers(Vector(power))
     assertEquals(PhasePowerHarness.menuPowers(catalog,
-        atDunes.warbandsAt("Dunes", p1, 1).ready, p1, powers,
+        atDunes.warbandsAt(DunesSite, p1, 1).ready, p1, powers,
         WalkerPowers.empty).map(_.ref),
       Vector(source))
     assertEquals(PhasePowerHarness.menuPowers(catalog,
-      atDunes.bandits("Dunes", 1).ready, p1, powers, WalkerPowers.empty),
+      atDunes.bandits(DunesSite, 1).ready, p1, powers, WalkerPowers.empty),
       Vector.empty)
 
   test("a usable REST power stops the Rest auto-skip, and using the last " +
@@ -206,7 +210,7 @@ class PhasePowerSuite extends munit.FunSuite:
 
   test("an edifice at the pawn's site is a source, on either face"):
     // Hall of Debate is printed, for this test, with the test power's power.
-    val id = CatalogNames.edifice("Hall of Debate")
+    val id = HallOfDebateCard.id
     val edifice = present(catalog.edifice(id), "Hall of Debate")
     val powered = catalog.copy(edifices = catalog.edifices.map(e =>
       if e.id == edifice.id then TestCards.edificeLike(e)(
@@ -214,8 +218,8 @@ class PhasePowerSuite extends munit.FunSuite:
         ruined = e.ruined.powers :+ printed) else e))
     val power = TestPower(powerId, PowerTiming.Act)
     Vector(EdificeSide.Intact, EdificeSide.Ruined).foreach { side =>
-      val state = Table.start.pawn(p1, at = "Ancient City")
-        .edifice(id, side, at = "Ancient City").ready
+      val state = Table.start.pawn(p1, at = AncientCitySite)
+        .edifice(id, side, at = AncientCitySite).ready
       assertEquals(PhasePowerHarness.menuPowers(powered, state, p1,
           PhasePowers(Vector(power)), WalkerPowers.empty).map(_.ref),
         Vector(DecisionOptionRef.Edifice(id)),
@@ -239,7 +243,7 @@ class PhasePowerSuite extends munit.FunSuite:
       Vector.empty)
 
   test("a held relic's power is usable only while the relic is faceup"):
-    val relic = CatalogNames.relic("Brass Horse")
+    val relic = BrassHorseCard.id
     val relicPower = TestPower(present(catalog.relic(relic)
       .flatMap(_.powers.headOption).map(_.id), "Brass Horse's power"),
       PowerTiming.Act)

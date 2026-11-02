@@ -1,10 +1,13 @@
 package oathdigital.gameplay
 
+import oathdigital.catalog.holding.{HallowedSpringCard, MagiciansCodeCard}
 import oathdigital.gameplay.actions.economy.TradeProcedure
+import oathdigital.gameplay.powers.action.AlchemistCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{ProcedureWalker, WalkerPowers}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, Table}
+import oathdigital.testkit.{Look, Outcomes, Table}
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
 import oathdigital.testkit.StartPreview
@@ -12,14 +15,14 @@ import oathdigital.testkit.StartPreview
 class TradeProcedureSuite extends munit.FunSuite:
   private val favor = Vector[DecisionOptionRef](DecisionOptionRef.Button("favor"))
   private val secret = Vector[DecisionOptionRef](DecisionOptionRef.Button("secret"))
-  private val alchemist = CatalogNames.denizen("Alchemist")
+  private val alchemist = AlchemistCard.id
 
   /** p1 stands at Ancient City, which holds the token-free Alchemist
     * (Arcane) and nothing else. p1 has 4 favor and 2 faceup secrets, and
     * the Arcane bank holds 5. */
   private def atAlchemist: Table = Table.start
-    .pawn(p1, at = "Ancient City")
-    .denizen(alchemist, at = "Ancient City")
+    .pawn(p1, at = AncientCitySite)
+    .denizen(alchemist, at = AncientCitySite)
     .favor(p1, 4).secrets(p1, faceUp = 2)
     .bankFavor(Suit.Arcane, 5)
 
@@ -35,7 +38,7 @@ class TradeProcedureSuite extends munit.FunSuite:
 
   test("Trade for favor moves a secret and its yield is capped by the bank"):
     val ready = atAlchemist
-      .adviser(p1, "Magician's Code")       // Arcane, like Alchemist
+      .adviser(p1, MagiciansCodeCard)       // Arcane, like Alchemist
       .bankFavor(Suit.Arcane, 1)
       .ready
     val after = trade(ready, favor)
@@ -49,7 +52,7 @@ class TradeProcedureSuite extends munit.FunSuite:
     assertEquals(after.banks.favor(Suit.Arcane), 4)
 
   test("Trade for secrets places one favor, burns one and yields the matches"):
-    val ready = atAlchemist.adviser(p1, "Magician's Code").ready  // Arcane too
+    val ready = atAlchemist.adviser(p1, MagiciansCodeCard).ready  // Arcane too
     val after = Look(trade(ready, secret))
     assertEquals(after.favor(p1), 2)
     assertEquals(after.faceUpSecrets(p1), 3)
@@ -91,12 +94,12 @@ class TradeProcedureSuite extends munit.FunSuite:
     }
 
   test("an intact edifice is a legal Trade source"):
-    val ready = Table.start.pawn(p1, at = "Ancient City")
+    val ready = Table.start.pawn(p1, at = AncientCitySite)
       .favor(p1, 4).secrets(p1, faceUp = 2)
-      .edifice("Hallowed Spring", EdificeSide.Intact, at = "Ancient City").ready
+      .edifice(HallowedSpringCard, EdificeSide.Intact, at = AncientCitySite).ready
     val options = StartPreview.firstDecisionOptions(catalog, ready, p1,
         ActionRef.Trade, WalkerPowers.empty,
         TradeProcedure.selection(TradeResource.Secret))
     assertEquals(options.map(_.option.ref), Vector(DecisionOptionRef.Edifice(
-      CatalogNames.edifice("Hallowed Spring"))))
+      HallowedSpringCard.id)))
     accepted(options.head.outcome)

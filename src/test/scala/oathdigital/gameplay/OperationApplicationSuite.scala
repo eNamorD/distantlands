@@ -1,9 +1,11 @@
 package oathdigital.gameplay
 
 import oathdigital.gameplay.operations._
+import oathdigital.gameplay.powers.action.{FaeMerchantCard, SecondChanceCard}
+import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.model._
 import oathdigital.model.TestGameFixtures._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Unwrap.accepted
 
 /** The shape guard through the two interfaces that cross it: the resolver's
@@ -214,8 +216,8 @@ class OperationApplicationSuite extends munit.FunSuite:
       Vector("power-blocked"))
 
   /** Three denizens in the Cradle discard: the first named at the bottom. */
-  private val cradlePile = Vector("Threatening Roar", "Fae Merchant",
-    "Second Chance").map(CatalogNames.denizen(_))
+  private val cradlePile = Vector(ThreateningRoarCard.id, FaeMerchantCard.id,
+    SecondChanceCard.id)
 
   private def bottomDraw(cards: Vector[CardId]): Draw =
     Draw(Table.p1, cards, Location.RegionalDiscard(Region.Cradle),

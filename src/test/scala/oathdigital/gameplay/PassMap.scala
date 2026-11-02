@@ -1,8 +1,12 @@
 package oathdigital.gameplay
 
+import oathdigital.gameplay.cards.{BuriedGiantSite, DeepWoodsSite, DunesSite}
+import oathdigital.gameplay.powers.travel.{BrokenPeaksSite, DesolateShoreSite,
+  FairIsleSite, NarrowPassSite}
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 
 /** The Narrow Pass's map. Cradle: Ancient City, Broken Peaks. Provinces:
   * the Pass, Buried Giant, Deep Woods. Hinterland: Desolate Shore, Dunes,
@@ -10,14 +14,14 @@ import oathdigital.testkit.{CatalogNames, Table}
   * regions, so the map is built here.
   */
 object PassMap:
-  val pass: SiteId = CatalogNames.site("Narrow Pass")
-  val ancientCity: SiteId = CatalogNames.site("Ancient City")
-  val brokenPeaks: SiteId = CatalogNames.site("Broken Peaks")
-  val buriedGiant: SiteId = CatalogNames.site("Buried Giant")
-  val deepWoods: SiteId = CatalogNames.site("Deep Woods")
-  val desolateShore: SiteId = CatalogNames.site("Desolate Shore")
-  val dunes: SiteId = CatalogNames.site("Dunes")
-  val fairIsle: SiteId = CatalogNames.site("Fair Isle")
+  val pass: SiteId = NarrowPassSite.id
+  val ancientCity: SiteId = AncientCitySite.id
+  val brokenPeaks: SiteId = BrokenPeaksSite.id
+  val buriedGiant: SiteId = BuriedGiantSite.id
+  val deepWoods: SiteId = DeepWoodsSite.id
+  val desolateShore: SiteId = DesolateShoreSite.id
+  val dunes: SiteId = DunesSite.id
+  val fairIsle: SiteId = FairIsleSite.id
 
   val map: MapState =
     val cradle = Vector(ancientCity, brokenPeaks)
