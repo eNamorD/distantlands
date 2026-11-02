@@ -375,6 +375,14 @@ final case class Table private (private val game: ReadyGame,
       c.commonCards.copy(relicDeck = Vector.empty)))
       .updateCampaign(c => c.copy(reliquary = c.reliquary ++ deck)) }
 
+  /** The first `n` relics of the relic deck moved, in order, to the
+    * Reliquary. */
+  def reliquaryFromDeck(n: Int): Table = update { r =>
+    val deck = r.game.current.commonCards.relicDeck
+    r.updateCurrent(c => c.copy(commonCards =
+      c.commonCards.copy(relicDeck = deck.drop(n))))
+      .updateCampaign(c => c.copy(reliquary = c.reliquary ++ deck.take(n))) }
+
   /** A walker procedure for `action`, parked at step `path` of its tree
     * ("0" is the tree's first step), with `answered` already recorded. */
   def parkedWalker(action: ProcedureRef, path: String = "0",

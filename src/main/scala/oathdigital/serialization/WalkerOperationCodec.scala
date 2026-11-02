@@ -425,6 +425,7 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
       ujson.Obj("kind" -> "chronicle-gathering")
     case ShufflePile.SuitedReserve(suit) =>
       ujson.Obj("kind" -> "suited-reserve", "suit" -> suit.key)
+    case ShufflePile.Reliquary => ujson.Obj("kind" -> "reliquary")
 
   private def decodeShufflePile(value: ujson.Value, path: String)
       : Either[WireError, ShufflePile] =
@@ -432,6 +433,7 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
       case Some("edifice-deck") => Right(ShufflePile.EdificeDeck)
       case Some("set-aside-relics") => Right(ShufflePile.SetAsideRelics)
       case Some("chronicle-gathering") => Right(ShufflePile.ChronicleGathering)
+      case Some("reliquary") => Right(ShufflePile.Reliquary)
       case Some("suited-reserve") => decodeSuit(value("suit").str,
         s"$path.suit").map(ShufflePile.SuitedReserve.apply)
       case _ => decodeSearchSource(value, path).map(ShufflePile.Search.apply)

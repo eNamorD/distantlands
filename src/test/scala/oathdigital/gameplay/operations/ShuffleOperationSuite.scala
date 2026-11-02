@@ -100,3 +100,13 @@ class ShuffleOperationSuite extends munit.FunSuite:
     val done = accepted(executor.execute(reserved,
       Shuffle(ShufflePile.SuitedReserve(suit), Some(three.reverse))))
     assertEquals(done.game.campaign.suitedReserves(suit), three.reverse)
+
+  test("a shuffle writes the Reliquary's new order"):
+    val three = zones(discarded).relicDeck.take(3)
+    val stocked = discarded.updateCurrent(current => current.copy(
+      commonCards = current.commonCards.copy(
+        relicDeck = current.commonCards.relicDeck.drop(3))))
+      .updateCampaign(_.copy(reliquary = three))
+    val done = accepted(executor.execute(stocked,
+      Shuffle(ShufflePile.Reliquary, Some(three.reverse))))
+    assertEquals(done.game.campaign.reliquary, three.reverse)
