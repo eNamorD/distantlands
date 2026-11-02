@@ -24,7 +24,8 @@ class RuinedSetupRulesSuite extends munit.FunSuite:
 
   // The Setup walk is the subject (the face's effect runs when the walk
   // reaches it), so these tests start from the fresh Setup, not a Table.
-  private def stagedWith(edifice: EdificeId, side: EdificeSide = EdificeSide.Ruined): Table =
+  private def stagedWith(edifice: EdificeId,
+      side: EdificeSide = EdificeSide.Ruined): Table =
     Table.from(FirstGameSetupFixture.freshReady).edifice(edifice, side, at = site)
 
   /** Bandits rule exactly `bandited`, one each; every other site is empty.
