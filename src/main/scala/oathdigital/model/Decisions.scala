@@ -297,6 +297,23 @@ object DecisionOption:
     def ref: DecisionOptionRef = option.ref
     override def available: Boolean = option.available
 
+  /** A battle plan an Imperial ally lends the decision's owner (Imperial
+    * Tactics): its source is `owner`'s. Wrapping for the reason `Badged`
+    * wraps: `ref` is the wrapped option's. */
+  final case class Lent(option: DecisionOption, owner: PlayerId)
+      extends DecisionOption:
+    def ref: DecisionOptionRef = option.ref
+    override def available: Boolean = option.available
+
+  /** The ally who lends `option`, through any wrappers. */
+  def lender(option: DecisionOption): Option[PlayerId] = option match
+    case Lent(_, owner) => Some(owner)
+    case Badged(inner, _) => lender(inner)
+    case Priced(inner, _) => lender(inner)
+    case Unavailable(inner, _) => lender(inner)
+    case Warned(inner, _) => lender(inner)
+    case _ => None
+
   /** An option shown with why it may not be chosen now. `ref` is the wrapped
     * option's, and the answer check reads only available options, so an
     * answer naming it is refused as an absent option is.

@@ -1,6 +1,6 @@
 # Empire phase design
 
-Status: designed, 2026-10-29. Slice 1a implemented, 2026-10-29. Slice 1b-i implemented, 2026-10-30.
+Status: designed, 2026-10-29. Slice 1a implemented, 2026-10-29. Slice 1b-i implemented, 2026-10-30. Slice 1b-ii implemented, 2026-11-01.
 
 Roadmap item: **Phase - Empire**. Chancellor and Citizen roles in play,
 Imperial warbands, the Imperial Campaign, the Stable Regime and Successor
@@ -250,7 +250,9 @@ no one approves anything.
   window, labelled with its owner. A plan whose requirement an offer meets
   becomes usable. A chosen plan's costs, fixed and variable, are paid from
   the allies' offered amounts first, in turn order starting after the user,
-  then by the user.
+  then by the user. A surcharge on the plan and Peace Envoy's gift are paid
+  the same way, but the gift never comes from the enemy it is given to. The
+  option's price shows only the user's share.
 - **The window.** An Imperial user's plan window is asked when the user has
   a plan they could use with aid, even one they cannot pay for alone, or an
   ally has a faceup plan the user could use. Otherwise it is skipped as
@@ -258,7 +260,10 @@ no one approves anything.
 - **Withdrawing.** An ally may withdraw any unused part of an offer. Spent
   amounts and chosen plans are no longer theirs to withdraw.
 - **Lifetime.** Offers belong to one side's plan window and end when it
-  finishes; unused amounts stay with the ally. The attacker and defender
+  finishes; unused amounts stay with the ally. They stand while the walk is
+  still inside the Campaign, such as at a plan's amount question, since the
+  plan's payment reads them, and clear when the walk ends or another plan
+  window opens; allies can change them only while the plan decision waits. The attacker and defender
   cannot use the same plan: a plan one side used is shown unavailable to the
   other, with the reason "The attacker used this plan".
 - **Offer panel.** Each other Imperial player sees a panel headed "You may

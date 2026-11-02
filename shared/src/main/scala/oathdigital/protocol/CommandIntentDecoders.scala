@@ -40,6 +40,22 @@ private[protocol] object CommandIntentDecoders:
         requester <- string(value, "requesterId", path)
         setting <- string(value, "setting", path)
       yield SetConsentPreference(power, requester, setting)
+    case "savePlanAid" =>
+      def amount(name: String) = field(value, name, path).flatMap(
+        integer(_, s"$path.$name"))
+      for
+        _ <- exact(value, Set("type", "plans", "requirements", "favor",
+          "secrets", "favorBurnt", "secretsBurnt"), path)
+        plans <- field(value, "plans", path).flatMap(
+          CommandNestedCodecs.decodeStartArgsWire(_, s"$path.plans"))
+        requirements <- field(value, "requirements", path).flatMap(
+          CommandNestedCodecs.decodeStartArgsWire(_, s"$path.requirements"))
+        favor <- amount("favor")
+        secrets <- amount("secrets")
+        favorBurnt <- amount("favorBurnt")
+        secretsBurnt <- amount("secretsBurnt")
+      yield SavePlanAid(plans, requirements, favor, secrets, favorBurnt,
+        secretsBurnt)
     case other => Left(InvalidValue(s"$path.type", s"unknown intent type '$other'"))
 
   private def empty(value: ujson.Obj, path: String, result: GameIntent) = exact(value, Set("type"), path).map(_ => result)

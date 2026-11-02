@@ -95,8 +95,8 @@ trait BattlePlan extends ContributingPower:
   final override lazy val contributions: Map[PowerWindow, Vector[Contribution]] =
     val offers: Map[PowerWindow, Vector[Contribution]] = sides.toVector.map {
       side => BattlePlan.windowOf(side) -> Vector[Contribution](Offer(ctx =>
-        PlanContext.of(ctx).filter(_.side == side).flatMap(plan)
-          .map(_.copy(sides = sides))))
+        PlanContext.of(ctx).filter(_.side == side).flatMap(BattlePlan.lent(
+          _, plan)).map(_.copy(sides = sides))))
     }.toMap
     val afterwards: Map[PowerWindow, Vector[Contribution]] = later.map:
       case (window, build) => window -> Vector[Contribution](Transform(
@@ -122,6 +122,22 @@ object BattlePlan:
   /** A plan's `wrapping` of a window: the fold's context, the plan's use and
     * the window's children. */
   type Wrap = (PowerCtx, PlanUse, Vector[Operation]) => Vector[Operation]
+
+  /** The plan `plan` gives `context`, with its lender; or, when it stands
+    * only with more aid, the plan as the full view gives it, unavailable
+    * until an ally offers what it needs (Imperial Tactics). */
+  def lent(context: PlanContext,
+      plan: PlanContext => Option[CampaignPlanOffer])
+      : Option[CampaignPlanOffer] =
+    val actual = plan(context).map(offer =>
+      offer.copy(lender = context.lentBy(offer.source)))
+    if context.aidWindow.isEmpty || actual.exists(_.withheld.isEmpty) then
+      actual
+    else plan(context.fullAid).filter(_.withheld.isEmpty).map { offer =>
+      val owner = context.fullAid.lentBy(offer.source)
+      offer.copy(lender = owner, awaitsAid = true, withheld = Some(
+        owner.fold(ImperialTactics.awaitsNeed)(ImperialTactics.awaitsPlan)))
+    }.orElse(actual)
 
   def windowOf(side: CampaignPlanSide): PowerWindow = side match
     case CampaignPlanSide.Attacker => PowerWindow.CampaignAttackerBattlePlans

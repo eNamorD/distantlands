@@ -19,7 +19,8 @@ object GameProjectionCodec:
     "relicDeckCount", "temporaryHandPreview",
     "walkerDecision", "walkerWaiting", "viewerPlayerId",
     "supplyMaximum", "supplyBands", "undo", "redo", "logRevision",
-    "consentWaiting", "consentPrompt", "consentPreferences", "chronicle")
+    "consentWaiting", "consentPrompt", "consentPreferences", "chronicle",
+    "planAidPrompt")
 
   def encode(value: GameProjection): String = ujson.write(encodeValue(value))
   def decode(json: String): Either[ProtocolDecodeFailure, GameProjection] =
@@ -77,6 +78,8 @@ object GameProjectionCodec:
       ConsentProjectionCodec.encodePreferences),
     "chronicle" -> option(value.chronicle)(encodeChronicle))
     value.viewerPlayerId.foreach(player => result("viewerPlayerId") = ujson.Str(player))
+    value.planAidPrompt.foreach(prompt => result("planAidPrompt") =
+      PlanAidProjectionCodec.encodePrompt(prompt))
     result
 
   private[projection] def decodeValue(raw: ujson.Value, path: String): Result[GameProjection] = for
@@ -137,13 +140,16 @@ object GameProjectionCodec:
     consentPreferences <- traverse(preferenceRaws,
       s"$path.consentPreferences")(ConsentProjectionCodec.decodePreferences)
     chronicle <- optionalAbsent(value, "chronicle", path)(decodeChronicle)
+    planAidPrompt <- optionalAbsent(value, "planAidPrompt", path)(
+      PlanAidProjectionCodec.decodePrompt)
   yield GameProjection(game, sequence, phase, active, players, world, pawns,
     ready, completed, resources, siteResources,
     deckCount, deckTop, boards, oathkeeper, banners,
     banks, tracks, relicDeck, preview,
     walkerDecision, walkerWaiting, viewer,
     supplyMaximum, bands, undo, redo, logRevision,
-    consentWaiting, consentPrompt, consentPreferences, chronicle)
+    consentWaiting, consentPrompt, consentPreferences, chronicle,
+    planAidPrompt)
 
   private def encodeChronicle(value: ChronicleProjection): ujson.Value =
     val result = ujson.Obj("name" -> value.name,

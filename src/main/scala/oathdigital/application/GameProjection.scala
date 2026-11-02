@@ -3,7 +3,7 @@ package oathdigital.application
 import oathdigital.application.chronicle.ChronicleEntries
 import oathdigital.catalog.ExecutableCatalog
 import oathdigital.model.OathState.{NoGame, Ready}
-import oathdigital.gameplay.PlayerSecretSummary
+import oathdigital.gameplay.{OathRules, PlayerSecretSummary}
 import oathdigital.gameplay.powerresolver.PhasePowers
 import oathdigital.gameplay.phases.rest.FinishRestProcedure
 import oathdigital.gameplay.powers.{ConsentPowers, PhasePowerCatalog,
@@ -25,6 +25,9 @@ final class GameProjector(catalog: ExecutableCatalog, phasePowers: PhasePowers,
     presentation, walkerDecisions)
   private val consent = new ConsentProjector(presentation, walkerDecisions,
     ConsentPowers.default(catalog))
+  private val aid = new PlanAidProjector(new OathRules(catalog,
+    walkerPowerCatalog = WalkerPowerCatalog.default(catalog),
+    phasePowerCatalog = phasePowers), walkerDecisions)
 
   private val logs = new gamelog.GameLogProjector(catalog, presentation)
 
@@ -66,7 +69,7 @@ final class GameProjector(catalog: ExecutableCatalog, phasePowers: PhasePowers,
           else offer(loaded.undo, requestingPlayer, "Undo"),
         redo = if waiting.nonEmpty then None
           else offer(loaded.redo, requestingPlayer, "Redo"),
-        logRevision = loaded.logRevision))
+        logRevision = loaded.logRevision, planAidPrompt = aid.prompt(context)))
 
   /** `step` offered to its issuer alone (undo design, "Rulings" and
     * "Controls"): "Undo: {line}", or "Undo your last step" when the batch

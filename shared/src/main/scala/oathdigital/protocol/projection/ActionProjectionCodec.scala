@@ -326,7 +326,8 @@ private[projection] object ActionProjectionCodec:
     suggested <- optionalInt(row, "suggested", path)
   yield DecisionSlotProjection(option, minimum, maximum, suggested)
 
-  private def encodeOptionRow(row: DecisionOptionProjection): ujson.Value =
+  private[projection] def encodeOptionRow(row: DecisionOptionProjection)
+      : ujson.Value =
     ujson.Obj("kind" -> row.kind, "id" -> row.id, "label" -> row.label,
       "card" -> option(row.card)(encodeCard),
       "details" -> encoded(row.details)(ujson.Str(_)),

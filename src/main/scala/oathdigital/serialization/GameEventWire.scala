@@ -18,7 +18,8 @@ final case class GameEventEnvelope(
  */
 object GameEventWire extends GameEventJsonSupport with LifecycleEventCodec
     with EndingEventCodec
-    with WalkerEventCodec with UndoEventCodec with ConsentEventCodec:
+    with WalkerEventCodec with UndoEventCodec with ConsentEventCodec
+    with PlanAidEventCodec:
   import WireError._
 
   /** The pre-release stream has one current format and no compatibility reader. */
@@ -49,6 +50,8 @@ object GameEventWire extends GameEventJsonSupport with LifecycleEventCodec
   val ConsentRequestWithdrawnType = "consent.request-withdrawn"
   val ConsentPreferenceSetType = "consent.preference-set"
   val ConsentPreferencesClearedType = "consent.preferences-cleared"
+  val PlanAidSavedType = "plan-aid.saved"
+  val PlanAidClearedType = "plan-aid.cleared"
 
   /** Encodes one event at its absolute position in the game stream. */
   def encodeEvent(
@@ -258,10 +261,11 @@ object GameEventWire extends GameEventJsonSupport with LifecycleEventCodec
   private val discriminatorDispatch = lifecycleDiscriminator
     .orElse(endingDiscriminator).orElse(walkerDiscriminator)
     .orElse(undoDiscriminator).orElse(consentDiscriminator)
+    .orElse(planAidDiscriminator)
 
   private val encoderDispatch = lifecycleEncoder
     .orElse(endingEncoder).orElse(walkerEncoder).orElse(undoEncoder)
-    .orElse(consentEncoder)
+    .orElse(consentEncoder).orElse(planAidEncoder)
 
   /** The wire type for `event`, or a typed error when no vocabulary in this
     * build registers one. `discriminatorDispatch` is a composed
@@ -295,6 +299,7 @@ object GameEventWire extends GameEventJsonSupport with LifecycleEventCodec
         .orElse(walkerDecode(eventType, payload, path))
         .orElse(undoDecode(eventType, payload, path))
         .orElse(consentDecode(eventType, payload, path))
+        .orElse(planAidDecode(eventType, payload, path))
         .getOrElse(Left(UnknownEventType(s"$path.eventType", eventType)))
     catch
       case NonFatal(error) => Left(InvalidValue(path,

@@ -135,6 +135,7 @@ private[frontend] object ParkedDecision:
       case surface: Surface.BoardDecision => BoardDecisionPanel.render(
         surface, value, drafts, canControl, panel, controls)
     ConsentPanels.render(value, canControl, panel, controls)
+    PlanAidPanel.render(value, canControl, panel, drafts, controls)
     routed.notice.foreach(notice =>
       panel.appendChild(text("p", "walker-waiting", notice)))
 

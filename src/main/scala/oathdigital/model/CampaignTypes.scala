@@ -144,12 +144,19 @@ final case class PlanAmount(decisionId: String,
   * `warning` is why a plan its user can pay for deserves a second look
   * (Zealots, whose condition fails). The option shows it and stays
   * choosable.
+  *
+  * Imperial Tactics (Empire phase design, "1b-ii"): `requires` names what
+  * an Imperial ally may meet for the plan's user; `lender` is the ally
+  * whose source it is; `awaitsAid` marks an offer that stands only once an
+  * ally offers more, shown unavailable until then.
   */
 final case class CampaignPlanOffer(source: CampaignPlanSource, label: String,
     costs: Vector[CampaignPlanCost], effects: Vector[CampaignPlanEffect],
     sides: Set[CampaignPlanSide] = Set.empty,
     withheld: Option[OptionReason] = None, alone: Boolean = false,
-    amount: Option[PlanAmount] = None, warning: Option[OptionReason] = None)
+    amount: Option[PlanAmount] = None, warning: Option[OptionReason] = None,
+    requires: Vector[PlanNeed] = Vector.empty,
+    lender: Option[PlayerId] = None, awaitsAid: Boolean = false)
 
 /** An offer with the power that made it. */
 final case class OfferedPlan(power: PowerId, offer: CampaignPlanOffer)

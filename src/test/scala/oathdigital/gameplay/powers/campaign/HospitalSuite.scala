@@ -226,11 +226,14 @@ class HospitalSuite extends munit.FunSuite:
       "site, but it saves nothing"):
     // The Chancellor defends the Empire's sites and so may choose it, but
     // at the end the Citizen rules them on their own turn (ruling R15).
+    // The Citizen's window opens too, since the Chancellor, an Imperial
+    // player though the enemy, could offer them the plan (Imperial Tactics).
     val base = withEnemyAtOrigin(board(warbands = 4, supply = 7))
     val seated = on(base)(_.imperial(base.rival, base.actor))
     val b = on(hospitalFor(seated, base.rival, hospitalSite))(
       _.boardWarbands(base.rival, 3))
     val won = commit(rules(winningDice), b, 4, raid = true)
+      .finishAttackerPlans(b.actor)
       .pick(b.rival, CampaignIds.defenderPlan, ref).finishPlanWindows
     assert(awaits(won, b.actor, CampaignIds.relocation))
     val done = won.pick(b.actor, CampaignIds.relocation,

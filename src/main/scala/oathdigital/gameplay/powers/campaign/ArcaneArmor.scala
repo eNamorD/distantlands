@@ -2,7 +2,7 @@ package oathdigital.gameplay.powers.campaign
 
 import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
 import oathdigital.gameplay.actions.campaign.{CampaignIds,
-  CampaignProcedure, PlanAmounts}
+  CampaignProcedure, PlanAid, PlanAmounts}
 import oathdigital.gameplay.powers.PowerAnswers
 import oathdigital.model._
 
@@ -56,7 +56,8 @@ case object ArcaneArmor extends BattlePlan:
 
   def plan(context: PlanContext): Option[CampaignPlanOffer] =
     context.denizen(cardId).map { source =>
-      val secrets = context.user.fold(0)(faceUpSecrets(context.ready, _))
+      val secrets = context.user.fold(0)(faceUpSecrets(context.ready, _)) +
+        context.aidSecrets
       val dice = pool(context.ready)
       val offer = CampaignPlanOffer(source,
         "Arcane Armor: set defense dice to double shields", Vector.empty,
@@ -65,16 +66,21 @@ case object ArcaneArmor extends BattlePlan:
         offer.copy(withheld = Some(OptionReason.Written(noSecret)))
       else if dice < 1 then
         offer.copy(withheld = Some(OptionReason.Written(noDefenseDice)))
-      else offer.copy(amount = Some(PlanAmounts.rangeBy(decisionId, bounds,
+      else offer.copy(amount = Some(PlanAmounts.rangeBy(decisionId,
+        bounds(context.aidWindow),
         heading, confirm, secretsEach = 1)(_ => Vector.empty)))
     }
 
   /** X runs from one to the smaller of the secrets left to pay with and the
     * dice in the pool, when the question is asked: a surcharge on the plan
     * (Gleaming Armor) has taken its secret by then. */
-  private def bounds(ready: ReadyGame, user: PlayerId)
+  private def bounds(window: Option[AidWindow])(ready: ReadyGame,
+      user: PlayerId)
       : Either[OathViolation, (Int, Int)] =
-    val secrets = faceUpSecrets(ready, user)
+    // What the allies offered to pay and have not used (Imperial Tactics).
+    val aided = window.fold(0)(at => PlanAid.allies(ready, user)
+      .map(PlanAid.remaining(ready, at, _).secrets).sum)
+    val secrets = faceUpSecrets(ready, user) + aided
     if secrets < 1 then Left(OathViolation.InsufficientSecrets(1, secrets))
     else Right(1 -> math.min(secrets, pool(ready)))
 

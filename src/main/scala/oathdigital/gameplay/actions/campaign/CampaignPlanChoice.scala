@@ -18,6 +18,9 @@ import oathdigital.model._
   *    are chosen (`finishWith`). A plan its user can pay for
   *    shows its offer's warning. Nothing usable means nothing
   *    is asked, the pass does nothing, and the `Repeat` ends.
+  *  - An Imperial user's window is asked, even when they can use nothing
+  *    alone, when some plan awaits an ally's offer or could be paid with
+  *    the allies' help (Imperial Tactics).
   *  - The chosen plan is applied as a [[CampaignPlanApplication]].
   *  - A bandit defender applies every cost-free plan it is offered and can
   *    pay for, without asking.
@@ -78,20 +81,48 @@ final class CampaignPlanChoice(catalog: ExecutableCatalog, val actor: PlayerId,
     def unavailable(offered: OfferedPlan, reason: OptionReason)
         : DecisionOption =
       DecisionOption.Unavailable(CampaignPlans.optionOf(offered), reason)
-    val listed = offers.filterNot(offered =>
+    // An Imperial ally may lend one plan to both sides; the defender cannot
+    // use one the attacker used (Imperial Tactics, CR p. 35).
+    val attackerUsed: Set[DecisionOptionRef] =
+      if side != CampaignPlanSide.Defender then Set.empty
+      else CampaignAnswers.picks(pending,
+        CampaignIds.planDecision(CampaignPlanSide.Attacker)).toSet
+    val unchosen = offers.filterNot(offered =>
       chosen.contains(CampaignPlans.refOf(offered.offer.source)))
-      .map(offered => offered.offer.withheld match
-        case Some(reason) => unavailable(offered, reason)
-        case None => pass.applies(applicationOf(setup, offered)) match
+    def usedByAttacker(offered: OfferedPlan): Boolean =
+      attackerUsed(CampaignPlans.refOf(offered.offer.source))
+    // Each offered plan's dry run, once: the options and the window's gate
+    // read it. A withheld plan is not dry-run.
+    val dryRuns = unchosen.map(offered => offered ->
+      offered.offer.withheld.toLeft(pass.applies(applicationOf(setup,
+        offered))))
+    val listed = dryRuns.map((offered, dryRun) => dryRun match
+        case _ if usedByAttacker(offered) =>
+          unavailable(offered,
+            OptionReason.Written(CampaignPlanChoice.attackerUsed))
+        case Left(reason) => unavailable(offered, reason)
+        case Right(applied) => applied match
           case Right(operations) => warned(offered, PlanPrice.priced(
-            CampaignPlans.optionOf(offered), offered.offer, operations))
+            CampaignPlans.optionOf(offered), offered.offer, operations,
+            Some(user)))
           case Left(violation) =>
             unavailable(offered, OptionReason.Written(PlanPrice.shortfall(
               pass.state, user, offered.offer, violation))))
+    // A plan that awaits an offer, or one the allies could still pay for,
+    // keeps the window open for them (Empire phase design, "The window").
+    // While the decision waits only the offers change, and this reads the
+    // allies' holdings and the full-aid view, not what they offered, so the
+    // parked decision stays put as they offer and withdraw.
+    val aidable = PlanAid.window(pass.state, actor, side, user).exists(at =>
+      dryRuns.exists((offered, dryRun) => !usedByAttacker(offered) &&
+        (offered.offer.awaitsAid || dryRun.exists(_.left.exists(
+          PlanAid.couldCover(pass.state, at, _,
+            PlanAid.printed(offered.offer.costs)))))))
     val playable = listed.exists(_.available)
-    if !playable && !pass.resuming then Vector.empty
+    val asked = playable || aidable
+    if !asked && !pass.resuming then Vector.empty
     else Vector[Operation](
-      Branch((_, _) => if !playable then Vector.empty
+      Branch((_, _) => if !asked then Vector.empty
         else Vector(decision(decisionId, user, listed, chosen.size))),
       Branch((_, tree) => CampaignAnswers.lastPick(tree, decisionId) match {
         case None => Vector.empty
@@ -103,10 +134,8 @@ final class CampaignPlanChoice(catalog: ExecutableCatalog, val actor: PlayerId,
           case Some(offered) => Vector[Operation](
             CampaignNotes.leaf(CampaignNotes.activationNote(
               offered.offer.source, user, actor)),
-            OpenPick(decisionId, ref, CampaignPlans.optionOf(offered) match
-              case DecisionOption.Badged(DecisionOption.Button(_, label), _) =>
-                Some(label)
-              case DecisionOption.Button(_, label) => Some(label)
+            OpenPick(decisionId, ref, offered.offer.source match
+              case _: CampaignPlanSource.Title => Some(offered.offer.label)
               case _ => None),
             applicationOf(setup, offered),
             ClosePick())
@@ -128,6 +157,9 @@ final class CampaignPlanChoice(catalog: ExecutableCatalog, val actor: PlayerId,
     })))
 
 object CampaignPlanChoice:
+  /** Why the defender cannot use a plan the attacker used (CR p. 35). */
+  val attackerUsed: String = "The attacker used this plan"
+
   /** "Finish with no battle plans", or "with 2 battle plans": "Finish" says
     * how many plans the side fights with, as the modifier decision's "Start"
     * says how many modifiers the action starts with. */

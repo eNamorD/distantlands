@@ -17,6 +17,10 @@ trait WalkerEvent extends OathEvent
   * batch: the journal fold closes any open batch before one, so consent
   * stays off the undo stack. */
 sealed trait ConsentEvent extends OathEvent
+
+/** The Imperial Tactics facts (Empire phase design, "1b-ii"). Like consent
+  * facts, they open no command batch and join none. */
+sealed trait PlanAidEvent extends OathEvent
 object OathEvent:
   /** Replaces `FirstGameStarted` (2026-09-21 Chronicle design, slice 2,
     * "Setup from a Chronicle"). `chronicle` is the between-game record;
@@ -72,6 +76,11 @@ object OathEvent:
     * (ruling 17). */
   final case class ConsentPreferencesCleared(granter: PlayerId,
       power: PowerId) extends ConsentEvent
+  /** `ally`'s whole offer for `window`, replacing their earlier one. */
+  final case class PlanAidSaved(ally: PlayerId, window: AidWindow,
+      offer: AidOffer) extends PlanAidEvent
+  /** No Imperial plan decision is parked any more, so the offers end. */
+  case object PlanAidCleared extends PlanAidEvent
 
 enum TradeResource { case Favor, Secret }
 

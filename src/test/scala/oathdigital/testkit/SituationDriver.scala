@@ -187,9 +187,9 @@ object SituationDriver:
       case GameCommand.ResolveWalker(actor, decision) =>
         rules.resolveWalker(state, actor, decision.decisionId,
           decision.answer)
-      case _: GameCommand.ConsentCommand =>
+      case _: GameCommand.ConsentCommand | _: GameCommand.SavePlanAid =>
         Left(OathViolation.InvalidEventOrder(
-          "consent commands need a journal; use a journaled situation"))
+          "consent and aid commands need a journal; use a journaled situation"))
       case GameCommand.Undo(_) | GameCommand.Redo(_) =>
         Left(OathViolation.InvalidEventOrder(
           "undo and redo need a journal; use a journaled situation"))

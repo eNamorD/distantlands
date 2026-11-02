@@ -27,6 +27,11 @@ object GameIntent:
     * a field that could name the sender. */
   final case class SetConsentPreference(powerId: String, requesterId: String,
       setting: String) extends GameIntent
+  /** The sender's whole Imperial Tactics offer: the plans they lend and the
+    * requirements they meet, as refs, and the four amounts. */
+  final case class SavePlanAid(plans: Vector[WalkerStartArgWire],
+      requirements: Vector[WalkerStartArgWire], favor: Int, secrets: Int,
+      favorBurnt: Int, secretsBurnt: Int) extends GameIntent
 
 /** One game-object reference in a walker procedure's start selection, spelled
   * exactly as a decision answer spells one: a kind and an id, decoded by the

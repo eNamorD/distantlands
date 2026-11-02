@@ -34,8 +34,21 @@ class CommandProtocolSuite extends munit.FunSuite:
     RequestConsent("travel.destination", WalkerStartArgWire("site", "coast"),
       Vector("p2")),
     AnswerConsent("always"),
-    SetConsentPreference("site.narrow-pass.pass", "blue", "case-by-case")
+    SetConsentPreference("site.narrow-pass.pass", "blue", "case-by-case"),
+    SavePlanAid(Vector(WalkerStartArgWire("denizen", "108"),
+      WalkerStartArgWire("button", "title")),
+      Vector(WalkerStartArgWire("banner", "darkest-secret"),
+        WalkerStartArgWire("player", "p2")), 2, 1, 0, 3),
+    SavePlanAid(Vector.empty, Vector.empty, 0, 0, 0, 0)
   )
+
+  test("an aid offer with a negative amount is rejected"):
+    val json = """{"expectedNextSequence":0,"intent":{"type":"savePlanAid",""" +
+      """"plans":[],"requirements":[],"favor":-1,"secrets":0,""" +
+      """"favorBurnt":0,"secretsBurnt":0}}"""
+    assertEquals(rejected(ActorlessCommandCodec.decode(json)),
+      ProtocolDecodeFailure.InvalidValue("$.intent.favor",
+        "expected a non-negative 32-bit integer"))
 
   test("a walker answer carrying a deleted legacy tag is rejected"):
     val legacy = ujson.Obj("kind" -> "recover-choice", "choice" -> "continue")

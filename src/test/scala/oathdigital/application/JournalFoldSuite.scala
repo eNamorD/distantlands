@@ -46,3 +46,14 @@ class JournalFoldSuite extends munit.FunSuite:
     val reloaded = ParkedServiceFixture.replayingSecond(service, stripped)
     assertEquals(reloaded.load("g").map(_.map(loaded =>
       (loaded.state, loaded.undo))), Right(Some((picked.state, None))))
+
+  test("standing aid offers outlive a rewind"):
+    import oathdigital.model.*
+    val offered = PlanAidState().saved(p2,
+      AidWindow(p1, CampaignPlanSide.Defender, p3),
+      AidOffer(amounts = AidAmounts(favor = 1)))
+    val target = table.ready
+    val current = target.copy(planAid = offered)
+    assertEquals(JournalFold.carried(OathState.Ready(target),
+      OathState.Ready(current)), OathState.Ready(target.copy(
+        planAid = offered)))

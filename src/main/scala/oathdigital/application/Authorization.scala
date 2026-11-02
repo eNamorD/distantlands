@@ -60,6 +60,8 @@ final case class AuthorizedPlayer private[application] (
     GameCommand.RequestConsent(access.playerId, decisionId, target, granters)
   def answerConsent(choice: ConsentChoice): GameCommand =
     GameCommand.AnswerConsent(access.playerId, choice)
+  def savePlanAid(offer: AidOffer): GameCommand =
+    GameCommand.SavePlanAid(access.playerId, offer)
   def setConsentPreference(power: PowerId, requester: PlayerId,
       setting: ConsentSetting): GameCommand =
     GameCommand.SetConsentPreference(access.playerId, power, requester,

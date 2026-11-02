@@ -133,6 +133,17 @@ class ProjectionProtocolSuite extends munit.FunSuite:
             "site-slot", "site:a:0", "Bury Known at Site A",
             replaces = Some(known), buries = true))))))))
 
+  test("the Imperial Tactics offer panel round-trips, and is absent when unset"):
+    val row = DecisionOptionProjection("denizen", "108", "Shield Wall", None,
+      Vector("Defense"), Some("Defense"))
+    assertRoundTrips(projection.copy(planAidPrompt = Some(
+      PlanAidPromptProjection("p3", "defender", Vector(row),
+        Vector(row.copy(kind = "banner", id = "darkest-secret",
+          label = "Darkest Secret")),
+        PlanAidOfferProjection(Vector("denizen:108"), Vector.empty, 2),
+        PlanAidOfferProjection(favor = 1), favorHeld = 3, secretsHeld = 1))))
+    assert(!GameProjectionCodec.encode(projection).contains("planAidPrompt"))
+
   test("a payload without consent parts decodes to none"):
     val raw = ujson.read(GameProjectionCodec.encode(projection))
     Vector("consentWaiting", "consentPrompt", "consentPreferences")

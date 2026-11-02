@@ -109,6 +109,7 @@ final class GameApplicationService(
   private val presentation = new GamePresentationProjector(catalog)
   private val journalFold = new JournalFold(rules.evolve)
   private val consent = new ConsentDesk(rules, ConsentPowers.default(catalog))
+  private val aid = new PlanAidDesk(rules)
   private val coupling = new UndoCoupling(state =>
     rules.powerUseStep(state).nonEmpty)
   private val log = new gamelog.GameLogFormatter(catalog, presentation)
@@ -222,6 +223,9 @@ final class GameApplicationService(
           setting) =>
         consentBatch(gameId, journal, consent.setPreference(journal.state,
           granter, power, requester, setting), expected, nextSequence)
+      case GameCommand.SavePlanAid(ally, offer) =>
+        consentBatch(gameId, journal, aid.save(journal.state, ally, offer),
+          expected, nextSequence)
       case _ => handleAgainst(gameId, journal, command, expected, nextSequence)
 
   /** Withdraws `request`, about an automatic power, and takes back what
@@ -240,7 +244,7 @@ final class GameApplicationService(
 
   /** A consent command's events, appended as one batch. Any batch opening
     * among them is left out of the reported events, as it is for every
-    * command. */
+    * command. An Imperial Tactics offer is appended the same way. */
   private def consentBatch(gameId: String, journal: FoldedJournal,
       events: Either[OathViolation, Vector[OathEvent]],
       expected: ExpectedStream, nextSequence: Long)
@@ -381,7 +385,8 @@ final class GameApplicationService(
     yield accepted
 
   /** Appends `appended`, then any stale-preference clearing it leaves
-    * (consent design, "Commands"), as one append, and reports `reported`
+    * (consent design, "Commands") and any stale Imperial Tactics offers'
+    * clearing, as one append, and reports `reported`
     * plus the clearing. The state reported is the fold's, which an undo
     * or a redo has given the current consent ledger. The fold runs before
     * the append, so a batch it would reject is never written. */
@@ -395,7 +400,7 @@ final class GameApplicationService(
   ): Either[GameApplicationError, GameAccepted] =
     for
       opened <- extended(journal, appended, nextSequence)
-      clearing = consent.stale(opened.state)
+      clearing = consent.stale(opened.state) ++ aid.stale(opened.state)
       folded <- extended(opened, clearing, nextSequence + appended.size)
       records <- encode(gameId, nextSequence, appended ++ clearing)
       result <- repository.append(gameId, expected, records)
@@ -507,6 +512,8 @@ final class GameApplicationService(
       // `routed` sends these to the consent desk; none reaches the rules.
       case _: GameCommand.ConsentCommand => Left(OathViolation.InvalidEventOrder(
         "a consent command never reaches the rules"))
+      case _: GameCommand.SavePlanAid => Left(OathViolation.InvalidEventOrder(
+        "an aid offer goes to the aid desk"))
 
   private def isWalkerResume(command: GameCommand): Boolean = command match
     case _: GameCommand.ResolveWalker => true

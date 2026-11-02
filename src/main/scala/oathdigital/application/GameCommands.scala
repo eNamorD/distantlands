@@ -31,6 +31,11 @@ object GameCommand:
   /** `granter` answers the request waiting on them. */
   final case class AnswerConsent(granter: PlayerId, choice: ConsentChoice)
       extends ConsentCommand
+  /** `ally`'s whole Imperial Tactics offer for the parked plan window
+    * (Empire phase design, "1b-ii"). Routed to the aid desk; legal over
+    * another player's parked decision. */
+  final case class SavePlanAid(ally: PlayerId, offer: AidOffer)
+      extends GameCommand
 
   /** The player a command's batch is recorded for, in the `CommandAccepted`
     * that opens it (undo design, "Terms"): its actor. Begin has none, so a
@@ -42,6 +47,7 @@ object GameCommand:
     case Undo(_) => None
     case Redo(_) => None
     case _: ConsentCommand => None
+    case SavePlanAid(_, _) => None
 
 /** One answer to the currently parked generic walker decision. */
 final case class TreeDecision(decisionId: String, answer: DecisionAnswer)

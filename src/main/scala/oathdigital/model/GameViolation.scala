@@ -106,6 +106,9 @@ object OathViolation:
   case object ConsentPending extends OathViolation
   /** A consent command that cannot apply now, and why. */
   final case class ConsentUnavailable(reason: String) extends OathViolation
+  /** An Imperial Tactics offer that cannot be saved now, and why (Empire
+    * phase design, "1b-ii"). */
+  final case class PlanAidUnavailable(reason: String) extends OathViolation
   final case class SiteNotInPlay(siteId: SiteId)
       extends OathViolation
   final case class InvalidEventOrder(detail: String)

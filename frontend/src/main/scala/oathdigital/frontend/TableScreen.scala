@@ -100,10 +100,20 @@ private[frontend] final class TableScreen(
           value.activeParticipantId.getOrElse(""),
           value.walkerDecision.map(_.decisionId).getOrElse(""))
           .mkString("|")
+        // An Imperial ally's offer is built from the board while another
+        // player's plan window is parked (Empire phase design, "Offer
+        // panel").
         val options = routed.surface.collect {
           case board: ParkedDecision.Surface.BoardDecision => BoardOptions.of(
             board, drafts, view.controlsAvailable, controls, value)
-        }.getOrElse(BoardOptions.none)
+        }.orElse(for
+          prompt <- value.planAidPrompt
+          draft <- drafts.aid
+          if view.controlsAvailable
+        yield new BoardOptions(PlanAidDraft.views(prompt, draft), chosen =>
+          controls.stage(Draft.Aid(Some(draft.toggled(prompt,
+            BoardOptionViews.key(chosen)))))))
+          .getOrElse(BoardOptions.none)
         (WorldBoardRenderer.players(value, selectedPlayer, options),
           WorldBoardRenderer.world(value, options,
             Option.when(view.controlsAvailable)(controls.submitCommand)),

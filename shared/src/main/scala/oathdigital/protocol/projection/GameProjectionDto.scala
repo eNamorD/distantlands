@@ -33,6 +33,7 @@ final case class GameProjection(
     ,consentPrompt: Option[ConsentPromptProjection] = None
     ,consentPreferences: Vector[ConsentPreferencesProjection] = Vector.empty
     ,chronicle: Option[ChronicleProjection] = None
+    ,planAidPrompt: Option[PlanAidPromptProjection] = None
 )
 
 /** Every seat's view of the game's Chronicle (Chronicle browsing design,

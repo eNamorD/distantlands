@@ -36,6 +36,7 @@ private[server] object CommandRejectionMessage:
       case oathdigital.model.OathViolation.ConsentPending =>
         "Waiting for an answer to a consent request"
       case oathdigital.model.OathViolation.ConsentUnavailable(reason) => reason
+      case oathdigital.model.OathViolation.PlanAidUnavailable(reason) => reason
       // Worded as the unwaivable rejection is: the waiver is for the search.
       case oathdigital.model.OathViolation.WaivableOperationRejected(code,
           detail, _) =>

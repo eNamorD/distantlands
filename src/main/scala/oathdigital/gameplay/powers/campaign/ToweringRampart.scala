@@ -25,6 +25,7 @@ object ToweringRampartCard extends Edifice(EdificeId("E20"), Suit.Order):
   * It is used by the ruler of the site the edifice stands at. A Raid targets no
   * site, so a Raid gets it only when the ruler's pawn is here. A bandit ruler
   * has no pawn, so it applies when the site is targeted, without choosing.
+  * An Imperial ally's pawn at the site meets "your pawn" (ruling R16).
   */
 case object ToweringRampart extends BattlePlan:
   val edificeId: EdificeId = ToweringRampartCard.id
@@ -38,4 +39,6 @@ case object ToweringRampart extends BattlePlan:
       context.pawnAt(source.siteId) || context.targets(source.siteId))
       .map(source => CampaignPlanOffer(source,
         "Towering Rampart: add 2 defense dice", Vector.empty,
-        Vector(CampaignPlanEffect.AddDefenseDice(2))))
+        Vector(CampaignPlanEffect.AddDefenseDice(2)),
+        requires = Option.unless(context.targets(source.siteId))(
+          PlanNeed.PawnAt(source.siteId)).toVector))

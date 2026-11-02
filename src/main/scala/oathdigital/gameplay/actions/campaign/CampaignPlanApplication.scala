@@ -27,6 +27,12 @@ import oathdigital.model._
   *  - A plan with an amount asks it of its user last, so a dry run pays
   *    what is fixed and stops at the question, then pays what each unit
   *    costs onto the plan's card and applies what the answer does.
+  *  - An Imperial user's Imperial allies pay first, from what they offered,
+  *    in turn order after the user, and the user pays the rest (Imperial
+  *    Tactics; rulings R11 and R12). What each ally paid, lent and met is
+  *    recorded as Campaign pool markers (`PlanAid`), so undoing the pick
+  *    undoes the use. A payment slot is never on a resume's path, so its
+  *    split may read the state.
   */
 final class CampaignPlanApplication(catalog: ExecutableCatalog,
     val setup: CampaignSetup, val side: CampaignPlanSide,
@@ -40,12 +46,13 @@ final class CampaignPlanApplication(catalog: ExecutableCatalog,
 
   override val children: Vector[Operation] = Vector[Operation](
     Branch((ready, _) => reveal(ready)),
-    Branch((_, _) => pay),
+    Branch((ready, _) => pay(ready)),
     Branch((ready, _) => sacrifice(ready))) ++
     offered.offer.effects.map(effect) ++ Vector[Operation](
       Branch((ready, _) => ask(ready)),
-      Branch((_, pending) => payAmount(pending)),
+      Branch((ready, pending) => payAmount(ready, pending)),
       Branch((_, pending) => chosenEffects(pending)),
+      Branch((ready, _) => lent(ready)),
       Branch((_, _) => marker))
 
   /** The plan's amount question, asked of its user, with its bounds read
@@ -61,20 +68,57 @@ final class CampaignPlanApplication(catalog: ExecutableCatalog,
       case _ => Vector.empty
 
   /** What the answered amount costs, placed onto the plan's card. */
-  private def payAmount(pending: PendingTree): Vector[Operation] =
+  private def payAmount(ready: ReadyGame, pending: PendingTree)
+      : Vector[Operation] =
     val owed = for
       amount <- offered.offer.amount
       if amount.secretsEach > 0
       player <- user
       chosen <- PlanAmounts.chosen(pending, amount)
     yield player -> Cost(secret = chosen * amount.secretsEach)
-    owed.toVector.map { case (player, cost) =>
+    owed.toVector.flatMap { case (player, cost) =>
       CampaignPlans.cardOf(source) match
-        case Some(card) => payment(Costs.onCard(player, card, cost,
-          catalog, intoOccupied = true))
+        case Some(card) => split(ready, player, cost, Some(card))
         case None =>
-          refuse("the title has no card to place a plan's cost on")
+          Vector(refuse("the title has no card to place a plan's cost on"))
     }
+
+  /** The window aid reaches, when the user is Imperial. */
+  private def aidWindow(ready: ReadyGame): Option[AidWindow] =
+    user.flatMap(PlanAid.window(ready, setup.actor, side, _))
+
+  /** `cost`, paid onto `card` (or, for the title, from the payer's play
+    * area) by the allies first and the user last, with the markers of what
+    * each ally paid. */
+  private def split(ready: ReadyGame, player: PlayerId, cost: Cost,
+      card: Option[CardId]): Vector[Operation] =
+    val window = aidWindow(ready)
+    PlanAid.payments(ready, window, player, cost).flatMap { (payer, part) =>
+      val paid = card match
+        case Some(id) => payment(Costs.onCard(payer, id, part, catalog,
+          intoOccupied = true))
+        case None if part.favor + part.secret == 0 =>
+          payment(PayCost(payer, Location.PlayArea(payer), part))
+        case None => refuse("the title has no card to place a plan's cost on")
+      val markers = window.filter(_ => payer != player).toVector
+        .flatMap(PlanAid.spent(_, payer, part))
+      paid +: markers
+    }
+
+  /** The markers of what this plan used of its lenders: the plan itself,
+    * when an ally lent it, and each requirement an ally met for it that
+    * the user does not meet alone (ruling R12), Hearts and Minds' People's
+    * Favor among them, so its end reads who lent it. */
+  private def lent(ready: ReadyGame): Vector[Operation] =
+    (for
+      window <- aidWindow(ready)
+      player <- user
+    yield offered.offer.lender.map(PlanAid.lentUse(window, _,
+        CampaignPlans.refOf(source))).toVector ++
+      offered.offer.requires.filterNot(PlanAid.meetsAlone(ready, player, _))
+        .flatMap(PlanAid.lentNeed(ready, window, _, full = false))
+        .map((ally, ref) => PlanAid.lentUse(window, ally, ref)))
+      .getOrElse(Vector.empty)
 
   /** What the answered amount does. */
   private def chosenEffects(pending: PendingTree): Vector[Operation] =
@@ -101,7 +145,7 @@ final class CampaignPlanApplication(catalog: ExecutableCatalog,
         resultingOrientation = Some(Orientation.FaceUp)))
     case _ => Vector.empty
 
-  private def pay: Vector[Operation] =
+  private def pay(ready: ReadyGame): Vector[Operation] =
     val costs = offered.offer.costs
     def total(pick: PartialFunction[CampaignPlanCost, Int]): Int =
       costs.collect(pick).sum
@@ -111,15 +155,8 @@ final class CampaignPlanApplication(catalog: ExecutableCatalog,
       favorBurnt = total { case CampaignPlanCost.FavorBurnt(count) => count },
       secretBurnt = total { case CampaignPlanCost.SecretBurnt(count) => count })
     if cost == Cost.free then Vector.empty
-    else user match
-      case None => Vector.empty
-      case Some(player) => CampaignPlans.cardOf(source) match
-        case Some(card) => Vector(payment(Costs.onCard(player, card, cost,
-          catalog, intoOccupied = true)))
-        case None if cost.favor + cost.secret == 0 =>
-          Vector(payment(PayCost(player, Location.PlayArea(player), cost)))
-        case None => Vector(refuse(
-          "the title has no card to place a plan's cost on"))
+    else user.fold(Vector.empty[Operation])(player =>
+      split(ready, player, cost, CampaignPlans.cardOf(source)))
 
   /** The payment runs as a batch, not as the composite's own moves, so that
     * the pipeline settles it at once when its payer is not the active player.

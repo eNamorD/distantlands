@@ -2,7 +2,7 @@ package oathdigital.gameplay.powers.campaign
 
 import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.actions.campaign.{CampaignPlanApplication,
-  CampaignPlans, CampaignSetup}
+  CampaignPlans, CampaignSetup, PlanAid}
 import oathdigital.gameplay.operations.Costs
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution, PowerCtx, Transform}
 import oathdigital.gameplay.powers.CatalogResolution
@@ -14,10 +14,11 @@ import oathdigital.model._
   *
   * While the holder is in a Campaign, as the attacker or as a player defender,
   * every plan the opposing side chooses costs `cost` more, paid like the plan's
-  * own cost: onto the plan's source card, and settled at once outside its
-  * user's turn. The title has no card, so its plan pays `onTitle` instead. The
-  * added cost is part of the plan's application, so a plan the user cannot
-  * afford with it is not offered, and the option's price includes it. Bandits
+  * own cost: onto the plan's source card, by an Imperial user's allies
+  * first, and settled at once outside its user's turn. The title has no
+  * card, so its plan pays `onTitle` instead. The added cost is part of the
+  * plan's application, so a plan the user cannot afford with it is not
+  * offered, and the option's price includes it. Bandits
   * are enemies too, but they hold nothing and cannot pay, so while a holder
   * attacks, a bandit defender applies no plan at all.
   *
@@ -85,8 +86,15 @@ trait PlanSurcharge extends ContributingPower:
   yield application.user.fold[Operation](
     BuildOps((_, _) => Left(unpayable)))(user =>
     BuildOps((ready, _) => CampaignPlans.cardOf(application.source) match {
-      case Some(card) => Right(Vector[CoreOperation](Costs.onCard(user, card,
-        cost, catalog, intoOccupied = true)))
+      // An Imperial user's allies pay first, as for the plan's own cost.
+      case Some(card) =>
+        val window = PlanAid.window(ready, application.setup.actor,
+          application.side, user)
+        Right(PlanAid.payments(ready, window, user, cost).flatMap {
+          (payer, part) => Costs.onCard(payer, card, part, catalog,
+            intoOccupied = true) +: window.filter(_ => payer != user)
+            .toVector.flatMap(PlanAid.spent(_, payer, part))
+        })
       case None => onTitle(ready, user)
     }))
 

@@ -154,6 +154,7 @@ Without Empire, round 8 uses War Exhaustion while skipping Stable Regime and Cha
 - **Chancellor's Eye.** A Citizen asks the Chancellor's consent to move warbands from their site to their board (CR p. 35).
 - **Warband Transfers.** An Imperial player may move warbands to or from another Imperial player's board when that player's pawn is at their site and that player consents (CR p. 35).
 - **Imperial Infighting.** An Imperial player may raid another Imperial player, and a Citizen may conquer Imperial sites, which the Chancellor defends (CR p. 35).
+- **Imperial Tactics.** In a Campaign, an Imperial player may use battle plans in another Imperial player's play area with their consent, and plans at Imperial sites with the Chancellor's consent; any Imperial player may pay a plan's costs or meet its requirements, even split between players. The Oathkeeper title is a defensive battle plan. The attacker and defender cannot use the same plan (CR p. 35).
 
 ## Rules precedence and timing
 
