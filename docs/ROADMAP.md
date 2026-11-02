@@ -428,6 +428,8 @@ before treating the numbers below as current.
   arm); `AuthorizedPlayer.forPlayer` mints a "transport" access context to
   build commands, and `GameCommand.issuer` answers `None` for commands that
   carry an actor. A command could be an actor plus a model-typed intent.
+  Design note:
+  [one command vocabulary](superpowers/specs/2026-11-02-one-command-vocabulary-design.md).
 - [ ] **One HTTP gateway.** Three transports write the same load, submit and
   log over the same service calls; only the trusted-seat one is used in
   production, and the authenticated stack mounts only in development, with no
