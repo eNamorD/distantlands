@@ -12,35 +12,35 @@ object TrustedSeatFailure:
   case object StorageFailure extends TrustedSeatFailure
   final case class Application(error: GameApplicationError) extends TrustedSeatFailure
 
-/** TrustedSeat is resolved from a credential before crossing this boundary. */
+/** The seat transport's view of `GameGateway`: a `TrustedSeat` resolved from
+  * its cookie becomes the seat's access, for its own game only. */
 final class TrustedGameGateway(service: GameApplicationService, projector: GameProjector):
   import TrustedSeatFailure._
 
-  private def actor(gameId: String, seat: TrustedSeat): Either[TrustedSeatFailure, PlayerId] =
-    Either.cond(gameId == seat.gameId, PlayerId(seat.playerId), Forbidden)
+  private val gateway = new GameGateway(service, projector)
+
+  private def access(gameId: String, seat: TrustedSeat)
+      : Either[TrustedSeatFailure, GameAccess] =
+    Either.cond(gameId == seat.gameId, GameAccess.Seat(PlayerId(seat.playerId)),
+      Forbidden)
 
   def load(gameId: String, seat: TrustedSeat): Either[TrustedSeatFailure, GameProjection] =
-    for
-      player <- actor(gameId, seat)
-      loaded <- service.load(gameId).left.map(Application.apply)
-      game <- loaded.toRight(Application(GameApplicationError.StreamNotFound(gameId)))
-    yield projector.project(gameId, game, player).copy(viewerPlayerId = Some(player.value))
+    access(gameId, seat).flatMap(gateway.load(gameId, _).left.map(failure))
 
   /** The seat's log page. A cursor past the journal's end is an invalid
     * request, which the route reports as malformed. */
   def log(gameId: String, seat: TrustedSeat, after: Long)
-      : Either[TrustedSeatFailure, LogPage] = for
-    player <- actor(gameId, seat)
-    loaded <- service.history(gameId).left.map(Application.apply)
-    history <- loaded.toRight(Application(GameApplicationError.StreamNotFound(gameId)))
-    page <- projector.logPage(gameId, history, after, player).toRight(InvalidIntent)
-  yield page
+      : Either[TrustedSeatFailure, LogPage] =
+    access(gameId, seat).flatMap(gateway.log(gameId, _, after).left.map(failure))
 
   def submit(gameId: String, seat: TrustedSeat, request: ActorlessCommandRequest)
-      : Either[TrustedSeatFailure, GameProjection] = for
-    player <- actor(gameId, seat)
-    intent <- GameIntentMapper.map(request.intent).left.map(_ => InvalidIntent)
-    accepted <- service.handle(gameId, request.expectedNextSequence,
-      GameCommand.Issued(player, intent)).left.map(Application.apply)
-  yield projector.project(gameId, accepted.loaded, player)
-    .copy(viewerPlayerId = Some(player.value))
+      : Either[TrustedSeatFailure, GameProjection] =
+    access(gameId, seat).flatMap(gateway.submit(gameId, _, request)
+      .left.map(failure))
+
+  private def failure(gatewayFailure: GatewayFailure): TrustedSeatFailure =
+    gatewayFailure match
+      case GatewayFailure.Application(error) => Application(error)
+      case GatewayFailure.Access(_) => Forbidden
+      case GatewayFailure.InvalidIntent(_, _) | GatewayFailure.Malformed =>
+        InvalidIntent

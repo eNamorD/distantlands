@@ -5,8 +5,9 @@
 > candidate at `0d1ae92`, describes the three transports and the service
 > calls each writes, defines the seam for actor resolution, settles the
 > public-only projection scope and `SearchDrawPort`, and slices the change.
-> Slice 0 (the command vocabulary note) and slice 1 (the `SearchDrawPort`
-> fold) landed on 2026-11-02; slices 2 to 5 are not implemented. Companion
+> Slice 0 (the command vocabulary note), slice 1 (the `SearchDrawPort`
+> fold) and slice 2 (`GameGateway` and `GameAccess` behind the existing
+> routes) landed on 2026-11-02; slices 3 to 5 are not implemented. Companion
 > notes: the [command vocabulary](2026-11-02-one-command-vocabulary-design.md),
 > which landed first, and the [wire codecs](2026-11-02-derive-wire-codecs-design.md).
 

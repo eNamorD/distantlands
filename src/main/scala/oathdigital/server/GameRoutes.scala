@@ -14,11 +14,8 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import org.slf4j.LoggerFactory
 
-import oathdigital.application.{
-  GameApplicationError,
-  GameCommand,
-  GameIntentMapper
-}
+import oathdigital.application.GameApplicationError
+import oathdigital.protocol.ActorlessCommandRequest
 import oathdigital.protocol.projection.{GameProjection, LogPage,
   LogPageCodec}
 import oathdigital.model.PlayerId
@@ -43,41 +40,31 @@ private[server] object CommandRejectionMessage:
           .toString
       case other => other.toString
 
+/** The development transport's view of `GameGateway`: the `playerId` query
+  * parameter is the seat, and the raw event history stays a loopback-only
+  * privilege of this transport. */
 final class GameServerGateway(
     service: oathdigital.application.GameApplicationService,
     projector: oathdigital.application.GameProjector
 ):
+  private val gateway = new GameGateway(service, projector)
+
   def rawEventHistory(gameId: String, limit: Int)
       : Either[GameApplicationError, Vector[String]] =
     service.rawEventHistory(gameId, limit)
 
-  def submit(
-      gameId: String,
-      requestingPlayer: PlayerId,
-      expectedNextSequence: Long,
-      command: GameCommand
-  ): Either[GameApplicationError, GameProjection] =
-    service.handle(gameId, expectedNextSequence, command).map { accepted =>
-      projector.project(gameId, accepted.loaded, requestingPlayer)
-    }
+  def submit(gameId: String, requestingPlayer: PlayerId,
+      request: ActorlessCommandRequest)
+      : Either[GatewayFailure, GameProjection] =
+    gateway.submit(gameId, GameAccess.Seat(requestingPlayer), request)
 
-  def load(
-      gameId: String,
-      requestingPlayer: PlayerId
-  ): Either[GameApplicationError, GameProjection] =
-    service.load(gameId).flatMap:
-      case Some(loaded) =>
-        Right(projector.project(gameId, loaded, requestingPlayer))
-      case None =>
-        Left(GameApplicationError.StreamNotFound(gameId))
+  def load(gameId: String, requestingPlayer: PlayerId)
+      : Either[GatewayFailure, GameProjection] =
+    gateway.load(gameId, GameAccess.Seat(requestingPlayer))
 
-  /** `None` when `after` is past the journal's end. */
   def log(gameId: String, requestingPlayer: PlayerId, after: Long)
-      : Either[GameApplicationError, Option[LogPage]] =
-    service.history(gameId).flatMap:
-      case Some(history) =>
-        Right(projector.logPage(gameId, history, after, requestingPlayer))
-      case None => Left(GameApplicationError.StreamNotFound(gameId))
+      : Either[GatewayFailure, LogPage] =
+    gateway.log(gameId, GameAccess.Seat(requestingPlayer), after)
 
 final class GameRoutes(
     gateway: GameServerGateway,
@@ -128,26 +115,21 @@ final class GameRoutes(
                           "malformed-request",
                           s"${error.path}: ${error.message}"
                         ))
-                      case Right(request) =>
-                        GameIntentMapper.map(request.intent) match
-                          case Left(error) => complete(jsonResponse(StatusCodes.BadRequest,
-                            "malformed-request", s"${error.path}: ${error.message}"))
-                          case Right(intent) => completeAsync(gateway.submit(
-                            validGameId, PlayerId(validPlayerId),
-                            request.expectedNextSequence,
-                            GameCommand.Issued(PlayerId(validPlayerId), intent)))
+                      case Right(request) => completeAsync(gateway.submit(
+                        validGameId, PlayerId(validPlayerId), request))
                   }
       }
     }
 
   private def completeLog(
-      operation: => Either[GameApplicationError, Option[LogPage]]
+      operation: => Either[GatewayFailure, LogPage]
   ): Route = onComplete(Future(operation)(using blockingExecutionContext)):
-    case Success(Right(Some(page))) => complete(HttpResponse(StatusCodes.OK,
+    case Success(Right(page)) => complete(HttpResponse(StatusCodes.OK,
       entity = HttpEntity(ContentTypes.`application/json`,
         LogPageCodec.encode(page))))
-    case Success(Right(None)) => complete(jsonResponse(StatusCodes.BadRequest,
-      "malformed-request", "$.after: past the end of the journal"))
+    case Success(Left(GatewayFailure.Malformed)) =>
+      complete(jsonResponse(StatusCodes.BadRequest, "malformed-request",
+        "$.after: past the end of the journal"))
     case Success(Left(error)) =>
       val (status, code, message, _) = publicError(error)
       complete(jsonResponse(status, code, message))
@@ -166,7 +148,8 @@ final class GameRoutes(
           "warning" -> "Raw authoritative events may reveal hidden outcomes.",
           "events" -> ujson.Arr.from(values))))))
     case Success(Left(error)) =>
-      val (status, code, message, _) = publicError(error)
+      val (status, code, message, _) = publicError(
+        GatewayFailure.Application(error))
       complete(jsonResponse(status, code, message))
     case Failure(error) =>
       logger.error("Unhandled raw event-history route failure", error)
@@ -174,7 +157,7 @@ final class GameRoutes(
         "the server could not complete the request"))
 
   private def completeAsync(
-      operation: => Either[GameApplicationError, GameProjection]
+      operation: => Either[GatewayFailure, GameProjection]
   ): Route =
     onComplete(Future(operation)(using blockingExecutionContext)):
       case Success(Right(projection)) =>
@@ -199,6 +182,18 @@ final class GameRoutes(
         ))
 
   private def publicError(
+      failure: GatewayFailure
+  ): (StatusCode, String, String, Boolean) =
+    failure match
+      case GatewayFailure.InvalidIntent(path, message) =>
+        (StatusCodes.BadRequest, "malformed-request", s"$path: $message",
+          false)
+      case GatewayFailure.Access(_) | GatewayFailure.Malformed =>
+        (StatusCodes.BadRequest, "malformed-request", "the request is invalid",
+          false)
+      case GatewayFailure.Application(error) => applicationError(error)
+
+  private def applicationError(
       error: GameApplicationError
   ): (StatusCode, String, String, Boolean) =
     error match

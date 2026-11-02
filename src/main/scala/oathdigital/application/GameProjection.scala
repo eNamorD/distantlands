@@ -28,8 +28,10 @@ final class GameProjector(catalog: ExecutableCatalog, phasePowers: PhasePowers):
 
   /** The log page after `after` for `viewer`; `None` when `after` is past
     * the journal's end. */
+  /** The log from `after` as `viewer` reads it; no viewer reads the public
+    * lines alone. */
   def logPage(gameId: String, history: GameHistory, after: Long,
-      viewer: PlayerId): Option[LogPage] =
+      viewer: Option[PlayerId]): Option[LogPage] =
     logs.page(gameId, history, after, viewer)
 
   def project(gameId: String, loaded: LoadedGame,
