@@ -48,8 +48,6 @@ edifice.e19.intact
 edifice.e19.ruined
 edifice.e21.intact
 edifice.e21.ruined
-edifice.e23.intact
-edifice.e23.ruined
 edifice.e26.ruined
 edifice.e27.intact
 edifice.e29.ruined

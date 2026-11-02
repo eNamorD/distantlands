@@ -170,17 +170,3 @@ object FestivalDistrictCard extends Edifice(EdificeId("E21"), Suit.Hearth):
         "have. Draw that many denizens from the bottom of the world " +
         "deck as facedown advisers.")
     val powers: Vector[PrintedPower] = Vector(power)
-
-object SpiralCastleCard extends Edifice(EdificeId("E23"), Suit.Hearth):
-  object intact extends EdificeFace("Spiral Castle") with Locked:
-    val power = PrintedPower(PowerId("edifice.e23.intact"),
-      persistent = false, cost = Cost.free,
-      text = "If you're victorious in a raid, place the defender's pawn " +
-        "on this site, and they lose 2 Supply.")
-    val powers: Vector[PrintedPower] = Vector(power)
-  object ruined extends EdificeFace("Spiral Dungeons"):
-    val power = PrintedPower(PowerId("edifice.e23.ruined"),
-      persistent = false, cost = Cost.free,
-      text = "If you're victorious, place the attacker's pawn on this " +
-        "site, and they lose 2 Supply. _Bandits will use this._")
-    val powers: Vector[PrintedPower] = Vector(power)

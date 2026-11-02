@@ -21,6 +21,7 @@ object SimplePlans:
       Vector(FearsomeShield) ++
       Vector(ToweringRampart) ++
       Vector(CrackedRampart) ++
+      Vector(SpiralCastle, SpiralDungeons) ++
       Vector(BattleHonors) ++
       Vector(Longbows) ++
       Vector(BlackSword) ++
