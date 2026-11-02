@@ -1,6 +1,8 @@
 package oathdigital.server
 
-import oathdigital.application.{GameIntentMapper, PlayerIntent, TreeDecision}
+import akka.http.scaladsl.model.StatusCodes
+import oathdigital.application.{GameApplicationError, GameIntentMapper,
+  PlayerIntent, TreeDecision}
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.{ChooseOneAnswer, DistributeAnswer, PartitionAnswer}
 import oathdigital.protocol.{DecisionAnswerWire, DecisionPlacementWire,
@@ -65,3 +67,38 @@ class GameHttpWireSuite extends munit.FunSuite:
       """"decisionId":"travel.destination","target":{"optionKind":"site"}}}"""
     assertEquals(rejected(GameHttpWire.decodeCommand(missing)).path,
       "$.intent.target[0].optionId")
+
+  /** Every gateway failure has one public spelling. Only an invalid intent
+    * names where it went wrong; a refusal that could carry a storage detail
+    * is an internal error. */
+  test("the one error table spells every gateway failure"):
+    import GatewayFailure._
+    def spelled(failure: GatewayFailure) = GameHttpWire.publicError(failure)
+    assertEquals(spelled(Access(AccessRefusal.Forbidden)),
+      (StatusCodes.Forbidden, "forbidden", "access is denied"))
+    assertEquals(spelled(Access(AccessRefusal.Unauthenticated)),
+      (StatusCodes.Unauthorized, "authentication-required",
+        "valid authentication is required"))
+    assertEquals(spelled(Access(AccessRefusal.Malformed)),
+      (StatusCodes.BadRequest, "malformed-request", "the request is invalid"))
+    assertEquals(spelled(Malformed), spelled(Access(AccessRefusal.Malformed)))
+    assertEquals(spelled(InvalidIntent("$.intent.choice", "invalid")),
+      (StatusCodes.BadRequest, "malformed-request", "$.intent.choice: invalid"))
+    assertEquals(spelled(Application(GameApplicationError.StreamNotFound("g"))),
+      (StatusCodes.NotFound, "stream-not-found",
+        "the requested game does not exist"))
+    assertEquals(spelled(Application(
+      GameApplicationError.StaleClientPosition(1L, 2L)))._1, StatusCodes.Conflict)
+    assertEquals(spelled(Application(
+      GameApplicationError.SequenceConflict(1L, 2L)))._1, StatusCodes.Conflict)
+    assertEquals(spelled(Application(GameApplicationError.DuplicateGame("g"))),
+      (StatusCodes.Conflict, "duplicate-game", "the game already exists"))
+    assertEquals(spelled(Application(GameApplicationError.CommandRejected(
+      OathViolation.ConsentPending))),
+      (StatusCodes.UnprocessableContent, "command-rejected",
+        "Waiting for an answer to a consent request"))
+    val internal = (StatusCodes.InternalServerError, "internal-error",
+      GameHttpWire.internalErrorMessage)
+    assertEquals(spelled(Access(AccessRefusal.Storage)), internal)
+    assertEquals(spelled(Application(
+      GameApplicationError.StorageFailure("the database path"))), internal)

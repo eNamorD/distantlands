@@ -4,8 +4,8 @@ import oathdigital.model.PlayerColor
 
 import java.nio.file.Files
 
-import oathdigital.application.TrustedSeat
 import oathdigital.protocol._
+import oathdigital.testkit.Table.p2
 import oathdigital.testkit.Unwrap.accepted
 
 class ServerRuntimeSuite extends munit.FunSuite:
@@ -21,8 +21,8 @@ class ServerRuntimeSuite extends munit.FunSuite:
       def siteOrder(): Vector[String] =
         val gameId = accepted(runtime.trustedGameProvisioning
           .create(request, "https://games.example.test")).gameId
-        val seat = TrustedSeat(gameId, "p2")
-        val projection = accepted(runtime.trustedGame.load(gameId, seat))
+        val projection = accepted(runtime.gateway.load(gameId,
+          GameAccess.Seat(p2)))
         projection.world.flatMap(_.sites).map(_.siteId)
       val orders = Vector.fill(4)(siteOrder())
       assert(orders.distinct.size > 1,

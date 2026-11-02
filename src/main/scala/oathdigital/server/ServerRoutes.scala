@@ -44,16 +44,14 @@ object ServerRoutes:
       Seq("localhost", "127.0.0.1", "[::1]").map(host =>
         new java.net.URI(s"http://$host:${config.port}"))
     val trustedSeats = new TrustedSeatRoutes(runtime.identities,
-      runtime.trustedGameProvisioning, runtime.trustedGame, publicOrigin,
+      runtime.trustedGameProvisioning, runtime.gateway, publicOrigin,
       blockingExecutionContext, loopbackAliases).route
     val application = config.mode match
       case ServerMode.Development =>
         // The development start page creates games through the same trusted
         // provisioning as trusted-alpha mode, so both get the generated setup.
-        val development = DevelopmentRoutes.route(
-          runtime.firstGame,
-          blockingExecutionContext
-        ) ~ trustedSeats
+        val development = DevelopmentRoutes.route(runtime.service,
+          runtime.gateway, blockingExecutionContext) ~ trustedSeats
         config.authenticatedRouteMount.fold(development) { configuration =>
           val authenticator = new SessionCookieAuthenticator(
             runtime.identities,

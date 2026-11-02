@@ -3,7 +3,7 @@ package oathdigital.application.gamelog
 import oathdigital.application._
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.protocol.projection.{LogKind, LogPageCodec}
-import oathdigital.server.{DevelopmentRoutes, GameServerGateway}
+import oathdigital.server.{DevelopmentRoutes, GameGateway}
 import oathdigital.testkit.HttpTestServer
 import oathdigital.testkit.Unwrap.{accepted, present}
 
@@ -41,10 +41,9 @@ class GameLogRouteSuite extends munit.FunSuite:
   test("the development route binds playerId, checks the cursor, and leaves raw events alone"):
     // `woken` replays Setup: the route serves a game begun from the start.
     val script = LogScripts.woken
-    val gateway = new GameServerGateway(script.service,
-      new GameProjector(catalog))
+    val gateway = new GameGateway(script.service, new GameProjector(catalog))
     val server = HttpTestServer.start("game-log-route-test")(blocking =>
-      DevelopmentRoutes.route(gateway, blocking))
+      DevelopmentRoutes.route(script.service, gateway, blocking))
     val playerId = script.actor.value
     try
       val page =

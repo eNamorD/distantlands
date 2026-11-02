@@ -37,10 +37,10 @@ class GameRoutesSuite extends munit.FunSuite:
       // park (2026-09-21 Chronicle design, slice 2): two records for one
       // Begin command.
       assertEquals(begun.nextSequence, 2L)
-      val gateway = new GameServerGateway(service, new GameProjector(catalog))
+      val gateway = new GameGateway(service, new GameProjector(catalog))
       BegunRoutes(
         HttpTestServer.start("first-game-route-test")(blocking =>
-          DevelopmentRoutes.route(gateway, blocking)),
+          DevelopmentRoutes.route(service, gateway, blocking)),
         begun.nextSequence),
     teardown = _.server.close())
 
@@ -76,7 +76,7 @@ class GameRoutesSuite extends munit.FunSuite:
       assertEquals(ujson.read(history.body())("events")(0)("sequence").num.toLong,
         afterBegin - 1)
       assert(ujson.read(history.body())("warning").str.contains("hidden"))
-      // GameRoutes refuses a limit above 100.
+      // The events route refuses a limit above 100.
       assertEquals(server.get(
         "/api/dev/first-games/route-game/events?limit=101").statusCode(), 400)
 
