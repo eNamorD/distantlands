@@ -17,4 +17,6 @@ object OtherActionPowers:
       SecondChance.forCatalog(catalog), ArmedMob.forCatalog(catalog),
       HonorGuard.forCatalog(catalog), Resettle.forCatalog(catalog),
       RelicThief.forCatalog(catalog), Assassin.forCatalog(catalog),
-      ForestHorn.forCatalog(catalog), GiantsRampage.forCatalog(catalog))
+      ForestHorn.forCatalog(catalog), GiantsRampage.forCatalog(catalog),
+      TempleOfAncestors.forCatalog(catalog),
+      SqualidDistrict.forCatalog(catalog))
