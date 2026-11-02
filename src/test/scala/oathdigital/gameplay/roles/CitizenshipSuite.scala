@@ -47,3 +47,9 @@ class CitizenshipSuite extends munit.FunSuite:
       "role.replace-warbands.p3")
     assertNotEquals(Citizenship.replaceDecisionId(p1),
       Citizenship.replaceDecisionId(p3))
+
+  test("a bank short for warbands all in one place asks nothing"):
+    val boardOnly = Table.start.imperial(p1).turn(p3, Phase.Act)
+      .boardWarbands(p3, 2)
+      .boardWarbands(p1, MaterialBankState.ImperialWarbands - 1).ready
+    assertEquals(Citizenship.query(boardOnly, p3), None)
