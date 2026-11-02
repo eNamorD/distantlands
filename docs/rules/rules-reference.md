@@ -156,6 +156,15 @@ Without Empire, round 8 uses War Exhaustion while skipping Stable Regime and Cha
 - **Imperial Infighting.** An Imperial player may raid another Imperial player, and a Citizen may conquer Imperial sites, which the Chancellor defends (CR p. 35).
 - **Imperial Tactics.** In a Campaign, an Imperial player may use battle plans in another Imperial player's play area with their consent, and plans at Imperial sites with the Chancellor's consent; any Imperial player may pay a plan's costs or meet its requirements, even split between players. The Oathkeeper title is a defensive battle plan. The attacker and defender cannot use the same plan (CR p. 35).
 
+## Role changes
+
+- **Becoming a Citizen.** The player's board turns to its Citizen side; their warbands on the board and the map become purple, the player choosing which when the purple bank runs short; their revealed Vision is discarded; a Usurper title turns to its Oathkeeper side, and under Supremacy passes to the Chancellor; their Act phase ends if it is their turn; their Supply refreshes to 7 (CR p. 34).
+- **Becoming the Chancellor.** In a game with no Empire, a "become a Citizen" power makes the player the Chancellor instead: they also take the Chancellor board, the purple bank and the Grand Scepter (CR p. 34). The Usurper Limiter is removed at once (ruling R5), and the next round starts with them (ruling R4).
+- **Exile.** A Citizen's board turns to its Exile side; the purple warbands on it become warbands of their colour, the excess returning to the purple bank, while the Imperial warbands on the map stay; their Act phase ends if it is their turn; their Supply refreshes to 7 (CR p. 34).
+- **Self-exile.** As a minor action, a Citizen gives the Chancellor 1 favor per Imperial warband on their board, at least 3, and is exiled (CR p. 34).
+- **The Grand Scepter's Action.** Its Exile holder may become a Citizen (card OATH-GrandScepter-NF).
+- **First game.** A group's first game is advised to ignore "become a Citizen" powers (CR p. 34, ambiguity F8); a setup option does so, on by default.
+
 ## Rules precedence and timing
 
 - Card powers may add actions and trigger effects while using glossary-defined terms (CR p. 42).

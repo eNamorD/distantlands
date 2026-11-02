@@ -212,10 +212,9 @@ Citizenship and exile, and the Empire part of later-game setup. Design:
 [Empire phase design](superpowers/specs/2026-10-29-empire-phase-design.md).
 Each slice gets its own plan, in this order.
 
-- [ ] **Slice 3, Role changes in play.** Becoming a Citizen or the
-  Chancellor, exile, the Grand Scepter's powers, the five "become a Citizen"
-  denizens, the first-game toggle, and the Throne's Offer Citizenship step,
-  now an empty window.
+- [ ] **Slice 3b, Citizenship sources.** The Grand Scepter's battle plan
+  and its "becomes a Citizen" deal term, the five "become a Citizen"
+  denizens, and the Throne's Offer Citizenship step, now an empty window.
 - [ ] **Slice 4, Later-game setup.** Start game 2 from the Chronicle that the
   Chronicle Phase journals (CR pp. 8-13). Game start refuses a non-empty
   world, any Imperial role and a seated lineage's starting advisers until it

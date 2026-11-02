@@ -70,6 +70,10 @@ R16. **What aid covers.** Imperial Tactics lets an ally pay a plan's costs and m
 
 R17. **The Grand Scepter counts.** Under Supremacy, the Successor holds more relics than each other Imperial player (card OATH-265). The Grand Scepter is a relic, so it counts in its holder's total (CR p. 19; Empire slice 2).
 
+R18. **Short purple bank.** When the purple bank holds fewer warbands than a player becoming a Citizen has on their board and at sites, the player splits the bank's warbands over their board and each site that holds their warbands. At each place, the warbands left over return to the player's own bank, so a site can end with fewer warbands, or none (CR p. 34; Empire slice 3a).
+
+R19. **Supremacy title.** Under the Oath of Supremacy, a player who becomes a Citizen while holding the Oathkeeper title passes it to the Chancellor, on either side: Citizens never hold that title (CR p. 35). A player who becomes the Chancellor keeps it, turned to its Oathkeeper side (CR p. 34; Empire slice 3a).
+
 ## Chronicle rulings
 
 Rulings given by the project owner for the Chronicle Phase ([chronicle.md](chronicle.md)). The rev1 task cards are slightly older than the CR; where they disagree, the CR governs.
