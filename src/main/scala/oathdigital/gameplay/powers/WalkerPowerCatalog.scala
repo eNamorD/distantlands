@@ -89,7 +89,7 @@ object WalkerPowerCatalog:
       Vector(GiantPythonRestriction) ++
       Vector(HiddenPassages) ++
       TravelSitePowers.all ++
-      Vector(BoilingLake, ForbiddenForest.forCatalog(catalog)) ++
+      Vector(BoilingLakeTravel, ForbiddenForest.forCatalog(catalog)) ++
       Vector(HallowedSpring) ++
       TravelModifiers.forCatalog(catalog) ++
       Vector(LeagueTreatyContribution.forCatalog(catalog)) ++

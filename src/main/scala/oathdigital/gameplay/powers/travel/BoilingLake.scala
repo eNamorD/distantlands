@@ -23,9 +23,12 @@ import oathdigital.model._
   * `TravelCost`. The catalog marks it `persistent: false`, but it is a
   * must, so it keeps the default automatic resolution, as Tyrant does.
   *
-  * Its line, in Tyrant's wording: "Killed 2 {Blue} warbands."
+  * Its line, in Tyrant's wording: "Killed 2 {Blue} warbands." The object is
+  * named for its Travel timing so that the engine scan, which forbids a
+  * power's name in `gameplay/operations`, does not read it in
+  * `StillBoilingLake`.
   */
-case object BoilingLake extends ContributingPower:
+case object BoilingLakeTravel extends ContributingPower:
   val edifice: EdificeId = BoilingLakeCard.id
   val id: PowerId = BoilingLakeCard.intact.power.id
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)

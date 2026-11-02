@@ -24,7 +24,7 @@ class BoilingLakeSuite extends munit.FunSuite:
       .boardWarbands(actor, warbands)))
 
   private def said(events: Vector[OathEvent]): Vector[NoteText.Said] =
-    NoteText.said(BoilingLake.id, BoilingLake.noteKeys, events)
+    NoteText.said(BoilingLakeTravel.id, BoilingLakeTravel.noteKeys, events)
 
   private def kills(events: Vector[OathEvent]): Vector[Kill] =
     PhasePowerHarness.ops(events).collect { case kill: Kill => kill }
