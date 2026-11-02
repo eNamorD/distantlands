@@ -6,6 +6,7 @@ import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.{AcceptDeal, ChooseManyAnswer, ProposeTerms}
 import oathdigital.protocol.projection.{DecisionQueryProjection,
+  NegotiationCitizenshipProjection,
   GameProjection, NegotiationDealProjection}
 import oathdigital.testkit.{CatalogNames, MenuPlay, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
@@ -134,3 +135,19 @@ class NegotiationDealProjectionSuite extends munit.FunSuite:
     views.foreach(projection => assertEquals(
       deal(projection).transfers.head.relics.map(_.cardId),
       Vector(p1Relic.value)))
+
+  test("the Scepter's holder sees whom they may offer Citizenship, and " +
+      "everyone sees the offer"):
+    val table = gathered.imperial(p1).relic(p1, "The Grand Scepter")
+      .allowingCitizenshipPowers
+    val state = parkedDeal(table, who = Vector(p2, p3),
+      terms = Some(NegotiationTerms(citizenship = Vector(p2))))
+    val holder = deal(view(state, p1))
+    assertEquals(holder.editing.map(_.editableCitizenship),
+      Some(Vector("p2", "p3")))
+    assertEquals(holder.editing.flatMap(_.citizenshipRefused), None)
+    assertEquals(deal(view(state, p2)).editing.map(_.editableCitizenship),
+      Some(Vector.empty))
+    Vector(p1, p2, p3).foreach(viewer => assertEquals(
+      deal(view(state, viewer)).citizenship,
+      Vector(NegotiationCitizenshipProjection("p1", "p2")), viewer.value))

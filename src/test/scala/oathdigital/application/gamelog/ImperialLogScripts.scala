@@ -1,12 +1,16 @@
 package oathdigital.application.gamelog
 
 import oathdigital.application._
+import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.actions.minor.WarbandTransfers
+import oathdigital.gameplay.actions.negotiation.NegotiationDeal
 import oathdigital.gameplay.operations.TheGrandScepterCard
 import oathdigital.gameplay.powers.action.GrandScepterAction
+import oathdigital.gameplay.powers.campaign.GrandScepterPlan
 import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
-import oathdigital.testkit.{MenuPlay, Table}
+import oathdigital.model.DecisionAnswer.{AcceptDeal, ChooseAmountAnswer,
+  ChooseOneAnswer, ProposeTerms}
+import oathdigital.testkit.{Dice, MenuPlay, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import LogScripts.atTable
 
@@ -56,7 +60,51 @@ object ImperialLogScripts:
       Vector(DecisionOptionRef.Relic(TheGrandScepterCard.id))))
     Script("scepter-citizen", service, p1)
 
+  private def deal(by: PlayerId, answer: DecisionAnswer): GameCommand =
+    GameCommand.ResolveWalker(by, TreeDecision(NegotiationDeal.dealDecisionId,
+      answer))
+
+  /** p1, the Chancellor, holds the Grand Scepter at Ancient City beside p2,
+    * an Exile with 2 board warbands and 2 at Broken Peaks, and offers p2
+    * Citizenship in a deal both accept (Empire slice 3b). */
+  def dealCitizen(using munit.Location): Script =
+    val (service, act) = atTable("deal-citizen", Table.start
+      .imperial(p1).pawn(p1, at = "Ancient City").pawn(p2, at = "Ancient City")
+      .pawn(p3, at = "Buried Giant").relic(p1, "The Grand Scepter")
+      .boardWarbands(p2, 2).warbandsAt("Broken Peaks", p2, 2)
+      .allowingCitizenshipPowers.banditsRefilled)
+    act.parkedAfter(MenuPlay.start(p1, ActionRef.Negotiation))
+      .parkedAfter(deal(p1, ProposeTerms(NegotiationTerms(
+        citizenship = Vector(p2)))))
+      .parkedAfter(deal(p2, AcceptDeal))
+      .after(deal(p1, AcceptDeal))
+    Script("deal-citizen", service, p1)
+
+  /** p1, the Chancellor, raids p2, a Citizen, at Ancient City, with the
+    * Grand Scepter's plan and 3 favor to burn, wins and exiles p2 (Empire
+    * slice 3b). */
+  def scepterExiled(using munit.Location): Script =
+    val (service, act) = atTable("scepter-exiled", Table.start
+      .imperial(p1, p2).pawn(p1, at = "Ancient City")
+      .pawn(p2, at = "Ancient City").pawn(p3, at = "Buried Giant")
+      .relic(p1, "The Grand Scepter").favor(p1, 3)
+      .boardWarbands(p1, 4).boardWarbands(p2, 2).banditsRefilled, Dice.raid)
+    val plan = GrandScepterPlan.cardRef
+    LogScripts.raidAnswers(act, {
+      case park if park.decisionId == CampaignIds.attackerPlan &&
+          (park.decide.query match
+            case one: DecisionQuery.ChooseOne =>
+              one.options.exists(o => o.ref == plan && o.available)
+            case _ => false) =>
+        ChooseOneAnswer(plan)
+      case park if park.decisionId == GrandScepterPlan.decisionId =>
+        ChooseOneAnswer(GrandScepterPlan.exile)
+    }).after(MenuPlay.start(p1, ActionRef.Campaign))
+    Script("scepter-exiled", service, p1)
+
   val named: Vector[(String, () => Script)] =
     Vector("warbands-transferred" -> (() => warbandsTransferred),
       "self-exiled" -> (() => selfExiled),
-      "scepter-citizen" -> (() => scepterCitizen))
+      "scepter-citizen" -> (() => scepterCitizen),
+      "deal-citizen" -> (() => dealCitizen),
+      "scepter-exiled" -> (() => scepterExiled))

@@ -257,7 +257,9 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
         NegotiationProcedure.gaveCard -> LogKind.Delta,
         NegotiationProcedure.showed -> LogKind.Delta,
         NegotiationProcedure.wasShown -> LogKind.Delta,
-        NegotiationProcedure.offeredCitizenship -> LogKind.Delta)),
+        NegotiationProcedure.offeredCitizenship -> LogKind.Delta,
+        NegotiationProcedure.becameCitizen -> LogKind.Delta,
+        NegotiationProcedure.becameChancellor -> LogKind.Delta)),
       narratedPrefixes = Vector("negotiation."))
     case ActionRef.PeekSiteRelics => ProcedureLog(tag = None,
       lines = ActionLineSource.Notes())

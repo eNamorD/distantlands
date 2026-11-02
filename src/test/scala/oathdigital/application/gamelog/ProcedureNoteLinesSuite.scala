@@ -166,7 +166,9 @@ class ProcedureNoteLinesSuite extends munit.FunSuite:
   test("every Negotiation settlement line posts at Delta"):
     Vector(NegotiationProcedure.gaveFavor, NegotiationProcedure.gaveCard,
       NegotiationProcedure.showed, NegotiationProcedure.wasShown,
-      NegotiationProcedure.offeredCitizenship).foreach(key =>
+      NegotiationProcedure.offeredCitizenship,
+      NegotiationProcedure.becameCitizen,
+      NegotiationProcedure.becameChancellor).foreach(key =>
         assertEquals(kindOf(ActionRef.Negotiation, key), LogKind.Delta,
           s"${key.name}"))
 
