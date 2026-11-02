@@ -2,10 +2,10 @@ package oathdigital.application
 
 import oathdigital.gameplay.operations.PowerUseRules
 import oathdigital.gameplay.powerresolver.PowerUseStep
-import oathdigital.gameplay.powers.poweruse.CityWall
+import oathdigital.gameplay.powers.poweruse.{CityWall, CityWallCard}
 import oathdigital.gameplay.powers.travel.{TravelFixture, Tyrant, TyrantCard}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Outcomes}
+import oathdigital.testkit.{Look, Outcomes}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, present}
 
@@ -14,7 +14,7 @@ import oathdigital.testkit.Unwrap.{accepted, present}
   * and 6). */
 class AutomaticUseConsentServiceSuite extends munit.FunSuite:
   import ConsentFixture.gameId
-  private val wall = CatalogNames.denizen("City Wall")
+  private val wall = CityWallCard.id
   private val coast = TravelFixture.coast
 
   /** The key Tyrant's use by p1 is remembered under, against City Wall. */
@@ -25,7 +25,7 @@ class AutomaticUseConsentServiceSuite extends munit.FunSuite:
     * the coast, which p2 rules with 2 warbands. */
   private val tyrantBesideAWalledCoast: ReadyGame =
     TravelFixture.on(TravelFixture.board(supply = 7))(_
-      .adviser(p1, "Tyrant").denizen(wall, at = coast)
+      .adviser(p1, TyrantCard).denizen(wall, at = coast)
       .warbandsAt(coast, p2, 2))
 
   /** p1 travels to `site` at `sequence`; returns the pick's batch. */
@@ -132,7 +132,7 @@ class AutomaticUseConsentServiceSuite extends munit.FunSuite:
     // which p3 rules.
     val dunes = TravelFixture.provincePlains
     val ready = TravelFixture.on(ConsentFixture.passRuledByP2)(_
-      .adviser(p1, "Tyrant").denizen(wall, at = dunes)
+      .adviser(p1, TyrantCard).denizen(wall, at = dunes)
       .warbandsAt(dunes, p3, 1))
     val (service, _) = ConsentFixture.service(ready)
     val started = ConsentFixture.startTravel(service)

@@ -1,5 +1,10 @@
 package oathdigital.application
 
+import oathdigital.gameplay.cards.BuriedGiantSite
+import oathdigital.gameplay.powers.campaign.StickyFireCard
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
+import oathdigital.gameplay.powers.wake.AncientCitySite
+import oathdigital.gameplay.powers.whenplayed.WizardsConclaveCard
 import oathdigital.testkit.MenuPlay
 import java.nio.file.Files
 
@@ -11,7 +16,7 @@ import oathdigital.gameplay.actions.negotiation.NegotiationDeal
 import oathdigital.model.DecisionAnswer.{AcceptDeal, ProposeTerms}
 import oathdigital.persistence.OwnedHsqldbEventStreamRepository
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, Table}
+import oathdigital.testkit.{Look, Outcomes, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, present}
 import ParkedServiceFixture.{loaded, replayingSecond}
@@ -26,9 +31,9 @@ class GameApplicationServiceReopenSuite extends munit.FunSuite:
     val gameId = "game-hsql-rest-cleanup"
     // Broken Peaks' secrets give p2's coming Wake an option, so it waits. p2
     // is alone there: p1 rests at Ancient City, p3 stands at Buried Giant.
-    val table = Table.start.pawn(p1, "Ancient City").pawn(p2, "Broken Peaks")
-      .pawn(p3, "Buried Giant")
-      .siteTokens("Broken Peaks", secrets = 2)
+    val table = Table.start.pawn(p1, AncientCitySite).pawn(p2, BrokenPeaksSite)
+      .pawn(p3, BuriedGiantSite)
+      .siteTokens(BrokenPeaksSite, secrets = 2)
     val first = accepted(OwnedHsqldbEventStreamRepository.open(path))
     // p1 rests.
     val service = new GameApplicationService(catalog, first,
@@ -55,8 +60,8 @@ class GameApplicationServiceReopenSuite extends munit.FunSuite:
       "oathdigital-minor-reopen-").resolve("journal")
     val gameId = "game-hsql-minor-relics"
     // p2 acts at Broken Peaks, where a relic lies.
-    val table = Table.start.turn(p2, Phase.Act).pawn(p2, "Broken Peaks")
-      .relicAt("Sticky Fire", "Broken Peaks")
+    val table = Table.start.turn(p2, Phase.Act).pawn(p2, BrokenPeaksSite)
+      .relicAt(StickyFireCard, BrokenPeaksSite)
     val first = accepted(OwnedHsqldbEventStreamRepository.open(path))
     val service = new GameApplicationService(catalog, first,
       genesis = table.phaseMenuParked.state)
@@ -91,11 +96,11 @@ class GameApplicationServiceReopenSuite extends munit.FunSuite:
     * to p2's site, Broken Peaks, to negotiate. p3 stands at Buried Giant,
     * away from them, so p2 is the only player p1 can negotiate with. */
   private val negotiationTable = Table.start
-    .adviser(p1, "Wizard's Conclave", facedown = true)
-    .pawn(p1, "Ancient City")
-    .pawn(p2, "Broken Peaks")
-    .pawn(p3, "Buried Giant")
-  private val wizardsConclave = CatalogNames.denizen("Wizard's Conclave")
+    .adviser(p1, WizardsConclaveCard, facedown = true)
+    .pawn(p1, AncientCitySite)
+    .pawn(p2, BrokenPeaksSite)
+    .pawn(p3, BuriedGiantSite)
+  private val wizardsConclave = WizardsConclaveCard.id
 
   private def negotiationService(repository: EventStreamRepository)
       : GameApplicationService =
@@ -110,7 +115,7 @@ class GameApplicationServiceReopenSuite extends munit.FunSuite:
       ParkedServiceFixture.startTravel(p1)))
     val traveled = accepted(service.handle(gameId, parked.nextSequence,
       ParkedServiceFixture.pickTravelDestination(p1,
-        CatalogNames.site("Broken Peaks"))))
+        BrokenPeaksSite.id)))
     assertEquals(NegotiationDeal.eligible(Outcomes.ready(traveled.state), p1),
       Vector(p2))
     service.handle(gameId, traveled.nextSequence,

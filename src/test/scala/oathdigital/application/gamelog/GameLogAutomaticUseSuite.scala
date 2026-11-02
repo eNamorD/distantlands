@@ -2,10 +2,9 @@ package oathdigital.application.gamelog
 
 import oathdigital.application.{ConsentFixture, GameAccepted,
   GameApplicationService, GameCommand, ParkedServiceFixture}
-import oathdigital.gameplay.powers.poweruse.CityWall
-import oathdigital.gameplay.powers.travel.TravelFixture
+import oathdigital.gameplay.powers.poweruse.{CityWall, CityWallCard}
+import oathdigital.gameplay.powers.travel.{TravelFixture, TyrantCard}
 import oathdigital.model._
-import oathdigital.testkit.CatalogNames
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.{accepted, present}
 import LogScripts.{formatter, texts}
@@ -20,8 +19,8 @@ class GameLogAutomaticUseSuite extends munit.FunSuite:
     * the coast, which p2 rules with 2 warbands. */
   private val tyrantBesideAWalledCoast: ReadyGame =
     TravelFixture.on(TravelFixture.board(supply = 7))(_
-      .adviser(p1, "Tyrant")
-      .denizen(CatalogNames.denizen("City Wall"), at = coast)
+      .adviser(p1, TyrantCard)
+      .denizen(CityWallCard.id, at = coast)
       .warbandsAt(coast, p2, 2))
 
   private def travelling(service: GameApplicationService, sequence: Long,

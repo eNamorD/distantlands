@@ -1,9 +1,14 @@
 package oathdigital.application
 
+import oathdigital.gameplay.powers.action.DowsingSticksCard
+import oathdigital.gameplay.powers.campaign.MercenariesCard
+import oathdigital.gameplay.powers.search.MushroomsCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
+import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.testkit.MenuPlay
 import oathdigital.model._
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.testkit.{CatalogNames, Table, TestCards}
+import oathdigital.testkit.{Table, TestCards}
 import oathdigital.testkit.Table.p1
 
 /** The board a walker Forge is driven from, shared by every suite that needs
@@ -21,7 +26,7 @@ object ForgeWalkerFixture:
     * (three favor). Every homeland site restricts which denizens may be
     * played there, and the Forge needs three. */
   lazy val forgeSite: SiteId =
-    val ancientCity = CatalogNames.site("Ancient City")
+    val ancientCity = AncientCitySite.id
     require(catalog.sites.filter(site => site.forgeRequirements.nonEmpty &&
       site.homeland.isEmpty).map(_.id) == Vector(ancientCity),
       "Ancient City must be the one non-homeland forgeable site")
@@ -38,11 +43,11 @@ object ForgeWalkerFixture:
   lazy val forgeTable: Table = Table.start
     .pawn(p1, forgeSite)
     .warbandsAt(forgeSite, p1, 1).boardWarbands(p1, 2)
-    .denizen("Threatening Roar", forgeSite)
-    .denizen("Mushrooms", forgeSite)
-    .denizen("Mercenaries", forgeSite)
+    .denizen(ThreateningRoarCard, forgeSite)
+    .denizen(MushroomsCard, forgeSite)
+    .denizen(MercenariesCard, forgeSite)
     .favor(p1, 4)
-    .relicDeckTop("Dowsing Sticks")
+    .relicDeckTop(DowsingSticksCard)
     .oathkeeper(Some(p1))
     .banditsRefilled
 

@@ -2,11 +2,17 @@ package oathdigital.application.gamelog
 
 import oathdigital.application.WalkerDecisionProjector
 import oathdigital.gameplay.actions.VisionRules
+import oathdigital.gameplay.cards.BuriedGiantSite
+import oathdigital.gameplay.powers.action.FaeMerchantCard
+import oathdigital.gameplay.powers.campaign.StickyFireCard
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
+import oathdigital.gameplay.powers.wake.AncientCitySite
+import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{DeltaPayload, WalkerCompleted,
   WalkerStepRecorded}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, Table}
+import oathdigital.testkit.{Look, Outcomes, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import LogScripts._
 
@@ -21,11 +27,11 @@ class GameLogRareLinesSuite extends munit.FunSuite:
   // The board's p2, who stands at Broken Peaks and holds Birdsong facedown.
   private val other = p2
   // The board's relic, Sticky Fire, lies at Broken Peaks.
-  private val site = CatalogNames.site("Broken Peaks")
-  private val relic = CatalogNames.relic("Sticky Fire")
+  private val site = BrokenPeaksSite.id
+  private val relic = StickyFireCard.id
   // Two more sites, for warbands that may not share one.
-  private val ancientCity = CatalogNames.site("Ancient City")
-  private val buriedGiant = CatalogNames.site("Buried Giant")
+  private val ancientCity = AncientCitySite.id
+  private val buriedGiant = BuriedGiantSite.id
 
   /** The lines one batch of `ops` posts inside a run of `procedure`. */
   private def posted(procedure: ProcedureRef, ops: CoreOperation*)
@@ -50,10 +56,10 @@ class GameLogRareLinesSuite extends munit.FunSuite:
     * kind at a time, so each mover needs a site of its own. */
   private lazy val warbandBoard: Script =
     val (service, waking) = atTable("rare-warbands",
-      Table.start.pawn(p1, "Ancient City").pawn(p2, "Broken Peaks")
-        .pawn(p3, "Buried Giant").turn(p1, Phase.Wake)
+      Table.start.pawn(p1, AncientCitySite).pawn(p2, BrokenPeaksSite)
+        .pawn(p3, BuriedGiantSite).turn(p1, Phase.Wake)
         .boardWarbands(p1, 3).boardWarbands(p2, 2)
-        .banditsRefilled.bandits("Ancient City", 0).bandits("Buried Giant", 0))
+        .banditsRefilled.bandits(AncientCitySite, 0).bandits(BuriedGiantSite, 0))
     waking.endingWake(p1)
     Script("rare-warbands", service, p1)
 
@@ -62,8 +68,7 @@ class GameLogRareLinesSuite extends munit.FunSuite:
 
   test("gains, draws, buries, peeks and reveals each post one line"):
     // The board's world deck opens with these two Denizens.
-    val drawn = Vector("Threatening Roar", "Fae Merchant")
-      .map(CatalogNames.denizen(_))
+    val drawn = Vector(ThreateningRoarCard.id, FaeMerchantCard.id)
     assertEquals(ready.game.current.commonCards.worldDeck.take(2), drawn)
     val lines = posted(ActionRef.Travel,
       Gain.Favor(other, Suit.Arcane, 2), Gain.Secrets(actor, 1),
@@ -138,7 +143,7 @@ class GameLogRareLinesSuite extends munit.FunSuite:
       choices.option(ref, ready, ready, None).map(_.text).mkString
     // Threatening Roar, the board's top world-deck card (pinned by the
     // first test here), unseen by all.
-    val denizen = CatalogNames.denizen("Threatening Roar")
+    val denizen = ThreateningRoarCard.id
     assertEquals(said(DecisionOptionRef.Player(other)), playerLabel(other))
     assertEquals(said(DecisionOptionRef.Site(site)), presentation.siteLabel(site))
     assertEquals(said(DecisionOptionRef.Denizen(denizen)), "a Denizen")

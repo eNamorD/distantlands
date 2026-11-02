@@ -1,7 +1,9 @@
 package oathdigital.application
 
 import oathdigital.gameplay.ModifierPlay
-import oathdigital.gameplay.powers.search.NewsFromAfar
+import oathdigital.gameplay.powers.action.{FaeMerchantCard, SecondChanceCard}
+import oathdigital.gameplay.powers.search.{NewsFromAfar, NewsFromAfarCard}
+import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.model._
 import oathdigital.testkit.Table
 import oathdigital.testkit.Table.p1
@@ -12,7 +14,7 @@ import oathdigital.testkit.Unwrap.accepted
   * ruling 6). */
 class SearchSourceServiceSuite extends munit.FunSuite:
   private val table = Table.start
-    .worldDeckTop("Threatening Roar", "Fae Merchant", "Second Chance")
+    .worldDeckTop(ThreateningRoarCard, FaeMerchantCard, SecondChanceCard)
     .banditsRefilled
 
   test("Undo takes back the start, leaving the table as it was"):
@@ -24,7 +26,7 @@ class SearchSourceServiceSuite extends munit.FunSuite:
     assertEquals(undone.state, table.phaseMenuParked.state)
 
   test("Undo takes back a pick, and then the start"):
-    val withNews = table.adviser(p1, "News from Afar").favor(p1, 2)
+    val withNews = table.adviser(p1, NewsFromAfarCard).favor(p1, 2)
     val (service, _) = withNews.service()
     val started = accepted(service.handle("g", 0L,
       ParkedServiceFixture.startSearch(p1)))

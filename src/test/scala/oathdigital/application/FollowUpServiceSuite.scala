@@ -1,9 +1,13 @@
 package oathdigital.application
 
 import oathdigital.gameplay.FollowUpPlay
+import oathdigital.gameplay.cards.BuriedGiantSite
+import oathdigital.gameplay.powers.economy.KnightsErrantCard
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.walker.{FollowUpOffer, FollowUpSkipped}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -11,9 +15,9 @@ import oathdigital.testkit.Unwrap.accepted
   * every other command until its player answers (walker-driven game loop
   * design, ruling 6). */
 class FollowUpServiceSuite extends munit.FunSuite:
-  private val ancientCity = CatalogNames.site("Ancient City")
+  private val ancientCity = AncientCitySite.id
   private val knights =
-    PowerSourceRef.Card(CatalogNames.denizen("Knights Errant"))
+    PowerSourceRef.Card(KnightsErrantCard.id)
   private val campaign = QueuedProcedure(p1, ActionRef.Campaign, Vector.empty,
     Some(knights), QueueKind.Offer)
 
@@ -21,8 +25,8 @@ class FollowUpServiceSuite extends munit.FunSuite:
     * bandits rule Ancient City, so it can start. */
   private def offered(using munit.Location)
       : (GameApplicationService, InMemoryEventStreamRepository) =
-    Table.start.pawn(p1, at = ancientCity).pawn(p2, at = "Broken Peaks")
-      .pawn(p3, at = "Buried Giant").bandits(ancientCity, 2)
+    Table.start.pawn(p1, at = ancientCity).pawn(p2, at = BrokenPeaksSite)
+      .pawn(p3, at = BuriedGiantSite).bandits(ancientCity, 2)
       .offering(campaign).service()
 
   private def answer(chosen: DecisionAnswer, by: PlayerId = p1) =

@@ -1,11 +1,17 @@
 package oathdigital.application
 
+import oathdigital.catalog.holding.CrackedHornCard
 import oathdigital.gameplay.actions.VisionRules
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.setup.GreatForgeCard
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
+import oathdigital.gameplay.powers.wake.AncientCitySite
+import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._
 import oathdigital.protocol.projection.{CardDetailsProjection, DecisionOptionProjection, DecisionQueryProjection}
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.present
 
@@ -17,9 +23,9 @@ class SlotOptionRowsSuite extends munit.FunSuite:
   private val projector = new WalkerDecisionProjector(catalog, presentation,
     WalkerPowers(Vector.empty))
   /** Cradle, room for three, no Homeland. */
-  private val home = CatalogNames.site("Ancient City")
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
-  private val roar = CatalogNames.denizen("Threatening Roar")
+  private val home = AncientCitySite.id
+  private val wrestlers = WrestlersCard.id
+  private val roar = ThreateningRoarCard.id
 
   /** Wrestlers lies at Ancient City; p1 holds Threatening Roar facedown and
     * Conquest as their revealed Vision. */
@@ -56,8 +62,8 @@ class SlotOptionRowsSuite extends munit.FunSuite:
     assertEquals(projector.optionProjection(board, Some(p1), None,
       DecisionOption.SiteSlot(DecisionOptionRef.SiteSlot(home, 3))), None)
 
-  private val horn = CatalogNames.relic("Cracked Horn")
-  private val peaks = CatalogNames.site("Broken Peaks")
+  private val horn = CrackedHornCard.id
+  private val peaks = BrokenPeaksSite.id
 
   /** Cracked Horn lies at Broken Peaks, where p2 stands and p1 does not. */
   private lazy val relicBoard: ReadyGame =
@@ -152,7 +158,7 @@ class SlotOptionRowsSuite extends munit.FunSuite:
 
   test("a Replace option naming an edifice reads the face's name, not the " +
       "card's id"):
-    val forge = CatalogNames.edifice("Broken Forge")
+    val forge = GreatForgeCard.id
     val withEdifice = Table.start.edifice(forge, EdificeSide.Ruined, at = home)
       .ready
     val row = present(projector.optionProjection(withEdifice, Some(p1),

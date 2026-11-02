@@ -1,9 +1,10 @@
 package oathdigital.application.gamelog
 
+import oathdigital.gameplay.powers.campaign.StickyFireCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.walker.{DeltaPayload, WalkerCompleted,
   WalkerStepRecorded}
 import oathdigital.model._
-import oathdigital.testkit.CatalogNames
 import oathdigital.testkit.Table.p2
 import LogScripts._
 
@@ -22,8 +23,8 @@ class GameLogStrictnessSuite extends munit.FunSuite:
     val script = recordedEventsBoard
     // The board's relic lies at Broken Peaks, so there is none at Ancient
     // City for this peek to find.
-    val peekWhereNoRelicLies = Peek(p2, CatalogNames.relic("Sticky Fire"),
-      Location.Site(CatalogNames.site("Ancient City")))
+    val peekWhereNoRelicLies = Peek(p2, StickyFireCard.id,
+      Location.Site(AncientCitySite.id))
     val failure = intercept[IllegalStateException](formatAppended(script,
       Vector[OathEvent](
         WalkerStepRecorded("batch",

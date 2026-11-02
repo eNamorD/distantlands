@@ -1,5 +1,11 @@
 package oathdigital.application
 
+import oathdigital.gameplay.cards.BuriedGiantSite
+import oathdigital.gameplay.powers.campaign.NatureWorshipCard
+import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
+import oathdigital.gameplay.powers.wake.AncientCitySite
+import oathdigital.gameplay.powers.whenplayed.WizardsConclaveCard
 import scala.concurrent.duration.{Duration, DurationInt}
 
 import oathdigital.testkit.MenuPlay
@@ -9,7 +15,7 @@ import oathdigital.model.DecisionAnswer.{ChooseOneAnswer, PartitionAnswer}
 import oathdigital.serialization.GameEventWire
 import oathdigital.gameplay.setup.SetupProcedure
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, PlacementPicks, Table,
+import oathdigital.testkit.{Look, Outcomes, PlacementPicks, Table,
   WarExhaustionChoices}
 import oathdigital.gameplay.powers.WalkerPowerCatalog
 import oathdigital.testkit.Table.{p1, p2, p3}
@@ -137,12 +143,12 @@ class GameApplicationServiceStreamSuite extends munit.FunSuite:
     // p2 wakes at Broken Peaks, whose 2 secrets are its only Wake option. No
     // enemy pawn stands there: p1 is at Ancient City, p3 at Buried Giant.
     val (service, repository) = Table.start.turn(p2, Phase.Wake)
-      .pawn(p1, "Ancient City").pawn(p2, "Broken Peaks")
-      .pawn(p3, "Buried Giant").siteTokens("Broken Peaks", secrets = 2)
+      .pawn(p1, AncientCitySite).pawn(p2, BrokenPeaksSite)
+      .pawn(p3, BuriedGiantSite).siteTokens(BrokenPeaksSite, secrets = 2)
       // Bandits at every empty site keep the refill out of the command's events.
       .banditsRefilled.service()
     val active = p2
-    val siteId = CatalogNames.site("Broken Peaks")
+    val siteId = BrokenPeaksSite.id
 
     val wealth = accepted(service.handle("game-wake", 0L,
       MenuPlay.starting(active, ActionRef.TakeWealth, Vector(DecisionOptionRef.Button("secret")))))
@@ -194,7 +200,7 @@ class GameApplicationServiceStreamSuite extends munit.FunSuite:
       GameCommand.ResolveWalker(firstPlayer, TreeDecision(
         SetupProcedure.pawnDecisionId(firstPlayer),
         ChooseOneAnswer(DecisionOptionRef.Site(
-          CatalogNames.site("Ancient City"))))))
+          AncientCitySite.id)))))
 
     assertEquals(
       service.handle(
@@ -205,13 +211,13 @@ class GameApplicationServiceStreamSuite extends munit.FunSuite:
           // p2 keeps Wizard's Conclave from its dealt hand.
           PartitionAnswer(Vector(
             DecisionPlacement(DecisionOptionRef.Denizen(
-              CatalogNames.denizen("Wizard's Conclave")),
+              WizardsConclaveCard.id),
               SetupProcedure.adviserKeepKey),
             DecisionPlacement(DecisionOptionRef.Denizen(
-              CatalogNames.denizen("Errand Boy")),
+              ErrandBoyCard.id),
               SetupProcedure.adviserDiscardKey),
             DecisionPlacement(DecisionOptionRef.Denizen(
-              CatalogNames.denizen("Nature Worship")),
+              NatureWorshipCard.id),
               SetupProcedure.adviserDiscardKey)))))
       ),
       Left(GameApplicationError.StaleClientPosition(1L, 2L)))

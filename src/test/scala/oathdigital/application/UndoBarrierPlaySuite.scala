@@ -1,5 +1,7 @@
 package oathdigital.application
 
+import oathdigital.gameplay.powers.campaign.StickyFireCard
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
 import oathdigital.testkit.MenuPlay
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
@@ -20,8 +22,8 @@ class UndoBarrierPlaySuite extends munit.FunSuite:
 
   test("peeking at a site's relics cannot be taken back"):
     val table = Table.start
-      .pawn(p1, "Broken Peaks")
-      .relicAt("Sticky Fire", "Broken Peaks")
+      .pawn(p1, BrokenPeaksSite)
+      .relicAt(StickyFireCard, BrokenPeaksSite)
       .banditsRefilled
     val (service, repository) = table.service()
     val act = table.situation(Situation.journaled(service, catalog,

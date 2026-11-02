@@ -1,13 +1,19 @@
 package oathdigital.application
 
+import oathdigital.catalog.holding.GrandMaskCard
 import oathdigital.gameplay.OathRules
 import oathdigital.gameplay.actions.negotiation.NegotiationDeal
+import oathdigital.gameplay.cards.DunesSite
+import oathdigital.gameplay.powers.action.BrassHorseCard
+import oathdigital.gameplay.powers.campaign.StickyFireCard
+import oathdigital.gameplay.powers.search.TruthfulHarpCard
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.{AcceptDeal, ChooseManyAnswer, ProposeTerms}
 import oathdigital.protocol.projection.{DecisionQueryProjection,
   GameProjection, NegotiationDealProjection}
-import oathdigital.testkit.{CatalogNames, MenuPlay, Table}
+import oathdigital.testkit.{MenuPlay, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 
 /** What each viewer of a parked deal is shown. */
@@ -15,10 +21,10 @@ class NegotiationDealProjectionSuite extends munit.FunSuite:
   private val rules = new OathRules(catalog)
   private val projector = new GameProjector(catalog)
   private val dealId = NegotiationDeal.dealDecisionId
-  private val site = CatalogNames.site("Broken Peaks")
-  private val p1Relic = CatalogNames.relic("Brass Horse")
-  private val p2Relic = CatalogNames.relic("Truthful Harp")
-  private val siteRelic = CatalogNames.relic("Sticky Fire")
+  private val site = BrokenPeaksSite.id
+  private val p1Relic = BrassHorseCard.id
+  private val p2Relic = TruthfulHarpCard.id
+  private val siteRelic = StickyFireCard.id
 
   /** Every player stands at Broken Peaks with 5 favor and one facedown
     * relic: p1 holds Brass Horse with a secret on it, p2 Truthful Harp and
@@ -28,7 +34,7 @@ class NegotiationDealProjectionSuite extends munit.FunSuite:
     .favor(p1, 5).favor(p2, 5).favor(p3, 5)
     .relic(p1, p1Relic, facedown = true).tokens(p1Relic, secrets = 1)
     .relic(p2, p2Relic, facedown = true)
-    .relic(p3, "Grand Mask", facedown = true)
+    .relic(p3, GrandMaskCard, facedown = true)
     .relicAt(siteRelic, at = site)
     .knowsRelicAt(p1, siteRelic, at = site)
 
@@ -119,7 +125,7 @@ class NegotiationDealProjectionSuite extends munit.FunSuite:
   test("the Negotiation option is available while a candidate exists"):
     assert(MenuPlay.availableInMenu(catalog, gathered.ready,
       ActionRef.Negotiation))
-    val alone = gathered.pawn(p2, at = "Dunes").pawn(p3, at = "Dunes")
+    val alone = gathered.pawn(p2, at = DunesSite).pawn(p3, at = DunesSite)
     assert(!MenuPlay.availableInMenu(catalog, alone.ready,
       ActionRef.Negotiation))
 

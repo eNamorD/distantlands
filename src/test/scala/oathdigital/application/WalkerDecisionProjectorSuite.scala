@@ -1,10 +1,21 @@
 package oathdigital.application
 
+import oathdigital.catalog.Site
+import oathdigital.catalog.holding.CrackedHornCard
 import oathdigital.gameplay.CampaignFixture
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
+import oathdigital.gameplay.cards.DunesSite
 import oathdigital.gameplay.oathkeeper.OathkeeperProcedure
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.gameplay.operations.HallOfMinistersCard
+import oathdigital.gameplay.powers.action.DowsingSticksCard
+import oathdigital.gameplay.powers.campaign.{CursedCauldronCard, OutridersCard,
+  StickyFireCard, VowOfPeaceCard, WrestlersCard}
+import oathdigital.gameplay.powers.economy.BirdsongCard
+import oathdigital.gameplay.powers.travel.{BrokenPeaksSite, FairIsleSite}
+import oathdigital.gameplay.powers.wake.AncientCitySite
+import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
+import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.gameplay.walker.WalkerPowers
@@ -35,15 +46,15 @@ class WalkerDecisionProjectorSuite extends munit.FunSuite:
     * and p2 a facedown Birdsong, whose three-digit id (176) cannot turn up
     * in a projection by chance. */
   private val board: Table = Table.start
-    .relicAt("Sticky Fire", at = "Broken Peaks")
-    .relicAt("Cursed Cauldron", at = "Dunes")
-    .adviser(p1, "Wrestlers", facedown = true)
-    .adviser(p2, "Birdsong", facedown = true)
+    .relicAt(StickyFireCard, at = BrokenPeaksSite)
+    .relicAt(CursedCauldronCard, at = DunesSite)
+    .adviser(p1, WrestlersCard, facedown = true)
+    .adviser(p2, BirdsongCard, facedown = true)
 
-  private val stickyFire = CatalogNames.relic("Sticky Fire")
-  private val cursedCauldron = CatalogNames.relic("Cursed Cauldron")
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
-  private val birdsong = CatalogNames.denizen("Birdsong")
+  private val stickyFire = StickyFireCard.id
+  private val cursedCauldron = CursedCauldronCard.id
+  private val wrestlers = WrestlersCard.id
+  private val birdsong = BirdsongCard.id
 
   /** p1's view of `board`, continued by `steps`, parked on the first node
     * of the tree `action` is given, in p1's Act.
@@ -66,7 +77,7 @@ class WalkerDecisionProjectorSuite extends munit.FunSuite:
     * parked Forge projects its assignment prompt to the actor only") rather
     * than here.
     */
-  private val facedownRelicSite: SiteId = CatalogNames.site("Broken Peaks")
+  private val facedownRelicSite: SiteId = BrokenPeaksSite.id
 
   /** Whatever the action, the tree is [[rollTree]] -- so the two calls
     * below differ in nothing but the `ActionRef` that parked.
@@ -212,12 +223,12 @@ class WalkerDecisionProjectorSuite extends munit.FunSuite:
   test("an edifice option projects its label and details from the card's side, " +
       "and one that is not at a site suppresses the decision"):
     val base = parked(ActionRef.Recover)
-    val hall = CatalogNames.edifice("Hall of Ministers")
+    val hall = HallOfMinistersCard.id
     assert(base.ready.game.current.commonCards.edificeDeck.contains(hall),
       "the fixture must still hold the hall in the edifice deck")
     // The Hall moves from the edifice deck to Ancient City, p1's site.
     val placed = parked(ActionRef.Recover,
-      steps = _.edifice(hall, EdificeSide.Intact, at = "Ancient City"))
+      steps = _.edifice(hall, EdificeSide.Intact, at = AncientCitySite))
     val option = DecisionOption.Edifice(DecisionOptionRef.Edifice(hall))
 
     val query = projects(placed, p1, Vector(option))
@@ -237,7 +248,7 @@ class WalkerDecisionProjectorSuite extends munit.FunSuite:
     // p2 holds Cracked Horn facedown and the People's Favor; the Darkest
     // Secret is unclaimed.
     val placed = parked(ActionRef.Recover, steps = _
-      .relic(p2, "Cracked Horn", facedown = true)
+      .relic(p2, CrackedHornCard, facedown = true)
       .peoplesFavor(Some(p2), favor = 1).darkestSecret(None, secrets = 1))
     val slot = DecisionOption.RelicSlot(DecisionOptionRef.RelicSlot(p2, 0))
     val held = DecisionOption.Banner(
@@ -277,7 +288,7 @@ class WalkerDecisionProjectorSuite extends munit.FunSuite:
     assert(mine.offeredOptions.head.card.exists(!_.hidden))
     assertEquals(projects(base, p1, Vector(slot(p2, 9))), None)
 
-  private val threateningRoar = CatalogNames.denizen("Threatening Roar")
+  private val threateningRoar = ThreateningRoarCard.id
 
   /** A temporary hand is the one player area whose cards carry no state,
     * so `orientationOf` reports no orientation for them. A disclosure rule
@@ -337,7 +348,7 @@ class WalkerDecisionProjectorSuite extends munit.FunSuite:
     */
   test("a card the decision's owner may not identify suppresses the " +
       "projection, even though the card is really in play"):
-    val inDeck = CatalogNames.relic("Dowsing Sticks")
+    val inDeck = DowsingSticksCard.id
     val context = parked(ActionRef.Recover, Some(facedownRelicSite),
       steps = _.relicDeckTop(inDeck))
     // Cursed Cauldron: a facedown relic at Dunes, where p1's pawn is not,
@@ -431,7 +442,7 @@ class WalkerDecisionProjectorSuite extends munit.FunSuite:
     * ones. */
   private def parkedOathkeeperTie(using munit.Location): ReadyGame =
     Table.start.oathkeeper(Some(p2))
-      .warbandsAt("Dunes", p1, 1).warbandsAt("Fair Isle", p3, 1)
+      .warbandsAt(DunesSite, p1, 1).warbandsAt(FairIsleSite, p3, 1)
       .parkedWalker(TriggeredProcedureRef.Oathkeeper).ready
 
   test("a parked Oathkeeper tie shows the holder the tied leaders and names " +
@@ -487,7 +498,7 @@ class WalkerDecisionProjectorSuite extends munit.FunSuite:
     * cards in hand; the lookup is exercised on its own here, with the card
     * where a real facedown adviser would be: in the actor's own `advisers`.
     */
-  private val facedownAdviserCard = CatalogNames.denizen("Vow of Peace")
+  private val facedownAdviserCard = VowOfPeaceCard.id
 
   private def placementId(card: DenizenId): String =
     s"cardplay.place.${card.kind}.${card.value}"
@@ -566,7 +577,7 @@ class WalkerDecisionProjectorSuite extends munit.FunSuite:
     * `PendingTree`, so this proves what a real second pass looks like.
     */
   private lazy val campaignWithOnePlanPlayed: ReadyGame =
-    val relic = CatalogNames.relic("Sticky Fire")
+    val relic = StickyFireCard.id
     // A second, free attacker plan (Outriders) so at least one option besides
     // Finish is still offered after Sticky Fire is picked -- with only one
     // plan available the window would settle past the decision entirely
@@ -574,7 +585,7 @@ class WalkerDecisionProjectorSuite extends munit.FunSuite:
     // each pick" test), and there would be nothing to prove a repeat against.
     val b = CampaignFixture.withAdviser(CampaignFixture.withRelic(
       CampaignFixture.board(warbands = 5, supply = 7), relic),
-      CatalogNames.denizen("Outriders"), Orientation.FaceUp)
+      OutridersCard.id, Orientation.FaceUp)
     val g = CampaignFixture.rules()
     val started = g.startWalker(Ready(b.ready), ActionRef.Campaign, b.actor)
       .getOrElse(fail("Campaign must start"))
@@ -708,14 +719,14 @@ class WalkerDecisionProjectorSuite extends munit.FunSuite:
     assertEquals(facts(projected.toVector.flatMap(_.status)), Vector(
       "Attack total" -> "3", "Winner" -> "Attacker"))
 
-  private def siteRef(name: String): DecisionOptionRef.Site =
-    DecisionOptionRef.Site(CatalogNames.site(name))
+  private def siteRef(site: Site): DecisionOptionRef.Site =
+    DecisionOptionRef.Site(site.id)
 
   test("an unavailable option projects its state and written reason"):
     val context = parked(ActionRef.Recover)
     val tree = Sequence(Decide("test.decide", p1, DecisionQuery.ChooseOne(
-      Vector(DecisionOption.Site(siteRef("Dunes")), DecisionOption.Unavailable(
-        DecisionOption.Site(siteRef("Broken Peaks")),
+      Vector(DecisionOption.Site(siteRef(DunesSite)), DecisionOption.Unavailable(
+        DecisionOption.Site(siteRef(BrokenPeaksSite)),
         OptionReason.Written("Not ruled by the defender"))))))
     val options = projectorFor(tree).project(context).flatMap(_.query)
       .map(_.offeredOptions).getOrElse(fail("expected a projected query"))
@@ -726,8 +737,8 @@ class WalkerDecisionProjectorSuite extends munit.FunSuite:
   test("a choose-many projects its locked options, tallies, summary and " +
       "confirm label"):
     val context = parked(ActionRef.Recover)
-    val origin = siteRef("Dunes")
-    val extra = siteRef("Broken Peaks")
+    val origin = siteRef(DunesSite)
+    val extra = siteRef(BrokenPeaksSite)
     val tree = Sequence(Decide("test.decide", p1, DecisionQuery.ChooseMany(0,
       1, Vector(DecisionOption.Site(extra)), Some("Targets"),
       locked = Vector(DecisionOption.Site(origin)),
@@ -754,9 +765,9 @@ class WalkerDecisionProjectorSuite extends munit.FunSuite:
   test("a decide park projects where it is answered"):
     val context = parked(ActionRef.Recover)
     val board = Sequence(Decide("test.decide", p1, DecisionQuery.ChooseOne(
-      Vector(DecisionOption.Site(siteRef("Dunes"))))))
+      Vector(DecisionOption.Site(siteRef(DunesSite))))))
     val panel = Sequence(Decide("test.decide", p1, DecisionQuery.ChooseOne(
-      Vector(DecisionOption.Site(siteRef("Dunes")))),
+      Vector(DecisionOption.Site(siteRef(DunesSite)))),
       presentation = DecisionPresentation.Panel))
     assertEquals(projectorFor(board).project(context).map(_.presentation),
       Some("board"))
@@ -767,9 +778,9 @@ class WalkerDecisionProjectorSuite extends munit.FunSuite:
     val context = parked(ActionRef.Recover)
     val absent = DecisionOptionRef.Relic(RelicId("relic:not-on-this-board"))
     val tree = Sequence(Decide("test.decide", p1, DecisionQuery.ChooseOne(
-      Vector(DecisionOption.Site(siteRef("Dunes")), DecisionOption.Unavailable(
+      Vector(DecisionOption.Site(siteRef(DunesSite)), DecisionOption.Unavailable(
         DecisionOption.Relic(absent), OptionReason.Written("No"))))))
     assertEquals(projectorFor(tree).project(context).flatMap(_.query)
       .map(_.offeredOptions.map(_.id)),
-      Some(Vector(siteRef("Dunes").wireId)))
+      Some(Vector(siteRef(DunesSite).wireId)))
 

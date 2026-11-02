@@ -1,5 +1,9 @@
 package oathdigital.application
 
+import oathdigital.gameplay.powers.action.{AlchemistCard, HomesteadersCard}
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model.{Region, SearchSource}
 import oathdigital.testkit.Table
 import oathdigital.testkit.Table.p1
@@ -17,26 +21,26 @@ trait SearchDrawPortContract extends munit.FunSuite:
 
   // Ancient City lies in the Cradle.
   private val origin = Region.Cradle
-  private val atAncientCity = Table.start.pawn(p1, "Ancient City")
+  private val atAncientCity = Table.start.pawn(p1, AncientCitySite)
 
   test("a world deck draw takes the top cards, top first"):
-    val table = atAncientCity.worldDeckTop("Errand Boy", "Wrestlers",
-      "Alchemist", "Homesteaders")
+    val table = atAncientCity.worldDeckTop(ErrandBoyCard, WrestlersCard,
+      AlchemistCard, HomesteadersCard)
     assertEquals(
       accepted(port.prepare(table.ready, SearchSource.WorldDeck)),
       table.ready.game.current.commonCards.worldDeck.take(3))
 
   test("a regional discard draw takes the pile's last-placed cards first"):
-    val table = atAncientCity.discarded(origin, "Errand Boy", "Wrestlers",
-      "Alchemist", "Homesteaders")
+    val table = atAncientCity.discarded(origin, ErrandBoyCard, WrestlersCard,
+      AlchemistCard, HomesteadersCard)
     assertEquals(
       accepted(port.prepare(table.ready,
         SearchSource.RegionalDiscard(origin))),
       table.ready.game.current.commonCards.discard(origin).reverse.take(3))
 
   test("another region's discard is drawn the same way"):
-    val table = atAncientCity.discarded(Region.Provinces, "Errand Boy",
-      "Wrestlers")
+    val table = atAncientCity.discarded(Region.Provinces, ErrandBoyCard,
+      WrestlersCard)
     assertEquals(
       accepted(port.prepare(table.ready,
         SearchSource.RegionalDiscard(Region.Provinces))),

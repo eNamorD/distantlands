@@ -1,10 +1,13 @@
 package oathdigital.application.gamelog
 
 import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.campaign.VowOfUnion
+import oathdigital.gameplay.cards.BuriedGiantSite
+import oathdigital.gameplay.powers.campaign.{VowOfUnion, VowOfUnionCard}
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.{ChooseOneAnswer, DistributeAnswer}
-import oathdigital.testkit.{Answers, CatalogNames, Dice, MenuPlay, Table}
+import oathdigital.testkit.{Answers, Dice, MenuPlay, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import LogScripts.{atTable, format, playerLabel, raidAnswers, texts}
 
@@ -12,9 +15,9 @@ import LogScripts.{atTable, format, playerLabel, raidAnswers, texts}
   * neither of its questions posts a "Chose" line, and a Campaign it lets
   * end early says why. */
 class VowOfUnionLogSuite extends munit.FunSuite:
-  private val vow = CatalogNames.denizen("Vow of Union")
-  private val ancientCity = CatalogNames.site("Ancient City")
-  private val buriedGiant = CatalogNames.site("Buried Giant")
+  private val vow = VowOfUnionCard.id
+  private val ancientCity = AncientCitySite.id
+  private val buriedGiant = BuriedGiantSite.id
 
   /** Vow of Union's answers: the holder moves every warband at `site` to
     * their board, which then holds `after`. */
@@ -62,7 +65,7 @@ class VowOfUnionLogSuite extends munit.FunSuite:
   test("a Campaign left with nothing to attack says so"):
     // p2, at Broken Peaks with Vow of Union, rules Ancient City, p1's site,
     // and empties it: no Conquest is left, and no Raid was legal.
-    val table = Table.start.pawn(p1, ancientCity).pawn(p2, "Broken Peaks")
+    val table = Table.start.pawn(p1, ancientCity).pawn(p2, BrokenPeaksSite)
       .pawn(p3, buriedGiant).adviser(p2, vow).warbandsAt(ancientCity, p2, 2)
       .banditsRefilled
     val (service, act) = atTable("vow-of-union-ended", table, Dice.raid)

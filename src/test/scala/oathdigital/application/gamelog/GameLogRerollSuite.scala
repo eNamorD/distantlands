@@ -2,11 +2,11 @@ package oathdigital.application.gamelog
 
 import oathdigital.gameplay.actions.dice.RerollChoice
 import oathdigital.gameplay.actions.recover.RecoverProcedure
+import oathdigital.gameplay.powers.dice.JinxCard
 import oathdigital.gameplay.walker.{ChoicePayload, DeltaPayload, RollPayload,
   WalkerCompleted, WalkerStepRecorded}
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.CatalogNames
 import LogScripts._
 
 /** The lines of a reroll: the roll as rolled, then the throw restated after
@@ -17,7 +17,7 @@ class GameLogRerollSuite extends munit.FunSuite:
 
   private val pool = RecoverProcedure.recoverPool
   private val decision = RerollChoice.decisionId(pool, 1)
-  private val jinx = RerollChoice.optionRef(CatalogNames.denizen("Jinx"))
+  private val jinx = RerollChoice.optionRef(JinxCard.id)
 
   /** The state the appended steps start from: the Recover pool's two dice
     * show two blanks, so the reroll applies to them. */

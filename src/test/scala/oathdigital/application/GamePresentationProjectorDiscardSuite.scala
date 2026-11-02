@@ -1,8 +1,10 @@
 package oathdigital.application
 
+import oathdigital.catalog.holding.MagiciansCodeCard
+import oathdigital.gameplay.powers.action.ScryerCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2}
 
 /** A discard pile's cards, top first, through the one visibility rule. */
@@ -14,7 +16,7 @@ class GamePresentationProjectorDiscardSuite extends munit.FunSuite:
       .getOrElse(fail("no cradle"))
 
   // Appended in this order, so Scryer is on top.
-  private val table = Table.start.discarded(Region.Cradle, "Magician's Code", "Scryer")
+  private val table = Table.start.discarded(Region.Cradle, MagiciansCodeCard, ScryerCard)
 
   test("a discard pile projects each card as a back and the top card's kind"):
     val region = cradle(table.ready, p2)
@@ -25,7 +27,7 @@ class GamePresentationProjectorDiscardSuite extends munit.FunSuite:
     assertEquals(region.discardTopCardKind, Some("denizen"))
 
   test("a peeked card shows its face to the peeker and a back to others"):
-    val scryer = CatalogNames.worldCard("Scryer")
+    val scryer = ScryerCard.id
     // No Table step records a viewer's knowledge of a denizen.
     val peeked = table.update(ready => ready.copy(knowledge = ready.knowledge.copy(
       advisers = ready.knowledge.advisers.updated(p1, Vector(scryer))))).ready

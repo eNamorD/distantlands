@@ -1,8 +1,8 @@
 package oathdigital.application
 
-import oathdigital.gameplay.powers.travel.{TollRoads, TravelFixture}
+import oathdigital.gameplay.powers.travel.{TollRoads, TollRoadsCard,
+  TravelFixture}
 import oathdigital.model._
-import oathdigital.testkit.CatalogNames
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -13,7 +13,7 @@ object TollConsentFixture:
   import TravelFixture.{board, coast, on, provincePlains}
 
   val tolled: ReadyGame = on(board(supply = 7))(_
-    .denizen(CatalogNames.denizen("Toll Roads"), at = provincePlains)
+    .denizen(TollRoadsCard.id, at = provincePlains)
     .favor(p1, 1).warbandsAt(provincePlains, p2, 1).warbandsAt(coast, p2, 1))
 
   /** `tolled` with p1 holding no favor. */

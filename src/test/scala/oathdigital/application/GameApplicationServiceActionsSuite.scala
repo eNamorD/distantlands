@@ -1,5 +1,12 @@
 package oathdigital.application
 
+import oathdigital.catalog.holding.HallowedSpringCard
+import oathdigital.gameplay.cards.DeepWoodsSite
+import oathdigital.gameplay.powers.action.{FaeMerchantCard, SecondChanceCard}
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
+import oathdigital.gameplay.powers.wake.AncientCitySite
+import oathdigital.gameplay.powers.whenplayed.{ThreateningRoarCard,
+  WizardsConclaveCard}
 import oathdigital.testkit.MenuPlay
 import oathdigital.gameplay.powers.WalkerPowerCatalog
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
@@ -10,7 +17,7 @@ import oathdigital.gameplay.oathkeeper.OathkeeperProcedure
 import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.model.OathViolation.WrongPlayer
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, PlacementPicks, Table}
+import oathdigital.testkit.{Look, Outcomes, PlacementPicks, Table}
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
 import ParkedServiceFixture.{loaded, parkedAssertions,
@@ -46,10 +53,10 @@ class GameApplicationServiceActionsSuite extends munit.FunSuite:
     assertNotEquals(after.game.current.turn.activePlayer, active)
 
   test("minor adviser action persists and reloads through authoritative replay"):
-    val table = Table.start.adviser(p1, "Wizard's Conclave", facedown = true)
+    val table = Table.start.adviser(p1, WizardsConclaveCard, facedown = true)
     val (service, repository) = table.service()
     val actor = p1
-    val adviser = CatalogNames.denizen("Wizard's Conclave")
+    val adviser = WizardsConclaveCard.id
     val started = accepted(service.handle("game-minor-replay", 0L,
       playFacedownAdviser(actor)))
     // The parked walk reloads to the same state before it is answered.
@@ -109,13 +116,13 @@ class GameApplicationServiceActionsSuite extends munit.FunSuite:
   test("Travel parks on its destination, completes on the pick and reloads pawn Supply and Act"):
     // Bandits at every empty site, so the Travel's own events are the only
     // ones journaled: no refill follows it.
-    val table = Table.start.pawn(p1, "Ancient City").banditsRefilled
+    val table = Table.start.pawn(p1, AncientCitySite).banditsRefilled
     val (service, repository) = table.service()
     val active = p1
     val inAct = Outcomes.ready(table.state)
     val before = Look(inAct).player(active)
     // p1 stands at Ancient City and travels to the other Cradle site.
-    val destination = CatalogNames.site("Broken Peaks")
+    val destination = BrokenPeaksSite.id
     val parked = accepted(service.handle("game-travel", 0L,
       ParkedServiceFixture.startTravel(active)))
     val traveled = accepted(service.handle("game-travel", parked.nextSequence,
@@ -205,10 +212,10 @@ class GameApplicationServiceActionsSuite extends munit.FunSuite:
     assertEquals(reloadedResolved.nextSequence, resolved.nextSequence)
 
   test("a walker Muster on an edifice persists, reloads and replays with its kind"):
-    val siteId = CatalogNames.site("Deep Woods")
-    val edificeId = CatalogNames.edifice("Hiding Place")
+    val siteId = DeepWoodsSite.id
+    val edificeId = HallowedSpringCard.id
     val (service, repository) = Table.start.pawn(p1, siteId)
-      .edifice("Hiding Place", EdificeSide.Ruined, siteId).service()
+      .edifice(HallowedSpringCard, EdificeSide.Ruined, siteId).service()
     val active = p1
     val started = accepted(service.handle("game-walker-economy", 0L,
       MenuPlay.starting(active, ActionRef.Muster)))
@@ -256,7 +263,7 @@ class GameApplicationServiceActionsSuite extends munit.FunSuite:
   test("walker Search persists its card choice and completes after reload"):
     // Three denizens on top of the world deck, so the Search offers a choice.
     val (service, repository) = Table.start
-      .worldDeckTop("Threatening Roar", "Fae Merchant", "Second Chance")
+      .worldDeckTop(ThreateningRoarCard, FaeMerchantCard, SecondChanceCard)
       .service()
     val gameId = "game-walker-search"
     val actor = p1
@@ -268,9 +275,9 @@ class GameApplicationServiceActionsSuite extends munit.FunSuite:
     assertEquals(reloaded.state, started.state)
     val afterDraw = Outcomes.ready(reloaded.state)
     val drawn = afterDraw.game.current.temporaryHands(actor)
-    val roar = CatalogNames.denizen("Threatening Roar")
-    val merchant = CatalogNames.denizen("Fae Merchant")
-    val secondChance = CatalogNames.denizen("Second Chance")
+    val roar = ThreateningRoarCard.id
+    val merchant = FaeMerchantCard.id
+    val secondChance = SecondChanceCard.id
     assertEquals(drawn, Vector[WorldCardId](roar, merchant, secondChance))
     // Keep Threatening Roar and discard the other two.
     val assignments = Vector(

@@ -1,13 +1,16 @@
 package oathdigital.application
 
 import oathdigital.application.gamelog.LogScripts.{formatter, texts}
+import oathdigital.gameplay.cards.DeepWoodsSite
 import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.poweruse.{CityWall, ForestCouncil}
+import oathdigital.gameplay.powers.campaign.{RainBootsCard, WrestlersCard}
+import oathdigital.gameplay.powers.poweruse.{CityWall, CityWallCard,
+  ForestCouncil, ForestCouncilCard}
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
 import oathdigital.gameplay.powers.wake.{Hunger, HungerCard}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, MenuPlay, Outcomes,
-  ParkedNode, Table}
+import oathdigital.testkit.{Look, MenuPlay, Outcomes, ParkedNode, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, present}
 
@@ -17,8 +20,8 @@ import oathdigital.testkit.Unwrap.{accepted, present}
 class HungerConsentServiceSuite extends munit.FunSuite:
   import ConsentFixture.gameId
   private val projector = new GameProjector(catalog)
-  private val peaks = CatalogNames.site("Broken Peaks")
-  private val woods = CatalogNames.site("Deep Woods")
+  private val peaks = BrokenPeaksSite.id
+  private val woods = DeepWoodsSite.id
 
   /** HungerSuite's board: p2 holds Hunger faceup and Wrestlers, and p3
     * holds Rain Boots, both at Broken Peaks, in p1's Act. City Wall
@@ -26,11 +29,11 @@ class HungerConsentServiceSuite extends munit.FunSuite:
     * Deep Woods, ruled by `woodsRuler`. */
   private def hungerUnder(peaksRuler: PlayerId, woodsRuler: PlayerId)
       : ReadyGame =
-    Table.start.adviser(p2, HungerCard.id).adviser(p2, "Wrestlers")
-      .adviser(p3, "Rain Boots").pawn(p2, at = peaks).pawn(p3, at = peaks)
-      .denizen(CatalogNames.denizen("City Wall"), at = peaks)
+    Table.start.adviser(p2, HungerCard.id).adviser(p2, WrestlersCard)
+      .adviser(p3, RainBootsCard).pawn(p2, at = peaks).pawn(p3, at = peaks)
+      .denizen(CityWallCard.id, at = peaks)
       .warbandsAt(peaks, peaksRuler, 1)
-      .denizen(CatalogNames.denizen("Forest Council"), at = woods)
+      .denizen(ForestCouncilCard.id, at = woods)
       .warbandsAt(woods, woodsRuler, 1).ready
 
   /** p1 begins Rest, and p2's forced Wake reaches Hunger. */

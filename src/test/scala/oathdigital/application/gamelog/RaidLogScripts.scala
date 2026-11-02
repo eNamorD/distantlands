@@ -2,11 +2,13 @@ package oathdigital.application.gamelog
 
 import oathdigital.application._
 import oathdigital.gameplay.actions.campaign.CampaignIds
+import oathdigital.gameplay.powers.campaign.CarefulPlansCard
+import oathdigital.gameplay.powers.economy.{BirdsongCard, KnightsErrantCard}
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.walker.FollowUpOffer
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
-import oathdigital.testkit.{Answers, CatalogNames, Dice, Look, MenuPlay, Park,
-  Situation}
+import oathdigital.testkit.{Answers, Dice, Look, MenuPlay, Park, Situation}
 import oathdigital.testkit.Table.{p1, p2}
 import LogScriptSupport.{atTable, tableWithOnePawnPerSite}
 
@@ -23,8 +25,8 @@ object RaidLogScripts:
     * plan is chosen. */
   def raid(using munit.Location): Script =
     val (service, act) = atTable("raid", tableWithOnePawnPerSite
-      .pawn(p2, "Ancient City")
-      .adviser(p2, "Birdsong", facedown = true).banditsRefilled, Dice.raid)
+      .pawn(p2, AncientCitySite)
+      .adviser(p2, BirdsongCard, facedown = true).banditsRefilled, Dice.raid)
     raidAnswers(act).after(MenuPlay.start(p1, ActionRef.Campaign))
     Script("raid", service, p1)
 
@@ -32,10 +34,10 @@ object RaidLogScripts:
     * favor to pay for it. p1 chooses it, so p2's defense dice roll before
     * p1's attack dice. Everything else is answered as in `raid`. */
   def raidUnderCarefulPlans(using munit.Location): Script =
-    val careful = CatalogNames.denizen("Careful Plans")
+    val careful = CarefulPlansCard.id
     val (service, act) = atTable("careful-raid", tableWithOnePawnPerSite
-      .pawn(p2, "Ancient City")
-      .adviser(p2, "Birdsong", facedown = true)
+      .pawn(p2, AncientCitySite)
+      .adviser(p2, BirdsongCard, facedown = true)
       .adviser(p1, careful).favor(p1, 1).banditsRefilled, Dice.raid)
     // Chosen once: the favor it places marks it used.
     raidAnswers(act, {
@@ -66,7 +68,7 @@ object RaidLogScripts:
 
   private def knightsOffer: QueuedProcedure = QueuedProcedure(p1,
     ActionRef.Campaign, Vector.empty,
-    Some(PowerSourceRef.Card(CatalogNames.denizen("Knights Errant"))),
+    Some(PowerSourceRef.Card(KnightsErrantCard.id)),
     QueueKind.Offer)
 
   private def takeOffer: GameCommand = GameCommand.ResolveWalker(p1,
@@ -77,9 +79,9 @@ object RaidLogScripts:
   private def offeredRaidTable(name: String, behind: Vector[QueuedProcedure])(
       using munit.Location): (GameApplicationService, Situation) =
     atTable(name, tableWithOnePawnPerSite
-      .pawn(p2, "Ancient City")
-      .adviser(p2, "Birdsong", facedown = true)
-      .adviser(p1, CatalogNames.denizen("Knights Errant"))
+      .pawn(p2, AncientCitySite)
+      .adviser(p2, BirdsongCard, facedown = true)
+      .adviser(p1, KnightsErrantCard.id)
       .update(_.updateCurrent(_.copy(queue = behind)))
       .offering(knightsOffer)
       .banditsRefilled, Dice.raid)
