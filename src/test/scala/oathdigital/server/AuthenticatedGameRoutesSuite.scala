@@ -88,7 +88,8 @@ class AuthenticatedGameRoutesSuite extends munit.FunSuite:
       val replace = send(otherUser, answer("negotiation.deal", ujson.Obj(
         "kind" -> "propose-terms", "terms" -> ujson.Obj("transfers" ->
           ujson.Arr(ujson.Obj("recipientPlayerId" -> p2.value, "favor" -> 1,
-            "relicIds" -> ujson.Arr())), "disclosures" -> ujson.Arr()))))
+            "relicIds" -> ujson.Arr())), "disclosures" -> ujson.Arr(),
+          "citizenshipPlayerIds" -> ujson.Arr()))))
       assertEquals(replace.statusCode(), 200, replace.body()); sequence = sequenceOf(replace)
       val accept = send(otherUser, answer("negotiation.deal",
         ujson.Obj("kind" -> "accept-deal")))

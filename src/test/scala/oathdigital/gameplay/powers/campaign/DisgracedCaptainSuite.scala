@@ -12,7 +12,7 @@ import oathdigital.testkit.{CatalogNames, Look}
 class DisgracedCaptainSuite extends munit.FunSuite:
   private val card = CatalogNames.denizen("Disgraced Captain")
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
-  private val order = planlessCard("Martial Culture")
+  private val order = planlessCard("Council Seat")
 
   /** `who` holds Disgraced Captain and 2 favor. */
   private def holder(b: Board, who: PlayerId): Board =

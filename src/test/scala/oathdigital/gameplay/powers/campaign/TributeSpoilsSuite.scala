@@ -16,8 +16,10 @@ class TributeSpoilsSuite extends munit.FunSuite:
   private val honors = CatalogNames.denizen("Battle Honors")
   private val honorsRef: DecisionOptionRef =
     DecisionOptionRef.Denizen(honors)
-  private val orders =
-    planless("Martial Culture", "Relic Hunter", "Council Seat")
+  // Martial Culture's plan needs an Exile user who rules its site; it
+  // stands at the bandits' origin here, so it offers none.
+  private val orders = planless("Relic Hunter", "Council Seat") :+
+    CatalogNames.denizen("Martial Culture")
   // Beast, on either face: Hallowed Spring intact, Hiding Place ruined.
   private val beastEdifice = CatalogNames.edifice("Hallowed Spring")
   // A relic at the site, which Tribute Spoils does not count.
