@@ -421,19 +421,23 @@ before treating the numbers below as current.
   derived codec must still report a stale client bundle, which strict
   unknown-field rejection does today. The operation codec co-changed with
   `CoreOperations` in 13 of 16 commits; count its mechanical arms before
-  deciding it the same way.
+  deciding it the same way. Design note:
+  [derive the wire codecs](superpowers/specs/2026-11-02-derive-wire-codecs-design.md).
 - [ ] **One command vocabulary.** Each command is written in seven files
   (intent, codec, decoder, mapper, command, authorization builder, service
   arm); `AuthorizedPlayer.forPlayer` mints a "transport" access context to
   build commands, and `GameCommand.issuer` answers `None` for commands that
   carry an actor. A command could be an actor plus a model-typed intent.
+  Design note:
+  [one command vocabulary](superpowers/specs/2026-11-02-one-command-vocabulary-design.md).
 - [ ] **One HTTP gateway.** Three transports write the same load, submit and
   log over the same service calls; only the trusted-seat one is used in
   production, and the authenticated stack mounts only in development, with no
   session issuer. One gateway behind a seam for how the actor is resolved
   would serve both. The authenticated stack's public-only projection scope is
   the one behaviour the seat transport lacks. `SearchDrawPort`, a port checked
-  against itself, can fold away with the service arm it guards.
+  against itself, can fold away with the service arm it guards. Design
+  note: [one HTTP gateway](superpowers/specs/2026-11-02-one-http-gateway-design.md).
 - [ ] **`ConsentDesk` settles a batch.** Its seven verbs have one caller,
   which owns their order at nine sites; the last five consent commits all
   edited the service. The desk could take a batch and return it settled.
