@@ -84,6 +84,8 @@ class MartialCultureSuite extends munit.FunSuite:
     val after = ready(done.state)
     assertEquals(Imperials.role(after, b.rival), Some(Role.Citizen))
     assertEquals(after.game.current.turn.activePlayer, b.actor)
+    assertEquals(ActPowerHarness.replayed(done.game, b.ready, done.events),
+      after)
 
   test("against bandits the plan is not offered"):
     val base = board(warbands = 5, supply = 7)

@@ -1,6 +1,7 @@
 package oathdigital.gameplay
 
 import oathdigital.gameplay.actions.ProcedureNotes
+import oathdigital.gameplay.operations.TheGrandScepterCard
 import oathdigital.gameplay.actions.negotiation.{NegotiationDeal,
   NegotiationProcedure}
 import oathdigital.gameplay.powers.NoteText
@@ -122,3 +123,32 @@ class NegotiationCitizenshipSuite extends munit.FunSuite:
     assertEquals(Look(after).player(p2).board.warbands, 2)
     assertEquals(Look(after).player(p3).board.warbands, 1)
     assertEquals(Imperials.role(after, p3), Some(Role.Citizen))
+
+  test("with no Empire the first Exile offered becomes the Chancellor and " +
+      "takes the Scepter; the next becomes a Citizen"):
+    val noEmpire = Table.start.turn(p1, Phase.Act)
+      .pawn(p1, at = site).pawn(p2, at = site).pawn(p3, at = site)
+      .relic(p1, "The Grand Scepter").allowingCitizenshipPowers
+    val (state, _) = agreed(noEmpire.ready, p2, p3)
+    val after = Outcomes.ready(state)
+    assertEquals(Imperials.chancellor(after), Some(p2))
+    assertEquals(Imperials.role(after, p3), Some(Role.Citizen))
+    assertEquals(Imperials.role(after, p1), Some(Role.Exile))
+    assert(Look(after).player(p2).relics.exists(_.id ==
+      TheGrandScepterCard.id))
+
+  test("a deal that also gives the Scepter away still applies the offer"):
+    val terms = ProposeTerms(NegotiationTerms(Vector(NegotiationTransfer(p3,
+      0, Vector(TheGrandScepterCard.id))), citizenship = Vector(p2)))
+    val (state, _) = Vector[(PlayerId, DecisionAnswer)](p1 -> terms,
+      p1 -> AcceptDeal, p2 -> AcceptDeal, p3 -> AcceptDeal).foldLeft((
+      atDeal(gathered().ready), Vector.empty[OathEvent])) {
+      case ((state, events), (by, answer)) =>
+        val next = say(state, by, answer).getOrElse(
+          fail(s"${by.value} must be heard"))
+        (next.state, events ++ next.events)
+    }
+    val after = Outcomes.ready(state)
+    assertEquals(Imperials.role(after, p2), Some(Role.Citizen))
+    assert(Look(after).player(p3).relics.exists(_.id ==
+      TheGrandScepterCard.id))

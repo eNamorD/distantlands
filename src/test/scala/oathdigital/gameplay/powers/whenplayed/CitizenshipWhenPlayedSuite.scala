@@ -66,10 +66,11 @@ class CitizenshipWhenPlayedSuite extends munit.FunSuite:
       "unavailable with its reason"):
     val walked = played(p1AtHomeSite.turn(p1, Phase.Act).imperial(p3).ready,
       heir, chooseOne(heir.decline))
-    assertEquals(chooseOneOptions(walked.asked.head).head,
+    assertEquals(chooseOneOptions(walked.asked.head), Vector(
       DecisionOption.Unavailable(
         DecisionOption.Button(heir.become, "Become a Citizen"),
-        OptionReason.Written(Citizenship.ignoredReason)))
+        OptionReason.Written(Citizenship.ignoredReason)),
+      DecisionOption.Button(heir.decline, "Stay an Exile")))
 
   test("Bewitch: with the most secrets the player takes a Reliquary relic " +
       "facedown and becomes a Citizen"):
@@ -104,9 +105,14 @@ class CitizenshipWhenPlayedSuite extends munit.FunSuite:
       line("used", "Became a Citizen.")))
 
   test("Ancient Pact asks only the holder of the Darkest Secret"):
-    val holding = played(exileInEmpire.darkestSecret(Some(p1), 0)
-      .reliquaryFromDeck(1).ready, pact, chooseOne(pact.become))
+    val start = exileInEmpire.darkestSecret(Some(p1), 0).reliquaryFromDeck(1)
+      .ready
+    val stocked = start.game.campaign.reliquary
+    val holding = played(start, pact, chooseOne(pact.become))
     assertEquals(Imperials.role(holding.end, p1), Some(Role.Citizen))
+    assert(Look(holding.end).player(p1).relics.exists(relic =>
+      stocked.contains(relic.id)))
+    assertEquals(holding.end.game.campaign.reliquary, Vector.empty)
     val not = played(exileInEmpire.darkestSecret(Some(p2), 0).ready, pact)
     assertEquals(said(pact, not.events),
       Vector(line("unmet", "Did not hold the Darkest Secret.")))
@@ -115,8 +121,11 @@ class CitizenshipWhenPlayedSuite extends munit.FunSuite:
       "sites"):
     val most = exileInEmpire.warbandsAt(homeSite, p1, 1)
       .warbandsAt(nearSite, p1, 1).warbandsAt(awaySite, p2, 1)
-    val asked = played(most.ready, ambitions, chooseOne(ambitions.decline))
-    assertEquals(asked.asked.size, 1)
+    val start = most.reliquaryFromDeck(2).ready
+    val accepted = played(start, ambitions, chooseOne(ambitions.become))
+    assertEquals(Imperials.role(accepted.end, p1), Some(Role.Citizen))
+    assertEquals(accepted.end.game.campaign.reliquary.size, 1)
+    assertJournalRebuilds(start, accepted.events, accepted.end)
     val tied = exileInEmpire.warbandsAt(homeSite, p1, 1)
       .warbandsAt(awaySite, p2, 1)
     val walked = played(tied.ready, ambitions)

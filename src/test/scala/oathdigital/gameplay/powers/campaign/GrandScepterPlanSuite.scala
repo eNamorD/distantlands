@@ -74,8 +74,13 @@ class GrandScepterPlanSuite extends munit.FunSuite:
     assertEquals(won.winner, Some(false))
     val done = won.pick(b.rival, GrandScepterPlan.decisionId,
       GrandScepterPlan.exile)
-    assertEquals(Imperials.role(ready(done.state), b.actor),
-      Some(Role.Exile))
+    val after = ready(done.state)
+    assertEquals(Imperials.role(after, b.actor), Some(Role.Exile))
+    // The defender burnt the 3 favor; the exiled attacker's Act ended.
+    assertEquals(Look(after).player(b.rival).board.favor, 0)
+    assert(done.since(won).contains(EnterPhase(Phase.Rest)))
+    assertEquals(ActPowerHarness.replayed(done.game, b.ready, done.events),
+      after)
 
   test("against an Exile, or for an Exile, the plan is not offered"):
     val base = withEnemyAtOrigin(board(warbands = 5, supply = 7))
@@ -88,6 +93,8 @@ class GrandScepterPlanSuite extends munit.FunSuite:
     val raided = commit(rules(winningDice), againstExile, 4, raid = true)
     assert(!raided.offered(againstExile.actor).contains(ref))
 
+  // The first-game option, on by default in these tables, leaves the plan
+  // offered: it exiles, it makes no one a Citizen.
   test("a lost Campaign asks nothing"):
     val b = chancellorRaidsCitizen
     val lost = commit(rules(losingDice), b, 4, raid = true)
