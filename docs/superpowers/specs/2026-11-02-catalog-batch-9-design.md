@@ -1,9 +1,8 @@
 # Catalog Batch 9: Edifice Faces
 
-**Status:** designed 2026-11-02. Nothing is implemented yet. A second
-phase implements the slices below; its plan-time rulings go into a rulings
-appendix beside this file, as
-[batch 8's](2026-10-12-catalog-batch-8-rulings.md) did.
+**Status:** designed 2026-11-02. Slices 1 to 3 landed on 2026-11-02; their
+rulings are under [Rulings made while implementing](#rulings-made-while-implementing).
+Slices 4 to 10 are not implemented yet.
 
 **Builds on** [Catalog batch 8](2026-10-12-catalog-batch-8-design.md), whose
 vocabulary, cost rules, walker shapes and log-line rules apply unchanged.
@@ -264,7 +263,8 @@ Relic Patrols and Bandit Patrols refuse a Recover at its start with a
 `Restriction` at `RecoverActionEligibility`, as Vow of Peace refuses a
 Campaign, with a `Waiver` whose granter is the edifice's ruler, as Narrow
 Pass's. The Act menu shows Recover unavailable with the reason, askable of
-the ruler outside a Campaign.
+the ruler outside a Campaign (deferred: see the rulings made while
+implementing).
 
 - **Relic Patrols**: the actor is an enemy of the intact face's ruler and
   recovers at a site that ruler rules.
@@ -506,6 +506,43 @@ unless told otherwise.
     any relic the user holds, faceup or facedown; a faceup one is flipped
     facedown first so a site holds facedown relics only (rules 7.7.3).
 
+## Rulings made while implementing
+
+Settled while implementing slices 1 to 3, with the owner's defaults for
+the questions above.
+
+- **Slice 1.** Broken Horn buries what Setup's own reveals discarded to
+  its region's pile too, since those come before Setup's end. Its empty
+  line can only show in a game whose Setup discards nothing to that
+  region. Ruined School writes no line when no site is ruled by bandits.
+  The banner moves of Hall of Mockery and Lost Guardians are not made
+  (see the corrections), and neither line mentions the shared bank.
+- **Slice 2.** The hidden banner's reason is "{Blue}'s People's Favor
+  cannot be targeted.", naming the ruler, in the shape of Forgotten
+  Vault's; no line is written (question 2's default).
+- **Slice 3: consent is deferred.** Relic Patrols and Bandit Patrols refuse
+  the Recover at its start with a `Restriction` at
+  `RecoverActionEligibility` and no `Waiver`. The Act menu shows Recover
+  unavailable with "Relic Patrols: Cannot recover relics at its ruler's
+  sites." or "Bandit Patrols: Cannot recover relics at bandit sites.", not
+  askable. The design's askable refusal needs a seam the engine does not
+  have: the Act menu asks consent only for phase powers
+  (`PhasePowerProcedure.refusals`) and for a queued start with a queued
+  answer (`QueuedStart.consent`, Palanquin's Travel); a tree-level
+  restriction is waived only through a grant keyed on an answered
+  decision of the walk (`WalkerPowerGather.waived`), and a Recover has
+  none before the refusal. Its modifier decision is skipped when no
+  modifier is on offer, so an `OptionRestriction` on "Start Recover"
+  would not reach the common case either. A waiver that no grant could
+  apply was left out rather than listed in the consent grid. The seam,
+  an askable Act action at the phase menu, joins the Out of scope list
+  and would serve Forbidden Forest's start refusal too.
+- **Slice 3.** Relic Patrols under bandits protects nothing (question 1's
+  default); Bandit Patrols under bandits refuses every player at every
+  bandit site. Both faces are inert on the other face's reach. The rule
+  reads the Recover's site as `RecoverProcedure.actorSite` reads it, the
+  pawn site.
+
 ## Seams used for the first time
 
 Each gets a test through its first power before the power relies on it.
@@ -513,8 +550,8 @@ If a seam needs an engine change beyond the bar, stop and ask the product
 owner.
 
 - A `Bury` from a regional discard pile (Broken Horn).
-- A `Restriction` with a `Waiver` at `RecoverActionEligibility` (Relic
-  Patrols).
+- A `Restriction` at `RecoverActionEligibility` (Relic Patrols; without
+  the `Waiver`, see the rulings).
 - A `Kill` from a player's board inside an `AutomaticUse` (Boiling Lake).
 - An `operationRestrictions` refusing a `Play` by destination (Still
   Boiling Lake).
@@ -574,6 +611,11 @@ What remains after this batch, for the roadmap's engine-blocked item.
   and the last-warband minor action.
 - **Favor source redirection** (Vow of Kinship): every cost, take, burn
   and resource read is against the board.
+- **An askable Act action** (the Patrols' consent, Forbidden Forest's
+  start refusal): the Act menu asks consent for phase powers and queued
+  starts only, and a tree-level `Restriction` is waived only through a
+  grant keyed on an answered decision, which a refusal at an action's
+  start has none of.
 - **Challenge** (School of Vines, Sigil of the Eye, Sigil of the Heart,
   Favored Son, Magician's Code): unchanged from batch 8.
 - **Unchanged from batch 8:** Search Party, Bracken, Cracked Horn, Ring of

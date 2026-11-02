@@ -77,6 +77,7 @@ object WalkerPowerCatalog:
   private[powers] def contributing(catalog: ExecutableCatalog)
       : Vector[ContributingPower] =
     Vector(CatacombsContribution.forCatalog(catalog)) ++
+      Vector(RelicPatrols, BanditPatrols) ++
       Vector(VowOfPeaceContribution) ++
       Vector(VowOfSilence, VowOfDivision) ++
       Vector(BrassArmyMoves) ++
@@ -120,5 +121,6 @@ object WalkerPowerCatalog:
       Vector(Dazzle.forCatalog(catalog), GreatMarket.forCatalog(catalog),
         BanditMarket.forCatalog(catalog), GreatForge.forCatalog(catalog),
         BrokenForge.forCatalog(catalog), ProvingGrounds.forCatalog(catalog),
-        EmptyGrounds.forCatalog(catalog), TakeWealthLimit,
+        EmptyGrounds.forCatalog(catalog), HallOfMockery, LostGuardians,
+        RuinedSchool, BrokenHorn, TakeWealthLimit,
         ConspiracyWhenPlayed)
