@@ -3,8 +3,9 @@ package oathdigital.testkit
 import oathdigital.application.{CampaignDicePort, GameApplicationService,
   InMemoryEventStreamRepository}
 import oathdigital.catalog.ExecutableCatalog
+import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.phases.rest.WarExhaustionRandomPort
+import oathdigital.gameplay.phases.rest.RoundEndRandomPort
 import oathdigital.gameplay.setup.{FirstGameSetupFixture, GameStartRules}
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
@@ -396,6 +397,20 @@ final case class Table private (private val game: ReadyGame,
     moving(vision).onPlayer(player)(_.copy(revealedVision =
       Some(VisionState(vision, Orientation.FaceUp))))
 
+  /** `player` reveals `vision` and meets its goal: rules Dunes for
+    * Conquest, holds the People's Favor for Rebellion, Dowsing Sticks for
+    * Sanctuary, or the Darkest Secret for Faith. Draw three Visions for the
+    * goal to count. */
+  def revealedVisionMet(player: PlayerId, vision: VisionId)(
+      using munit.Location): Table =
+    val met = vision match
+      case VisionRules.Conquest => warbandsAt("Dunes", player, 1)
+      case VisionRules.Rebellion => peoplesFavor(Some(player), favor = 1)
+      case VisionRules.Sanctuary =>
+        relic(player, "Dowsing Sticks", facedown = true)
+      case _ => darkestSecret(Some(player), secrets = 1)
+    met.revealedVision(player, vision)
+
   /** The turn moved back to `phase`, keeping its active player and the
     * powers already used this turn (`turn` starts a fresh turn instead). */
   def backInPhase(phase: Phase): Table =
@@ -447,13 +462,13 @@ final case class Table private (private val game: ReadyGame,
     * same ids (a changed Forge cost, say). */
   def service(catalog: ExecutableCatalog = FirstGameSetupFixture.catalog,
       campaignDice: CampaignDicePort = CampaignDicePort.random,
-      warExhaustion: WarExhaustionRandomPort = WarExhaustionRandomPort.random)(
+      roundEnd: RoundEndRandomPort = RoundEndRandomPort.random)(
       using munit.Location)
       : (GameApplicationService, InMemoryEventStreamRepository) =
     val repository = new InMemoryEventStreamRepository
     (new GameApplicationService(catalog, repository,
       campaignDicePort = campaignDice,
-      warExhaustionRandomPort = warExhaustion, genesis = served.state),
+      roundEndRandomPort = roundEnd, genesis = served.state),
       repository)
 
   /** This table as a live game holds it: the menu of the turn's phase

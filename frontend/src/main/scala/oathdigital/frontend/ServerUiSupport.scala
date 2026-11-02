@@ -342,7 +342,7 @@ private[frontend] object ServerUiSupport:
     val banner = element("div", s"victory-banner ${winnerColorClass(value, winner)}")
     banner.setAttribute("role", "status")
     banner.appendChild(playerReference(value, winner))
-    banner.appendChild(dom.document.createTextNode(s" wins — $victory victory"))
+    banner.appendChild(dom.document.createTextNode(s" wins — $victory"))
     banner
 
   private[frontend] def playerReference(

@@ -4,7 +4,7 @@ import oathdigital.application.{CampaignDicePort, EventStreamRepository,
   GameCommand, GameApplicationService, InMemoryEventStreamRepository}
 import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.phases.rest.WarExhaustionRandomPort
+import oathdigital.gameplay.phases.rest.RoundEndRandomPort
 import oathdigital.gameplay.powerresolver.PhasePowers
 import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
 import oathdigital.gameplay.setup.{FirstGameSetupFixture, SetupProcedure}
@@ -160,21 +160,21 @@ object Situation:
       walkerPowers: WalkerPowers = WalkerPowers.empty,
       phasePowers: PhasePowers = PhasePowers.empty,
       walkerDice: WalkerDice = WalkerDice.unavailable,
-      warExhaustion: WarExhaustionRandomPort = WarExhaustionRandomPort.random)
+      roundEnd: RoundEndRandomPort = RoundEndRandomPort.random)
       : SituationDriver =
     SituationDriver.Rules(catalog, walkerPowers, phasePowers, walkerDice,
-      warExhaustion, defaultAnswer)
+      roundEnd, defaultAnswer)
 
   /** The rules adapter over the rules the production service builds
     * (`GameApplicationService.scala:85-90`), with its power catalogs, so it
     * agrees with the journaled adapter given the same input and ports. */
   def productionRules(catalog: ExecutableCatalog,
       campaignDice: CampaignDicePort = CampaignDicePort.random,
-      warExhaustion: WarExhaustionRandomPort = WarExhaustionRandomPort.random)
+      roundEnd: RoundEndRandomPort = RoundEndRandomPort.random)
       : SituationDriver =
     rules(catalog, WalkerPowerCatalog.default(catalog),
       PhasePowerCatalog.default(catalog),
-      CampaignDicePort.walkerDice(campaignDice), warExhaustion)
+      CampaignDicePort.walkerDice(campaignDice), roundEnd)
 
   /** Drives `service` as `gameId`, which must hold no stream yet, and
     * arranges through `repository`, which must be the service's own.

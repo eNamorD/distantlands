@@ -7,7 +7,7 @@ import oathdigital.gameplay.actions.search.SearchProcedure
 import oathdigital.gameplay.powerresolver.PowerUseStep
 import oathdigital.gameplay.powers.{ConsentPowers, PhasePowerCatalog,
   WalkerPowerCatalog}
-import oathdigital.gameplay.phases.rest.WarExhaustionRandomPort
+import oathdigital.gameplay.phases.rest.RoundEndRandomPort
 import oathdigital.model._
 import oathdigital.protocol.projection.LogKind
 
@@ -89,8 +89,8 @@ final class GameApplicationService(
     repository: EventStreamRepository,
     searchDrawPort: SearchDrawPort = SearchDrawPort.authoritative,
     campaignDicePort: CampaignDicePort = CampaignDicePort.random,
-    warExhaustionRandomPort: WarExhaustionRandomPort =
-      WarExhaustionRandomPort.random,
+    roundEndRandomPort: RoundEndRandomPort =
+      RoundEndRandomPort.random,
     eventCodec: GameEventCodec = GameEventCodec.default,
     /** Where every stream of this service begins: `NoGame`, so a stream's
       * first event is `GameStarted`, unless a test seeds a start state. Only
@@ -102,7 +102,7 @@ final class GameApplicationService(
   import RepositoryAppendResult._
 
   private val rules = new OathRules(catalog,
-    warExhaustionRandomPort = warExhaustionRandomPort,
+    roundEndRandomPort = roundEndRandomPort,
     walkerPowerCatalog = WalkerPowerCatalog.default(catalog),
     phasePowerCatalog = PhasePowerCatalog.default(catalog),
     walkerDice = CampaignDicePort.walkerDice(campaignDicePort))

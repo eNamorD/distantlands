@@ -11,7 +11,7 @@ import oathdigital.gameplay.chronicle.ChronicleBeginProcedure
 import oathdigital.gameplay.setup.SetupProcedure
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.testkit.{CatalogNames, Look, Outcomes, PlacementPicks, Table,
-  WarExhaustionChoices}
+  RoundEndChoices}
 import oathdigital.gameplay.powers.WalkerPowerCatalog
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, as, present, rejected}
@@ -45,7 +45,7 @@ class GameApplicationServiceStreamSuite extends munit.FunSuite:
     val poweredOrders = ChronicleFirstGamePlan.dealOrder(FirstGameBootstrapConfig(orders.participants, orders.firstPlayer),
       poweredChronicle.worldDeck, poweredChronicle.relicDeck)
     var service = new GameApplicationService(catalog, repository,
-      warExhaustionRandomPort = WarExhaustionChoices.firstCandidate)
+      roundEndRandomPort = RoundEndChoices.firstCandidate)
     var position = setupViaService(service, "powered-playability", sites,
       poweredChronicle, poweredOrders)
     var played = Set.empty[PlayerId]
@@ -79,7 +79,7 @@ class GameApplicationServiceStreamSuite extends munit.FunSuite:
       position = accepted(service.handle("powered-playability",
         position.nextSequence, MenuPlay.starting(actor, PhaseTransitionRef.BeginRest)))
       service = new GameApplicationService(catalog, repository,
-        warExhaustionRandomPort = WarExhaustionChoices.firstCandidate)
+        roundEndRandomPort = RoundEndChoices.firstCandidate)
       val reopened = loaded(service.load("powered-playability"))
       assertEquals(reopened.state, position.state)
       assertEquals(reopened.nextSequence, position.nextSequence)

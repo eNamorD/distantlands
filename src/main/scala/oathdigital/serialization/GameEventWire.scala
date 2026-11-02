@@ -32,6 +32,7 @@ object GameEventWire extends GameEventJsonSupport with LifecycleEventCodec
   val VisionVictoryType = "gameplay.vision-victory"
   val RoundEndedType = "gameplay.round-ended"
   val WarExhaustionResolvedType = "gameplay.war-exhaustion-resolved"
+  val EndDieRolledType = "gameplay.end-die-rolled"
   val WalkerStepRecordedType = "walker.step-recorded"
   val WalkerParkedType = "walker.parked"
   val WalkerCompletedType = "walker.completed"

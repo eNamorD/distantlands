@@ -8,12 +8,13 @@ import oathdigital.model.OathState._
 import oathdigital.model.OathViolation._
 import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.operations.{OperationPipeline, OperationPolicy}
+import oathdigital.gameplay.phases.rest.RoundEndRandomPort
 import oathdigital.model.{Move => CoreMove}
 
 /**
  * State-based checks: bandit refill, the Wake victories, the end of a round
- * and War Exhaustion. The Empire's endings (Stable Regime, the full War
- * Exhaustion) are slice 2's.
+ * and War Exhaustion. With an Empire, `EmpireEndings` decides the end die's
+ * win and War Exhaustion's winner; this object journals and replays them.
  *
  * CR p.16 gives each goal a strict qualification rule, then gives the current
  * holder two special tie duties: retain a qualifying tie, or choose among tied
@@ -64,31 +65,36 @@ object StateBasedEvaluation:
       }
     }
 
-  def endRound(state: OathState, randomWinner: Vector[PlayerId] => PlayerId)
+  def endRound(state: OathState, random: RoundEndRandomPort)
       : Either[OathViolation, Vector[OathEvent]] = supported(state).flatMap { ready =>
     val current = ready.game.current
     val turnOrder = TurnOrder.order(ready)
     if current.turn.phase != Phase.RoundEnd ||
         current.turn.activePlayer != turnOrder.head then
       Left(InvalidEventOrder("round ending requires the completed round's final Rest"))
+    else if EmpireEndings.rollsEndDie(ready) then
+      val round = current.tracks.round
+      val face = random.endDie()
+      val result = EmpireEndings.stableRegime(ready, face)
+      Right(EndDieRolled(round, face, result) +: Option.when(
+        result.isEmpty)(RoundEnded(round, Some(round + 1))).toVector)
     else if current.tracks.round < 8 then
       Right(Vector(RoundEnded(current.tracks.round,
         Some(current.tracks.round + 1))))
+    else if EmpireEndings.hasEmpire(ready) then
+      EmpireEndings.warExhaustion(ready).toRight(InvalidEventOrder(
+        "an Empire's War Exhaustion found no winner"))
+        .map(won => Vector(RoundEnded(8, None), won))
     else
       val usurper = current.title match
         case OathkeeperState(Some(player), TitleSide.Usurper) => Some(
           WarExhaustionResolved(player, VictoryKind.Usurper, None, Vector.empty))
         case _ => None
-      val visionary = visionPriority.iterator.flatMap { vision =>
-          current.players.find(p => p.revealedVision.exists(_.id == vision) &&
-            VisionVictoryEligibility.qualifies(p.player, ready))
-            .map(p => WarExhaustionResolved(p.player, VictoryKind.Visionary,
-              Some(vision), Vector.empty))
-        }.toSeq.headOption
+      val visionary = visionaryWin(ready)
       val fallback = current.title.holder.map(player => WarExhaustionResolved(
         player, VictoryKind.Oathkeeper, None, Vector.empty)).getOrElse:
         val candidates = turnOrder
-        WarExhaustionResolved(randomWinner(candidates),
+        WarExhaustionResolved(random.choose(candidates),
           VictoryKind.RandomSelection, None, candidates)
       Right(Vector(RoundEnded(8, None), usurper.orElse(visionary).getOrElse(fallback)))
   }
@@ -141,7 +147,9 @@ object StateBasedEvaluation:
           val round = ready.game.current.tracks.round
           val expected = RoundEnded(round, Option.when(round < 8)(round + 1))
           val first = TurnOrder.roundStart(ready)
+          // A winning end die ends the game, so no round follows it.
           if ready.game.current.turn.phase != Phase.RoundEnd ||
+              ready.game.current.result.nonEmpty ||
               ready.game.current.turn.activePlayer != first then
             Left(InvalidEventOrder("round-end event is outside the round-end procedure"))
           else if recorded != expected then Left(InvalidEventOrder(
@@ -163,7 +171,38 @@ object StateBasedEvaluation:
           result = Some(GameResult(recorded.winner, recorded.kind))))
         case expected => Left(InvalidEventOrder(
           s"War Exhaustion mismatch: expected $expected, recorded $recorded"))
+      case recorded: EndDieRolled => supported(state).flatMap { ready =>
+        val current = ready.game.current
+        val round = current.tracks.round
+        if current.turn.phase != Phase.RoundEnd || current.result.nonEmpty ||
+            current.turn.activePlayer != TurnOrder.roundStart(ready) then
+          Left(InvalidEventOrder("the end die is rolled only at a round's end"))
+        else if !EmpireEndings.rollsEndDie(ready) then
+          Left(InvalidEventOrder("this round's end rolls no end die"))
+        else if recorded.round != round || recorded.face < 1 ||
+            recorded.face > 6 then
+          Left(InvalidEventOrder(s"end die mismatch: recorded $recorded"))
+        else
+          val expected = EmpireEndings.stableRegime(ready, recorded.face)
+          if expected != recorded.result then Left(InvalidEventOrder(
+            s"Stable Regime mismatch: expected $expected, recorded " +
+              s"${recorded.result}"))
+          else update(state)(_.copy(result = recorded.result))
+      }
       case _ => Left(InvalidEventOrder("not a state-based evaluation event"))
+
+  /** War Exhaustion's Visionary step: an Exile with a revealed Vision whose
+    * goal they meet, in printed priority order (CR p. 19). */
+  private[gameplay] def visionaryWin(ready: ReadyGame)
+      : Option[WarExhaustionResolved] =
+    val current = ready.game.current
+    visionPriority.iterator.flatMap { vision =>
+      current.players.find(p => !Imperials.isImperial(ready, p.player) &&
+        p.revealedVision.exists(_.id == vision) &&
+        VisionVictoryEligibility.qualifies(p.player, ready))
+        .map(p => WarExhaustionResolved(p.player, VictoryKind.Visionary,
+          Some(vision), Vector.empty))
+    }.nextOption()
 
   private[gameplay] def supported(state: OathState): Either[OathViolation, ReadyGame] = state match
     case Ready(ready) => Right(ready)
@@ -187,23 +226,22 @@ object StateBasedEvaluation:
   private def endRoundWinner(ready: ReadyGame, first: PlayerId)
       : Either[OathViolation, ExpectedWarExhaustion] =
     val current = ready.game.current
-    current.title match
-      case OathkeeperState(Some(player), TitleSide.Usurper) => Right(ExactWar(
-        WarExhaustionResolved(player, VictoryKind.Usurper, None, Vector.empty)))
-      case _ =>
-        visionPriority.iterator.flatMap { vision =>
-            current.players.find(p => p.revealedVision.exists(_.id == vision) &&
-              VisionVictoryEligibility.qualifies(p.player, ready))
-              .map(p => WarExhaustionResolved(p.player, VictoryKind.Visionary,
-                Some(vision), Vector.empty))
-          }.toSeq.headOption.orElse(current.title.holder.map(player =>
-          WarExhaustionResolved(player, VictoryKind.Oathkeeper, None, Vector.empty))) match
-          case Some(value) => Right(ExactWar(value))
-          case None =>
-            val players = current.players.map(_.player)
-            val i = players.indexOf(first)
-            val candidates = players.drop(i) ++ players.take(i)
-            Right(LeftRandom(candidates))
+    if EmpireEndings.hasEmpire(ready) then
+      EmpireEndings.warExhaustion(ready).map(ExactWar(_)).toRight(
+        InvalidEventOrder("an Empire's War Exhaustion found no winner"))
+    else
+      current.title match
+        case OathkeeperState(Some(player), TitleSide.Usurper) => Right(ExactWar(
+          WarExhaustionResolved(player, VictoryKind.Usurper, None, Vector.empty)))
+        case _ =>
+          visionaryWin(ready).orElse(current.title.holder.map(player =>
+            WarExhaustionResolved(player, VictoryKind.Oathkeeper, None, Vector.empty))) match
+            case Some(value) => Right(ExactWar(value))
+            case None =>
+              val players = current.players.map(_.player)
+              val i = players.indexOf(first)
+              val candidates = players.drop(i) ++ players.take(i)
+              Right(LeftRandom(candidates))
 
   private def update(state: OathState)(f: CurrentGameState => CurrentGameState) = state match
     case Ready(ready) => Right(Ready(ready.copy(game = ready.game.copy(

@@ -212,8 +212,6 @@ Citizenship and exile, and the Empire part of later-game setup. Design:
 [Empire phase design](superpowers/specs/2026-10-29-empire-phase-design.md).
 Each slice gets its own plan, in this order.
 
-- [ ] **Slice 2, Empire endings.** Stable Regime, War Exhaustion with an
-  Empire, and Successor goals.
 - [ ] **Slice 3, Role changes in play.** Becoming a Citizen or the
   Chancellor, exile, the Grand Scepter's powers, the five "become a Citizen"
   denizens, the first-game toggle, and the Throne's Offer Citizenship step,

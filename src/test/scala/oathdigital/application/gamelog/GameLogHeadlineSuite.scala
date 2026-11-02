@@ -140,13 +140,40 @@ class GameLogHeadlineSuite extends munit.FunSuite:
       OathEvent.WarExhaustionResolved(winner, VictoryKind.Oathkeeper, None,
         Vector.empty) -> " won as the Oathkeeper",
       OathEvent.WarExhaustionResolved(winner, VictoryKind.RandomSelection, None,
-        Vector.empty) -> " won by random selection")
+        Vector.empty) -> " won by random selection",
+      OathEvent.WarExhaustionResolved(winner, VictoryKind.StableRegime, None,
+        Vector.empty) -> " won by Stable Regime",
+      OathEvent.WarExhaustionResolved(winner,
+        VictoryKind.ChancellorExhaustion, None, Vector.empty) ->
+        " won as the Chancellor",
+      OathEvent.WarExhaustionResolved(winner, VictoryKind.Successor, None,
+        Vector.empty) -> " won as Successor to the Chancellor")
     headlines.foreach { case (event, rest) =>
       val last = formatAppended(script, Vector(event)).last
       assertEquals(last.kind, LogKind.Victory)
       assertEquals(last.depth, 0)
       assertEquals(text(last), playerLabel(winner) + rest)
     }
+
+  test("the end die posts its face and the face it needed"):
+    val script = recordedEventsBoard
+    val missed = formatAppended(script,
+      Vector(OathEvent.EndDieRolled(6, 4, None))).last
+    assertEquals(missed.kind, LogKind.Roll)
+    assertEquals(text(missed),
+      "The end die rolled 4. Stable Regime needed 5 or more.")
+    val five = formatAppended(script,
+      Vector(OathEvent.EndDieRolled(5, 2, None))).last
+    assertEquals(text(five), "The end die rolled 2. Stable Regime needed 6.")
+
+  test("a winning end die posts the roll, then the victory"):
+    val script = recordedEventsBoard
+    val winner = script.actor
+    val lines = formatAppended(script, Vector(OathEvent.EndDieRolled(7, 3,
+      Some(GameResult(winner, VictoryKind.Successor))))).takeRight(2)
+    assertEquals(lines.map(_.kind), Vector(LogKind.Roll, LogKind.Victory))
+    assertEquals(text(lines.last),
+      playerLabel(winner) + " won as Successor to the Chancellor")
 
   test("the last round's end posts no round headline"):
     // Only the board's journal is read. A game has 8 rounds, so the 8th

@@ -4,6 +4,7 @@ import oathdigital.application.{GamePresentationProjector,
   WalkerDecisionProjector}
 import oathdigital.catalog.ExecutableCatalog
 import oathdigital.engine.ReplayStep
+import oathdigital.gameplay.EmpireEndings
 import oathdigital.gameplay.powerresolver.ModifierPicks
 import oathdigital.gameplay.powers.{ConsentPowers, WalkerPowerCatalog}
 import oathdigital.gameplay.walker.{FollowUpSkipped,
@@ -180,6 +181,10 @@ private[application] final class GameLogFormatter(catalog: ExecutableCatalog,
           words.vision(vision)))), run)
       case OathEvent.WarExhaustionResolved(winner, kind, vision, _) =>
         (Vector(victory(winner, exhaustion(kind, vision))), run)
+      case OathEvent.EndDieRolled(round, face, result) =>
+        (Posted(LogKind.Roll, Vector(Text(endDie(round, face)))) +:
+          result.map(won => victory(won.winner,
+            exhaustion(won.kind, None))).toVector, run)
       case _: ConsentEvent => (consent.lines(journal, at, viewer), run)
       case _: PlanAidEvent => (planAid.lines(journal, at, viewer), run)
       // Undo's facts post no line of their own; `format` keeps markers out
@@ -295,6 +300,13 @@ private[application] final class GameLogFormatter(catalog: ExecutableCatalog,
   private def victory(player: PlayerId, rest: Vector[LogSpan]): Posted =
     Posted(LogKind.Victory, words.player(player) +: rest)
 
+  /** "The end die rolled 4. Stable Regime needed 5 or more." The die is
+    * rolled only at rounds 5 to 7, which all have a threshold. */
+  private def endDie(round: Int, face: Int): String =
+    val needed = EmpireEndings.threshold(round).fold("")(least =>
+      s" Stable Regime needed $least${if least == 6 then "" else " or more"}.")
+    s"The end die rolled $face.$needed"
+
   private def exhaustion(kind: VictoryKind, vision: Option[VisionId])
       : Vector[LogSpan] = kind match
     case VictoryKind.Usurper => Vector(Text(" won as the Usurper"))
@@ -303,3 +315,8 @@ private[application] final class GameLogFormatter(catalog: ExecutableCatalog,
         Vector(Text(" won with "), words.vision(id)))
     case VictoryKind.Oathkeeper => Vector(Text(" won as the Oathkeeper"))
     case VictoryKind.RandomSelection => Vector(Text(" won by random selection"))
+    case VictoryKind.StableRegime => Vector(Text(" won by Stable Regime"))
+    case VictoryKind.ChancellorExhaustion =>
+      Vector(Text(" won as the Chancellor"))
+    case VictoryKind.Successor =>
+      Vector(Text(" won as Successor to the Chancellor"))

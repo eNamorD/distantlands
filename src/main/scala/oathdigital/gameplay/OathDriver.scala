@@ -6,7 +6,7 @@ import oathdigital.gameplay.chronicle.ChronicleSequence
 import oathdigital.gameplay.oathkeeper.{OathkeeperOutcome, OathkeeperRules}
 import oathdigital.gameplay.phases.PhaseMenu
 import oathdigital.gameplay.phases.rest.{TurnBoundary,
-  WarExhaustionRandomPort}
+  RoundEndRandomPort}
 import oathdigital.gameplay.phases.wake.ForcedWakeProcedure
 import oathdigital.gameplay.powerresolver.PhasePowers
 import oathdigital.gameplay.walker.{ActionBoundaryRan, ProcedureDequeued}
@@ -42,7 +42,7 @@ private[gameplay] trait OathDriver:
 
   protected def catalog: ExecutableCatalog
   protected def phasePowerCatalog: PhasePowers
-  protected def warExhaustionRandomPort: WarExhaustionRandomPort
+  protected def roundEndRandomPort: RoundEndRandomPort
   protected def outsideActions: Vector[OperationRestriction]
 
   private[gameplay] def next(transition: OathTransition,
@@ -114,7 +114,7 @@ private[gameplay] trait OathDriver:
         case Ready(ready) if ready.game.current.turn.phase ==
             Phase.RoundEnd =>
           TurnBoundary.finishRound(catalog, transition,
-            warExhaustionRandomPort, outsideActions)
+            roundEndRandomPort, outsideActions)
         case _ => Right(transition)
       rounded.flatMap(after => after.state match
         case Ready(ready) if ready.game.current.result.nonEmpty =>

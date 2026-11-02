@@ -24,9 +24,9 @@ private[frontend] object ActionDecisionRenderer:
      case None if value.phase == "game-over" =>
        node.textContent = value.oathkeeper.flatMap(_.winnerPlayerId)
          .fold("Game over.") { winner =>
-           val reason = value.oathkeeper.flatMap(_.winnerVictoryKind)
-             .map(_.replace('-', ' ')).getOrElse("winner")
-           s"Game over — $winner wins ($reason)."
+           val victory = VictoryWords.of(
+             value.oathkeeper.flatMap(_.winnerVictoryKind))
+           s"Game over — $winner wins ($victory)."
          }
      case None =>
        node.appendChild(dom.document.createTextNode(
@@ -53,8 +53,8 @@ private[frontend] object ActionDecisionRenderer:
    // back or restore belong to whatever the pane shows below them.
    StepControls.render(value, canControl, submitCommand).foreach(panel.appendChild)
    value.oathkeeper.flatMap(_.winnerPlayerId).foreach { winner =>
-     val victory = value.oathkeeper.flatMap(_.winnerVictoryKind)
-       .getOrElse("winner").replace('-', ' ')
+     val victory = VictoryWords.of(
+       value.oathkeeper.flatMap(_.winnerVictoryKind))
      panel.appendChild(winnerBanner(value, winner, victory))
    }
    // Drawn cards wait in the temporary hand: starting advisers, a Search's

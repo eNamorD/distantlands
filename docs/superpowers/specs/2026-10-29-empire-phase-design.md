@@ -1,6 +1,6 @@
 # Empire phase design
 
-Status: designed, 2026-10-29. Slice 1a implemented, 2026-10-29. Slice 1b-i implemented, 2026-10-30. Slice 1b-ii implemented, 2026-11-01.
+Status: designed, 2026-10-29. Slice 1a implemented, 2026-10-29. Slice 1b-i implemented, 2026-10-30. Slice 1b-ii implemented, 2026-11-01. Slice 2 implemented, 2026-11-01.
 
 Roadmap item: **Phase - Empire**. Chancellor and Citizen roles in play,
 Imperial warbands, the Imperial Campaign, the Stable Regime and Successor
@@ -488,6 +488,8 @@ legacies stay refused (see [Out of scope](#out-of-scope)).
   its user rules or holds (Great Crusade, Pledge of Defense, Kindred Warriors,
   Nature Worship) counts only the user's own cards. An ally's pawn at a site
   meets "your pawn is at this site" (Towering Rampart).
+- **R17, the Grand Scepter counts.** Supremacy's Successor counts every
+  relic each Imperial player holds, the Grand Scepter included.
 - **Defender is the attacker.** A Campaign target whose defender resolves to
   the attacker is not legal.
 - **First game.** "Become a Citizen" powers are ignored in a first game by a
