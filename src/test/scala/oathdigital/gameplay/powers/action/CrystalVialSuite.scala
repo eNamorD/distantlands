@@ -2,10 +2,11 @@ package oathdigital.gameplay.powers.action
 
 import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
+import oathdigital.gameplay.powers.campaign.{BattleHonorsCard, WrestlersCard}
+import oathdigital.gameplay.powers.wake.{AncientCitySite, MarbleFountainsCard}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Refusals,
-  Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Refusals, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
@@ -14,21 +15,21 @@ class CrystalVialSuite extends munit.FunSuite:
   import PowerFixture._
   import PhasePowerHarness._
 
-  private val vial = CatalogNames.relic("Crystal Vial")
+  private val vial = CrystalVialCard.id
   private val source = DecisionOptionRef.Relic(vial)
   private val power = CrystalVial(catalog)
-  private val inn = CatalogNames.denizen("Wayside Inn")
+  private val inn = WaysideInnCard.id
   private val faith = VisionRules.Faith
-  private val elders = CatalogNames.denizen("Elders")
+  private val elders = EldersCard.id
   /** p1's adviser, and p2's. */
-  private val held = CatalogNames.denizen("Wrestlers")
-  private val theirs = CatalogNames.denizen("Battle Honors")
+  private val held = WrestlersCard.id
+  private val theirs = BattleHonorsCard.id
   private val other = p2
 
   /** p1, in Act at Ancient City, holds the Vial and Wrestlers, with 2
     * faceup secrets; p2 holds Battle Honors. */
   private def staged = Table.start
-    .pawn(p1, "Ancient City").relic(p1, vial).adviser(p1, held)
+    .pawn(p1, AncientCitySite).relic(p1, vial).adviser(p1, held)
     .secrets(p1, faceUp = 2)
     .adviser(p2, theirs)
     .ready
@@ -43,7 +44,7 @@ class CrystalVialSuite extends munit.FunSuite:
   /** p1, at Ancient City, holds the Vial and 2 faceup secrets, and no
     * adviser; the site holds no card. */
   private def bare: ReadyGame =
-    Table.start.pawn(p1, "Ancient City").relic(p1, vial)
+    Table.start.pawn(p1, AncientCitySite).relic(p1, vial)
       .secrets(p1, faceUp = 2).ready
 
   test("the cost is one secret placed on the Vial and one burnt"):
@@ -56,7 +57,7 @@ class CrystalVialSuite extends munit.FunSuite:
   test("it offers the actor's advisers in either orientation and the cards " +
       "at the actor's site, and nobody else's"):
     val ready = Table.from(staged).adviser(actor, elders)
-      .adviser(actor, faith, facedown = true).denizen(inn, at = "Ancient City")
+      .adviser(actor, faith, facedown = true).denizen(inn, at = AncientCitySite)
       .ready
     val t = accepted(use(ready, power, source))
     assertEquals(offered(t, actor).map(_.toSet), Some(Set(
@@ -88,7 +89,7 @@ class CrystalVialSuite extends munit.FunSuite:
     assertEquals(worldDeck(after(done)).last, faith)
 
   test("a denizen at the site is buried with its favor and secrets returned"):
-    val ready = Table.from(staged).denizen(inn, at = "Ancient City")
+    val ready = Table.from(staged).denizen(inn, at = AncientCitySite)
       .tokens(inn, favor = 1, secrets = 1).ready
     val suit = Suit.Hearth // Wayside Inn's printed suit
     val t = accepted(use(ready, power, source))
@@ -101,8 +102,8 @@ class CrystalVialSuite extends munit.FunSuite:
 
   test("the edifice at the site is buried whichever face it shows"):
     Vector(EdificeSide.Intact, EdificeSide.Ruined).foreach { side =>
-      val edifice = CatalogNames.edifice("Marble Fountains")
-      val ready = Table.from(staged).edifice(edifice, side, at = "Ancient City")
+      val edifice = MarbleFountainsCard.id
+      val ready = Table.from(staged).edifice(edifice, side, at = AncientCitySite)
         .ready
       val t = accepted(use(ready, power, source))
       val done = accepted(answer(t, actor, CrystalVial.decisionId,

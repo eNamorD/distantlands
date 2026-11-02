@@ -1,11 +1,12 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture}
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, Table}
 import oathdigital.testkit.Outcomes.ready
 import oathdigital.testkit.Unwrap.accepted
 import oathdigital.testkit.PhasePowerHarness
@@ -13,14 +14,14 @@ import oathdigital.testkit.PhasePowerHarness
 class WaysideInnSuite extends munit.FunSuite:
   import PowerFixture._
 
-  private val inn = CatalogNames.denizen("Wayside Inn")
+  private val inn = WaysideInnCard.id
   private val source = DecisionOptionRef.Denizen(inn)
   private val rules = ActPowerHarness.rules()
   /** p1's Act at Ancient City with Wayside Inn at the site, `favor` favor
     * and `supply` Supply. */
   private def staged(favor: Int, supply: Int) =
-    Table.start.turn(actor, Phase.Act).pawn(actor, "Ancient City")
-      .denizen(inn, at = "Ancient City").favor(actor, favor)
+    Table.start.turn(actor, Phase.Act).pawn(actor, AncientCitySite)
+      .denizen(inn, at = AncientCitySite).favor(actor, favor)
       .supply(actor, supply).ready
   private def use(ready: ReadyGame) = rules.startWalker(Ready(ready),
     ActionRef.UsePower(WaysideInn.id), actor, Vector(source))

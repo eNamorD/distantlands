@@ -1,15 +1,16 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Unwrap.accepted
 
 class SpiritSnareSuite extends munit.FunSuite:
   import PowerFixture._
   import PhasePowerHarness._
 
-  private val snare = CatalogNames.denizen("Spirit Snare")
+  private val snare = SpiritSnareCard.id
   private val source = DecisionOptionRef.Denizen(snare)
 
   /** p1's Act at Ancient City with Spirit Snare at the site and one faceup
@@ -18,8 +19,8 @@ class SpiritSnareSuite extends munit.FunSuite:
     */
   private def staged(favor: (Suit, Int)*): ReadyGame =
     val banks = favor.toMap
-    val table = Table.start.turn(actor, Phase.Act).pawn(actor, "Ancient City")
-      .denizen(snare, at = "Ancient City").secrets(actor, 1)
+    val table = Table.start.turn(actor, Phase.Act).pawn(actor, AncientCitySite)
+      .denizen(snare, at = AncientCitySite).secrets(actor, 1)
     Suit.all.foldLeft(table)((t, suit) =>
       t.bankFavor(suit, banks.getOrElse(suit, 0))).ready
   private def bank(ready: ReadyGame, suit: Suit) = ready.banks.favor(suit)

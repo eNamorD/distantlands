@@ -1,8 +1,10 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.gameplay.cards.BuriedGiantSite
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Unwrap.accepted
 
@@ -10,7 +12,7 @@ class SpoiledSuppliesSuite extends munit.FunSuite:
   import PowerFixture._
   import PhasePowerHarness._
 
-  private val spoiled = CatalogNames.denizen("Spoiled Supplies")
+  private val spoiled = SpoiledSuppliesCard.id
   private val source = DecisionOptionRef.Denizen(spoiled)
   private val first = Table.p2
   private val second = Table.p3
@@ -23,10 +25,10 @@ class SpoiledSuppliesSuite extends munit.FunSuite:
     * stands at Buried Giant with 3 Supply, so it is never hit.
     */
   private def staged(supply: Int = 3, favor: Int = 1) =
-    Table.start.turn(actor, Phase.Act).pawn(actor, "Ancient City")
-      .denizen(spoiled, at = "Ancient City").favor(actor, favor)
-      .pawn(first, "Ancient City").supply(first, supply)
-      .pawn(second, "Buried Giant").supply(second, 3).ready
+    Table.start.turn(actor, Phase.Act).pawn(actor, AncientCitySite)
+      .denizen(spoiled, at = AncientCitySite).favor(actor, favor)
+      .pawn(first, AncientCitySite).supply(first, supply)
+      .pawn(second, BuriedGiantSite).supply(second, 3).ready
 
   test("each other player at the actor's site loses 1 Supply, and nobody " +
       "else does"):
@@ -48,7 +50,7 @@ class SpoiledSuppliesSuite extends munit.FunSuite:
         covers = false)))
 
   test("two players at the site each lose 1 Supply, each with a line"):
-    val ready = Table.from(staged()).pawn(second, "Ancient City").ready
+    val ready = Table.from(staged()).pawn(second, AncientCitySite).ready
     val done = accepted(use(ready, SpoiledSupplies, source))
     assertEquals(supplyOf(after(done), first), 2)
     assertEquals(supplyOf(after(done), second), 2)

@@ -2,7 +2,7 @@ package oathdigital.gameplay.powers.action
 
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
@@ -10,7 +10,7 @@ import oathdigital.testkit.Unwrap.accepted
 class LevelersSuite extends munit.FunSuite:
   import PhasePowerHarness._
 
-  private val levelers = CatalogNames.denizen("Levelers")
+  private val levelers = LevelersCard.id
   private val source = DecisionOptionRef.Denizen(levelers)
 
   /** p1's Act holding Levelers, with the banks holding exactly `favor`. */

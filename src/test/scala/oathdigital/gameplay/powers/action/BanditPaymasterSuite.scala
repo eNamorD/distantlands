@@ -1,8 +1,9 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
@@ -10,9 +11,9 @@ import oathdigital.testkit.Unwrap.accepted
 class BanditPaymasterSuite extends munit.FunSuite:
   import PhasePowerHarness._
 
-  private val paymaster = CatalogNames.denizen("Bandit Paymaster")
+  private val paymaster = BanditPaymasterCard.id
   private val source = DecisionOptionRef.Denizen(paymaster)
-  private val home = CatalogNames.site("Ancient City")
+  private val home = AncientCitySite.id
 
   /** p1's Act at Ancient City holding Bandit Paymaster, with `bandits`
     * bandit warbands at the site. */

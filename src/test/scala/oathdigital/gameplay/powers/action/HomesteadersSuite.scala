@@ -1,9 +1,14 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.catalog.holding.PilgrimageCard
+import oathdigital.gameplay.MarriageCard
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.search.{ErrandBoyCard, LandWardenCard}
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
@@ -11,19 +16,19 @@ import oathdigital.testkit.Unwrap.accepted
 class HomesteadersSuite extends munit.FunSuite:
   import PhasePowerHarness._
 
-  private val homesteaders = CatalogNames.denizen("Homesteaders")
+  private val homesteaders = HomesteadersCard.id
   private val source = DecisionOptionRef.Denizen(homesteaders)
   private val power = Homesteaders.forCatalog(catalog)
   /** p1's pawn site, with room for three cards. */
-  private val home = CatalogNames.site("Ancient City")
+  private val home = AncientCitySite.id
   /** A plain Hearth denizen. */
-  private val landWarden = CatalogNames.denizen("Land Warden")
+  private val landWarden = LandWardenCard.id
   /** A plain Beast denizen. */
-  private val errandBoy = CatalogNames.denizen("Errand Boy")
+  private val errandBoy = ErrandBoyCard.id
   /** Adviser-only. */
-  private val pilgrimage = CatalogNames.denizen("Pilgrimage")
+  private val pilgrimage = PilgrimageCard.id
   /** Locked and adviser-only. */
-  private val marriage = CatalogNames.denizen("Marriage")
+  private val marriage = MarriageCard.id
 
   /** p1's Act at Ancient City, holding Homesteaders faceup. */
   private def holdingHomesteaders: Table =
@@ -75,8 +80,8 @@ class HomesteadersSuite extends munit.FunSuite:
 
   test("with the pawn's site full it shows Continue and the line says so"):
     val ready = holdingHomesteaders.adviser(p1, landWarden)
-      .denizen(errandBoy, at = home).denizen("Wrestlers", at = home)
-      .denizen("Elders", at = home).ready
+      .denizen(errandBoy, at = home).denizen(WrestlersCard, at = home)
+      .denizen(EldersCard, at = home).ready
     val asked = accepted(use(ready, power, source))
     assert(awaits(asked, Homesteaders.decisionId))
     val done = accepted(continuedPast(asked, Homesteaders.decisionId))

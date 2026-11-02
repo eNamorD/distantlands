@@ -2,8 +2,9 @@ package oathdigital.gameplay.powers.action
 
 import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.search.LandWardenCard
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.accepted
@@ -11,11 +12,11 @@ import oathdigital.testkit.Unwrap.accepted
 class DreamThiefSuite extends munit.FunSuite:
   import PhasePowerHarness._
 
-  private val thief = CatalogNames.denizen("Dream Thief")
+  private val thief = DreamThiefCard.id
   private val source = DecisionOptionRef.Denizen(thief)
   // Two Hearth denizens whose powers these tests do not use.
-  private val homesteaders = CatalogNames.denizen("Homesteaders")
-  private val landWarden = CatalogNames.denizen("Land Warden")
+  private val homesteaders = HomesteadersCard.id
+  private val landWarden = LandWardenCard.id
   private val vision = VisionRules.Faith
 
   /** p1's Act holding Dream Thief (slot 0) with `favor` favor and a facedown

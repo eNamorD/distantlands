@@ -1,8 +1,11 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.gameplay.cards.BuriedGiantSite
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.accepted
@@ -12,9 +15,9 @@ class WitchsBargainSuite extends munit.FunSuite:
   import WitchsBargain.{exchangeDecisionId, giveFavor, giveSecret,
     playerDecisionId, stop, switch}
 
-  private val bargain = CatalogNames.denizen("Witch's Bargain")
+  private val bargain = WitchsBargainCard.id
   private val source = DecisionOptionRef.Denizen(bargain)
-  private val home = CatalogNames.site("Ancient City")
+  private val home = AncientCitySite.id
   private val chooseP2 = playerDecisionId -> DecisionOptionRef.Player(p2)
 
   /** p1's Act at Ancient City beside Witch's Bargain, with 3 faceup secrets
@@ -24,7 +27,7 @@ class WitchsBargainSuite extends munit.FunSuite:
     .pawn(p1, at = home).denizen(bargain, at = home)
     .secrets(p1, faceUp = 3).favor(p1, 4)
     .pawn(p2, at = home).favor(p2, 3).secrets(p2, faceUp = 1, faceDown = 1)
-    .pawn(p3, at = "Buried Giant")
+    .pawn(p3, at = BuriedGiantSite)
 
   /** Each walk in turn: Witch's Bargain used, then each answer p1 gave. */
   private def walksAnswering(ready: ReadyGame,
@@ -104,8 +107,8 @@ class WitchsBargainSuite extends munit.FunSuite:
     val stopped = walksAnswering(staged.ready, chooseP2,
       exchangeDecisionId -> stop)
     val alone = accepted(use(Table.start.turn(p1, Phase.Act)
-      .pawn(p1, at = home).pawn(p2, at = "Broken Peaks")
-      .pawn(p3, at = "Buried Giant").denizen(bargain, at = home).ready,
+      .pawn(p1, at = home).pawn(p2, at = BrokenPeaksSite)
+      .pawn(p3, at = BuriedGiantSite).denizen(bargain, at = home).ready,
       WitchsBargain, source))
     assert(backToActing(stopped.last))
     assert(backToActing(alone))

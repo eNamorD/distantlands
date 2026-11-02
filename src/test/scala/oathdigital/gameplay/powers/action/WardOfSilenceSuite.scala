@@ -2,12 +2,13 @@ package oathdigital.gameplay.powers.action
 
 import oathdigital.gameplay.phases.PhaseMenu
 import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog}
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseAmountAnswer
-import oathdigital.testkit.{CatalogNames, Look, MenuPlay, ParkedNode,
-  PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, MenuPlay, ParkedNode, PhasePowerHarness,
+  Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.accepted
@@ -17,7 +18,7 @@ import oathdigital.testkit.Unwrap.accepted
 class WardOfSilenceSuite extends munit.FunSuite:
   import PhasePowerHarness._
 
-  private val ward = CatalogNames.denizen("Ward of Silence")
+  private val ward = WardOfSilenceCard.id
   private val source = DecisionOptionRef.Denizen(ward)
 
   /** p1's Act at Ancient City holding Ward of Silence as an adviser and
@@ -26,8 +27,8 @@ class WardOfSilenceSuite extends munit.FunSuite:
   private def wardHeldWithP2AndP3AtTheSite(own: Int = 3,
       targetFaceUp: Int = 2): ReadyGame =
     Table.start.turn(p1, Phase.Act).adviser(p1, ward).secrets(p1, own)
-      .pawn(p2, "Ancient City").secrets(p2, targetFaceUp, 1)
-      .pawn(p3, "Ancient City").secrets(p3, 0, 2).ready
+      .pawn(p2, AncientCitySite).secrets(p2, targetFaceUp, 1)
+      .pawn(p3, AncientCitySite).secrets(p3, 0, 2).ready
 
   /** The options of the decision the use is parked on. */
   private def parkedOptions(t: OathTransition): Vector[DecisionOption] =

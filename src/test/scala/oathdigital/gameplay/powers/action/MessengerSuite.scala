@@ -1,20 +1,23 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.gameplay.cards.DeepWoodsSite
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.economy.VowOfWanderingCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
 
 class MessengerSuite extends munit.FunSuite:
-  private val vow = CatalogNames.denizen("Vow of Wandering")
+  private val vow = VowOfWanderingCard.id
   import PhasePowerHarness._
 
-  private val messenger = CatalogNames.denizen("Messenger")
+  private val messenger = MessengerCard.id
   private val source = DecisionOptionRef.Denizen(messenger)
-  private val home = CatalogNames.site("Ancient City")
-  private val far = CatalogNames.site("Deep Woods")
+  private val home = AncientCitySite.id
+  private val far = DeepWoodsSite.id
 
   /** p1's Act at Ancient City holding Messenger with `favor` favor and
     * `board` warbands on the board. Unless `ruling` is false, p1 rules

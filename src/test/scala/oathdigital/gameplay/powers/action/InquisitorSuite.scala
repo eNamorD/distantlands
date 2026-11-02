@@ -1,9 +1,13 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.gameplay.actions.VisionRules
+import oathdigital.gameplay.cards.BuriedGiantSite
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.search.LandWardenCard
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.accepted
@@ -11,18 +15,18 @@ import oathdigital.testkit.Unwrap.accepted
 class InquisitorSuite extends munit.FunSuite:
   import PhasePowerHarness._
 
-  private val inquisitor = CatalogNames.denizen("Inquisitor")
+  private val inquisitor = InquisitorCard.id
   private val source = DecisionOptionRef.Denizen(inquisitor)
-  private val home = CatalogNames.site("Ancient City")
+  private val home = AncientCitySite.id
   /** A plain Hearth denizen. */
-  private val landWarden = CatalogNames.denizen("Land Warden")
+  private val landWarden = LandWardenCard.id
   /** p2's Vision of Faith, its only adviser on the staged table. */
   private val faithSlot = DecisionOptionRef.AdviserSlot(p2, 0)
 
   /** p1's Act at Ancient City beside Inquisitor, with the faceup secret that
     * pays it. p3 stands at Buried Giant. */
   private def atHome: Table = Table.start.turn(p1, Phase.Act)
-    .pawn(p1, at = home).pawn(p3, at = "Buried Giant")
+    .pawn(p1, at = home).pawn(p3, at = BuriedGiantSite)
     .denizen(inquisitor, at = home).secrets(p1, faceUp = 1)
 
   /** `atHome`, with p2 there too, holding the Vision of Faith facedown. */
@@ -101,7 +105,7 @@ class InquisitorSuite extends munit.FunSuite:
 
   test("with no facedown Vision at the site it asks nothing, and the line " +
       "says so"):
-    val ready = atHome.pawn(p2, at = "Broken Peaks")
+    val ready = atHome.pawn(p2, at = BrokenPeaksSite)
       .adviser(p3, VisionRules.Faith, facedown = true).ready
     val done = accepted(use(ready, Inquisitor, source))
     assert(backToActing(done))

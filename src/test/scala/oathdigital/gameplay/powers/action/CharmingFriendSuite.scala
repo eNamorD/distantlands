@@ -1,9 +1,10 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.gameplay.cards.BuriedGiantSite
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Refusals,
-  Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Refusals, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Unwrap.accepted
 
@@ -11,7 +12,7 @@ class CharmingFriendSuite extends munit.FunSuite:
   import PowerFixture._
   import PhasePowerHarness._
 
-  private val friend = CatalogNames.denizen("Charming Friend")
+  private val friend = CharmingFriendCard.id
   private val source = DecisionOptionRef.Denizen(friend)
   private val victim = Table.p2
   private val bystander = Table.p3
@@ -26,10 +27,10 @@ class CharmingFriendSuite extends munit.FunSuite:
     * target.
     */
   private def staged(favor: Int = 2, secrets: Int = 1) =
-    Table.start.turn(actor, Phase.Act).pawn(actor, "Ancient City")
+    Table.start.turn(actor, Phase.Act).pawn(actor, AncientCitySite)
       .adviser(actor, friend).secrets(actor, secrets)
-      .pawn(victim, "Ancient City").favor(victim, favor)
-      .pawn(bystander, "Buried Giant").favor(bystander, 5).ready
+      .pawn(victim, AncientCitySite).favor(victim, favor)
+      .pawn(bystander, BuriedGiantSite).favor(bystander, 5).ready
 
   test("it places a secret on its card and offers the players at the " +
       "actor's site"):
@@ -71,7 +72,7 @@ class CharmingFriendSuite extends munit.FunSuite:
         covers = false)))
 
   test("with nobody at the site the cost is paid and nothing else happens"):
-    val ready = Table.from(staged()).pawn(victim, "Buried Giant").ready
+    val ready = Table.from(staged()).pawn(victim, BuriedGiantSite).ready
     val t = accepted(use(ready, CharmingFriend, source))
     parked.assertNotParked(t.state)
     assertEquals(Look(after(t)).tokensOn(friend), Tokens(0, 1))
@@ -81,7 +82,7 @@ class CharmingFriendSuite extends munit.FunSuite:
         covers = false)))
 
   test("every other player at the site is offered"):
-    val ready = Table.from(staged()).pawn(bystander, "Ancient City").ready
+    val ready = Table.from(staged()).pawn(bystander, AncientCitySite).ready
     val t = accepted(use(ready, CharmingFriend, source))
     assertEquals(offered(t, actor).map(_.toSet),
       Some(Set("player" -> victim.value, "player" -> bystander.value)))

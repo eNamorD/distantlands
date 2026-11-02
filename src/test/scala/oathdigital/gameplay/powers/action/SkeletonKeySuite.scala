@@ -1,8 +1,10 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.gameplay.cards.DunesSite
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
@@ -10,13 +12,13 @@ import oathdigital.testkit.Unwrap.accepted
 class SkeletonKeySuite extends munit.FunSuite:
   import PhasePowerHarness._
 
-  private val key = CatalogNames.relic("Skeleton Key")
+  private val key = SkeletonKeyCard.id
   private val source = DecisionOptionRef.Relic(key)
   /** A Hinterland site, and the quiet table's site for p1 in the Cradle. */
-  private val wild = CatalogNames.site("Dunes")
-  private val home = CatalogNames.site("Ancient City")
-  private val first = CatalogNames.relic("Whistle")
-  private val second = CatalogNames.relic("Dowsing Sticks")
+  private val wild = DunesSite.id
+  private val home = AncientCitySite.id
+  private val first = WhistleCard.id
+  private val second = DowsingSticksCard.id
 
   /** p1's Act holding Skeleton Key faceup with `secrets` faceup secrets,
     * the pawn at `at`, and `relics` facedown there. */

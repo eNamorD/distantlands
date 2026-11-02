@@ -1,9 +1,11 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.gameplay.cards.BuriedGiantSite
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Refusals,
-  Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Refusals, Table}
 import oathdigital.testkit.ActPowerHarness.usableIds
 import oathdigital.testkit.Outcomes.ready
 import oathdigital.testkit.Table.{p2, p3}
@@ -14,14 +16,14 @@ class WhistleSuite extends munit.FunSuite:
   import MovementFixture._
   import PhasePowerHarness.{awaits, backToActing, ops, replayed}
 
-  private val whistle = CatalogNames.relic("Whistle")
+  private val whistle = WhistleCard.id
   /** p1's Act at Ancient City holding Whistle with `secrets` faceup
     * secrets; p2 stands at Broken Peaks and p3 at Buried Giant. `homelands`
     * adds the ruined edifices at Deep Woods and Golden Valley. */
   private def staged(secrets: Int = 2)(using munit.Location) =
     Table.from(homelands(quietTable)).turn(actor, Phase.Act)
-      .pawn(actor, "Ancient City").pawn(p2, "Broken Peaks")
-      .pawn(p3, "Buried Giant").relic(actor, whistle).secrets(actor, secrets)
+      .pawn(actor, AncientCitySite).pawn(p2, BrokenPeaksSite)
+      .pawn(p3, BuriedGiantSite).relic(actor, whistle).secrets(actor, secrets)
       .ready
   private val target = DecisionOptionRef.Player(p2)
 
@@ -34,9 +36,9 @@ class WhistleSuite extends munit.FunSuite:
     val done = accepted(choose(parked.state, Whistle.decisionId, target))
     val after = ready(done.state)
     assert(backToActing(done))
-    assertEquals(Look(after).pawn(p2), CatalogNames.site("Ancient City"))
-    assertEquals(Look(after).pawn(p3), CatalogNames.site("Buried Giant"))
-    assertEquals(Look(after).pawn(actor), CatalogNames.site("Ancient City"))
+    assertEquals(Look(after).pawn(p2), AncientCitySite.id)
+    assertEquals(Look(after).pawn(p3), BuriedGiantSite.id)
+    assertEquals(Look(after).pawn(actor), AncientCitySite.id)
     assertEquals(Look(after).tokensOn(whistle), Tokens.empty)
     assertEquals(Look(after).player(p2).board.faceUpSecrets,
       Look(start).player(p2).board.faceUpSecrets + 1)
@@ -44,7 +46,7 @@ class WhistleSuite extends munit.FunSuite:
     assertEquals(replayed(start, parked.events ++ done.events), Right(done.state))
 
   test("only players at other sites are offered, even when there is one"):
-    val start = Table.from(staged()).pawn(p3, "Ancient City").ready
+    val start = Table.from(staged()).pawn(p3, AncientCitySite).ready
     val parked = accepted(use(start, Whistle.id, whistle))
     assert(awaits(parked, Whistle.decisionId))
     assertEquals(choose(parked.state, Whistle.decisionId,
@@ -54,14 +56,14 @@ class WhistleSuite extends munit.FunSuite:
     assert(backToActing(done))
 
   test("with nobody to pull, the cost is paid and the secret stays"):
-    val start = Table.from(staged()).pawn(p3, "Ancient City").pawn(p2,
-      "Ancient City").ready
+    val start = Table.from(staged()).pawn(p3, AncientCitySite).pawn(p2,
+      AncientCitySite).ready
     val done = accepted(use(start, Whistle.id, whistle))
     val after = ready(done.state)
     assert(backToActing(done))
     assertEquals(Look(after).tokensOn(whistle), Tokens(0, 1))
     assertEquals(Look(after).player(actor).board.faceUpSecrets, 1)
-    assertEquals(Look(after).pawn(p3), CatalogNames.site("Ancient City"))
+    assertEquals(Look(after).pawn(p3), AncientCitySite.id)
     assert(!ops(done.events).exists {
       case Move(Piece.Pawn(_), _, _, _, _) => true
       case _ => false
@@ -80,12 +82,12 @@ class WhistleSuite extends munit.FunSuite:
     val done = accepted(choose(parked.state, Whistle.decisionId, target))
     assertEquals(NoteText.said(Whistle, done.events), Vector(NoteText.Said(
       NoteKey.Used, s"Placed ${p2.value} at " +
-        s"${CatalogNames.site("Ancient City").value} and gave " +
+        s"${AncientCitySite.id.value} and gave " +
         s"${p2.value} the Whistle's secret.", covers = false)))
 
   test("with nobody to pull it writes that"):
-    val start = Table.from(staged()).pawn(p3, "Ancient City").pawn(p2,
-      "Ancient City").ready
+    val start = Table.from(staged()).pawn(p3, AncientCitySite).pawn(p2,
+      AncientCitySite).ready
     val done = accepted(use(start, Whistle.id, whistle))
     assertEquals(NoteText.said(Whistle, done.events), Vector(NoteText.Said(
       "used.none", "No pawn could be pulled.", covers = false)))

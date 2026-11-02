@@ -2,13 +2,16 @@ package oathdigital.gameplay.powers.action
 
 import oathdigital.gameplay.{OathRules, PowerAccess}
 import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignSetup}
+import oathdigital.gameplay.cards.DeepWoodsSite
 import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
 import oathdigital.gameplay.powers.campaign.PlanDriver
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseAmountAnswer
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, MenuPlay,
-  Outcomes, ParkedNode, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, MenuPlay, Outcomes,
+  ParkedNode, Table}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -18,9 +21,9 @@ import oathdigital.testkit.Unwrap.accepted
 class CaptainsSuite extends munit.FunSuite:
   private val card = CaptainsCard.id
   private val source = DecisionOptionRef.Denizen(card)
-  private val home = CatalogNames.site("Ancient City")
+  private val home = AncientCitySite.id
   /** In the Provinces, away from p1's Cradle, with no pawn. */
-  private val wilds = CatalogNames.site("Deep Woods")
+  private val wilds = DeepWoodsSite.id
 
   /** Captains at Ancient City, which p1 rules with 1 warband and where p1
     * pays a favor; p1 also rules the wilds with `atWilds` warbands, where
@@ -76,7 +79,7 @@ class CaptainsSuite extends munit.FunSuite:
   test("ruling no site where a Campaign could start, the ACTION is " +
       "unavailable with the reason"):
     val ready = captainsAtHomeWithTheRivalAtARuledSite()
-      .pawn(p2, at = CatalogNames.site("Broken Peaks")).ready
+      .pawn(p2, at = BrokenPeaksSite.id).ready
     assertEquals(menuOption(ready), DecisionOption.Unavailable(
       DecisionOption.Denizen(source), OptionReason.Written(
         "No site you rule where a Campaign could start")))

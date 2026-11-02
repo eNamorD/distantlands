@@ -2,8 +2,7 @@ package oathdigital.gameplay.powers.action
 
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Refusals,
-  Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Refusals, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
@@ -11,11 +10,11 @@ import oathdigital.testkit.Unwrap.accepted
 class ArcaneBrokersSuite extends munit.FunSuite:
   import PhasePowerHarness._
 
-  private val brokers = CatalogNames.denizen("Arcane Brokers")
+  private val brokers = ArcaneBrokersCard.id
   private val source = DecisionOptionRef.Denizen(brokers)
   private val scepter = RelicId("grand-scepter")
-  private val whistle = CatalogNames.relic("Whistle")
-  private val sticks = CatalogNames.relic("Dowsing Sticks")
+  private val whistle = WhistleCard.id
+  private val sticks = DowsingSticksCard.id
 
   /** p1's Act, holding Arcane Brokers as an adviser, `favor` favor and
     * `relics` faceup. */

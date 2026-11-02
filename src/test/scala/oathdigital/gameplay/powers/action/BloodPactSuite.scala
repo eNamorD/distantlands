@@ -2,7 +2,7 @@ package oathdigital.gameplay.powers.action
 
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
@@ -10,7 +10,7 @@ import oathdigital.testkit.Unwrap.accepted
 class BloodPactSuite extends munit.FunSuite:
   import PhasePowerHarness._
 
-  private val pact = CatalogNames.denizen("Blood Pact")
+  private val pact = BloodPactCard.id
   private val source = DecisionOptionRef.Denizen(pact)
 
   /** p1's Act, holding Blood Pact as an adviser, with `warbands` on the

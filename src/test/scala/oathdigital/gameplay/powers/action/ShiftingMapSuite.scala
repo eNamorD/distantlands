@@ -2,7 +2,7 @@ package oathdigital.gameplay.powers.action
 
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, Table}
 import oathdigital.testkit.Outcomes.{assertWireRoundTrips, ready}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -10,7 +10,7 @@ class ShiftingMapSuite extends munit.FunSuite:
   import ActPowerHarness._
   import PowerFixture._
 
-  private val map = CatalogNames.relic("Shifting Map")
+  private val map = ShiftingMapCard.id
   private val source = DecisionOptionRef.Relic(map)
 
   /** p1's Act holding Shifting Map, with `supply` Supply and `faceUp`

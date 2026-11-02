@@ -1,8 +1,10 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.gameplay.cards.BuriedGiantSite
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.accepted
@@ -10,7 +12,7 @@ import oathdigital.testkit.Unwrap.accepted
 class AmberFlameSuite extends munit.FunSuite:
   import PhasePowerHarness._
 
-  private val flame = CatalogNames.relic("Amber Flame")
+  private val flame = AmberFlameCard.id
   private val source = DecisionOptionRef.Relic(flame)
 
   /** p1's Act at Ancient City holding Amber Flame faceup with `secrets`
@@ -18,9 +20,9 @@ class AmberFlameSuite extends munit.FunSuite:
     * Favor with `favor`; p3 stands at Buried Giant holding the Darkest Secret
     * with 2, so it is never offered. */
   private def staged(favor: Int = 2, secrets: Int = 1): Table =
-    Table.start.turn(p1, Phase.Act).pawn(p1, "Ancient City").relic(p1, flame)
-      .secrets(p1, secrets).pawn(p2, at = "Ancient City")
-      .peoplesFavor(Some(p2), favor).pawn(p3, "Buried Giant")
+    Table.start.turn(p1, Phase.Act).pawn(p1, AncientCitySite).relic(p1, flame)
+      .secrets(p1, secrets).pawn(p2, at = AncientCitySite)
+      .peoplesFavor(Some(p2), favor).pawn(p3, BuriedGiantSite)
       .darkestSecret(Some(p3), 2)
 
   private def banner(ready: ReadyGame, which: Banner): Int = which match
