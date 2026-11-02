@@ -1,6 +1,6 @@
 # Empire phase design
 
-Status: designed, 2026-10-29. Slice 1a implemented, 2026-10-29. Slice 1b-i implemented, 2026-10-30. Slice 1b-ii implemented, 2026-11-01. Slice 2 implemented, 2026-11-01. Slice 3a implemented, 2026-11-01.
+Status: designed, 2026-10-29. Slice 1a implemented, 2026-10-29. Slice 1b-i implemented, 2026-10-30. Slice 1b-ii implemented, 2026-11-01. Slice 2 implemented, 2026-11-01. Slice 3a implemented, 2026-11-01. Slice 3b implemented, 2026-11-01.
 
 Roadmap item: **Phase - Empire**. Chancellor and Citizen roles in play,
 Imperial warbands, the Imperial Campaign, the Stable Regime and Successor
@@ -327,7 +327,9 @@ that started in play (from the next end of round).
 
 ### Becoming a Citizen
 
-One procedure shared by every source (CR p. 34):
+One procedure shared by every source (CR p. 34). No player performs it, so
+a restriction against a player's placements, such as Vow of Wandering,
+does not stop its replacements (ruling R20):
 
 1. `RoleChanged` to Citizen.
 2. Replace the player's warbands on their board and on the map with purple
@@ -365,17 +367,21 @@ created, and the rules under
 - **Grand Scepter, action.** An Exile holder becomes a Citizen, or the
   Chancellor in a game with no Empire.
 - **Grand Scepter, negotiation.** A new deal term, "(an Exile) becomes a
-  Citizen". Only the Scepter's holder may propose it, only for an Exile, and
-  it applies when the deal is accepted, alongside the other terms. Accepting
-  the deal is the Exile's consent.
+  Citizen". Only the Scepter's holder may propose it, only for an Exile
+  other than themself, and it applies when the deal is accepted, after the
+  other terms. Accepting the deal is the Exile's consent.
 - **Grand Scepter, battle plan** (3 burnt favor). An Imperial player
   victorious against a Citizen exiles them.
-- **Denizens.** Martial Culture, Long-Lost Heir, Bewitch (which also takes a
-  relic from the Reliquary), Ancient Pact and Royal Ambitions.
+- **Denizens.** Martial Culture, Long-Lost Heir, Bewitch, Ancient Pact and
+  Royal Ambitions. Bewitch, Ancient Pact and Royal Ambitions also take a
+  random relic from the Reliquary (rulings R21-R23).
 - **The Throne's Offer Citizenship step.** The new Chancellor offers
   Citizenship to Exiles, including players who became Exiles earlier in the
   same Chronicle (ruling 5); each accepts or declines. Accepting changes the
   role and replaces the player's warbands on sites with purple warbands.
+  See Chronicle rulings 20-22: a broken Empire's sites pass to the former
+  Chancellor, offers go to seated Exiles in seat order, and the Throne
+  assumes unlimited purple warbands.
   The other Citizenship steps do not apply in the Chronicle, since boards
   reset at the next setup.
 

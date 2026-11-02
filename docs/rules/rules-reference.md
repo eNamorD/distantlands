@@ -163,6 +163,9 @@ Without Empire, round 8 uses War Exhaustion while skipping Stable Regime and Cha
 - **Exile.** A Citizen's board turns to its Exile side; the purple warbands on it become warbands of their colour, the excess returning to the purple bank, while the Imperial warbands on the map stay; their Act phase ends if it is their turn; their Supply refreshes to 7 (CR p. 34).
 - **Self-exile.** As a minor action, a Citizen gives the Chancellor 1 favor per Imperial warband on their board, at least 3, and is exiled (CR p. 34).
 - **The Grand Scepter's Action.** Its Exile holder may become a Citizen (card OATH-GrandScepter-NF).
+- **The Grand Scepter in negotiation.** Its holder may offer Citizenship to Exiles among the negotiators, never to themself; accepting the deal is the Exile's consent (CR p. 34).
+- **The Grand Scepter's battle plan.** For 3 burnt favor, an Imperial player victorious against a Citizen may exile them (CR p. 34, ruling R23).
+- **"Become a Citizen" denizens.** Martial Culture (defeating another Exile), Long-Lost Heir, Bewitch (the most secrets), Ancient Pact (the Darkest Secret) and Royal Ambitions (the most sites); the last three also take a random relic from the Reliquary (rulings R21-R23).
 - **First game.** A group's first game is advised to ignore "become a Citizen" powers (CR p. 34, ambiguity F8); a setup option does so, on by default.
 
 ## Rules precedence and timing

@@ -79,6 +79,16 @@ R18. **Short purple bank.** When the purple bank holds fewer warbands than a pla
 
 R19. **Supremacy title.** Under the Oath of Supremacy, a player who becomes a Citizen while holding the Oathkeeper title passes it to the Chancellor, on either side: Citizens never hold that title (CR p. 35). A player who becomes the Chancellor keeps it, turned to its Oathkeeper side (CR p. 34; Empire slice 3a).
 
+R20. **No one performs a role change.** Becoming a Citizen, from any source, is performed by no player, so a restriction against a player's placements does not stop its warband replacements. Vow of Wandering refuses only a replacement its holder performs (Bandit Prince, Ballot Box). Chronicle steps have no actor (Chronicle ruling 7), so the Vow restricts nothing in the Chronicle phase (Empire slice 3b).
+
+R21. **"The most."** "Have the most secrets" (Bewitch) and "rule the most sites" (Royal Ambitions) mean strictly more than every other seated player: a tie is not the most. Secrets are counted as the player's area shows them, credits for secrets on cards in play going to the active player; sites are the sites the player rules (Empire slice 3b).
+
+R22. **Empty Reliquary.** Bewitch, Ancient Pact and Royal Ambitions still make the player a Citizen when the Reliquary is empty; only the relic is missed. All three take the relic, as their card text says, facedown (Empire slice 3b).
+
+R23. **Either side.** Martial Culture works for an Exile who defeats another Exile player as attacker or defender, and the Grand Scepter's battle plan for an Imperial player who defeats a Citizen as attacker or defender. Its card database wording is followed: "you may exile them", for 3 burnt favor. A defender who becomes a Citizen or is exiled off-turn ends no Act phase (Empire slice 3b).
+
+R24. **Queued actions after a role change (provisional).** Actions a player has queued, such as Second Wind's Travel and Campaign, still run after a role change ends that player's Act phase (Empire slice 3b). The Martial Culture FAQ suggests Second Wind's second Campaign does not happen once its holder has become a Citizen; revisit this.
+
 ## Chronicle rulings
 
 Rulings given by the project owner for the Chronicle Phase ([chronicle.md](chronicle.md)). The rev1 task cards are slightly older than the CR; where they disagree, the CR governs.
@@ -102,6 +112,12 @@ Rulings given by the project owner for the Chronicle Phase ([chronicle.md](chron
 17. **Rival sites keep every card.** Archive Rival Sites stores every card left on a rival site with it, not only relics and intact edifices. After Shape Empire, a rival Enduring site can still hold denizens or a ruined edifice; they are stored too (CR p. 40).
 18. **The Stars on the table.** The Stars steps change nothing on the table. The Chronicle stores no pieces, so Clean Up's piece returns change nothing it records. The digital version reads the finished table once, at the end of the Chronicle Phase, and stores the sites as Archive Rival Sites, Clean Up and Store order them (CR pp. 40-41).
 19. **The scorepad's roles.** The era scorepad records each player's role when Score Lineage Points records their score, after the Sun has crowned, so a winning Exile is recorded as Chancellor ([chronicle.md](chronicle.md), the Throne, step 6: "circle the Chancellor's score").
+
+20. **A broken Empire's sites.** When an Exile wins, each site that held Imperial warbands takes one warband of the former Chancellor's colour once the Imperial warbands are removed, so the former Chancellor rules it as an Exile through the rest of the Chronicle. This deviates from CR p. 36, which leaves those sites empty and has the Throne place an Imperial warband on each site with no warbands if the former Chancellor accepts Citizenship. A former Chancellor who declines keeps the sites; a boxed former Chancellor places none, and those sites stay empty (Empire slice 3b).
+
+21. **Offer Citizenship.** The Throne holder offers Citizenship to any seated Exiles, none included; boxed lineages are never offered. Each offered Exile answers in seat order, Decline first; answering at the same time waits for the walker's simultaneous step. An Exile who accepts becomes a Citizen, returns their board warbands, and keeps one Imperial warband at each site they rule. No other Citizenship step, and not the first-game option, applies in the Chronicle (CR p. 37; Empire slice 3b).
+
+22. **Unlimited purple at the Throne.** Offer Citizenship assumes an unlimited purple supply, since it marks sites as the Empire's; purple warbands the bank lacks are added to it (CR p. 37; Empire slice 3b).
 
 ## Source relationship cautions
 

@@ -63,6 +63,7 @@ meets the goal, even when tied with the Empire.
 6. The winner becomes Chancellor and takes the Chancellor board, the purple pieces, and the Grand Scepter. **Actor:** none: procedural.
    - Digital: when no one holds the Grand Scepter, the winner takes it from the box, faceup ([ruling 10](ambiguities.md#chronicle-rulings)).
    - If an Exile won, the Empire breaks. The winner's newly dormant legacies become active. The former Chancellor and all Citizens, even those in the box, become Exiles. Discard all relics in the Reliquary. Remove all Imperial warbands from sites, without adding bandits. Then, on each site the winner rules, replace their warbands with one Imperial warband. The winner rules these sites for the rest of the Chronicle.
+   - Digital: once the Imperial warbands are removed, each site that held them takes one warband of a seated former Chancellor's colour, so the former Chancellor rules it as an Exile; a boxed one places none ([ruling 20](ambiguities.md#chronicle-rulings), a deviation).
    - If a Citizen won, a new dynasty begins: the former Chancellor becomes a Citizen.
 
 **Assign Tasks**
@@ -77,6 +78,7 @@ meets the goal, even when tied with the Empire.
 The player holding the Throne task (the winner) resolves these steps.
 
 1. **Offer Citizenship.** Offer Citizenship to any Exiles, including players who became Exiles during Crown Chancellor. Each offered Exile accepts or declines. If an Exile becomes a Citizen, flip their newly dormant legacies to active, and replace their warbands at each site they rule with one Imperial warband (excess Imperial warbands may come from other sites). If the former Chancellor accepts, also place one Imperial warband on each site that was previously Imperial, that is, each site with no warbands. **Actor:** the Throne holder chooses whom to offer; each offered Exile answers.
+   - Digital: only seated Exiles are offered, and each answers in seat order, Decline first. Accepting returns the player's board warbands and turns each site they rule into one Imperial warband; the bank is topped up when short. The former Chancellor needs no special case: after ruling 20 their sites turn Imperial like any Exile's ([rulings 20-22](ambiguities.md#chronicle-rulings)).
 2. **Shape Empire.** Remove any of your warbands from sites, except the last warband of yours on the map. If you rule no sites, remove all warbands from the site with your pawn and place one of your warbands there. Then discard the denizens you do not rule, except intact edifices and cards at Enduring sites. Some legacies also protect denizens from this discard. Ruined edifices discarded this way go to the bottom of the edifice deck. **Actor:** the Throne holder chooses which warbands to remove; the discard is procedural.
    - After Crown Chancellor, "your warbands" are the Imperial warbands and "sites you rule" are the Empire's sites; discarded denizens go to the discard pile of the region after their site's ([rulings 11 and 14](ambiguities.md#chronicle-rulings)).
    - Digital: discarded edifices join the ordered set-aside edifice list instead of the deck bottom ([ruling 9](ambiguities.md#chronicle-rulings)).
