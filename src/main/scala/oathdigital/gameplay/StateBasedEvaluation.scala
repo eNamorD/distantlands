@@ -79,12 +79,7 @@ object StateBasedEvaluation:
         case OathkeeperState(Some(player), TitleSide.Usurper) => Some(
           WarExhaustionResolved(player, VictoryKind.Usurper, None, Vector.empty))
         case _ => None
-      val visionary = visionPriority.iterator.flatMap { vision =>
-          current.players.find(p => p.revealedVision.exists(_.id == vision) &&
-            VisionVictoryEligibility.qualifies(p.player, ready))
-            .map(p => WarExhaustionResolved(p.player, VictoryKind.Visionary,
-              Some(vision), Vector.empty))
-        }.toSeq.headOption
+      val visionary = visionaryWin(ready)
       val fallback = current.title.holder.map(player => WarExhaustionResolved(
         player, VictoryKind.Oathkeeper, None, Vector.empty)).getOrElse:
         val candidates = turnOrder
@@ -165,6 +160,19 @@ object StateBasedEvaluation:
           s"War Exhaustion mismatch: expected $expected, recorded $recorded"))
       case _ => Left(InvalidEventOrder("not a state-based evaluation event"))
 
+  /** War Exhaustion's Visionary step: an Exile with a revealed Vision whose
+    * goal they meet, in printed priority order (CR p. 19). */
+  private[gameplay] def visionaryWin(ready: ReadyGame)
+      : Option[WarExhaustionResolved] =
+    val current = ready.game.current
+    visionPriority.iterator.flatMap { vision =>
+      current.players.find(p => !Imperials.isImperial(ready, p.player) &&
+        p.revealedVision.exists(_.id == vision) &&
+        VisionVictoryEligibility.qualifies(p.player, ready))
+        .map(p => WarExhaustionResolved(p.player, VictoryKind.Visionary,
+          Some(vision), Vector.empty))
+    }.nextOption()
+
   private[gameplay] def supported(state: OathState): Either[OathViolation, ReadyGame] = state match
     case Ready(ready) => Right(ready)
     case _ => Left(GameNotStarted)
@@ -191,12 +199,7 @@ object StateBasedEvaluation:
       case OathkeeperState(Some(player), TitleSide.Usurper) => Right(ExactWar(
         WarExhaustionResolved(player, VictoryKind.Usurper, None, Vector.empty)))
       case _ =>
-        visionPriority.iterator.flatMap { vision =>
-            current.players.find(p => p.revealedVision.exists(_.id == vision) &&
-              VisionVictoryEligibility.qualifies(p.player, ready))
-              .map(p => WarExhaustionResolved(p.player, VictoryKind.Visionary,
-                Some(vision), Vector.empty))
-          }.toSeq.headOption.orElse(current.title.holder.map(player =>
+        visionaryWin(ready).orElse(current.title.holder.map(player =>
           WarExhaustionResolved(player, VictoryKind.Oathkeeper, None, Vector.empty))) match
           case Some(value) => Right(ExactWar(value))
           case None =>
