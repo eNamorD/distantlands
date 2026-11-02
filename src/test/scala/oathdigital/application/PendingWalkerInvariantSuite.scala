@@ -40,19 +40,25 @@ class PendingWalkerInvariantSuite extends munit.FunSuite:
     GameCommand.AnswerConsent(actor, ConsentChoice.Yes))
 
   private def isStepCommand(command: GameCommand): Boolean = command match
-    case _: GameCommand.Undo | _: GameCommand.Redo => true
+    case GameCommand.Issued(_, PlayerIntent.Undo | PlayerIntent.Redo) => true
     case _ => false
 
+  /** The sample names Begin and one `Issued` per `PlayerIntent` case, read
+    * from the source so a new intent cannot escape the invariant. */
   test("the sample holds every GameCommand constructor"):
     val source = Files.readString(Paths.get(
       "src/main/scala/oathdigital/application/GameCommands.scala"))
-    val start = source.indexOf("object GameCommand:")
+    val start = source.indexOf("object PlayerIntent:")
     val end = "\n\\S".r.findFirstMatchIn(source.substring(start + 1))
       .fold(source.length)(start + 1 + _.start)
     val body = source.substring(start, end)
-    val declared = "final case class (\\w+)".r.findAllMatchIn(body)
-      .map(_.group(1)).toSet
-    assertEquals(everyCommand(PlayerId("p1")).map(_.productPrefix).toSet, declared)
+    val declared = "(?:final case class|case object) (\\w+)".r
+      .findAllMatchIn(body).map(_.group(1)).toSet
+    val sampled = everyCommand(PlayerId("p1")).map {
+      case GameCommand.Issued(_, intent) => intent.productPrefix
+      case begin => begin.productPrefix
+    }.toSet
+    assertEquals(sampled, declared + "Begin")
 
   /** Every constructor but Undo and Redo, for every player, is refused and
     * appends nothing. A preference is legal over a park by design (consent

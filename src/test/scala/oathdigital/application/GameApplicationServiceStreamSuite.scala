@@ -3,7 +3,7 @@ package oathdigital.application
 import oathdigital.gameplay.cards.BuriedGiantSite
 import oathdigital.gameplay.powers.campaign.NatureWorshipCard
 import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
+import oathdigital.gameplay.powers.travel.{BrokenPeaksSite, MinesSite}
 import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.powers.whenplayed.WizardsConclaveCard
 import scala.concurrent.duration.{Duration, DurationInt}
@@ -322,3 +322,22 @@ class GameApplicationServiceStreamSuite extends munit.FunSuite:
       Left(GameApplicationError.CodecFailure(
         EventCodecFailure("invalid-sequence", "$[0].sequence",
           "expected 0 but found 1"))))
+
+  /** The undo design rests on exactly one intent opening a batch: only a
+    * walker answer is recorded with a `CommandAccepted`, so only it can be
+    * taken back. Undo, Redo and the consent intents append alone. */
+  test("ResolveWalker is the one intent that opens a batch"):
+    val intents = Vector[PlayerIntent](
+      PlayerIntent.Undo, PlayerIntent.Redo,
+      PlayerIntent.ResolveWalker(TreeDecision("any",
+        ChooseOneAnswer(DecisionOptionRef.Button("go")))),
+      PlayerIntent.SetConsentPreference(MinesSite.mountain,
+        p2, ConsentSetting.Always),
+      PlayerIntent.RequestConsent("any", DecisionOptionRef.Button("go")),
+      PlayerIntent.AnswerConsent(ConsentChoice.Yes))
+    assertEquals(intents.filter(_.opensBatch).map(_.productPrefix),
+      Vector("ResolveWalker"))
+    assertEquals(GameCommand.issuer(GameCommand.Issued(p1, intents(2))),
+      Some(p1))
+    assertEquals(intents.filterNot(_ == intents(2)).flatMap(intent =>
+      GameCommand.issuer(GameCommand.Issued(p1, intent))), Vector.empty)

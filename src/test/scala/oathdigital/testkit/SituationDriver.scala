@@ -1,7 +1,7 @@
 package oathdigital.testkit
 
 import oathdigital.application.{EventStreamRepository, ExpectedStream,
-  GameCommand, GameApplicationService, TreeDecision}
+  GameCommand, GameApplicationService, PlayerIntent, TreeDecision}
 import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.OathRules
 import oathdigital.gameplay.phases.PhaseMenu
@@ -184,13 +184,13 @@ object SituationDriver:
         : Either[OathViolation, OathTransition] = command match
       case GameCommand.Begin(chronicle, orders) =>
         rules.beginGame(state, chronicle, orders)
-      case GameCommand.ResolveWalker(actor, decision) =>
+      case GameCommand.Issued(actor, PlayerIntent.ResolveWalker(decision)) =>
         rules.resolveWalker(state, actor, decision.decisionId,
           decision.answer)
-      case _: GameCommand.ConsentCommand =>
+      case GameCommand.Issued(_, _: PlayerIntent.Consent) =>
         Left(OathViolation.InvalidEventOrder(
           "consent commands need a journal; use a journaled situation"))
-      case GameCommand.Undo(_) | GameCommand.Redo(_) =>
+      case GameCommand.Issued(_, PlayerIntent.Undo | PlayerIntent.Redo) =>
         Left(OathViolation.InvalidEventOrder(
           "undo and redo need a journal; use a journaled situation"))
 
