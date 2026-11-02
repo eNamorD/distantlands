@@ -9,8 +9,8 @@ import oathdigital.gameplay.powers.{NoteText, PowerFixture,
   WalkerPowerCatalog}
 import oathdigital.gameplay.powers.PowerFixture.{actor, quietTable}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome,
-  WalkerPowers}
+import oathdigital.gameplay.walker.{ProcedureWalker, WalkerDice,
+  WalkerOutcome, WalkerPowers}
 import oathdigital.model._
 import oathdigital.testkit.{DecisionAnswers, PowerRules, RecordedOps, Table}
 import oathdigital.testkit.Unwrap.{accepted, present}
@@ -44,9 +44,10 @@ object WhenPlayedHarness:
         restrictionSet = OperationRestrictions.forCatalog(catalog)))
 
   /** Walks `hook`, for a card played to a site or as an adviser. */
-  def fire(ready: ReadyGame, power: ContributingPower, hook: CardPlayedFaceup)
+  def fire(ready: ReadyGame, power: ContributingPower, hook: CardPlayedFaceup,
+      dice: WalkerDice = WalkerDice.unavailable)
       : Either[OathViolation, WalkerOutcome] =
-    ProcedureWalker.advance(ready, hook, None, powers(power))
+    ProcedureWalker.advance(ready, hook, None, powers(power), dice)
 
   /** Walks `hook` with every production walker power registered, as a real
     * card play would: for a test that pins what another power does not do. */
@@ -72,10 +73,11 @@ object WhenPlayedHarness:
     * player owns, such as each player's burn in Revelation. */
   def resumeBy(ready: ReadyGame, power: ContributingPower,
       hook: CardPlayedFaceup, tree: PendingTree, decisionId: String,
-      answer: DecisionAnswer, by: PlayerId)
+      answer: DecisionAnswer, by: PlayerId,
+      dice: WalkerDice = WalkerDice.unavailable)
       : Either[OathViolation, WalkerOutcome] =
     ProcedureWalker.resolve(ready, hook, tree,
-      Answered(decisionId, answer, by), powers(power))
+      Answered(decisionId, answer, by), powers(power), dice)
 
   /** A walk answered to its end: each question in the order it was asked,
     * the events of every command, and the state the walk finished in. */
@@ -88,6 +90,13 @@ object WhenPlayedHarness:
     * answers are left over. */
   def walkAnswering(ready: ReadyGame, power: ContributingPower,
       hook: CardPlayedFaceup, answers: DecisionAnswer*)(
+      using munit.Location): Walked =
+    walkShuffling(ready, power, hook, WalkerDice.unavailable, answers*)
+
+  /** `walkAnswering`, with `dice` as the walk's source of rolls and
+    * shuffles. */
+  def walkShuffling(ready: ReadyGame, power: ContributingPower,
+      hook: CardPlayedFaceup, dice: WalkerDice, answers: DecisionAnswer*)(
       using munit.Location): Walked =
     def go(outcome: WalkerOutcome, events: Vector[OathEvent],
         asked: Vector[Decide], left: List[DecisionAnswer]): Walked =
@@ -103,8 +112,8 @@ object WhenPlayedHarness:
           val next = left.headOption.getOrElse(munit.Assertions.fail(
             s"no answer is left for ${parked.decisionId}"))
           go(accepted(resumeBy(at, power, hook, tree, parked.decisionId,
-            next, parked.owner)), reached, asked :+ parked, left.drop(1))
-    go(accepted(fire(ready, power, hook)), Vector.empty, Vector.empty,
+            next, parked.owner, dice)), reached, asked :+ parked, left.drop(1))
+    go(accepted(fire(ready, power, hook, dice)), Vector.empty, Vector.empty,
       answers.toList)
 
   /** The state `events` reach from `ready`: `ready` itself while no step

@@ -27,4 +27,5 @@ object WhenPlayedPowers:
       Vector(BanditChief) ++
       Vector(ARoundOfAle.forCatalog(catalog)) ++
       Vector(CallForHelp.forCatalog(catalog)) ++
-      Vector(TrueOath.forCatalog(catalog))
+      Vector(TrueOath.forCatalog(catalog)) ++
+      Vector(LongLostHeir, Bewitch, AncientPact, RoyalAmbitions)

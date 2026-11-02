@@ -1,7 +1,5 @@
 denizen.acting-troupe
-denizen.ancient-pact
 denizen.autumn-wind
-denizen.bewitch
 denizen.bracken
 denizen.council-arbiter
 denizen.council-seat
@@ -9,14 +7,12 @@ denizen.deed-writer
 denizen.false-prophet
 denizen.favored-son
 denizen.glamor
-denizen.long-lost-heir
 denizen.magicians-code
 denizen.master-of-disguise
 denizen.naysayers
 denizen.pilgrimage
 denizen.relic-hunter
 denizen.reliquary-raid
-denizen.royal-ambitions
 denizen.search-party
 denizen.the-gathering
 denizen.tracker
