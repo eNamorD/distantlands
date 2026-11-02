@@ -288,6 +288,7 @@ one.
   seat, and `formatAppended` takes `stateBefore` and `lastStateAfter`
   without checking them. Recorded as separate candidates in the
   [log operation strictness decision](superpowers/specs/2026-10-19-log-operation-strictness-decision.md).
+  Audited in the [split delta audit](testing/audits/split-delta-bracketing-audit.md).
 
 ### Powers-related deferred items
 
