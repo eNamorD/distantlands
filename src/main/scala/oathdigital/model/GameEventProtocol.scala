@@ -35,6 +35,12 @@ object OathEvent:
   final case class BanditsRefilled(sites: Vector[(SiteId, Int)]) extends OathEvent
   final case class RoundEnded(completedRound: Int, nextRound: Option[Int])
       extends OathEvent
+  /** The purple end die at the end of round 5, 6 or 7, rolled while an
+    * Imperial player holds the Oathkeeper title (CR p. 19). `result` is the
+    * win the face gives, the Chancellor's or a Successor's; a winning roll
+    * ends the game, and after a losing one `RoundEnded` follows. */
+  final case class EndDieRolled(round: Int, face: Int,
+      result: Option[GameResult]) extends OathEvent
   final case class WarExhaustionResolved(
       winner: PlayerId,
       kind: VictoryKind,

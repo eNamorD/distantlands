@@ -67,6 +67,7 @@ final class OathRules(protected val catalog: ExecutableCatalog,
       case event: UsurperVictory => StateBasedEvaluation.evolve(catalog, state, event, outsideActions)
       case event: VisionVictory => StateBasedEvaluation.evolve(catalog, state, event, outsideActions)
       case event: RoundEnded => StateBasedEvaluation.evolve(catalog, state, event, outsideActions)
+      case event: EndDieRolled => StateBasedEvaluation.evolve(catalog, state, event, outsideActions)
       case event: WarExhaustionResolved =>
         StateBasedEvaluation.evolve(catalog, state, event, outsideActions)
       case event: ConsentEvent => state match

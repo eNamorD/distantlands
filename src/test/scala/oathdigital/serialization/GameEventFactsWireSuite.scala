@@ -32,6 +32,19 @@ class GameEventFactsWireSuite extends munit.FunSuite:
         clue(kind))
     }
 
+  test("the end die round trips with and without a win"):
+    val events = Vector[OathEvent](OathEvent.EndDieRolled(5, 4, None),
+      OathEvent.EndDieRolled(7, 3,
+        Some(GameResult(PlayerId("p2"), VictoryKind.Successor))))
+    assertStreamRoundTrips("end-die", events)
+
+  test("an end die naming a winner without a kind is refused"):
+    val encoded = accepted(GameEventWire.encodeEvent("end-die", 0,
+      OathEvent.EndDieRolled(6, 5,
+        Some(GameResult(PlayerId("p1"), VictoryKind.StableRegime)))))
+    encoded("payload")("victoryKind") = ujson.Null
+    assert(GameEventWire.decode(encoded).isLeft)
+
   test("a Vision victory event round trips"):
     val events = Vector[OathEvent](OathEvent.VisionVictory(PlayerId("red"),
       VisionId("vision:vision-of-faith")))

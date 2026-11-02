@@ -10,6 +10,7 @@ private[serialization] trait EndingEventCodec { this: GameEventJsonSupport =>
   protected final val endingDiscriminator: PartialFunction[OathEvent, String] =
       case _: RoundEnded => RoundEndedType
       case _: WarExhaustionResolved => WarExhaustionResolvedType
+      case _: EndDieRolled => EndDieRolledType
       case _: BanditsRefilled => BanditsRefilledType
       case _: UsurperFlipped => UsurperFlippedType
       case _: UsurperVictory => UsurperVictoryType
@@ -24,6 +25,13 @@ private[serialization] trait EndingEventCodec { this: GameEventJsonSupport =>
         "victoryKind" -> kind.key,
         "visionId" -> vision.fold[ujson.Value](ujson.Null)(v => ujson.Str(v.value)),
         "randomCandidatePlayerIds" -> stringArray(candidates.map(_.value)))
+      case EndDieRolled(round, face, result) => ujson.Obj(
+        "round" -> round,
+        "face" -> face,
+        "winnerPlayerId" -> result.fold[ujson.Value](ujson.Null)(r =>
+          ujson.Str(r.winner.value)),
+        "victoryKind" -> result.fold[ujson.Value](ujson.Null)(r =>
+          ujson.Str(r.kind.key)))
       case BanditsRefilled(sites) => ujson.Obj("sites" -> ujson.Arr.from(
         sites.map { case (site, count) =>
           ujson.Obj("siteId" -> site.value, "count" -> count)
@@ -54,6 +62,17 @@ private[serialization] trait EndingEventCodec { this: GameEventJsonSupport =>
             case ujson.Null => None
             case value => Some(VisionId(value.str))
           }, payload("randomCandidatePlayerIds").arr.toVector.map(v => PlayerId(v.str)))
+        case EndDieRolledType => for
+          round <- safeIntField(payload.obj, "round", path)
+          face <- safeIntField(payload.obj, "face", path)
+          result <- (payload("winnerPlayerId"), payload("victoryKind")) match
+            case (ujson.Null, ujson.Null) => Right(None)
+            case (ujson.Null, _) | (_, ujson.Null) => Left(InvalidValue(path,
+              "an end die names a winner and a victory kind together"))
+            case (winner, kind) =>
+              victoryKind(kind, s"$path.victoryKind").map(k =>
+                Some(GameResult(PlayerId(winner.str), k)))
+        yield EndDieRolled(round, face, result)
         case BanditsRefilledType => for
           sites <- traverse(payload("sites").arr.toVector) { value => for
             count <- safeIntField(value.obj, "count", s"$path.sites")

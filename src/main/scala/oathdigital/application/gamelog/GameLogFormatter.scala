@@ -4,6 +4,7 @@ import oathdigital.application.{GamePresentationProjector,
   WalkerDecisionProjector}
 import oathdigital.catalog.ExecutableCatalog
 import oathdigital.engine.ReplayStep
+import oathdigital.gameplay.EmpireEndings
 import oathdigital.gameplay.powerresolver.ModifierPicks
 import oathdigital.gameplay.powers.{ConsentPowers, WalkerPowerCatalog}
 import oathdigital.gameplay.walker.{FollowUpSkipped,
@@ -180,6 +181,10 @@ private[application] final class GameLogFormatter(catalog: ExecutableCatalog,
           words.vision(vision)))), run)
       case OathEvent.WarExhaustionResolved(winner, kind, vision, _) =>
         (Vector(victory(winner, exhaustion(kind, vision))), run)
+      case OathEvent.EndDieRolled(round, face, result) =>
+        (Posted(LogKind.Roll, Vector(Text(endDie(round, face)))) +:
+          result.map(won => victory(won.winner,
+            exhaustion(won.kind, None))).toVector, run)
       case _: ConsentEvent => (consent.lines(journal, at, viewer), run)
       case _: PlanAidEvent => (planAid.lines(journal, at, viewer), run)
       // Undo's facts post no line of their own; `format` keeps markers out
@@ -294,6 +299,14 @@ private[application] final class GameLogFormatter(catalog: ExecutableCatalog,
 
   private def victory(player: PlayerId, rest: Vector[LogSpan]): Posted =
     Posted(LogKind.Victory, words.player(player) +: rest)
+
+  /** "The end die rolled 4. Stable Regime needed 5 or more." */
+  private def endDie(round: Int, face: Int): String =
+    val needed = EmpireEndings.threshold(round).fold("") {
+      case 6 => " Stable Regime needed 6."
+      case least => s" Stable Regime needed $least or more."
+    }
+    s"The end die rolled $face.$needed"
 
   private def exhaustion(kind: VictoryKind, vision: Option[VisionId])
       : Vector[LogSpan] = kind match
