@@ -1,6 +1,5 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.holding.FestivalDistrictCard
 import oathdigital.gameplay.operations.HallOfMinistersCard
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.CodeOfHonorCard

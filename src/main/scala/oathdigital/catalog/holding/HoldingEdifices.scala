@@ -63,38 +63,6 @@ object WildPasturesCard extends Edifice(EdificeId("E07"), Suit.Nomad):
         "cards on the map unless the winner rules this card.")
     val powers: Vector[PrintedPower] = Vector(power)
 
-object GiantsPathCard extends Edifice(EdificeId("E09"), Suit.Nomad):
-  object intact extends EdificeFace("Giant's Path") with Locked:
-    val power = PrintedPower(PowerId("edifice.e09.intact"),
-      persistent = false, cost = Cost(secret = 1),
-      text = "**ACTION:** Move this card to another site, then place your " +
-        "pawn there.")
-    val powers: Vector[PrintedPower] = Vector(power)
-  object ruined extends EdificeFace("Giant's Rampage"):
-    val power = PrintedPower(PowerId("edifice.e09.ruined"),
-      persistent = false, cost = Cost(favor = 1, secret = 2),
-      text = "**ACTION:** Bury a denizen at any site _(even here)_. If " +
-        "you do, move Giant's Rampage to that site and place your " +
-        "pawn there.")
-    val powers: Vector[PrintedPower] = Vector(power)
-
-object TempleOfAncestorsCard extends Edifice(EdificeId("E10"), Suit.Nomad):
-  object intact extends EdificeFace("Temple of Ancestors") with Locked:
-    val power = PrintedPower(PowerId("edifice.e10.intact"),
-      persistent = false, cost = Cost(favor = 1),
-      text = "**ACTION:** Draw a card from the bottom of the world deck " +
-        "and play it to your advisers or discard it, as if you " +
-        "searched.")
-    val powers: Vector[PrintedPower] = Vector(power)
-  object ruined extends EdificeFace("Ruined Temple"):
-    val power = PrintedPower(PowerId("edifice.e10.ruined"),
-      persistent = false, cost = Cost.free,
-      text = "**SETUP / WHEN EXPLORED:** If you place your pawn here, you " +
-        "may burn [secret-burnt]. If you do and then win the game, " +
-        "score double the legacy points and take rule of all bandit " +
-        "sites.")
-    val powers: Vector[PrintedPower] = Vector(power)
-
 object GreatSpireCard extends Edifice(EdificeId("E11"), Suit.Arcane):
   object intact extends EdificeFace("Great Spire") with Locked:
     val power = PrintedPower(PowerId("edifice.e11.intact"),
@@ -127,20 +95,6 @@ object GreatClockCard extends Edifice(EdificeId("E12"), Suit.Arcane):
         "end the game._")
     val powers: Vector[PrintedPower] = Vector(power)
 
-object UndergroundLibraryCard extends Edifice(EdificeId("E13"), Suit.Arcane):
-  object intact extends EdificeFace("Underground Library") with Locked:
-    val power = PrintedPower(PowerId("edifice.e13.intact"),
-      persistent = false, cost = Cost(favor = 1),
-      text = "**ACTION:** Peek at all relics in this region, then swap " +
-        "one with a relic you have, placing it facedown.")
-    val powers: Vector[PrintedPower] = Vector(power)
-  object ruined extends EdificeFace("Drowned Library"):
-    val power = PrintedPower(PowerId("edifice.e13.ruined"),
-      persistent = false, cost = Cost(secret = 1),
-      text = "If your pawn is at this site, you may recover the top card " +
-        "of the relic deck instead. Its recover difficulty is 5.")
-    val powers: Vector[PrintedPower] = Vector(power)
-
 object TheTribunalCard extends Edifice(EdificeId("E19"), Suit.Order):
   object intact extends EdificeFace("The Tribunal") with Locked:
     val power = PrintedPower(PowerId("edifice.e19.intact"),
@@ -154,19 +108,4 @@ object TheTribunalCard extends Edifice(EdificeId("E19"), Suit.Order):
       persistent = true, cost = Cost.free,
       text = "**WHEN NEGOTIATING:** Players at sites ruled by bandits may " +
         "negotiate with each other.")
-    val powers: Vector[PrintedPower] = Vector(power)
-
-object FestivalDistrictCard extends Edifice(EdificeId("E21"), Suit.Hearth):
-  object intact extends EdificeFace("Festival District") with Locked:
-    val power = PrintedPower(PowerId("edifice.e21.intact"),
-      persistent = false, cost = Cost.free,
-      text = "**WHEN NEGOTIATING:** Players may give, receive, and swap " +
-        "advisers. _Players must follow their adviser limits._")
-    val powers: Vector[PrintedPower] = Vector(power)
-  object ruined extends EdificeFace("Squalid District"):
-    val power = PrintedPower(PowerId("edifice.e21.ruined"),
-      persistent = false, cost = Cost(favor = 1, favorBurnt = 1),
-      text = "**ACTION:** Discard any number of facedown advisers you " +
-        "have. Draw that many denizens from the bottom of the world " +
-        "deck as facedown advisers.")
     val powers: Vector[PrintedPower] = Vector(power)
