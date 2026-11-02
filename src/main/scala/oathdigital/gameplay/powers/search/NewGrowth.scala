@@ -29,7 +29,7 @@ object NewGrowthCard extends Denizen(DenizenId("188"), "New Growth",
   */
 final case class NewGrowth private (catalog: ExecutableCatalog)
     extends SelectedModifier:
-  val cardId: DenizenId = NewGrowthCard.id
+  val card: Denizen = NewGrowthCard
   def id: PowerId = NewGrowth.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Search)
 

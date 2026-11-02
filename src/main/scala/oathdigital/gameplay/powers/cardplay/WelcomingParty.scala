@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.cardplay
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
+import oathdigital.catalog.{Denizen, PrintedPower, SiteOnly}
 import oathdigital.gameplay.powerresolver.{Contribution, PowerCtx, Transform}
 import oathdigital.gameplay.powers.SelectedModifier
 import oathdigital.model._
@@ -27,10 +27,11 @@ object WelcomingPartyCard extends Denizen(DenizenId("50"), "Welcoming Party", Su
   * by a Search came straight from its draw. The favor is best-effort, so an
   * empty Hearth bank gives nothing.
   */
-final case class WelcomingParty private (catalog: ExecutableCatalog)
-    extends SelectedModifier:
-  val cardId: DenizenId = WelcomingPartyCard.id
-  def id: PowerId = WelcomingParty.id
+case object WelcomingParty extends SelectedModifier:
+  val id: PowerId = WelcomingPartyCard.power.id
+  val Favor: Int = 1
+
+  val card: Denizen = WelcomingPartyCard
   def actions: Set[MajorActionType] = Set(MajorActionType.Search)
 
   def effects: Map[PowerWindow, Vector[Contribution]] = Map(
@@ -42,10 +43,3 @@ final case class WelcomingParty private (catalog: ExecutableCatalog)
     case CardPlayedFaceup(card: DenizenId, _) => card != cardId &&
       ctx.procedure.contains(ActionRef.Search)
     case _ => false
-
-object WelcomingParty:
-  val id: PowerId = WelcomingPartyCard.power.id
-  val Favor: Int = 1
-
-  def forCatalog(catalog: ExecutableCatalog): WelcomingParty =
-    new WelcomingParty(catalog)

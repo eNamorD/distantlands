@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
+import oathdigital.catalog.Denizen
 import oathdigital.model.{DenizenId, NoteKey, Operation, PowerWindow}
 
 /** A battle plan whose card says "At end, discard": the card goes to a
@@ -13,8 +13,8 @@ import oathdigital.model.{DenizenId, NoteKey, Operation, PowerWindow}
   * and a narrower discard in `endDiscard`.
   */
 private[campaign] trait DiscardedAtEnd extends BattlePlan:
-  def catalog: ExecutableCatalog
-  def cardId: DenizenId
+  def card: Denizen
+  final def cardId: DenizenId = card.id
 
   /** This plan's own keys, beside the end-of-Campaign discard line. */
   def planNoteKeys: Vector[NoteKey] = Vector.empty
@@ -28,7 +28,7 @@ private[campaign] trait DiscardedAtEnd extends BattlePlan:
   /** The end discard. A plan that discards only on some outcome narrows
     * this; it never drops the line, because the line is the discard's. */
   def endDiscard: PlanUse => Vector[Operation] = use =>
-    PlanDiscard.afterCampaign(catalog, id, use, cardId)
+    PlanDiscard.afterCampaign(id, use, card)
 
   final override def later: Map[PowerWindow, PlanUse => Vector[Operation]] =
     otherWindows + (PowerWindow.CampaignActionEligibility -> endDiscard)

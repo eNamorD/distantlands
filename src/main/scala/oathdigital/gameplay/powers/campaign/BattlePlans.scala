@@ -1,6 +1,5 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.powerresolver.ContributingPower
 
 /** The Campaign battle plans the first batch's engine ported, registered
@@ -9,8 +8,5 @@ import oathdigital.gameplay.powerresolver.ContributingPower
   * title's defense.
   */
 object BattlePlans:
-  def forCatalog(catalog: ExecutableCatalog): Vector[ContributingPower] =
-    Vector[ContributingPower](TitleDefensePlan.plan) ++
-      Vector(Outriders) ++
-      Vector(BrassArmy) ++
-      Vector(Watchdog)
+  val all: Vector[ContributingPower] =
+    Vector(TitleDefensePlan.plan, Outriders, BrassArmy, Watchdog)

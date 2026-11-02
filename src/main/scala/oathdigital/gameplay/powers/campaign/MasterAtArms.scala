@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, PrintedPower}
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.actions.dice.{DiceThrow, RerollChoice}
 import oathdigital.gameplay.powerresolver.{Contribution, OfferReroll,
@@ -27,13 +27,38 @@ object MasterAtArmsCard extends Denizen(DenizenId("249"), "Master at Arms",
   *
   * It writes "Rerolled {n} hollow swords.".
   */
-final case class MasterAtArms private (catalog: ExecutableCatalog)
-    extends BattlePlan:
+case object MasterAtArms extends BattlePlan:
+  val id: PowerId = MasterAtArmsCard.power.id
+  /** Its "how many" question on the `number`th attack throw. */
+  def decisionId(number: Int): String =
+    RerollChoice.followUpId(CampaignIds.attackPool, number, "master-at-arms")
+  val label: String = "Master at Arms: reroll hollow swords"
+  /** Its reroll button. */
+  val rerollLabel: String = "Reroll any [hollow-sword] with Master at Arms"
+  val heading: String = "Reroll how many hollow swords?"
+  val noHollowSword: String = "No die shows a hollow sword"
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "Rerolled {n} hollow swords." */
+  val rerolled: NoteKey = notes.key("rerolled", Vector(
+    NotePart.Text("Rerolled "), NotePart.Arg(0),
+    NotePart.Plural(0, " hollow sword.", " hollow swords.")))
+
+  /** The indices of the throw's dice showing a hollow sword, in order. */
+  def hollow(rolled: DiceThrow): Vector[Int] =
+    rolled.indices.zip(rolled.faces).collect {
+      case (index, AttackDieFace.HollowSword) => index }
+
+  /** How many hollow swords the user chose to reroll on throw `number`. */
+  private def amount(pending: PendingTree, number: Int): Option[Int] =
+    pending.answered.reverse.collectFirst {
+      case Answered(id, DecisionAnswer.ChooseAmountAnswer(n), _)
+          if id == decisionId(number) => n
+    }
+
   val cardId: DenizenId = MasterAtArmsCard.id
-  def id: PowerId = MasterAtArms.id
   def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Attacker)
-  override def noteKeys: Vector[NoteKey] = MasterAtArms.noteKeys
 
   def plan(context: PlanContext): Option[CampaignPlanOffer] =
     context.denizen(cardId).map(source => CampaignPlanOffer(source,
@@ -70,35 +95,3 @@ final case class MasterAtArms private (catalog: ExecutableCatalog)
       Branch((_, pending) => MasterAtArms.amount(pending, rolled.number)
         .toVector.flatMap(amount => Vector(note(amount),
           Reroll(rolled.pool, hollow.take(amount))))))
-
-object MasterAtArms:
-  val id: PowerId = MasterAtArmsCard.power.id
-  /** Its "how many" question on the `number`th attack throw. */
-  def decisionId(number: Int): String =
-    RerollChoice.followUpId(CampaignIds.attackPool, number, "master-at-arms")
-  val label: String = "Master at Arms: reroll hollow swords"
-  /** Its reroll button. */
-  val rerollLabel: String = "Reroll any [hollow-sword] with Master at Arms"
-  val heading: String = "Reroll how many hollow swords?"
-  val noHollowSword: String = "No die shows a hollow sword"
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "Rerolled {n} hollow swords." */
-  val rerolled: NoteKey = notes.key("rerolled", Vector(
-    NotePart.Text("Rerolled "), NotePart.Arg(0),
-    NotePart.Plural(0, " hollow sword.", " hollow swords.")))
-
-  /** The indices of the throw's dice showing a hollow sword, in order. */
-  def hollow(rolled: DiceThrow): Vector[Int] =
-    rolled.indices.zip(rolled.faces).collect {
-      case (index, AttackDieFace.HollowSword) => index }
-
-  /** How many hollow swords the user chose to reroll on throw `number`. */
-  private def amount(pending: PendingTree, number: Int): Option[Int] =
-    pending.answered.reverse.collectFirst {
-      case Answered(id, DecisionAnswer.ChooseAmountAnswer(n), _)
-          if id == decisionId(number) => n
-    }
-
-  def forCatalog(catalog: ExecutableCatalog): MasterAtArms =
-    new MasterAtArms(catalog)

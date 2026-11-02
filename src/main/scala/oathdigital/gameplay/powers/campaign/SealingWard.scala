@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog, Locked,
-  PrintedPower}
+import oathdigital.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
 import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignSetup}
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   Transform}
@@ -28,14 +27,19 @@ object SealingWardCard extends Denizen(DenizenId("72"), "Sealing Ward", Suit.Arc
   * line: "Added 2 more defense dice." It adds one `Branch` whatever the board
   * holds, so the window's node count never depends on live state.
   */
-final case class SealingWard private (catalog: ExecutableCatalog)
-    extends ContributingPower:
+case object SealingWard extends ContributingPower:
+  val id: PowerId = SealingWardCard.power.id
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "Added {n} more defense dice." */
+  val added: NoteKey = notes.key("added", Vector(NotePart.Text("Added "),
+    NotePart.Arg(0),
+    NotePart.Plural(0, " more defense die.", " more defense dice.")))
+
   val cardId: DenizenId = SealingWardCard.id
-  def id: PowerId = SealingWard.id
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
   override lazy val resolution: PowerResolution =
-    CatalogResolution.of(catalog, id)
-  override def noteKeys: Vector[NoteKey] = SealingWard.noteKeys
+    CatalogResolution.of(SealingWardCard.power)
 
   def contributions: Map[PowerWindow, Vector[Contribution]] = Map(
     PowerWindow.CampaignGatherPools -> Vector(Transform((ctx, children) =>
@@ -70,15 +74,3 @@ final case class SealingWard private (catalog: ExecutableCatalog)
 
   private def holds(ready: ReadyGame, player: PlayerId): Boolean =
     PowerAccess.holdsFaceupAdviser(ready, player, cardId)
-
-object SealingWard:
-  val id: PowerId = SealingWardCard.power.id
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "Added {n} more defense dice." */
-  val added: NoteKey = notes.key("added", Vector(NotePart.Text("Added "),
-    NotePart.Arg(0),
-    NotePart.Plural(0, " more defense die.", " more defense dice.")))
-
-  def forCatalog(catalog: ExecutableCatalog): SealingWard =
-    new SealingWard(catalog)

@@ -22,7 +22,7 @@ object GreatCrusadeCard extends Denizen(DenizenId("164"), "Great Crusade", Suit.
   */
 final case class GreatCrusade private (catalog: ExecutableCatalog)
     extends BattlePlan with DiscardedAtEnd:
-  val cardId: DenizenId = GreatCrusadeCard.id
+  val card: Denizen = GreatCrusadeCard
   def id: PowerId = GreatCrusade.id
   def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] =

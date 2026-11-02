@@ -16,32 +16,14 @@ import oathdigital.gameplay.powerresolver.ContributingPower
   */
 object SimplePlans:
   def forCatalog(catalog: ExecutableCatalog): Vector[ContributingPower] =
-    Vector(Mercenaries.forCatalog(catalog)) ++
-      Vector(Wrestlers) ++
-      Vector(FearsomeShield) ++
-      Vector(ToweringRampart) ++
-      Vector(CrackedRampart) ++
-      Vector(SpiralCastle, SpiralDungeons) ++
-      Vector(BattleHonors) ++
-      Vector(Longbows) ++
-      Vector(BlackSword) ++
-      Vector(FireTalkers) ++
-      Vector(NatureWorship.forCatalog(catalog)) ++
-      Vector(CrackedSage.forCatalog(catalog)) ++
-      Vector(VillageConstable) ++
-      Vector(BannerBreakers) ++
-      Vector(CrackingGround) ++
-      Vector(WalledGarden.forCatalog(catalog)) ++
-      Vector(BanditStandard) ++
-      Vector(ExtraProvisions) ++
-      Vector(Encirclement) ++
-      Vector(DisgracedCaptain.forCatalog(catalog)) ++
-      Vector(BattleAxes.forCatalog(catalog)) ++
-      Vector(FieldPromotion) ++
-      Vector(TributeSpoils.forCatalog(catalog)) ++
-      Vector(MilitaryParade.forCatalog(catalog)) ++
-      Vector(Scouts) ++
-      Vector(SecondWind) ++
-      Vector(Zealots) ++
-      Vector(BearTraps) ++
-      Vector(SignalTrees.forCatalog(catalog))
+    Vector(Mercenaries, Wrestlers, FearsomeShield,
+      ToweringRampart, CrackedRampart, SpiralCastle, SpiralDungeons,
+      BattleHonors, Longbows, BlackSword,
+      FireTalkers, NatureWorship.forCatalog(catalog),
+      CrackedSage.forCatalog(catalog), VillageConstable, BannerBreakers,
+      CrackingGround, WalledGarden.forCatalog(catalog), BanditStandard,
+      ExtraProvisions, Encirclement, DisgracedCaptain.forCatalog(catalog),
+      BattleAxes.forCatalog(catalog), FieldPromotion,
+      TributeSpoils.forCatalog(catalog), MilitaryParade.forCatalog(catalog),
+      Scouts, SecondWind, Zealots, BearTraps,
+      SignalTrees.forCatalog(catalog))

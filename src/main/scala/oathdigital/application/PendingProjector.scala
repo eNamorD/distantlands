@@ -1,6 +1,5 @@
 package oathdigital.application
 
-import oathdigital.catalog.ExecutableCatalog
 import oathdigital.model._
 import oathdigital.protocol.projection._
 
@@ -8,7 +7,6 @@ import oathdigital.protocol.projection._
   * parked position is the only pending procedure state.
   */
 private[application] final class PendingProjector(
-    catalog: ExecutableCatalog,
     presentation: GamePresentationProjector,
     walkerDecisions: WalkerDecisionProjector
 ):

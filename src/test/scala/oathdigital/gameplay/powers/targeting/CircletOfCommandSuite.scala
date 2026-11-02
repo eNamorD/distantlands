@@ -79,7 +79,7 @@ class CircletOfCommandSuite extends munit.FunSuite:
       as[DecisionQuery.ChooseOne](decide.query).options.map(_.ref),
       parked.events)
 
-  private val power = CircletOfCommand.forCatalog(catalog)
+  private val power = CircletOfCommand
 
   private def hidden(events: Vector[OathEvent]): Vector[NoteText.Said] =
     NoteText.said(power.id, power.noteKeys, events)
@@ -131,7 +131,7 @@ class CircletOfCommandSuite extends munit.FunSuite:
       DecisionOptionRef.Banner(Banner.PeoplesFavor)))
 
   test("the Circlet's rule ignores an option that is not a banner or a relic"):
-    val power = CircletOfCommand.forCatalog(catalog)
+    val power = CircletOfCommand
     val ready = Table.start.relic(p1, circlet).ready
     val ctx = PowerCtx(ready, p1, power.source,
       PowerWindow.CampaignTargetSelection, Vector.empty,

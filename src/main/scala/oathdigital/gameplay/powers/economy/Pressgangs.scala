@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.economy
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, PrintedPower}
 import oathdigital.gameplay.actions.economy.MusterProcedure
 import oathdigital.gameplay.powerresolver.{Contribution, Transform}
 import oathdigital.gameplay.powers.SelectedModifier
@@ -23,10 +23,10 @@ object PressgangsCard extends Denizen(DenizenId("6"), "Pressgangs", Suit.Order):
   * onto the answered source is marked `intoOccupied`. It does not apply to
   * a Trade. It writes no line: the start line names it.
   */
-final case class Pressgangs private (catalog: ExecutableCatalog)
-    extends SelectedModifier:
-  val cardId: DenizenId = PressgangsCard.id
-  def id: PowerId = Pressgangs.id
+case object Pressgangs extends SelectedModifier:
+  val id: PowerId = PressgangsCard.power.id
+
+  val card: Denizen = PressgangsCard
   def actions: Set[MajorActionType] = Set(MajorActionType.Muster)
   override def priority: Int = EconomySources.ExemptionPriority
 
@@ -36,9 +36,3 @@ final case class Pressgangs private (catalog: ExecutableCatalog)
     PowerWindow.MusterCost -> Vector(Transform((ctx, operations) =>
       EconomySources.intoOccupied(ctx, operations,
         MusterProcedure.decisionId))))
-
-object Pressgangs:
-  val id: PowerId = PressgangsCard.power.id
-
-  def forCatalog(catalog: ExecutableCatalog): Pressgangs =
-    new Pressgangs(catalog)

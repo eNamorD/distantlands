@@ -19,7 +19,7 @@ object FriendlyFamiliarCard extends Denizen(DenizenId("224"), "Friendly Familiar
   */
 final case class FriendlyFamiliar private (catalog: ExecutableCatalog)
     extends ActingSite:
-  val cardId: DenizenId = FriendlyFamiliarCard.id
+  val card: Denizen = FriendlyFamiliarCard
   def id: PowerId = FriendlyFamiliar.id
   override def cost: Cost = FriendlyFamiliarCard.power.cost
   val noSite: String = "No other site has a card to trade with"

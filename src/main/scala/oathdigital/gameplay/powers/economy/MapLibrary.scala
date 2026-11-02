@@ -27,7 +27,7 @@ object MapLibraryCard extends Denizen(DenizenId("76"), "Map Library", Suit.Arcan
   */
 final case class MapLibrary private (catalog: ExecutableCatalog)
     extends SelectedModifier:
-  val cardId: DenizenId = MapLibraryCard.id
+  val card: Denizen = MapLibraryCard
   def id: PowerId = MapLibrary.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Trade)
 
@@ -41,7 +41,7 @@ final case class MapLibrary private (catalog: ExecutableCatalog)
   override def selectable(ready: ReadyGame, actor: PlayerId): Boolean =
     super.selectable(ready, actor) &&
       PowerAccess.presentSite(ready, actor).exists(site =>
-        SiteRulers.siteOf(ready, cardId).contains(site))
+        SiteRulers.siteOf(ready, card.id).contains(site))
 
 object MapLibrary:
   val id: PowerId = MapLibraryCard.power.id

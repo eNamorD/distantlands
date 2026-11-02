@@ -5,18 +5,11 @@ import oathdigital.gameplay.powerresolver.ContributingPower
 
 /** The Travel modifiers and rules that are not terrain, registered together.
   * Each names its card, so all are always present. Terrain is
-  * [[TravelSitePowers]].
+  * [[TravelSitePowers]]. Forest Paths and Hospitality read other cards'
+  * suits, so they alone take the catalog.
   */
 object TravelModifiers:
   def forCatalog(catalog: ExecutableCatalog): Vector[ContributingPower] =
-    Vector(Tents.forCatalog(catalog)) ++
-      Vector(RoyalStables.forCatalog(catalog)) ++
-      Vector(ForestPaths.forCatalog(catalog)) ++
-      Vector(DragonskinDrum.forCatalog(catalog)) ++
-      Vector(TollRoads.forCatalog(catalog)) ++
-      Vector(GraspingVines.forCatalog(catalog)) ++
-      Vector(AFastSteed.forCatalog(catalog)) ++
-      Vector(SpecialEnvoy.forCatalog(catalog)) ++
-      Vector(WayStation.forCatalog(catalog)) ++
-      Vector(Hospitality.forCatalog(catalog)) ++
-      Vector(Tyrant)
+    Vector(Tents, RoyalStables, ForestPaths.forCatalog(catalog),
+      DragonskinDrum, TollRoads, GraspingVines, AFastSteed, SpecialEnvoy,
+      WayStation, Hospitality.forCatalog(catalog), Tyrant)

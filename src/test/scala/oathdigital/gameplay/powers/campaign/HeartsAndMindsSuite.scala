@@ -4,7 +4,6 @@ import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{CatalogNames, Look, Table}
 
@@ -14,7 +13,7 @@ import oathdigital.testkit.{CatalogNames, Look, Table}
 class HeartsAndMindsSuite extends munit.FunSuite:
   private val card = CatalogNames.denizen("Hearts and Minds")
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
-  private val power = HeartsAndMinds.forCatalog(catalog)
+  private val power = HeartsAndMinds
 
   /** p2 rules the origin with 2 warbands and the Oathkeeper title, Hearts
     * and Minds stands there, and p2 has `favor` favor; `favored` says

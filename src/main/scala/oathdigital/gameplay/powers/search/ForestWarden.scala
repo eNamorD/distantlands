@@ -33,7 +33,7 @@ object ForestWardenCard extends Denizen(DenizenId("218"), "Forest Warden",
   */
 final case class ForestWarden private (catalog: ExecutableCatalog)
     extends SelectedModifier:
-  val cardId: DenizenId = ForestWardenCard.id
+  val card: Denizen = ForestWardenCard
   def id: PowerId = ForestWarden.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Search)
   private val notes = NoteSet(id)

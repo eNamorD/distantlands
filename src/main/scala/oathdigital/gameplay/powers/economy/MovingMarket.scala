@@ -40,7 +40,7 @@ final case class MovingMarket private (catalog: ExecutableCatalog)
     extends SelectedModifier:
   import MovingMarket._
 
-  val cardId: DenizenId = MovingMarketCard.id
+  val card: Denizen = MovingMarketCard
   def id: PowerId = MovingMarket.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Trade)
   override def noteKeys: Vector[NoteKey] = MovingMarket.noteKeys
@@ -66,11 +66,11 @@ final case class MovingMarket private (catalog: ExecutableCatalog)
 
   private def tradedWith(pending: PendingTree): Boolean =
     PowerAnswers.one(pending, TradeProcedure.decisionId)
-      .contains(DecisionOptionRef.Denizen(cardId))
+      .contains(DecisionOptionRef.Denizen(card.id))
 
   /** Every empty slot at the other sites in play, in map then slot order. */
   private def openSlots(ready: ReadyGame): Vector[DecisionOptionRef.SiteSlot] =
-    SiteRulers.siteOf(ready, cardId).toVector.flatMap(here =>
+    SiteRulers.siteOf(ready, card.id).toVector.flatMap(here =>
       ready.game.current.map.inPlay.filter(_ != here).flatMap(site =>
         SiteRoom.emptySlots(catalog, ready, site)
           .map(DecisionOptionRef.SiteSlot(site, _))))
@@ -80,7 +80,7 @@ final case class MovingMarket private (catalog: ExecutableCatalog)
     PowerAnswers.one(pending, decisionId) match
       case Some(`skip`) => Right(Vector.empty)
       case Some(slot: DecisionOptionRef.SiteSlot) => (for
-          here <- SiteRulers.siteOf(ready, cardId)
+          here <- SiteRulers.siteOf(ready, card.id)
           if openSlots(ready).contains(slot)
         yield Vector[CoreOperation](Move(Piece.Card(cardId),
           PositionedLocation(Location.Site(here)),
@@ -97,7 +97,7 @@ final case class MovingMarket private (catalog: ExecutableCatalog)
       : Either[OathViolation, Vector[CoreOperation]] =
     Right(PowerAnswers.one(pending, decisionId).toVector.collect {
       case slot: DecisionOptionRef.SiteSlot
-          if SiteRulers.siteOf(ready, cardId).contains(slot.site) =>
+          if SiteRulers.siteOf(ready, card.id).contains(slot.site) =>
         Gain.Favor(actor, Suit.Nomad, Gained)
     }.flatMap(gain => TradeFavor.record(ready, gain) :+ gain))
 
@@ -107,7 +107,7 @@ final case class MovingMarket private (catalog: ExecutableCatalog)
       : Option[LogNote] = for
     case slot: DecisionOptionRef.SiteSlot <-
       NoteSupport.answer(states, decisionId)
-    if SiteRulers.siteOf(states.now, cardId).contains(slot.site)
+    if SiteRulers.siteOf(states.now, card.id).contains(slot.site)
   yield
     val card = PowerSourceRef.Card(cardId)
     val gained = states.previous.fold(0)(NoteSupport.favor(_, actor))

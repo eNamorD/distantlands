@@ -1,5 +1,6 @@
 package oathdigital.gameplay.powers.economy
 
+import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.{NoteSupport, PowerAccess}
 import oathdigital.gameplay.powerresolver.{Contribution, ModifierPicks,
   OfferReason, PowerCtx, Transform}
@@ -26,6 +27,8 @@ import oathdigital.model._
   * names the site: "Acted as if at {the Shrine}."
   */
 trait ActingSite extends SelectedModifier:
+  /** Read for the suits of the cards at the chosen site. */
+  def catalog: ExecutableCatalog
   /** The sites the player may act as if at: never the pawn site. */
   def sites(ready: ReadyGame, actor: PlayerId): Vector[SiteId]
   /** Why the card is unavailable when `sites` is empty. */

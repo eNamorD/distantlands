@@ -31,41 +31,14 @@ import oathdigital.gameplay.powerresolver.ContributingPower
   */
 object PlanRules:
   def forCatalog(catalog: ExecutableCatalog): Vector[ContributingPower] =
-    Vector(StickyFire) ++
-      Vector(WarningSignals.forCatalog(catalog)) ++
-      Vector(GleamingArmor.forCatalog(catalog)) ++
-      Vector(InsectSwarm.forCatalog(catalog)) ++
-      Vector(HorseArchers.forCatalog(catalog)) ++
-      Vector(StormCaller.forCatalog(catalog)) ++
-      Vector(RivalKhan.forCatalog(catalog)) ++
-      Vector(GreatCrusade.forCatalog(catalog)) ++
-      Vector(PledgeOfDefense.forCatalog(catalog)) ++
-      Vector(BagOfSiegeworks) ++
-      Vector(RainBoots.forCatalog(catalog)) ++
-      Vector(GreatLevy) ++
-      Vector(GarrisonArmory) ++
-      Vector(Hospital) ++
-      Vector(BookBurning) ++
-      Vector(RustingRay) ++
-      Vector(FaeBattalion) ++
-      Vector(WarTortoise) ++
-      Vector(Lancers.forCatalog(catalog)) ++
-      Vector(WeepingBanner) ++
-      Vector(FearsomeGeneral) ++
-      Vector(KindredWarriors.forCatalog(catalog)) ++
-      Vector(Rangers) ++
-      Vector(MasterAtArms.forCatalog(catalog)) ++
-      Vector(UnstableSummon) ++
-      Vector(ArcaneArmor) ++
-      Vector(MountainGiant.forCatalog(catalog)) ++
-      Vector(MountedPatrol.forCatalog(catalog)) ++
-      Vector(ShieldWall) ++
-      Vector(BillowingFog) ++
-      Vector(TravelingDoctor.forCatalog(catalog)) ++
-      Vector(CursedCauldron) ++
-      Vector(SaltTheEarth.forCatalog(catalog)) ++
-      Vector(SealingWard.forCatalog(catalog)) ++
-      Vector(Herald.forCatalog(catalog)) ++
-      Vector(SneakAttack.forCatalog(catalog)) ++
-      Vector(VowOfUnion) ++
-      Vector(KeepRule)
+    Vector(StickyFire, WarningSignals, GleamingArmor.forCatalog(catalog), InsectSwarm.forCatalog(catalog),
+      HorseArchers, StormCaller, RivalKhan.forCatalog(catalog),
+      GreatCrusade.forCatalog(catalog), PledgeOfDefense.forCatalog(catalog),
+      BagOfSiegeworks, RainBoots, GreatLevy, GarrisonArmory, Hospital,
+      BookBurning, RustingRay, FaeBattalion, WarTortoise, Lancers,
+      WeepingBanner, FearsomeGeneral, KindredWarriors.forCatalog(catalog),
+      Rangers, MasterAtArms, UnstableSummon, ArcaneArmor,
+      MountainGiant, MountedPatrol, ShieldWall,
+      BillowingFog, TravelingDoctor, CursedCauldron,
+      SaltTheEarth.forCatalog(catalog), SealingWard, Herald, SneakAttack,
+      VowOfUnion, KeepRule)

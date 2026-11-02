@@ -127,10 +127,16 @@ gameplay.
 2. Move the card object out of `catalog/holding/` into the power's file. Keep
    its `PrintedPower`, and keep the card listed in
    `gameplay/cards/NewFoundations.scala`.
-3. Write the power. A `ContributingPower` declares `contributions` by
-   `PowerWindow`: `Transform`, `Restriction`, `OptionRestriction`, `Offer` or
-   `OfferReroll`. A `PhasePower` is a WAKE, ACTION or REST power used as an
-   action.
+3. Write the power as a `case object` that names its card object: a
+   `SelectedModifier` states `card`, a plan discarded at the end states
+   `card`, a `PaidAction` takes the printed power. A `ContributingPower`
+   declares `contributions` by `PowerWindow`: `Transform`, `Restriction`,
+   `OptionRestriction`, `Offer` or `OfferReroll`. A `PhasePower` is a WAKE,
+   ACTION or REST power used as an action. Only a power that looks other
+   cards up (another card's suit through `EffectiveSuit`, a site's
+   capacity, a relic's defense) takes a `catalog: ExecutableCatalog`
+   parameter behind a `forCatalog` constructor, and
+   `scripts/check-architecture.py` lists each such file with its reason.
 4. Register it in `WalkerPowerCatalog` or `PhasePowerCatalog`, or both.
    Registration marks the handler implemented (`PowerImplementationStatus`).
 5. Declare its Game Log keys as `noteKeys`. `DeclaredNotes` refuses a note

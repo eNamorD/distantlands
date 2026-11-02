@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.travel
 
-import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
+import oathdigital.catalog.{PrintedPower, Relic}
 import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.powerresolver.{Contribution, PowerCtx, Transform}
 import oathdigital.gameplay.powers.{PlayerFacts, SelectedModifier}
@@ -19,13 +19,16 @@ object DragonskinDrumCard extends Relic(RelicId("R20"), "Dragonskin Drum", value
   *
   * Its line, "{Red} gained 1 warband.", reads the gain's step.
   */
-final case class DragonskinDrum private (catalog: ExecutableCatalog)
-    extends SelectedModifier:
-  val cardId: RelicId = DragonskinDrumCard.id
-  def id: PowerId = DragonskinDrum.id
+case object DragonskinDrum extends SelectedModifier:
+  val id: PowerId = DragonskinDrumCard.power.id
+  val Warbands: Int = 1
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  val gained: NoteKey = NoteSupport.gainedKey(notes, "gained")
+
+  val card: Relic = DragonskinDrumCard
   def actions: Set[MajorActionType] = Set(MajorActionType.Travel)
 
-  override def noteKeys: Vector[NoteKey] = DragonskinDrum.noteKeys
 
   def effects: Map[PowerWindow, Vector[Contribution]] = Map(
     PowerWindow.TravelCost -> Vector(Transform((ctx, operations) =>
@@ -40,13 +43,3 @@ final case class DragonskinDrum private (catalog: ExecutableCatalog)
   private def gain(actor: PlayerId): Operation = BuildOps((ready, _) =>
     PlayerFacts.forceKind(ready, actor).map(kind =>
       Vector(Gain.Warbands(actor, kind, DragonskinDrum.Warbands))))
-
-object DragonskinDrum:
-  val id: PowerId = DragonskinDrumCard.power.id
-  val Warbands: Int = 1
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  val gained: NoteKey = NoteSupport.gainedKey(notes, "gained")
-
-  def forCatalog(catalog: ExecutableCatalog): DragonskinDrum =
-    new DragonskinDrum(catalog)
