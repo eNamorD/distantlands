@@ -1,6 +1,6 @@
 package oathdigital.gameplay.chronicle
 
-import oathdigital.gameplay.operations.TheGrandScepterCard
+import oathdigital.gameplay.operations.GrandScepterSource
 import oathdigital.model._
 
 /** Crown Chancellor, the Sun's sixth step (CR p. 36, Chronicle ruling 10).
@@ -15,7 +15,7 @@ object ChronicleCrown:
       lineage <- ready.game.campaign.lineages.get(player.lineage).toRight(
         OathViolation.InvalidEventOrder(
           s"${player.lineage.value} has no lineage state"))
-    yield scepter(ready, winner) ++ (lineage.role match
+    yield GrandScepterSource.take(ready, winner) ++ (lineage.role match
       case Role.Exile => empireBreaks(ready, player)
       case Role.Citizen => newDynasty(ready, player.lineage)
       case Role.Chancellor => Vector.empty)
@@ -29,23 +29,6 @@ object ChronicleCrown:
       .filterNot(l => campaign.lineages.contains(l.id))
       .map(l => l.id -> campaign.boxRoles.getOrElse(l.id, l.role))
     (seated ++ boxed).sortBy(_._1.value)
-
-  private def scepter(ready: ReadyGame, winner: PlayerId)
-      : Vector[CoreOperation] =
-    val id = TheGrandScepterCard.id
-    val current = ready.game.current
-    val held = current.players.find(_.relics.exists(_.id == id))
-      .map(state => Location.PlayArea(state.player))
-    val atSite = current.map.sites.collectFirst {
-      case (site, state) if state.relics.exists(_.id == id) =>
-        Location.Site(site)
-    }
-    held.orElse(atSite) match
-      case Some(Location.PlayArea(`winner`)) => Vector.empty
-      case Some(from) => Vector(Move(Piece.Card(id), PositionedLocation(from),
-        PositionedLocation(Location.PlayArea(winner)),
-        resultingOrientation = Some(Orientation.FaceUp)))
-      case None => Vector(GrandScepterFromBox(winner))
 
   /** If an Exile won: the former Chancellor and every Citizen, even in the
     * box, become Exiles; the Reliquary is discarded; Imperial warbands leave
