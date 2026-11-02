@@ -4,7 +4,6 @@ import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
-import oathdigital.testkit.CatalogNames
 
 /** The Rampart edifice: two more defense dice for its ruler when their pawn is
   * at its site or the site is targeted (intact), one more when it is targeted
@@ -13,7 +12,7 @@ import oathdigital.testkit.CatalogNames
   */
 class RampartSuite extends munit.FunSuite:
   // Towering Rampart intact, Cracked Rampart ruined.
-  private val edifice = CatalogNames.edifice("Towering Rampart")
+  private val edifice = ToweringRampartCard.id
   private val defensePool = CampaignIds.defensePool
 
   /** The other player rules the origin, which the Campaign targets. */

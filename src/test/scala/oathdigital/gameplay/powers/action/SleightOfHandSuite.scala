@@ -1,9 +1,10 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.gameplay.cards.BuriedGiantSite
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Refusals,
-  Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Refusals, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Unwrap.accepted
 
@@ -11,7 +12,7 @@ class SleightOfHandSuite extends munit.FunSuite:
   import PowerFixture._
   import PhasePowerHarness._
 
-  private val sleight = CatalogNames.denizen("Sleight of Hand")
+  private val sleight = SleightOfHandCard.id
   private val source = DecisionOptionRef.Denizen(sleight)
   private val victim = Table.p2
   private val bystander = Table.p3
@@ -22,10 +23,10 @@ class SleightOfHandSuite extends munit.FunSuite:
     * facedown secrets, so it is never a target.
     */
   private def staged(up: Int, down: Int, favor: Int = 1) =
-    Table.start.turn(actor, Phase.Act).pawn(actor, "Ancient City")
+    Table.start.turn(actor, Phase.Act).pawn(actor, AncientCitySite)
       .adviser(actor, sleight).favor(actor, favor)
-      .pawn(victim, "Ancient City").secrets(victim, up, down)
-      .pawn(bystander, "Buried Giant").secrets(bystander, 5, 5).ready
+      .pawn(victim, AncientCitySite).secrets(victim, up, down)
+      .pawn(bystander, BuriedGiantSite).secrets(bystander, 5, 5).ready
   private def secretsOf(ready: ReadyGame, id: PlayerId = actor) =
     (Look(ready).player(id).board.faceUpSecrets, Look(ready).player(id)
       .board.faceDownSecrets)
@@ -86,13 +87,13 @@ class SleightOfHandSuite extends munit.FunSuite:
     assertEquals(Look(after(t)).player(actor).board.favor, 0)
 
   test("a player at another site is not a target"):
-    val ready = Table.from(staged(3, 0)).pawn(victim, "Buried Giant").ready
+    val ready = Table.from(staged(3, 0)).pawn(victim, BuriedGiantSite).ready
     val t = accepted(use(ready, SleightOfHand, source))
     parked.assertNotParked(t.state)
     assertEquals(secretsOf(after(t), victim), (3, 0))
 
   test("every eligible player is offered"):
-    val ready = Table.from(staged(2, 0)).pawn(bystander, "Ancient City")
+    val ready = Table.from(staged(2, 0)).pawn(bystander, AncientCitySite)
       .secrets(bystander, 2, 0).ready
     val t = accepted(use(ready, SleightOfHand, source))
     assertEquals(offered(t, actor).map(_.toSet),

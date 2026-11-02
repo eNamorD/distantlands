@@ -2,9 +2,11 @@ package oathdigital.application.gamelog
 
 import oathdigital.application._
 import oathdigital.gameplay.actions.negotiation.NegotiationDeal
+import oathdigital.gameplay.powers.economy.BirdsongCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.{AcceptDeal, DeclineDeal, ProposeTerms}
-import oathdigital.testkit.{CatalogNames, MenuPlay, Situation, Table}
+import oathdigital.testkit.{MenuPlay, Situation, Table}
 import oathdigital.testkit.Table.{p1, p2}
 import LogScriptSupport.{atTable, tableWithOnePawnPerSite}
 
@@ -19,7 +21,7 @@ object NegotiationLogScripts:
       using munit.Location)
       : (GameApplicationService, Situation, PlayerId, PlayerId) =
     val (service, act) = atTable(name,
-      extra(tableWithOnePawnPerSite.pawn(p2, "Ancient City")).banditsRefilled)
+      extra(tableWithOnePawnPerSite.pawn(p2, AncientCitySite)).banditsRefilled)
     (service, act.parkedAfter(MenuPlay.start(p1, ActionRef.Negotiation)), p1, p2)
 
   private def deal(by: PlayerId, answer: DecisionAnswer): GameCommand =
@@ -42,7 +44,7 @@ object NegotiationLogScripts:
 
   /** The partner shows the actor its facedown adviser. */
   def negotiationDisclosed(using munit.Location): Script =
-    val birdsong = CatalogNames.denizen("Birdsong")
+    val birdsong = BirdsongCard.id
     val (service, parked, actor, partner) = negotiating(
       "negotiation-disclosed", _.adviser(p2, birdsong, facedown = true))
     val adviser: WorldCardId = birdsong

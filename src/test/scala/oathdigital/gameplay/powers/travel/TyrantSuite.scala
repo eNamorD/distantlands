@@ -1,9 +1,11 @@
 package oathdigital.gameplay.powers.travel
 
+import oathdigital.gameplay.cards.DeepWoodsSite
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes,
-  PhasePowerHarness, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, Outcomes, PhasePowerHarness,
+  Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Unwrap.accepted
 import oathdigital.testkit.AppendedAutomaticUses
@@ -12,7 +14,7 @@ class TyrantSuite extends munit.FunSuite:
   import PowerFixture._
   import TravelFixture._
 
-  private val tyrant = CatalogNames.denizen("Tyrant")
+  private val tyrant = TyrantCard.id
   private val rival = Table.p2
 
   /** The actor holds Tyrant faceup, at Buried Giant, the Cradle's plains,
@@ -65,8 +67,8 @@ class TyrantSuite extends munit.FunSuite:
     * node, folded with p1 acting. */
   private val p2Travels: Operation = Sequence(Vector[Operation](Move(
     Piece.Pawn(Table.p2), PositionedLocation(Location.Site(
-      CatalogNames.site("Ancient City"))), PositionedLocation(Location.Site(
-      CatalogNames.site("Deep Woods"))))), Some(PowerWindow.TravelCost))
+      AncientCitySite.id)), PositionedLocation(Location.Site(
+      DeepWoodsSite.id)))), Some(PowerWindow.TravelCost))
 
   test("its kill is an automatic use of the traveller's, judged where it " +
       "runs"):

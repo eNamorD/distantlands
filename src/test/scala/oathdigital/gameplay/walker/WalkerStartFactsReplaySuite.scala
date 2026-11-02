@@ -1,14 +1,15 @@
 package oathdigital.gameplay.walker
 
+import oathdigital.gameplay.cards.{BuriedGiantSite, DunesSite}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 
 /** Start facts are restored by replay, checked against the recorded start on
   * every later park, and cleared when the walk completes (travel destination
   * design, ruling 6). */
 class WalkerStartFactsReplaySuite extends munit.FunSuite:
-  private val source = DecisionOptionRef.Site(CatalogNames.site("Buried Giant"))
-  private val elsewhere = DecisionOptionRef.Site(CatalogNames.site("Dunes"))
+  private val source = DecisionOptionRef.Site(BuriedGiantSite.id)
+  private val elsewhere = DecisionOptionRef.Site(DunesSite.id)
 
   private def park(at: String, facts: Vector[DecisionOptionRef]): WalkerParked =
     WalkerParked(ActionRef.Travel, Vector(at), Vector.empty, Vector.empty,

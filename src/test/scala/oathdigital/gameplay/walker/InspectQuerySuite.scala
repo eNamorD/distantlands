@@ -1,8 +1,8 @@
 package oathdigital.gameplay.walker
 
+import oathdigital.gameplay.powers.campaign.{BattleHonorsCard, WrestlersCard}
 import oathdigital.model.{DecisionAnswer, DecisionOptionRef, DecisionQuery,
   OathViolation, PlayerId}
-import oathdigital.testkit.CatalogNames
 
 /** The `Inspect` decision (catalog batch 2, N5): cards to look at and one
   * Done button, checked with hand-built queries as `DecisionQuerySuite`
@@ -10,8 +10,8 @@ import oathdigital.testkit.CatalogNames
 class InspectQuerySuite extends munit.FunSuite:
   private val decisionId = "power.scryer.inspect"
   private val anyone = PlayerId("player-red")
-  private val cards = Vector(CatalogNames.denizen("Wrestlers"),
-    CatalogNames.denizen("Battle Honors"))
+  private val cards = Vector(WrestlersCard.id,
+    BattleHonorsCard.id)
   private val inspect = DecisionQuery.Inspect(cards,
     heading = Some("Scryer: the Cradle discard pile"))
 

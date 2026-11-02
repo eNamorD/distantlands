@@ -2,7 +2,7 @@ package oathdigital.gameplay.powers.action
 
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, Table}
 import oathdigital.testkit.Outcomes.{assertWireRoundTrips, ready}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -10,7 +10,7 @@ class TutorSuite extends munit.FunSuite:
   import ActPowerHarness._
   import PowerFixture._
 
-  private val tutor = CatalogNames.denizen("Tutor")
+  private val tutor = TutorCard.id
   private val source = DecisionOptionRef.Denizen(tutor)
 
   /** p1's Act holding Tutor faceup (it is adviser-only), with `favor` favor

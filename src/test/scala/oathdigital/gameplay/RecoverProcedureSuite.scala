@@ -1,7 +1,10 @@
 package oathdigital.gameplay
 
+import oathdigital.catalog.holding.{BanditCrownCard, CrackedHornCard}
 import oathdigital.gameplay.actions.RecoverRules
 import oathdigital.gameplay.actions.recover.RecoverProcedure
+import oathdigital.gameplay.powers.action.DowsingSticksCard
+import oathdigital.gameplay.powers.travel.FairIsleSite
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.gameplay.WalkerDiceFixture.scripted
 import oathdigital.gameplay.walker.{ChoicePayload, DeltaPayload, LogNoted,
@@ -9,7 +12,7 @@ import oathdigital.gameplay.walker.{ChoicePayload, DeltaPayload, LogNoted,
   WalkerStepRecorded}
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, RecordedOps, Table}
+import oathdigital.testkit.{Look, Outcomes, RecordedOps, Table}
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.{accepted, as, present, rejected}
 
@@ -29,9 +32,9 @@ class RecoverProcedureSuite extends munit.FunSuite
   private val actor = p1
   // Fair Isle's Recover difficulty is 3: a two-shield roll of two dice
   // reaches it, and two blanks do not.
-  private val recoverSite = CatalogNames.site("Fair Isle")
+  private val recoverSite = FairIsleSite.id
   private val difficulty = 3
-  private val relic = CatalogNames.relic("Dowsing Sticks")
+  private val relic = DowsingSticksCard.id
   private val siteRelic = RelicState(relic, Orientation.FaceDown, Tokens.empty)
 
   /** p1, in Act with full Supply, stands at Fair Isle, which holds Dowsing
@@ -392,8 +395,8 @@ class RecoverProcedureSuite extends munit.FunSuite
       "nothing else at the site"):
     // A second facedown relic and a faceup one, so the query has something
     // to exclude rather than trivially matching.
-    val second = CatalogNames.relic("Cracked Horn")
-    val faceUp = CatalogNames.relic("Bandit Crown")
+    val second = CrackedHornCard.id
+    val faceUp = BanditCrownCard.id
     val ready = recoverBoard.relicAt(second, at = recoverSite)
       .relicAt(faceUp, at = recoverSite, facedown = false).ready
 

@@ -4,6 +4,7 @@ import oathdigital.gameplay.CampaignFixture.{RaidBoard, on, raidBoard}
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.setup.{HallOfDebateCard, TomeGuardiansCard}
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
 import oathdigital.testkit.{Journal, Outcomes}
@@ -117,7 +118,7 @@ class BannerGuardiansSuite extends munit.FunSuite:
     // p2 holds the People's Favor at Ancient City and rules Broken Peaks,
     // where the Hall of Debate stands.
     val staged = challengeTable.edifice(HallOfDebateCard.id,
-      EdificeSide.Intact, at = "Broken Peaks")
-      .warbandsAt("Broken Peaks", p2, 2).ready
+      EdificeSide.Intact, at = BrokenPeaksSite)
+      .warbandsAt(BrokenPeaksSite, p2, 2).ready
     assert(optionsAt(accepted(start(staged, ActionRef.Challenge, p1)),
       ActionRef.Challenge).contains(peoplesFavor))

@@ -1,5 +1,7 @@
 package oathdigital.serialization
 
+import oathdigital.gameplay.operations.HallOfMinistersCard
+import oathdigital.gameplay.powers.campaign.{SecondWindCard, StickyFireCard}
 import oathdigital.model._
 import oathdigital.gameplay.walker.{ActionBoundaryRan, ChoicePayload,
   FollowUpSkipped,
@@ -8,7 +10,6 @@ import oathdigital.model.DecisionAnswer.{ChooseOneAnswer, DistributeAnswer,
   PartitionAnswer}
 import oathdigital.serialization.WalkerWireEvents.{assertStreamRoundTrips,
   encodedStream, encodedStreamThatRoundTrips}
-import oathdigital.testkit.CatalogNames
 import oathdigital.testkit.Unwrap.accepted
 
 /** Walker decision answers on the wire: every answer and option reference kind
@@ -59,7 +60,7 @@ class WalkerDecisionWireSuite extends munit.FunSuite:
       .zip(Vector("pay-favor", "pay-secret", "pay-favor"))
       .map { case (option, section) => DecisionPlacement(option, section) })
     val chooseOne = ChooseOneAnswer(
-      DecisionOptionRef.Relic(CatalogNames.relic("Sticky Fire")))
+      DecisionOptionRef.Relic(StickyFireCard.id))
     val distribute = DistributeAnswer(Vector(
       DistributeAmount(DecisionOptionRef.FavorBank(Suit.Arcane), 0),
       DistributeAmount(DecisionOptionRef.FavorBank(Suit.Nomad), 3)))
@@ -137,7 +138,7 @@ class WalkerDecisionWireSuite extends munit.FunSuite:
 
   test("a follow-up's start and skip round trip with their entry"):
     val entry = QueuedProcedure(PlayerId("p1"), ActionRef.Travel, Vector.empty,
-        Some(PowerSourceRef.Card(CatalogNames.denizen("Second Wind"))),
+        Some(PowerSourceRef.Card(SecondWindCard.id)),
         QueueKind.Offer)
     val encoded = encodedStreamThatRoundTrips("follow-ups", Vector[OathEvent](
       ProcedureDequeued(entry), FollowUpSkipped(entry)))
@@ -151,7 +152,7 @@ class WalkerDecisionWireSuite extends munit.FunSuite:
 
   test("a queued entry naming a procedure no client starts is refused"):
     val entry = QueuedProcedure(PlayerId("p1"), ActionRef.Travel, Vector.empty,
-      Some(PowerSourceRef.Card(CatalogNames.denizen("Second Wind"))),
+      Some(PowerSourceRef.Card(SecondWindCard.id)),
       QueueKind.Offer)
     val encoded = encodedStreamThatRoundTrips("queued-family",
       Vector[OathEvent](ProcedureDequeued(entry)))
@@ -169,10 +170,10 @@ class WalkerDecisionWireSuite extends munit.FunSuite:
       DecisionOptionRef.Player(PlayerId("blue")),
       DecisionOptionRef.Site(SiteId("site:s1")),
       DecisionOptionRef.Denizen(DenizenId("denizen:d1")),
-      DecisionOptionRef.Relic(CatalogNames.relic("Sticky Fire")),
+      DecisionOptionRef.Relic(StickyFireCard.id),
       DecisionOptionRef.Vision(VisionId("vision:v1")),
       DecisionOptionRef.Edifice(
-        CatalogNames.edifice("Hall of Ministers")),
+        HallOfMinistersCard.id),
       DecisionOptionRef.Deck(CardDeck.Relic),
       DecisionOptionRef.FavorBank(Suit.Hearth),
       DecisionOptionRef.RelicSlot(PlayerId("blue"), 0),

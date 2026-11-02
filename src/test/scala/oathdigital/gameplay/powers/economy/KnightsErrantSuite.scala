@@ -1,5 +1,10 @@
 package oathdigital.gameplay.powers.economy
 
+import oathdigital.gameplay.cards.BuriedGiantSite
+import oathdigital.gameplay.powers.action.AlchemistCard
+import oathdigital.gameplay.powers.campaign.VowOfPeaceCard
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.testkit.MenuPlay
 import oathdigital.gameplay.{FollowUpPlay, ModifierPlay, OathRules,
   WalkerDiceFixture}
@@ -9,15 +14,15 @@ import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, ParkedNode, Table}
+import oathdigital.testkit.{Look, Outcomes, ParkedNode, Table}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
 
 class KnightsErrantSuite extends munit.FunSuite:
-  private val knights = CatalogNames.denizen("Knights Errant")
-  private val alchemist = CatalogNames.denizen("Alchemist")
+  private val knights = KnightsErrantCard.id
+  private val alchemist = AlchemistCard.id
   private val modifiers = Vector(KnightsErrant.id)
-  private val ancientCity = CatalogNames.site("Ancient City")
+  private val ancientCity = AncientCitySite.id
   private val rules = new OathRules(catalog,
     walkerPowerCatalog = WalkerPowerCatalog.default(catalog),
     walkerDice = WalkerDiceFixture.blanks)
@@ -29,8 +34,8 @@ class KnightsErrantSuite extends munit.FunSuite:
     */
   private def staged(supply: Int, campaignLegal: Boolean = true): Table =
     Table.start
-      .pawn(p1, at = ancientCity).pawn(p2, at = "Broken Peaks")
-      .pawn(Table.p3, at = "Buried Giant")
+      .pawn(p1, at = ancientCity).pawn(p2, at = BrokenPeaksSite)
+      .pawn(Table.p3, at = BuriedGiantSite)
       .adviser(p1, knights)
       .denizen(alchemist, at = ancientCity)
       .bandits(ancientCity, if campaignLegal then 2 else 0)
@@ -100,7 +105,7 @@ class KnightsErrantSuite extends munit.FunSuite:
     assert(!offered(ActionRef.Trade).contains(KnightsErrant.id))
 
   test("Vow of Peace shows on the offer, and Skip clears it"):
-    val vowed = staged(supply = 1).adviser(p1, "Vow of Peace").ready
+    val vowed = staged(supply = 1).adviser(p1, VowOfPeaceCard).ready
     val mustered = musterFrom(vowed, modifiers)
     assert(FollowUpPlay.taken(rules, mustered.state, p1).isLeft)
     val shown = ParkedNode.of(mustered.state, catalog,

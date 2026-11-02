@@ -1,5 +1,6 @@
 package oathdigital.application
 
+import oathdigital.gameplay.powers.action.DowsingSticksCard
 import oathdigital.testkit.MenuPlay
 import oathdigital.protocol.projection.{DecisionQueryProjection,
   DecisionSectionProjection, GameProjection}
@@ -14,7 +15,7 @@ import oathdigital.server.GameHttpWire
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.application.ForgeWalkerFixture.{forgeService, forgeSite,
   forgeTable, mixedForgeCostCatalog}
-import oathdigital.testkit.{CatalogNames, Look, Outcomes}
+import oathdigital.testkit.{Look, Outcomes}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.present
 import ParkedServiceFixture.{loaded, parkedAssertions, replayingSecond}
@@ -101,7 +102,7 @@ class GameApplicationServiceForgeSuite extends munit.FunSuite:
       .fold(error => fail(s"walker Forge answer rejected: $error"), identity)
 
   /** forgeTable tops the relic deck with Dowsing Sticks. */
-  private val dowsingSticks = CatalogNames.relic("Dowsing Sticks")
+  private val dowsingSticks = DowsingSticksCard.id
 
   test("a parked Forge projects its assignment prompt to the actor only"):
     val gameId = "game-walker-forge-prompt"

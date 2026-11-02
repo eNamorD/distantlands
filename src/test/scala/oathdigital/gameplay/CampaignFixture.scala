@@ -1,16 +1,19 @@
 package oathdigital.gameplay
 
 import oathdigital.gameplay.powers.WalkerPowerCatalog
+import oathdigital.gameplay.powers.action.OracularPigCard
 import oathdigital.gameplay.powers.campaign.BattlePlan
 import oathdigital.gameplay.actions.VisionRules
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.gameplay.walker.{QueuedStart, WalkerDice, WalkerPowers}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Table}
+import oathdigital.testkit.{CardRefs, Look, Table}
+import oathdigital.testkit.CardRefs.{DenizenRef, EdificeRef, RelicRef}
 
 /** The boards the Campaign suites share, built on the quiet `Table`.
   *
-  * p1, the actor, is placed at Ancient City (the origin, `originName`) by
+  * p1, the actor, is placed at Ancient City (the origin, `originSite`) by
   * the board itself, which two Bandits rule, in p1's Act with `warbands` warbands and `supply` Supply. `extras`
   * further sites are Bandit-ruled too, in map order after the origin: Broken
   * Peaks, Buried Giant, Deep Woods, and so on. Every other site is empty.
@@ -27,11 +30,11 @@ object CampaignFixture:
         SiteForces.Occupied(ForceKind.Bandit, 2))
 
   /** The site p1 stands at and the Bandits rule: the origin of every board. */
-  val originName = "Ancient City"
+  val originSite = AncientCitySite
 
   def board(extras: Int = 0, warbands: Int, supply: Int)(
       using munit.Location): Board =
-    val origin = CatalogNames.site(originName)
+    val origin = originSite.id
     val inPlay = Table.start.ready.game.current.map.inPlay
     val ruled = origin +: inPlay.filter(_ != origin).take(extras)
     val elsewhere = inPlay.find(!ruled.contains(_)).get
@@ -106,28 +109,28 @@ object CampaignFixture:
 
   /** `player` holds `card`, by name or id, on `orientation`, with `tokens` on
     * it. */
-  def withAdviserFor(b: Board, player: PlayerId, card: String | DenizenId,
+  def withAdviserFor(b: Board, player: PlayerId, card: DenizenRef,
       orientation: Orientation, tokens: Tokens = Tokens.empty)(
       using munit.Location): Board =
-    val id = CatalogNames.denizen(card)
+    val id = CardRefs.denizenId(card)
     on(b)(_.adviser(player, id, facedown = orientation == Orientation.FaceDown)
       .tokens(id, favor = tokens.favor, secrets = tokens.secrets))
 
-  def withAdviser(b: Board, card: String | DenizenId, orientation: Orientation)(
+  def withAdviser(b: Board, card: DenizenRef, orientation: Orientation)(
       using munit.Location): Board =
     withAdviserFor(b, b.actor, card, orientation)
 
-  def withRelic(b: Board, relic: String | RelicId)(
+  def withRelic(b: Board, relic: RelicRef)(
       using munit.Location): Board =
     withRelicFor(b, b.actor, relic)
 
   /** `player` holds a faceup relic, by name or id. */
-  def withRelicFor(b: Board, player: PlayerId, relic: String | RelicId)(
+  def withRelicFor(b: Board, player: PlayerId, relic: RelicRef)(
       using munit.Location): Board =
     on(b)(_.relic(player, relic))
 
   /** An edifice stands at `site`, on the given face, by name or id. */
-  def withEdifice(b: Board, site: SiteId, edifice: String | EdificeId,
+  def withEdifice(b: Board, site: SiteId, edifice: EdificeRef,
       side: EdificeSide)(using munit.Location): Board =
     on(b)(_.edifice(edifice, side, at = site))
 
@@ -146,7 +149,7 @@ object CampaignFixture:
     on(b)(_.warbandsAt(site, b.actor, 2))
 
   /** `site` also holds `card`, by name or id. The board's sites start empty. */
-  def withSiteCard(b: Board, site: SiteId, card: String | DenizenId)(
+  def withSiteCard(b: Board, site: SiteId, card: DenizenRef)(
       using munit.Location): Board =
     on(b)(_.denizen(card, at = site))
 
@@ -160,12 +163,12 @@ object CampaignFixture:
   def raidBoard(defenderWarbands: Int = 3)(using munit.Location): RaidBoard =
     val b = withEnemyAtOrigin(board(warbands = 4, supply = 7))
     // Oracular Pig prints no battle plan, so the defender is offered none.
-    val relic = CatalogNames.relic("Oracular Pig")
+    val relic = OracularPigCard.id
     val relicPlans = WalkerPowerCatalog.default(catalog).powers.collect {
       case plan: BattlePlan => plan.cardRef }.collect {
       case DecisionOptionRef.Relic(id) => id }
     assert(!relicPlans.contains(relic),
-      s"${CatalogNames.nameOf(relic)} prints a battle plan")
+      s"${CardRefs.nameOf(relic)} prints a battle plan")
     // Ids no card carries stand for cards whose identity the Raid never
     // learns: they join the table as they are.
     val raided = on(b)(_

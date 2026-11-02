@@ -2,9 +2,13 @@ package oathdigital.gameplay.powers.search
 
 import oathdigital.gameplay.SearchPlay
 import oathdigital.gameplay.powers.SearchFixture
+import oathdigital.gameplay.powers.action.{HomesteadersCard, MessengerCard}
+import oathdigital.gameplay.powers.banner.YewStaffCard
+import oathdigital.gameplay.powers.campaign.{CodeOfHonorCard, ShieldWallCard}
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
@@ -12,11 +16,13 @@ import oathdigital.testkit.Unwrap.accepted
 class DisciplesSuite extends munit.FunSuite:
   import SearchFixture.rules
 
-  private val disciples = CatalogNames.denizen("Disciples")
+  private val disciples = DisciplesCard.id
   private val modifiers = Vector(Disciples.id)
   // Hearth and Order denizens whose powers these tests do not use.
-  private val deckTop = Vector("Homesteaders", "Land Warden", "News from Afar")
-  private val discardPile = Vector("Code of Honor", "Messenger", "Shield Wall")
+  private val deckTop = Vector(HomesteadersCard, LandWardenCard,
+    NewsFromAfarCard)
+  private val discardPile = Vector(CodeOfHonorCard, MessengerCard,
+    ShieldWallCard)
   private val region = Region.Cradle // Ancient City's region
   private val startingSupply = 5
 
@@ -26,7 +32,7 @@ class DisciplesSuite extends munit.FunSuite:
     * so far, and `holder` holds the Darkest Secret. */
   private def holdingDisciples(visions: Int,
       holder: Option[PlayerId] = Some(p1)): ReadyGame =
-    Table.start.pawn(p1, "Ancient City").worldDeckTop(deckTop*)
+    Table.start.pawn(p1, AncientCitySite).worldDeckTop(deckTop*)
       .supply(p1, startingSupply).adviser(p1, disciples)
       .discarded(region, discardPile*).darkestSecret(holder, 1)
       .visionsDrawn(visions).ready
@@ -86,5 +92,5 @@ class DisciplesSuite extends munit.FunSuite:
       "costs 2"):
     for holder <- Vector(Some(p2), None) do
       val ready = Table.from(holdingDisciples(visions = 1, holder = holder))
-        .relic(p1, "Yew Staff").ready
+        .relic(p1, YewStaffCard).ready
       assertEquals(spent(ready, modifiers), 2, holder.toString)

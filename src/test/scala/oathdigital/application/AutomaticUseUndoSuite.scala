@@ -2,10 +2,11 @@ package oathdigital.application
 
 import oathdigital.gameplay.actions.travel.TravelProcedure
 import oathdigital.gameplay.powers.action.{Palanquin, PalanquinCard}
+import oathdigital.gameplay.powers.poweruse.CityWallCard
 import oathdigital.gameplay.powers.travel.{TravelFixture, TyrantCard}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, MenuPlay, Outcomes}
+import oathdigital.testkit.{Look, MenuPlay, Outcomes}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, present}
 
@@ -14,7 +15,7 @@ import oathdigital.testkit.Unwrap.{accepted, present}
 class AutomaticUseUndoSuite extends munit.FunSuite:
   import ConsentFixture.gameId
   private val projector = new GameProjector(catalog)
-  private val wall = CatalogNames.denizen("City Wall")
+  private val wall = CityWallCard.id
   private val coast = TravelFixture.coast
   private val home = TravelFixture.cradlePlains
 
@@ -22,7 +23,7 @@ class AutomaticUseUndoSuite extends munit.FunSuite:
     * the coast, which p2 rules with 2 warbands. */
   private val tyrantBesideAWalledCoast: ReadyGame =
     TravelFixture.on(TravelFixture.board(supply = 7))(_
-      .adviser(p1, "Tyrant").denizen(wall, at = coast)
+      .adviser(p1, TyrantCard).denizen(wall, at = coast)
       .warbandsAt(coast, p2, 2))
 
   /** p1 travels to `site` at `sequence`; returns the pick's batch. */
@@ -116,7 +117,7 @@ class AutomaticUseUndoSuite extends munit.FunSuite:
     // p1 holds Palanquin and sends p3, who holds Tyrant, to the coast.
     val sent = TravelFixture.on(TravelFixture.board())(_
       .adviser(p1, PalanquinCard.id).favor(p1, 1)
-      .pawn(p3, home).adviser(p3, "Tyrant")
+      .pawn(p3, home).adviser(p3, TyrantCard)
       .denizen(wall, at = coast).warbandsAt(coast, p2, 2))
     val (service, _) = ConsentFixture.service(sent)
     val used = accepted(service.handle(gameId, 0L, MenuPlay.starting(p1,

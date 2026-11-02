@@ -35,10 +35,6 @@ Left behind by earlier phases:
   powers through `PowerCtx` (or `ReadyGame`) instead of construction. The
   projectors, the Game Log and the action procedures take it for genuine
   lookups and stay as they are.
-- [ ] **Migrate `CatalogNames` to card objects.** Test files look
-  cards up by name through `CatalogNames` (the test readability sweep of
-  2026-10-02 moved numeric ids onto it). Sweep them to direct object
-  references such as `AlchemistCard`; a standing rule stops new uses.
 - [ ] **Show that the action pane scrolls at 1024×700.** At that size the
   action pane is about 330px tall, and the Keep and Discard zones of the
   starting-adviser decision sit wholly below the sticky confirm button with
@@ -481,7 +477,9 @@ before treating the numbers below as current.
   `catalog: ExecutableCatalog` parameter and adds no `forCatalog`
   constructor only to pass the catalog on (`scripts/check-architecture.py`
   lists the powers allowed one, each with its reason), and a new test names
-  cards by their card objects, not through `CatalogNames`.
+  cards and sites by their card objects (`AlchemistCard`, `DeepWoodsSite`),
+  never by a printed name looked up at run time (BackendArchitectureSuite
+  checks).
 - The verification gate is the complete JVM and Scala.js suites, the optimized
   Scala.js linker, the card catalog suite, the architecture and documentation-link
   checks, and diff validation.

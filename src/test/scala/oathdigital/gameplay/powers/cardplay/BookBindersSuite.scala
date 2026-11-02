@@ -1,22 +1,24 @@
 package oathdigital.gameplay.powers.cardplay
 
+import oathdigital.gameplay.powers.targeting.CircletOfCommandCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.testkit.MenuPlay
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.powers.whenplayed.ConspiracyWhenPlayed
 import oathdigital.gameplay.powers.{NoteText, PowerFixture, SearchFixture}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PowerRules, Table}
+import oathdigital.testkit.{Look, PowerRules, Table}
 import oathdigital.testkit.Unwrap.accepted
 
 class BookBindersSuite extends munit.FunSuite:
   import PowerFixture._
   import VisionPlayFixture._
 
-  private val binders = CatalogNames.denizen("Book Binders")
+  private val binders = BookBindersCard.id
   private val holder = Table.p2
   // A relic for the Conspiracy to take from Book Binders' holder.
-  private val targetRelic = CatalogNames.relic("Circlet of Command")
+  private val targetRelic = CircletOfCommandCard.id
   private val parked = PowerRules.parkedUnderWalkerPowers
 
   /** A Search drawing Faith, `owner` holding Book Binders, and exactly these
@@ -50,7 +52,7 @@ class BookBindersSuite extends munit.FunSuite:
       using munit.Location): ReadyGame =
     Table.from(
       SearchFixture.staged(Vector(VisionRules.Conspiracy), supply = 5))
-      .adviser(holder, binders).pawn(holder, "Ancient City")
+      .adviser(holder, binders).pawn(holder, AncientCitySite)
       .relic(holder, targetRelic, facedown = true)
       .banksHoldingOnly(banks.toSeq*).ready
 

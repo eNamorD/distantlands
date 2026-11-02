@@ -3,18 +3,20 @@ package oathdigital.gameplay.powers.cardplay
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.powers.{NoteText, PowerFixture, SearchFixture}
+import oathdigital.gameplay.powers.action.{ArcaneBrokersCard, WardOfSilenceCard}
+import oathdigital.gameplay.powers.campaign.ArcaneArmorCard
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, Table}
 
 class GossipSuite extends munit.FunSuite:
   import PowerFixture._
   import SearchFixture._
 
-  private val gossip = CatalogNames.denizen("Gossip")
+  private val gossip = GossipCard.id
   // Three Arcane denizens whose powers these tests do not use; p1 plays the
   // first, Ward of Silence.
-  private val plain = Vector("Ward of Silence", "Arcane Brokers",
-    "Arcane Armor").map(CatalogNames.denizen(_))
+  private val plain = Vector(WardOfSilenceCard.id, ArcaneBrokersCard.id,
+    ArcaneArmorCard.id)
   private val holder = Table.p2
 
   /** `holder` holds a faceup Gossip, the Discord bank holds 3 favor, and the

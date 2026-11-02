@@ -1,10 +1,12 @@
 package oathdigital.gameplay.powers.travel
 
+import oathdigital.gameplay.powers.economy.HallowedSpringCard
 import oathdigital.gameplay.actions.travel.TravelProcedure
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
+import oathdigital.gameplay.powers.search.ErrandBoyCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes}
+import oathdigital.testkit.{ActPowerHarness, Look, Outcomes}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Unwrap.{accepted, rejected}
 
@@ -12,11 +14,11 @@ class ForestPathsSuite extends munit.FunSuite:
   import PowerFixture._
   import TravelFixture._
 
-  private val paths = CatalogNames.denizen("Forest Paths")
+  private val paths = ForestPathsCard.id
   private val modifiers = Vector(ForestPaths.id)
   // A Beast denizen and a Beast edifice whose powers these tests do not use.
-  private val beast = CatalogNames.denizen("Errand Boy")
-  private val beastEdifice = CatalogNames.edifice("Hallowed Spring")
+  private val beast = ErrandBoyCard.id
+  private val beastEdifice = HallowedSpringCard.id
   private def held = on(board(supply = 7))(_.adviser(actor, paths)
     .favor(actor, 1))
 

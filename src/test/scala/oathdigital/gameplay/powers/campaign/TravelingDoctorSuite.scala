@@ -6,13 +6,13 @@ import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseAmountAnswer
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Traveling Doctor: Billowing Fog's rule, free, and discarded after a
   * Campaign its user lost. A bandit defender applies it and gains nothing
   * from it. */
 class TravelingDoctorSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Traveling Doctor")
+  private val card = TravelingDoctorCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
 
   private def lines(run: Run): Vector[NoteText.Said] =

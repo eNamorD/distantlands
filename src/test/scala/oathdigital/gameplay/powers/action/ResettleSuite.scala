@@ -1,9 +1,16 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.catalog.holding.PilgrimageCard
+import oathdigital.gameplay.cards.BuriedGiantSite
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.campaign.{MountainGiantCard, WildMountsCard}
+import oathdigital.gameplay.powers.search.{ErrandBoyCard, LandWardenCard}
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
+import oathdigital.gameplay.powers.wake.AncientCitySite
+import oathdigital.gameplay.powers.whenplayed.FaithfulFriendCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.accepted
@@ -11,26 +18,26 @@ import oathdigital.testkit.Unwrap.accepted
 class ResettleSuite extends munit.FunSuite:
   import PhasePowerHarness._
 
-  private val resettle = CatalogNames.denizen("Resettle")
+  private val resettle = ResettleCard.id
   private val source = DecisionOptionRef.Denizen(resettle)
   private val power = Resettle.forCatalog(catalog)
   /** p1's pawn site, with room for three cards. */
-  private val home = CatalogNames.site("Ancient City")
+  private val home = AncientCitySite.id
   /** Two sites with room for one card each. */
-  private val peaks = CatalogNames.site("Broken Peaks")
-  private val giant = CatalogNames.site("Buried Giant")
+  private val peaks = BrokenPeaksSite.id
+  private val giant = BuriedGiantSite.id
   /** Plain Nomad denizens. */
-  private val elders = CatalogNames.denizen("Elders")
-  private val wildMounts = CatalogNames.denizen("Wild Mounts")
-  private val mountainGiant = CatalogNames.denizen("Mountain Giant")
+  private val elders = EldersCard.id
+  private val wildMounts = WildMountsCard.id
+  private val mountainGiant = MountainGiantCard.id
   /** A plain Hearth denizen. */
-  private val landWarden = CatalogNames.denizen("Land Warden")
+  private val landWarden = LandWardenCard.id
   /** Nomad and adviser-only. */
-  private val pilgrimage = CatalogNames.denizen("Pilgrimage")
+  private val pilgrimage = PilgrimageCard.id
   /** Nomad, locked and adviser-only. */
-  private val faithfulFriend = CatalogNames.denizen("Faithful Friend")
+  private val faithfulFriend = FaithfulFriendCard.id
   /** A plain Beast denizen, filling Broken Peaks. */
-  private val errandBoy = CatalogNames.denizen("Errand Boy")
+  private val errandBoy = ErrandBoyCard.id
 
   /** p1's Act at Ancient City beside Resettle, site-only. p2 holds Wild
     * Mounts faceup with 1 favor on it. Errand Boy fills Broken Peaks; Buried

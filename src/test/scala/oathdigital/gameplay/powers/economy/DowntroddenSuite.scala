@@ -1,9 +1,10 @@
 package oathdigital.gameplay.powers.economy
 
 import oathdigital.gameplay.powers.SearchFixture
+import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, EconomyActions,
-  Look, Table}
+import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
@@ -11,9 +12,9 @@ import oathdigital.testkit.Unwrap.accepted
 class DowntroddenSuite extends munit.FunSuite:
   import SearchFixture.rules
 
-  private val downtrodden = CatalogNames.denizen("Downtrodden")
+  private val downtrodden = DowntroddenCard.id
   // A plain Beast card with no Muster power, mustered on in every test.
-  private val beast = CatalogNames.denizen("Errand Boy")
+  private val beast = ErrandBoyCard.id
   private val modifiers = Vector(Downtrodden.id)
 
   /** `table` with every favor bank holding `each`, except as `banks` sets. */
@@ -26,13 +27,13 @@ class DowntroddenSuite extends munit.FunSuite:
   /** p1 holds Downtrodden (Discord) as a faceup adviser and stands at
     * Ancient City, with 1 favor, 3 warbands and 7 Supply to pay a Muster. */
   private def seatedAtHome: Table = Table.start.adviser(p1, downtrodden)
-    .pawn(p1, at = "Ancient City").favor(p1, 1).boardWarbands(p1, 3)
+    .pawn(p1, at = AncientCitySite).favor(p1, 1).boardWarbands(p1, 3)
     .supply(p1, 7)
 
   /** `seatedAtHome` beside Errand Boy. Every favor bank holds 3, except as
     * `banks` sets. */
   private def board(banks: (Suit, Int)*): ReadyGame =
-    banksHolding(seatedAtHome.denizen(beast, at = "Ancient City"), 3,
+    banksHolding(seatedAtHome.denizen(beast, at = AncientCitySite), 3,
       banks*).ready
 
   /** Musters from Errand Boy. */
@@ -77,11 +78,11 @@ class DowntroddenSuite extends munit.FunSuite:
 
   test("Village Idiot's favor comes after the check: a tie for least stays " +
       "a tie when both modifiers are selected"):
-    val idiot = CatalogNames.denizen("Village Idiot")
+    val idiot = VillageIdiotCard.id
     // Every bank holds 2, so Hearth, Village Idiot's suit, ties for least.
     // Village Idiot then takes 1 from the Hearth bank, which must not make
     // the bank the strict least before Downtrodden reads it.
-    val seated = seatedAtHome.denizen(idiot, at = "Ancient City")
+    val seated = seatedAtHome.denizen(idiot, at = AncientCitySite)
     val ready = banksHolding(seated, 2).ready
     // The order the player selects them in must not matter.
     Vector(Downtrodden.id, VillageIdiot.id).permutations.foreach: selected =>

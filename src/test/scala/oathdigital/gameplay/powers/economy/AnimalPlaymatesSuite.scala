@@ -1,9 +1,13 @@
 package oathdigital.gameplay.powers.economy
 
 import oathdigital.gameplay.powers.SearchFixture
+import oathdigital.gameplay.powers.action.AlchemistCard
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.setup.SchoolOfVinesCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, EconomyActions,
-  Look, Table}
+import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
@@ -11,22 +15,22 @@ import oathdigital.testkit.Unwrap.accepted
 class AnimalPlaymatesSuite extends munit.FunSuite:
   import SearchFixture.rules
 
-  private val playmates = CatalogNames.denizen("Animal Playmates")
+  private val playmates = AnimalPlaymatesCard.id
   private val modifiers = Vector(AnimalPlaymates.id)
   // Plain cards the tests muster on: none has a Muster or Trade power.
-  private val beast = CatalogNames.denizen("Errand Boy")
-  private val order = CatalogNames.denizen("Wrestlers")
+  private val beast = ErrandBoyCard.id
+  private val order = WrestlersCard.id
   /** A Beast edifice whose intact face has no Muster or Trade power (its
     * power is about challenging banners). */
-  private val beastEdifice = CatalogNames.edifice("School of Vines")
+  private val beastEdifice = SchoolOfVinesCard.id
 
-  private val home = "Ancient City"
+  private val home = AncientCitySite
 
   /** p1 holds Animal Playmates as an adviser and stands at Ancient City,
     * which holds Alchemist. p1 has 4 favor and 7 Supply. */
   private def advised(facedown: Boolean = false): Table = Table.start
     .adviser(p1, playmates, facedown = facedown)
-    .pawn(p1, at = home).denizen("Alchemist", at = home)
+    .pawn(p1, at = home).denizen(AlchemistCard, at = home)
     .favor(p1, 4).supply(p1, 7)
 
   private def muster(ready: ReadyGame, selected: Vector[PowerId],

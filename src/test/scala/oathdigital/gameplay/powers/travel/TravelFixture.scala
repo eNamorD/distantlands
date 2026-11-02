@@ -2,6 +2,8 @@ package oathdigital.gameplay.powers.travel
 
 import oathdigital.gameplay.{OathRules, TravelPlay}
 import oathdigital.gameplay.actions.travel.TravelProcedure
+import oathdigital.gameplay.cards.{BuriedGiantSite, DunesSite, SaltFlatsSite,
+  ShroudedWoodsSite}
 import oathdigital.gameplay.powerresolver.ModifierPicks
 import oathdigital.gameplay.powers.{PowerFixture, WalkerPowerCatalog}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
@@ -9,7 +11,7 @@ import oathdigital.gameplay.walker.{WalkerPowers, WalkerSimulation}
 import oathdigital.gameplay.walker.WalkerSimulation.PreviewedOption
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, ParkedNode, Refusals, Table}
+import oathdigital.testkit.{ParkedNode, Refusals, Table}
 import oathdigital.testkit.PowerRules
 import oathdigital.testkit.Unwrap.accepted
 
@@ -35,10 +37,10 @@ object TravelFixture:
 
   private def site(power: String): SiteId = catalog.sites.find(
     _.handlers.exists(_.value.endsWith(s".$power"))).get.id
-  val cradlePlains: SiteId = CatalogNames.site("Buried Giant")
-  val provincePlains: SiteId = CatalogNames.site("Dunes")
-  val hinterlandPlains: SiteId = CatalogNames.site("Salt Flats")
-  val secondHinterlandPlains: SiteId = CatalogNames.site("Shrouded Woods")
+  val cradlePlains: SiteId = BuriedGiantSite.id
+  val provincePlains: SiteId = DunesSite.id
+  val hinterlandPlains: SiteId = SaltFlatsSite.id
+  val secondHinterlandPlains: SiteId = ShroudedWoodsSite.id
   val coast: SiteId = site("coast")
   val island: SiteId = site("island")
   val mountain: SiteId = site("mountain")

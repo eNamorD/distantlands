@@ -5,11 +5,13 @@ import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import oathdigital.gameplay.actions.search.SearchProcedure
 import oathdigital.gameplay.powers.{SearchFixture, WalkerPowerCatalog}
+import oathdigital.gameplay.powers.action.AncientBindingCard
+import oathdigital.gameplay.powers.campaign.{RainBootsCard, WrestlersCard}
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look, ParkedNode, PlacementPicks,
-  Table}
+import oathdigital.testkit.{Look, ParkedNode, PlacementPicks, Table}
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
 
@@ -20,7 +22,7 @@ class LandWardenSuite extends munit.FunSuite:
   import SearchFixture.rules
 
   private val walkerPowers = WalkerPowerCatalog.default(catalog)
-  private val landWarden = CatalogNames.denizen("Land Warden")
+  private val landWarden = LandWardenCard.id
   private val modifiers = Vector(LandWarden.id)
   /** Three Beast cards with no power of their own, on top of the world
     * deck: playing one has no effect on the others. */
@@ -30,7 +32,7 @@ class LandWardenSuite extends munit.FunSuite:
     * 5 Supply and the world deck topped by `drawn`, holding Land Warden
     * faceup unless `warden` is false. */
   private def atAncientCity(warden: Boolean = true): Table =
-    val table = Table.start.pawn(p1, "Ancient City").supply(p1, 5)
+    val table = Table.start.pawn(p1, AncientCitySite).supply(p1, 5)
       .worldDeckTop(drawn*)
     if warden then table.adviser(p1, landWarden) else table
 
@@ -95,7 +97,7 @@ class LandWardenSuite extends munit.FunSuite:
     val second = accepted(SearchFixture.place(first, drawn(0),
       PlayedAs.Faceup))
     val after = Look(SearchFixture.after(second))
-    assertEquals(after.cardsAt("Ancient City"), Vector(drawn(1)))
+    assertEquals(after.cardsAt(AncientCitySite), Vector(drawn(1)))
     assert(after.advisers(p1).contains(drawn(0)), after.advisers(p1))
     assert(after.inRegionalDiscard(drawn(2)))
 
@@ -114,9 +116,9 @@ class LandWardenSuite extends munit.FunSuite:
 
   test("when the first did not go to a site and no site has room, the " +
       "second is discarded"):
-    val full = atAncientCity().denizen("Rain Boots", at = "Ancient City")
-      .denizen("Ancient Binding", at = "Ancient City")
-      .denizen("Wrestlers", at = "Ancient City")
+    val full = atAncientCity().denizen(RainBootsCard, at = AncientCitySite)
+      .denizen(AncientBindingCard, at = AncientCitySite)
+      .denizen(WrestlersCard, at = AncientCitySite)
     val (first, options) = secondCardOptions(full, PlayedAs.Faceup)
     assertEquals(PlacementPicks.offered(options), Vector(PlayedAs.Discarded))
     val second = accepted(SearchFixture.place(first, drawn(0),

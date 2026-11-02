@@ -2,11 +2,11 @@ package oathdigital.application
 
 import oathdigital.application.gamelog.LogScripts.{formatter, texts}
 import oathdigital.gameplay.powers.action.{Palanquin, PalanquinCard}
-import oathdigital.gameplay.powers.travel.TravelFixture
+import oathdigital.gameplay.powers.travel.{TollRoadsCard, TravelFixture}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.protocol.projection._
-import oathdigital.testkit.{CatalogNames, Look, MenuPlay, Outcomes}
+import oathdigital.testkit.{Look, MenuPlay, Outcomes}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, present}
 
@@ -69,7 +69,7 @@ class PalanquinConsentServiceSuite extends munit.FunSuite:
     val bandits = TravelFixture.on(TravelFixture.board())(_
       .adviser(p1, PalanquinCard.id).favor(p1, 1)
       .pawn(p3, TravelFixture.cradlePlains).favor(p3, 1)
-      .denizen(CatalogNames.denizen("Toll Roads"),
+      .denizen(TollRoadsCard.id,
         at = TravelFixture.provincePlains)
       .bandits(TravelFixture.provincePlains, 1).bandits(coast, 1))
     val (service, _) = ConsentFixture.service(bandits)

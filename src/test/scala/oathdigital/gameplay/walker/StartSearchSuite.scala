@@ -2,8 +2,11 @@ package oathdigital.gameplay.walker
 
 import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,
   ModifierPicks, Transform}
+import oathdigital.gameplay.powers.campaign.{MercenariesCard, WrestlersCard}
+import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Table.p1
 
 /** The dry run that walks a start past its modifier decision (walker-driven
@@ -11,9 +14,9 @@ import oathdigital.testkit.Table.p1
   * hand-built tree walked with stand-in modifiers. */
 class StartSearchSuite extends munit.FunSuite:
   private val window = PowerWindow.SearchModifierSelection
-  private val alpha = CatalogNames.denizen("Wrestlers")
-  private val beta = CatalogNames.denizen("Mercenaries")
-  private val gamma = CatalogNames.denizen("Errand Boy")
+  private val alpha = WrestlersCard.id
+  private val beta = MercenariesCard.id
+  private val gamma = ErrandBoyCard.id
   private val go = DecisionOptionRef.Button("go")
 
   /** A stand-in modifier on `card`, pickable at the Search window, that
@@ -51,7 +54,7 @@ class StartSearchSuite extends munit.FunSuite:
   /** p1 at Ancient City with `supply` Supply, holding alpha, beta and gamma
     * faceup. */
   private def table(supply: Int): ReadyGame =
-    Table.start.pawn(p1, "Ancient City").favor(p1, 3).supply(p1, supply)
+    Table.start.pawn(p1, AncientCitySite).favor(p1, 3).supply(p1, supply)
       .adviser(p1, alpha).adviser(p1, beta).adviser(p1, gamma).ready
 
   private def started(supply: Int, stands: Stand*) =

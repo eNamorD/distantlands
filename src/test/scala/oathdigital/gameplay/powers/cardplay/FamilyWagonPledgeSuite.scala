@@ -1,13 +1,17 @@
 package oathdigital.gameplay.powers.cardplay
 
+import oathdigital.gameplay.PledgeToDiscordCard
 import oathdigital.gameplay.actions.ProcedureNotes
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import oathdigital.gameplay.powers.{NoteText, PowerFixture, SearchFixture}
+import oathdigital.gameplay.powers.action.{EldersCard, HomesteadersCard}
+import oathdigital.gameplay.powers.campaign.{RainBootsCard, WrestlersCard}
+import oathdigital.gameplay.powers.search.LandWardenCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.PartitionAnswer
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Unwrap.accepted
 
 /** Family Wagon beside Pledge to Discord (catalog batch 8 rulings, slice
@@ -17,13 +21,12 @@ class FamilyWagonPledgeSuite extends munit.FunSuite:
   import PowerFixture.actor
 
   private val power = FamilyWagon.forCatalog(catalog)
-  private val wagon = CatalogNames.denizen("Family Wagon")
-  private val pledge = CatalogNames.denizen("Pledge to Discord")
-  private val elders = CatalogNames.denizen("Elders")
-  private val rainBoots = CatalogNames.denizen("Rain Boots")
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
-  private val fillers = Vector("Homesteaders", "Land Warden")
-    .map(CatalogNames.denizen(_))
+  private val wagon = FamilyWagonCard.id
+  private val pledge = PledgeToDiscordCard.id
+  private val elders = EldersCard.id
+  private val rainBoots = RainBootsCard.id
+  private val wrestlers = WrestlersCard.id
+  private val fillers = Vector(HomesteadersCard.id, LandWardenCard.id)
 
   /** The actor with Pledge to Discord and `advisers`, about to Search
     * Family Wagon off the deck. */

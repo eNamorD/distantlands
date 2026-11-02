@@ -4,13 +4,14 @@ import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Shield Wall: a defender's plan that adds two defense dice, and kills its
   * user's whole force when they are defeated. */
 class ShieldWallSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Shield Wall")
+  private val card = ShieldWallCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
 
   private def killed(who: PlayerId): NoteText.Said = NoteText.Said("killed",
@@ -69,9 +70,9 @@ class ShieldWallSuite extends munit.FunSuite:
     assertEquals(said(ShieldWall, done.events), Vector.empty)
 
   test("Hospital saves the warbands Shield Wall kills"):
-    val hospital = CatalogNames.denizen("Hospital")
+    val hospital = HospitalCard.id
     // Broken Peaks, the first site after the origin, which nobody else rules.
-    val site = CatalogNames.site("Broken Peaks")
+    val site = BrokenPeaksSite.id
     val shielded = rivalHoldsShieldWall
     val b = withSiteCard(on(shielded)(_.warbandsAt(site, shielded.rival, 2)),
       site, hospital)
@@ -89,7 +90,7 @@ class ShieldWallSuite extends munit.FunSuite:
 
   test("with Sticky Fire also killing the force, the returned warband dies " +
       "once"):
-    val fire = CatalogNames.relic("Sticky Fire")
+    val fire = StickyFireCard.id
     val b = withRelic(rivalHoldsShieldWall, fire)
     val done = commit(rules(winningDice), b, 4)
       .pick(b.actor, CampaignIds.attackerPlan, DecisionOptionRef.Relic(fire))

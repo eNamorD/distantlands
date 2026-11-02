@@ -1,11 +1,13 @@
 package oathdigital.gameplay
 
+import oathdigital.gameplay.cards.{BuriedGiantSite, DunesSite}
 import oathdigital.gameplay.powerresolver._
 import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.travel.TravelSitePowers
+import oathdigital.gameplay.powers.travel.{BrokenPeaksSite, DesolateShoreSite,
+  FairIsleSite, NarrowPassSite, RockyCoastSite, TravelSitePowers}
 import oathdigital.gameplay.setup.FirstGameSetupFixture
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Table, TestCards}
+import oathdigital.testkit.{Look, Table, TestCards}
 import oathdigital.testkit.Unwrap.present
 
 /** Travel terrain rules are proved against contribution collection, before
@@ -29,13 +31,13 @@ class TravelSitePowersSuite extends munit.FunSuite:
   // The first two Plains sites, and the first site of each terrain, in
   // catalog order; Rocky Coast is a second coast site, with its own
   // `.rocky-coast.coast` handler.
-  private val plain = CatalogNames.site("Buried Giant")
-  private val otherPlain = CatalogNames.site("Dunes")
-  private val mountain = CatalogNames.site("Broken Peaks")
-  private val coast = CatalogNames.site("Desolate Shore")
-  private val island = CatalogNames.site("Fair Isle")
-  private val pass = CatalogNames.site("Narrow Pass")
-  private val rockyCoast = CatalogNames.site("Rocky Coast")
+  private val plain = BuriedGiantSite.id
+  private val otherPlain = DunesSite.id
+  private val mountain = BrokenPeaksSite.id
+  private val coast = DesolateShoreSite.id
+  private val island = FairIsleSite.id
+  private val pass = NarrowPassSite.id
+  private val rockyCoast = RockyCoastSite.id
 
   /** p1's Act on the quiet table, p1 at `source`, the map as given. */
   private def readyAt(source: SiteId, map: Option[MapState] = None)

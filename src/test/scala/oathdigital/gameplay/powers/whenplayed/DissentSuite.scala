@@ -2,6 +2,9 @@ package oathdigital.gameplay.powers.whenplayed
 
 import oathdigital.gameplay.phases.RestCleanupPlan
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.action.HomesteadersCard
+import oathdigital.gameplay.powers.economy.DefameCard
+import oathdigital.gameplay.powers.search.{DisciplesCard, LandWardenCard}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{Look, Outcomes, Table}
@@ -23,11 +26,11 @@ class DissentSuite extends munit.FunSuite:
     // favor. p2 rules Land Warden (Hearth) and, through its warband there,
     // Disciples (Arcane) at another Cradle site, and holds 1. p3 holds the
     // People's Favor, and Defame (Discord), with 2 favor.
-    val ready = Table.start.adviser(p1, dissent).adviser(p1, "Homesteaders")
+    val ready = Table.start.adviser(p1, dissent).adviser(p1, HomesteadersCard)
       .favor(p1, 3)
-      .adviser(p2, "Land Warden").warbandsAt(nearSite, p2, 1)
-      .denizen("Disciples", at = nearSite).favor(p2, 1)
-      .adviser(p3, "Defame").favor(p3, 2).peoplesFavor(Some(p3), 1).ready
+      .adviser(p2, LandWardenCard).warbandsAt(nearSite, p2, 1)
+      .denizen(DisciplesCard, at = nearSite).favor(p2, 1)
+      .adviser(p3, DefameCard).favor(p3, 2).peoplesFavor(Some(p3), 1).ready
     val done = Outcomes.finished(play(ready, power, dissent))
     val end = Look(done.treeless)
     assertEquals(Vector(p1, p2, p3).map(end.favor), Vector(1, 0, 2))
@@ -46,7 +49,7 @@ class DissentSuite extends munit.FunSuite:
   test("the recorded operations rebuild the end state"):
     // p1 rules Dissent and holds 2 favor; p2 rules Land Warden and holds 1.
     val ready = Table.start.adviser(p1, dissent).favor(p1, 2)
-      .adviser(p2, "Land Warden").favor(p2, 1).ready
+      .adviser(p2, LandWardenCard).favor(p2, 1).ready
     val done = Outcomes.finished(play(ready, power, dissent))
     assertJournalRebuilds(ready, done.events, done.treeless)
 

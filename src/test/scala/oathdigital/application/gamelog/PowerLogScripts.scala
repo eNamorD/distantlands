@@ -5,16 +5,21 @@ import oathdigital.application._
 import oathdigital.gameplay.{ModifierPlay, TravelPlay}
 import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.powers.action.{BarbedNet, GamblingHall, Oracle,
-  Wolves}
-import oathdigital.gameplay.powers.cardplay.WildCry
-import oathdigital.gameplay.powers.search.{Augury, NewsFromAfar}
-import oathdigital.gameplay.powers.travel.Tents
-import oathdigital.gameplay.powers.whenplayed.FamilyHeirloom
+import oathdigital.gameplay.powers.action.{BarbedNet, BarbedNetCard,
+  DowsingSticksCard, GamblingHall, GamblingHallCard, Oracle, OracleCard, Wolves,
+  WolvesCard}
+import oathdigital.gameplay.powers.campaign.StickyFireCard
+import oathdigital.gameplay.powers.cardplay.{WildCry, WildCryCard}
+import oathdigital.gameplay.powers.economy.BirdsongCard
+import oathdigital.gameplay.powers.search.{Augury, AuguryCard, NewsFromAfar,
+  NewsFromAfarCard}
+import oathdigital.gameplay.powers.travel.{Tents, TentsCard}
+import oathdigital.gameplay.powers.wake.{AncientCitySite, HungerCard}
+import oathdigital.gameplay.powers.whenplayed.{FamilyHeirloom,
+  FamilyHeirloomCard, WizardsConclaveCard}
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{Answers, CatalogNames, Dice, Look, MenuPlay,
-  PlacementPicks}
+import oathdigital.testkit.{Answers, Dice, Look, MenuPlay, PlacementPicks}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import LogScriptSupport.{atTable, tableWithOnePawnPerSite}
 
@@ -37,7 +42,7 @@ object PowerLogScripts:
     * it. */
   def augury(using munit.Location): Script =
     val (service, act) = atTable("augury", tableWithOnePawnPerSite
-      .denizen("Augury", "Ancient City").banditsRefilled)
+      .denizen(AuguryCard, AncientCitySite).banditsRefilled)
     act.withAnswers(ModifierPlay.answers(PowerWindow.SearchModifierSelection,
       Vector(Augury.id))).after(MenuPlay.start(p1, ActionRef.Search))
     Script("augury", service, p1)
@@ -48,7 +53,7 @@ object PowerLogScripts:
     * no Supply. */
   def twoPicks(using munit.Location): Script =
     val (service, act) = atTable("two-picks", tableWithOnePawnPerSite
-      .denizen("Augury", "Ancient City").adviser(p1, "News from Afar")
+      .denizen(AuguryCard, AncientCitySite).adviser(p1, NewsFromAfarCard)
       .favor(p1, 2).banditsRefilled)
     act.withAnswers(ModifierPlay.answers(PowerWindow.SearchModifierSelection,
       Vector(NewsFromAfar.id, Augury.id))).after(MenuPlay.start(p1, ActionRef.Search))
@@ -57,9 +62,9 @@ object PowerLogScripts:
   /** Wild Cry at p1's site and a facedown adviser: the play picks Wild Cry,
     * then plays the adviser by default. */
   def facedownWithCry(using munit.Location): Script =
-    val conclave = CatalogNames.denizen("Wizard's Conclave")
+    val conclave = WizardsConclaveCard.id
     val (service, act) = atTable("facedown-cry", tableWithOnePawnPerSite
-      .denizen("Wild Cry", "Ancient City")
+      .denizen(WildCryCard, AncientCitySite)
       .adviser(p1, conclave, facedown = true).banditsRefilled)
     act.withAnswers(ModifierPlay.answers(PowerWindow.SearchModifierSelection,
       Vector(WildCry.id))).after(MenuPlay.start(p1, ActionRef.PlayFacedownAdviser))
@@ -70,7 +75,7 @@ object PowerLogScripts:
     * other site of Ancient City's region, which Tents makes free. */
   def travelWithTents(using munit.Location): Script =
     val (service, act) = atTable("tents", tableWithOnePawnPerSite
-      .adviser(p1, "Tents").favor(p1, 1).banditsRefilled)
+      .adviser(p1, TentsCard).favor(p1, 1).banditsRefilled)
     val map = act.ready.game.current.map
     val home = Look(act.ready).pawn(p1)
     val nearby = map.inPlay.find(site => site != home &&
@@ -90,8 +95,9 @@ object PowerLogScripts:
     * shields, so they total 8, and the richest bank is chosen so the gain is
     * never empty. */
   def gamblingHall(using munit.Location): Script =
-    val card = CatalogNames.denizen("Gambling Hall")
-    val table = tableWithOnePawnPerSite.denizen("Gambling Hall", "Ancient City")
+    val card = GamblingHallCard.id
+    val table = tableWithOnePawnPerSite.denizen(GamblingHallCard,
+      AncientCitySite)
       .favor(p1, 2).banditsRefilled
     val richest = Suit.all.maxBy(suit => table.ready.banks.favor(suit))
     val (service, act) = atTable("gambling-hall", table)
@@ -105,9 +111,9 @@ object PowerLogScripts:
     * board question parks; the answer kills one of the other player's
     * warbands with the most of them. */
   def wolves(using munit.Location): Script =
-    val card = CatalogNames.denizen("Wolves")
+    val card = WolvesCard.id
     // p3 has fewer warbands on its board, so p2 is the one with the most.
-    val table = tableWithOnePawnPerSite.denizen("Wolves", "Ancient City")
+    val table = tableWithOnePawnPerSite.denizen(WolvesCard, AncientCitySite)
       .secrets(p1, faceUp = 2).boardWarbands(p3, 2).banditsRefilled
     val victim = table.ready.game.current.players.filter(_.player != p1)
       .maxBy(_.board.warbands).player
@@ -126,9 +132,9 @@ object PowerLogScripts:
 
   /** Oracle, its drawn Vision of Sanctuary played as `placement` names. */
   def oracle(name: String, placement: PlayedAs)(using munit.Location): Script =
-    val card = CatalogNames.denizen("Oracle")
+    val card = OracleCard.id
     val (service, act) = atTable(name, tableWithOnePawnPerSite
-      .denizen("Oracle", "Ancient City").secrets(p1, faceUp = 3)
+      .denizen(OracleCard, AncientCitySite).secrets(p1, faceUp = 3)
       .worldDeckTop(VisionRules.Sanctuary).banditsRefilled)
     act.withAnswers {
       case park if park.decisionId.startsWith(LogWords.PlacePrefix) =>
@@ -140,12 +146,12 @@ object PowerLogScripts:
     * by a player holding four secrets. The relic question parks; the answer
     * takes Dowsing Sticks. */
   def barbedNet(using munit.Location): Script =
-    val net = CatalogNames.relic("Barbed Net")
-    val target = CatalogNames.relic("Dowsing Sticks")
+    val net = BarbedNetCard.id
+    val target = DowsingSticksCard.id
     val (service, act) = atTable("barbed-net", tableWithOnePawnPerSite
-      .relic(p1, "Barbed Net")
-      .relicAt("Dowsing Sticks", "Ancient City")
-      .relicAt("Sticky Fire", "Ancient City")
+      .relic(p1, BarbedNetCard)
+      .relicAt(DowsingSticksCard, AncientCitySite)
+      .relicAt(StickyFireCard, AncientCitySite)
       .secrets(p1, faceUp = 4).banditsRefilled)
     act.withAnswers {
       case park if park.decisionId == BarbedNet.decisionId =>
@@ -161,7 +167,7 @@ object PowerLogScripts:
     * holder, p2. */
   def hunger(using munit.Location): Script =
     val (service, act) = atTable("hunger", tableWithOnePawnPerSite
-      .adviser(p2, "Birdsong", facedown = true).adviser(p2, "Hunger")
+      .adviser(p2, BirdsongCard, facedown = true).adviser(p2, HungerCard)
       .banditsRefilled)
     act.after(MenuPlay.start(p1, PhaseTransitionRef.BeginRest))
     Script("hunger", service, p2)
@@ -172,8 +178,8 @@ object PowerLogScripts:
   def familyHeirloom(name: String, choice: DecisionOptionRef.Button)
       (using munit.Location): Script =
     val (service, act) = atTable(name, tableWithOnePawnPerSite
-      .adviser(p1, "Family Heirloom", facedown = true)
-      .relicDeckTop("Dowsing Sticks").banditsRefilled)
+      .adviser(p1, FamilyHeirloomCard, facedown = true)
+      .relicDeckTop(DowsingSticksCard).banditsRefilled)
     act.withAnswers {
       case park if park.decisionId.startsWith(LogWords.PlacePrefix) =>
         ChooseOneAnswer(PlacementPicks.pick(park.decide, PlayedAs.Faceup))

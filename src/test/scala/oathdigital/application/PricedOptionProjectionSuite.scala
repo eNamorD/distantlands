@@ -1,9 +1,10 @@
 package oathdigital.application
 
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Table.p1
 
 /** An option that states its price projects as the option it wraps, with the
@@ -11,7 +12,7 @@ import oathdigital.testkit.Table.p1
   */
 class PricedOptionProjectionSuite extends munit.FunSuite:
   private val actor = p1
-  private val site = CatalogNames.site("Ancient City")
+  private val site = AncientCitySite.id
 
   /** The options p1 is offered by a parked decision offering `options`. */
   private def projected(options: Vector[DecisionOption]) =

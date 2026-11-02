@@ -4,14 +4,14 @@ import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignPlans}
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Encirclement: a favor placed for two attack dice, added or removed, offered
   * only while its user's force is strictly larger than the enemy's. */
 class EncirclementSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Encirclement")
+  private val card = EncirclementCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
+  private val wrestlers = WrestlersCard.id
 
   /** The actor holds Encirclement and a favor. */
   private def attacker(b: Board): Board =

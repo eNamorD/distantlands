@@ -1,5 +1,6 @@
 package oathdigital.gameplay.actions.dice
 
+import oathdigital.catalog.holding.BrackenCard
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.WalkerDiceFixture.scripted
 import oathdigital.gameplay.actions.campaign.CampaignIds
@@ -22,7 +23,7 @@ class RerollChoiceSuite extends munit.FunSuite:
     RerollChoice.decisionId(CampaignIds.defensePool, 1)
 
   test("Bracken offers nothing of its own"):
-    assertEquals(planlessCard("Bracken"), bracken)
+    assertEquals(planlessCard(BrackenCard), bracken)
 
   /** p1 attacks the bandit-ruled origin with 2 warbands, holding
     * Bracken faceup. */

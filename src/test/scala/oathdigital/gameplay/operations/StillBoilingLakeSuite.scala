@@ -3,6 +3,7 @@ package oathdigital.gameplay.operations
 import oathdigital.gameplay.actions.{CardPlay, CardPlayRules}
 import oathdigital.gameplay.actions.cardplay.CardSlots
 import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
 import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
@@ -58,7 +59,7 @@ class StillBoilingLakeSuite extends munit.FunSuite:
     assertEquals(rule.reason(ready, Play(card, from, Location.Site(home),
       Orientation.FaceUp)).map(_.code), Some(StillBoilingLake.code))
     assertEquals(rule.reason(ready, Play(card, from,
-      Location.Site(SiteId("site:broken-peaks")), Orientation.FaceUp)), None)
+      Location.Site(BrokenPeaksSite.id), Orientation.FaceUp)), None)
     assertEquals(rule.reason(ready, Play(card, from, Location.PlayArea(p1),
       Orientation.FaceDown)), None)
     assertEquals(rule.reason(ready, Move(Piece.Card(card), from,

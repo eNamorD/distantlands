@@ -2,7 +2,7 @@ package oathdigital.gameplay.powers.action
 
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, Table}
 import oathdigital.testkit.Outcomes.{assertWireRoundTrips, ready}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -10,7 +10,7 @@ class DemonTailSuite extends munit.FunSuite:
   import ActPowerHarness._
   import PowerFixture._
 
-  private val tail = CatalogNames.relic("Demon Tail")
+  private val tail = DemonTailCard.id
   private val source = DecisionOptionRef.Relic(tail)
 
   /** p1's Act holding Demon Tail, with `supply` Supply and `faceUp` faceup

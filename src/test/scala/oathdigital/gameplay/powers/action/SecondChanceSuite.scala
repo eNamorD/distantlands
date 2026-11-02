@@ -1,9 +1,11 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.campaign.CodeOfHonorCard
+import oathdigital.gameplay.powers.economy.DefameCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.accepted
@@ -11,13 +13,13 @@ import oathdigital.testkit.Unwrap.accepted
 class SecondChanceSuite extends munit.FunSuite:
   import PhasePowerHarness._
 
-  private val chance = CatalogNames.denizen("Second Chance")
+  private val chance = SecondChanceCard.id
   private val source = DecisionOptionRef.Denizen(chance)
   private val power = SecondChance.forCatalog(catalog)
   // Denizens whose powers these tests do not use: only their suits matter.
-  private val codeOfHonor = CatalogNames.denizen("Code of Honor")
-  private val defame = CatalogNames.denizen("Defame")
-  private val homesteaders = CatalogNames.denizen("Homesteaders")
+  private val codeOfHonor = CodeOfHonorCard.id
+  private val defame = DefameCard.id
+  private val homesteaders = HomesteadersCard.id
 
   /** p1's Act holding Second Chance with `secrets` faceup secrets. */
   /** The walk Second Chance started and the walk after `target` was

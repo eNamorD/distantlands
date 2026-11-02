@@ -1,10 +1,13 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog}
+import oathdigital.gameplay.powers.banner.YewStaffCard
+import oathdigital.gameplay.powers.rest.InsomniaCard
+import oathdigital.gameplay.powers.search.LandWardenCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, ParkedNode,
-  PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, ParkedNode, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
@@ -12,32 +15,32 @@ import oathdigital.testkit.Unwrap.accepted
 class ArmedMobSuite extends munit.FunSuite:
   import PhasePowerHarness._
 
-  private val mob = CatalogNames.denizen("Armed Mob")
+  private val mob = ArmedMobCard.id
   private val source = DecisionOptionRef.Denizen(mob)
   private val power = ArmedMob.forCatalog(catalog)
   // Two Hearth denizens whose powers these tests do not use.
-  private val homesteaders = CatalogNames.denizen("Homesteaders")
-  private val landWarden = CatalogNames.denizen("Land Warden")
-  private val insomnia = CatalogNames.denizen("Insomnia")
+  private val homesteaders = HomesteadersCard.id
+  private val landWarden = LandWardenCard.id
+  private val insomnia = InsomniaCard.id
 
   /** p1's Act at Ancient City beside a site Armed Mob, with `favor` favor.
     * Armed Mob is site-only. p2 holds the Darkest Secret. */
   /** The walk Armed Mob started and the walk after `card` was chosen. */
   private def staged(favor: Int = 1): Table =
-    Table.start.turn(p1, Phase.Act).pawn(p1, "Ancient City")
-      .denizen(mob, at = "Ancient City").favor(p1, favor)
+    Table.start.turn(p1, Phase.Act).pawn(p1, AncientCitySite)
+      .denizen(mob, at = AncientCitySite).favor(p1, favor)
       .darkestSecret(Some(p2), 1)
 
   /** The discard pile of the region after Ancient City's (the Cradle):
     * where a card discarded there goes. */
   private def discarded(ready: ReadyGame): Vector[WorldCardId] =
-    Look(ready).discardAfter("Ancient City")
+    Look(ready).discardAfter(AncientCitySite)
 
   private def choose(ready: ReadyGame, card: DenizenId): UsedAndAnswered =
     useAndAnswer(ready, power, source,
       ArmedMob.decisionId, DecisionOptionRef.Denizen(card))
 
-  private val yewStaff = "Yew Staff"
+  private val yewStaff = YewStaffCard.id
 
   /** The choose-one the use is parked on, with its heading and its
     * unavailable options. */

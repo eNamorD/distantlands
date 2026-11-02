@@ -1,7 +1,8 @@
 package oathdigital.gameplay.powerresolver
 
+import oathdigital.gameplay.powers.campaign.WildMountsCard
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Unwrap.as
 
 /** A composite that is not the walker's own and carries no window, as a
@@ -150,7 +151,7 @@ class OperationRewriteSuite extends munit.FunSuite:
       dropPoolChanges), Vector[Operation](Sequence(Vector.empty)))
 
   test("a semantic composite is matched whole, never entered"):
-    val discard = Discard.Denizen(CatalogNames.denizen("Wild Mounts"),
+    val discard = Discard.Denizen(WildMountsCard.id,
       PositionedLocation(Location.PlayArea(actor)), Region.Cradle,
       Suit.Nomad, favor = 0, secrets = 0, actingPlayer = actor)
     val dropMoves: OperationRewrite.Matcher[CoreOperation, CoreOperation] =

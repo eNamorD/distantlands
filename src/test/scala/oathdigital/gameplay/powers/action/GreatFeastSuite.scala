@@ -1,9 +1,13 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.gameplay.operations.HallOfMinistersCard
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.campaign.WildMountsCard
+import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
@@ -11,13 +15,13 @@ import oathdigital.testkit.Unwrap.accepted
 class GreatFeastSuite extends munit.FunSuite:
   import PhasePowerHarness._
 
-  private val feast = CatalogNames.denizen("Great Feast")
+  private val feast = GreatFeastCard.id
   private val source = DecisionOptionRef.Denizen(feast)
   private val power = GreatFeast.forCatalog(catalog)
-  private val home = CatalogNames.site("Ancient City")
+  private val home = AncientCitySite.id
   // Denizens whose powers these tests do not use, a Beast and a Nomad.
-  private val errandBoy = CatalogNames.denizen("Errand Boy")
-  private val wildMounts = CatalogNames.denizen("Wild Mounts")
+  private val errandBoy = ErrandBoyCard.id
+  private val wildMounts = WildMountsCard.id
 
   /** p1's Act at Ancient City holding Great Feast, with `supply` Supply and
     * `favor` favor. */
@@ -85,7 +89,7 @@ class GreatFeastSuite extends munit.FunSuite:
       "not be discarded"):
     // Bandits rule Ancient City, so nobody may consent to the discard.
     val ready = staged().denizen(errandBoy, at = home)
-      .edifice(CatalogNames.edifice("Hall of Ministers"), EdificeSide.Intact,
+      .edifice(HallOfMinistersCard.id, EdificeSide.Intact,
         at = home).bandits(home, 2).ready
     val asked = accepted(use(ready, power, source))
     assert(awaits(asked, GreatFeast.decisionId))

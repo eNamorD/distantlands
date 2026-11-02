@@ -1,7 +1,12 @@
 package oathdigital.application.gamelog
 
+import oathdigital.gameplay.cards.BuriedGiantSite
+import oathdigital.gameplay.powers.campaign.KeepCard
+import oathdigital.gameplay.powers.economy.BirdsongCard
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Dice, MenuPlay, Table}
+import oathdigital.testkit.{Dice, MenuPlay, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import LogScripts.{atTable, format, playerLabel, raidAnswers, texts}
 
@@ -9,17 +14,17 @@ import LogScripts.{atTable, format, playerLabel, raidAnswers, texts}
   * pawn ended up, and the closing line neither sends the pawn there nor
   * reports a burn or a discard. */
 class KeepLogSuite extends munit.FunSuite:
-  private val keep = CatalogNames.denizen("Keep")
-  private val ancientCity = CatalogNames.site("Ancient City")
-  private val brokenPeaks = CatalogNames.site("Broken Peaks")
-  private val buriedGiant = CatalogNames.site("Buried Giant")
+  private val keep = KeepCard.id
+  private val ancientCity = AncientCitySite.id
+  private val brokenPeaks = BrokenPeaksSite.id
+  private val buriedGiant = BuriedGiantSite.id
 
   /** p1 raids p2 at Ancient City and wins. p2 holds a facedown Birdsong,
     * and Keep stands at `keepSite`, where p2 holds 2 warbands. The log as
     * p3 sees it. */
   private def raidOnKeepsRuler(keepSite: SiteId): Vector[String] =
     val table = Table.start.pawn(p1, ancientCity).pawn(p2, ancientCity)
-      .pawn(p3, buriedGiant).adviser(p2, "Birdsong", facedown = true)
+      .pawn(p3, buriedGiant).adviser(p2, BirdsongCard, facedown = true)
       .denizen(keep, at = keepSite).warbandsAt(keepSite, p2, 2)
       .banditsRefilled
     val (service, act) = atTable("keep", table, Dice.raid)

@@ -1,11 +1,12 @@
 package oathdigital.gameplay.powers.setup
 
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 
 class EdificeSetupSupportSuite extends munit.FunSuite:
-  private val edifice = CatalogNames.edifice("Great Market")
-  private val site = CatalogNames.site("Ancient City")
+  private val edifice = GreatMarketCard.id
+  private val site = AncientCitySite.id
 
   test("siteOf finds an edifice staged on a side, and misses the other side"):
     val staged = Table.start.edifice(edifice, EdificeSide.Ruined, at = site)

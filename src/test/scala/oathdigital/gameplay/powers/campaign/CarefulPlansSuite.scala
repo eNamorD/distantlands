@@ -6,7 +6,7 @@ import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseAmountAnswer
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Careful Plans: one favor placed, and the defender rolls before the
   * attacker; the sacrifice stays after the attack roll. */
@@ -14,9 +14,9 @@ class CarefulPlansSuite extends munit.FunSuite:
   import AttackDieFace.{OneSword, TwoSwordsSkull}
   import DefenseDieFace.{Blank, OneShield}
 
-  private val card = CatalogNames.denizen("Careful Plans")
+  private val card = CarefulPlansCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
-  private val longbows = CatalogNames.denizen("Longbows")
+  private val longbows = LongbowsCard.id
   private val attackFaces = Vector[DieFace](OneSword, TwoSwordsSkull)
   private val defenseFaces = Vector[DieFace](Blank, OneShield)
 

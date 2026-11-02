@@ -3,19 +3,20 @@ package oathdigital.gameplay.powers.campaign
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.action.{BrassHorseCard, OracularPigCard}
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Sealing Ward: each of its holder's relics a Raid targets adds a defense
   * die, added when the pools are gathered. A Raid's defense pool holds 2 dice
   * for the defender's pawn and 2 for each relic targeted. */
 class SealingWardSuite extends munit.FunSuite:
-  private val ward = CatalogNames.denizen("Sealing Ward")
+  private val ward = SealingWardCard.id
   /** Prints no battle plan, so the defender is offered none. */
-  private val pig = CatalogNames.relic("Oracular Pig")
+  private val pig = OracularPigCard.id
   /** Another faceup relic; its only power is an ACTION. */
-  private val horse = CatalogNames.relic("Brass Horse")
+  private val horse = BrassHorseCard.id
 
   private def lines(run: Run): Vector[NoteText.Said] =
     NoteText.said(SealingWard.id, Vector(SealingWard.added), run.events)

@@ -1,5 +1,9 @@
 package oathdigital.gameplay
 
+import oathdigital.gameplay.powers.action.DowsingSticksCard
+import oathdigital.gameplay.powers.campaign.{BagOfSiegeworksCard, BrassArmyCard,
+  CursedCauldronCard, OutridersCard, VowOfPeaceCard, WatchdogCard}
+import oathdigital.gameplay.powers.travel.TentsCard
 import oathdigital.testkit.MenuPlay
 import oathdigital.gameplay.CampaignFixture.{Board, actorRules, board, on,
   rivalRulesOriginAndHoldsOathkeeper, rules, withAdviser, withEnemyAtOrigin,
@@ -16,8 +20,8 @@ import oathdigital.gameplay.walker.{ParkedDecisionAssertions, ProcedureWalker,
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, EmptyWindowModifier,
-  Look, RecordedOps, Table}
+import oathdigital.testkit.{ActPowerHarness, EmptyWindowModifier, Look,
+  RecordedOps, Table}
 import oathdigital.testkit.Outcomes.ready
 import oathdigital.testkit.Unwrap.{accepted, as, present}
 import oathdigital.testkit.StartPreview
@@ -110,7 +114,7 @@ class CampaignProcedureSuite extends munit.FunSuite:
       "Raid defender"):
     val shared = withEnemyAtOrigin(board(warbands = 5, supply = 7))
     // The rival holds a faceup relic, so a Raid has something to take.
-    val b = withRelicFor(shared, shared.rival, "Cursed Cauldron")
+    val b = withRelicFor(shared, shared.rival, CursedCauldronCard)
     val started = accepted(start(b))
     parked.assertParked(started.state, ActionRef.Campaign, CampaignIds.kind,
       b.actor)
@@ -190,7 +194,7 @@ class CampaignProcedureSuite extends munit.FunSuite:
   test("a held battle-plan relic does not block the start: its plan is " +
       "chosen at the plan step"):
     val b = board(warbands = 5, supply = 7)
-    val holding = withRelic(b, "Bag of Siegeworks")
+    val holding = withRelic(b, BagOfSiegeworksCard)
     // Bag of Siegeworks is a battle plan, offered at the plan step, so
     // holding it changes nothing at the start.
     parked.assertParked(accepted(start(holding)).state,
@@ -199,15 +203,15 @@ class CampaignProcedureSuite extends munit.FunSuite:
   test("a faceup Vow of Peace stops the start, through the walker power " +
       "catalog"):
     val b = board(warbands = 5, supply = 7)
-    val holding = withAdviser(b, "Vow of Peace", Orientation.FaceUp)
+    val holding = withAdviser(b, VowOfPeaceCard, Orientation.FaceUp)
     val withPowers = rules()
     assertEquals(
       withPowers.startWalker(Ready(holding.ready), ActionRef.Campaign, b.actor),
       Left(OathViolation.CampaignUnavailable(
         "Vow of Peace prevents its ruler from campaigning")))
 
-  private val outriders = CatalogNames.denizen("Outriders")
-  private val brass = CatalogNames.relic("Brass Army")
+  private val outriders = OutridersCard.id
+  private val brass = BrassArmyCard.id
   private def planPick(ref: DecisionOptionRef) = ChooseOneAnswer(ref)
   private val finish = ChooseOneAnswer(CampaignIds.finish)
 
@@ -314,7 +318,7 @@ class CampaignProcedureSuite extends munit.FunSuite:
         Some("Oathkeeper title: add 1 defense die"), open = false)))
 
   test("a bandit defender applies its cost-free plans by itself"):
-    val watchdog = CatalogNames.denizen("Watchdog")
+    val watchdog = WatchdogCard.id
     val base = board(warbands = 5, supply = 7)
     assert(
       base.ready.game.current.map.regionOf(base.origin).contains(Region.Cradle),
@@ -636,8 +640,8 @@ class CampaignProcedureSuite extends munit.FunSuite:
 
   test("a Raid locks the defender's pawn, and shows what it may not take"):
     val shared = withEnemyAtOrigin(board(warbands = 5, supply = 7))
-    val cauldron = CatalogNames.relic("Cursed Cauldron")
-    val sticks = CatalogNames.relic("Dowsing Sticks")
+    val cauldron = CursedCauldronCard.id
+    val sticks = DowsingSticksCard.id
     // The rival holds Cursed Cauldron faceup and three warbands; the
     // bystander holds Dowsing Sticks faceup; the actor holds the Darkest
     // Secret.
@@ -673,7 +677,7 @@ class CampaignProcedureSuite extends munit.FunSuite:
       "Campaign"):
     val powers = EmptyWindowModifier.powersFor(MajorActionType.Campaign)
     val b = board(warbands = 5, supply = 7)
-    val withTents = on(b)(_.adviser(b.actor, "Tents"))
+    val withTents = on(b)(_.adviser(b.actor, TentsCard))
     val started = accepted(new OathRules(catalog, walkerPowerCatalog = powers)
       .startWalker(Ready(withTents.ready), ActionRef.Campaign, b.actor))
     assertEquals(

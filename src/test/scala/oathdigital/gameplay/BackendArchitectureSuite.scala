@@ -270,8 +270,8 @@ class BackendArchitectureSuite extends munit.FunSuite:
     assertEquals(oversized, Vector.empty)
 
   test("tests name catalog cards, not their ids, outside the catalog suite"):
-    // A catalog id hides which card a test means; CatalogNames names it. The
-    // catalog prints a denizen as digits and a relic or edifice as its letter
+    // A catalog id hides which card a test means; its card object names it.
+    // The catalog prints a denizen as digits and a relic or edifice as its letter
     // and two digits (relic R08, edifice E16). A plain-id fixture card such
     // as relic R3 is not a catalog id and is not matched. The exempt suite
     // tests the ids themselves (spec, rubric R5). This file is scanned too,
@@ -287,6 +287,19 @@ class BackendArchitectureSuite extends munit.FunSuite:
     val offenders = scalaFilesUnder(roots)
       .filterNot(path => exempt(path.toString))
       .filter(path => catalogId.findFirstIn(Files.readString(path)).nonEmpty)
+      .map(_.toString).sorted
+    assertEquals(offenders, Vector.empty)
+
+  test("tests name catalog cards by their card objects, not by a name lookup"):
+    // A card object (`AlchemistCard`, `DeepWoodsSite`) reads as the card and
+    // the compiler checks it; the retired lookup of printed names resolved
+    // strings at run time, so a typo was a test failure and a rename a
+    // sweep. This file is scanned too, so the needle is spelled in parts.
+    val lookup = ("Catalog" + "Names").r
+    val roots = Vector(Paths.get("src/test/scala"),
+      Paths.get("frontend/src/test/scala"), Paths.get("shared/src/test/scala"))
+    val offenders = scalaFilesUnder(roots)
+      .filter(path => lookup.findFirstIn(Files.readString(path)).nonEmpty)
       .map(_.toString).sorted
     assertEquals(offenders, Vector.empty)
 

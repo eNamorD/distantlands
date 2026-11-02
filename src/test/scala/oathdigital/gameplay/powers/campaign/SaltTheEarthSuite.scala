@@ -1,24 +1,27 @@
 package oathdigital.gameplay.powers.campaign
 
+import oathdigital.catalog.holding.{GreatClockCard, RelicHunterCard,
+  SearchPartyCard}
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.action.DowsingSticksCard
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseAmountAnswer
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Salt the Earth: an attacker who wins a Conquest buries every card at one
   * targeted site, relics included. */
 class SaltTheEarthSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Salt the Earth")
+  private val card = SaltTheEarthCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
-  private val relicHunter = planlessCard("Relic Hunter")
-  private val searchParty = planlessCard("Search Party")
+  private val relicHunter = planlessCard(RelicHunterCard)
+  private val searchParty = planlessCard(SearchPartyCard)
   /** An edifice whose powers are not built, so it changes no Campaign. It is
     * locked, which a burial ignores. */
-  private val clock = CatalogNames.edifice("Great Clock")
-  private val sticks = CatalogNames.relic("Dowsing Sticks")
+  private val clock = GreatClockCard.id
+  private val sticks = DowsingSticksCard.id
 
   private def lines(run: Run): Vector[NoteText.Said] =
     NoteText.said(SaltTheEarth.id, Vector(SaltTheEarth.buried), run.events)

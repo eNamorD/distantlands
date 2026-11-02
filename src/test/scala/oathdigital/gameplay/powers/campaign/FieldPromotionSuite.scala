@@ -6,14 +6,14 @@ import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.PowerFixture.warbandBank
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Field Promotion: a plan for either side, a favor placed, that gains three
   * warbands if its user wins, or what their supply holds. */
 class FieldPromotionSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Field Promotion")
+  private val card = FieldPromotionCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
-  private val honors = CatalogNames.denizen("Battle Honors")
+  private val honors = BattleHonorsCard.id
   private val honorsRef: DecisionOptionRef =
     DecisionOptionRef.Denizen(honors)
 

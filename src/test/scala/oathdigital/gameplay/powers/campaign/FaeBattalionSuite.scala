@@ -3,14 +3,14 @@ package oathdigital.gameplay.powers.campaign
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.banner.YewStaffCard
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
-import oathdigital.testkit.CatalogNames
 
 /** Fae Battalion: a free attacker's plan, offered while its user holds the
   * Darkest Secret, that counts each hollow sword as a sword. */
 class FaeBattalionSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Fae Battalion")
+  private val card = FaeBattalionCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
   private val counted = NoteText.Said("counted",
     "Hollow swords counted as swords.", covers = false)
@@ -18,7 +18,7 @@ class FaeBattalionSuite extends munit.FunSuite:
   /** p1 holds Fae Battalion and Longbows faceup; Longbows keeps the
     * attacker's window open. */
   private def attacker: Board = withAdviser(withAdviser(
-    board(warbands = 5, supply = 7), card, Orientation.FaceUp), "Longbows",
+    board(warbands = 5, supply = 7), card, Orientation.FaceUp), LongbowsCard,
     Orientation.FaceUp)
 
   test("with the Darkest Secret each hollow sword counts as a sword, and it " +
@@ -43,7 +43,7 @@ class FaeBattalionSuite extends munit.FunSuite:
       "the Darkest Secret"):
     val base = attacker
     val b = on(base)(_.darkestSecret(Some(base.rival), secrets = 1)
-      .relic(base.actor, "Yew Staff"))
+      .relic(base.actor, YewStaffCard))
     val done = commit(rules(losingDice), b, 3)
       .pick(b.actor, CampaignIds.attackerPlan, ref).finishPlanWindows
     assertEquals(done.result.attackScore, 3)

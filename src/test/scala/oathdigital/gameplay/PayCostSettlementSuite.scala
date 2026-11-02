@@ -1,15 +1,17 @@
 package oathdigital.gameplay
 
 import oathdigital.gameplay.operations._
+import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Table}
+import oathdigital.testkit.{Look, Table}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
 
 class PayCostSettlementSuite extends munit.FunSuite:
   private val active = p1
   private val payer = p2
-  private val denizen = CatalogNames.denizen("Errand Boy")
+  private val denizen = ErrandBoyCard.id
   /** Errand Boy is a Beast. */
   private val suit = Suit.Beast
 
@@ -17,7 +19,7 @@ class PayCostSettlementSuite extends munit.FunSuite:
     * Ancient City carrying `cardTokens`. */
   private def offTurnPayer(cardTokens: Tokens = Tokens.empty): Table =
     Table.start.favor(payer, 3).secrets(payer, faceUp = 3)
-      .denizen(denizen, at = "Ancient City")
+      .denizen(denizen, at = AncientCitySite)
       .tokens(denizen, cardTokens.favor, cardTokens.secrets)
 
   private def run(state: ReadyGame, operation: PayCost) =

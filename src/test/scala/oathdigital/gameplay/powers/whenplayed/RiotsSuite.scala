@@ -1,8 +1,13 @@
 package oathdigital.gameplay.powers.whenplayed
 
+import oathdigital.gameplay.operations.HallOfMinistersCard
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.action.HomesteadersCard
+import oathdigital.gameplay.powers.campaign.WildMountsCard
+import oathdigital.gameplay.powers.recover.RelicPatrolsCard
+import oathdigital.gameplay.powers.search.{ErrandBoyCard, LandWardenCard}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, Table}
+import oathdigital.testkit.{Look, Outcomes, Table}
 import oathdigital.testkit.Table.{p1, p2}
 
 class RiotsSuite extends munit.FunSuite:
@@ -10,12 +15,12 @@ class RiotsSuite extends munit.FunSuite:
 
   private val power = registered[Riots]
   private val riots = power.cardId
-  private val homesteaders = CatalogNames.denizen("Homesteaders")
-  private val landWarden = CatalogNames.denizen("Land Warden")
-  private val errandBoy = CatalogNames.denizen("Errand Boy")
-  private val wildMounts = CatalogNames.denizen("Wild Mounts")
-  private val hallOfBandits = CatalogNames.edifice("Hall of Bandits")
-  private val relicPatrols = CatalogNames.edifice("Relic Patrols")
+  private val homesteaders = HomesteadersCard.id
+  private val landWarden = LandWardenCard.id
+  private val errandBoy = ErrandBoyCard.id
+  private val wildMounts = WildMountsCard.id
+  private val hallOfBandits = HallOfMinistersCard.id
+  private val relicPatrols = RelicPatrolsCard.id
 
   private def discarded(cards: Vector[CardId]): NoteText.Said =
     NoteText.Said("discarded",
@@ -30,8 +35,8 @@ class RiotsSuite extends munit.FunSuite:
   private def staged: Table = p1AtHomeSite.adviser(p1, riots)
     .denizen(homesteaders, at = homeSite).denizen(errandBoy, at = homeSite)
     .denizen(wildMounts, at = nearSite)
-    .edifice("Hall of Bandits", EdificeSide.Ruined, at = nearSite)
-    .edifice("Relic Patrols", EdificeSide.Intact, at = nearSite)
+    .edifice(HallOfMinistersCard, EdificeSide.Ruined, at = nearSite)
+    .edifice(RelicPatrolsCard, EdificeSide.Intact, at = nearSite)
     .denizen(landWarden, at = awaySite)
 
   private val targets: Vector[CardId] = inMapOrder(

@@ -1,27 +1,30 @@
 package oathdigital.gameplay.powers.campaign
 
+import oathdigital.gameplay.powers.economy.HallowedSpringCard
+import oathdigital.catalog.holding.{AutumnWindCard, BrackenCard, GlamorCard}
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignPlans}
+import oathdigital.gameplay.cards.{BuriedGiantSite, DeepWoodsSite}
 import oathdigital.gameplay.powers.campaign.PlanDriver._
+import oathdigital.gameplay.powers.travel.{BrokenPeaksSite, DesolateShoreSite}
 import oathdigital.model._
-import oathdigital.testkit.CatalogNames
 
 /** Walled Garden: a free, site-only defender's plan for one defense die per
   * beast card at any site, offered only when its site is a Conquest target. */
 class WalledGardenSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Walled Garden")
+  private val card = WalledGardenCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
-  private val beasts = planless("Bracken", "Autumn Wind")
+  private val beasts = planless(BrackenCard, AutumnWindCard)
   private val beast = beasts.head
-  private val arcane = planlessCard("Glamor")
+  private val arcane = planlessCard(GlamorCard)
   // Beast, on either face: Hallowed Spring intact, Hiding Place ruined.
-  private val beastEdifice = CatalogNames.edifice("Hallowed Spring")
+  private val beastEdifice = HallowedSpringCard.id
 
   // Sites other than the origin, Ancient City, in map order.
-  private val brokenPeaks = CatalogNames.site("Broken Peaks")
-  private val buriedGiant = CatalogNames.site("Buried Giant")
-  private val deepWoods = CatalogNames.site("Deep Woods")
-  private val desolateShore = CatalogNames.site("Desolate Shore")
+  private val brokenPeaks = BrokenPeaksSite.id
+  private val buriedGiant = BuriedGiantSite.id
+  private val deepWoods = DeepWoodsSite.id
+  private val desolateShore = DesolateShoreSite.id
 
   /** What the bandits' application of Walled Garden recorded as its effect:
     * the operation just before its marker. */

@@ -4,6 +4,7 @@ import java.nio.file.{Files, Paths}
 import oathdigital.gameplay.actions.recover.RecoverProcedure
 import oathdigital.gameplay.oathkeeper.OathkeeperProcedure
 import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
+import oathdigital.gameplay.powers.travel.MinesSite
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.gameplay.walker.ParkedDecisionAssertions
 import oathdigital.model._
@@ -32,7 +33,7 @@ class PendingWalkerInvariantSuite extends munit.FunSuite:
       ChooseOneAnswer(DecisionOptionRef.Button("go")))),
     GameCommand.Undo(actor), GameCommand.Redo(actor),
     GameCommand.SetConsentPreference(actor,
-      oathdigital.gameplay.powers.travel.MinesSite.mountain,
+      MinesSite.mountain,
       PlayerId("p2"), ConsentSetting.Always),
     GameCommand.RequestConsent(actor, "not-parked",
       DecisionOptionRef.Button("go")),

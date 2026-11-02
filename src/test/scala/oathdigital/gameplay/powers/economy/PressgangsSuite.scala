@@ -1,5 +1,8 @@
 package oathdigital.gameplay.powers.economy
 
+import oathdigital.gameplay.powers.action.AlchemistCard
+import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.testkit.MenuPlay
 import oathdigital.gameplay.ModifierPlay
 import oathdigital.gameplay.actions.economy.MusterProcedure
@@ -10,21 +13,21 @@ import oathdigital.gameplay.walker.ModifierOffers
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, EconomyActions,
-  Look, PhasePowerHarness, PowerRules, Refusals, Table}
+import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look,
+  PhasePowerHarness, PowerRules, Refusals, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
 
 class PressgangsSuite extends munit.FunSuite:
-  private val pressgangs = CatalogNames.denizen("Pressgangs")
-  private val golem = CatalogNames.denizen("Golem Legions")
+  private val pressgangs = PressgangsCard.id
+  private val golem = GolemLegionsCard.id
   private val selected = Vector(Pressgangs.id)
-  private val home = CatalogNames.site("Ancient City")
+  private val home = AncientCitySite.id
   /** A plain Arcane denizen. */
-  private val alchemist = CatalogNames.denizen("Alchemist")
+  private val alchemist = AlchemistCard.id
   /** A plain Beast denizen. */
-  private val errandBoy = CatalogNames.denizen("Errand Boy")
+  private val errandBoy = ErrandBoyCard.id
   private val rules = PowerRules.withWalkerPowers
 
   /** p1 at Ancient City holding Pressgangs faceup, with 2 favor and 7

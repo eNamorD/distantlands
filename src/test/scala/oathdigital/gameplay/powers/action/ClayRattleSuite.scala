@@ -2,10 +2,10 @@ package oathdigital.gameplay.powers.action
 
 import oathdigital.gameplay.{OathRules, WalkerDiceFixture}
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
+import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.gameplay.walker.WalkerDice
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look,
-  PhasePowerHarness, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.{assertWireRoundTrips, ready}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -15,7 +15,7 @@ class ClayRattleSuite extends munit.FunSuite:
 
   private val parked = PhasePowerHarness.parked
 
-  private val rattle = CatalogNames.relic("Clay Rattle")
+  private val rattle = ClayRattleCard.id
   private val source = DecisionOptionRef.Relic(rattle)
   private val cradle = SearchSource.RegionalDiscard(Region.Cradle)
 
@@ -28,8 +28,8 @@ class ClayRattleSuite extends munit.FunSuite:
   private def staged(faceUp: Int = 2): ReadyGame =
     Table.start.turn(actor, Phase.Act).relic(actor, rattle)
       .secrets(actor, faceUp)
-      .discarded(Region.Cradle, "Threatening Roar", "Fae Merchant",
-        "Second Chance").ready
+      .discarded(Region.Cradle, ThreateningRoarCard, FaeMerchantCard,
+        SecondChanceCard).ready
   private def zones(ready: ReadyGame): CardZones = ready.game.current.commonCards
 
   /** The state Clay Rattle was used from, the walk it started, and the

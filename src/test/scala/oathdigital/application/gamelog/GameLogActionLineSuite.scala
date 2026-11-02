@@ -4,13 +4,17 @@ import oathdigital.gameplay.ModifierPlay
 import oathdigital.gameplay.actions.ProcedureNotes
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.powers.search.NewGrowth
+import oathdigital.gameplay.cards.{BuriedGiantSite, DeepWoodsSite}
+import oathdigital.gameplay.powers.search.{ErrandBoyCard, NewGrowth,
+  NewGrowthCard}
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.LogNoted
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
 import oathdigital.protocol.projection.{LogKind, LogSpan}
-import oathdigital.testkit.{Answers, CatalogNames, MenuPlay, Table}
+import oathdigital.testkit.{Answers, MenuPlay, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import LogScripts._
 import CaptainsLogScripts._
@@ -154,11 +158,11 @@ class GameLogActionLineSuite extends munit.FunSuite:
     * with New Growth picked. It lives here, not in `LogScripts`, which is
     * at the test files' line limit. */
   private def facedownAdviserToAnotherSite(using munit.Location): Script =
-    val beast = CatalogNames.denizen("Errand Boy")
-    val woods = DecisionOptionRef.SiteSlot(CatalogNames.site("Deep Woods"), 0)
+    val beast = ErrandBoyCard.id
+    val woods = DecisionOptionRef.SiteSlot(DeepWoodsSite.id, 0)
     val (service, acted) = atTable("another-site", Table.start
-      .pawn(p1, "Ancient City").pawn(p2, "Broken Peaks")
-      .pawn(p3, "Buried Giant").adviser(p1, CatalogNames.denizen("New Growth"))
+      .pawn(p1, AncientCitySite).pawn(p2, BrokenPeaksSite)
+      .pawn(p3, BuriedGiantSite).adviser(p1, NewGrowthCard.id)
       .adviser(p1, beast, facedown = true).banditsRefilled)
     val pickingBeastThenDeepWoods: Answers = {
       case park
@@ -181,7 +185,7 @@ class GameLogActionLineSuite extends munit.FunSuite:
   test("Captains: the use names the site, and the Campaign's lines follow " +
       "as any queued Raid's"):
     val all = texts(format(captainsRaidFromARuledSite, None))
-    val woods = CatalogNames.site("Deep Woods")
+    val woods = DeepWoodsSite.id
     assert(all.contains(
       s"Captains: Campaign at ${catalog.site(woods).get.name}."), all)
     val start = all.indexWhere(_ == "Campaign · Captains")

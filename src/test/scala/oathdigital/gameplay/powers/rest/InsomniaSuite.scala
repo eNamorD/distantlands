@@ -5,12 +5,15 @@ import oathdigital.gameplay.PlacementFixture
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
 import oathdigital.gameplay.powers.{AdviserLimit, NoteText, PhasePowerCatalog,
   WalkerPowerCatalog}
+import oathdigital.gameplay.powers.action.HomesteadersCard
+import oathdigital.gameplay.powers.search.{LandWardenCard, NewsFromAfarCard}
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, PlacementPicks,
-  PowerRules, RecordedOps, Table}
+import oathdigital.testkit.{Look, Outcomes, PlacementPicks, PowerRules,
+  RecordedOps, Table}
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
 import oathdigital.testkit.PhasePowerHarness
@@ -20,14 +23,14 @@ class InsomniaSuite extends munit.FunSuite:
   /** The automatic production powers, as a command with no modifier walks. */
   private val powers = WalkerPowers.selected(WalkerPowerCatalog.default(catalog),
     Vector.empty)
-  private val insomnia = CatalogNames.denizen("Insomnia")
-  private val tongue = CatalogNames.denizen("Silver Tongue")
+  private val insomnia = InsomniaCard.id
+  private val tongue = SilverTongueCard.id
   private val use = ActionRef.UsePower(Insomnia.id)
   private val source = DecisionOptionRef.Denizen(insomnia)
   // Hearth denizens whose powers these tests do not use.
-  private val homesteaders = CatalogNames.denizen("Homesteaders")
-  private val landWarden = CatalogNames.denizen("Land Warden")
-  private val newsFromAfar = CatalogNames.denizen("News from Afar")
+  private val homesteaders = HomesteadersCard.id
+  private val landWarden = LandWardenCard.id
+  private val newsFromAfar = NewsFromAfarCard.id
 
   /** p1's Rest, holding Insomnia as an adviser, faceup unless `facedown`. */
   private def resting(facedown: Boolean = false): ReadyGame =
@@ -104,8 +107,8 @@ class InsomniaSuite extends munit.FunSuite:
 
   test("with Silver Tongue as well the limit stays 2, and the Mob's discard " +
       "stays"):
-    val ready = Table.start.hand(p1, homesteaders).pawn(p1, "Ancient City")
-      .denizen(newsFromAfar, at = "Ancient City").adviser(p1, tongue)
+    val ready = Table.start.hand(p1, homesteaders).pawn(p1, AncientCitySite)
+      .denizen(newsFromAfar, at = AncientCitySite).adviser(p1, tongue)
       .adviser(p1, insomnia).peoplesFavor(Some(p1), 1).ready
     assertEquals(AdviserLimit.of(catalog, ready, p1), 2)
     assert(placementOptions(ready, homesteaders).exists(option =>

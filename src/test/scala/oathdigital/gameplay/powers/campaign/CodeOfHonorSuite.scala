@@ -5,17 +5,16 @@ import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignPlans}
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
-import oathdigital.testkit.CatalogNames
 
 /** Code of Honor: two attack dice added or removed, used with no other
   * battle plan. */
 class CodeOfHonorSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Code of Honor")
+  private val card = CodeOfHonorCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
-  private val longbows = CatalogNames.denizen("Longbows")
+  private val longbows = LongbowsCard.id
   private val longbowsRef: DecisionOptionRef =
     DecisionOptionRef.Denizen(longbows)
-  private val outriders = CatalogNames.denizen("Outriders")
+  private val outriders = OutridersCard.id
   private val source = PowerSourceRef.Card(card)
 
   /** The actor holds Code of Honor, Longbows and Outriders faceup: three

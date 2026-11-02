@@ -5,11 +5,12 @@ import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.actions.travel.TravelProcedure
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   OptionRestriction}
+import oathdigital.gameplay.powers.action.WildAlliesCard
 import oathdigital.gameplay.walker.{ProcedureWalker, QueuedStart,
   WalkerPowers}
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Outcomes, Table}
+import oathdigital.testkit.{Outcomes, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, present}
 
@@ -77,7 +78,7 @@ class NarrowPassCampaignConsentSuite extends munit.FunSuite:
     // pawn stands in the Cradle: Deep Woods is no longer outside.
     val entry = QueuedProcedure(p1, ActionRef.Campaign,
       Vector(DecisionOptionRef.Site(PassMap.buriedGiant)),
-      Some(PowerSourceRef.Card(CatalogNames.denizen("Wild Allies"))),
+      Some(PowerSourceRef.Card(WildAlliesCard.id)),
       QueueKind.Run)
     val state = accepted(rules().startWalker(Ready(QueuedStart.startingFrom(
       passHeldByBandits, entry)), ActionRef.Campaign, p1,

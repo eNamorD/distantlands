@@ -1,5 +1,7 @@
 package oathdigital.gameplay
 
+import oathdigital.gameplay.cards.BuriedGiantSite
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
 import oathdigital.model.OathEvent._
 import oathdigital.model.OathState.Ready
 import oathdigital.model.OathViolation._
@@ -8,13 +10,12 @@ import oathdigital.gameplay.phases.wake.TakeWealthProcedure
 import oathdigital.gameplay.powerresolver.PhasePowers
 import oathdigital.gameplay.powers.WalkerPowerCatalog
 import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.gameplay.powers.wake.TakeWealthLimit
+import oathdigital.gameplay.powers.wake.{AncientCitySite, TakeWealthLimit}
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.gameplay.walker.{DeltaPayload, ParkedDecisionAssertions,
   WalkerPowers, WalkerStepRecorded}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, MenuPlay, Outcomes,
-  TakeWealthFixture, Table}
+import oathdigital.testkit.{Look, MenuPlay, Outcomes, Table, TakeWealthFixture}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, rejected}
 
@@ -35,7 +36,7 @@ class TakeWealthProcedureSuite extends munit.FunSuite:
   private val favorArg = TakeWealthFixture.favorArg
   private val secretArg = TakeWealthFixture.secretArg
   private val actor = p1
-  private val home = CatalogNames.site("Ancient City")
+  private val home = AncientCitySite.id
 
   /** p1's Wake at Ancient City, which holds `favor` and `secrets`. Without
     * `sharedEnemy`, p2 stands at Broken Peaks and p3 at Buried Giant; with
@@ -43,8 +44,8 @@ class TakeWealthProcedureSuite extends munit.FunSuite:
   private def wake(favor: Int, secrets: Int,
       sharedEnemy: Boolean = false): ReadyGame =
     TakeWealthFixture.wakeReady(Table.start.turn(actor, Phase.Wake)
-      .pawn(actor, at = home).pawn(p2, at = "Broken Peaks")
-      .pawn(p3, at = "Buried Giant").ready,
+      .pawn(actor, at = home).pawn(p2, at = BrokenPeaksSite)
+      .pawn(p3, at = BuriedGiantSite).ready,
       favor = favor, secrets = secrets, sharedEnemy = sharedEnemy)
 
   private def board(ready: ReadyGame): PlayerBoardState =
@@ -98,7 +99,7 @@ class TakeWealthProcedureSuite extends munit.FunSuite:
     // precondition proves it has something to do here.
     // Ancient City, capacity 3, holds no bandits.
     val ready = Table.from(wake(favor = 1, secrets = 1))
-      .bandits("Ancient City", 0).ready
+      .bandits(AncientCitySite, 0).ready
     assert(StateBasedEvaluation.banditRefill(catalog, Ready(ready))
       .toOption.flatten.nonEmpty,
       "precondition: the boundary would refill bandits in this state")

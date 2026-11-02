@@ -8,17 +8,16 @@ import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.CatalogNames
 
 /** The plan window runs its option restrictions over the plans it is
   * offered (catalog batch 6, "Option restrictions over offers"): a forbidden
   * plan is withheld with the restriction's note, or dropped without one.
   */
 class PlanOfferRestrictionSuite extends munit.FunSuite:
-  private val longbows = CatalogNames.denizen("Longbows")
+  private val longbows = LongbowsCard.id
   private val longbowsRef: DecisionOptionRef =
     DecisionOptionRef.Denizen(longbows)
-  private val encirclement = CatalogNames.denizen("Encirclement")
+  private val encirclement = EncirclementCard.id
   private val encirclementRef: DecisionOptionRef =
     DecisionOptionRef.Denizen(encirclement)
   private val title: DecisionOptionRef = DecisionOptionRef.Button("title")

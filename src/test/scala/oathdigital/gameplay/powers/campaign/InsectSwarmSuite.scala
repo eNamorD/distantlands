@@ -6,7 +6,7 @@ import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Insect Swarm: while its faceup holder is in a Campaign, every plan the enemy
   * chooses costs one more favor, burnt from the plan's user's board, whatever
@@ -14,11 +14,11 @@ import oathdigital.testkit.{CatalogNames, Look}
   * option states the price with it.
   */
 class InsectSwarmSuite extends munit.FunSuite:
-  private val swarm = CatalogNames.denizen("Insect Swarm")
-  private val armor = CatalogNames.denizen("Gleaming Armor")
-  private val watchdog = CatalogNames.denizen("Watchdog")
-  private val honors = CatalogNames.denizen("Battle Honors")
-  private val provisions = CatalogNames.denizen("Extra Provisions")
+  private val swarm = InsectSwarmCard.id
+  private val armor = GleamingArmorCard.id
+  private val watchdog = WatchdogCard.id
+  private val honors = BattleHonorsCard.id
+  private val provisions = ExtraProvisionsCard.id
   private val titleRef: DecisionOptionRef = DecisionOptionRef.Button("title")
 
   private def ref(card: DenizenId): DecisionOptionRef =

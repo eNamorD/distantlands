@@ -1,5 +1,11 @@
 package oathdigital.gameplay
 
+import oathdigital.catalog.holding.{CouncilArbiterCard, GrandMaskCard}
+import oathdigital.gameplay.cards.DunesSite
+import oathdigital.gameplay.powers.action.BrassHorseCard
+import oathdigital.gameplay.powers.campaign.StickyFireCard
+import oathdigital.gameplay.powers.search.{ErrandBoyCard, TruthfulHarpCard}
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
 import oathdigital.testkit.MenuPlay
 import oathdigital.gameplay.actions.negotiation.NegotiationDeal
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
@@ -7,7 +13,7 @@ import oathdigital.gameplay.walker.{ParkedDecisionAssertions, WalkerPowers}
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.{AcceptDeal, ChooseManyAnswer, DeclineDeal, ProposeTerms}
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Journal, Look, Outcomes, Table}
+import oathdigital.testkit.{Journal, Look, Outcomes, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, present}
 import oathdigital.testkit.StartPreview
@@ -20,9 +26,9 @@ class NegotiationProcedureSuite extends munit.FunSuite:
   private val parked = new ParkedDecisionAssertions(catalog)
   private val negotiators = NegotiationDeal.negotiatorsDecisionId
   private val dealId = NegotiationDeal.dealDecisionId
-  private val site = CatalogNames.site("Broken Peaks")
-  private val p1Relic = CatalogNames.relic("Brass Horse")
-  private val siteRelic = CatalogNames.relic("Sticky Fire")
+  private val site = BrokenPeaksSite.id
+  private val p1Relic = BrassHorseCard.id
+  private val siteRelic = StickyFireCard.id
 
   /** Every player stands at Broken Peaks with 5 favor and one facedown
     * relic: p1 holds Brass Horse with a secret on it, p2 Truthful Harp and
@@ -31,8 +37,8 @@ class NegotiationProcedureSuite extends munit.FunSuite:
     .pawn(p1, at = site).pawn(p2, at = site).pawn(p3, at = site)
     .favor(p1, 5).favor(p2, 5).favor(p3, 5)
     .relic(p1, p1Relic, facedown = true).tokens(p1Relic, secrets = 1)
-    .relic(p2, "Truthful Harp", facedown = true)
-    .relic(p3, "Grand Mask", facedown = true)
+    .relic(p2, TruthfulHarpCard, facedown = true)
+    .relic(p3, GrandMaskCard, facedown = true)
     .relicAt(siteRelic, at = site)
     .knowsRelicAt(p1, siteRelic, at = site)
 
@@ -60,12 +66,12 @@ class NegotiationProcedureSuite extends munit.FunSuite:
     parked.assertParked(started.state, ActionRef.Negotiation, negotiators, p1)
 
   test("a lone candidate skips the negotiator choice"):
-    val started = start(gathered.pawn(p3, at = "Dunes").ready)
+    val started = start(gathered.pawn(p3, at = DunesSite).ready)
       .getOrElse(fail("Negotiation must start"))
     parked.assertParked(started.state, ActionRef.Negotiation, dealId, p1)
 
   test("with no candidate the start is rejected and offered nowhere"):
-    val alone = gathered.pawn(p2, at = "Dunes").pawn(p3, at = "Dunes").ready
+    val alone = gathered.pawn(p2, at = DunesSite).pawn(p3, at = DunesSite).ready
     assert(start(alone).left.toOption.exists(
       _.isInstanceOf[OathViolation.NegotiationUnavailable]))
     assert(!StartPreview.opens(catalog, alone, p1, ActionRef.Negotiation,
@@ -164,7 +170,7 @@ class NegotiationProcedureSuite extends munit.FunSuite:
       say(theirs.state, p1, AcceptDeal)).state)), None)
 
   test("an agreed disclosure grants durable knowledge to its recipient only"):
-    val adviser = CatalogNames.denizen("Errand Boy")
+    val adviser = ErrandBoyCard.id
     val deal = atDeal(gathered.adviser(p1, adviser, facedown = true).ready, p2, p3)
     val terms = ProposeTerms(NegotiationTerms(disclosures = Vector(
       NegotiationDisclosure(p2, NegotiationDisclosureRef.Adviser(p1, adviser)),
@@ -198,7 +204,7 @@ class NegotiationProcedureSuite extends munit.FunSuite:
     assertEquals(MenuPlay.pendingBeyondMenu(Outcomes.ready(agreed.state)), None)
 
   test("an unsupported Negotiation rule does not block the Negotiation"):
-    val powered = gathered.adviser(p1, "Council Arbiter").ready
+    val powered = gathered.adviser(p1, CouncilArbiterCard).ready
     val started = start(powered).getOrElse(
       fail("an unsupported rule must not block"))
     parked.assertParked(accepted(choose(started.state, p1, p2)).state,

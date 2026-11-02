@@ -1,9 +1,10 @@
 package oathdigital.serialization
 
+import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.travel.TyrantCard
 import oathdigital.model._
 import oathdigital.model.OathEvent.{ConsentAnswered, ConsentPreferenceSet,
   ConsentPreferencesCleared, ConsentRequestWithdrawn, ConsentRequested}
-import oathdigital.testkit.CatalogNames
 
 /** The consent facts round-trip through the envelope (consent design,
   * "Events"). */
@@ -47,7 +48,7 @@ class ConsentEventWireSuite extends munit.FunSuite:
       "none"):
     val covered = ConsentRequested(request.copy(covers = Vector(ConsentKey(
       PowerId("edifice.e16.intact"), p1, "operation.discard",
-      DecisionOptionRef.Denizen(CatalogNames.denizen("Errand Boy"))))))
+      DecisionOptionRef.Denizen(ErrandBoyCard.id)))))
     assertEquals(roundTrip(covered), Right(covered))
     assertEquals(GameEventWire.encodeEvent("g", 0L, ConsentRequested(request))
       .map(_("payload").obj.contains("covers")), Right(false))
@@ -65,7 +66,7 @@ class ConsentEventWireSuite extends munit.FunSuite:
   test("an automatic power's use round-trips, and a request without one " +
       "writes none"):
     val used = ConsentRequested(request.copy(
-      use = Some(ConsentUse(CatalogNames.denizen("Tyrant"), p1))))
+      use = Some(ConsentUse(TyrantCard.id, p1))))
     assertEquals(roundTrip(used), Right(used))
     assertEquals(GameEventWire.encodeEvent("g", 0L, ConsentRequested(request))
       .map(_("payload").obj.contains("use")), Right(false))

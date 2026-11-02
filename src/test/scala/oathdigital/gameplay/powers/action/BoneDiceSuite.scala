@@ -3,9 +3,9 @@ package oathdigital.gameplay.powers.action
 import oathdigital.gameplay.WalkerDiceFixture.scripted
 import oathdigital.gameplay.actions.dice.RerollChoice
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
+import oathdigital.gameplay.powers.dice.JinxCard
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look,
-  PhasePowerHarness, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.{assertWireRoundTrips, ready}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -15,7 +15,7 @@ class BoneDiceSuite extends munit.FunSuite:
 
   private val parked = PhasePowerHarness.parked
 
-  private val bones = CatalogNames.relic("Bone Dice")
+  private val bones = BoneDiceCard.id
   private val source = DecisionOptionRef.Relic(bones)
   /** p1's Act holding Bone Dice, with `supply` Supply and the quiet table's
     * one faceup secret. */
@@ -93,7 +93,7 @@ class BoneDiceSuite extends munit.FunSuite:
       NoteText.Said("buried", "Buried after a skull.", covers = true)))
 
   test("Jinx rerolls the Bone Dice's roll"):
-    val jinx = CatalogNames.denizen("Jinx")
+    val jinx = JinxCard.id
     val ready0 = Table.start.turn(actor, Phase.Act).relic(actor, bones)
       .supply(actor, 2).adviser(actor, jinx).secrets(actor, faceUp = 2).ready
     val rules0 = rulesWithPrintedRestrictions(scripted(

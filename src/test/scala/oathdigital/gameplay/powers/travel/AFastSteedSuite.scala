@@ -2,7 +2,7 @@ package oathdigital.gameplay.powers.travel
 
 import oathdigital.gameplay.powers.PowerFixture
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes}
+import oathdigital.testkit.{ActPowerHarness, Look, Outcomes}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Unwrap.accepted
 
@@ -10,7 +10,7 @@ class AFastSteedSuite extends munit.FunSuite:
   import PowerFixture._
   import TravelFixture._
 
-  private val steed = CatalogNames.denizen("A Fast Steed")
+  private val steed = AFastSteedCard.id
   private val modifiers = Vector(AFastSteed.id)
 
   /** The actor holds A Fast Steed faceup, 1 favor, 7 Supply and `warbands`

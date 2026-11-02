@@ -1,5 +1,8 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.gameplay.powers.economy.HallowedSpringCard
+import oathdigital.catalog.holding.FestivalDistrictCard
+import oathdigital.gameplay.cards.{DeepWoodsSite, GoldenValleySite}
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
 import oathdigital.testkit.{Look, MenuPlay, PhasePowerHarness, Table}
@@ -19,8 +22,8 @@ object MovementFixture:
     * at its Homelands; no other card lies at any site. */
   def homelands(ready: ReadyGame)(using munit.Location): ReadyGame =
       Table.from(ready)
-    .edifice("Hiding Place", EdificeSide.Ruined, at = "Deep Woods")
-    .edifice("Squalid District", EdificeSide.Ruined, at = "Golden Valley")
+    .edifice(HallowedSpringCard, EdificeSide.Ruined, at = DeepWoodsSite)
+    .edifice(FestivalDistrictCard, EdificeSide.Ruined, at = GoldenValleySite)
     .ready
 
   /** The relic `id` in `holder`'s play area, if it is there. */

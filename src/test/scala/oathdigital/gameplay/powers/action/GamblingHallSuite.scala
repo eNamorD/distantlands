@@ -3,10 +3,12 @@ package oathdigital.gameplay.powers.action
 import oathdigital.gameplay.WalkerDiceFixture.scripted
 import oathdigital.gameplay.actions.dice.RerollChoice
 import oathdigital.gameplay.powers.PowerFixture
+import oathdigital.gameplay.powers.dice.JinxCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.walker.LogNoted
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look,
-  PhasePowerHarness, Refusals, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, PhasePowerHarness, Refusals,
+  Table}
 import oathdigital.testkit.Outcomes.{assertWireRoundTrips, ready}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -16,14 +18,14 @@ class GamblingHallSuite extends munit.FunSuite:
 
   private val walkerParked = PhasePowerHarness.parked
 
-  private val hall = CatalogNames.denizen("Gambling Hall")
+  private val hall = GamblingHallCard.id
   private val source = DecisionOptionRef.Denizen(hall)
   private def bank(suit: Suit) = DecisionOptionRef.FavorBank(suit)
   /** p1's Act at Ancient City with Gambling Hall at the site and `favor`
     * favor. The Beast bank holds 4 favor and the Nomad bank 3. */
   private def stagedTable(favor: Int = 3): Table =
-    Table.start.turn(actor, Phase.Act).pawn(actor, "Ancient City")
-      .denizen(hall, at = "Ancient City").favor(actor, favor)
+    Table.start.turn(actor, Phase.Act).pawn(actor, AncientCitySite)
+      .denizen(hall, at = AncientCitySite).favor(actor, favor)
       .bankFavor(Suit.Beast, 4).bankFavor(Suit.Nomad, 3)
   private def staged(favor: Int = 3): ReadyGame = stagedTable(favor).ready
 
@@ -151,7 +153,7 @@ class GamblingHallSuite extends munit.FunSuite:
     assertEquals(notes(done.events), Vector.empty)
 
   test("Jinx rerolls the four dice before the bank is chosen"):
-    val jinx = CatalogNames.denizen("Jinx")
+    val jinx = JinxCard.id
     val ready0 = stagedTable().adviser(actor, jinx)
       .secrets(actor, faceUp = 1).ready
     val rules0 = rulesWithPrintedRestrictions(scripted(

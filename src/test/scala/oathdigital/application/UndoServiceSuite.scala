@@ -1,10 +1,12 @@
 package oathdigital.application
 
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.testkit.MenuPlay
 import oathdigital.gameplay.ModifierPlay
-import oathdigital.gameplay.powers.economy.GolemLegions
-import oathdigital.gameplay.powers.recover.RelicWorship
-import oathdigital.gameplay.powers.travel.Tents
+import oathdigital.gameplay.powers.economy.{GolemLegions, GolemLegionsCard}
+import oathdigital.gameplay.powers.recover.{CatacombsCard, RelicWorship,
+  RelicWorshipCard}
+import oathdigital.gameplay.powers.travel.{FairIsleSite, Tents, TentsCard}
 import oathdigital.model._
 import oathdigital.model.OathEvent.StepTakenBack
 import oathdigital.testkit.Table
@@ -113,7 +115,7 @@ class UndoServiceSuite extends munit.FunSuite:
       moved.nextSequence)
 
   test("Undo takes back a Travel modifier pick, and then the start"):
-    val withTents = table.pawn(p1, "Ancient City").adviser(p1, "Tents")
+    val withTents = table.pawn(p1, AncientCitySite).adviser(p1, TentsCard)
       .favor(p1, 1)
     val (service, _) = withTents.service()
     val started = accepted(service.handle("g", 0L,
@@ -130,7 +132,7 @@ class UndoServiceSuite extends munit.FunSuite:
 
   test("Undo takes back a Muster modifier pick, and then the start"):
     // No card stands at p1's site, so Start waits for Golem Legions.
-    val withGolem = table.adviser(p1, "Golem Legions")
+    val withGolem = table.adviser(p1, GolemLegionsCard)
     val (service, _) = withGolem.service()
     val started = accepted(service.handle("g", 0L,
       MenuPlay.starting(p1, ActionRef.Muster)))
@@ -147,8 +149,8 @@ class UndoServiceSuite extends munit.FunSuite:
   test("Undo takes back a Recover modifier pick, and then the start"):
     // Catacombs and Relic Worship can both be picked, so picking one asks
     // again instead of rolling.
-    val withBoth = table.pawn(p1, "Fair Isle").secrets(p1, faceUp = 2)
-      .denizen("Catacombs", at = "Fair Isle").adviser(p1, "Relic Worship")
+    val withBoth = table.pawn(p1, FairIsleSite).secrets(p1, faceUp = 2)
+      .denizen(CatacombsCard, at = FairIsleSite).adviser(p1, RelicWorshipCard)
     val (service, _) = withBoth.service()
     val started = accepted(service.handle("g", 0L,
       MenuPlay.starting(p1, ActionRef.Recover)))

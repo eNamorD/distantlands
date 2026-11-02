@@ -2,9 +2,10 @@ package oathdigital.gameplay.powers.action
 
 import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
+import oathdigital.gameplay.powers.campaign.{BattleHonorsCard, RainBootsCard,
+  WrestlersCard}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Refusals,
-  Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Refusals, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, as, present}
@@ -13,20 +14,20 @@ class IvoryEyeSuite extends munit.FunSuite:
   import PowerFixture._
   import PhasePowerHarness._
 
-  private val eye = CatalogNames.relic("Ivory Eye")
+  private val eye = IvoryEyeCard.id
   private val source = DecisionOptionRef.Relic(eye)
   private val target = p2
   private val third = p3
   private val faith = VisionRules.Faith
-  private val elders = CatalogNames.denizen("Elders")
+  private val elders = EldersCard.id
 
   /** p1's Act: p1 holds the Eye faceup and 1 faceup secret. Each player holds
     * one facedown adviser: p1 Wrestlers, p2 Battle Honors, p3 Rain Boots. */
   private def staged = Table.start
     .relic(p1, eye).secrets(p1, faceUp = 1)
-    .adviser(p1, "Wrestlers", facedown = true)
-    .adviser(p2, "Battle Honors", facedown = true)
-    .adviser(p3, "Rain Boots", facedown = true)
+    .adviser(p1, WrestlersCard, facedown = true)
+    .adviser(p2, BattleHonorsCard, facedown = true)
+    .adviser(p3, RainBootsCard, facedown = true)
     .ready
   private def firstAdviser(ready: ReadyGame, owner: PlayerId): CardId =
     Look(ready).player(owner).advisers.head.id

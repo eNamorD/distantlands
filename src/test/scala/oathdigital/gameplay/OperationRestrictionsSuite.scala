@@ -1,11 +1,18 @@
 package oathdigital.gameplay
 
 import oathdigital.gameplay.operations.{GrandScepter, HallOfMinisters,
-  LockedCards, OperationConsent, OperationPipeline, OperationPolicy,
-  OperationRestrictions, RestrictionIcons, StillBoilingLake}
+  HallOfMinistersCard, LockedCards, OperationConsent, OperationPipeline,
+  OperationPolicy, OperationRestrictions, RestrictionIcons,
+  StillBoilingLake}
+import oathdigital.gameplay.powers.campaign.{SealingWardCard, WrestlersCard}
+import oathdigital.gameplay.powers.cardplay.WildCryCard
+import oathdigital.gameplay.powers.economy.MountedLibraryCard
+import oathdigital.gameplay.powers.search.{CropRotationCard, ErrandBoyCard}
+import oathdigital.gameplay.powers.travel.DragonskinDrumCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -17,13 +24,13 @@ import oathdigital.testkit.Unwrap.accepted
 class OperationRestrictionsSuite extends munit.FunSuite:
   private val set = OperationRestrictions.forCatalog(catalog)
   /** Locked and adviser-only. */
-  private val lockedCard = CatalogNames.denizen("Sealing Ward")
+  private val lockedCard = SealingWardCard.id
   /** The Order edifice Hall of Ministers, locked while intact. */
-  private val hall = CatalogNames.edifice("Hall of Ministers")
-  private val wildCry = CatalogNames.denizen("Wild Cry")
+  private val hall = HallOfMinistersCard.id
+  private val wildCry = WildCryCard.id
   /** A plain Beast card, unrestricted. */
-  private val plainCard = CatalogNames.denizen("Errand Boy")
-  private val drum = CatalogNames.relic("Dragonskin Drum")
+  private val plainCard = ErrandBoyCard.id
+  private val drum = DragonskinDrumCard.id
   private val scepter = RelicId("grand-scepter")
 
   private def refusal(ready: ReadyGame, operation: CoreOperation,
@@ -83,7 +90,7 @@ class OperationRestrictionsSuite extends munit.FunSuite:
     assertEquals(refusal(ready, discard(plainCard, Location.PlayArea(p1))), None)
 
   /** The Hall's site, where p1 stands. */
-  private val hallSite = CatalogNames.site("Ancient City")
+  private val hallSite = AncientCitySite.id
 
   /** The Hall on `side` at Ancient City, which p1 rules. */
   private def edificeAt(side: EdificeSide): ReadyGame =
@@ -205,8 +212,8 @@ class OperationRestrictionsSuite extends munit.FunSuite:
 
   test("a selected power that discards its own card is left out of the " +
       "active-modifier rule, and the others stay protected"):
-    val mountedLibrary = CatalogNames.denizen("Mounted Library")
-    val cropRotation = CatalogNames.denizen("Crop Rotation")
+    val mountedLibrary = MountedLibraryCard.id
+    val cropRotation = CropRotationCard.id
     val ready = Table.start.adviser(p1, cropRotation)
       .adviser(p1, mountedLibrary).ready
     val selected = oathdigital.gameplay.walker.WalkerPowers.selected(
@@ -281,7 +288,7 @@ class OperationRestrictionsSuite extends munit.FunSuite:
   test("a grant for one card's discard lifts the Hall for every discard of " +
       "the same batch, which happen at the same time, and for no other " +
       "batch"):
-    val wrestlers = CatalogNames.denizen("Wrestlers")
+    val wrestlers = WrestlersCard.id
     val ready = Table.from(hallRuledByP1).denizen(wrestlers, at = hallSite)
       .ready
     val granted = ready.copy(consent = ConsentState(

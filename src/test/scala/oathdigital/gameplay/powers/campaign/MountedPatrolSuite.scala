@@ -5,16 +5,16 @@ import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Mounted Patrol: a free defender's plan that halves the attack pool,
   * rounded down, just before the attack roll, and is discarded after the
   * Campaign. Its halving is the first `wrapping` on the attack roll's leaf
   * (catalog batch 4 design, "Seams used for the first time"). */
 class MountedPatrolSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Mounted Patrol")
+  private val card = MountedPatrolCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
-  private val longbows = CatalogNames.denizen("Longbows")
+  private val longbows = LongbowsCard.id
   private val discarded = NoteText.Said("discarded",
     "Discarded after the Campaign.", covers = false)
 

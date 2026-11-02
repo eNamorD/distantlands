@@ -3,14 +3,18 @@ package oathdigital.gameplay.operations
 import oathdigital.gameplay.{OathRules, PowerAccess}
 import oathdigital.gameplay.WalkerDiceFixture.scripted
 import oathdigital.gameplay.actions.recover.RecoverProcedure
+import oathdigital.gameplay.cards.DunesSite
 import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.action.SkeletonKey
-import oathdigital.gameplay.powers.wake.HornedMask
+import oathdigital.gameplay.powers.action.{DowsingSticksCard, SkeletonKey,
+  SkeletonKeyCard, WaysideInnCard, WhistleCard}
+import oathdigital.gameplay.powers.travel.FairIsleSite
+import oathdigital.gameplay.powers.wake.{AncientCitySite, HornedMask,
+  HornedMaskCard}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
 import oathdigital.protocol.projection.ConsentAskProjection
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.{accepted, present}
 
@@ -20,7 +24,7 @@ import oathdigital.testkit.Unwrap.{accepted, present}
 class AncientBloodlineTakesSuite extends munit.FunSuite:
   import DefenseDieFace.TwoShields
 
-  private val bloodline = CatalogNames.denizen("Ancient Bloodline")
+  private val bloodline = AncientBloodlineCard.id
   private val askedReason = Some("Ancient Bloodline: Locked and needs the " +
     "holder's consent.")
   private val askingP2 = Some(ConsentAskProjection(Vector("p2"),
@@ -40,8 +44,8 @@ class AncientBloodlineTakesSuite extends munit.FunSuite:
       .flatMap(_.offeredOptions).find(_.id == ref.wireId), ref.wireId)
 
   // Recover: Fair Isle's difficulty is 3, and two shields twice make 4.
-  private val isle = CatalogNames.site("Fair Isle")
-  private val sticks = CatalogNames.relic("Dowsing Sticks")
+  private val isle = FairIsleSite.id
+  private val sticks = DowsingSticksCard.id
   private val sticksRef = DecisionOptionRef.Relic(sticks)
   /** Fresh for each walk: the scripted dice are used up as they roll. */
   private def recoverRules = new OathRules(catalog,
@@ -99,9 +103,9 @@ class AncientBloodlineTakesSuite extends munit.FunSuite:
   test("Skeleton Key offers a relic the holder locks askable of the " +
       "holder"):
     import PhasePowerHarness.{awaits, use}
-    val key = CatalogNames.relic("Skeleton Key")
-    val dunes = CatalogNames.site("Dunes")
-    val whistle = CatalogNames.relic("Whistle")
+    val key = SkeletonKeyCard.id
+    val dunes = DunesSite.id
+    val whistle = WhistleCard.id
     val ready = Table.start.turn(p1, Phase.Act).relic(p1, key)
       .secrets(p1, 2).pawn(p1, dunes).relicAt(whistle, at = dunes)
       .warbandsAt(dunes, p2, 1).adviser(p2, bloodline).ready
@@ -115,9 +119,9 @@ class AncientBloodlineTakesSuite extends munit.FunSuite:
   test("Horned Mask offers a denizen the holder locks askable of the " +
       "holder"):
     import PhasePowerHarness.{awaits, use}
-    val mask = CatalogNames.relic("Horned Mask")
-    val home = CatalogNames.site("Ancient City")
-    val inn = CatalogNames.denizen("Wayside Inn")
+    val mask = HornedMaskCard.id
+    val home = AncientCitySite.id
+    val inn = WaysideInnCard.id
     val ready = Table.start.turn(p1, Phase.Wake).pawn(p1, home)
       .relic(p1, mask).denizen(inn, at = home)
       .warbandsAt(home, p2, 1).adviser(p2, bloodline).ready

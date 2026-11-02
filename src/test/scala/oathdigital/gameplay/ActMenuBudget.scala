@@ -1,7 +1,15 @@
 package oathdigital.gameplay
 
 import oathdigital.gameplay.CampaignFixture.board
+import oathdigital.gameplay.cards.{BuriedGiantSite, DeepWoodsSite}
 import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
+import oathdigital.gameplay.powers.action.{SecondChanceCard, WildAlliesCard,
+  WolvesCard}
+import oathdigital.gameplay.powers.cardplay.WildCryCard
+import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.travel.{BrokenPeaksSite, DesolateShoreSite}
+import oathdigital.gameplay.powers.wake.AncientCitySite
+import oathdigital.gameplay.powers.whenplayed.AnimalHostCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome,
   WalkerPowers, WalkerProcedureRegistry}
@@ -35,17 +43,17 @@ object ActMenuBudget:
     * attack. With `allies`, p1 holds Wild Allies faceup, whose menu option
     * and site question price a Campaign from each of those sites. */
   private def beastSites(allies: Boolean): (ReadyGame, PlayerId) =
-    val beasts = Vector("Ancient City" -> "Second Chance",
-      "Broken Peaks" -> "Errand Boy", "Buried Giant" -> "Wolves",
-      "Deep Woods" -> "Wild Cry", "Desolate Shore" -> "Animal Host")
+    val beasts = Vector(AncientCitySite -> SecondChanceCard,
+      BrokenPeaksSite -> ErrandBoyCard, BuriedGiantSite -> WolvesCard,
+      DeepWoodsSite -> WildCryCard, DesolateShoreSite -> AnimalHostCard)
     val held =
-      if allies then Table.start.adviser(Table.p1, "Wild Allies")
+      if allies then Table.start.adviser(Table.p1, WildAlliesCard)
       else Table.start
     val table = beasts.foldLeft(held)((table, beast) =>
         table.denizen(beast._2, at = beast._1))
-      .warbandsAt("Broken Peaks", Table.p1, 2)
-      .warbandsAt("Buried Giant", Table.p1, 1)
-      .bandits("Deep Woods", 2).warbandsAt("Deep Woods", Table.p1, 3)
+      .warbandsAt(BrokenPeaksSite, Table.p1, 2)
+      .warbandsAt(BuriedGiantSite, Table.p1, 1)
+      .bandits(DeepWoodsSite, 2).warbandsAt(DeepWoodsSite, Table.p1, 3)
     (table.ready, Table.p1)
 
   def main(args: Array[String]): Unit =

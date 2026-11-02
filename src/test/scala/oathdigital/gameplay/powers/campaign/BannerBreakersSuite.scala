@@ -4,12 +4,12 @@ import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Banner Breakers: a favor placed and a favor burnt for three attack dice,
   * offered only while the defender holds a banner. */
 class BannerBreakersSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Banner Breakers")
+  private val card = BannerBreakersCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
 
   /** The actor holds Banner Breakers and 2 favor. Nobody holds a banner. */

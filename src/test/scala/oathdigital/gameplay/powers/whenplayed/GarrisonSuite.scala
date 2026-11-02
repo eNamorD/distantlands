@@ -1,15 +1,19 @@
 package oathdigital.gameplay.powers.whenplayed
 
+import oathdigital.gameplay.cards.{BuriedGiantSite, DeepWoodsSite}
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.PowerFixture.warbandBank
 import oathdigital.gameplay.WalkerRecordedOpsReducer
+import oathdigital.gameplay.powers.economy.VowOfWanderingCard
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, Table}
+import oathdigital.testkit.{Look, Outcomes, Table}
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.rejected
 
 class GarrisonSuite extends munit.FunSuite with WalkerRecordedOpsReducer:
-  private val vow = CatalogNames.denizen("Vow of Wandering")
+  private val vow = VowOfWanderingCard.id
   private val forbidden = NoteText.Said("vow-of-wandering",
     "Vow of Wandering forbids placing warbands on sites.", covers = false)
   import WhenPlayedHarness._
@@ -18,9 +22,9 @@ class GarrisonSuite extends munit.FunSuite with WalkerRecordedOpsReducer:
   private val card = power.cardId
   private val played = hook(card)
   private val kind = Look(Table.start.ready).forceKind(p1)
-  private val ancientCity = CatalogNames.site("Ancient City")
-  private val brokenPeaks = CatalogNames.site("Broken Peaks")
-  private val buriedGiant = CatalogNames.site("Buried Giant")
+  private val ancientCity = AncientCitySite.id
+  private val brokenPeaks = BrokenPeaksSite.id
+  private val buriedGiant = BuriedGiantSite.id
   private val sites = Vector(ancientCity, brokenPeaks, buriedGiant)
 
   /** p1 holds Garrison, rules the first `counts.size` of Ancient City, Broken
@@ -91,7 +95,7 @@ class GarrisonSuite extends munit.FunSuite with WalkerRecordedOpsReducer:
     val first = Outcomes.parked(play(ready, power, card))
     // The state the walk had reached at the choice: its recorded gain applied.
     val atChoice = foldRecordedOps(ready, first.events, "gain did not replay")
-    val unruled = CatalogNames.site("Deep Woods")
+    val unruled = DeepWoodsSite.id
     assertEquals(rejected(resume(atChoice, power, played, first.tree,
       Garrison.decisionId, chooseSites(unruled))), OathViolation
       .InvalidEventOrder(s"decision ${Garrison.decisionId} does not offer " +

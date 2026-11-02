@@ -1,9 +1,11 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.catalog.holding.CrackedHornCard
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look,
-  PhasePowerHarness, Refusals, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, PhasePowerHarness, Refusals,
+  Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Unwrap.accepted
 
@@ -12,24 +14,26 @@ class BarbedNetSuite extends munit.FunSuite:
   import PhasePowerHarness._
   import ActPowerHarness.allSecrets
 
-  private val net = CatalogNames.relic("Barbed Net")
+  private val net = BarbedNetCard.id
   private val source = DecisionOptionRef.Relic(net)
 
   // The relic the tests take from the site, the one they leave there, and
   // one that stays in the relic deck.
-  private val taken = CatalogNames.relic("Dowsing Sticks")
-  private val left = CatalogNames.relic("Cracked Horn")
-  private val inRelicDeck = CatalogNames.relic("Whistle")
+  private val taken = DowsingSticksCard.id
+  private val left = CrackedHornCard.id
+  private val inRelicDeck = WhistleCard.id
 
   /** p1's Act at Ancient City holding Barbed Net faceup with `faceUp`
     * secrets. The site holds Dowsing Sticks and Cracked Horn facedown, or no
     * relic when `relicsAtSite` is false. */
   private def staged(relicsAtSite: Boolean = true, faceUp: Int = 3)
       : ReadyGame =
-    val holding = Table.start.turn(actor, Phase.Act).pawn(actor, "Ancient City")
+    val holding = Table.start.turn(actor, Phase.Act)
+      .pawn(actor, AncientCitySite)
       .relic(actor, net).secrets(actor, faceUp)
     if relicsAtSite then
-      holding.relicAt(taken, "Ancient City").relicAt(left, "Ancient City").ready
+      holding.relicAt(taken, AncientCitySite).relicAt(left, AncientCitySite)
+        .ready
     else holding.ready
   private def atSite(ready: ReadyGame): Vector[RelicId] =
     ready.game.current.map.sites(actorsSite(ready)).relics.map(_.id)

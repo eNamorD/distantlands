@@ -4,10 +4,11 @@ import oathdigital.gameplay.ModifierPlay
 import oathdigital.gameplay.actions.economy.TradeProcedure
 import oathdigital.gameplay.powerresolver.ModifierPicks
 import oathdigital.gameplay.powers.SearchFixture
+import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, EconomyActions, Look, Outcomes,
-  Table}
+import oathdigital.testkit.{EconomyActions, Look, Outcomes, Table}
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
 
@@ -17,10 +18,10 @@ class TradeModifierChoiceSuite extends munit.FunSuite:
   import EconomyActions.parkedDecision
   import SearchFixture.rules
 
-  private val birdsong = CatalogNames.denizen("Birdsong")
+  private val birdsong = BirdsongCard.id
   /** A plain Beast denizen to trade with: it has no Muster or Trade power. */
-  private val errandBoy = CatalogNames.denizen("Errand Boy")
-  private val home = "Ancient City"
+  private val errandBoy = ErrandBoyCard.id
+  private val home = AncientCitySite
   private val modifierDecisionId =
     ModifierPicks.decisionId(PowerWindow.TradeModifierSelection)
   private val startTrade: DecisionOption =

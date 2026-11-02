@@ -1,12 +1,17 @@
 package oathdigital.application
 
+import oathdigital.gameplay.cards.DeepWoodsSite
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.testkit.MenuPlay
-import oathdigital.gameplay.operations.HallOfMinisters
-import oathdigital.gameplay.powers.action.RovingTerror
+import oathdigital.gameplay.operations.{HallOfMinisters, HallOfMinistersCard}
+import oathdigital.gameplay.powers.action.{RovingTerror, RovingTerrorCard}
 import oathdigital.model._
 import oathdigital.model.OathEvent.{CommandAccepted, ConsentAnswered,
   ConsentRequested}
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, Table}
+import oathdigital.testkit.{Look, Outcomes, Table}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -15,10 +20,10 @@ import oathdigital.testkit.Unwrap.accepted
   * own undoable step. */
 class HallOfMinistersConsentServiceSuite extends munit.FunSuite:
   private val gameId = "hall-consent"
-  private val terror = CatalogNames.denizen("Roving Terror")
-  private val home = CatalogNames.site("Ancient City")
-  private val woods = CatalogNames.site("Deep Woods")
-  private val errandBoy = CatalogNames.denizen("Errand Boy")
+  private val terror = RovingTerrorCard.id
+  private val home = AncientCitySite.id
+  private val woods = DeepWoodsSite.id
+  private val errandBoy = ErrandBoyCard.id
   private val errandBoyRef = DecisionOptionRef.Denizen(errandBoy)
   /** Errand Boy's slot at Deep Woods, Roving Terror's answer for it. */
   private val errandBoySlot = DecisionOptionRef.SiteSlot(woods, 0)
@@ -26,10 +31,10 @@ class HallOfMinistersConsentServiceSuite extends munit.FunSuite:
     * Peaks, which the Hall does not protect, so the question is asked. */
   private val board = Table.start.turn(p1, Phase.Act).pawn(p1, at = home)
     .denizen(terror, at = home).denizen(errandBoy, at = woods)
-    .edifice(CatalogNames.edifice("Hall of Ministers"), EdificeSide.Intact,
+    .edifice(HallOfMinistersCard.id, EdificeSide.Intact,
       at = woods).warbandsAt(woods, p2, 1)
-    .denizen(CatalogNames.denizen("Wrestlers"),
-      at = CatalogNames.site("Broken Peaks"))
+    .denizen(WrestlersCard.id,
+      at = BrokenPeaksSite.id)
   private val useTerror = MenuPlay.starting(p1, ActionRef.UsePower(RovingTerror.id), Vector(DecisionOptionRef.Denizen(terror)))
   private val request = ConsentRequest(p1, RovingTerror.decisionId,
     errandBoySlot, Vector(ConsentAsk(p2, Vector(HallOfMinisters.id))),

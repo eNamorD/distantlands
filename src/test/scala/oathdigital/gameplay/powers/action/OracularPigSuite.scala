@@ -3,7 +3,7 @@ package oathdigital.gameplay.powers.action
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
 import oathdigital.model._
 import oathdigital.protocol.projection.DecisionQueryProjection
-import oathdigital.testkit.{CatalogNames, PhasePowerHarness}
+import oathdigital.testkit.PhasePowerHarness
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Unwrap.accepted
 
@@ -11,7 +11,7 @@ class OracularPigSuite extends munit.FunSuite:
   import PowerFixture._
   import PhasePowerHarness._
 
-  private val pig = CatalogNames.relic("Oracular Pig")
+  private val pig = OracularPigCard.id
   private val source = DecisionOptionRef.Relic(pig)
   /** Whether `player` has peeked `card`, which the projector then names to
     * them alone (`CardKnowledgeSuite`). */

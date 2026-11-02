@@ -13,11 +13,16 @@ import oathdigital.gameplay.actions.recover.RecoverProcedure
 import oathdigital.gameplay.oathkeeper.OathkeeperProcedure
 import oathdigital.gameplay.phases.rest.FinishRestProcedure
 import oathdigital.gameplay.phases.wake.TakeWealthProcedure
+import oathdigital.gameplay.powers.action.{FaeMerchantCard, PiedPiperCard,
+  SecondChanceCard}
+import oathdigital.gameplay.powers.campaign.{MercenariesCard, StickyFireCard}
+import oathdigital.gameplay.powers.economy.BirdsongCard
+import oathdigital.gameplay.powers.search.{MushroomsCard, WineOfWelcomeCard}
+import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.setup.SetupProcedure
 import oathdigital.model._
 import oathdigital.protocol.projection.{LogKind, LogSpan}
-import oathdigital.testkit.CatalogNames
 import LogSpan.Text
 
 /** What a migrated procedure's line reads, on the branches no golden script
@@ -71,9 +76,9 @@ class ProcedureNoteLinesSuite extends munit.FunSuite:
         NoteArg.Site(brokenPeaks)),
       Vector[LogSpan](Text("Took 1 secret from "), words.site(brokenPeaks)))
 
-  private val roar: CardId = CatalogNames.denizen("Threatening Roar")
-  private val mushrooms: CardId = CatalogNames.denizen("Mushrooms")
-  private val mercenaries: CardId = CatalogNames.denizen("Mercenaries")
+  private val roar: CardId = ThreateningRoarCard.id
+  private val mushrooms: CardId = MushroomsCard.id
+  private val mercenaries: CardId = MercenariesCard.id
 
   test("a Forge paying secrets only reads as the rule wrote it"):
     assertEquals(spoken(ActionRef.Forge, ForgeProcedure.paidSecrets,
@@ -136,8 +141,8 @@ class ProcedureNoteLinesSuite extends munit.FunSuite:
     assertEquals(kindOf(PhaseTransitionRef.FinishRest,
       FinishRestProcedure.supplyIncreased), LogKind.Delta)
 
-  private val stickyFire: CardId = CatalogNames.relic("Sticky Fire")
-  private val birdsong: CardId = CatalogNames.denizen("Birdsong")
+  private val stickyFire: CardId = StickyFireCard.id
+  private val birdsong: CardId = BirdsongCard.id
 
   test("a relic given in a negotiation reads as the rule wrote it"):
     assertEquals(spoken(ActionRef.Negotiation, NegotiationProcedure.gaveCard,
@@ -246,9 +251,9 @@ class ProcedureNoteLinesSuite extends munit.FunSuite:
   // which above `LogWords.Inline` (5) writes "6 cards" when the viewer
   // identifies none of them and a `LogSpan.Cards` span when it identifies
   // some. Recorded in the wording ledger.
-  private val faeMerchant: CardId = CatalogNames.denizen("Fae Merchant")
-  private val secondChance: CardId = CatalogNames.denizen("Second Chance")
-  private val piedPiper: CardId = CatalogNames.denizen("Pied Piper")
+  private val faeMerchant: CardId = FaeMerchantCard.id
+  private val secondChance: CardId = SecondChanceCard.id
+  private val piedPiper: CardId = PiedPiperCard.id
 
   test("a draw above five cards is counted, not listed by its backs"):
     val six = Vector(roar, faeMerchant, secondChance, piedPiper, mushrooms,
@@ -258,7 +263,7 @@ class ProcedureNoteLinesSuite extends munit.FunSuite:
 
   /** A relic named rather than spelled by id, which renders as its back
     * here, with no state behind it. `birdsong` above is the denizen. */
-  private val wine: CardId = CatalogNames.relic("Wine of Welcome")
+  private val wine: CardId = WineOfWelcomeCard.id
 
   test("a things argument joins sites, a pawn, a card and a banner"):
     assertEquals(spoken(ActionRef.Campaign, CampaignNotes.targets,

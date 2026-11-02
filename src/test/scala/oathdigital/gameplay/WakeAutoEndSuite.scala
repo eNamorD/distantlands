@@ -1,5 +1,8 @@
 package oathdigital.gameplay
 
+import oathdigital.gameplay.cards.BuriedGiantSite
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model.OathState.Ready
 import oathdigital.gameplay.phases.PhaseMenu
 import oathdigital.gameplay.powers.PhasePowerCatalog
@@ -21,16 +24,16 @@ class WakeAutoEndSuite extends munit.FunSuite:
     * p3 at Buried Giant. Ancient City is the only River in play, so its River
     * offers nothing. No Wake option is open unless a test adds one. */
   private val quiet: ReadyGame = Table.start
-    .pawn(p1, at = "Ancient City").pawn(p2, at = "Broken Peaks")
-    .pawn(p3, at = "Buried Giant").ready
+    .pawn(p1, at = AncientCitySite).pawn(p2, at = BrokenPeaksSite)
+    .pawn(p3, at = BuriedGiantSite).ready
   private val actor = p1
 
   private def completed(events: Vector[OathEvent]) =
     events.collect { case WalkerCompleted(procedure) => procedure }
   /** One favor at p2's and p3's sites, so whoever wakes next can take it. */
   private def withFavor(ready: ReadyGame)(using munit.Location): ReadyGame =
-    Table.from(ready).siteTokens("Broken Peaks", favor = 1)
-      .siteTokens("Buried Giant", favor = 1).ready
+    Table.from(ready).siteTokens(BrokenPeaksSite, favor = 1)
+      .siteTokens(BuriedGiantSite, favor = 1).ready
   private def replayed(from: ReadyGame, events: Vector[OathEvent]) =
     Ready(ActPowerHarness.replayed(rules, from, events))
 

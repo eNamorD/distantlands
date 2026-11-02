@@ -1,8 +1,9 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
@@ -10,17 +11,17 @@ import oathdigital.testkit.Unwrap.accepted
 class BogSuite extends munit.FunSuite:
   import PhasePowerHarness._
 
-  private val bog = CatalogNames.denizen("Bog")
+  private val bog = BogCard.id
   private val source = DecisionOptionRef.Denizen(bog)
   private val scepter = RelicId("grand-scepter")
-  private val whistle = CatalogNames.relic("Whistle")
+  private val whistle = WhistleCard.id
 
   /** p1's Act at Ancient City beside a site Bog, holding `relics` faceup,
     * with `beast` favor in the Beast bank. Bog is site-only. */
   private def staged(relics: Vector[RelicId] = Vector(whistle),
       beast: Int = 5): ReadyGame =
-    relics.foldLeft(Table.start.turn(p1, Phase.Act).pawn(p1, "Ancient City")
-      .denizen(bog, at = "Ancient City").bankFavor(Suit.Beast, beast))(
+    relics.foldLeft(Table.start.turn(p1, Phase.Act).pawn(p1, AncientCitySite)
+      .denizen(bog, at = AncientCitySite).bankFavor(Suit.Beast, beast))(
       _.relic(p1, _)).ready
 
   private def beastBank(ready: ReadyGame): Int =

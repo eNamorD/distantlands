@@ -7,8 +7,7 @@ import oathdigital.gameplay.powers.{NoteText, PayOrAsk, PowerFixture,
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.ParkedDecisionAssertions
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes,
-  Refusals, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, Outcomes, Refusals, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Unwrap.accepted
 
@@ -16,7 +15,7 @@ class WayStationSuite extends munit.FunSuite:
   import PowerFixture._
   import TravelFixture._
 
-  private val wayStation = CatalogNames.denizen("Way Station")
+  private val wayStation = WayStationCard.id
   private val rival = Table.p2
 
   /** Way Station stands at the coast, which `rival` rules. The actor, at the
@@ -41,7 +40,7 @@ class WayStationSuite extends munit.FunSuite:
   /** The coast also carries Toll Roads' toll of 1 favor on top of the Travel. */
   private def tolled(favor: Int): ReadyGame =
     on(rivalRules(favor = favor))(_
-      .denizen(CatalogNames.denizen("Toll Roads"), at = provincePlains)
+      .denizen(TollRoadsCard.id, at = provincePlains)
       .warbandsAt(provincePlains, rival, 1))
 
   test("its ruler travels there free, unasked"):
@@ -85,7 +84,7 @@ class WayStationSuite extends munit.FunSuite:
 
   test("a Travel a selected modifier already made free is not asked"):
     val ready = on(rivalRules(favor = 2))(_
-      .adviser(actor, CatalogNames.denizen("Tents")))
+      .adviser(actor, TentsCard.id))
     val done = accepted(travel(ready, coast, Vector(Tents.id)))
     val result = Outcomes.ready(done.state)
     assertEquals(Look(result).pawn(actor), coast)

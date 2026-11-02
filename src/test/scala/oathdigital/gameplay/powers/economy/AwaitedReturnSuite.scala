@@ -1,20 +1,22 @@
 package oathdigital.gameplay.powers.economy
 
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, EconomyActions,
-  Look, PowerRules, Table}
+import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look, PowerRules,
+  Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
 
 class AwaitedReturnSuite extends munit.FunSuite:
-  private val awaited = CatalogNames.denizen("Awaited Return")
+  private val awaited = AwaitedReturnCard.id
   private val power = AwaitedReturn
   private val modifiers = Vector(AwaitedReturn.id)
-  private val home = CatalogNames.site("Ancient City")
+  private val home = AncientCitySite.id
   /** A plain Order denizen to Trade with. */
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
+  private val wrestlers = WrestlersCard.id
   private val rules = PowerRules.withWalkerPowers
 
   /** p1 at Ancient City beside Wrestlers, holding Awaited Return faceup,

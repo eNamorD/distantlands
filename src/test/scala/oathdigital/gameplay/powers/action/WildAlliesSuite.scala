@@ -1,13 +1,17 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignSetup}
+import oathdigital.gameplay.cards.DeepWoodsSite
 import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog,
   WalkerPowerCatalog}
-import oathdigital.gameplay.powers.poweruse.CityWall
+import oathdigital.gameplay.powers.poweruse.{CityWall, CityWallCard}
+import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.travel.DesolateShoreSite
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, MenuPlay,
-  Outcomes, ParkedNode, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, MenuPlay, Outcomes,
+  ParkedNode, Table}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -15,14 +19,14 @@ import oathdigital.testkit.Unwrap.accepted
   * card. Act as if your pawn is there. Spend no Supply and add your
   * warbands there to your force." (catalog batch 8, slice 13). */
 class WildAlliesSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Wild Allies")
+  private val card = WildAlliesCard.id
   private val source = DecisionOptionRef.Denizen(card)
-  private val errandBoy = CatalogNames.denizen("Errand Boy")
-  private val home = CatalogNames.site("Ancient City")
+  private val errandBoy = ErrandBoyCard.id
+  private val home = AncientCitySite.id
   /** In the Provinces, away from p1's Cradle, with no pawn. */
-  private val wilds = CatalogNames.site("Deep Woods")
+  private val wilds = DeepWoodsSite.id
   /** A third site with no pawn. */
-  private val lonely = CatalogNames.site("Desolate Shore")
+  private val lonely = DesolateShoreSite.id
   private val rules = ActPowerHarness.rulesWithPrintedRestrictions()
 
   /** p1 holds Wild Allies faceup with a secret to pay; Errand Boy, a
@@ -65,7 +69,7 @@ class WildAlliesSuite extends munit.FunSuite:
   test("the site question lists the Beast sites in map order, and one " +
       "with nothing to attack is unavailable with why"):
     val ready = alliesWithABeastSiteHoldingTheRival
-      .denizen(CatalogNames.denizen("Wolves"), at = lonely).ready
+      .denizen(WolvesCard.id, at = lonely).ready
     val options = siteOptions(accepted(ActPowerHarness.use(rules, ready,
       WildAllies.id, source)))
     val map = ready.game.current.map
@@ -83,7 +87,7 @@ class WildAlliesSuite extends munit.FunSuite:
     val spring = oathdigital.gameplay.powers.economy.HallowedSpringCard.id
     val ready = alliesWithABeastSiteHoldingTheRival
       .edifice(spring, EdificeSide.Intact, at = home)
-      .denizen(CatalogNames.denizen("Wolves"), at = lonely, facedown = true)
+      .denizen(WolvesCard.id, at = lonely, facedown = true)
       .ready
     val options = siteOptions(accepted(ActPowerHarness.use(rules, ready,
       WildAllies.id, source)))
@@ -123,7 +127,7 @@ class WildAlliesSuite extends munit.FunSuite:
       "Wall's reason"):
     // City Wall at Ancient City, ruled by p2; p1, an enemy, stands there.
     val ready = alliesWithABeastSiteHoldingTheRival
-      .denizen(CatalogNames.denizen("City Wall"), at = home)
+      .denizen(CityWallCard.id, at = home)
       .warbandsAt(home, p2, 1).ready
     menuOption(ready) match
       case DecisionOption.Unavailable(_, ask: OptionReason.Askable) =>

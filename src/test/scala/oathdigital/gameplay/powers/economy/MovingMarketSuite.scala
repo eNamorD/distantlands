@@ -2,29 +2,34 @@ package oathdigital.gameplay.powers.economy
 
 import oathdigital.gameplay.ModifierPlay
 import oathdigital.gameplay.actions.economy.TradeProcedure
+import oathdigital.gameplay.cards.BuriedGiantSite
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, EconomyActions,
-  Look, Outcomes, PhasePowerHarness, PowerRules, Table}
+import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look, Outcomes,
+  PhasePowerHarness, PowerRules, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
 
 class MovingMarketSuite extends munit.FunSuite:
-  private val market = CatalogNames.denizen("Moving Market")
+  private val market = MovingMarketCard.id
   private val power = MovingMarket.forCatalog(catalog)
   private val modifiers = Vector(MovingMarket.id)
   /** p1's pawn site, and two other sites in play. */
-  private val home = CatalogNames.site("Ancient City")
-  private val peaks = CatalogNames.site("Broken Peaks")
-  private val giant = CatalogNames.site("Buried Giant")
+  private val home = AncientCitySite.id
+  private val peaks = BrokenPeaksSite.id
+  private val giant = BuriedGiantSite.id
   /** A plain Beast denizen, filling Broken Peaks. */
-  private val errandBoy = CatalogNames.denizen("Errand Boy")
+  private val errandBoy = ErrandBoyCard.id
   /** A plain Order denizen to Trade with instead. */
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
+  private val wrestlers = WrestlersCard.id
   private val rules = PowerRules.withWalkerPowers
   private val parked = PowerRules.parkedUnderWalkerPowers
 

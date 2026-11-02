@@ -1,8 +1,9 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, Table}
 import oathdigital.testkit.Outcomes.{assertWireRoundTrips, ready}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -10,14 +11,14 @@ class WizardSchoolSuite extends munit.FunSuite:
   import ActPowerHarness._
   import PowerFixture._
 
-  private val school = CatalogNames.denizen("Wizard School")
+  private val school = WizardSchoolCard.id
   private val source = DecisionOptionRef.Denizen(school)
 
   /** p1's Act at Ancient City with Wizard School (site-only) at the site
     * and `favor` favor. */
   private def staged(favor: Int = 2): ReadyGame =
-    Table.start.turn(actor, Phase.Act).pawn(actor, "Ancient City")
-      .denizen(school, at = "Ancient City").favor(actor, favor).ready
+    Table.start.turn(actor, Phase.Act).pawn(actor, AncientCitySite)
+      .denizen(school, at = AncientCitySite).favor(actor, favor).ready
 
   test("it places a favor, gains a secret and ends the Act phase"):
     // 2 favor less the 1 placed leave 1.

@@ -6,12 +6,16 @@ import java.nio.file.Files
 import oathdigital.application._
 import oathdigital.application.MembershipRole._
 import oathdigital.catalog.SiteOnly
+import oathdigital.gameplay.cards.BuriedGiantSite
+import oathdigital.gameplay.powers.campaign.NatureWorshipCard
+import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
+import oathdigital.gameplay.powers.whenplayed.WizardsConclaveCard
 import oathdigital.persistence.HsqldbDatabaseOwner
 import oathdigital.gameplay.setup.SetupProcedure
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.model.DenizenId
-import oathdigital.testkit.{CatalogNames, HttpTestServer,
-  TestUserHeaderAuthenticator}
+import oathdigital.testkit.{HttpTestServer, TestUserHeaderAuthenticator}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -46,7 +50,7 @@ class AuthenticatedGameRoutesSuite extends munit.FunSuite:
     val traveled = initialSituation().endingWake(p2)
       .parkedAfter(ParkedServiceFixture.startTravel(p2))
       .parkedAfter(ParkedServiceFixture.pickTravelDestination(p2,
-        CatalogNames.site("Buried Giant")))
+        BuriedGiantSite.id))
     traveled.seedInto(repository, gameId)
     val ownerUser = UserId("negotiation-owner")
     val actorUser = UserId("negotiation-actor")
@@ -195,9 +199,8 @@ class AuthenticatedGameRoutesSuite extends munit.FunSuite:
     case BegunAuthGame(server, _, afterBegin) =>
       // p2 is dealt Wizard's Conclave, Errand Boy and Nature Worship, keeps
       // Wizard's Conclave, and discards the others.
-      val kept = CatalogNames.denizen("Wizard's Conclave")
-      val discarded = Vector("Errand Boy", "Nature Worship")
-        .map(CatalogNames.denizen(_))
+      val kept = WizardsConclaveCard.id
+      val discarded = Vector(ErrandBoyCard.id, NatureWorshipCard.id)
       assertEquals(freshReady.game.current.temporaryHands(p2)
         .collect { case id: DenizenId => id }, kept +: discarded)
       assert(!catalog.denizen(kept).exists(_.isInstanceOf[SiteOnly]))
@@ -205,7 +208,7 @@ class AuthenticatedGameRoutesSuite extends munit.FunSuite:
       val pawnDecision = SetupProcedure.pawnDecisionId(p2)
       val pawn = server.post(commandsPath,
         resolveWalkerBody(afterBegin, pawnDecision, "site",
-          CatalogNames.site("Ancient City").value), Some(p2User.value))
+          AncientCitySite.id.value), Some(p2User.value))
       assertEquals(pawn.statusCode(), 200, pawn.body())
       assertEquals(ujson.read(pawn.body())("walkerDecision")("decisionId").str,
         SetupProcedure.adviserDecisionId(p2))

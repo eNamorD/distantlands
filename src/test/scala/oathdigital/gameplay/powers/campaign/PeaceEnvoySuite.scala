@@ -3,19 +3,20 @@ package oathdigital.gameplay.powers.campaign
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.action.WildAlliesCard
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Peace Envoy: one favor placed and one favor given per defense die, used
   * with no other plan, while the enemy's pawn shares the user's site. */
 class PeaceEnvoySuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Peace Envoy")
+  private val card = PeaceEnvoyCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
-  private val longbows = CatalogNames.denizen("Longbows")
+  private val longbows = LongbowsCard.id
   private val longbowsRef: DecisionOptionRef =
     DecisionOptionRef.Denizen(longbows)
-  private val outriders = CatalogNames.denizen("Outriders")
+  private val outriders = OutridersCard.id
   private val source = PowerSourceRef.Card(card)
 
   /** `b`, with the actor also holding Longbows faceup: a free plan that
@@ -75,7 +76,7 @@ class PeaceEnvoySuite extends munit.FunSuite:
       _.favor(base.actor, 5).favor(base.rival, 0))
     val game = rules(losingDice)
     val run = committed(game, campaignQueuedFrom(game, b, away,
-      PowerSourceRef.Card(CatalogNames.denizen("Wild Allies"))), b,
+      PowerSourceRef.Card(WildAlliesCard.id)), b,
       force = 2, raid = true)
     val picked = run.pick(b.actor, CampaignIds.attackerPlan, ref)
     assertEquals(Look(picked.state).adviserTokens(b.actor, card), Tokens(1, 0))
@@ -89,7 +90,7 @@ class PeaceEnvoySuite extends munit.FunSuite:
       _.favor(base.rival, 5).favor(base.actor, 0))
     val game = rules(losingDice)
     val done = committed(game, campaignQueuedFrom(game, b, away,
-        PowerSourceRef.Card(CatalogNames.denizen("Wild Allies"))), b,
+        PowerSourceRef.Card(WildAlliesCard.id)), b,
         force = 4, raid = true)
       .finishAttackerPlans(b.actor)
       .pick(b.rival, CampaignIds.defenderPlan, ref).finishPlanWindows
@@ -115,7 +116,7 @@ class PeaceEnvoySuite extends munit.FunSuite:
     // The rival's Insect Swarm burns one more favor for each attacker plan.
     val base = withLongbowsHeld(envoyAttackerWithRivalAtOrigin(favor = 3))
     val b = withAdviserFor(base, base.rival,
-      CatalogNames.denizen("Insect Swarm"), Orientation.FaceUp)
+      InsectSwarmCard.id, Orientation.FaceUp)
     val run = commit(rules(losingDice), b, 2)
     assertEquals(run.withheld(b.actor, ref),
       Some(OptionReason.Written("Needs 4 favor; you have 3")))

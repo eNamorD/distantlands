@@ -4,12 +4,12 @@ import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Herald: after another player campaigns against a player, its holder
   * gains a favor from a bank they choose. */
 class HeraldSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Herald")
+  private val card = HeraldCard.id
 
   private def lines(run: Run): Vector[NoteText.Said] =
     NoteText.said(Herald.id, Vector(Herald.gained), run.events)

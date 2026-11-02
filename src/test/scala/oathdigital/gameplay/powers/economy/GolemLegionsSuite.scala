@@ -1,28 +1,32 @@
 package oathdigital.gameplay.powers.economy
 
+import oathdigital.catalog.holding.MagiciansCodeCard
 import oathdigital.gameplay.ModifierPlay
 import oathdigital.gameplay.actions.economy.MusterProcedure
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, EconomyActions,
-  Look, MenuPlay, PhasePowerHarness, PowerRules, Refusals, Table}
+import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look, MenuPlay,
+  PhasePowerHarness, PowerRules, Refusals, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
 
 class GolemLegionsSuite extends munit.FunSuite:
-  private val golem = CatalogNames.denizen("Golem Legions")
+  private val golem = GolemLegionsCard.id
   private val selected = Vector(GolemLegions.id)
-  private val home = CatalogNames.site("Ancient City")
+  private val home = AncientCitySite.id
   /** An Arcane adviser besides Golem Legions. */
-  private val magiciansCode = CatalogNames.denizen("Magician's Code")
+  private val magiciansCode = MagiciansCodeCard.id
   /** A plain Beast denizen. */
-  private val errandBoy = CatalogNames.denizen("Errand Boy")
+  private val errandBoy = ErrandBoyCard.id
   /** A plain Order denizen. */
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
-  private val vowOfBeastkin = CatalogNames.denizen("Vow of Beastkin")
+  private val wrestlers = WrestlersCard.id
+  private val vowOfBeastkin = VowOfBeastkinCard.id
   private val rules = PowerRules.withWalkerPowers
 
   /** p1 at Ancient City, where no card stands, holding Golem Legions faceup,

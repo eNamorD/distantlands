@@ -2,13 +2,13 @@ package oathdigital.gameplay.powers.targeting
 
 import oathdigital.gameplay.OathRules
 import oathdigital.gameplay.powers.WalkerPowerCatalog
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{ProcedureWalker, WalkerPowers,
   WalkerProcedureRegistry}
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, MenuPlay, Outcomes, PowerRules,
-  Table}
+import oathdigital.testkit.{MenuPlay, Outcomes, PowerRules, Table}
 import oathdigital.testkit.Unwrap.{accepted, present}
 
 /** Shared reading for the suites of the rules that keep a player from being
@@ -18,18 +18,18 @@ object TargetingFixture:
   /** Rules with the walker power catalog, so the printed protections apply. */
   val rules: OathRules = PowerRules.withWalkerPowers
   /** The Fortress edifice: Oaken Fortress intact, Rotting Fortress ruined. */
-  val fortress: EdificeId = CatalogNames.edifice("Oaken Fortress")
+  val fortress: EdificeId = OakenFortressCard.id
   /** The relic whose holder's banners and relics cannot be targeted. */
-  val circlet: RelicId = CatalogNames.relic("Circlet of Command")
+  val circlet: RelicId = CircletOfCommandCard.id
 
   /** p1, in Act at Ancient City, can afford a Challenge (6 favor, 6 faceup
     * and 4 facedown secrets) against p2, who stands there holding the
     * People's Favor with 2 favor. */
   val challengeTable: Table = Table.start
-    .pawn(Table.p1, at = "Ancient City").favor(Table.p1, 6)
+    .pawn(Table.p1, at = AncientCitySite).favor(Table.p1, 6)
     .secrets(Table.p1, faceUp = 6, faceDown = 4)
     .peoplesFavor(Some(Table.p2), favor = 2)
-    .pawn(Table.p2, at = "Ancient City")
+    .pawn(Table.p2, at = AncientCitySite)
 
   def ready(transition: OathTransition)(using munit.Location): ReadyGame =
     Outcomes.ready(transition.state)

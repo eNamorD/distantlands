@@ -4,12 +4,18 @@ import oathdigital.gameplay.{FacedownAdviserPlay, OathRules, PlacementFixture,
   SearchPlay}
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import oathdigital.gameplay.actions.search.SearchProcedure
+import oathdigital.gameplay.powers.action.{BanditPaymasterCard,
+  DarkEnforcerCard, ScryerCard, SpoiledSuppliesCard}
+import oathdigital.gameplay.powers.campaign.{SecondWindCard, UnstableSummonCard}
+import oathdigital.gameplay.powers.economy.DefameCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
+import oathdigital.gameplay.powers.whenplayed.BlackmailCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Outcomes, PlacementPicks, PowerRules,
-  Table, TestCards}
+import oathdigital.testkit.{Outcomes, PlacementPicks, PowerRules, Table,
+  TestCards}
 import oathdigital.testkit.Unwrap.accepted
 
 /** Drives a real Search through the rules, with the production walker powers,
@@ -31,15 +37,15 @@ object SearchFixture:
     * topped by `top`, with `supply` Supply.
     */
   def staged(top: Vector[WorldCardId], supply: Int): ReadyGame =
-    Table.start.pawn(actor, "Ancient City").worldDeckTop(top*)
+    Table.start.pawn(actor, AncientCitySite).worldDeckTop(top*)
       .supply(actor, supply).ready
 
   /** Eight Discord denizens for the world deck. None is played faceup, so
     * no power of theirs applies.
     */
-  val discordCards: Vector[DenizenId] = Vector("Defame", "Second Wind",
-    "Scryer", "Bandit Paymaster", "Unstable Summon", "Dark Enforcer",
-    "Spoiled Supplies", "Blackmail").map(CatalogNames.denizen(_))
+  val discordCards: Vector[DenizenId] = Vector(DefameCard.id, SecondWindCard.id,
+    ScryerCard.id, BanditPaymasterCard.id, UnstableSummonCard.id,
+    DarkEnforcerCard.id, SpoiledSuppliesCard.id, BlackmailCard.id)
 
   /** Any plain denizens of `suit` (unrestricted, with no production walker
     * power of their own) that no player and no site holds: in the world deck,

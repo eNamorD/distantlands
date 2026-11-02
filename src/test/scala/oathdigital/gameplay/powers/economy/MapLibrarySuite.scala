@@ -1,31 +1,35 @@
 package oathdigital.gameplay.powers.economy
 
+import oathdigital.gameplay.powers.economy.HallowedSpringCard
 import oathdigital.gameplay.ModifierPlay
 import oathdigital.gameplay.powers.WalkerPowerCatalog
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.ModifierOffers
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, EconomyActions,
-  Look, PhasePowerHarness, PowerRules, Table}
+import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look,
+  PhasePowerHarness, PowerRules, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
 
 class MapLibrarySuite extends munit.FunSuite:
-  private val library = CatalogNames.denizen("Map Library")
+  private val library = MapLibraryCard.id
   private val selected = Vector(MapLibrary.id)
   /** p1's pawn site. */
-  private val home = CatalogNames.site("Ancient City")
+  private val home = AncientCitySite.id
   /** Another site in play in the pawn's region. */
   private val near = Table.otherSiteInRegionOf(home)
   /** A site in play in another region. */
   private val away = Table.siteInAnotherRegionThan(home)
   /** A plain Order denizen. */
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
+  private val wrestlers = WrestlersCard.id
   /** A plain Beast denizen. */
-  private val errandBoy = CatalogNames.denizen("Errand Boy")
-  private val hallowedSpring = CatalogNames.edifice("Hallowed Spring")
+  private val errandBoy = ErrandBoyCard.id
+  private val hallowedSpring = HallowedSpringCard.id
   private val rules = PowerRules.withWalkerPowers
 
   /** p1 at Ancient City beside Map Library, with the start's 1 faceup secret

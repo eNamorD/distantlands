@@ -2,8 +2,7 @@ package oathdigital.gameplay.powers.action
 
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Refusals,
-  Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Refusals, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
@@ -11,11 +10,11 @@ import oathdigital.testkit.Unwrap.accepted
 class RelicBreakerSuite extends munit.FunSuite:
   import PhasePowerHarness._
 
-  private val breaker = CatalogNames.denizen("Relic Breaker")
+  private val breaker = RelicBreakerCard.id
   private val source = DecisionOptionRef.Denizen(breaker)
   private val scepter = RelicId("grand-scepter")
-  private val whistle = CatalogNames.relic("Whistle")
-  private val sticks = CatalogNames.relic("Dowsing Sticks")
+  private val whistle = WhistleCard.id
+  private val sticks = DowsingSticksCard.id
 
   /** p1's Act, holding Relic Breaker as an adviser and `relics` faceup. */
   private def staged(relics: Vector[RelicId] = Vector(whistle, sticks))

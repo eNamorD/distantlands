@@ -2,7 +2,7 @@ package oathdigital.gameplay.powers.action
 
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
@@ -10,7 +10,7 @@ import oathdigital.testkit.Unwrap.accepted
 class FirebrandSuite extends munit.FunSuite:
   import PhasePowerHarness._
 
-  private val brand = CatalogNames.denizen("Firebrand")
+  private val brand = FirebrandCard.id
   private val source = DecisionOptionRef.Denizen(brand)
 
   /** p1's Act holding Firebrand, the banks holding exactly `favor`, and the

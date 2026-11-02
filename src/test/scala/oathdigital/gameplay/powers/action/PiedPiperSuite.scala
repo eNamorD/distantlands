@@ -3,12 +3,17 @@ package oathdigital.gameplay.powers.action
 import oathdigital.gameplay.actions.CardPlayRules
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import oathdigital.gameplay.cards.BuriedGiantSite
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
+import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome,
   WalkerPowers}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Unwrap
 import oathdigital.testkit.Unwrap.{accepted, present}
@@ -17,13 +22,13 @@ class PiedPiperSuite extends munit.FunSuite:
   import PowerFixture._
   import PhasePowerHarness._
 
-  private val piper = CatalogNames.denizen("Pied Piper")
+  private val piper = PiedPiperCard.id
   private val source = DecisionOptionRef.Denizen(piper)
   private val receiver = Table.p2
-  private val plain = Vector("Threatening Roar", "Fae Merchant", "Wrestlers")
-    .map(CatalogNames.denizen(_))
+  private val plain = Vector(ThreateningRoarCard.id, FaeMerchantCard.id,
+    WrestlersCard.id)
   /** A plain denizen in hand. */
-  private val played = CatalogNames.denizen("Errand Boy")
+  private val played = ErrandBoyCard.id
 
   private def favorOf(ready: ReadyGame, id: PlayerId = actor) =
     Look(ready).player(id).board.favor
@@ -34,7 +39,7 @@ class PiedPiperSuite extends munit.FunSuite:
   private def playing(card: DenizenId, first: Table => Table,
       held: Vector[DenizenId]): ReadyGame =
     held.foldLeft(first(Table.start.turn(actor, Phase.Act)
-      .pawn(actor, "Ancient City").hand(actor, card)))(
+      .pawn(actor, AncientCitySite).hand(actor, card)))(
       _.adviser(actor, _, facedown = true)).ready
 
   /** The placement options of `card` from hand, with Pied Piper's power in
@@ -63,9 +68,9 @@ class PiedPiperSuite extends munit.FunSuite:
     * secret. The receiver stands at Buried Giant, another site, with
     * `favor`. */
   private def staged(favor: Int = 3, secrets: Int = 1) =
-    Table.start.turn(actor, Phase.Act).pawn(actor, "Ancient City")
+    Table.start.turn(actor, Phase.Act).pawn(actor, AncientCitySite)
       .adviser(actor, piper).secrets(actor, secrets)
-      .pawn(receiver, "Buried Giant").favor(receiver, favor)
+      .pawn(receiver, BuriedGiantSite).favor(receiver, favor)
 
   private def movedTo(ready: ReadyGame) =
     val t = accepted(use(ready, PiedPiper, source))

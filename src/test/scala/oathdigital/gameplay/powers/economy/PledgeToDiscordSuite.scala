@@ -1,16 +1,21 @@
 package oathdigital.gameplay.powers.economy
 
+import oathdigital.gameplay.{MarriageCard, PledgeToDiscordCard}
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import oathdigital.gameplay.actions.economy.TradeProcedure
 import oathdigital.gameplay.powers.{PowerFixture, SearchFixture}
-import oathdigital.gameplay.powers.action.HonorGuard
-import oathdigital.gameplay.powers.cardplay.WildCry
+import oathdigital.gameplay.powers.action.{HomesteadersCard, HonorGuard,
+  HonorGuardCard}
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.cardplay.{WildCry, WildCryCard}
+import oathdigital.gameplay.powers.search.{ErrandBoyCard, LandWardenCard}
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look, MenuPlay, PhasePowerHarness,
-  PowerRules, Table}
+import oathdigital.testkit.{Look, MenuPlay, PhasePowerHarness, PowerRules,
+  Table}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -19,10 +24,10 @@ import oathdigital.testkit.Unwrap.accepted
   * reader: a Trade's matching advisers, a target rule with the bank a
   * bury returns to, and a card played to the holder's advisers. */
 class PledgeToDiscordSuite extends munit.FunSuite:
-  private val pledge = CatalogNames.denizen("Pledge to Discord")
-  private val marriage = CatalogNames.denizen("Marriage")
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
-  private val home = CatalogNames.site("Ancient City")
+  private val pledge = PledgeToDiscordCard.id
+  private val marriage = MarriageCard.id
+  private val wrestlers = WrestlersCard.id
+  private val home = AncientCitySite.id
   /** A plain Discord denizen. */
   private val plainDiscord = SearchFixture.anyPlainDenizensOf(Suit.Discord)
     .head
@@ -46,7 +51,7 @@ class PledgeToDiscordSuite extends munit.FunSuite:
 
   test("Honor Guard targets a holder with no Order adviser, and the " +
       "buried adviser's favor goes to the Discord bank"):
-    val guard = CatalogNames.denizen("Honor Guard")
+    val guard = HonorGuardCard.id
     val ready = Table.start.turn(p1, Phase.Act).pawn(p1, home)
       .adviser(p1, guard).favor(p1, 3).pawn(p2, at = home)
       .adviser(p2, pledge).adviser(p2, wrestlers)
@@ -68,10 +73,9 @@ class PledgeToDiscordSuite extends munit.FunSuite:
   test("a Beast card played faceup to the holder's advisers is Discord, " +
       "so Wild Cry gives nothing; played to a site it gives"):
     import PowerFixture.actor
-    val wildCry = CatalogNames.denizen("Wild Cry")
-    val beast = CatalogNames.denizen("Errand Boy")
-    val fillers = Vector("Homesteaders", "Land Warden")
-      .map(CatalogNames.denizen(_))
+    val wildCry = WildCryCard.id
+    val beast = ErrandBoyCard.id
+    val fillers = Vector(HomesteadersCard.id, LandWardenCard.id)
     val ready = Table.from(SearchFixture.staged(Vector(beast) ++ fillers,
       supply = 5)).denizen(wildCry, at = home).adviser(actor, pledge)
       .ready

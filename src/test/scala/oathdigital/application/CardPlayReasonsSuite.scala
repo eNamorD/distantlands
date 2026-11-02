@@ -2,12 +2,16 @@ package oathdigital.application
 
 import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.powers.{SearchFixture, WalkerPowerCatalog}
+import oathdigital.gameplay.powers.action.AncientBindingCard
+import oathdigital.gameplay.powers.campaign.{RainBootsCard, SealingWardCard}
 import oathdigital.gameplay.powers.cardplay.{SacredGround, SacredGroundCard,
-  VisionPlayFixture, VowOfObedience}
+  VisionPlayFixture, VowOfObedience, VowOfObedienceCard}
+import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.protocol.projection.DecisionOptionProjection
-import oathdigital.testkit.{CatalogNames, Outcomes, PlacementPicks, Table}
+import oathdigital.testkit.{Outcomes, PlacementPicks, Table}
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.{accepted, present}
 
@@ -54,23 +58,23 @@ class CardPlayReasonsSuite extends munit.FunSuite:
   test("a Vow of Obedience holder sees the revealed Vision spot refused, " +
       "with the Vow's reason"):
     val parked = searchedFaith(_.adviser(p1,
-      CatalogNames.denizen("Vow of Obedience")))
+      VowOfObedienceCard.id))
     assertEquals(hiddenBy(parked.state), Some(VowOfObedience.id))
     assertSpotRefused(parked.state)
 
   test("a player away from Sacred Ground sees the revealed Vision spot " +
       "refused, with its reason"):
     val parked = searchedFaith(_.edifice(SacredGroundCard.id,
-      EdificeSide.Intact, at = CatalogNames.site("Broken Peaks")))
+      EdificeSide.Intact, at = BrokenPeaksSite.id))
     assertEquals(hiddenBy(parked.state), Some(SacredGround.id))
     assertSpotRefused(parked.state)
 
   test("a faceup locked adviser's Replace rows say Locked"):
-    val sealingWard = CatalogNames.denizen("Sealing Ward")
-    val errandBoy = CatalogNames.denizen("Errand Boy")
+    val sealingWard = SealingWardCard.id
+    val errandBoy = ErrandBoyCard.id
     // Three advisers fill p1's adviser limit (3 by default), so keeping the
     // drawn Errand Boy means replacing one of them: Replace rows exist.
-    val ready = Vector("Rain Boots", "Ancient Binding").foldLeft(Table.from(
+    val ready = Vector(RainBootsCard, AncientBindingCard).foldLeft(Table.from(
       SearchFixture.staged(Vector(errandBoy), supply = 5)))(
       _.adviser(p1, _, facedown = true)).adviser(p1, sealingWard).ready
     // The Search may draw more than one card: keep Errand Boy.

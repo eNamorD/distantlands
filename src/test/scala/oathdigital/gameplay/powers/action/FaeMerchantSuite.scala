@@ -1,9 +1,9 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, PowerRules,
-  Refusals, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, PowerRules, Refusals, Table}
 import oathdigital.testkit.Outcomes.{assertWireRoundTrips, ready}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -13,20 +13,20 @@ class FaeMerchantSuite extends munit.FunSuite:
 
   private val walkerParked = PowerRules.parkedUnderWalkerAndPhasePowers
 
-  private val fae = CatalogNames.denizen("Fae Merchant")
+  private val fae = FaeMerchantCard.id
   private val source = DecisionOptionRef.Denizen(fae)
   private val scepter = RelicId("grand-scepter")
-  private val whistle = CatalogNames.relic("Whistle")
+  private val whistle = WhistleCard.id
   /** The relic on top of the relic deck: the one Fae Merchant draws. */
-  private val top = CatalogNames.relic("Dowsing Sticks")
+  private val top = DowsingSticksCard.id
   private def relicRef(id: RelicId) = DecisionOptionRef.Relic(id)
 
   /** p1's Act at Ancient City with Fae Merchant at the site, holding `held`
     * faceup with `secrets` faceup secrets; Dowsing Sticks tops the relic
     * deck. */
   private def stagedTable(held: Vector[RelicId], secrets: Int = 2): Table =
-    val acting = Table.start.turn(actor, Phase.Act).pawn(actor, "Ancient City")
-      .denizen(fae, at = "Ancient City").secrets(actor, secrets)
+    val acting = Table.start.turn(actor, Phase.Act).pawn(actor, AncientCitySite)
+      .denizen(fae, at = AncientCitySite).secrets(actor, secrets)
       .relicDeckTop(top)
     held.foldLeft(acting)(_.relic(actor, _))
   private def staged(held: Vector[RelicId] = Vector(whistle),

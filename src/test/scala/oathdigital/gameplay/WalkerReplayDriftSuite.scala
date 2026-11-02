@@ -1,9 +1,11 @@
 package oathdigital.gameplay
 
 import oathdigital.gameplay.actions.recover.RecoverProcedure
+import oathdigital.gameplay.cards.DunesSite
 import oathdigital.gameplay.oathkeeper.OathkeeperProcedure
-import oathdigital.testkit.{CatacombsGame, CatalogNames, Look, Outcomes,
-  RecordedOps, Table}
+import oathdigital.gameplay.powers.action.DowsingSticksCard
+import oathdigital.gameplay.powers.travel.FairIsleSite
+import oathdigital.testkit.{CatacombsGame, Look, Outcomes, RecordedOps, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, as}
 import oathdigital.gameplay.powers.WalkerPowerCatalog
@@ -127,8 +129,8 @@ class WalkerReplayDriftSuite extends munit.FunSuite
     WalkerPowers.selected(WalkerPowerCatalog.default(catalog), Vector.empty)
 
   /** Fair Isle, the easiest Recover on the table (difficulty 3). */
-  private val recoverSite = CatalogNames.site("Fair Isle")
-  private val dowsingSticks = CatalogNames.relic("Dowsing Sticks")
+  private val recoverSite = FairIsleSite.id
+  private val dowsingSticks = DowsingSticksCard.id
 
   /** p1, active in the Act, stands at Fair Isle, where Dowsing Sticks lies
     * facedown. */
@@ -314,7 +316,7 @@ class WalkerReplayDriftSuite extends munit.FunSuite
     // p2 holds the title while p1 and p3 each rule a site: a tie p2 breaks.
     val (holder, leaders) = (p2, Vector(p1, p3))
     val ready = Table.start.oathkeeper(Some(holder))
-      .warbandsAt("Dunes", p1, 1).warbandsAt("Fair Isle", p3, 1)
+      .warbandsAt(DunesSite, p1, 1).warbandsAt(FairIsleSite, p3, 1)
       .ready
     val oathkeeperTree: (ReadyGame, Boolean) => Operation = (state, _) =>
       accepted(OathkeeperProcedure.build(catalog, state,

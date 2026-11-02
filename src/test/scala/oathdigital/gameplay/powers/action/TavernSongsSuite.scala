@@ -1,9 +1,13 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.catalog.holding.GlamorCard
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.campaign.ArcaneArmorCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
+import oathdigital.gameplay.powers.whenplayed.WizardsConclaveCard
 import oathdigital.model._
 import oathdigital.protocol.projection.DecisionQueryProjection
-import oathdigital.testkit.{CatalogNames, PhasePowerHarness, Table}
+import oathdigital.testkit.{PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
@@ -11,15 +15,15 @@ import oathdigital.testkit.Unwrap.accepted
 class TavernSongsSuite extends munit.FunSuite:
   import PhasePowerHarness._
 
-  private val songs = CatalogNames.denizen("Tavern Songs")
+  private val songs = TavernSongsCard.id
   private val source = DecisionOptionRef.Denizen(songs)
-  private val home = CatalogNames.site("Ancient City")
+  private val home = AncientCitySite.id
   /** Ancient City's region. */
   private val region = Region.Cradle
   private val pileName = SearchSource.name(SearchSource.RegionalDiscard(region))
   /** Five Arcane cards for the pile, the last on top. */
-  private val pile = Vector("Ward of Silence", "Arcane Brokers", "Arcane Armor",
-    "Glamor", "Wizard's Conclave").map(CatalogNames.denizen(_))
+  private val pile = Vector(WardOfSilenceCard.id, ArcaneBrokersCard.id,
+    ArcaneArmorCard.id, GlamorCard.id, WizardsConclaveCard.id)
 
   /** p1's Act at Ancient City with Tavern Songs at the site, and `cards` in
     * the Cradle discard pile, the last named on top. */

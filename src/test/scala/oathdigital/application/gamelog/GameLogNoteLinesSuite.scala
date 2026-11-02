@@ -3,16 +3,17 @@ package oathdigital.application.gamelog
 import oathdigital.engine.ReplayStep
 import oathdigital.gameplay.actions.{CardPlayRules, ProcedureNotes,
   RuleNotes, VisionRules}
-import oathdigital.gameplay.powers.action.{DreamThief, GamblingHall, MagicCarpet,
-  QuickExit, Wolves}
-import oathdigital.gameplay.powers.rest.SilverTongue
-import oathdigital.gameplay.powers.wake.Hunger
+import oathdigital.gameplay.powers.action.{DowsingSticksCard, DreamThief,
+  GamblingHall, MagicCarpet, QuickExit, Wolves}
+import oathdigital.gameplay.powers.economy.BirdsongCard
+import oathdigital.gameplay.powers.rest.{SilverTongue, SilverTongueCard}
+import oathdigital.gameplay.powers.wake.{AncientCitySite, Hunger}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{ChoicePayload, DeltaPayload, LogNoted,
   WalkerCompleted, WalkerParked, WalkerStepRecorded}
 import oathdigital.model._
 import oathdigital.protocol.projection.{LogEntry, LogKind, LogSpan}
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, Table}
+import oathdigital.testkit.{Look, Outcomes, Table}
 import oathdigital.testkit.Table.p2
 import LogScripts._
 
@@ -20,7 +21,7 @@ import LogScripts._
   * The notes are journaled into real scripts, as Silver Tongue's, whose
   * wording this suite supplies. */
 class GameLogNoteLinesSuite extends munit.FunSuite:
-  private val silverTongueCard = CatalogNames.denizen("Silver Tongue")
+  private val silverTongueCard = SilverTongueCard.id
   private type Steps = Vector[ReplayStep[OathState, OathEvent]]
   private val power = SilverTongue.id
   private val card = PowerSourceRef.Card(silverTongueCard)
@@ -64,7 +65,7 @@ class GameLogNoteLinesSuite extends munit.FunSuite:
   // The Silver Tongue park gives p2 Birdsong facedown, and no other seat
   // holds a facedown adviser.
   private val hiddenOwner = p2
-  private val hiddenAdviser = CatalogNames.denizen("Birdsong")
+  private val hiddenAdviser = BirdsongCard.id
 
   /** Fails unless `hiddenOwner` holds `hiddenAdviser` facedown in `ready`. */
   private def assertOwnerHoldsHiddenFacedown(ready: ReadyGame)(
@@ -400,7 +401,7 @@ class GameLogNoteLinesSuite extends munit.FunSuite:
   test("a power that names its notes' source reads under that name, not its site"):
     val script = silverTongueScript
     val steps = silverTongueSteps
-    val site = CatalogNames.site("Ancient City")
+    val site = AncientCitySite.id
     val noted = inserted(steps, take(steps), LogNoted(power, took(
       PowerSourceRef.Site(site), NoteArg.Player(script.actor),
       NoteArg.Amount(1, NoteUnit.Favor)), covers = false))
@@ -450,7 +451,7 @@ class GameLogNoteLinesSuite extends munit.FunSuite:
     val actor = playerLabel(script.actor)
     val other = script.otherSeat
     // The barbed-net script's answer takes Dowsing Sticks.
-    val taken = CatalogNames.relic("Dowsing Sticks")
+    val taken = DowsingSticksCard.id
     Vector(script.actor, other).foreach { viewer =>
       val shown = format(script, Some(viewer)).filter(_.depth == 1)
       val all = texts(shown)
@@ -507,7 +508,7 @@ class GameLogNoteLinesSuite extends munit.FunSuite:
           // Dowsing Sticks tops the heirloom scripts' relic deck.
           val named = shown(at).spans.exists {
             case LogSpan.Card(id, _) =>
-              id == CatalogNames.relic("Dowsing Sticks").value
+              id == DowsingSticksCard.id.value
             case _ => false
           }
           assertEquals(named, viewer == script.actor, shown(at).spans.toString)

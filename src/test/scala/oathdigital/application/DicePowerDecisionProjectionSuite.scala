@@ -1,9 +1,12 @@
 package oathdigital.application
 
-import oathdigital.gameplay.powers.action.{FaeMerchant, GamblingHall}
+import oathdigital.gameplay.operations.TheGrandScepterCard
+import oathdigital.gameplay.powers.action.{DowsingSticksCard, FaeMerchant,
+  FaeMerchantCard, GamblingHall, GamblingHallCard, WhistleCard}
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Table}
+import oathdigital.testkit.{ActPowerHarness, Table}
 import oathdigital.testkit.Outcomes.ready
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
@@ -19,9 +22,9 @@ class DicePowerDecisionProjectionSuite extends munit.FunSuite:
   private val projector = new WalkerDecisionProjector(catalog,
     new GamePresentationProjector(catalog))
 
-  private val fae = CatalogNames.denizen("Fae Merchant")
-  private val whistle = CatalogNames.relic("Whistle")
-  private val dowsingSticks = CatalogNames.relic("Dowsing Sticks")
+  private val fae = FaeMerchantCard.id
+  private val whistle = WhistleCard.id
+  private val dowsingSticks = DowsingSticksCard.id
 
   private def owner(state: ReadyGame) =
     projector.project(ScopedProjectionContext(state, Some(p1)))
@@ -29,10 +32,10 @@ class DicePowerDecisionProjectionSuite extends munit.FunSuite:
     projector.project(ScopedProjectionContext(state, Some(p2)))
 
   test("Gambling Hall offers the owner all six favor banks"):
-    val hall = CatalogNames.denizen("Gambling Hall")
+    val hall = GamblingHallCard.id
     // p1 stands at Ancient City, where Gambling Hall is, with 3 favor.
-    val ready0 = Table.start.pawn(p1, "Ancient City")
-      .denizen(hall, at = "Ancient City").favor(p1, 3).ready
+    val ready0 = Table.start.pawn(p1, AncientCitySite)
+      .denizen(hall, at = AncientCitySite).favor(p1, 3).ready
     val rules0 = rules(defenseDice(DefenseDieFace.OneShield,
       DefenseDieFace.OneShield, DefenseDieFace.TwoShields,
       DefenseDieFace.Blank))
@@ -49,8 +52,8 @@ class DicePowerDecisionProjectionSuite extends munit.FunSuite:
       "facedown one just taken"):
     // p1 stands at Ancient City with Fae Merchant, holds the Whistle faceup
     // and 2 faceup secrets; Dowsing Sticks tops the relic deck.
-    val ready0 = Table.start.pawn(p1, "Ancient City")
-      .denizen(fae, at = "Ancient City")
+    val ready0 = Table.start.pawn(p1, AncientCitySite)
+      .denizen(fae, at = AncientCitySite)
       .relic(p1, whistle).secrets(p1, faceUp = 2)
       .relicDeckTop(dowsingSticks).ready
     val parked = ready(accepted(use(rulesWithPrintedRestrictions(), ready0,
@@ -64,9 +67,9 @@ class DicePowerDecisionProjectionSuite extends munit.FunSuite:
     assertEquals(other(parked), None)
 
   test("Fae Merchant does not offer the Grand Scepter"):
-    val scepter = CatalogNames.relic("The Grand Scepter")
-    val ready0 = Table.start.pawn(p1, "Ancient City")
-      .denizen(fae, at = "Ancient City")
+    val scepter = TheGrandScepterCard.id
+    val ready0 = Table.start.pawn(p1, AncientCitySite)
+      .denizen(fae, at = AncientCitySite)
       .relic(p1, scepter).relic(p1, whistle).secrets(p1, faceUp = 2)
       .relicDeckTop(dowsingSticks).ready
     val parked = ready(accepted(use(rulesWithPrintedRestrictions(), ready0,

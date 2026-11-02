@@ -2,24 +2,28 @@ package oathdigital.gameplay.powers.cardplay
 
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import oathdigital.gameplay.powers.{NoteText, PowerFixture, SearchFixture}
+import oathdigital.gameplay.powers.action.{HomesteadersCard, MessengerCard}
+import oathdigital.gameplay.powers.campaign.{CodeOfHonorCard, LancersCard,
+  MountainGiantCard, ShieldWallCard, WildMountsCard}
+import oathdigital.gameplay.powers.search.{LandWardenCard, NewsFromAfarCard}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, Table}
 
 class SaddleMakersSuite extends munit.FunSuite:
   import PowerFixture._
   import SearchFixture._
 
-  private val saddle = CatalogNames.denizen("Saddle Makers")
+  private val saddle = SaddleMakersCard.id
   // Three denizens of each suit, whose powers these tests do not use; p1
   // plays the first of each: Wild Mounts (Nomad), Code of Honor (Order),
   // Homesteaders (Hearth).
-  private val nomad = Vector("Wild Mounts", "Lancers", "Mountain Giant")
-    .map(CatalogNames.denizen(_))
-  private val order = Vector("Code of Honor", "Messenger", "Shield Wall")
-    .map(CatalogNames.denizen(_))
-  private val hearth = Vector("Homesteaders", "Land Warden", "News from Afar")
-    .map(CatalogNames.denizen(_))
+  private val nomad = Vector(WildMountsCard.id, LancersCard.id,
+    MountainGiantCard.id)
+  private val order = Vector(CodeOfHonorCard.id, MessengerCard.id,
+    ShieldWallCard.id)
+  private val hearth = Vector(HomesteadersCard.id, LandWardenCard.id,
+    NewsFromAfarCard.id)
   private val holder = Table.p2
 
   /** `holder` holds Saddle Makers on `orientation`, the Nomad bank holds 3

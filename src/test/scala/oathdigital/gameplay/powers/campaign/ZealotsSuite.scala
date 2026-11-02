@@ -6,7 +6,7 @@ import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseAmountAnswer
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Zealots: one favor placed; while the defending force is larger when it
   * is chosen, each sacrificed warband adds three. */
@@ -14,7 +14,7 @@ class ZealotsSuite extends munit.FunSuite:
   import AttackDieFace.{HollowSword, TwoSwordsSkull}
   import DefenseDieFace.Blank
 
-  private val card = CatalogNames.denizen("Zealots")
+  private val card = ZealotsCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
   private val source = PowerSourceRef.Card(card)
   // Ancient City's two blank defense dice and its two Bandits defend with 2.

@@ -1,7 +1,12 @@
 package oathdigital.gameplay
 
+import oathdigital.catalog.Site
 import oathdigital.gameplay.actions.BannerRules
+import oathdigital.gameplay.cards.{BuriedGiantSite, DunesSite}
 import oathdigital.gameplay.phases.PhaseMenu
+import oathdigital.gameplay.powers.travel.{BrokenPeaksSite, FairIsleSite,
+  TentsCard}
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.gameplay.actions.challenge.ChallengeProcedure
 import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,
@@ -11,8 +16,8 @@ import oathdigital.gameplay.walker.{ParkedDecisionAssertions, ProcedureWalker,
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
 import oathdigital.model.OathViolation.NoPlayableOption
-import oathdigital.testkit.{CatalogNames, EmptyWindowModifier, Journal, Look,
-  MenuPlay, Outcomes, Table}
+import oathdigital.testkit.{EmptyWindowModifier, Journal, Look, MenuPlay,
+  Outcomes, Table}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.{accepted, rejected}
 
@@ -33,8 +38,8 @@ class ChallengeProcedureSuite extends munit.FunSuite:
 
   /** Every site holds 10 secrets except those named, so the least sites are
     * the named ones with the fewest. */
-  private def siteSecrets(table: Table, named: (String, Int)*): Table =
-    val secretsBySite = named.map((name, n) => CatalogNames.site(name) -> n).toMap
+  private def siteSecrets(table: Table, named: (Site, Int)*): Table =
+    val secretsBySite = named.map((site, n) => site.id -> n).toMap
     table.ready.game.current.map.inPlay.foldLeft(table) { (t, site) =>
       t.siteTokens(site, secrets = secretsBySite.getOrElse(site, 10))
     }
@@ -142,37 +147,37 @@ class ChallengeProcedureSuite extends munit.FunSuite:
 
   test("Wandering Flame: a unique least site takes secrets one at a time, with no site decision"):
     val board = siteSecrets(challenger.darkestSecret(None, secrets = 3),
-      "Ancient City" -> 0, "Broken Peaks" -> 1, "Buried Giant" -> 5).ready
+      AncientCitySite -> 0, BrokenPeaksSite -> 1, BuriedGiantSite -> 5).ready
     val done = chooseAmount(atAmount(board, darkestSecretOption), 4)
       .getOrElse(fail("the amount must be accepted"))
     val after = Look(done.state)
     // 3 secrets go one at a time to the least site: 0 -> 1, then the two
     // least sites at 1 take one each.
-    assertEquals((after.siteTokens("Ancient City").secrets,
-      after.siteTokens("Broken Peaks").secrets,
-      after.siteTokens("Buried Giant").secrets), (2, 2, 5))
+    assertEquals((after.siteTokens(AncientCitySite).secrets,
+      after.siteTokens(BrokenPeaksSite).secrets,
+      after.siteTokens(BuriedGiantSite).secrets), (2, 2, 5))
     assertEquals(banners(done.state).darkestSecret.holder,
       Some(p1))
     assertEquals(banners(done.state).darkestSecret.secrets, 4)
     assertEquals(after.faceUpSecrets(p1), 6 - 4)
 
   test("Wandering Flame: fewer secrets than tied sites parks one choose-many, then finishes"):
-    val (a, b, c) = ("Ancient City", "Broken Peaks", "Buried Giant")
+    val (a, b, c) = (AncientCitySite, BrokenPeaksSite, BuriedGiantSite)
     val board = siteSecrets(challenger.darkestSecret(None, secrets = 2),
       a -> 0, b -> 0, c -> 0).ready
     val parked = chooseAmount(atAmount(board, darkestSecretOption), 3)
       .getOrElse(fail("the amount must be accepted"))
     parkedOn.assertParked(parked.state, ActionRef.Challenge,
       "challenge.ribbon-site", p1)
-    val siteA = CatalogNames.site(a)
-    val siteC = CatalogNames.site(c)
+    val siteA = a.id
+    val siteC = c.id
     def refused(sites: Vector[SiteId], reason: String) =
       assertEquals(rejected(chooseSites(parked.state, sites)),
         OathViolation.InvalidEventOrder(s"decision challenge.ribbon-site $reason"))
     refused(Vector(siteA), "selects 1 options instead of 2")
     refused(Vector(siteA, siteA), "selects an option more than once")
     // Dunes holds 10, not tied.
-    refused(Vector(siteA, CatalogNames.site("Dunes")),
+    refused(Vector(siteA, DunesSite.id),
       "does not offer a selected option")
     val done = chooseSites(parked.state, Vector(siteA, siteC))
       .getOrElse(fail("two tied sites must be accepted"))
@@ -193,7 +198,7 @@ class ChallengeProcedureSuite extends munit.FunSuite:
     parkedOn.assertParked(parked.state, ActionRef.Challenge,
       "challenge.ribbon-site", p1)
     val done = chooseSites(parked.state,
-      Vector("Ancient City", "Broken Peaks").map(CatalogNames.site(_)))
+      Vector(AncientCitySite.id, BrokenPeaksSite.id))
       .getOrElse(fail("two tied sites must be accepted"))
     assertEquals(Look(done.state).faceUpSecrets(p2), 1 + 3)
     assertEquals(banners(done.state).darkestSecret.holder,
@@ -280,7 +285,7 @@ class ChallengeProcedureSuite extends munit.FunSuite:
   test("a completed Challenge replays exactly from its journal"):
     // The first player, p2, places the first pawn: at Fair Isle, which starts
     // with 3 favor. Taking it gives p2 the favor to outbid People's Favor.
-    val wealthSite = CatalogNames.site("Fair Isle")
+    val wealthSite = FairIsleSite.id
     assertEquals(catalog.site(wealthSite).map(_.startingResources.favor),
       Some(3))
     val orderedSites = wealthSite +: sites.filterNot(_ == wealthSite).take(7)
@@ -311,7 +316,7 @@ class ChallengeProcedureSuite extends munit.FunSuite:
   test("a modifier for the Challenge is asked about first, beside Start " +
       "Challenge"):
     val powers = EmptyWindowModifier.powersFor(MajorActionType.Challenge)
-    val board = challenger.peoplesFavor(None, favor = 2).adviser(p1, "Tents")
+    val board = challenger.peoplesFavor(None, favor = 2).adviser(p1, TentsCard)
       .ready
     val started = accepted(new OathRules(catalog, walkerPowerCatalog = powers)
       .startWalker(Ready(board), ActionRef.Challenge, p1))

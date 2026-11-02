@@ -1,8 +1,8 @@
 package oathdigital.application.gamelog
 
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
 import oathdigital.protocol.projection.{LogEntry}
-import oathdigital.testkit.CatalogNames
 import LogScripts._
 
 /** Which entries share a band (log action sections design, "Server"): every
@@ -52,7 +52,7 @@ class GameLogSectionSuite extends munit.FunSuite:
 
   test("refilled bandits and a new Usurper are in no section"):
     val script = recordedEventsBoard
-    val site = CatalogNames.site("Ancient City")
+    val site = AncientCitySite.id
     assertEquals(formatAppended(script, Vector(OathEvent.BanditsRefilled(
       Vector(site -> 1)))).last.section, None)
     assertEquals(formatAppended(script, Vector(OathEvent.UsurperFlipped(

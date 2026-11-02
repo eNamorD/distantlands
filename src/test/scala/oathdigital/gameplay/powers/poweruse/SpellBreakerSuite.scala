@@ -1,10 +1,12 @@
 package oathdigital.gameplay.powers.poweruse
 
+import oathdigital.gameplay.cards.DeepWoodsSite
 import oathdigital.gameplay.powerresolver.PowerUse
 import oathdigital.gameplay.powers.ConsentPowers
+import oathdigital.gameplay.powers.action.RovingTerrorCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2}
 
 /** Spell Breaker (card 162): "Enemies of Spell Breaker's ruler cannot use
@@ -12,9 +14,9 @@ import oathdigital.testkit.Table.{p1, p2}
   * slice 10). This part tests the restriction alone; the paths that read
   * it are tested in the suites after it. */
 class SpellBreakerSuite extends munit.FunSuite:
-  private val breaker = CatalogNames.denizen("Spell Breaker")
-  private val woods = CatalogNames.site("Deep Woods")
-  private val terror = CatalogNames.denizen("Roving Terror")
+  private val breaker = SpellBreakerCard.id
+  private val woods = DeepWoodsSite.id
+  private val terror = RovingTerrorCard.id
 
   /** p1's Act, with Spell Breaker at Deep Woods, which `ruled` gives its
     * ruler: p2's warband by default. */

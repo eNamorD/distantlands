@@ -1,5 +1,7 @@
 package oathdigital.application
 
+import oathdigital.gameplay.powers.campaign.{CursedCauldronCard, StickyFireCard}
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
 import oathdigital.testkit.MenuPlay
 import oathdigital.model._
 import oathdigital.gameplay.{ModifierPlay, OathRules, WalkerDiceFixture}
@@ -15,7 +17,7 @@ import oathdigital.protocol.projection.{DecisionOptionProjection,
   DecisionQueryProjection, DecisionSectionProjection, DieFace => RolledFace,
   GameProjectionCodec, WalkerDecisionProjection,
   WalkerRollOutcomeProjection}
-import oathdigital.testkit.{CatalogNames, Dice}
+import oathdigital.testkit.Dice
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.{accepted, present}
 import oathdigital.application.ParkedServiceFixture.loaded
@@ -166,7 +168,7 @@ class WalkerDecisionProjectionSuite extends munit.FunSuite:
     * marker instead of reading live site state would yield a one-element
     * vector and fail the equality check. */
   private val relicQuery = DecisionQueryProjection.ChooseOne(
-    Vector("Sticky Fire", "Cursed Cauldron").map(CatalogNames.relic)
+    Vector(StickyFireCard.id, CursedCauldronCard.id)
       .map(relic => DecisionOptionProjection("relic", relic.value,
         presentation.relicLabel(relic),
         Some(presentation.cardDetails(relic, Some(Orientation.FaceDown),
@@ -197,7 +199,7 @@ class WalkerDecisionProjectionSuite extends munit.FunSuite:
     // would fail if the projector ever fell back to echoing a closure
     // instead of describing the query rebuilt against live site state.
     val facedownRelics = ready.game.current.map
-      .sites(CatalogNames.site("Broken Peaks")).relics
+      .sites(BrokenPeaksSite.id).relics
       .filter(_.orientation == Orientation.FaceDown)
     assert(ownerDecision.flatMap(_.query)
       .exists(_.offeredOptions.map(_.id).toSet ==

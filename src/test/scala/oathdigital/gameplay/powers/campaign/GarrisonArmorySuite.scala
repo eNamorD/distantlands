@@ -7,16 +7,16 @@ import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
 import oathdigital.model.DefenseDieFace.{OneShield, TwoShields}
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Garrison Armory: a defender's plan, a favor placed, in a Conquest, so that
   * the warbands at the targets add their defense twice. */
 class GarrisonArmorySuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Garrison Armory")
+  private val card = GarrisonArmoryCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
-  private val bag = CatalogNames.relic("Bag of Siegeworks")
+  private val bag = BagOfSiegeworksCard.id
   private val bagRef: DecisionOptionRef = DecisionOptionRef.Relic(bag)
-  private val provisions = CatalogNames.denizen("Extra Provisions")
+  private val provisions = ExtraProvisionsCard.id
   private val twoAdded = NoteText.Said("added",
     "Warbands on the targets added 2 more defense.", covers = false)
 

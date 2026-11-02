@@ -1,9 +1,14 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.catalog.holding.FestivalDistrictCard
+import oathdigital.gameplay.operations.HallOfMinistersCard
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.campaign.CodeOfHonorCard
+import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
@@ -11,17 +16,17 @@ import oathdigital.testkit.Unwrap.accepted
 class DarkEnforcerSuite extends munit.FunSuite:
   import PhasePowerHarness._
 
-  private val enforcer = CatalogNames.denizen("Dark Enforcer")
+  private val enforcer = DarkEnforcerCard.id
   private val source = DecisionOptionRef.Denizen(enforcer)
   private val power = DarkEnforcer.forCatalog(catalog)
-  private val home = CatalogNames.site("Ancient City")
+  private val home = AncientCitySite.id
   // One denizen of each suit the tests need; their powers go unused.
-  private val codeOfHonor = CatalogNames.denizen("Code of Honor")
-  private val homesteaders = CatalogNames.denizen("Homesteaders")
-  private val errandBoy = CatalogNames.denizen("Errand Boy")
+  private val codeOfHonor = CodeOfHonorCard.id
+  private val homesteaders = HomesteadersCard.id
+  private val errandBoy = ErrandBoyCard.id
   /** An Order edifice, on its ruined face, and a Hearth one, intact. */
-  private val hallOfBandits = CatalogNames.edifice("Hall of Bandits")
-  private val festivalDistrict = CatalogNames.edifice("Festival District")
+  private val hallOfBandits = HallOfMinistersCard.id
+  private val festivalDistrict = FestivalDistrictCard.id
 
   /** p1's Act at Ancient City holding Dark Enforcer, with `favor` favor. */
   private def staged(favor: Int = 1): Table =

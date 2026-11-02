@@ -1,8 +1,12 @@
 package oathdigital.gameplay.powers.whenplayed
 
+import oathdigital.catalog.holding.{CrackedHornCard, RingOfDevotionCard}
+import oathdigital.gameplay.cards.BuriedGiantSite
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.search.PaintedTrumpetCard
+import oathdigital.gameplay.powers.targeting.LostTongueCard
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, Table}
+import oathdigital.testkit.{Look, Outcomes, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.{p1, p2, p3}
 
@@ -12,9 +16,9 @@ class BlackmailSuite extends munit.FunSuite:
   private val power = registered[Blackmail]
   private val blackmail = power.cardId
   private val played = hook(blackmail)
-  private val horn = CatalogNames.relic("Cracked Horn")
-  private val ring = CatalogNames.relic("Ring of Devotion")
-  private val trumpet = CatalogNames.relic("Painted Trumpet")
+  private val horn = CrackedHornCard.id
+  private val ring = RingOfDevotionCard.id
+  private val trumpet = PaintedTrumpetCard.id
 
   /** Blackmail as p1's adviser. p1 and p2 stand at `homeSite`, and p2 holds
     * the Cracked Horn, faceup unless `facedown`, and `favor`. p1 holds 1
@@ -24,7 +28,7 @@ class BlackmailSuite extends munit.FunSuite:
     Table.start.adviser(p1, blackmail).favor(p1, 1).pawn(p1, homeSite)
       .pawn(p2, homeSite)
       .relic(p2, horn, facedown).favor(p2, favor)
-      .relic(p1, ring).relic(p3, trumpet).pawn(p3, "Buried Giant")
+      .relic(p1, ring).relic(p3, trumpet).pawn(p3, BuriedGiantSite)
 
   private def tookTheHorn: NoteText.Said = NoteText.Said("took",
     s"Took ${horn.value} from ${p2.value}.", covers = false)
@@ -74,7 +78,7 @@ class BlackmailSuite extends munit.FunSuite:
   test("a relic Lost Tongue protects is not offered, and with none left the " +
       "line says so"):
     // p2 holds Lost Tongue faceup, and p1 rules no Nomad card.
-    val ready = p2HoldingTheHorn(favor = 4).adviser(p2, "Lost Tongue").ready
+    val ready = p2HoldingTheHorn(favor = 4).adviser(p2, LostTongueCard).ready
     val done = Outcomes.finished(play(ready, power, blackmail))
     assertEquals(ops(done.events), Vector.empty)
     assertEquals(said(power, done.events), Vector(NoteText.Said("none",

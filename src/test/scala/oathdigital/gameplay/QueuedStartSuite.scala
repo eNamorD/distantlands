@@ -1,12 +1,18 @@
 package oathdigital.gameplay
 
 import oathdigital.gameplay.actions.economy.TradeProcedure
+import oathdigital.gameplay.cards.BuriedGiantSite
 import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
+import oathdigital.gameplay.powers.action.{AlchemistCard, DowsingSticksCard,
+  FaeMerchantCard, SecondChanceCard}
+import oathdigital.gameplay.powers.travel.{BrokenPeaksSite, FairIsleSite}
+import oathdigital.gameplay.powers.wake.AncientCitySite
+import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{PricedOptions, QueuedStart, WalkerPowers}
 import oathdigital.gameplay.walker.QueuedStart.StartCost
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Table}
+import oathdigital.testkit.{Look, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 
 /** What a start costs, or why it would be refused, through the production
@@ -17,16 +23,16 @@ class QueuedStartSuite extends munit.FunSuite:
     WalkerPowerCatalog.default(catalog), Vector.empty)
   private val phasePowers = PhasePowerCatalog.default(catalog)
   // Fair Isle has a Recover difficulty.
-  private val fairIsle = CatalogNames.site("Fair Isle")
-  private val relic = CatalogNames.relic("Dowsing Sticks")
+  private val fairIsle = FairIsleSite.id
+  private val relic = DowsingSticksCard.id
 
   /** p1's Act at Fair Isle, with `supply` Supply and a world deck to search,
     * and Dowsing Sticks facedown there when `lying` says so. */
   private def acting(supply: Int, lying: Boolean = true): ReadyGame =
     val seated = Table.start.pawn(p1, at = fairIsle)
-      .pawn(p2, at = "Broken Peaks").pawn(p3, at = "Buried Giant")
-      .supply(p1, supply).worldDeckTop("Threatening Roar", "Fae Merchant",
-        "Second Chance")
+      .pawn(p2, at = BrokenPeaksSite).pawn(p3, at = BuriedGiantSite)
+      .supply(p1, supply).worldDeckTop(ThreateningRoarCard, FaeMerchantCard,
+        SecondChanceCard)
     (if lying then seated.relicAt(relic, at = fairIsle) else seated).ready
 
   private def entry(procedure: StartableRef,
@@ -36,8 +42,8 @@ class QueuedStartSuite extends munit.FunSuite:
   /** p1's Act at Ancient City beside the token-free Alchemist, with
     * `favor` favor and `secrets` faceup secrets. */
   private def atAlchemist(favor: Int, secrets: Int): ReadyGame = Table.start
-    .pawn(p1, at = "Ancient City").pawn(p2, at = "Broken Peaks")
-    .pawn(p3, at = "Buried Giant").denizen("Alchemist", at = "Ancient City")
+    .pawn(p1, at = AncientCitySite).pawn(p2, at = BrokenPeaksSite)
+    .pawn(p3, at = BuriedGiantSite).denizen(AlchemistCard, at = AncientCitySite)
     .supply(p1, 7).favor(p1, favor).secrets(p1, faceUp = secrets).ready
 
   private def trading(resource: TradeResource): QueuedProcedure =

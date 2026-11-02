@@ -2,7 +2,10 @@ package oathdigital.application.gamelog
 
 import oathdigital.application._
 import oathdigital.engine.{RecordedEvent, ReplayStep}
+import oathdigital.gameplay.cards.BuriedGiantSite
 import oathdigital.gameplay.phases.rest.FinishRestProcedure
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{LogNoted, WalkerCompleted}
 import oathdigital.model._
@@ -24,8 +27,8 @@ object LogScriptSupport:
     * Ancient City, p2 at Broken Peaks and p3 at Buried Giant. A script that
     * needs a pawn elsewhere moves it after this. */
   private[gamelog] def tableWithOnePawnPerSite: Table =
-    Table.start.pawn(p1, "Ancient City").pawn(p2, "Broken Peaks")
-      .pawn(p3, "Buried Giant")
+    Table.start.pawn(p1, AncientCitySite).pawn(p2, BrokenPeaksSite)
+      .pawn(p3, BuriedGiantSite)
 
   val presentation = new GamePresentationProjector(catalog)
   val formatter = new GameLogFormatter(catalog, presentation)

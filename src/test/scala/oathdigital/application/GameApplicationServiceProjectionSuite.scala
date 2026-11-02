@@ -1,5 +1,18 @@
 package oathdigital.application
 
+import oathdigital.catalog.Site
+import oathdigital.gameplay.cards.{BuriedGiantSite, DeepWoodsSite, DunesSite,
+  GoldenValleySite}
+import oathdigital.gameplay.powers.action.{FaeMerchantCard, SecondChanceCard}
+import oathdigital.gameplay.powers.campaign.{CursedCauldronCard,
+  NatureWorshipCard, StickyFireCard, WrestlersCard}
+import oathdigital.gameplay.powers.economy.BirdsongCard
+import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.travel.{BrokenPeaksSite, DesolateShoreSite,
+  FairIsleSite}
+import oathdigital.gameplay.powers.wake.AncientCitySite
+import oathdigital.gameplay.powers.whenplayed.{ThreateningRoarCard,
+  WizardsConclaveCard}
 import oathdigital.protocol.projection.{ActivePlayerResourcesProjection,
   CurrentSiteResourcesProjection, SiteForcesProjection}
 import oathdigital.model._
@@ -11,8 +24,7 @@ import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.model.OathState.Ready
 import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.testkit.{CatalogNames, Look, MenuPlay, Outcomes,
-  PlacementPicks, Table}
+import oathdigital.testkit.{Look, MenuPlay, Outcomes, PlacementPicks, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, present}
 import ParkedServiceFixture.firstPlayer
@@ -28,13 +40,13 @@ class GameApplicationServiceProjectionSuite extends munit.FunSuite:
     // p2's facedown adviser (any facedown adviser will do) are what Act then
     // offers: Recover, a Campaign, a peek and the minor action.
     val table = Table.start.turn(p2, Phase.Wake)
-      .pawn(p1, "Ancient City").pawn(p3, "Buried Giant")
-      .pawn(p2, "Broken Peaks").favor(p2, 1).secrets(p2, faceUp = 1)
+      .pawn(p1, AncientCitySite).pawn(p3, BuriedGiantSite)
+      .pawn(p2, BrokenPeaksSite).favor(p2, 1).secrets(p2, faceUp = 1)
       .supply(p2, 7)
-      .siteTokens("Broken Peaks", favor = 0, secrets = 2)
-      .relicAt("Sticky Fire", "Broken Peaks")
-      .bandits("Broken Peaks", 1)
-      .adviser(p2, "Birdsong", facedown = true).phaseMenuParked
+      .siteTokens(BrokenPeaksSite, favor = 0, secrets = 2)
+      .relicAt(StickyFireCard, BrokenPeaksSite)
+      .bandits(BrokenPeaksSite, 1)
+      .adviser(p2, BirdsongCard, facedown = true).phaseMenuParked
     val (service, _) = table.service()
     val active = p2
     val stored = LoadedGame(table.state, 0L)
@@ -50,7 +62,7 @@ class GameApplicationServiceProjectionSuite extends munit.FunSuite:
         faceDownSecrets = 0, committedSecrets = 0, totalSecrets = 1,
         supply = 7)))
     assertEquals(own.currentSiteResources, Some(CurrentSiteResourcesProjection(
-      CatalogNames.site("Broken Peaks").value, favor = 0, secrets = 2)))
+      BrokenPeaksSite.id.value, favor = 0, secrets = 2)))
 
     val ended = accepted(service.handle(
       "game-projection-wake",
@@ -66,15 +78,15 @@ class GameApplicationServiceProjectionSuite extends munit.FunSuite:
     assertEquals(projector.projectPublic("game-projection-wake",
       LoadedGame(ended.state, ended.nextSequence)).walkerDecision, None)
 
-  private val ancientCity = CatalogNames.site("Ancient City")
-  private val brokenPeaks = CatalogNames.site("Broken Peaks")
-  private val buriedGiant = CatalogNames.site("Buried Giant")
-  private val deepWoods = CatalogNames.site("Deep Woods")
-  private val desolateShore = CatalogNames.site("Desolate Shore")
-  private val errandBoy = CatalogNames.denizen("Errand Boy")
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
-  private val siteRelics = Vector(CatalogNames.relic("Sticky Fire"),
-    CatalogNames.relic("Cursed Cauldron"))
+  private val ancientCity = AncientCitySite.id
+  private val brokenPeaks = BrokenPeaksSite.id
+  private val buriedGiant = BuriedGiantSite.id
+  private val deepWoods = DeepWoodsSite.id
+  private val desolateShore = DesolateShoreSite.id
+  private val errandBoy = ErrandBoyCard.id
+  private val wrestlers = WrestlersCard.id
+  private val siteRelics = Vector(StickyFireCard.id,
+    CursedCauldronCard.id)
 
   /** The quiet table with every site detail a projection shows. p1 rules
     * Ancient City with 2 warbands; it holds Errand Boy then Wrestlers
@@ -95,7 +107,7 @@ class GameApplicationServiceProjectionSuite extends munit.FunSuite:
       .siteTokens(ancientCity, favor = 2, secrets = 1)
       .bandits(deepWoods, 3)
       .warbandsAt(desolateShore, p2, 4)
-      .discarded(Region.Cradle, "Fae Merchant")
+      .discarded(Region.Cradle, FaeMerchantCard)
       .discarded(Region.Provinces, VisionRules.Conspiracy)
       .ready
 
@@ -187,16 +199,16 @@ class GameApplicationServiceProjectionSuite extends munit.FunSuite:
 
   test("every site projects its printed Recover difficulty or Forge cost"):
     val sites = ownDetails.world.flatMap(_.sites)
-    def byName[A](printed: (String, A)*) = printed.map((name, value) =>
-      CatalogNames.site(name).value -> value).toMap
+    def bySite[A](printed: (Site, A)*) = printed.map((site, value) =>
+      site.id.value -> value).toMap
     assertEquals(sites.flatMap(site => site.forgeCost.map(cost =>
       site.siteId -> Tokens(cost.favor, cost.secrets))).toMap,
-      byName("Ancient City" -> Tokens(3, 0), "Deep Woods" -> Tokens(1, 2),
-        "Golden Valley" -> Tokens(3, 0)))
+      bySite(AncientCitySite -> Tokens(3, 0), DeepWoodsSite -> Tokens(1, 2),
+        GoldenValleySite -> Tokens(3, 0)))
     assertEquals(sites.flatMap(site => site.recoverDifficulty.map(
       site.siteId -> _)).toMap,
-      byName("Broken Peaks" -> 4, "Buried Giant" -> 6, "Desolate Shore" -> 5,
-        "Dunes" -> 4, "Fair Isle" -> 3))
+      bySite(BrokenPeaksSite -> 4, BuriedGiantSite -> 6, DesolateShoreSite -> 5,
+        DunesSite -> 4, FairIsleSite -> 3))
 
   /** The hand is a preview, not a question: it is drawn while the walker is
     * asking about something else (the starting site), and goes quiet the
@@ -245,7 +257,7 @@ class GameApplicationServiceProjectionSuite extends munit.FunSuite:
   test("a Search's kept card is previewed once while it is being placed"):
     // Three denizens on top of the world deck, so the Search offers a choice.
     val (service, _) = Table.start
-      .worldDeckTop("Threatening Roar", "Fae Merchant", "Second Chance")
+      .worldDeckTop(ThreateningRoarCard, FaeMerchantCard, SecondChanceCard)
       .service()
     val gameId = "game-search-preview"
     val actor = p1
@@ -255,9 +267,9 @@ class GameApplicationServiceProjectionSuite extends munit.FunSuite:
       ParkedServiceFixture.pickSearchSource(actor, SearchSource.WorldDeck)))
     val afterDraw = Outcomes.ready(started.state)
     val drawn = afterDraw.game.current.temporaryHands(actor)
-    val kept = CatalogNames.denizen("Threatening Roar")
-    val merchant = CatalogNames.denizen("Fae Merchant")
-    val secondChance = CatalogNames.denizen("Second Chance")
+    val kept = ThreateningRoarCard.id
+    val merchant = FaeMerchantCard.id
+    val secondChance = SecondChanceCard.id
     assertEquals(drawn, Vector[WorldCardId](kept, merchant, secondChance))
     // Keep Threatening Roar and discard the other two.
     val assignments = Vector(
@@ -278,7 +290,7 @@ class GameApplicationServiceProjectionSuite extends munit.FunSuite:
     * the card being placed is previewed all the same, from where it lies.
     */
   test("a facedown adviser being played is previewed from the board"):
-    val table = Table.start.adviser(p1, "Wizard's Conclave", facedown = true)
+    val table = Table.start.adviser(p1, WizardsConclaveCard, facedown = true)
     val (service, _) = table.service()
     val gameId = "game-facedown-preview"
     val actor = p1
@@ -303,8 +315,8 @@ class GameApplicationServiceProjectionSuite extends munit.FunSuite:
 
   /** p2's dealt hand in the fixture's first game: Wizard's Conclave, Errand
     * Boy and Nature Worship. */
-  private val wizardsConclave = CatalogNames.denizen("Wizard's Conclave")
-  private val natureWorship = CatalogNames.denizen("Nature Worship")
+  private val wizardsConclave = WizardsConclaveCard.id
+  private val natureWorship = NatureWorshipCard.id
 
   /** The fixture's first game begun, and the first player, p2, placed at
     * Ancient City: p2 is now asked which adviser to keep. Replays Begin and

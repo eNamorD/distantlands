@@ -2,13 +2,17 @@ package oathdigital.gameplay.powers.targeting
 
 import oathdigital.gameplay.CampaignFixture
 import oathdigital.gameplay.actions.campaign.CampaignIds
+import oathdigital.gameplay.cards.BuriedGiantSite
 import oathdigital.gameplay.powerresolver.{PowerCtx, Restriction}
 import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
+import oathdigital.gameplay.powers.action.{HomesteadersCard, WildAlliesCard}
+import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.{accepted, as}
 import oathdigital.testkit.StartPreview
@@ -45,7 +49,7 @@ class FortressRulesSuite extends munit.FunSuite:
   private def challengeBanners(side: EdificeSide, ruled: Boolean)
       (using munit.Location): Vector[DecisionOptionRef] =
     // p1 challenges at Ancient City, where p2 stands holding People's Favor.
-    val site = CatalogNames.site("Ancient City")
+    val site = AncientCitySite.id
     val held = challengeTable.ready
     val staged = Table.from(held).edifice(fortress, side, at = site)
     val ready = (if ruled then staged.warbandsAt(site, p2, 2) else staged)
@@ -106,15 +110,15 @@ class FortressRulesSuite extends munit.FunSuite:
   test("a faceup beast adviser lifts the Rotting Fortress's protection; a " +
       "facedown one, or one of another suit, does not"):
     val b = fortified(EdificeSide.Ruined, ruled = false)
-    val armed = on(b)(_.adviser(b.actor, "Errand Boy"))  // Beast
+    val armed = on(b)(_.adviser(b.actor, ErrandBoyCard))  // Beast
     val startable =
       StartPreview.opens(catalog, armed.ready, armed.actor, ActionRef.Campaign,
           powers)
     assert(startable)
     assertEquals(parkedOn(accepted(startOf(armed))), Some(CampaignIds.force))
-    val hearth = on(b)(_.adviser(b.actor, "Homesteaders"))  // Hearth
+    val hearth = on(b)(_.adviser(b.actor, HomesteadersCard))  // Hearth
     assertEquals(startOf(hearth).left.toOption, Some(protectedRaid))
-    val hidden = on(b)(_.adviser(b.actor, "Errand Boy", facedown = true))
+    val hidden = on(b)(_.adviser(b.actor, ErrandBoyCard, facedown = true))
     assertEquals(startOf(hidden).left.toOption, Some(protectedRaid))
 
   test("the Rotting Fortress protects every player at the site, so a second " +
@@ -127,12 +131,12 @@ class FortressRulesSuite extends munit.FunSuite:
     // p1 campaigns from Buried Giant, which bandits rule, where the Rotting
     // Fortress stands with p2 and p3; p1's pawn stays at Ancient City.
     val base = board(warbands = 4, supply = 7)
-    val origin = CatalogNames.site("Buried Giant")
+    val origin = BuriedGiantSite.id
     val b = on(base)(_.bandits(origin, 2).pawn(base.rival, at = origin)
       .pawn(base.bystander, at = origin)
       .edifice(fortress, EdificeSide.Ruined, at = origin))
     val started = CampaignFixture.campaignQueuedFrom(TargetingFixture.rules,
-      b, origin, PowerSourceRef.Card(CatalogNames.denizen("Wild Allies")))
+      b, origin, PowerSourceRef.Card(WildAlliesCard.id))
     val raidOption = TargetingFixture.optionsIncludingUnavailableAt(started,
       ActionRef.Campaign).find(_.ref == raid)
     raidOption match
@@ -207,7 +211,7 @@ class FortressRulesSuite extends munit.FunSuite:
     // p1 challenges at Ancient City, where p2 stands holding People's Favor.
     val held = challengeTable.ready
     val staged = Table.from(held).edifice(fortress, EdificeSide.Ruined,
-      at = "Ancient City").ready
+      at = AncientCitySite).ready
     assertEquals(
       hidden(rotting, accepted(start(staged, ActionRef.Challenge, p1))),
       Vector.empty)

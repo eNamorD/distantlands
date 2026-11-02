@@ -7,11 +7,13 @@ import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.actions.dice.RerollChoice
 import oathdigital.gameplay.actions.recover.RecoverProcedure
 import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
+import oathdigital.gameplay.powers.action.DowsingSticksCard
 import oathdigital.gameplay.powers.campaign.PlanDriver._
+import oathdigital.gameplay.powers.travel.{BrokenPeaksSite, FairIsleSite}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look, Table}
+import oathdigital.testkit.{Look, Table}
 import oathdigital.testkit.Unwrap.accepted
 
 /** Jinx (card 68): after its ruler rolls, they may pay a secret to reroll
@@ -22,7 +24,7 @@ class JinxSuite extends munit.FunSuite:
   import AttackDieFace.{HollowSword, OneSword}
   import DefenseDieFace.{Blank, TwoShields}
 
-  private val jinx = CatalogNames.denizen("Jinx")
+  private val jinx = JinxCard.id
   private val ref: DecisionOptionRef = RerollChoice.optionRef(jinx)
   private val attackReroll = RerollChoice.decisionId(CampaignIds.attackPool, 1)
   private val defenseReroll =
@@ -110,7 +112,7 @@ class JinxSuite extends munit.FunSuite:
   test("Jinx at a site its ruler rules rerolls their roll"):
     // p1 rules Broken Peaks with two warbands, and Jinx stands there.
     val base = board(warbands = 2, supply = 7)
-    val peaks = CatalogNames.site("Broken Peaks")
+    val peaks = BrokenPeaksSite.id
     val b = withSecrets(withSiteCard(actorRules(base, peaks), peaks, jinx),
       faceUp = 1)
     val game = rules(scripted(Vector(HollowSword, HollowSword),
@@ -121,8 +123,8 @@ class JinxSuite extends munit.FunSuite:
   test("the actor rerolls a Recover roll, and each roll is its own throw"):
     // Fair Isle's difficulty is 3. The first roll and its reroll fail, the
     // second roll is rerolled into a success.
-    val site = CatalogNames.site("Fair Isle")
-    val relic = CatalogNames.relic("Dowsing Sticks")
+    val site = FairIsleSite.id
+    val relic = DowsingSticksCard.id
     val start = Table.start.turn(Table.p1, Phase.Act).pawn(Table.p1, at = site)
       .relicAt(relic, at = site).adviser(Table.p1, jinx)
       .secrets(Table.p1, faceUp = 2).ready

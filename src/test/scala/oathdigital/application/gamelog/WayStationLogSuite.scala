@@ -2,9 +2,11 @@ package oathdigital.application.gamelog
 
 import oathdigital.application.{GameApplicationService, GameCommand,
   ParkedServiceFixture, TreeDecision}
-import oathdigital.gameplay.powers.travel.WayStation
+import oathdigital.gameplay.powers.travel.{BrokenPeaksSite, WayStation,
+  WayStationCard}
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.{accepted, present}
 import LogScripts.formatter
@@ -13,15 +15,15 @@ import LogScripts.formatter
   * no "Chose" line, the favor answer posts the toll lines, and the Travel tag
   * waits for the step that spends (travel destination design, ruling 9). */
 class WayStationLogSuite extends munit.FunSuite:
-  private val destination = CatalogNames.site("Broken Peaks")
+  private val destination = BrokenPeaksSite.id
 
   /** p2 rules Way Station at Broken Peaks; p1 Travels there from Ancient City
     * holding 7 Supply and `favor`. */
   private def travelled(favor: Int, answer: DecisionOptionRef.Button)
       : Vector[String] =
-    val table = Table.start.pawn(p1, "Ancient City").supply(p1, 7)
-      .denizen("Way Station", "Broken Peaks")
-      .warbandsAt("Broken Peaks", p2, 1).favor(p1, favor).banditsRefilled
+    val table = Table.start.pawn(p1, AncientCitySite).supply(p1, 7)
+      .denizen(WayStationCard, BrokenPeaksSite)
+      .warbandsAt(BrokenPeaksSite, p2, 1).favor(p1, favor).banditsRefilled
     val (service, _) = table.service()
     val started = accepted(service.handle("g", 0L,
       ParkedServiceFixture.startTravel(p1)))

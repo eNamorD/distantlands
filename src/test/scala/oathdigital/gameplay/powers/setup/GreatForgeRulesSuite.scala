@@ -1,31 +1,35 @@
 package oathdigital.gameplay.powers.setup
 
 import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
+import oathdigital.gameplay.powers.action.DowsingSticksCard
+import oathdigital.gameplay.powers.campaign.{CursedCauldronCard, StickyFireCard}
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.{FirstGameSetupFixture, SetupProcedure, SetupWalkDriver}
 import oathdigital.gameplay.actions.ProcedureNotes
 import oathdigital.gameplay.walker.{LogNoted, WalkerPowers}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Table}
+import oathdigital.testkit.{Look, Table}
 import oathdigital.testkit.Unwrap.accepted
 
 class GreatForgeRulesSuite extends munit.FunSuite:
   private val catalog = FirstGameSetupFixture.catalog
-  private val edifice = CatalogNames.edifice("Great Forge")
+  private val edifice = GreatForgeCard.id
   private val powers = WalkerPowers.selected(WalkerPowerCatalog.default(catalog),
     Vector.empty)
   // The generic driver always answers a Decide with its first offered
   // option, and `siteOptions` is `map.inPlay` order -- Ancient City comes
   // first, so the edifice sits under the FIRST participant's (setup's first
   // player) pawn-placement choice.
-  private val site = CatalogNames.site("Ancient City")
+  private val site = AncientCitySite.id
   // p2 is the first player of the fixture's first game.
   private val firstPlayer = Table.p2
   // The fresh deal tops the relic deck with Dowsing Sticks, and puts Sticky
   // Fire and Cursed Cauldron at Broken Peaks, in the Cradle with Ancient City.
-  private val topRelic = CatalogNames.relic("Dowsing Sticks")
-  private val relicSite = CatalogNames.site("Broken Peaks")
-  private val cradleRelics = Vector(CatalogNames.relic("Sticky Fire"),
-    CatalogNames.relic("Cursed Cauldron"))
+  private val topRelic = DowsingSticksCard.id
+  private val relicSite = BrokenPeaksSite.id
+  private val cradleRelics = Vector(StickyFireCard.id,
+    CursedCauldronCard.id)
 
   // The Setup walk is the subject (the edifice's effect runs when the walk
   // reaches it), so these tests start from the fresh Setup, not a Table.

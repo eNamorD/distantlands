@@ -1,13 +1,20 @@
 package oathdigital.application.gamelog
 
+import oathdigital.gameplay.powers.economy.HallowedSpringCard
 import oathdigital.application._
+import oathdigital.gameplay.cards.DeepWoodsSite
 import oathdigital.gameplay.phases.PhaseMenu
 import oathdigital.gameplay.phases.wake.TakeWealthProcedure
+import oathdigital.gameplay.powers.campaign.StickyFireCard
+import oathdigital.gameplay.powers.economy.BirdsongCard
+import oathdigital.gameplay.powers.rest.InsomniaCard
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
+import oathdigital.gameplay.powers.wake.AncientCitySite
+import oathdigital.gameplay.powers.whenplayed.WizardsConclaveCard
 import oathdigital.gameplay.setup.{FirstGameSetupFixture, SetupProcedure}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{Answers, CatalogNames, Dice, Look, MenuPlay,
-  Situation, Table}
+import oathdigital.testkit.{Answers, Dice, Look, MenuPlay, Situation, Table}
 import oathdigital.testkit.Unwrap.as
 import oathdigital.testkit.Table.{p1, p2, p3}
 import LogScriptSupport.{atTable, start, tableWithOnePawnPerSite}
@@ -25,17 +32,17 @@ object PhaseLogScripts:
     * their Act. */
   def recordedEventsBoard(using munit.Location): Script =
     val (service, waking) = atTable("board", tableWithOnePawnPerSite.turn(p1, Phase.Wake)
-      .relicAt("Sticky Fire", "Broken Peaks")
-      .edifice("Hiding Place", EdificeSide.Ruined, "Deep Woods")
-      .adviser(p2, "Birdsong", facedown = true)
-      .adviser(p3, "Wizard's Conclave", facedown = true)
+      .relicAt(StickyFireCard, BrokenPeaksSite)
+      .edifice(HallowedSpringCard, EdificeSide.Ruined, DeepWoodsSite)
+      .adviser(p2, BirdsongCard, facedown = true)
+      .adviser(p3, WizardsConclaveCard, facedown = true)
       .banditsRefilled)
     waking.endingWake(p1)
     Script("board", service, p1)
 
   /** p1's Wake with one favor at Ancient City and nothing else to take. */
   private def wealthTable: Table = tableWithOnePawnPerSite
-    .turn(p1, Phase.Wake).siteTokens("Ancient City", favor = 1, secrets = 0)
+    .turn(p1, Phase.Wake).siteTokens(AncientCitySite, favor = 1, secrets = 0)
     .banditsRefilled
 
   /** p1 takes the favor by picking it from the Wake menu. */
@@ -50,10 +57,10 @@ object PhaseLogScripts:
     * which ends the Rest. */
   def restFromMenu(using munit.Location): Script =
     val (service, resting) = atTable("menu-rest", tableWithOnePawnPerSite
-      .adviser(p1, "Insomnia").turn(p1, Phase.Rest).banditsRefilled
+      .adviser(p1, InsomniaCard).turn(p1, Phase.Rest).banditsRefilled
       .phaseMenuParked)
     resting.after(MenuPlay.picking(p1,
-      DecisionOptionRef.Denizen(CatalogNames.denizen("Insomnia"))))
+      DecisionOptionRef.Denizen(InsomniaCard.id)))
     Script("menu-rest", service, p1)
 
   /** The same take, started directly, as before the menus. */
@@ -129,8 +136,8 @@ object PhaseLogScripts:
     * Wake's only option, so Wake ends with the take. */
   def takeWealth(using munit.Location): Script =
     val (service, waking) = atTable("take-wealth", tableWithOnePawnPerSite
-      .turn(p2, Phase.Wake).pawn(p2, "Broken Peaks")
-      .siteTokens("Broken Peaks", favor = 1)
+      .turn(p2, Phase.Wake).pawn(p2, BrokenPeaksSite)
+      .siteTokens(BrokenPeaksSite, favor = 1)
       .banditsRefilled)
     start(waking, ActionRef.TakeWealth, DecisionOptionRef.Button("favor"))
     Script("take-wealth", service, p2)

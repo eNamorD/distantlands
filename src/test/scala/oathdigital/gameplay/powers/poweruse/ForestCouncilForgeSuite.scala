@@ -1,11 +1,16 @@
 package oathdigital.gameplay.powers.poweruse
 
+import oathdigital.catalog.holding.MartialCultureCard
 import oathdigital.gameplay.OathRules
+import oathdigital.gameplay.cards.DeepWoodsSite
 import oathdigital.gameplay.powers.WalkerPowerCatalog
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, MenuPlay, Table}
+import oathdigital.testkit.{MenuPlay, Table}
 import oathdigital.testkit.Table.{p1, p2}
 
 /** A Forge whose every split places on a Beast card, under an enemy's
@@ -13,8 +18,8 @@ import oathdigital.testkit.Table.{p1, p2}
   * split, finds no answer survives, and refuses the Forge before anything
   * is spent. */
 class ForestCouncilForgeSuite extends munit.FunSuite:
-  private val forgeSite = CatalogNames.site("Deep Woods")
-  private val councilSite = CatalogNames.site("Ancient City")
+  private val forgeSite = DeepWoodsSite.id
+  private val councilSite = AncientCitySite.id
   private val rules = new OathRules(catalog,
     walkerPowerCatalog = WalkerPowerCatalog.default(catalog))
 
@@ -24,12 +29,12 @@ class ForestCouncilForgeSuite extends munit.FunSuite:
     * Deep Woods prints a Forge cost of 1 favor and 2 secrets, so each split
     * places one resource on each card. */
   private def forgeBesideBeast(councilRuler: PlayerId): ReadyGame =
-    Vector("Wrestlers", "Martial Culture", "Errand Boy")
+    Vector(WrestlersCard, MartialCultureCard, ErrandBoyCard)
       .foldLeft(Table.start.turn(p1, Phase.Act).pawn(p1, forgeSite)
         .warbandsAt(forgeSite, p1, 1).favor(p1, 5).secrets(p1, faceUp = 5)
-        .denizen(CatalogNames.denizen("Forest Council"), at = councilSite)
+        .denizen(ForestCouncilCard.id, at = councilSite)
         .warbandsAt(councilSite, councilRuler, 1))((table, card) =>
-        table.denizen(CatalogNames.denizen(card), at = forgeSite)).ready
+        table.denizen(card, at = forgeSite)).ready
 
   private def forgeOffered(ready: ReadyGame)(using munit.Location): Boolean =
     MenuPlay.availableInMenu(catalog, ready, ActionRef.Forge)

@@ -3,11 +3,12 @@ package oathdigital.gameplay.powers.action
 import oathdigital.gameplay.phases.PhaseMenu
 import oathdigital.gameplay.powers.{NoteText, OathkeeperGoalChoice,
   PhasePowerCatalog}
+import oathdigital.gameplay.powers.banner.YewStaffCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, MenuPlay, ParkedNode,
-  PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, MenuPlay, ParkedNode, PhasePowerHarness,
+  Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
@@ -17,7 +18,7 @@ import oathdigital.testkit.Unwrap.accepted
 class TheRedSeerSuite extends munit.FunSuite:
   import PhasePowerHarness._
 
-  private val seer = CatalogNames.denizen("The Red Seer")
+  private val seer = TheRedSeerCard.id
   private val source = DecisionOptionRef.Denizen(seer)
 
   /** p1's Act holding The Red Seer as an adviser, 3 faceup secrets and,
@@ -102,7 +103,7 @@ class TheRedSeerSuite extends munit.FunSuite:
 
   test("with Yew Staff and no Darkest Secret it is usable"):
     val ready = Table.from(seerHeldUnder(OathkeeperGoal.Supremacy,
-      holds = false)).relic(p1, "Yew Staff").ready
+      holds = false)).relic(p1, YewStaffCard).ready
     assert(usableNow(ready).exists(_.power.id == TheRedSeer.id))
     assert(awaits(accepted(use(ready, TheRedSeer, source)),
       TheRedSeer.decisionId))

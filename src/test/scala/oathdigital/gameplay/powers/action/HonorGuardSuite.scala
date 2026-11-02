@@ -1,9 +1,13 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.campaign.CodeOfHonorCard
+import oathdigital.gameplay.powers.rest.InsomniaCard
+import oathdigital.gameplay.powers.search.{LandWardenCard, NewsFromAfarCard}
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.accepted
@@ -11,17 +15,17 @@ import oathdigital.testkit.Unwrap.accepted
 class HonorGuardSuite extends munit.FunSuite:
   import PhasePowerHarness._
 
-  private val guard = CatalogNames.denizen("Honor Guard")
+  private val guard = HonorGuardCard.id
   private val source = DecisionOptionRef.Denizen(guard)
   private val power = HonorGuard.forCatalog(catalog)
   // Denizens whose powers these tests do not use.
-  private val homesteaders = CatalogNames.denizen("Homesteaders")
-  private val landWarden = CatalogNames.denizen("Land Warden")
-  private val newsFromAfar = CatalogNames.denizen("News from Afar")
-  private val levelers = CatalogNames.denizen("Levelers")
-  private val codeOfHonor = CatalogNames.denizen("Code of Honor")
-  private val insomnia = CatalogNames.denizen("Insomnia")
-  private val home = CatalogNames.site("Ancient City")
+  private val homesteaders = HomesteadersCard.id
+  private val landWarden = LandWardenCard.id
+  private val newsFromAfar = NewsFromAfarCard.id
+  private val levelers = LevelersCard.id
+  private val codeOfHonor = CodeOfHonorCard.id
+  private val insomnia = InsomniaCard.id
+  private val home = AncientCitySite.id
 
   /** p1's Act at Ancient City holding Honor Guard with `favor` favor. p2
     * stands at Ancient City holding Homesteaders faceup with 1 favor and 1

@@ -1,12 +1,15 @@
 package oathdigital.gameplay.powers.search
 
 import oathdigital.gameplay.FacedownAdviserPlay
+import oathdigital.gameplay.cards.DeepWoodsSite
 import oathdigital.gameplay.powers.{SearchFixture, WalkerPowerCatalog}
+import oathdigital.gameplay.powers.campaign.CodeOfHonorCard
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look,
-  PlacementPicks, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, PlacementPicks, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
@@ -17,16 +20,16 @@ class NewGrowthSuite extends munit.FunSuite:
   import SearchFixture.{keep, placeAt, rules, start}
 
   private val walkerPowers = WalkerPowerCatalog.default(catalog)
-  private val newGrowth = CatalogNames.denizen("New Growth")
-  private val crop = CatalogNames.denizen("Crop Rotation")
-  private val beast = CatalogNames.denizen("Errand Boy")
+  private val newGrowth = NewGrowthCard.id
+  private val crop = CropRotationCard.id
+  private val beast = ErrandBoyCard.id
   private val hearth = SearchFixture.anyPlainDenizensOf(Suit.Hearth).head
   private val order = SearchFixture.anyPlainDenizensOf(Suit.Order).head
-  private val filler = CatalogNames.denizen("Code of Honor")
-  private val home = CatalogNames.site("Ancient City")
+  private val filler = CodeOfHonorCard.id
+  private val home = AncientCitySite.id
   /** Room for one. */
-  private val peaks = CatalogNames.site("Broken Peaks")
-  private val woods = CatalogNames.site("Deep Woods")
+  private val peaks = BrokenPeaksSite.id
+  private val woods = DeepWoodsSite.id
 
   /** p1 in Act at Ancient City holding New Growth faceup, with 5 Supply and
     * `top` on the world deck. Broken Peaks is full. */

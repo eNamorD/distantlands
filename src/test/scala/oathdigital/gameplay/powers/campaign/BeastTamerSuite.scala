@@ -5,18 +5,17 @@ import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignPlans}
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
-import oathdigital.testkit.CatalogNames
 
 /** Beast Tamer: its holder's enemy cannot use Beast or Nomad battle plans. */
 class BeastTamerSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Beast Tamer")
-  private val warTortoise = CatalogNames.denizen("War Tortoise")
+  private val card = BeastTamerCard.id
+  private val warTortoise = WarTortoiseCard.id
   private val warTortoiseRef: DecisionOptionRef =
     DecisionOptionRef.Denizen(warTortoise)
-  private val horseArchers = CatalogNames.denizen("Horse Archers")
+  private val horseArchers = HorseArchersCard.id
   private val horseArchersRef: DecisionOptionRef =
     DecisionOptionRef.Denizen(horseArchers)
-  private val longbows = CatalogNames.denizen("Longbows")
+  private val longbows = LongbowsCard.id
   private val longbowsRef: DecisionOptionRef =
     DecisionOptionRef.Denizen(longbows)
   private val title: DecisionOptionRef = DecisionOptionRef.Button("title")

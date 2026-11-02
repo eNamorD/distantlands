@@ -2,8 +2,7 @@ package oathdigital.gameplay.powers.action
 
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look,
-  PhasePowerHarness, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.{assertWireRoundTrips, ready}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -13,9 +12,9 @@ class DowsingSticksSuite extends munit.FunSuite:
 
   private val parked = PhasePowerHarness.parked
 
-  private val sticks = CatalogNames.relic("Dowsing Sticks")
+  private val sticks = DowsingSticksCard.id
   private val source = DecisionOptionRef.Relic(sticks)
-  private val whistle = CatalogNames.relic("Whistle")
+  private val whistle = WhistleCard.id
 
   /** p1's Act holding Dowsing Sticks with `secrets` faceup secrets, and
     * Whistle on top of the relic deck. */
