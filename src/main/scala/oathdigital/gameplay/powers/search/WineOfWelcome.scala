@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.search
 
-import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
+import oathdigital.catalog.{PrintedPower, Relic}
 import oathdigital.gameplay.actions.SearchRules
 import oathdigital.gameplay.actions.search.SearchProcedure
 import oathdigital.gameplay.powerresolver.{Contribution, ModifierPicks,
@@ -31,13 +31,23 @@ object WineOfWelcomeCard extends Relic(RelicId("R33"), "Wine of Welcome", value 
   * operation (procedures journal their own notes, slice 3 plan-time
   * ruling 5).
   */
-final case class WineOfWelcome private (catalog: ExecutableCatalog)
-    extends SelectedModifier:
+case object WineOfWelcome extends SelectedModifier:
+  def id: PowerId = WineOfWelcomeCard.power.id
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "Wine of Welcome: Drawing from the bottom of the World Deck", before
+    * the draw, as Spinning Bee's line is. The pile is always the world
+    * deck, so the line takes no argument. */
+  val drawing: NoteKey = notes.key("drawing", Vector(
+    NotePart.Text("Drawing from the bottom of the World Deck")))
+  val discardWarning: String = "Wine of Welcome needs the world deck"
+  /** Both Wine of Welcome's and Mushrooms' warning, whichever is picked
+    * first. */
+  val withMushrooms: String = "Wine of Welcome does nothing with Mushrooms"
+
   val card: Relic = WineOfWelcomeCard
-  def id: PowerId = WineOfWelcome.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Search)
   override def priority: Int = BottomDraw.Priority
-  override def noteKeys: Vector[NoteKey] = WineOfWelcome.noteKeys
 
   def effects: Map[PowerWindow, Vector[Contribution]] = Map(
     PowerWindow.SearchBeforeDraw -> Vector(Transform((_, operations) =>
@@ -64,20 +74,3 @@ final case class WineOfWelcome private (catalog: ExecutableCatalog)
   override def offerReason(ctx: PowerCtx): Option[OfferReason] =
     Option.when(ModifierPicks.isPicked(ctx.answered, ctx.window,
       MushroomsCard.id))(OfferReason.Warned(WineOfWelcome.withMushrooms))
-
-object WineOfWelcome:
-  val id: PowerId = WineOfWelcomeCard.power.id
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "Wine of Welcome: Drawing from the bottom of the World Deck", before
-    * the draw, as Spinning Bee's line is. The pile is always the world
-    * deck, so the line takes no argument. */
-  val drawing: NoteKey = notes.key("drawing", Vector(
-    NotePart.Text("Drawing from the bottom of the World Deck")))
-  val discardWarning: String = "Wine of Welcome needs the world deck"
-  /** Both Wine of Welcome's and Mushrooms' warning, whichever is picked
-    * first. */
-  val withMushrooms: String = "Wine of Welcome does nothing with Mushrooms"
-
-  def forCatalog(catalog: ExecutableCatalog): WineOfWelcome =
-    new WineOfWelcome(catalog)

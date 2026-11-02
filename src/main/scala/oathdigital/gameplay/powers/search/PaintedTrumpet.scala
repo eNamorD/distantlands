@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.search
 
-import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
+import oathdigital.catalog.{PrintedPower, Relic}
 import oathdigital.gameplay.actions.search.SearchProcedure
 import oathdigital.gameplay.powerresolver.{Contribution, ModifierPicks,
   OfferReason, PowerCtx, Transform}
@@ -34,13 +34,23 @@ object PaintedTrumpetCard extends Relic(RelicId("R23"), "Painted Trumpet", value
   * priced at; this line says the cards came from all of them (procedures
   * journal their own notes, slice 3 plan-time ruling 5).
   */
-final case class PaintedTrumpet private (catalog: ExecutableCatalog)
-    extends SelectedModifier:
+case object PaintedTrumpet extends SelectedModifier:
+  def id: PowerId = PaintedTrumpetCard.power.id
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "Painted Trumpet: Drawing the top card of each discard pile
+    * instead". */
+  val drawing: NoteKey = notes.key("drawing", Vector(
+    NotePart.Text("Drawing the top card of each discard pile instead")))
+  /** After the draw extensions, which fold at 0, so that nothing modifies
+    * its draw. */
+  val Priority: Int = 1
+  val deckWarning: String = "Painted Trumpet needs a discard pile"
+  val notWithMushrooms: String = "Cannot be used with Mushrooms"
+
   val card: Relic = PaintedTrumpetCard
-  def id: PowerId = PaintedTrumpet.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Search)
   override def priority: Int = PaintedTrumpet.Priority
-  override def noteKeys: Vector[NoteKey] = PaintedTrumpet.noteKeys
 
   def effects: Map[PowerWindow, Vector[Contribution]] = Map(
     PowerWindow.SearchBeforeDraw -> Vector(Transform((ctx, operations) =>
@@ -90,20 +100,3 @@ final case class PaintedTrumpet private (catalog: ExecutableCatalog)
           Location.Hand(actor))))
     Either.cond(draws.nonEmpty, draws,
       OathViolation.SearchSourceUnavailable(pile))
-
-object PaintedTrumpet:
-  val id: PowerId = PaintedTrumpetCard.power.id
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "Painted Trumpet: Drawing the top card of each discard pile
-    * instead". */
-  val drawing: NoteKey = notes.key("drawing", Vector(
-    NotePart.Text("Drawing the top card of each discard pile instead")))
-  /** After the draw extensions, which fold at 0, so that nothing modifies
-    * its draw. */
-  val Priority: Int = 1
-  val deckWarning: String = "Painted Trumpet needs a discard pile"
-  val notWithMushrooms: String = "Cannot be used with Mushrooms"
-
-  def forCatalog(catalog: ExecutableCatalog): PaintedTrumpet =
-    new PaintedTrumpet(catalog)

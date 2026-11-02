@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.search
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower,
-  SiteOnly}
+import oathdigital.catalog.{Denizen, PrintedPower, SiteOnly}
 import oathdigital.gameplay.actions.search.SearchProcedure
 import oathdigital.gameplay.operations.SupplyStrip
 import oathdigital.gameplay.powerresolver.{Contribution, ModifierPicks,
@@ -36,14 +35,25 @@ object MushroomsCard extends Denizen(DenizenId("183"), "Mushrooms", Suit.Beast) 
   * the draw operation and a note cannot read an operation (procedures
   * journal their own notes, slice 3 plan-time ruling 5).
   */
-final case class Mushrooms private (catalog: ExecutableCatalog)
-    extends SelectedModifier:
+case object Mushrooms extends SelectedModifier:
+  def id: PowerId = MushroomsCard.power.id
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "Mushrooms: Drawing one card from the bottom of the Cradle
+    * discard". */
+  val drawing: NoteKey = notes.key("drawing", Vector(
+    NotePart.Text("Drawing one card from the bottom of the "),
+    NotePart.Arg(0), NotePart.Text(" discard")))
+  val Secrets: Int = 1
+  /** The cards it draws, before any draw extension. */
+  val Cards: Int = 1
+  val worldDeck: String = "Mushrooms draws from a discard pile"
+  val notWithTrumpet: String = "Cannot be used with Painted Trumpet"
+
   val card: Denizen = MushroomsCard
-  def id: PowerId = Mushrooms.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Search)
   override def cost: Cost = Cost(secret = Mushrooms.Secrets)
   override def priority: Int = BottomDraw.Priority
-  override def noteKeys: Vector[NoteKey] = Mushrooms.noteKeys
 
   def effects: Map[PowerWindow, Vector[Contribution]] = Map(
     PowerWindow.SearchSourceSelection -> Vector(Transform((ctx, operations) =>
@@ -74,21 +84,3 @@ final case class Mushrooms private (catalog: ExecutableCatalog)
       Some(OfferReason.Unavailable(Mushrooms.notWithTrumpet))
     else Option.when(ModifierPicks.isPicked(ctx.answered, ctx.window,
       WineOfWelcomeCard.id))(OfferReason.Warned(WineOfWelcome.withMushrooms))
-
-object Mushrooms:
-  val id: PowerId = MushroomsCard.power.id
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "Mushrooms: Drawing one card from the bottom of the Cradle
-    * discard". */
-  val drawing: NoteKey = notes.key("drawing", Vector(
-    NotePart.Text("Drawing one card from the bottom of the "),
-    NotePart.Arg(0), NotePart.Text(" discard")))
-  val Secrets: Int = 1
-  /** The cards it draws, before any draw extension. */
-  val Cards: Int = 1
-  val worldDeck: String = "Mushrooms draws from a discard pile"
-  val notWithTrumpet: String = "Cannot be used with Painted Trumpet"
-
-  def forCatalog(catalog: ExecutableCatalog): Mushrooms =
-    new Mushrooms(catalog)

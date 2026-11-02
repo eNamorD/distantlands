@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.search
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, PrintedPower}
 import oathdigital.gameplay.actions.{CardPlayRules, DiscardPermission}
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
 import oathdigital.gameplay.powerresolver.{Contribution, Transform}
@@ -28,10 +28,10 @@ object CropRotationCard extends Denizen(DenizenId("128"), "Crop Rotation", Suit.
   * Its line, "May discard a card at {site} first.", travels in the
   * permission, and card play writes it for the discard it allowed.
   */
-final case class CropRotation private (catalog: ExecutableCatalog)
-    extends SelectedModifier:
+case object CropRotation extends SelectedModifier:
+  def id: PowerId = CropRotationCard.power.id
+
   val card: Denizen = CropRotationCard
-  def id: PowerId = CropRotation.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Search)
   private val notes = NoteSet(id)
   notes.include(CardPlayRules.notes)
@@ -49,9 +49,3 @@ final case class CropRotation private (catalog: ExecutableCatalog)
     * edifice is a denizen for placement, so a ruined one may go. */
   private def permission: DiscardPermission =
     DiscardPermission.lined(id, PowerSourceRef.Card(cardId))
-
-object CropRotation:
-  val id: PowerId = CropRotationCard.power.id
-
-  def forCatalog(catalog: ExecutableCatalog): CropRotation =
-    new CropRotation(catalog)

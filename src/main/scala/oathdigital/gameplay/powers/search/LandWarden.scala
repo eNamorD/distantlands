@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.search
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, PrintedPower}
 import oathdigital.gameplay.actions.PlacementLimit
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
@@ -29,29 +29,8 @@ object LandWardenCard extends Denizen(DenizenId("130"), "Land Warden", Suit.Hear
   * It writes no line: the Search line names both kept cards, and each
   * play has its own line.
   */
-final case class LandWarden private (catalog: ExecutableCatalog)
-    extends SelectedModifier:
-  val card: Denizen = LandWardenCard
-  def id: PowerId = LandWarden.id
-  def actions: Set[MajorActionType] = Set(MajorActionType.Search)
-  override def cost: Cost = Cost(favor = LandWarden.Favor)
-
-  def effects: Map[PowerWindow, Vector[Contribution]] = Map(
-    PowerWindow.SearchKeep -> Vector(Transform((ctx, operations) =>
-      OperationRewrite.nodes(ctx, operations)((_, _) => {
-        case decide: Decide
-            if decide.decisionId == SearchProcedure.cardDecisionId =>
-          Vector(LandWarden.widened(decide))
-      }))),
-    PowerWindow.SearchPlayAdviser -> Vector(Transform((ctx, children) =>
-      ctx.operation match
-        case tree: CardPlayProcedure.PlacementTree
-            if LandWarden.toSiteOnly(ctx.answered, tree.card) =>
-          tree.adjust(children)(_.limitPlacements(LandWarden.siteRule))
-        case _ => children)))
-
-object LandWarden:
-  val id: PowerId = LandWardenCard.power.id
+case object LandWarden extends SelectedModifier:
+  def id: PowerId = LandWardenCard.power.id
   val Favor: Int = 1
   /** How many cards the keep decision may hold. */
   val Kept: Int = 2
@@ -86,5 +65,20 @@ object LandWarden:
           .exists(_ != PlayedAs.AtSite)
       case _ => false
 
-  def forCatalog(catalog: ExecutableCatalog): LandWarden =
-    new LandWarden(catalog)
+  val card: Denizen = LandWardenCard
+  def actions: Set[MajorActionType] = Set(MajorActionType.Search)
+  override def cost: Cost = Cost(favor = LandWarden.Favor)
+
+  def effects: Map[PowerWindow, Vector[Contribution]] = Map(
+    PowerWindow.SearchKeep -> Vector(Transform((ctx, operations) =>
+      OperationRewrite.nodes(ctx, operations)((_, _) => {
+        case decide: Decide
+            if decide.decisionId == SearchProcedure.cardDecisionId =>
+          Vector(LandWarden.widened(decide))
+      }))),
+    PowerWindow.SearchPlayAdviser -> Vector(Transform((ctx, children) =>
+      ctx.operation match
+        case tree: CardPlayProcedure.PlacementTree
+            if LandWarden.toSiteOnly(ctx.answered, tree.card) =>
+          tree.adjust(children)(_.limitPlacements(LandWarden.siteRule))
+        case _ => children)))

@@ -10,9 +10,9 @@ import oathdigital.gameplay.powerresolver.ContributingPower
 object CardPlayTriggers:
   def forCatalog(catalog: ExecutableCatalog): Vector[ContributingPower] =
     Vector(WildCry.forCatalog(catalog)) ++
-      Vector(WelcomingParty.forCatalog(catalog)) ++
-      Vector(Gossip.forCatalog(catalog)) ++
-      Vector(BookBinders.forCatalog(catalog)) ++
+      Vector(WelcomingParty) ++
+      Vector(Gossip) ++
+      Vector(BookBinders) ++
       Vector(SaddleMakers.forCatalog(catalog)) ++
       Vector(VowOfObedience) ++
       Vector(SecretPolice) ++

@@ -22,22 +22,22 @@ import oathdigital.gameplay.powers.search.{Augury, Baron, CropRotation,
   */
 object ActionModifiers:
   def forCatalog(catalog: ExecutableCatalog): Vector[ContributingPower] =
-    Vector(Augury.forCatalog(catalog)) ++
-      Vector(TruthfulHarp.forCatalog(catalog)) ++
-      Vector(Disciples.forCatalog(catalog)) ++
-      Vector(CropRotation.forCatalog(catalog)) ++
-      Vector(Baron.forCatalog(catalog)) ++
+    Vector(Augury) ++
+      Vector(TruthfulHarp) ++
+      Vector(Disciples) ++
+      Vector(CropRotation) ++
+      Vector(Baron) ++
       Vector(NewGrowth.forCatalog(catalog)) ++
       Vector(ForestWarden.forCatalog(catalog)) ++
-      Vector(NewsFromAfar.forCatalog(catalog)) ++
-      Vector(HuntingParty.forCatalog(catalog)) ++
-      Vector(Observatory.forCatalog(catalog)) ++
-      Vector(ErrandBoy.forCatalog(catalog)) ++
-      Vector(Mushrooms.forCatalog(catalog)) ++
-      Vector(WineOfWelcome.forCatalog(catalog)) ++
-      Vector(PaintedTrumpet.forCatalog(catalog)) ++
+      Vector(NewsFromAfar) ++
+      Vector(HuntingParty) ++
+      Vector(Observatory) ++
+      Vector(ErrandBoy) ++
+      Vector(Mushrooms) ++
+      Vector(WineOfWelcome) ++
+      Vector(PaintedTrumpet) ++
       Vector(SpinningBee.forCatalog(catalog)) ++
-      Vector(LandWarden.forCatalog(catalog)) ++
+      Vector(LandWarden) ++
       Vector(CupOfPlenty.forCatalog(catalog)) ++
       Vector(AnimalPlaymates.forCatalog(catalog)) ++
       Vector(Birdsong.forCatalog(catalog)) ++
@@ -59,7 +59,7 @@ object ActionModifiers:
       Vector(Pressgangs.forCatalog(catalog)) ++
       Vector(OldSongs.forCatalog(catalog)) ++
       Vector(Curfew.forCatalog(catalog)) ++
-      Vector(ForcedLabor.forCatalog(catalog)) ++
+      Vector(ForcedLabor) ++
       Vector(InitiationRite) ++
       Vector(VowOfBeastkin.forCatalog(catalog)) ++
       Vector(VowOfWanderingMuster, VowOfWandering) ++

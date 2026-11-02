@@ -5,7 +5,6 @@ import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.powers.whenplayed.ConspiracyWhenPlayed
 import oathdigital.gameplay.powers.{NoteText, PowerFixture, SearchFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{CatalogNames, Look, PowerRules, Table}
 import oathdigital.testkit.Unwrap.accepted
@@ -55,7 +54,7 @@ class BookBindersSuite extends munit.FunSuite:
       .relic(holder, targetRelic, facedown = true)
       .banksHoldingOnly(banks.toSeq*).ready
 
-  private val power = BookBinders.forCatalog(catalog)
+  private val power = BookBinders
 
   private def said(events: Vector[OathEvent]): Vector[NoteText.Said] =
     NoteText.said(power.id, power.noteKeys, events)

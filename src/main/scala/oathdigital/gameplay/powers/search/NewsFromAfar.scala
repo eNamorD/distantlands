@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.search
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, PrintedPower}
 import oathdigital.gameplay.operations.SupplyStrip
 import oathdigital.gameplay.powerresolver.{Contribution, Transform}
 import oathdigital.gameplay.powers.SelectedModifier
@@ -20,20 +20,14 @@ object NewsFromAfarCard extends Denizen(DenizenId("134"), "News from Afar", Suit
   * holds, such as Forced Labor's, is a separate operation and is still paid.
   * The start line's cost span shows what was paid, so it writes no line.
   */
-final case class NewsFromAfar private (catalog: ExecutableCatalog)
-    extends SelectedModifier:
+case object NewsFromAfar extends SelectedModifier:
+  def id: PowerId = NewsFromAfarCard.power.id
+  val Favor: Int = 2
+
   val card: Denizen = NewsFromAfarCard
-  def id: PowerId = NewsFromAfar.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Search)
   override def cost: Cost = Cost(favor = NewsFromAfar.Favor)
 
   def effects: Map[PowerWindow, Vector[Contribution]] = Map(
     PowerWindow.SearchCost -> Vector(Transform((ctx, operations) =>
       SupplyStrip(ctx, ctx.actor, operations))))
-
-object NewsFromAfar:
-  val id: PowerId = NewsFromAfarCard.power.id
-  val Favor: Int = 2
-
-  def forCatalog(catalog: ExecutableCatalog): NewsFromAfar =
-    new NewsFromAfar(catalog)

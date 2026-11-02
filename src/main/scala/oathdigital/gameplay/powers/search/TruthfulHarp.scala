@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.search
 
-import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
+import oathdigital.catalog.{PrintedPower, Relic}
 import oathdigital.gameplay.powerresolver.{Contribution, Transform}
 import oathdigital.gameplay.powers.SelectedModifier
 import oathdigital.model._
@@ -26,13 +26,18 @@ object TruthfulHarpCard extends Relic(RelicId("R04"), "Truthful Harp", value = 3
   * Its line names every card revealed, "Revealed {cards}.", and covers the
   * generic peek lines.
   */
-final case class TruthfulHarp private (catalog: ExecutableCatalog)
-    extends SelectedModifier:
+case object TruthfulHarp extends SelectedModifier:
+  def id: PowerId = TruthfulHarpCard.power.id
+  val More: Int = 2
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "Revealed {cards}." */
+  val revealed: NoteKey = notes.key("revealed", Vector(
+    NotePart.Text("Revealed "), NotePart.Arg(0), NotePart.Text(".")))
+
   val card: Relic = TruthfulHarpCard
-  def id: PowerId = TruthfulHarp.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Search)
 
-  override def noteKeys: Vector[NoteKey] = TruthfulHarp.noteKeys
 
   def effects: Map[PowerWindow, Vector[Contribution]] = Map(
     PowerWindow.SearchBeforeDraw -> Vector(Transform((ctx, operations) =>
@@ -53,15 +58,3 @@ final case class TruthfulHarp private (catalog: ExecutableCatalog)
       viewer <- ready.game.current.players.map(_.player).filter(_ != actor)
       card <- ready.game.current.temporaryHands.getOrElse(actor, Vector.empty)
     yield Peek(viewer, card, Location.Hand(actor))))
-
-object TruthfulHarp:
-  val id: PowerId = TruthfulHarpCard.power.id
-  val More: Int = 2
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "Revealed {cards}." */
-  val revealed: NoteKey = notes.key("revealed", Vector(
-    NotePart.Text("Revealed "), NotePart.Arg(0), NotePart.Text(".")))
-
-  def forCatalog(catalog: ExecutableCatalog): TruthfulHarp =
-    new TruthfulHarp(catalog)
