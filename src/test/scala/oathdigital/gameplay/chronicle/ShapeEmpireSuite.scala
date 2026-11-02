@@ -44,7 +44,9 @@ class ShapeEmpireSuite extends munit.FunSuite:
 
   test("the Chancellor may remove Imperial warbands but keeps the last one"):
     val table = empireAt("Ancient City", "Broken Peaks")
-    val started = throneStarted(table)
+    // Offer Citizenship comes first; offering no one moves on.
+    val started = ChronicleWalk.walkedTo(rules, throneStarted(table),
+      ShapeEmpire.removeDecisionId)
     val parked = ChronicleWalk.parked(started.state).get
     assertEquals((parked.decisionId, parked.owner),
       (ShapeEmpire.removeDecisionId, p1))
