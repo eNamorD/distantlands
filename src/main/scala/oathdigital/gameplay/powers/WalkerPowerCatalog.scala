@@ -77,6 +77,7 @@ object WalkerPowerCatalog:
   private[powers] def contributing(catalog: ExecutableCatalog)
       : Vector[ContributingPower] =
     Vector(CatacombsContribution.forCatalog(catalog)) ++
+      Vector(RelicPatrols, BanditPatrols) ++
       Vector(VowOfPeaceContribution) ++
       Vector(VowOfSilence, VowOfDivision) ++
       Vector(BrassArmyMoves) ++

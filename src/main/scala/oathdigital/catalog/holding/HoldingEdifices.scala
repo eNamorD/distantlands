@@ -157,20 +157,6 @@ object StonePortalCard extends Edifice(EdificeId("E14"), Suit.Arcane):
         "Hinterland site wraps to the top Cradle site.")
     val powers: Vector[PrintedPower] = Vector(power)
 
-object RelicPatrolsCard extends Edifice(EdificeId("E17"), Suit.Order):
-  object intact extends EdificeFace("Relic Patrols") with Locked:
-    val power = PrintedPower(PowerId("edifice.e17.intact"),
-      persistent = true, cost = Cost.free,
-      text = "Enemies of this card's ruler **cannot** recover relics at " +
-        "sites ruled by this card's ruler.")
-    val powers: Vector[PrintedPower] = Vector(power)
-  object ruined extends EdificeFace("Bandit Patrols"):
-    val power = PrintedPower(PowerId("edifice.e17.ruined"),
-      persistent = true, cost = Cost.free,
-      text = "Enemies of this card's ruler **cannot** recover relics at " +
-        "sites ruled by bandits.")
-    val powers: Vector[PrintedPower] = Vector(power)
-
 object TheTribunalCard extends Edifice(EdificeId("E19"), Suit.Order):
   object intact extends EdificeFace("The Tribunal") with Locked:
     val power = PrintedPower(PowerId("edifice.e19.intact"),
