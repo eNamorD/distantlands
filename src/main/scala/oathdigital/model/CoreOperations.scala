@@ -599,10 +599,12 @@ final case class SuitedReserveFromBox(suit: Suit, cards: Vector[DenizenId])
 final case class ImperialWarbandsTaken(count: Int) extends PrimitiveOperation:
   require(count > 0, "the Imperial supply must be positive")
 
-/** Adds purple warbands to an Imperial supply that exists: the Throne's
-  * Offer Citizenship assumes an unlimited supply (Chronicle ruling 22). */
-final case class ImperialWarbandsAdded(count: Int) extends PrimitiveOperation:
-  require(count > 0, "added Imperial warbands must be positive")
+/** Adds warbands of `kind` to a supply that exists. A Chronicle step that
+  * places one warband per site assumes an unlimited supply and adds what
+  * the bank lacks (Chronicle rulings 20 and 22). */
+final case class WarbandsAdded(kind: ForceKind, count: Int)
+    extends PrimitiveOperation:
+  require(count > 0, "added warbands must be positive")
 
 /** Adds lineage points to a lineage's era score (Score Lineage Points,
   * CR p. 37). */

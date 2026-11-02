@@ -44,7 +44,7 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
     ModifyDicePool | Roll | ModifyRollOutcome | Reroll | SetDieFaces |
     QueueProcedure | Defer | TakeDeferred | ActAsIf | OpenPick | ClosePick
   private type ChronicleOperation = RoleChanged | ChronicleTaskAssigned |
-    GrandScepterFromBox | ImperialWarbandsTaken | ImperialWarbandsAdded |
+    GrandScepterFromBox | ImperialWarbandsTaken | WarbandsAdded |
     LineagePointsScored | EdificeBuilt | SuitedReserveFromBox
 
   protected final def encodeOperation(operation: CoreOperation): ujson.Value =
@@ -66,8 +66,9 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
       "kind" -> "grand-scepter-from-box", "player" -> player.value)
     case ImperialWarbandsTaken(count) => ujson.Obj(
       "kind" -> "imperial-warbands-taken", "count" -> count)
-    case ImperialWarbandsAdded(count) => ujson.Obj(
-      "kind" -> "imperial-warbands-added", "count" -> count)
+    case WarbandsAdded(force, count) => ujson.Obj(
+      "kind" -> "warbands-added", "force" -> encodeForceKind(force),
+      "count" -> count)
     case LineagePointsScored(lineage, points) => ujson.Obj(
       "kind" -> "lineage-points-scored", "lineage" -> lineage.value,
       "points" -> points)
@@ -563,9 +564,10 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
     case "imperial-warbands-taken" => for
       count <- positive(value, "count", path)
     yield ImperialWarbandsTaken(count)
-    case "imperial-warbands-added" => for
+    case "warbands-added" => for
+      force <- decodeForceKind(value("force"), s"$path.force")
       count <- positive(value, "count", path)
-    yield ImperialWarbandsAdded(count)
+    yield WarbandsAdded(force, count)
     case "lineage-points-scored" => for
       points <- positive(value, "points", path)
     yield LineagePointsScored(LineageId(value("lineage").str), points)

@@ -78,9 +78,9 @@ class ChronicleStateOperationsSuite extends munit.FunSuite:
   test("purple warbands added raise an existing Imperial supply, and none " +
       "exists to raise before it is taken (Chronicle ruling 22)"):
     val taken = accepted(run(Table.start.ready, ImperialWarbandsTaken(24)))
-    val raised = accepted(run(taken, ImperialWarbandsAdded(3)))
+    val raised = accepted(run(taken, WarbandsAdded(ForceKind.Imperial, 3)))
     assertEquals(raised.banks.warbandSupply.get(ForceKind.Imperial), Some(27))
-    assert(run(Table.start.ready, ImperialWarbandsAdded(3)).isLeft)
+    assert(run(Table.start.ready, WarbandsAdded(ForceKind.Imperial, 3)).isLeft)
 
   test("the game's first lineage points open its scorepad row for every " +
       "seated lineage, with its role, and later points add to it"):

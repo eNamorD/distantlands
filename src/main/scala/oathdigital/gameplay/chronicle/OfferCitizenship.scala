@@ -97,7 +97,7 @@ object OfferCitizenship:
         PositionedLocation(Location.PlayArea(exile)),
         PositionedLocation(Location.WarbandBank(own)))).toVector
       val short = ruled.size - PlayerFacts.banked(ready, ForceKind.Imperial)
-      val added = Option.when(short > 0)(ImperialWarbandsAdded(short)).toVector
+      val added = Option.when(short > 0)(WarbandsAdded(ForceKind.Imperial, short)).toVector
       val swaps = ruled.flatMap((site, n) =>
         val at = PositionedLocation(Location.Site(site))
         Option.when(n > 1)(Kill(Piece.Warbands(own, n - 1), at)).toVector :+

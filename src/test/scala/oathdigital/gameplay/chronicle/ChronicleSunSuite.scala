@@ -112,17 +112,19 @@ class ChronicleSunSuite extends munit.FunSuite:
       after.game.current.map.sites(site).forces,
       SiteForces.Occupied(colour, 1), site.value))
 
-  test("a former Chancellor's bank, short by their board, places what it " +
-      "holds, and the rest of the Empire's sites stay empty"):
+  test("a former Chancellor's bank, short by their board, is topped up so " +
+      "each of the Empire's sites takes one warband"):
     // 13 purple board warbands turn to p2's colour, leaving 1 in the bank.
     val peaks = CatalogNames.site("Broken Peaks")
     val after = sunEnded(ChronicleWalk.chronicleWonByP1.imperial(p2)
       .boardWarbands(p2, 13).warbandsAt("Ancient City", p2, 1)
       .warbandsAt(peaks, p2, 1))
     val colour = ForceKind.Exile(lineageOf(after, p2))
-    assertEquals(Vector(ancientCity, peaks).map(site =>
-      after.game.current.map.sites(site).forces).count(
-        _ == SiteForces.Occupied(colour, 1)), 1)
+    Vector(ancientCity, peaks).foreach(site => assertEquals(
+      after.game.current.map.sites(site).forces,
+      SiteForces.Occupied(colour, 1), site.value))
+    assertEquals(after.banks.warbandSupply.get(colour),
+      Some(MaterialBankState.ExileWarbandsPerLineage + 1))
 
   test("a boxed former Chancellor leaves the Empire's sites empty"):
     val table = withBoxedLineage(ChronicleWalk.chronicleWonByP1,

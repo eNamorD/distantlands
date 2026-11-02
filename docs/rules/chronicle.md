@@ -63,7 +63,7 @@ meets the goal, even when tied with the Empire.
 6. The winner becomes Chancellor and takes the Chancellor board, the purple pieces, and the Grand Scepter. **Actor:** none: procedural.
    - Digital: when no one holds the Grand Scepter, the winner takes it from the box, faceup ([ruling 10](ambiguities.md#chronicle-rulings)).
    - If an Exile won, the Empire breaks. The winner's newly dormant legacies become active. The former Chancellor and all Citizens, even those in the box, become Exiles. Discard all relics in the Reliquary. Remove all Imperial warbands from sites, without adding bandits. Then, on each site the winner rules, replace their warbands with one Imperial warband. The winner rules these sites for the rest of the Chronicle.
-   - Digital: once the Imperial warbands are removed, each site that held them takes one warband of a seated former Chancellor's colour, so the former Chancellor rules it as an Exile; a boxed one places none ([ruling 20](ambiguities.md#chronicle-rulings), a deviation).
+   - Digital: once the Imperial warbands are removed, each site that held them takes one warband of a seated former Chancellor's colour, so the former Chancellor rules it as an Exile, their bank topped up when short; a boxed one places none ([ruling 20](ambiguities.md#chronicle-rulings), a deviation).
    - If a Citizen won, a new dynasty begins: the former Chancellor becomes a Citizen.
 
 **Assign Tasks**
