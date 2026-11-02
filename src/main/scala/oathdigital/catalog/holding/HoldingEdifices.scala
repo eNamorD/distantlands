@@ -141,22 +141,6 @@ object UndergroundLibraryCard extends Edifice(EdificeId("E13"), Suit.Arcane):
         "of the relic deck instead. Its recover difficulty is 5.")
     val powers: Vector[PrintedPower] = Vector(power)
 
-object StonePortalCard extends Edifice(EdificeId("E14"), Suit.Arcane):
-  object intact extends EdificeFace("Stone Portal") with Locked:
-    val power = PrintedPower(PowerId("edifice.e14.intact"),
-      persistent = false, cost = Cost(secret = 1),
-      text = "**ACTION:** If your pawn is at this site, place your pawn " +
-        "on another site. If your pawn is not at this site, place " +
-        "your pawn at this site.")
-    val powers: Vector[PrintedPower] = Vector(power)
-  object ruined extends EdificeFace("Shattered Portal"):
-    val power = PrintedPower(PowerId("edifice.e14.ruined"),
-      persistent = false, cost = Cost(secret = 1),
-      text = "**ACTION:** If your pawn is at this site, roll [round-die] " +
-        "and place your pawn that many sites Hinterward. The bottom " +
-        "Hinterland site wraps to the top Cradle site.")
-    val powers: Vector[PrintedPower] = Vector(power)
-
 object TheTribunalCard extends Edifice(EdificeId("E19"), Suit.Order):
   object intact extends EdificeFace("The Tribunal") with Locked:
     val power = PrintedPower(PowerId("edifice.e19.intact"),
@@ -199,18 +183,4 @@ object SpiralCastleCard extends Edifice(EdificeId("E23"), Suit.Hearth):
       persistent = false, cost = Cost.free,
       text = "If you're victorious, place the attacker's pawn on this " +
         "site, and they lose 2 Supply. _Bandits will use this._")
-    val powers: Vector[PrintedPower] = Vector(power)
-
-object HiddenPassagesCard extends Edifice(EdificeId("E25"), Suit.Hearth):
-  object intact extends EdificeFace("Hidden Passages") with Locked:
-    val power = PrintedPower(PowerId("edifice.e25.intact"),
-      persistent = false, cost = Cost.free,
-      text = "**WAKE:** If your pawn is at this site and its ruler " +
-        "consents, place your pawn on any site.")
-    val powers: Vector[PrintedPower] = Vector(power)
-  object ruined extends EdificeFace("Sinking Passages"):
-    val power = PrintedPower(PowerId("edifice.e25.ruined"),
-      persistent = false, cost = Cost.free,
-      text = "**WAKE:** If your pawn is at this site, you may burn " +
-        "[favor-burnt] to place your pawn on any site.")
     val powers: Vector[PrintedPower] = Vector(power)

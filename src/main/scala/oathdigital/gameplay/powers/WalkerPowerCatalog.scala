@@ -87,6 +87,7 @@ object WalkerPowerCatalog:
       Vector(ForestCouncil.forCatalog(catalog)) ++
       Vector(CityWall) ++
       Vector(GiantPythonRestriction) ++
+      Vector(HiddenPassages) ++
       TravelSitePowers.all ++
       Vector(BoilingLake, ForbiddenForest.forCatalog(catalog)) ++
       Vector(HallowedSpring) ++

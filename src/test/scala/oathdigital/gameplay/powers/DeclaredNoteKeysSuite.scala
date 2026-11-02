@@ -20,7 +20,7 @@ class DeclaredNoteKeysSuite extends munit.FunSuite:
   private val file: Path = Paths.get("src/test/resources/notes/declared-keys.txt")
   private val writing = sys.env.get("NOTE_KEYS_SNAPSHOT").contains("write")
 
-  /** One entry per catalog listing. Six powers are both a contributing
+  /** One entry per catalog listing. Seven powers are both a contributing
     * power and a phase power, so they are listed twice. */
   private val listings: Vector[(PowerId, Vector[NoteKey])] =
     WalkerPowerCatalog.default(catalog).powers.map(power =>
@@ -68,7 +68,7 @@ class DeclaredNoteKeysSuite extends munit.FunSuite:
     assertEquals(twice.keys.toVector.map(_.value).sorted, Vector(
       "denizen.assassin", "denizen.insomnia", "denizen.pied-piper",
       "denizen.silver-tongue", "denizen.vow-of-obedience",
-      "denizen.vow-of-poverty"))
+      "denizen.vow-of-poverty", "edifice.e25.intact"))
     twice.foreach: (id, entries) =>
       val each = entries.map(_._2.map(key =>
         s"${key.name} = ${wording(key.template)}").sorted).distinct
