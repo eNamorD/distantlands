@@ -11,9 +11,10 @@ specs.
 
 **Phase - Cleanup tasks** holds what finished phases left behind. Catalog
 batch 7 (Campaign dice) landed on 2026-10-10; what it left behind is under
-Cleanup tasks. Catalog batch 8 landed on 2026-10-18: its
-[design](superpowers/specs/2026-10-12-catalog-batch-8-design.md) records
-every slice and item.
+Cleanup tasks. Catalog batch 8 landed on 2026-10-18 and catalog batch 9 on
+2026-11-02; the
+[batch 9 design](superpowers/specs/2026-11-02-catalog-batch-9-design.md)
+records its slices, rulings and what remains engine-blocked.
 
 ## Next
 
@@ -80,43 +81,33 @@ did":
 ### Phase - Catalog batch - engine-blocked
 
 Cards that need an engine change first, grouped by the missing mechanism.
-[Catalog batch 8](superpowers/specs/2026-10-12-catalog-batch-8-design.md#out-of-scope)
-left these out: each costs a slice or more per card, or belongs with another
-phase. The
-[catalog batch 9 design](superpowers/specs/2026-11-02-catalog-batch-9-design.md)
-(2026-11-02) triaged every remaining power, took 22 edifice faces whose
-mechanisms exist, and its "Out of scope" section is the refreshed version of
-this list.
+[Catalog batch 9](superpowers/specs/2026-11-02-catalog-batch-9-design.md)
+(landed 2026-11-02) implemented every edifice face whose mechanisms the
+engine had; its [Out of scope](superpowers/specs/2026-11-02-catalog-batch-9-design.md#out-of-scope)
+section describes each seam below in a paragraph.
 
-- **Search Party:** a card played after its WHEN PLAYED, as if searched.
-  Nested inside the WHEN PLAYED, the played card fires neither its own WHEN
-  PLAYED nor the card-play triggers (`WalkerHooks.gathered` is keyed by
-  window), and Search re-reads its live hand on a single-card draw. It needs
-  its own spec. Recorded in the
-  [catalog batch 4 rulings](superpowers/specs/2026-10-05-catalog-batch-4-rulings.md#moved-out-of-the-batch).
-- **A choice of discard destination:** Bracken, Cracked Horn, Ring of
-  Devotion. A discard is always to the top of a region's pile, and an
-  optional destination needs a deferred operation plus a question.
-- **Acting as another card:** Master of Disguise and Acting Troupe, a choice
-  made per use.
-- **New target kinds:** Relic Hunter, Glamor.
-- **Challenge** (`legalBanners` is hard-coded, no ribbon adjustment): Sigil of
-  the Eye, Sigil of the Heart, Favored Son, Magician's Code (its 2 secrets
-  count toward placing more than the banner holds, but the start gate runs
-  before any modifier).
-- **Other:** Pilgrimage (shuffling the Dispossessed), Autumn Wind (a combined
-  shuffle and deal), Tracker (memory across turns), Obsidian Cage (a new
-  warband store), and False Prophet.
-  False Prophet is the only card that plays a card outside the active
-  player's turn: its holder plays the Vision when another player's action
-  discards it. The off-turn actor of catalog batch 8, slice 14, lets a
-  queued walk belong to another player, so only the player-aware card play
-  is left. Card play assumes the player is the walk's actor, `ctx.actor`
-  (the `SearchPlayAdviser` transforms, such as `HolderAdviserLimit`, Pied
-  Piper and Lost Tapestry, and the `ActionCardPlayedFaceup` readers, such as
-  Book Binders, Secret Police and Conspiracy). So the play must either run
-  as its own procedure for its holder, or give `PlacementTree` and
-  `CardPlayedFaceup` the playing player and move those readers onto it.
+- **Live terrain:** Grand Canal, Lost Lagoon.
+- **Round advance and the round die:** Great Clock, Broken Clock, Shattered
+  Portal.
+- **Recover source:** Drowned Library.
+- **Discard replacement with a question:** Wild Pastures.
+- **Own-power lock exemption:** Giant's Path.
+- **Dispossessed shuffles:** Great Spire, Fallen Spire, Pilgrimage.
+- **Vision collection:** Desecrated Ground.
+- **A card taken from under a deck's end:** Squalid District's skipped
+  Vision.
+- **As-if ruler:** Bandit Crown.
+- **Favor source redirection:** Vow of Kinship.
+- **An askable Act action:** consent for Relic Patrols and Bandit Patrols.
+- **Challenge** (`legalBanners` is hard-coded, no ribbon adjustment): School
+  of Vines, Sigil of the Eye, Sigil of the Heart, Favored Son, Magician's
+  Code.
+- **Unchanged from batch 8:** Search Party (recorded in the
+  [catalog batch 4 rulings](superpowers/specs/2026-10-05-catalog-batch-4-rulings.md#moved-out-of-the-batch)),
+  Bracken, Cracked Horn and Ring of Devotion (a discard destination),
+  Master of Disguise and Acting Troupe (acting as another card), Relic
+  Hunter and Glamor (new target kinds), Autumn Wind, Tracker, Obsidian
+  Cage and False Prophet (a player-aware off-turn card play).
 
 ### Phase - All-Exile alpha readiness
 
