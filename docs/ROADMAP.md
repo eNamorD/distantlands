@@ -401,15 +401,12 @@ before treating the numbers below as current.
   `CoreOperations` in 13 of 16 commits; count its mechanical arms before
   deciding it the same way. Design note:
   [derive the wire codecs](superpowers/specs/2026-11-02-derive-wire-codecs-design.md).
-- [ ] **One HTTP gateway.** Three transports write the same load, submit and
-  log over the same service calls; only the trusted-seat one is used in
-  production, and the authenticated stack mounts only in development, with no
-  session issuer. One gateway behind a seam for how the actor is resolved
-  would serve both. The authenticated stack's public-only projection scope is
-  the one behaviour the seat transport lacks. Design note:
-  [one HTTP gateway](superpowers/specs/2026-11-02-one-http-gateway-design.md);
-  slices 1 to 3 are done (`GameGateway`, `GameApiRoutes`, one error table),
-  slice 4 (retire the authenticated stack) remains.
+- [ ] **One frontend client (optional).** The development shell still talks
+  to `/api/dev/first-games/{gameId}?playerId=` through its own
+  `HttpGameClient`; mounting the dev API at `/games/{gameId}/api` with the
+  query-parameter resolution would retire the second client. Slice 5 of the
+  [one HTTP gateway](superpowers/specs/2026-11-02-one-http-gateway-design.md)
+  note, left for a frontend session.
 - [ ] **`ConsentDesk` settles a batch.** Its seven verbs have one caller,
   which owns their order at nine sites; the last five consent commits all
   edited the service. The desk could take a batch and return it settled.
@@ -418,7 +415,10 @@ before treating the numbers below as current.
 
 - [ ] **X6 — Complete production authentication and deployment**
   - [ ] Add OIDC Authorization Code + PKCE, session issuance/rotation/logout,
-    secure cookie-setting responses, and frontend login/session-expiry UX.
+    secure cookie-setting responses, and frontend login/session-expiry UX;
+    then mount `GameApiRoutes` with `SessionMembershipActor` and a bootstrap
+    route on `MembershipBootstrap`, which the retired authenticated transport
+    left behind for it.
   - [ ] Add membership-management UX, rate limiting, audit logging, and the
     final production deployment gate. The alpha phase may add a narrower safe
     invitation flow first; until then, keep development routes loopback-only.

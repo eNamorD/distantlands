@@ -139,36 +139,25 @@ serves seat routes instead; hosting it is covered in
 [quick-start.md](../operations/quick-start.md) and
 [configuration.md](../operations/configuration.md).
 
-Every operation authenticates before membership lookup. The HTTP authenticator
-accepts only a 43-128 character base64url-shaped raw session cookie, hashes it
-with SHA-256 at the edge, and sends only the fixed digest to
-`IdentityRepository`. Resolution runs on `oathdigital.blocking-dispatcher`, not
-Akka's request dispatcher. Missing, malformed, unknown, expired, and revoked
-sessions share one stable `401` response. Raw session and CSRF tokens never
-enter repositories, logs, projections, or errors.
+The session authenticator accepts only a 43-128 character base64url-shaped
+raw session cookie, hashes it with SHA-256 at the edge, and sends only the
+fixed digest to `IdentityRepository`. Resolution runs on
+`oathdigital.blocking-dispatcher`, not Akka's request dispatcher. Missing,
+malformed, unknown, expired, and revoked sessions share one failure, which
+the API answers with one stable `401`. Raw session and CSRF tokens never
+enter repositories, logs, projections, or errors. `SameOriginCsrfProtection`
+compares exactly one `X-CSRF-Token` header against the session's stored
+digest in constant time, under exactly the configured `Origin`.
 
-GET/poll requires a session but is CSRF-exempt. Every authenticated POST
-requires exactly the configured `Origin` and one `X-CSRF-Token` header. The
-header is hashed and compared to the stored digest with a constant-time digest
-comparison before request-body or domain handling; failure is a stable `403`
-and performs no append. GET has no player selector. POST accepts
-`expectedNextSequence` plus an actor-free intent. Walker decisions use
-`resolveWalker` with a decision ID and a typed answer payload. Unknown fields,
-including `playerId`, are rejected. Membership constructs the domain actor, and
-mutations are attempted once without retry.
-Authenticated bootstrap requires the owner membership and a pre-provisioned
+`MembershipBootstrap` requires the owner membership and a pre-provisioned
 game resource. Its participant list must exactly match every provisioned
 `player` membership; owner and spectator memberships are never setup seats.
 The request selects only participant order, lineage, color, and first player.
-The server derives every hidden site, deck, denizen, and relic ordering from the
-executable catalog (built into the server) and creates the event stream once. The current membership
-model deliberately does not let the owner also occupy a player seat.
-
-The authenticated transport has no login, logout, session issuance,
-cookie-setting, OIDC redirect/callback, or refresh endpoint. Tests provision
-digests directly. Trusted-alpha seat cookies belong to the separate seat
-routes.
-Cookie flags and lifecycle belong to the later issuance boundary.
+The server derives every hidden site, deck, denizen, and relic ordering from
+the executable catalog (built into the server) and creates the event stream
+once. The current membership model deliberately does not let the owner also
+occupy a player seat. Trusted-alpha seat cookies belong to the seat routes;
+session cookie flags and lifecycle belong to the later issuance boundary.
 
 ## Run and shutdown
 
@@ -181,11 +170,6 @@ Start the server with a database path:
 The default bind address is `127.0.0.1:8080`; override it with `--host` and
 `--port` (or `OATH_HOST` and `OATH_PORT`). HSQLDB creates several files using
 the supplied path prefix. Use a durable local directory in production.
-
-For seeded-session testing, configure both
-`--session-cookie-name oath_session` and an exact origin such as
-`--authenticated-public-origin http://127.0.0.1:8080`. This does not issue a
-session or relax the loopback binding gate.
 
 Akka Coordinated Shutdown first unbinds HTTP and then closes the application
 runtime. `HsqldbDatabaseOwner` owns one Hikari datasource and Slick database,
@@ -205,6 +189,19 @@ a dedicated fixed thread pool defined in `application.conf`; they do not run on
 Akka's default dispatcher. Coordinated database shutdown also uses the blocking
 dispatcher. Logback supplies the SLF4J backend so
 startup, bind, and shutdown messages are not silently discarded.
+
+## One game API
+
+Every transport serves the same three endpoints through `GameApiRoutes`:
+`GET` the projection, `POST commands`, `GET log/{after}`, under its own
+prefix. The transport resolves the actor through an `ActorResolution`
+(`SeatCookieActor` for the `oath_seat` cookie, `QueryParameterActor` for the
+development `?playerId=`, `SessionMembershipActor` once X6 issues sessions)
+into a `GameAccess`: a `Seat(player)` or a `Public` view. `GameGateway` then
+does load, submit and log once over that access: a seat sees its own
+projection and log lines and may command; a public view sees the public
+projection, no private lines, and may not. `GameHttpWire` holds the one
+table of public errors, so every transport spells a failure the same way.
 
 ## Loopback development API
 

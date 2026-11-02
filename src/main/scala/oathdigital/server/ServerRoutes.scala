@@ -29,8 +29,7 @@ object ServerRoutes:
       runtime: ServerRuntime,
       blockingExecutionContext: ExecutionContext,
       config: ServerConfig,
-      readiness: ServerReadiness,
-      nowMillis: () => Long = () => System.currentTimeMillis()
+      readiness: ServerReadiness
   ): Route =
     val publicOrigin = config.publicBaseUrl.getOrElse(
       new java.net.URI("http", null, config.host, config.port, null, null, null))
@@ -50,23 +49,8 @@ object ServerRoutes:
       case ServerMode.Development =>
         // The development start page creates games through the same trusted
         // provisioning as trusted-alpha mode, so both get the generated setup.
-        val development = DevelopmentRoutes.route(runtime.service,
-          runtime.gateway, blockingExecutionContext) ~ trustedSeats
-        config.authenticatedRouteMount.fold(development) { configuration =>
-          val authenticator = new SessionCookieAuthenticator(
-            runtime.identities,
-            configuration.sessionCookieName,
-            nowMillis,
-            blockingExecutionContext
-          )
-          val csrf = new SameOriginCsrfProtection(configuration.publicOrigin)
-          development ~ new AuthenticatedGameRoutes(
-            authenticator,
-            csrf,
-            runtime.authenticatedGame,
-            blockingExecutionContext
-          ).route
-        }
+        DevelopmentRoutes.route(runtime.service, runtime.gateway,
+          blockingExecutionContext) ~ trustedSeats
       case ServerMode.TrustedAlpha =>
         trustedSeats ~ ProductionFrontendRoutes.route
     HealthRoutes.route(readiness) ~ application

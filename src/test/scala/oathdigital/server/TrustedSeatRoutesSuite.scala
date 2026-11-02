@@ -517,7 +517,7 @@ class TrustedSeatRoutesSuite extends munit.FunSuite:
     // player; reversing the two requested seats makes p2 first.
     val runtime = accepted(ServerRuntime.open(database, reversing, gameIds))
     val config = ServerConfig("127.0.0.1", 8080, publicOrigin.map(URI.create),
-      database, ServerMode.TrustedAlpha, None, "test")
+      database, ServerMode.TrustedAlpha, "test")
     try
       TrustedServer(HttpTestServer.start("trusted-seat-route-test")(blocking =>
         ServerRoutes.route(runtime, blocking, config,

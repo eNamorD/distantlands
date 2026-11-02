@@ -77,9 +77,10 @@ python3 scripts/check-architecture.py
 ## Shared protocol and adapter ports
 
 Shared protocol types are wire DTOs, not domain authority. The server derives
-the actor from a development selector, an authenticated membership or a
-trusted-alpha seat cookie, maps the actorless intent to
-`application.GameCommand`, and invokes gameplay. Projection
+the actor through an `ActorResolution` (a development selector, a trusted-alpha
+seat cookie, or a session's membership once X6 issues sessions), maps the
+actorless intent to a `PlayerIntent`, binds it as `GameCommand.Issued(actor,
+intent)`, and invokes gameplay through the one `GameGateway`. Projection
 DTOs are assembled by application collaborators and decoded by the frontend.
 
 Application-owned interfaces include `EventStreamRepository`,

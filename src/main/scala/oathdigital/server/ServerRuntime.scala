@@ -2,18 +2,12 @@ package oathdigital.server
 
 import java.nio.file.Path
 
-import oathdigital.application.{
-  ChronicleRandomPort,
-  IdentityRepository,
-  MembershipAuthorizationService
-}
+import oathdigital.application.{ChronicleRandomPort, IdentityRepository}
 import oathdigital.gameplay.cards.NewFoundations
 import oathdigital.persistence.HsqldbDatabaseOwner
 final class ServerRuntime private (
     val service: oathdigital.application.GameApplicationService,
     val gateway: GameGateway,
-    val authenticatedGame: AuthenticatedGameGateway,
-    val authorization: MembershipAuthorizationService,
     val identities: IdentityRepository,
     val trustedGameProvisioning: TrustedGameProvisioning,
     private val database: HsqldbDatabaseOwner
@@ -48,19 +42,9 @@ object ServerRuntime:
           catalog,
           random
         )
-      val authorization =
-        new MembershipAuthorizationService(database.identities)
       new ServerRuntime(
         firstGameService,
         new GameGateway(firstGameService, projector),
-        new AuthenticatedGameGateway(
-          firstGameService,
-          projector,
-          authorization,
-          database.identities,
-          generatedPlanFactory
-        ),
-        authorization,
         database.identities,
         new TrustedGameProvisioning(firstGameService, generatedPlanFactory,
           database.trustedGames, generateGameId = gameIds),

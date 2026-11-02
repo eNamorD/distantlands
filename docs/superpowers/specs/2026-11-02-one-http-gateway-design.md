@@ -5,11 +5,19 @@
 > candidate at `0d1ae92`, describes the three transports and the service
 > calls each writes, defines the seam for actor resolution, settles the
 > public-only projection scope and `SearchDrawPort`, and slices the change.
-> Slices 0 to 3 landed on 2026-11-02: the command vocabulary note, the
-> `SearchDrawPort` fold, `GameGateway` and `GameAccess`, and `GameApiRoutes`
-> with the one error table in `GameHttpWire` behind the seat and development
-> transports (the authenticated routes keep their own table until slice 4
-> deletes them). Slices 4 and 5 are not implemented. Companion
+> Status: implemented, slices 0 to 4, on 2026-11-02, with the recommended
+> defaults: the authenticated routes were deleted and
+> `SessionCookieAuthenticator`, `SameOriginCsrfProtection`,
+> `MembershipAuthorizationService`, a new `SessionMembershipActor` and the
+> bootstrap logic as `MembershipBootstrap` (a class of its own rather than a
+> `GameGateway.bootstrap`, so the gateway's constructor stays service and
+> projector) were kept for X6; a `Public` view reads the log as a viewer
+> with no private lines; the trusted seat's error wording won except that
+> an invalid intent keeps its path (a command body that fails to decode is
+> spelled the same way); the dev shell stays where it is, and slice 5 is a
+> roadmap item. `AccessRefusal.Storage` carries no reference: the routes
+> generate one when they answer. The numbers below are as measured at
+> `0d1ae92`, before the change. Companion
 > notes: the [command vocabulary](2026-11-02-one-command-vocabulary-design.md),
 > which landed first, and the [wire codecs](2026-11-02-derive-wire-codecs-design.md).
 

@@ -14,7 +14,6 @@ final case class ServerConfig(
     publicBaseUrl: Option[URI],
     databasePath: Path,
     mode: ServerMode,
-    authenticatedRouteMount: Option[AuthenticatedRouteMountConfiguration],
     version: String
 )
 
@@ -28,8 +27,6 @@ object ServerConfig:
     "--host",
     "--port",
     "--public-base-url",
-    "--session-cookie-name",
-    "--authenticated-public-origin",
     "--database-path",
     "--mode"
   )
@@ -38,8 +35,7 @@ object ServerConfig:
 
   val usage: String =
     "Usage: oathdigital [--host HOST] [--port PORT] " +
-      "[--public-base-url URL] [--session-cookie-name NAME] " +
-      "[--authenticated-public-origin ORIGIN] [--database-path PATH] " +
+      "[--public-base-url URL] [--database-path PATH] " +
       "[--mode development|trusted-alpha]. " +
       "Internet exposure requires HTTPS at a trusted reverse proxy."
 
@@ -59,20 +55,6 @@ object ServerConfig:
     val publicBaseUrl = parseOptionalUri(optionalValue(
       "--public-base-url", "OATH_PUBLIC_BASE_URL", cli, environment
     ))
-    val authenticatedRouteMount = parseAuthenticatedRouteMount(
-      optionalValue(
-        "--session-cookie-name",
-        "OATH_SESSION_COOKIE_NAME",
-        cli,
-        environment
-      ),
-      optionalValue(
-        "--authenticated-public-origin",
-        "OATH_AUTHENTICATED_PUBLIC_ORIGIN",
-        cli,
-        environment
-      )
-    )
     val databasePath = parsePath(
       "--database-path",
       value(
@@ -93,8 +75,7 @@ object ServerConfig:
       "--public-base-url" -> publicBaseUrl.left.toOption,
       "--database-path" -> databasePath.left.toOption,
       "--mode" -> mode.left.toOption
-    ).collect { case (option, Some(error)) => option -> error } ++
-      authenticatedRouteMount.left.toOption.toVector
+    ).collect { case (option, Some(error)) => option -> error }
 
     val trustBoundaryErrors = (host, publicBaseUrl, mode) match
       case (Right(validHost), Right(baseUrl), Right(validMode)) =>
@@ -115,7 +96,6 @@ object ServerConfig:
         publicBaseUrl.toOption.get,
         databasePath.toOption.get,
         mode.toOption.get,
-        authenticatedRouteMount.toOption.get,
         version
       ))
 
@@ -192,30 +172,6 @@ object ServerConfig:
   ): Either[String, Option[URI]] = value match
     case None => Right(None)
     case Some(raw) => parsePublicBaseUrl(raw).map(Some(_))
-
-  private def parseAuthenticatedRouteMount(
-      sessionCookieName: Option[String],
-      publicOrigin: Option[String]
-  ): Either[(String, String), Option[AuthenticatedRouteMountConfiguration]] =
-    AuthenticatedRouteMountConfiguration
-      .fromOptions(sessionCookieName, publicOrigin)
-      .left.map { message =>
-        val option =
-          if sessionCookieName.forall(_.trim.isEmpty) then
-            "--session-cookie-name"
-          else "--authenticated-public-origin"
-        option -> s"$option: $message"
-      }
-      .flatMap:
-        case Some(configuration) =>
-          SameOriginCsrfProtection
-            .validateOrigin(configuration.publicOrigin)
-            .left.map(message =>
-              "--authenticated-public-origin" ->
-                s"--authenticated-public-origin: $message"
-            )
-            .map(_ => Some(configuration))
-        case None => Right(None)
 
   private def parsePublicBaseUrl(value: String): Either[String, URI] =
     val parsed = Try(new URI(value.trim)).toOption
