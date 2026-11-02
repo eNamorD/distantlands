@@ -8,7 +8,7 @@ import oathdigital.testkit.Table.{p1, p2}
 import LogScripts.atTable
 
 /** Journaled Palanquin uses, for the Game Log suites (catalog batch 8,
-  * slice 15). Kept beside `LogScripts`, which is at its size limit. */
+  * slice 15). Kept beside `LogScripts`. */
 object PalanquinLogScripts:
   /** p1 holds Palanquin and 1 favor at Ancient City, where p2 stands too;
     * p1 sends p2 to Buried Giant. */

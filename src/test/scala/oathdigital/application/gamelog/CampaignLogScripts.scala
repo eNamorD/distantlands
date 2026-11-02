@@ -13,8 +13,8 @@ import LogScripts.{atTable, raidAnswers}
 
 /** The Campaign branches the older goldens never play: a won Raid's
   * spoils, and a Conquest victory's placement with the bandits' loss.
-  * Kept beside `LogScripts`, which is at its size limit (procedures
-  * journal their own notes design, slice 4).
+  * Kept beside `LogScripts` (procedures journal their own notes design,
+  * slice 4).
   */
 object CampaignLogScripts:
   private val relic = CatalogNames.relic("Wine of Welcome")

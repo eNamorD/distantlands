@@ -10,7 +10,7 @@ import oathdigital.testkit.Table.{p1, p2, p3}
 import LogScripts.{atTable, raidAnswers}
 
 /** Journaled Captains Campaigns, for the Game Log suites (catalog batch 8,
-  * slice 13). Kept beside `LogScripts`, which is at its size limit. */
+  * slice 13). Kept beside `LogScripts`. */
 object CaptainsLogScripts:
   /** Captains at Ancient City, where p1 stands and rules with 1 warband;
     * p1 also rules Deep Woods with `atWoods` warbands, where p2 stands, and

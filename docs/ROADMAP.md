@@ -58,10 +58,6 @@ Left behind by earlier phases:
     but the card still sits in `HoldingNomadDenizens.scala`. Move it out.
   - A test that fails when every power of a holding card is implemented
     would keep the two in step.
-- [ ] **Split `LogScripts.scala` before it grows.** The log-script support
-  file is at 799 of the 800 lines `BackendArchitectureSuite` allows a test
-  file, so the next script added there fails the build. Split it along the
-  procedures its scripts play.
 
 Left behind by the
 [consent work](superpowers/specs/2026-10-08-consent-system-design.md):
