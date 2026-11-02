@@ -6,13 +6,13 @@ import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Table}
+import oathdigital.testkit.{Look, Table}
 
 /** Hearts and Minds: three favor placed; the defender wins without a roll,
   * and the card is discarded after the Campaign unless its user holds the
   * People's Favor. */
 class HeartsAndMindsSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Hearts and Minds")
+  private val card = HeartsAndMindsCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
   private val power = HeartsAndMinds.forCatalog(catalog)
 

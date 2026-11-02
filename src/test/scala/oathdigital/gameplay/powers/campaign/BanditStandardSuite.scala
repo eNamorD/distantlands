@@ -2,21 +2,22 @@ package oathdigital.gameplay.powers.campaign
 
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
+import oathdigital.gameplay.cards.BuriedGiantSite
 import oathdigital.gameplay.powers.campaign.PlanDriver._
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
 import oathdigital.model._
-import oathdigital.testkit.CatalogNames
 
 /** Bandit Standard: a free attacker's plan from a faceup relic, for one attack
   * die per bandit warband in the region of the attacker's pawn, never against
   * bandits in a Conquest. */
 class BanditStandardSuite extends munit.FunSuite:
-  private val relic = CatalogNames.relic("Bandit Standard")
+  private val relic = BanditStandardCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Relic(relic)
 
   /** In the Cradle with the origin, Ancient City. */
-  private val brokenPeaks = CatalogNames.site("Broken Peaks")
+  private val brokenPeaks = BrokenPeaksSite.id
   /** In the Provinces, away from the origin. */
-  private val buriedGiant = CatalogNames.site("Buried Giant")
+  private val buriedGiant = BuriedGiantSite.id
 
   test("an attacker adds one attack die per bandit warband in their pawn's " +
       "region, for nothing"):

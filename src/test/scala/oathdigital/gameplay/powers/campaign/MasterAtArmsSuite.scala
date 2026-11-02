@@ -6,12 +6,12 @@ import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.actions.dice.RerollChoice
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
+import oathdigital.gameplay.powers.dice.JinxCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{WalkerProcedureRegistry,
   WalkerRollFeedback}
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseAmountAnswer
-import oathdigital.testkit.CatalogNames
 
 /** Master at Arms (card 249): a free attacker battle plan. Once chosen,
   * after the attack roll its user may reroll any number of the dice showing
@@ -20,9 +20,9 @@ class MasterAtArmsSuite extends munit.FunSuite:
   import AttackDieFace.{HollowSword, OneSword, TwoSwordsSkull}
   import DefenseDieFace.Blank
 
-  private val card = CatalogNames.denizen("Master at Arms")
+  private val card = MasterAtArmsCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
-  private val jinx = CatalogNames.denizen("Jinx")
+  private val jinx = JinxCard.id
   private val jinxRef: DecisionOptionRef = RerollChoice.optionRef(jinx)
   private val rerollRef: DecisionOptionRef = RerollChoice.optionRef(card)
   private val reroll = RerollChoice.decisionId(CampaignIds.attackPool, 1)

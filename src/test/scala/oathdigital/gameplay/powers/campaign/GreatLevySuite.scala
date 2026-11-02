@@ -6,15 +6,15 @@ import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignPlans}
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** The Great Levy: two favor placed for three attack dice, added or removed,
   * unless the enemy holds the People's Favor; an attacker also ignores every
   * skull, as with Outriders. */
 class GreatLevySuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("The Great Levy")
+  private val card = TheGreatLevyCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
-  private val outriders = CatalogNames.denizen("Outriders")
+  private val outriders = OutridersCard.id
   private val outridersRef: DecisionOptionRef =
     DecisionOptionRef.Denizen(outriders)
   private val line = NoteText.Said("ignored", "Skulls ignored.", covers = false)

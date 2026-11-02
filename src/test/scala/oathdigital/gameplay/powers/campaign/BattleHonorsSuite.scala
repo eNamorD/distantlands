@@ -4,12 +4,12 @@ import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Battle Honors: a free plan for either side that gains two favor from the
   * Order bank if its user wins, as much as the bank holds. */
 class BattleHonorsSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Battle Honors")
+  private val card = BattleHonorsCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
 
   /** p1 holds Battle Honors faceup. */

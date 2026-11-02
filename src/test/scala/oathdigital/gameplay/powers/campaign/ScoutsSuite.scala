@@ -5,11 +5,11 @@ import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Scouts: a free attacker's plan that gains a Supply when it is applied. */
 class ScoutsSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Scouts")
+  private val card = ScoutsCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
 
   test("the attacker gains a Supply when it is chosen, and says so"):

@@ -1,18 +1,19 @@
 package oathdigital.gameplay.powers.campaign
 
+import oathdigital.catalog.holding.GlamorCard
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Cracked Sage: a secret placed and a favor burnt for four attack dice,
   * added or removed, offered only when the enemy has a faceup arcane
   * adviser. */
 class CrackedSageSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Cracked Sage")
+  private val card = CrackedSageCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
-  private val arcane = planlessCard("Glamor")
+  private val arcane = planlessCard(GlamorCard)
 
   private def funded(b: Board, who: PlayerId): Board =
     on(b)(_.favor(who, 2).secrets(who, faceUp = 1))

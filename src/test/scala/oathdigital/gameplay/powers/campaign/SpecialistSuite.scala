@@ -5,14 +5,14 @@ import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignPlans}
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Specialist: two favor placed so that the defender cannot use battle
   * plans. */
 class SpecialistSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Specialist")
+  private val card = SpecialistCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
-  private val longbows = CatalogNames.denizen("Longbows")
+  private val longbows = LongbowsCard.id
   private val longbowsRef: DecisionOptionRef =
     DecisionOptionRef.Denizen(longbows)
 

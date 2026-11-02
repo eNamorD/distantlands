@@ -1,5 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
+import oathdigital.catalog.Denizen
 import oathdigital.gameplay.{OathRules, WalkerDiceFixture}
 import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignProcedure}
 import oathdigital.gameplay.CampaignFixture.Board
@@ -12,7 +13,7 @@ import oathdigital.gameplay.walker.{ParkedDecisionAssertions, ProcedureWalker,
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, RecordedOps}
+import oathdigital.testkit.RecordedOps
 import oathdigital.testkit.Unwrap.present
 
 /** Drives a Campaign through the rules with the production battle plans, for
@@ -31,22 +32,19 @@ object PlanDriver:
     * is half a sword and every defense die blank. */
   val losingDice: WalkerDice = WalkerDiceFixture.blanks
 
-  /** These denizens, by name, after checking that no power of theirs is
-    * implemented yet: held as advisers, they offer no battle plan of their
-    * own. */
-  def planless(names: String*)(using munit.Location): Vector[DenizenId] =
+  /** These denizens, after checking that no power of theirs is implemented
+    * yet: held as advisers, they offer no battle plan of their own. */
+  def planless(cards: Denizen*): Vector[DenizenId] =
     val implemented = PowerImplementationStatus.implemented(catalog)
-    names.toVector.map { name =>
-      val id = CatalogNames.denizen(name)
-      val card = catalog.denizens.find(_.id.value == id.value).get
+    cards.toVector.map { card =>
       assert(card.powers.forall(power => !implemented(power.id)),
-        s"$name has an implemented power, so it may offer a battle plan")
-      id
+        s"${card.name} has an implemented power, so it may offer a battle plan")
+      card.id
     }
 
-  /** One planless denizen, by name. */
-  def planlessCard(name: String)(using munit.Location): DenizenId =
-    planless(name).head
+  /** One planless denizen. */
+  def planlessCard(card: Denizen): DenizenId =
+    planless(card).head
 
   export oathdigital.testkit.Outcomes.ready
 

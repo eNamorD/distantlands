@@ -1,17 +1,18 @@
 package oathdigital.gameplay.powers.campaign
 
+import oathdigital.catalog.holding.{AutumnWindCard, BrackenCard}
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.campaign.PlanDriver._
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
 import oathdigital.model._
-import oathdigital.testkit.CatalogNames
 
 /** Battle Axes: a free plan for two attack dice, added or removed, offered
   * only while the enemy rules a beast card. */
 class BattleAxesSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Battle Axes")
+  private val card = BattleAxesCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
-  private val beasts = planless("Bracken", "Autumn Wind")
+  private val beasts = planless(BrackenCard, AutumnWindCard)
 
   test("an attacker adds two attack dice, for nothing, when the defender " +
       "rules a beast card"):
@@ -30,7 +31,7 @@ class BattleAxesSuite extends munit.FunSuite:
     val base = rivalRulesOriginAndHoldsOathkeeper(
       board(warbands = 5, supply = 7))
     // Nobody rules Broken Peaks: the board has no extra sites.
-    val site = CatalogNames.site("Broken Peaks")
+    val site = BrokenPeaksSite.id
     val b = withSiteCard(withAdviser(withAdviser(base, card,
       Orientation.FaceUp), beasts(0), Orientation.FaceUp), site, beasts(1))
     assert(!commit(rules(winningDice), b, 3).offers(b.actor, b.actor,

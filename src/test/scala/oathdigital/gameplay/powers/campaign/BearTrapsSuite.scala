@@ -3,14 +3,15 @@ package oathdigital.gameplay.powers.campaign
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.action.WildAlliesCard
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Bear Traps: a free defender's plan that removes an attack die and kills
   * a warband on the attacker's board, beyond the committed force. */
 class BearTrapsSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Bear Traps")
+  private val card = BearTrapsCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
 
   /** One warband killed from `player`'s board. */
@@ -46,7 +47,7 @@ class BearTrapsSuite extends munit.FunSuite:
     val b = withAdviserFor(base, base.rival, card, Orientation.FaceUp)
     val game = rules(losingDice)
     val run = committed(game, campaignQueuedFrom(game, b, away,
-      PowerSourceRef.Card(CatalogNames.denizen("Wild Allies"))), b,
+      PowerSourceRef.Card(WildAlliesCard.id)), b,
       force = 2, raid = true).finishAttackerPlans(b.actor)
     val picked = run.pick(b.rival, CampaignIds.defenderPlan, ref)
     assert(picked.since(run).contains(killedFrom(b, b.actor)))
@@ -58,7 +59,7 @@ class BearTrapsSuite extends munit.FunSuite:
     val b = withAdviserFor(base, base.rival, card, Orientation.FaceUp)
     val game = rules(losingDice)
     val run = committed(game, campaignQueuedFrom(game, b, away,
-      PowerSourceRef.Card(CatalogNames.denizen("Wild Allies"))), b,
+      PowerSourceRef.Card(WildAlliesCard.id)), b,
       force = 3, raid = true).finishAttackerPlans(b.actor)
     val picked = run.pick(b.rival, CampaignIds.defenderPlan, ref)
     assertEquals(Look(picked.state).boardWarbands(b.actor), 1)

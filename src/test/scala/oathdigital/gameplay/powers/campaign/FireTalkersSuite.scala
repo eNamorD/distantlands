@@ -2,14 +2,15 @@ package oathdigital.gameplay.powers.campaign
 
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
+import oathdigital.gameplay.powers.banner.YewStaffCard
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Fire Talkers: a secret placed for three attack dice, added or removed,
   * offered only while its user holds the Darkest Secret. */
 class FireTalkersSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Fire Talkers")
+  private val card = FireTalkersCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
 
   /** `who` holds the Darkest Secret, with its 1 secret. */
@@ -58,7 +59,7 @@ class FireTalkersSuite extends munit.FunSuite:
       "Darkest Secret"):
     val attacker = attackerHoldingFireTalkersAndTheDarkestSecret
     val b = on(withDarkestSecret(attacker, attacker.rival))(
-      _.relic(attacker.actor, "Yew Staff"))
+      _.relic(attacker.actor, YewStaffCard))
     val picked = commit(rules(winningDice), b, 2)
       .pick(b.actor, CampaignIds.attackerPlan, ref)
     assert(picked.ops.contains(ModifyDicePool(CampaignIds.attackPool, 3)))

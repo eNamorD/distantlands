@@ -6,17 +6,17 @@ import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Gleaming Armor: while its faceup holder is in a Campaign, every plan the
   * enemy chooses costs one more secret, placed onto its card, or turned
   * facedown for the title's plan. A plan the enemy cannot afford with it is not
   * offered, and the option states the price with it. */
 class GleamingArmorSuite extends munit.FunSuite:
-  private val armor = CatalogNames.denizen("Gleaming Armor")
-  private val watchdog = CatalogNames.denizen("Watchdog")
-  private val honors = CatalogNames.denizen("Battle Honors")
-  private val brass = CatalogNames.relic("Brass Army")
+  private val armor = GleamingArmorCard.id
+  private val watchdog = WatchdogCard.id
+  private val honors = BattleHonorsCard.id
+  private val brass = BrassArmyCard.id
   private val titleRef: DecisionOptionRef = DecisionOptionRef.Button("title")
 
   private def price(option: DecisionOption): OptionPrice = option match

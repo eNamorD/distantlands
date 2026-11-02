@@ -7,15 +7,15 @@ import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.gameplay.walker.{DeltaPayload, WalkerDice,
   WalkerStepRecorded}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Book Burning: a free attacker's plan, offered only in a Raid. If the
   * attacker wins, every secret on the defender's board is burnt but one, the
   * facedown ones first, turned faceup to be burnt. */
 class BookBurningSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Book Burning")
+  private val card = BookBurningCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
-  private val honors = CatalogNames.denizen("Battle Honors")
+  private val honors = BattleHonorsCard.id
   private val honorsRef: DecisionOptionRef =
     DecisionOptionRef.Denizen(honors)
 

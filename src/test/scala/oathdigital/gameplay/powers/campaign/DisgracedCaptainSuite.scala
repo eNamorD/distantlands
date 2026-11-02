@@ -1,18 +1,19 @@
 package oathdigital.gameplay.powers.campaign
 
+import oathdigital.catalog.holding.MartialCultureCard
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignPlans}
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Disgraced Captain: a favor placed and a favor burnt for four attack dice,
   * added or removed, offered only while the Campaign's defender rules an
   * order card. */
 class DisgracedCaptainSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Disgraced Captain")
+  private val card = DisgracedCaptainCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
-  private val order = planlessCard("Martial Culture")
+  private val order = planlessCard(MartialCultureCard)
 
   /** `who` holds Disgraced Captain and 2 favor. */
   private def holder(b: Board, who: PlayerId): Board =

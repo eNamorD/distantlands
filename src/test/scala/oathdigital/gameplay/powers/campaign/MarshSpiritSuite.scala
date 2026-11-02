@@ -5,15 +5,14 @@ import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
-import oathdigital.testkit.CatalogNames
 
 /** Marsh Spirit: players who target its site cannot use battle plans. */
 class MarshSpiritSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Marsh Spirit")
-  private val longbows = CatalogNames.denizen("Longbows")
+  private val card = MarshSpiritCard.id
+  private val longbows = LongbowsCard.id
   private val longbowsRef: DecisionOptionRef =
     DecisionOptionRef.Denizen(longbows)
-  private val outriders = CatalogNames.denizen("Outriders")
+  private val outriders = OutridersCard.id
 
   /** `b`, with the actor holding Longbows faceup and Marsh Spirit standing
     * at `site`. */

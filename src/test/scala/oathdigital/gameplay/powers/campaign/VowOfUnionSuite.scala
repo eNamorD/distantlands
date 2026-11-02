@@ -2,13 +2,16 @@ package oathdigital.gameplay.powers.campaign
 
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
+import oathdigital.gameplay.cards.BuriedGiantSite
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.action.WildAlliesCard
 import oathdigital.gameplay.powers.campaign.PlanDriver._
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer,
   DistributeAnswer}
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look, MenuPlay}
+import oathdigital.testkit.{Look, MenuPlay}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 
 /** Vow of Union's Campaign half: at the start of any Campaign its holder
@@ -16,11 +19,11 @@ import oathdigital.testkit.Outcomes.assertWireRoundTrips
   * they rule in their region. A move offers the attacker the Skip, and a
   * move that leaves nothing to attack ends the Campaign. */
 class VowOfUnionSuite extends munit.FunSuite:
-  private val vow = CatalogNames.denizen("Vow of Union")
+  private val vow = VowOfUnionCard.id
   /** In the Cradle, with Ancient City, every board's origin. */
-  private val brokenPeaks = CatalogNames.site("Broken Peaks")
+  private val brokenPeaks = BrokenPeaksSite.id
   /** In the Provinces. */
-  private val buriedGiant = CatalogNames.site("Buried Giant")
+  private val buriedGiant = BuriedGiantSite.id
   private val game = rules(winningDice)
   private val toBoardHeading = "Vow of Union: move warbands from the sites " +
     "you rule in your region to your board"
@@ -129,7 +132,7 @@ class VowOfUnionSuite extends munit.FunSuite:
     assertEquals(away, buriedGiant)
     val b = withAdviser(base, vow, Orientation.FaceUp)
     val started = campaignQueuedFrom(game, b, away,
-      PowerSourceRef.Card(CatalogNames.denizen("Wild Allies")))
+      PowerSourceRef.Card(WildAlliesCard.id))
     val asked = Run(game, started, started.events)
     assert(awaits(asked, b.actor, VowOfUnion.directionDecisionId))
     val way = asked.pick(b.actor, VowOfUnion.directionDecisionId,

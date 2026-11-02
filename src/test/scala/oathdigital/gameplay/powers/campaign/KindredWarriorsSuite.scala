@@ -1,18 +1,19 @@
 package oathdigital.gameplay.powers.campaign
 
+import oathdigital.catalog.holding.{RelicHunterCard, SearchPartyCard}
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.WalkerDiceFixture.skullThenSwords
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Kindred Warriors: a secret placed. ±X attack dice, X the suits other than
   * Arcane among the cards its user rules; an attacker also ignores every
   * skull, and so is offered it at X = 0. */
 class KindredWarriorsSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Kindred Warriors")
+  private val card = KindredWarriorsCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
   private val ignored = NoteText.Said("ignored", "Skulls ignored.",
     covers = false)
@@ -31,7 +32,7 @@ class KindredWarriorsSuite extends munit.FunSuite:
 
   test("an attacker ruling a Nomad and an Order card adds two dice, places " +
       "a secret and ignores every skull"):
-    val b = attacker(planless("Search Party", "Relic Hunter"))
+    val b = attacker(planless(SearchPartyCard, RelicHunterCard))
     val run = commit(rules(skullThenSwords), b, 2)
     val picked = run.pick(b.actor, CampaignIds.attackerPlan, ref)
     assertEquals(attackDice(picked.since(run)), Vector(2))
@@ -61,7 +62,7 @@ class KindredWarriorsSuite extends munit.FunSuite:
     val bare = commit(rules(winningDice), base, 4)
     assert(awaits(bare, base.rival, CampaignIds.defenderPlan))
     assert(!bare.offered(base.actor).contains(ref))
-    val b = withAdviserFor(base, base.rival, planlessCard("Search Party"),
+    val b = withAdviserFor(base, base.rival, planlessCard(SearchPartyCard),
       Orientation.FaceUp)
     val run = commit(rules(winningDice), b, 4)
     val picked = run.pick(b.rival, CampaignIds.defenderPlan, ref)

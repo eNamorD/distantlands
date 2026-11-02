@@ -5,12 +5,12 @@ import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Lancers: a free attacker's plan that doubles the count of every face
   * rolled, before the skull cap, and is discarded after the Campaign. */
 class LancersSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Lancers")
+  private val card = LancersCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
   private val doubled = NoteText.Said("doubled",
     "The attack roll was doubled.", covers = false)
