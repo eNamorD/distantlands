@@ -4,7 +4,7 @@ import oathdigital.application.{CampaignDicePort, GameApplicationService,
   InMemoryEventStreamRepository}
 import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.phases.rest.WarExhaustionRandomPort
+import oathdigital.gameplay.phases.rest.RoundEndRandomPort
 import oathdigital.gameplay.setup.{FirstGameSetupFixture, GameStartRules}
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
@@ -447,13 +447,13 @@ final case class Table private (private val game: ReadyGame,
     * same ids (a changed Forge cost, say). */
   def service(catalog: ExecutableCatalog = FirstGameSetupFixture.catalog,
       campaignDice: CampaignDicePort = CampaignDicePort.random,
-      warExhaustion: WarExhaustionRandomPort = WarExhaustionRandomPort.random)(
+      roundEnd: RoundEndRandomPort = RoundEndRandomPort.random)(
       using munit.Location)
       : (GameApplicationService, InMemoryEventStreamRepository) =
     val repository = new InMemoryEventStreamRepository
     (new GameApplicationService(catalog, repository,
       campaignDicePort = campaignDice,
-      warExhaustionRandomPort = warExhaustion, genesis = served.state),
+      roundEndRandomPort = roundEnd, genesis = served.state),
       repository)
 
   /** This table as a live game holds it: the menu of the turn's phase

@@ -5,7 +5,7 @@ import oathdigital.application.{EventStreamRepository, ExpectedStream,
 import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.OathRules
 import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.phases.rest.WarExhaustionRandomPort
+import oathdigital.gameplay.phases.rest.RoundEndRandomPort
 import oathdigital.gameplay.powerresolver.PhasePowers
 import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
 import oathdigital.gameplay.walker.{DeltaPayload, WalkerDice, WalkerPowers,
@@ -141,10 +141,10 @@ object SituationDriver:
     */
   final case class Rules(catalog: ExecutableCatalog, walkerPowers: WalkerPowers,
       phasePowers: PhasePowers, walkerDice: WalkerDice,
-      warExhaustion: WarExhaustionRandomPort, answers: Answers)
+      roundEnd: RoundEndRandomPort, answers: Answers)
       extends SituationDriver:
     private val rules = new OathRules(catalog,
-      warExhaustionRandomPort = warExhaustion,
+      roundEndRandomPort = roundEnd,
       walkerPowerCatalog = walkerPowers, phasePowerCatalog = phasePowers,
       walkerDice = walkerDice)
 

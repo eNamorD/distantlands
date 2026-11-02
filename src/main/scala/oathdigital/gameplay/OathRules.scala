@@ -4,7 +4,7 @@ import oathdigital.catalog.ExecutableCatalog
 import oathdigital.engine.EventEvolution
 import oathdigital.gameplay.aid.PlanAidEvolution
 import oathdigital.gameplay.consent.ConsentEvolution
-import oathdigital.gameplay.phases.rest.WarExhaustionRandomPort
+import oathdigital.gameplay.phases.rest.RoundEndRandomPort
 import oathdigital.model._
 import oathdigital.gameplay.powerresolver.{PhasePowers}
 import oathdigital.gameplay.walker.{ActionBoundaryRan, FollowUpSkipped,
@@ -27,8 +27,8 @@ import oathdigital.model.OathViolation._
   * command walks; production derives it from the action's own module.
   */
 final class OathRules(protected val catalog: ExecutableCatalog,
-    protected val warExhaustionRandomPort: WarExhaustionRandomPort =
-      WarExhaustionRandomPort.random,
+    protected val roundEndRandomPort: RoundEndRandomPort =
+      RoundEndRandomPort.random,
     protected val walkerPowerCatalog: WalkerPowers = WalkerPowers.empty,
     protected val walkerTree: OathRules.WalkerTreeSource =
       OathRules.declaredWalkerTree,

@@ -4,7 +4,7 @@ import oathdigital.gameplay.phases.{PhaseMenu, RestCleanupPlan}
 import oathdigital.gameplay.walker.WalkerCompleted
 import oathdigital.model._
 import oathdigital.testkit.{CatalogNames, Look, MenuPlay, Outcomes, Table,
-  WarExhaustionChoices}
+  RoundEndChoices}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.model.OathState.Ready
@@ -205,7 +205,7 @@ class RestSuite extends munit.FunSuite:
       .updateCurrent(c => c.copy(tracks = c.tracks.copy(round = 8)))
 
     val deterministic = new OathRules(catalog,
-      warExhaustionRandomPort = WarExhaustionChoices.lastCandidate)
+      roundEndRandomPort = RoundEndChoices.lastCandidate)
     val finished = accepted(rest(Ready(roundEight), last, deterministic))
     assertEquals(finished.events.collect {
       case ended: OathEvent.RoundEnded => ended },

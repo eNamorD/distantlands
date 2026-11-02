@@ -24,7 +24,7 @@ import oathdigital.testkit.Unwrap.accepted
   *
   * The tree a command walks is supplied through `OathRules`' `walkerTree`
   * seam rather than read from a real action -- the same injectable-default
-  * shape `warExhaustionRandomPort` already uses, and the production default
+  * shape `roundEndRandomPort` already uses, and the production default
   * is what every other walker suite exercises. The wiring under test is
   * generic; the tree only has to carry a hookable node.
   */

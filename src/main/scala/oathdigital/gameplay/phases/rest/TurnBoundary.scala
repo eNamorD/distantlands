@@ -9,7 +9,7 @@ import oathdigital.model.{OathTransition, OathViolation, OperationRestriction}
   */
 object TurnBoundary:
   def finishRound(catalog: ExecutableCatalog, transition: OathTransition,
-      randomPort: WarExhaustionRandomPort,
+      randomPort: RoundEndRandomPort,
       restrictions: Vector[OperationRestriction])
       : Either[OathViolation, OathTransition] =
     StateBasedEvaluation.endRound(transition.state, randomPort.choose)
