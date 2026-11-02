@@ -19,4 +19,4 @@ object OtherActionPowers:
       RelicThief.forCatalog(catalog), Assassin.forCatalog(catalog),
       ForestHorn.forCatalog(catalog), GiantsRampage.forCatalog(catalog),
       TempleOfAncestors.forCatalog(catalog),
-      SqualidDistrict.forCatalog(catalog))
+      SqualidDistrict.forCatalog(catalog), UndergroundLibrary)

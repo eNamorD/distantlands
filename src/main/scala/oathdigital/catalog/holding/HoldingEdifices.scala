@@ -95,20 +95,6 @@ object GreatClockCard extends Edifice(EdificeId("E12"), Suit.Arcane):
         "end the game._")
     val powers: Vector[PrintedPower] = Vector(power)
 
-object UndergroundLibraryCard extends Edifice(EdificeId("E13"), Suit.Arcane):
-  object intact extends EdificeFace("Underground Library") with Locked:
-    val power = PrintedPower(PowerId("edifice.e13.intact"),
-      persistent = false, cost = Cost(favor = 1),
-      text = "**ACTION:** Peek at all relics in this region, then swap " +
-        "one with a relic you have, placing it facedown.")
-    val powers: Vector[PrintedPower] = Vector(power)
-  object ruined extends EdificeFace("Drowned Library"):
-    val power = PrintedPower(PowerId("edifice.e13.ruined"),
-      persistent = false, cost = Cost(secret = 1),
-      text = "If your pawn is at this site, you may recover the top card " +
-        "of the relic deck instead. Its recover difficulty is 5.")
-    val powers: Vector[PrintedPower] = Vector(power)
-
 object TheTribunalCard extends Edifice(EdificeId("E19"), Suit.Order):
   object intact extends EdificeFace("The Tribunal") with Locked:
     val power = PrintedPower(PowerId("edifice.e19.intact"),
