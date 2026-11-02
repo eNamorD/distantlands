@@ -295,6 +295,10 @@ final case class Table private (private val game: ReadyGame,
       ready.banks.warbandSupply.updated(ForceKind.Imperial,
         MaterialBankState.ImperialWarbands)))).roundStarter(chancellor)
 
+  /** The first-game option that ignores "become a Citizen" powers is off. */
+  def allowingCitizenshipPowers: Table = update(ready => ready.copy(setup =
+    ready.setup.copy(ignoreCitizenshipPowers = false)))
+
   /** The round in progress began with `player`. */
   def roundStarter(player: PlayerId): Table =
     update(_.updateCurrent(current => current.copy(tracks =
