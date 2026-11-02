@@ -38,12 +38,17 @@ class GameEventFactsWireSuite extends munit.FunSuite:
         Some(GameResult(PlayerId("p2"), VictoryKind.Successor))))
     assertStreamRoundTrips("end-die", events)
 
-  test("an end die naming a winner without a kind is refused"):
-    val encoded = accepted(GameEventWire.encodeEvent("end-die", 0,
+  test("an end die with half a win or an unknown kind is refused"):
+    def encodedWin = accepted(GameEventWire.encodeEvent("end-die", 0,
       OathEvent.EndDieRolled(6, 5,
         Some(GameResult(PlayerId("p1"), VictoryKind.StableRegime)))))
-    encoded("payload")("victoryKind") = ujson.Null
-    assert(GameEventWire.decode(encoded).isLeft)
+    Vector[(String, ujson.Value)]("victoryKind" -> ujson.Null,
+      "winnerPlayerId" -> ujson.Null, "victoryKind" -> ujson.Str("bogus"),
+      "victoryKind" -> ujson.Num(3)).foreach { (field, value) =>
+      val encoded = encodedWin
+      encoded("payload")(field) = value
+      assert(GameEventWire.decode(encoded).isLeft, clue((field, value)))
+    }
 
   test("a Vision victory event round trips"):
     val events = Vector[OathEvent](OathEvent.VisionVictory(PlayerId("red"),

@@ -23,19 +23,6 @@ class EmpireEndingsSuite extends munit.FunSuite:
       .update(_.updateCurrent(c => c.copy(tracks =
         c.tracks.copy(round = round, usurperLimited = false))))
 
-  /** `player` reveals `vision` and meets its goal: rules Dunes for
-    * Conquest, holds the People's Favor for Rebellion, a relic for
-    * Sanctuary, or the Darkest Secret for Faith. */
-  private def meetingVision(table: Table, player: PlayerId,
-      vision: VisionId): Table =
-    val met = vision match
-      case VisionRules.Conquest => table.warbandsAt("Dunes", player, 1)
-      case VisionRules.Rebellion => table.peoplesFavor(Some(player), favor = 1)
-      case VisionRules.Sanctuary =>
-        table.relic(player, "Dowsing Sticks", facedown = true)
-      case _ => table.darkestSecret(Some(player), secrets = 1)
-    met.revealedVision(player, vision)
-
   private val chancellorWin = WarExhaustionResolved(p1,
     VictoryKind.ChancellorExhaustion, None, Vector.empty)
 
@@ -61,13 +48,13 @@ class EmpireEndingsSuite extends munit.FunSuite:
       face <- 1 to 6
     do
       val ready = empire(round = round).ready
-      assertEquals(EmpireEndings.stableRegime(ready, round, face),
+      assertEquals(EmpireEndings.stableRegime(ready, face),
         Option.when(face >= least)(GameResult(p1, VictoryKind.StableRegime)),
         clue((round, face)))
 
   test("a Successor takes the Stable Regime win"):
     val ready = empire().darkestSecret(Some(p2), secrets = 1).ready
-    assertEquals(EmpireEndings.stableRegime(ready, 5, 6),
+    assertEquals(EmpireEndings.stableRegime(ready, 6),
       Some(GameResult(p2, VictoryKind.Successor)))
 
   test("the Successor goal follows the Oathkeeper goal"):
@@ -84,6 +71,8 @@ class EmpireEndingsSuite extends munit.FunSuite:
       devotion.relic(p2, TheGrandScepterCard.id).ready), Some(p2))
     assertEquals(EmpireEndings.successor(
       devotion.darkestSecret(Some(p2), secrets = 1).ready), None)
+    assertEquals(EmpireEndings.successor(
+      devotion.relic(p1, TheGrandScepterCard.id).ready), None)
 
   test("only a Citizen can be the Successor"):
     assertEquals(EmpireEndings.successor(empire()
@@ -137,11 +126,28 @@ class EmpireEndingsSuite extends munit.FunSuite:
       (first, second) <- Vector(p2 -> p3, p3 -> p2)
     do
       val base = empire(round = 8, holder = None, citizens = Vector.empty)
-      val table = meetingVision(meetingVision(base, first, earlier),
-        second, later).visionsDrawn(3)
+      val table = base.revealedVisionMet(first, earlier)
+        .revealedVisionMet(second, later).visionsDrawn(3)
       assertEquals(EmpireEndings.warExhaustion(table.ready), Some(
         WarExhaustionResolved(first, VictoryKind.Visionary, Some(earlier),
           Vector.empty)), clue((earlier, later, first)))
+
+  test("Supremacy has no Successor while the Chancellor holds the most " +
+      "relics"):
+    val ready = empire(goal = OathkeeperGoal.Supremacy)
+      .relic(p1, TheGrandScepterCard.id).relic(p1, "Yew Staff")
+      .relic(p2, "Dowsing Sticks").ready
+    assertEquals(EmpireEndings.successor(ready), None)
+
+  test("War Exhaustion: a Citizen's Vision wins nothing"):
+    // An Imperial board has no Vision slot, so this table cannot arise in
+    // play; War Exhaustion still reads only Exiles' Visions. p2 meets Faith
+    // with the Darkest Secret, which is no Successor goal under Supremacy.
+    val ready = empire(round = 8, holder = None,
+      goal = OathkeeperGoal.Supremacy)
+      .revealedVisionMet(p2, VisionRules.Faith).visionsDrawn(3).ready
+    assert(VisionVictoryEligibility.qualifies(p2, ready))
+    assertEquals(EmpireEndings.warExhaustion(ready), Some(chancellorWin))
 
   test("War Exhaustion: otherwise the Chancellor wins, or the Successor"):
     assertEquals(EmpireEndings.warExhaustion(

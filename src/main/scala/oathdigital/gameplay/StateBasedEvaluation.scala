@@ -75,7 +75,7 @@ object StateBasedEvaluation:
     else if EmpireEndings.rollsEndDie(ready) then
       val round = current.tracks.round
       val face = random.endDie()
-      val result = EmpireEndings.stableRegime(ready, round, face)
+      val result = EmpireEndings.stableRegime(ready, face)
       Right(EndDieRolled(round, face, result) +: Option.when(
         result.isEmpty)(RoundEnded(round, Some(round + 1))).toVector)
     else if current.tracks.round < 8 then
@@ -181,8 +181,7 @@ object StateBasedEvaluation:
             recorded.face > 6 then
           Left(InvalidEventOrder(s"end die mismatch: recorded $recorded"))
         else
-          val expected = EmpireEndings.stableRegime(ready, round,
-            recorded.face)
+          val expected = EmpireEndings.stableRegime(ready, recorded.face)
           if expected != recorded.result then Left(InvalidEventOrder(
             s"Stable Regime mismatch: expected $expected, recorded " +
               s"${recorded.result}"))

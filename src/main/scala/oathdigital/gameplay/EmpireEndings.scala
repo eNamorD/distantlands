@@ -27,10 +27,9 @@ object EmpireEndings:
     hasEmpire(ready) && imperialOathkeeper(ready) &&
       threshold(ready.game.current.tracks.round).nonEmpty
 
-  /** The win `face` gives at the end of `round`, or none. */
-  def stableRegime(ready: ReadyGame, round: Int, face: Int)
-      : Option[GameResult] =
-    threshold(round).filter(face >= _).flatMap(_ =>
+  /** The win `face` gives at the end of the current round, or none. */
+  def stableRegime(ready: ReadyGame, face: Int): Option[GameResult] =
+    threshold(ready.game.current.tracks.round).filter(face >= _).flatMap(_ =>
       chancellorWins(ready, VictoryKind.StableRegime))
 
   /** War Exhaustion with an Empire, in printed order: an Imperial

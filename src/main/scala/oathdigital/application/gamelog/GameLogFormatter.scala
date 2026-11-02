@@ -300,12 +300,11 @@ private[application] final class GameLogFormatter(catalog: ExecutableCatalog,
   private def victory(player: PlayerId, rest: Vector[LogSpan]): Posted =
     Posted(LogKind.Victory, words.player(player) +: rest)
 
-  /** "The end die rolled 4. Stable Regime needed 5 or more." */
+  /** "The end die rolled 4. Stable Regime needed 5 or more." The die is
+    * rolled only at rounds 5 to 7, which all have a threshold. */
   private def endDie(round: Int, face: Int): String =
-    val needed = EmpireEndings.threshold(round).fold("") {
-      case 6 => " Stable Regime needed 6."
-      case least => s" Stable Regime needed $least or more."
-    }
+    val needed = EmpireEndings.threshold(round).fold("")(least =>
+      s" Stable Regime needed $least${if least == 6 then "" else " or more"}.")
     s"The end die rolled $face.$needed"
 
   private def exhaustion(kind: VictoryKind, vision: Option[VisionId])

@@ -250,19 +250,6 @@ class StateBasedEvaluationSuite extends munit.FunSuite:
       WarExhaustionResolved(p1, VictoryKind.Visionary,
         Some(VisionRules.Conquest), Vector.empty))
 
-  /** `player` reveals `vision` and meets its goal: rules Dunes for
-    * Conquest, holds the People's Favor for Rebellion, a relic for
-    * Sanctuary, or the Darkest Secret for Faith. */
-  private def meetingVision(table: Table, player: PlayerId,
-      vision: VisionId): Table =
-    val met = vision match
-      case VisionRules.Conquest => table.warbandsAt("Dunes", player, 1)
-      case VisionRules.Rebellion => table.peoplesFavor(Some(player), favor = 1)
-      case VisionRules.Sanctuary =>
-        table.relic(player, "Dowsing Sticks", facedown = true)
-      case _ => table.darkestSecret(Some(player), secrets = 1)
-    met.revealedVision(player, vision)
-
   test("tied War Exhaustion Visions go to Conquest, then Rebellion, " +
       "Sanctuary and Faith"):
     // p2 and p3 both meet their Visions. Each seat holds the earlier Vision
@@ -274,9 +261,9 @@ class StateBasedEvaluationSuite extends munit.FunSuite:
       later <- order.drop(i + 1)
       (first, second) <- Vector(p2 -> p3, p3 -> p2)
     do
-      val table = meetingVision(meetingVision(
-        preparedTable(Vector.empty, round = 8), first, earlier),
-        second, later).visionsDrawn(3)
+      val table = preparedTable(Vector.empty, round = 8)
+        .revealedVisionMet(first, earlier).revealedVisionMet(second, later)
+        .visionsDrawn(3)
       assertEquals(lastEventAtRoundEnd(table, pickFirstCandidate),
         WarExhaustionResolved(first, VictoryKind.Visionary, Some(earlier),
           Vector.empty), clue((earlier, later, first)))

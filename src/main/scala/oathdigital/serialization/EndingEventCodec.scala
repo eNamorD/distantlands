@@ -43,8 +43,10 @@ private[serialization] trait EndingEventCodec { this: GameEventJsonSupport =>
 
   protected final def victoryKind(value: ujson.Value, path: String)
       : Either[WireError, VictoryKind] =
-    VictoryKind.values.find(_.key == value.str).toRight(
-      InvalidValue(path, s"unknown victory kind ${value.str}"))
+    value match
+      case ujson.Str(key) => VictoryKind.values.find(_.key == key).toRight(
+        InvalidValue(path, s"unknown victory kind $key"))
+      case other => Left(InvalidValue(path, s"victory kind is not a string: $other"))
 
   protected final def endingDecode(eventType: String, payload: ujson.Value,
       path: String): Option[Either[WireError, OathEvent]] =
