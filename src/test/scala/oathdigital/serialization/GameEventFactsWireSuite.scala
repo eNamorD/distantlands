@@ -23,6 +23,15 @@ class GameEventFactsWireSuite extends munit.FunSuite:
       assertEquals(decoded.event, event)
     }
 
+  test("War Exhaustion round trips every victory kind"):
+    VictoryKind.values.toVector.zipWithIndex.foreach { case (kind, index) =>
+      val event = WarExhaustionResolved(PlayerId("p1"), kind, None,
+        Vector.empty)
+      val encoded = accepted(GameEventWire.encodeEvent("war", index, event))
+      assertEquals(accepted(GameEventWire.decode(encoded)).event, event,
+        clue(kind))
+    }
+
   test("a Vision victory event round trips"):
     val events = Vector[OathEvent](OathEvent.VisionVictory(PlayerId("red"),
       VisionId("vision:vision-of-faith")))

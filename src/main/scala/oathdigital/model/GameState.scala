@@ -170,6 +170,14 @@ enum VictoryKind(val key: String):
   case Visionary extends VictoryKind("visionary")
   case Oathkeeper extends VictoryKind("oathkeeper")
   case RandomSelection extends VictoryKind("random-selection")
+  /** The Chancellor's win on the end die, or at round eight while an
+    * Imperial player holds the Oathkeeper title (CR p. 19). */
+  case StableRegime extends VictoryKind("stable-regime")
+  /** The Chancellor's win at round eight when no earlier step wins. */
+  case ChancellorExhaustion extends VictoryKind("chancellor-exhaustion")
+  /** A Citizen's win in the Chancellor's place (Successor to the
+    * Chancellor). */
+  case Successor extends VictoryKind("successor")
 
 final case class GameResult(winner: PlayerId,
     kind: VictoryKind = VictoryKind.Usurper)

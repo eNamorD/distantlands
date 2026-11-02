@@ -303,3 +303,8 @@ private[application] final class GameLogFormatter(catalog: ExecutableCatalog,
         Vector(Text(" won with "), words.vision(id)))
     case VictoryKind.Oathkeeper => Vector(Text(" won as the Oathkeeper"))
     case VictoryKind.RandomSelection => Vector(Text(" won by random selection"))
+    case VictoryKind.StableRegime => Vector(Text(" won by Stable Regime"))
+    case VictoryKind.ChancellorExhaustion =>
+      Vector(Text(" won as the Chancellor"))
+    case VictoryKind.Successor =>
+      Vector(Text(" won as Successor to the Chancellor"))

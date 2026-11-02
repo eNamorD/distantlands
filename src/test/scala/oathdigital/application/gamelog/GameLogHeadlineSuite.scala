@@ -140,7 +140,14 @@ class GameLogHeadlineSuite extends munit.FunSuite:
       OathEvent.WarExhaustionResolved(winner, VictoryKind.Oathkeeper, None,
         Vector.empty) -> " won as the Oathkeeper",
       OathEvent.WarExhaustionResolved(winner, VictoryKind.RandomSelection, None,
-        Vector.empty) -> " won by random selection")
+        Vector.empty) -> " won by random selection",
+      OathEvent.WarExhaustionResolved(winner, VictoryKind.StableRegime, None,
+        Vector.empty) -> " won by Stable Regime",
+      OathEvent.WarExhaustionResolved(winner,
+        VictoryKind.ChancellorExhaustion, None, Vector.empty) ->
+        " won as the Chancellor",
+      OathEvent.WarExhaustionResolved(winner, VictoryKind.Successor, None,
+        Vector.empty) -> " won as Successor to the Chancellor")
     headlines.foreach { case (event, rest) =>
       val last = formatAppended(script, Vector(event)).last
       assertEquals(last.kind, LogKind.Victory)
