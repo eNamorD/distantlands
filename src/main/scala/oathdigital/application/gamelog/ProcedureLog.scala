@@ -276,6 +276,9 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
       narrated = Vector(Told(WarbandTransfers.partnerDecisionId),
         Told(WarbandTransfers.directionDecisionId),
         Told(WarbandTransfers.confirmDecisionId)))
+    // The line names the favor and the Chancellor it went to.
+    case ActionRef.SelfExile => ProcedureLog(tag = None,
+      lines = ActionLineSource.Notes())
     // A power that plays a card as if searched (Oracle) posts where the card
     // went, as a Search does, and tells the same card-play decisions.
     case ActionRef.UsePower(power) => ProcedureLog(tag = None,
