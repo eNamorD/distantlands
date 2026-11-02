@@ -43,12 +43,13 @@ final case class GiantPython private (catalog: ExecutableCatalog)
   override def noteKeys: Vector[NoteKey] = GiantPython.noteKeys
   override def narratedDecisions: Set[String] = Set(decisionId)
 
-  override def usable(ready: ReadyGame, player: PlayerId,
-      source: DecisionOptionRef): Boolean =
+  override def usable(catalog: ExecutableCatalog, ready: ReadyGame,
+      player: PlayerId, source: DecisionOptionRef): Boolean =
     CardPowerBanners.holdsDarkestSecret(ready, player) &&
       slots.options(ready, player).exists(_.available)
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     Branch((live, _) => Vector(Decide(decisionId, player,
       DecisionQuery.ChooseOne(slots.options(live, player),

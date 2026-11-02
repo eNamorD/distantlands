@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.{PrintedPower, Relic}
+import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
 import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.actions.BannerRules
 import oathdigital.gameplay.powers.PowerAnswers
@@ -42,7 +42,8 @@ case object AmberFlame extends PaidAction(AmberFlameCard.power):
   override def noteKeys: Vector[NoteKey] = notes.declared
   override def narratedDecisions: Set[String] = Set(decisionId)
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     Branch((live, _) => ask(live, player, source)),
     BuildOps((live, pending) => burn(live, player, pending)),

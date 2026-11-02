@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, PrintedPower, SiteOnly}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower,
+  SiteOnly}
 import oathdigital.gameplay.NoteSupport
 import oathdigital.model._
 
@@ -22,7 +23,8 @@ case object WizardSchool extends PaidAction(WizardSchoolCard.power):
     NotePart.Text("'s Act phase ended.")))
   override def noteKeys: Vector[NoteKey] = notes.declared
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector(
     Gain.Secrets(player, 1),
     Note(id, NoteSupport.gainNote(gained, source, player, NoteUnit.Secret,

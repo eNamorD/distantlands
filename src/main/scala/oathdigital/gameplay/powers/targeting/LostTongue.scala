@@ -58,7 +58,8 @@ final case class LostTongue private (catalog: ExecutableCatalog)
       ConspiracyTargets.narrowed(ctx, id, operations,
         bannerShielded(ctx, _), None))))
 
-  override def operationRestrictions: Vector[OperationRestriction] =
+  override def operationRestrictions(catalog: ExecutableCatalog)
+      : Vector[OperationRestriction] =
     Vector(takes)
 
   /** Refuses a `Take` of the holder's relic or banner by a player who rules

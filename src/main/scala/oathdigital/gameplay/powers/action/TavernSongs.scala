@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
 import oathdigital.gameplay.PowerAccess
 import oathdigital.model._
 
@@ -39,7 +39,8 @@ case object TavernSongs extends PaidAction(TavernSongsCard.power):
     NotePart.Text(", which was empty.")))
   override def noteKeys: Vector[NoteKey] = notes.declared
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     BuildOps((live, _) => Right(region(live, player).toVector.flatMap(at =>
       top(live, at).map(card =>

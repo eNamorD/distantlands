@@ -48,7 +48,8 @@ final case class TempleOfAncestors private (catalog: ExecutableCatalog)
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
   override def noteKeys: Vector[NoteKey] = TempleOfAncestors.noteKeys
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     BuildOps((live, _) => Right(bottom(live).toVector.flatMap(card =>
       Take(Piece.Card(card), player, Location.Deck(CardDeck.World),

@@ -36,7 +36,7 @@ object ForcedWakeProcedure:
     powers.powers.filter(power => power.forced &&
       power.timing == PowerTiming.Wake).flatMap(power =>
       PhasePowerProcedure.sources(catalog, ready, player, power).collect {
-        case (found, ref) if power.usable(ready, player, ref) &&
+        case (found, ref) if power.usable(catalog, ready, player, ref) &&
             !deactivatedUnasked(catalog, ready, player, power, found,
               powers) => power -> ref
       })
@@ -53,7 +53,8 @@ object ForcedWakeProcedure:
     source match
       case PowerSourceRef.Card(card) =>
         val use = PowerUse.automatic(player, power.id, card)
-        val raised = PowerUseRules.raised(ready, use, powers.useRestrictions)
+        val raised = PowerUseRules.raised(catalog, ready, use,
+          powers.useRestrictions)
         raised.nonEmpty && !PowerUseRules.waivable(use, raised)
       case _ => PhasePowerProcedure.refusals(catalog, ready, player, power,
         source, powers.useRestrictions).nonEmpty
@@ -68,9 +69,9 @@ object ForcedWakeProcedure:
       "no forced Wake power is due"))
     trees <- found.foldLeft[Either[OathViolation, Vector[Operation]]](
       Right(Vector.empty)) { case (built, (power, source)) =>
-      built.flatMap(done => power.build(ready, player, source).map(tree =>
-        done :+ cardOf(source).fold(tree)(card => AutomaticUse(player,
-          power.id, card, (_, _) => Vector(tree)))))
+      built.flatMap(done => power.build(catalog, ready, player, source)
+        .map(tree => done :+ cardOf(source).fold(tree)(card =>
+          AutomaticUse(player, power.id, card, (_, _) => Vector(tree)))))
     }
   yield Sequence(trees)
 

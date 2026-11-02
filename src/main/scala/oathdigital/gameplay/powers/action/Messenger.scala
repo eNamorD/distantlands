@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
 import oathdigital.gameplay.PowerAccess
 import oathdigital.gameplay.powers.{PowerAnswers, WarbandArrangement}
 import oathdigital.gameplay.powers.economy.VowOfWandering
@@ -39,7 +39,8 @@ case object Messenger extends PaidAction(MessengerCard.power):
     NotePart.Text("No warband could be moved.")))
   override def noteKeys: Vector[NoteKey] = notes.declared
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Branch((live, _) => {
     val (board, sites) = WarbandArrangement.holdings(live, player,
       ruled(live, player))

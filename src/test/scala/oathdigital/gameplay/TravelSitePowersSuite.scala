@@ -55,7 +55,8 @@ class TravelSitePowersSuite extends munit.FunSuite:
 
   private def ctx(ready: ReadyGame, window: PowerWindow, operation: Operation,
       power: ContributingPower): PowerCtx =
-    PowerCtx(ready, actor, power.source, window, Vector.empty, operation)
+    PowerCtx(catalog, ready, actor, power.source, window, Vector.empty,
+      operation)
 
   private def gathered(ready: ReadyGame, node: Operation,
       window: PowerWindow = PowerWindow.TravelCost,

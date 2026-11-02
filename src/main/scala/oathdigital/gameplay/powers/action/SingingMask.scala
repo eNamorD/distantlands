@@ -37,7 +37,8 @@ final case class SingingMask private (catalog: ExecutableCatalog)
   override def narratedDecisions: Set[String] =
     Set(cardDecisionId, directionDecisionId, amountDecisionId)
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     Branch((live, _) => askCard(live, player)),
     Branch((live, pending) => askDirection(live, player, pending)),

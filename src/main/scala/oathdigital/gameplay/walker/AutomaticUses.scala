@@ -42,7 +42,7 @@ private[walker] object AutomaticUses:
       case Some(Body) => Vector(unasked, effect(use))
       case Some(_) => Vector(step(use, judged, state, powers), answered(use))
       case None =>
-        val raised = PowerUseRules.raised(state, judged,
+        val raised = PowerUseRules.raised(powers.catalog, state, judged,
           powers.useRestrictions)
         if raised.isEmpty then Vector(unasked, effect(use))
         else if !PowerUseRules.waivable(judged, raised) then Vector.empty
@@ -67,7 +67,8 @@ private[walker] object AutomaticUses:
     * lifted, or open once each has granted; and `skip`. */
   private def step(use: AutomaticUse, judged: PowerUse, state: ReadyGame,
       powers: WalkerPowers): Decide =
-    val left = PowerUseRules.refusals(state, judged, powers.useRestrictions)
+    val left = PowerUseRules.refusals(powers.catalog, state, judged,
+      powers.useRestrictions)
     val letting = DecisionOption.Button(PowerUseStep.use, "Let it work")
     Decide(PowerUseStep.decisionId(use.power), use.user,
       DecisionQuery.ChooseOne(Vector(

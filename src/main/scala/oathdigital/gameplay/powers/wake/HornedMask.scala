@@ -45,10 +45,12 @@ final case class HornedMask(catalog: ExecutableCatalog) extends PhasePower:
   def timing: PowerTiming = PowerTiming.Wake
   override def noteKeys: Vector[NoteKey] = HornedMask.noteKeys
   override def narratedDecisions: Set[String] = Set(denizenDecisionId)
-  def usable(ready: ReadyGame, player: PlayerId,
-      source: DecisionOptionRef): Boolean = true
+  def usable(catalog: ExecutableCatalog, ready: ReadyGame,
+      player: PlayerId, source: DecisionOptionRef): Boolean =
+    true
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     Branch((live, _) => askDenizen(live, player)),
     Branch((live, pending) => askDiscard(live, player, pending)),

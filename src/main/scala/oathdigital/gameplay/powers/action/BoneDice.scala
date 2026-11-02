@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.{PrintedPower, Relic}
+import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
 import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.actions.dice.RollStep
 import oathdigital.gameplay.powers.PlayerFacts
@@ -34,7 +34,8 @@ case object BoneDice extends PaidAction(BoneDiceCard.power):
     NotePart.Text("Buried after a skull.")))
   override def noteKeys: Vector[NoteKey] = notes.declared
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = source match
     case DecisionOptionRef.Relic(relic) => Right(Sequence(Vector(
       ModifyDicePool(pool, Dice),

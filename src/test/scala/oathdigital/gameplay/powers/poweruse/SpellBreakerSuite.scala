@@ -31,7 +31,8 @@ class SpellBreakerSuite extends munit.FunSuite:
 
   test("it refuses an enemy of its ruler a power that costs a secret, " +
       "waivable by the ruler"):
-    val refusal = SpellBreaker.refusal(breakerAtDeepWoods(), secretUse(p1))
+    val refusal = SpellBreaker.refusal(catalog, breakerAtDeepWoods(),
+      secretUse(p1))
     assertEquals(refusal.map(_.power), Some(SpellBreaker.id))
     assertEquals(refusal.flatMap(_.reason.waiver).flatMap(_.granter),
       Some(p2))
@@ -40,20 +41,21 @@ class SpellBreakerSuite extends munit.FunSuite:
         DecisionOptionRef.Denizen(terror))))
 
   test("its ruler, and a power that costs no secret, are not refused"):
-    assertEquals(SpellBreaker.refusal(breakerAtDeepWoods(), secretUse(p2)),
+    assertEquals(SpellBreaker.refusal(catalog, breakerAtDeepWoods(),
+      secretUse(p2)),
       None)
-    assertEquals(SpellBreaker.refusal(breakerAtDeepWoods(),
+    assertEquals(SpellBreaker.refusal(catalog, breakerAtDeepWoods(),
       secretUse(p1).copy(costsSecret = false)), None)
 
   test("under bandits every player is refused, and nobody may consent"):
-    val refusal = SpellBreaker.refusal(
+    val refusal = SpellBreaker.refusal(catalog,
       breakerAtDeepWoods(_.bandits(woods, 2)), secretUse(p1))
     assertEquals(refusal.map(_.power), Some(SpellBreaker.id))
     // Its waiver names nobody, so the refusal shows its plain reason.
     assertEquals(refusal.flatMap(_.reason.waiver).map(_.granter), Some(None))
 
   test("at an unruled site it refuses nobody"):
-    assertEquals(SpellBreaker.refusal(breakerAtDeepWoods(identity),
+    assertEquals(SpellBreaker.refusal(catalog, breakerAtDeepWoods(identity),
       secretUse(p1)), None)
 
   test("the consent grid lists it, granted by its ruler"):

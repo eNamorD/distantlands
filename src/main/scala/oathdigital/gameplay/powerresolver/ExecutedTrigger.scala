@@ -1,11 +1,12 @@
 package oathdigital.gameplay.powerresolver
 
+import oathdigital.catalog.ExecutableCatalog
 import oathdigital.model.{CoreOperation, Operation, PlayerId, ReadyGame}
 
 /** What a trigger on executed operations reads (catalog batch 8, slice 6):
-  * the active player, the operations one walker batch executed, and the
-  * state the trigger is asked in. */
-final case class ExecutedBatch(actor: PlayerId,
+  * the walk's card catalog, the active player, the operations one walker
+  * batch executed, and the state the trigger is asked in. */
+final case class ExecutedBatch(catalog: ExecutableCatalog, actor: PlayerId,
     executed: Vector[CoreOperation], now: ReadyGame)
 
 /** A power that starts a follow-up after a walker batch executes

@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, PrintedPower, SiteOnly}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower,
+  SiteOnly}
 import oathdigital.gameplay.{NoteSupport, PowerAccess}
 import oathdigital.gameplay.powers.PowerAnswers
 import oathdigital.model._
@@ -38,7 +39,8 @@ case object Convoys extends PaidAction(ConvoysCard.power):
   def ref(region: Region): DecisionOptionRef.Button =
     DecisionOptionRef.Button(region.key)
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     Branch((live, _) => ask(live, player)),
     BuildOps((live, pending) => move(live, player, pending)),

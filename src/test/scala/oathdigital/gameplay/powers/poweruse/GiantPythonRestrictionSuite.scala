@@ -35,22 +35,22 @@ class GiantPythonRestrictionSuite extends munit.FunSuite:
 
   test("it refuses every player, its ruler included, a non-persistent " +
       "power of another card at its site, and nobody may waive it"):
-    val refusal = GiantPythonRestriction.refusal(pythonAtRuledHome,
+    val refusal = GiantPythonRestriction.refusal(catalog, pythonAtRuledHome,
       nonPersistentUseOf(terror))
     assertEquals(refusal.map(_.note),
       Some(GiantPythonRestriction.usePlain(source)))
     assertEquals(refusal.flatMap(_.reason.waiver), None)
-    assert(GiantPythonRestriction.refusal(pythonAtRuledHome,
+    assert(GiantPythonRestriction.refusal(catalog, pythonAtRuledHome,
       nonPersistentUseOf(terror, by = p2)).nonEmpty)
 
   test("Giant Python itself, and a card at another site, are free"):
-    assertEquals(GiantPythonRestriction.refusal(pythonAtRuledHome,
+    assertEquals(GiantPythonRestriction.refusal(catalog, pythonAtRuledHome,
       nonPersistentUseOf(python)), None)
-    assertEquals(GiantPythonRestriction.refusal(pythonAtRuledHome,
+    assertEquals(GiantPythonRestriction.refusal(catalog, pythonAtRuledHome,
       nonPersistentUseOf(wrestlers)), None)
 
   test("it refuses a payment onto a card at its site"):
-    val ban = GiantPythonRestriction.operationRestrictions.head
+    val ban = GiantPythonRestriction.operationRestrictions(catalog).head
     val pay = PayCost(p1, Location.OnCard(terror), Cost(favor = 1))
     assert(ban.reason(pythonAtRuledHome, pay).exists(_.waiver.isEmpty))
     assertEquals(ban.reason(pythonAtRuledHome,
@@ -69,7 +69,7 @@ class GiantPythonRestrictionSuite extends munit.FunSuite:
     val moved = Table.start.turn(p1, Phase.Act).pawn(p1, at = home)
       .denizen(python, at = woods).denizen(terror, at = home)
       .denizen(wrestlers, at = woods).ready
-    assertEquals(GiantPythonRestriction.refusal(moved,
+    assertEquals(GiantPythonRestriction.refusal(catalog, moved,
       nonPersistentUseOf(terror)), None)
-    assert(GiantPythonRestriction.refusal(moved,
+    assert(GiantPythonRestriction.refusal(catalog, moved,
       nonPersistentUseOf(wrestlers)).nonEmpty)

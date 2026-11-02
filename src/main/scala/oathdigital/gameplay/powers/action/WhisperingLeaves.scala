@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.{AdviserOnly, Denizen, PrintedPower}
+import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
+  PrintedPower}
 import oathdigital.gameplay.{NoteSupport, PowerAccess}
 import oathdigital.gameplay.powers.{PlayerFacts, PowerAnswers}
 import oathdigital.model._
@@ -37,7 +38,8 @@ case object WhisperingLeaves extends PaidAction(WhisperingLeavesCard.power):
   override def noteKeys: Vector[NoteKey] = notes.declared
   override def narratedDecisions: Set[String] = Set(decisionId)
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = source match
     case DecisionOptionRef.Denizen(leaves) => Right(Sequence(Vector[Operation](
       Decide(decisionId, player, DecisionQuery.ChooseOne(

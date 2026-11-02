@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.rest
 
-import oathdigital.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
+import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog, Locked,
+  PrintedPower}
 import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.powerresolver._
 import oathdigital.model._
@@ -38,10 +39,12 @@ case object Insomnia extends PhasePower with ContributingPower:
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
   override def noteKeys: Vector[NoteKey] = notes.declared
 
-  def usable(ready: ReadyGame, player: PlayerId,
-      source: DecisionOptionRef): Boolean = true
+  def usable(catalog: ExecutableCatalog, ready: ReadyGame,
+      player: PlayerId, source: DecisionOptionRef): Boolean =
+    true
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector(
     Gain.Secrets(player, Insomnia.Secrets),
     Note(id, NoteSupport.gainNote(Insomnia.gained, source, player,

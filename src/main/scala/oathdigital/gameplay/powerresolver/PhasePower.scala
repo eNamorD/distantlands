@@ -1,5 +1,6 @@
 package oathdigital.gameplay.powerresolver
 
+import oathdigital.catalog.ExecutableCatalog
 import oathdigital.model.{ConsentKey, Cost, DecisionOptionRef, OathViolation,
   Operation, PlayerId, PowerId, LogNote, PowerTiming, QueuedProcedure,
   ReadyGame}
@@ -52,8 +53,11 @@ trait PhasePower extends NotingPower:
   /** The power's own name, for a menu button when its source carries two
     * powers of one phase. */
   def buttonName: Option[String] = None
-  /** Power-specific preconditions beyond access and once-per-turn. */
-  def usable(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef): Boolean
+  /** Power-specific preconditions beyond access and once-per-turn.
+    * `catalog` is the game's card catalog, which a power that looks other
+    * cards up reads, as `build` and `refusal` get it. */
+  def usable(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef): Boolean
   /** What using the power costs, placed onto its source card. The engine
     * prepends the payment and reads "cost payable, including the empty-card
     * rule" as part of `usable`. Free by default. A cost is not accepted from
@@ -64,20 +68,22 @@ trait PhasePower extends NotingPower:
     * its cost has a secret or a burnt secret. A power that pays X secrets
     * from its tree overrides it. */
   def costsSecret: Boolean = cost.secret > 0 || cost.secretBurnt > 0
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
-      : Either[OathViolation, Operation]
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef): Either[OathViolation, Operation]
 
   /** `build`, for a power that queues a procedure and must know whether
     * it would start. Every other power builds as `build` does. */
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef,
-      starts: QueuedStarts): Either[OathViolation, Operation] =
-    build(ready, player, source)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef, starts: QueuedStarts)
+      : Either[OathViolation, Operation] =
+    build(catalog, ready, player, source)
 
   /** Why the power cannot be used now, in the player's words, beyond
     * `usable`: for a power whose use only queues a procedure that would
     * not start. `None` by default. */
-  def refusal(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef,
-      starts: QueuedStarts): Option[String] = None
+  def refusal(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef, starts: QueuedStarts)
+      : Option[String] = None
 
 /** `useRestrictions` are the power-use restrictions the walker powers
   * declare (catalog batch 8, slice 10), so a phase power is judged by the

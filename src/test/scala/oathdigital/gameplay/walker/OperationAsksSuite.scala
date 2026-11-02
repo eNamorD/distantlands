@@ -1,5 +1,6 @@
 package oathdigital.gameplay.walker
 
+import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.actions.economy.MusterProcedure
 import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.operations.OperationConsent
@@ -41,7 +42,8 @@ class OperationAsksSuite extends munit.FunSuite:
     def id: PowerId = ban
     def source: RuleSourceRef = RuleSourceRef.GameRule(ban.value)
     def contributions: Map[PowerWindow, Vector[Contribution]] = Map.empty
-    override def operationRestrictions: Vector[OperationRestriction] =
+    override def operationRestrictions(catalog: ExecutableCatalog)
+      : Vector[OperationRestriction] =
       Vector(new OperationRestriction:
         override def reason(ready: ReadyGame, operation: CoreOperation)
             : Option[OperationReason] = operation match

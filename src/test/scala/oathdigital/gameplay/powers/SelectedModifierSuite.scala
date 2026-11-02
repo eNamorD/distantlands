@@ -32,8 +32,8 @@ class SelectedModifierSuite extends munit.FunSuite:
     override def appliesAt(ctx: PowerCtx): Boolean = applies
 
   private def ctx(ready: ReadyGame, power: SelectedModifier,
-      window: PowerWindow): PowerCtx = PowerCtx(ready, actor, power.source,
-    window, Vector.empty, Sequence(Vector.empty, Some(window)))
+      window: PowerWindow): PowerCtx = PowerCtx(catalog, ready, actor,
+    power.source, window, Vector.empty, Sequence(Vector.empty, Some(window)))
 
   private def selectable(ready: ReadyGame, power: SelectedModifier,
       window: PowerWindow = PowerWindow.TravelModifierSelection): Boolean =

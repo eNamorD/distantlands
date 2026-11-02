@@ -1,5 +1,6 @@
 package oathdigital.gameplay.powers.wake
 
+import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.cards.{AncientCitySite, HeadwatersSite,
   RiverbankSite, TidalMarshesSite}
 import oathdigital.gameplay.powerresolver.PhasePower
@@ -25,10 +26,12 @@ final case class RiverSitePower(id: PowerId, site: SiteId)
   override def noteKeys: Vector[NoteKey] = own.declared
   override def noteSource: Option[String] = Some(name)
 
-  def usable(ready: ReadyGame, player: PlayerId,
-      source: DecisionOptionRef): Boolean = destinations(ready).nonEmpty
+  def usable(catalog: ExecutableCatalog, ready: ReadyGame,
+      player: PlayerId, source: DecisionOptionRef): Boolean =
+    destinations(ready).nonEmpty
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     PawnMoves.siteChoice(siteDecisionId, player, destinations(ready),
       "River: choose the River to place your pawn at"),

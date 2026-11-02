@@ -3,6 +3,7 @@ package oathdigital.gameplay
 import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.powerresolver._
 import oathdigital.gameplay.powers.wake.TakeWealthLimit
+import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.Table
 
@@ -55,7 +56,7 @@ class TakeWealthPowerSuite extends munit.FunSuite:
 
   private def ctx(state: ReadyGame, window: PowerWindow, node: Operation,
       power: ContributingPower): PowerCtx =
-    PowerCtx(state, actor, power.source, window, Vector.empty, node)
+    PowerCtx(catalog, state, actor, power.source, window, Vector.empty, node)
 
   private def violation(state: ReadyGame, node: Operation,
       window: PowerWindow = PowerWindow.WakeTakeWealth): Option[OathViolation] =

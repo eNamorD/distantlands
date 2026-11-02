@@ -34,10 +34,12 @@ final case class SilverTongue private (catalog: ExecutableCatalog)
   notes.include(NoteSupport.notes)
   override def noteKeys: Vector[NoteKey] = notes.declared
 
-  def usable(ready: ReadyGame, player: PlayerId,
-      source: DecisionOptionRef): Boolean = stocked(ready, player).nonEmpty
+  def usable(catalog: ExecutableCatalog, ready: ReadyGame,
+      player: PlayerId, source: DecisionOptionRef): Boolean =
+    stocked(ready, player).nonEmpty
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] =
     val choice = choiceDecisionId(ready, player)
     Right(Sequence(Vector(Branch((state, _) => stocked(state, player) match {

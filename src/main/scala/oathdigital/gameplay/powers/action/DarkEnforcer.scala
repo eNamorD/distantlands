@@ -29,7 +29,8 @@ final case class DarkEnforcer private (catalog: ExecutableCatalog)
   private val cards = new SiteCards(catalog, Set(Suit.Order, Suit.Hearth))
   override def noteKeys: Vector[NoteKey] = DarkEnforcer.noteKeys
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     BuildOps((live, _) => discards(live, player)),
     Note(this.id, discardedNote(_, player, source), covers = true))))

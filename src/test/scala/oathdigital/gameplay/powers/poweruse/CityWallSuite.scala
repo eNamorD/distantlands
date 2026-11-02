@@ -56,19 +56,20 @@ class CityWallSuite extends munit.FunSuite:
 
   test("it refuses an enemy at its site any non-persistent power, waivable " +
       "by the ruler"):
-    val refusal = CityWall.refusal(wallAtAncientCity(), nonPersistentUse)
+    val refusal = CityWall.refusal(catalog, wallAtAncientCity(),
+      nonPersistentUse)
     assertEquals(refusal.map(_.note), Some(CityWall.usePlain(source)))
     assertEquals(refusal.flatMap(_.reason.waiver).flatMap(_.granter),
       Some(p2))
 
   test("away from its site, or as its ruler, nothing is refused"):
-    assertEquals(CityWall.refusal(wallAtAncientCity(pawnAt = woods),
+    assertEquals(CityWall.refusal(catalog, wallAtAncientCity(pawnAt = woods),
       nonPersistentUse), None)
-    assertEquals(CityWall.refusal(wallAtAncientCity(ruled =
+    assertEquals(CityWall.refusal(catalog, wallAtAncientCity(ruled =
       _.warbandsAt(home, p1, 1)), nonPersistentUse), None)
 
   test("it refuses an enemy at its site a payment onto any card"):
-    val ban = CityWall.operationRestrictions.head
+    val ban = CityWall.operationRestrictions(catalog).head
     val pay = PayCost(p1, Location.OnCard(wrestlers), Cost(favor = 1))
     assertEquals(ban.reason(wallAtAncientCity(), pay).flatMap(_.waiver)
       .map(_.covers), Some(ConsentKey(CityWall.id, p1, "power.use",
@@ -79,7 +80,7 @@ class CityWallSuite extends munit.FunSuite:
     // A Muster's sources stand at the musterer's site, every one of which
     // City Wall refuses, so no question shows this reason beside a card
     // that may be chosen: the refusal itself is pinned.
-    val ban = CityWall.operationRestrictions.head
+    val ban = CityWall.operationRestrictions(catalog).head
     val pay = PayCost(p1, Location.OnCard(wrestlers), Cost(favor = 1))
     val waiver = ban.reason(wallAtAncientCity(ruled = _.bandits(home, 2)),
       pay).flatMap(_.waiver)
@@ -315,7 +316,7 @@ class CityWallSuite extends munit.FunSuite:
       "card"):
     // Every selected modifier is non-persistent, so a pick shows the use
     // reason first; the placing ban is pinned on the payment itself.
-    val ban = CityWall.operationRestrictions.head
+    val ban = CityWall.operationRestrictions(catalog).head
     val pay = PayCost(p1, Location.OnCard(wrestlers), Cost(favor = 1))
     val away = wallAtAncientCity(pawnAt = woods)
     assertEquals(ban.reason(away, pay), None)
@@ -323,11 +324,12 @@ class CityWallSuite extends munit.FunSuite:
 
   test("once the walk ends, the enemy acts from their pawn again"):
     val away = wallAtAncientCity(pawnAt = woods)
-    assert(CityWall.refusal(afterActingAsIfAt(away, home),
+    assert(CityWall.refusal(catalog, afterActingAsIfAt(away, home),
       nonPersistentUse).nonEmpty)
     val done = Outcomes.finished(ProcedureWalker.advance(away,
       ActAsIf(home), None, everyPower))
-    assertEquals(CityWall.refusal(done.treeless, nonPersistentUse), None)
+    assertEquals(CityWall.refusal(catalog, done.treeless, nonPersistentUse),
+      None)
 
   test("an enemy at its site who trades as if elsewhere is not walled in " +
       "for the rest of that Trade"):
@@ -344,8 +346,9 @@ class CityWallSuite extends munit.FunSuite:
     val ready = afterActingAsIfAt(Table.start.turn(p1, Phase.Act)
       .pawn(p1, at = woods).pawn(p2, at = woods).denizen(wall, at = home)
       .bandits(home, 2).ready, home)
-    assert(CityWall.refusal(ready, nonPersistentUse).nonEmpty)
-    assertEquals(CityWall.refusal(ready, nonPersistentUse.copy(user = p2)),
+    assert(CityWall.refusal(catalog, ready, nonPersistentUse).nonEmpty)
+    assertEquals(CityWall.refusal(catalog, ready,
+      nonPersistentUse.copy(user = p2)),
       None)
 
   test("a game parked after the site answer and rebuilt from its events " +
@@ -354,7 +357,7 @@ class CityWallSuite extends munit.FunSuite:
     val acting = tradingAsIfAt(ready, home)
     val rebuilt = ActPowerHarness.replayed(tradeRules, ready, acting.events)
     assertEquals(rebuilt.game.current.walkerAsIfSite, Some(home))
-    assert(CityWall.refusal(rebuilt, nonPersistentUse).nonEmpty)
+    assert(CityWall.refusal(catalog, rebuilt, nonPersistentUse).nonEmpty)
 
   /** The actor holding Tyrant at Buried Giant, laid out by `steps`. */
   private def holdingTyrant(steps: Table => Table): ReadyGame =

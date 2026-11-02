@@ -62,7 +62,7 @@ object WalkerPowerCatalog:
     val powers = contributing(catalog)
     WalkerPowers(powers,
       restrictionSet = OperationRestrictions.forCatalog(catalog),
-      declared = Some(DeclaredNotes.of(powers, catalog)))
+      declared = Some(DeclaredNotes.of(powers, catalog)), catalog = catalog)
 
   /** The power-use restrictions the walker powers of `catalog` declare,
     * for the phase powers (catalog batch 8, slice 10). Read from

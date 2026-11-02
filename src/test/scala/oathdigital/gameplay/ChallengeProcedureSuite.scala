@@ -1,6 +1,6 @@
 package oathdigital.gameplay
 
-import oathdigital.catalog.Site
+import oathdigital.catalog.{ExecutableCatalog, Site}
 import oathdigital.gameplay.actions.BannerRules
 import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite, DunesSite, FairIsleSite}
@@ -274,7 +274,8 @@ class ChallengeProcedureSuite extends munit.FunSuite:
       def id: PowerId = PowerId("test.no-banner")
       def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
       def contributions: Map[PowerWindow, Vector[Contribution]] = Map.empty
-      override def operationRestrictions: Vector[OperationRestriction] =
+      override def operationRestrictions(catalog: ExecutableCatalog)
+      : Vector[OperationRestriction] =
         Vector(noBannerTakenStub)
     val powers = WalkerPowers(Vector(restricting))
     assertEquals(rejected(ProcedureWalker.advance(board, tree, None, powers)),

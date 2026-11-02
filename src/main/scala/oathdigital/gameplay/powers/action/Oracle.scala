@@ -32,7 +32,8 @@ final case class Oracle private (catalog: ExecutableCatalog)
 
   override def noteKeys: Vector[NoteKey] = Oracle.noteKeys
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     BuildOps((live, _) => Right(first(live).toVector.flatMap(vision =>
       Vector[CoreOperation](Take(Piece.Card(vision), player,

@@ -1,5 +1,6 @@
 package oathdigital.gameplay.powers.poweruse
 
+import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.cards.{AncientCitySite, DeepWoodsSite}
 import oathdigital.gameplay.operations.PowerUseRules
@@ -41,7 +42,8 @@ class AutomaticUseStepWiringSuite extends munit.FunSuite:
       Vector(this)
     private val note = LogNote(Some(refusingSource), "refused",
       Vector.empty)
-    def refusal(ready: ReadyGame, use: PowerUse): Option[PowerUseRefusal] =
+    def refusal(catalog: ExecutableCatalog, ready: ReadyGame, use: PowerUse)
+      : Option[PowerUseRefusal] =
       Some(PowerUseRefusal(id, note, OperationReason("test-refused",
         "every use", OperationReasonKind.Impossible, Some(OperationWaiver(
           id, Some(p3), ConsentKey(id, use.user, PowerUseRules.useKey,

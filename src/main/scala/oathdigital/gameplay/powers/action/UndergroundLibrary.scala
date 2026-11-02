@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.{Edifice, EdificeFace, Locked, PrintedPower}
+import oathdigital.catalog.{Edifice, EdificeFace, ExecutableCatalog, Locked,
+  PrintedPower}
 import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.powers.PowerAnswers
 import oathdigital.gameplay.powers.setup.EdificeSetupSupport
@@ -92,7 +93,8 @@ case object UndergroundLibrary
   private def swappable(ready: ReadyGame, player: PlayerId): Boolean =
     relicsInRegion(ready).nonEmpty && heldRelics(ready, player).nonEmpty
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     BuildOps((live, _) => Right(relicsInRegion(live).map(found =>
       Peek(player, found.relic, Location.Site(found.site))))),

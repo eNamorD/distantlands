@@ -1,5 +1,6 @@
 package oathdigital.gameplay.powerresolver
 
+import oathdigital.catalog.ExecutableCatalog
 import oathdigital.model.{AdviserState, CardId, CoreOperation, DenizenState,
   Note, Orientation, PlayerId, ReadyGame, VisionState}
 
@@ -8,19 +9,19 @@ import oathdigital.model.{AdviserState, CardId, CoreOperation, DenizenState,
 final case class AdviserArrival(player: PlayerId, card: CardId)
 
 /** What an arrival rule reads (catalog batch 5, "The arrival pass"): the
-  * active player, the states before and after the leaf, and the advisers
-  * that arrived in it, in seat and then held order. `after` already holds
-  * the follow-ups of the rules asked before. */
-final case class AdviserArrivals(actor: PlayerId, before: ReadyGame,
-    after: ReadyGame, arrivals: Vector[AdviserArrival])
+  * walk's card catalog, the active player, the states before and after the
+  * leaf, and the advisers that arrived in it, in seat and then held order.
+  * `after` already holds the follow-ups of the rules asked before. */
+final case class AdviserArrivals(catalog: ExecutableCatalog, actor: PlayerId,
+    before: ReadyGame, after: ReadyGame, arrivals: Vector[AdviserArrival])
 
 object AdviserArrivals:
   /** The advisers that arrived between `before` and `after`. */
-  def between(actor: PlayerId, before: ReadyGame, after: ReadyGame)
-      : AdviserArrivals =
+  def between(catalog: ExecutableCatalog, actor: PlayerId, before: ReadyGame,
+      after: ReadyGame): AdviserArrivals =
     val held = before.game.current.players
       .map(player => player.player -> player.advisers).toMap
-    AdviserArrivals(actor, before, after, for
+    AdviserArrivals(catalog, actor, before, after, for
       player <- after.game.current.players
       adviser <- player.advisers
       earlier = held.getOrElse(player.player, Vector.empty)

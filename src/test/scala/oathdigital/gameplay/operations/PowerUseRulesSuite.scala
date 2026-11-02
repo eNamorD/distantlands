@@ -1,8 +1,10 @@
 package oathdigital.gameplay.operations
 
+import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.powerresolver.{PowerUse, PowerUseRefusal,
   PowerUseRestriction}
 import oathdigital.gameplay.powers.action.RovingTerrorCard
+import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2}
@@ -28,7 +30,8 @@ class PowerUseRulesSuite extends munit.FunSuite:
   /** A ban on every use, waivable by p2 when `granter` names them. */
   private def banGrantedBy(granter: Option[PlayerId]): PowerUseRestriction =
     new PowerUseRestriction:
-      def refusal(ready: ReadyGame, use: PowerUse): Option[PowerUseRefusal] =
+      def refusal(catalog: ExecutableCatalog, ready: ReadyGame, use: PowerUse)
+      : Option[PowerUseRefusal] =
         Some(PowerUseRefusal(ruled, plain(source), OperationReason(
           "test-ban", "banned", OperationReasonKind.Impossible,
           granter.map(player => OperationWaiver(ruled, Some(player),
@@ -46,13 +49,13 @@ class PowerUseRulesSuite extends munit.FunSuite:
   test("a grant remembered this turn lifts the refusal; a refusal does " +
       "not"):
     val ban = Vector(banGrantedBy(Some(p2)))
-    assertEquals(PowerUseRules.refusals(remembering(ConsentAnswer.Granted),
-      use, ban), Vector.empty)
-    assertEquals(PowerUseRules.refusals(remembering(ConsentAnswer.Refused),
-      use, ban).map(_.power), Vector(ruled))
+    assertEquals(PowerUseRules.refusals(catalog,
+      remembering(ConsentAnswer.Granted), use, ban), Vector.empty)
+    assertEquals(PowerUseRules.refusals(catalog,
+      remembering(ConsentAnswer.Refused), use, ban).map(_.power), Vector(ruled))
 
   test("a refusal its ruler may waive is askable of them"):
-    val refused = PowerUseRules.refusals(quiet, use,
+    val refused = PowerUseRules.refusals(catalog, quiet, use,
       Vector(banGrantedBy(Some(p2))))
     assertEquals(PowerUseRules.shown(quiet, p1, refused, consent = true),
       OptionReason.Askable(ruled, asked(source),
@@ -60,11 +63,11 @@ class PowerUseRulesSuite extends munit.FunSuite:
 
   test("without consent, or with nobody to grant it, the plain reason is " +
       "shown"):
-    val waivable = PowerUseRules.refusals(quiet, use,
+    val waivable = PowerUseRules.refusals(catalog, quiet, use,
       Vector(banGrantedBy(Some(p2))))
     assertEquals(PowerUseRules.shown(quiet, p1, waivable, consent = false),
       OptionReason.Noted(ruled, plain(source)))
-    val bandits = PowerUseRules.refusals(quiet, use,
+    val bandits = PowerUseRules.refusals(catalog, quiet, use,
       Vector(banGrantedBy(None)))
     assertEquals(PowerUseRules.shown(quiet, p1, bandits, consent = true),
       OptionReason.Noted(ruled, plain(source)))

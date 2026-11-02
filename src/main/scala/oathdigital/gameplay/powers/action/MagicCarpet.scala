@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.{PrintedPower, Relic}
+import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
 import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.powers.{PlayerFacts, PowerAnswers}
 import oathdigital.model._
@@ -35,7 +35,8 @@ case object MagicCarpet extends PaidAction(MagicCarpetCard.power):
   override def narratedDecisions: Set[String] =
     Set(siteDecisionId, fateDecisionId)
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = source match
     case DecisionOptionRef.Relic(carpet) => Right(Sequence(Vector[Operation](
       PawnMoves.siteChoice(siteDecisionId, player,

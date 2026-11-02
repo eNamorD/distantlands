@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
 import oathdigital.gameplay.InPlayCardResources
 import oathdigital.gameplay.powers.SecretBurns
 import oathdigital.model._
@@ -43,7 +43,8 @@ case object AncientBinding extends PaidAction(AncientBindingCard.power):
     NotePart.Text("No secret was burned.")))
   override def noteKeys: Vector[NoteKey] = notes.declared
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = source match
     case DecisionOptionRef.Denizen(card) => Right(Sequence(Vector[Operation](
       Branch((live, _) =>

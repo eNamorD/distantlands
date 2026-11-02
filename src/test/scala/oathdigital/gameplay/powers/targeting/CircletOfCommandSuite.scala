@@ -136,7 +136,7 @@ class CircletOfCommandSuite extends munit.FunSuite:
   test("the Circlet's rule ignores an option that is not a banner or a relic"):
     val power = CircletOfCommand
     val ready = Table.start.relic(p1, circlet).ready
-    val ctx = PowerCtx(ready, p1, power.source,
+    val ctx = PowerCtx(catalog, ready, p1, power.source,
       PowerWindow.CampaignTargetSelection, Vector.empty,
       Decide("x", p1, DecisionQuery.ChooseOne(Vector.empty)))
     val restriction = as[OptionRestriction](

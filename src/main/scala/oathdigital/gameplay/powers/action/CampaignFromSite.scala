@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.PrintedPower
+import oathdigital.catalog.{ExecutableCatalog, PrintedPower}
 import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.actions.campaign.CampaignProcedure
 import oathdigital.gameplay.powerresolver.QueuedStarts
@@ -33,12 +33,13 @@ abstract class CampaignFromSite(power: PrintedPower, card: DenizenId)
 
   override def narratedDecisions: Set[String] = Set(siteDecisionId)
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] =
-    build(ready, player, source, QueuedStarts.unchecked)
+    build(catalog, ready, player, source, QueuedStarts.unchecked)
 
-  override def build(ready: ReadyGame, player: PlayerId,
-      source: DecisionOptionRef, starts: QueuedStarts)
+  override def build(catalog: ExecutableCatalog, ready: ReadyGame,
+      player: PlayerId, source: DecisionOptionRef, starts: QueuedStarts)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     Branch((live, _) => Vector(Decide(siteDecisionId, player,
       DecisionQuery.ChooseOne(options(live, player, starts),
@@ -52,8 +53,9 @@ abstract class CampaignFromSite(power: PrintedPower, card: DenizenId)
       case DecisionOptionRef.Site(site) =>
         campaignAt(PowerSourceRef.Card(card), NoteArg.Site(site)) }))))
 
-  override def refusal(ready: ReadyGame, player: PlayerId,
-      source: DecisionOptionRef, starts: QueuedStarts): Option[String] =
+  override def refusal(catalog: ExecutableCatalog, ready: ReadyGame,
+      player: PlayerId, source: DecisionOptionRef, starts: QueuedStarts)
+      : Option[String] =
     Option.unless(sites(ready, player).exists(site =>
       starts.refusal(ready, entry(player, site)).isEmpty))(noSite)
 

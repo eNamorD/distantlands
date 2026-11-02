@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.economy
 
-import oathdigital.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
+import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog, Locked,
+  PrintedPower}
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   PhasePower, PowerCtx, Restriction}
 import oathdigital.gameplay.powers.PlayerFacts
@@ -58,12 +59,13 @@ case object VowOfPoverty extends PhasePower with ContributingPower:
       Option.when(holds(ctx.state, ctx.actor) && gainsFavor(ctx))(
         OathViolation.NoPlayableOption(ActionRef.Trade.key)))))
 
-  def usable(ready: ReadyGame, player: PlayerId,
-      source: DecisionOptionRef): Boolean =
+  def usable(catalog: ExecutableCatalog, ready: ReadyGame,
+      player: PlayerId, source: DecisionOptionRef): Boolean =
     PlayerFacts.player(ready, player).exists(_.board.favor == 0) &&
       FavorBankChoice.stocked(ready).nonEmpty
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] =
     val choice = choiceDecisionId(ready, player)
     Right(Sequence(Vector(

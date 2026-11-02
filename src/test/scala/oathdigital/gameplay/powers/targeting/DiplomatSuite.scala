@@ -94,7 +94,7 @@ class DiplomatSuite extends munit.FunSuite:
     val power = Diplomat.forCatalog(catalog)
     val restriction = as[Restriction](
       power.contributions(PowerWindow.CampaignActionEligibility).head)
-    def ctx(state: ReadyGame) = PowerCtx(state, b.actor, power.source,
+    def ctx(state: ReadyGame) = PowerCtx(catalog, state, b.actor, power.source,
       PowerWindow.CampaignActionEligibility, Vector.empty,
       Sequence(Vector.empty))
     assertEquals(restriction.fn(ctx(b.ready), Sequence(Vector.empty)),

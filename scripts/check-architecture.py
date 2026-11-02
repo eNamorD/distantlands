@@ -169,24 +169,19 @@ for path in sources:
             errors.append(f"{rel}:{line_number}: duplicate command vocabulary")
 
 # Powers read their cards from card objects (ROADMAP standing rules; the
-# card classes design of 2026-10-01). A power takes a `catalog:
-# ExecutableCatalog` parameter, or offers a `forCatalog` constructor, only
-# to look other cards up: another card's suit, a site's capacity, a relic's
-# defense. Each file that still does is listed here with its reason; a new
-# one is a violation until it earns an entry.
+# card classes design of 2026-10-01), and a power that looks other cards up
+# (another card's suit, a site's capacity, a relic's defense) reads the
+# catalog the walker hands it: `PowerCtx.catalog`, or the `catalog` its
+# phase-power or restriction hook takes. A power class that still holds a
+# `catalog: ExecutableCatalog` constructor parameter, or offers a
+# `forCatalog` constructor, is listed here with its reason; a new one is a
+# violation until it earns an entry.
 POWERS_ROOT = "src/main/scala/oathdigital/gameplay/powers"
-catalog_parameter = re.compile(r"catalog: ExecutableCatalog|def forCatalog\b")
+catalog_parameter = re.compile(
+    r"(?:class|trait|object)\s+\w+[^\n(]*\(\s*catalog: ExecutableCatalog"
+    r"|def forCatalog\b|def catalog: ExecutableCatalog")
 powers_reading_the_catalog = {
     "ActionModifiers.scala": "registry: threads the catalog to the powers below that read it",
-    "AdviserLimit.scala": "helper: the adviser limit reads the holder's advisers' suits",
-    "CatalogResolution.scala": "helper: the catalog form serves powers without a card object",
-    "ConsentPowers.scala": "helper: builds the walker powers",
-    "DeclaredNotes.scala": "helper: builds the walker and phase powers for their notes",
-    "PhasePowerCatalog.scala": "registry: threads the catalog to the powers below that read it",
-    "PowerImplementationStatus.scala": "helper: builds every power to count the implemented ones",
-    "RuledCards.scala": "helper: the cards a ruler rules, by their effective suit",
-    "SiteRoom.scala": "helper: a site's capacity, from the catalog",
-    "WalkerPowerCatalog.scala": "registry: threads the catalog to the powers below that read it",
     "action/ArmedMob.scala": "reads other cards' suits",
     "action/Assassin.scala": "reads other cards' suits",
     "action/BallotBox.scala": "reads other cards' suits",
@@ -222,16 +217,12 @@ powers_reading_the_catalog = {
     "campaign/BeastTamer.scala": "reads other cards' suits",
     "campaign/CrackedSage.scala": "reads other cards' suits",
     "campaign/DisgracedCaptain.scala": "reads other cards' suits",
-    "campaign/EnemyPlans.scala": "helper: the suit of the enemy's plan card",
-    "campaign/FavorBySuit.scala": "helper: counts cards by suit",
     "campaign/GleamingArmor.scala": "prices the enemy's plan card (PlanSurcharge)",
     "campaign/GreatCrusade.scala": "reads other cards' suits",
     "campaign/InsectSwarm.scala": "prices the enemy's plan card (PlanSurcharge)",
     "campaign/KindredWarriors.scala": "reads other cards' suits",
     "campaign/MilitaryParade.scala": "reads other cards' suits",
     "campaign/NatureWorship.scala": "reads other cards' suits",
-    "campaign/PlanContext.scala": "helper: the cards a side rules, by suit",
-    "campaign/PlanDiscard.scala": "helper: the catalog form discards any ruled card (Wild Mounts)",
     "campaign/PlanRestrictions.scala": "registry: threads the catalog to the powers below that read it",
     "campaign/PlanRewrites.scala": "registry: threads the catalog to the powers below that read it",
     "campaign/PlanRules.scala": "registry: threads the catalog to the powers below that read it",
@@ -258,14 +249,12 @@ powers_reading_the_catalog = {
     "economy/Curfew.scala": "reads other cards' suits",
     "economy/Defame.scala": "reads other cards' suits",
     "economy/Downtrodden.scala": "reads other cards' suits",
-    "economy/EconomySources.scala": "helper: the cards a Trade or Muster draws on, by suit",
     "economy/FriendlyFamiliar.scala": "reads other cards' suits",
     "economy/MapLibrary.scala": "reads other cards' suits",
     "economy/MountedLibrary.scala": "reads other cards' suits",
     "economy/MovingMarket.scala": "reads a site's capacity",
     "economy/SkilledMerchants.scala": "reads other cards' suits",
     "economy/SmallFriends.scala": "reads other cards' suits",
-    "economy/SuitSupplyWaiver.scala": "helper: the suit of the traded card",
     "economy/VowOfBeastkin.scala": "reads other cards' suits",
     "poweruse/ForestCouncil.scala": "reads other cards' suits",
     "recover/CatacombsContribution.scala": "reads its site's relic slots",
@@ -306,9 +295,10 @@ for path in scala_sources(ROOT / POWERS_ROOT):
     rel = relative(path)[len(POWERS_ROOT) + 1:]
     if catalog_parameter.search(path.read_text(encoding="utf-8")):
         if rel not in powers_reading_the_catalog:
-            errors.append(f"{relative(path)}: a power takes the catalog or offers "
-                          "forCatalog; read the card object, or list the file "
-                          "with its reason in check-architecture.py")
+            errors.append(f"{relative(path)}: a power holds the catalog or "
+                          "offers forCatalog; read it from PowerCtx or the "
+                          "hook's catalog, or list the file with its reason "
+                          "in check-architecture.py")
     elif rel in powers_reading_the_catalog:
         errors.append(f"{relative(path)}: listed as reading the catalog but no "
                       "longer does; drop its entry from check-architecture.py")

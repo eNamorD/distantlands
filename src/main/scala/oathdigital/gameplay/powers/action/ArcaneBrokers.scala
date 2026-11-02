@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
 import oathdigital.gameplay.NoteSupport
 import oathdigital.model._
 
@@ -41,7 +41,8 @@ case object ArcaneBrokers extends PaidAction(ArcaneBrokersCard.power):
         PositionedLocation(Location.PlayArea(player)), held.tokens.secrets,
         player), Gain.Secrets(player, Gained)))
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(
     relic.steps(player) :+ Note(id, discardNote(_, player, source),
       covers = true)))

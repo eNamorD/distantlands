@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powerresolver
 
 import oathdigital.gameplay.powers.campaign.WildMountsCard
+import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.Table
 import oathdigital.testkit.Unwrap.as
@@ -30,7 +31,7 @@ class OperationRewriteSuite extends munit.FunSuite:
 
   /** The context of folding `operation` at `window`, with `foldState`. */
   private def foldingCtx(operation: Operation): PowerCtx =
-    PowerCtx(foldState, actor, RuleSourceRef.GameRule("test"), window,
+    PowerCtx(catalog, foldState, actor, RuleSourceRef.GameRule("test"), window,
       Vector("0"), operation)
 
   /** The context of folding a windowed `Sequence`. */

@@ -32,11 +32,12 @@ final class BrassHorse(catalog: ExecutableCatalog)
 
   override def noteKeys: Vector[NoteKey] = BrassHorse.noteKeys
 
-  override def usable(ready: ReadyGame, player: PlayerId,
-      source: DecisionOptionRef): Boolean =
+  override def usable(catalog: ExecutableCatalog, ready: ReadyGame,
+      player: PlayerId, source: DecisionOptionRef): Boolean =
     region(ready, player).exists(top(ready, _).nonEmpty)
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     BuildOps((state, _) => reveal(state, player)),
     Note(this.id, revealNote(_, player, source), covers = true),

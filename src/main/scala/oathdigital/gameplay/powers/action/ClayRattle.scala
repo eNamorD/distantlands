@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.{PrintedPower, Relic}
+import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
 import oathdigital.model._
 
 object ClayRattleCard extends Relic(RelicId("R47"), "Clay Rattle", value = 45, defense = 2):
@@ -34,7 +34,8 @@ case object ClayRattle extends PaidAction(ClayRattleCard.power):
 
   def ref(pile: SearchSource): DecisionOptionRef = SearchSource.ref(pile)
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector(
     Decide(decisionId, player, DecisionQuery.ChooseOne(
       piles.map(SearchSource.option),

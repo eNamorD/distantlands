@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.{PrintedPower, Relic}
+import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
 import oathdigital.gameplay.powers.RelicDraws
 import oathdigital.model._
 
@@ -23,6 +23,7 @@ case object DowsingSticks extends PaidAction(DowsingSticksCard.power):
   val emptyDeck: NoteKey = RelicDraws.emptyDeck
   override def noteKeys: Vector[NoteKey] = notes.declared
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] =
     Right(Sequence(RelicDraws.drawSteps(id, player, source)))

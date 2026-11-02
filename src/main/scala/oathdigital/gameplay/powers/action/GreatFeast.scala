@@ -30,7 +30,8 @@ final case class GreatFeast private (catalog: ExecutableCatalog)
   override def noteKeys: Vector[NoteKey] = GreatFeast.noteKeys
   override def narratedDecisions: Set[String] = Set(decisionId)
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     Branch((live, _) => cards.ask(live, player, decisionId,
       "Great Feast: discard a Beast card at your site")),

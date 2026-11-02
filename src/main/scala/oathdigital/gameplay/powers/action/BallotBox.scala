@@ -36,7 +36,8 @@ final case class BallotBox private (catalog: ExecutableCatalog)
 
   override def noteKeys: Vector[NoteKey] = BallotBox.noteKeys
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = source match
     case DecisionOptionRef.Denizen(card) => SiteRulers.siteOf(ready, card)
       .toRight(OathViolation.InvalidEventOrder(

@@ -51,7 +51,7 @@ class ForestCouncilSuite extends munit.FunSuite:
 
   test("it refuses an enemy a Beast card's non-persistent power, waivable " +
       "by the ruler"):
-    val refusal = power.refusal(councilAtDeepWoods(),
+    val refusal = power.refusal(catalog, councilAtDeepWoods(),
       useOf(terror, persistent = false))
     assertEquals(refusal.map(_.note), Some(ForestCouncil.usePlain(source)))
     assertEquals(refusal.flatMap(_.reason.waiver).flatMap(_.granter),
@@ -60,27 +60,31 @@ class ForestCouncilSuite extends munit.FunSuite:
   test("it refuses neither a Beast card's persistent power that places " +
       "nothing, nor another suit's non-persistent power, nor its ruler"):
     val ready = councilAtDeepWoods()
-    assertEquals(power.refusal(ready, useOf(terror, persistent = true)),
+    assertEquals(power.refusal(catalog, ready,
+      useOf(terror, persistent = true)),
       None)
-    assertEquals(power.refusal(ready, useOf(wrestlers, persistent = false)),
+    assertEquals(power.refusal(catalog, ready,
+      useOf(wrestlers, persistent = false)),
       None)
-    assertEquals(power.refusal(councilAtDeepWoods(_.warbandsAt(woods, p1,
-      1)), useOf(terror, persistent = false)), None)
+    assertEquals(power.refusal(catalog, councilAtDeepWoods(
+      _.warbandsAt(woods, p1, 1)), useOf(terror, persistent = false)), None)
 
   test("a persistent power whose cost places on a Beast card is refused " +
       "on its user's turn, with the placing reason"):
     val placing = useOf(terror, persistent = true).copy(places = true)
-    assertEquals(power.refusal(councilAtDeepWoods(), placing).map(_.note),
+    assertEquals(power.refusal(catalog, councilAtDeepWoods(), placing)
+      .map(_.note),
       Some(ForestCouncil.placingPlain(source)))
     val offTurn = councilAtDeepWoods().updateCurrent(current =>
       current.copy(turn = current.turn.copy(activePlayer = p2)))
-    assertEquals(power.refusal(offTurn, placing), None)
+    assertEquals(power.refusal(catalog, offTurn, placing), None)
 
   test("it refuses a payment onto a Beast card on the payer's turn, and " +
       "not off it"):
     val ready = councilAtDeepWoods()
     val pay = PayCost(p1, Location.OnCard(errandBoy), Cost(favor = 1))
-    val ban = present(power.operationRestrictions.headOption, "the ban")
+    val ban = present(power.operationRestrictions(catalog).headOption,
+      "the ban")
     assertEquals(ban.reason(ready, pay).flatMap(_.waiver).map(_.covers),
       Some(ConsentKey(ForestCouncil.id, p1, "power.use", errandBoyRef)))
     assertEquals(ban.reason(ready, pay.copy(placedAt =
@@ -92,7 +96,8 @@ class ForestCouncilSuite extends munit.FunSuite:
 
   test("it refuses an enemy's gift of favor onto a Beast card, the giver " +
       "placing it"):
-    val ban = present(power.operationRestrictions.headOption, "the ban")
+    val ban = present(power.operationRestrictions(catalog).headOption,
+      "the ban")
     val gift = Give(Piece.Favor(1), p1, Location.PlayArea(p1),
       Location.OnCard(errandBoy))
     assertEquals(ban.reason(councilAtDeepWoods(), gift).flatMap(_.waiver)
@@ -130,7 +135,8 @@ class ForestCouncilSuite extends munit.FunSuite:
     val banditsRule = grantedByP2(councilAtDeepWoods(_.bandits(woods, 2)))
     assertEquals(musterSources(banditsRule).find(_.ref == errandBoyRef)
       .map(_.askable), Some(false))
-    assertEquals(power.refusal(banditsRule, useOf(terror, persistent = false))
+    assertEquals(power.refusal(catalog, banditsRule,
+      useOf(terror, persistent = false))
       .map(_.power), Some(ForestCouncil.id))
 
   test("under bandits the Beast source shows the plain reason, as nobody " +

@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.{Edifice, EdificeFace, Locked, PrintedPower}
+import oathdigital.catalog.{Edifice, EdificeFace, ExecutableCatalog, Locked,
+  PrintedPower}
 import oathdigital.gameplay.PowerAccess
 import oathdigital.gameplay.powers.setup.EdificeSetupSupport
 import oathdigital.model._
@@ -47,7 +48,8 @@ case object StonePortal extends PaidAction(StonePortalCard.intact.power):
   private def pawnHere(ready: ReadyGame, player: PlayerId): Boolean =
     portalSite(ready).exists(PowerAccess.pawnSite(ready, player).contains)
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     Branch((live, _) => portalSite(live).toVector.filter(_ =>
       pawnHere(live, player)).map(site => PawnMoves.siteChoice(decisionId,

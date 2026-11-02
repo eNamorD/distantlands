@@ -77,7 +77,7 @@ class VowOfWanderingSuite extends munit.FunSuite:
 
   // ---- the restriction ----------------------------------------------------
   private val near = BrokenPeaksSite.id
-  private val placing = VowOfWandering.operationRestrictions.head
+  private val placing = VowOfWandering.operationRestrictions(catalog).head
   private val refusal = Some(OperationReason("vow-of-wandering",
     "Vow of Wandering forbids placing warbands on sites",
     OperationReasonKind.Impossible))

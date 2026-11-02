@@ -138,7 +138,7 @@ class LostTongueSuite extends munit.FunSuite:
       .relic(p2, crackedHorn).peoplesFavor(Some(p2), favor = 2).ready
     def reasonFor(state: ReadyGame, operation: CoreOperation)
         : Vector[OperationReason] =
-      power.operationRestrictions.flatMap(_.reason(state, operation))
+      power.operationRestrictions(catalog).flatMap(_.reason(state, operation))
     val mine = Location.PlayArea(p1)
     val theirs = Location.PlayArea(p2)
     val takeRelic = Take(Piece.Card(crackedHorn), p1, theirs, mine)

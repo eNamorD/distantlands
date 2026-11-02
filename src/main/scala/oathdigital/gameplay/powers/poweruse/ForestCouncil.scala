@@ -38,7 +38,8 @@ final case class ForestCouncil private (catalog: ExecutableCatalog)
   override def noteKeys: Vector[NoteKey] = ForestCouncil.noteKeys
   override def powerUseRestrictions: Vector[PowerUseRestriction] =
     Vector(this)
-  override def operationRestrictions: Vector[OperationRestriction] =
+  override def operationRestrictions(catalog: ExecutableCatalog)
+      : Vector[OperationRestriction] =
     Vector(placing)
   override def waiver: Option[Waiver] =
     Some(RulerBans.waiver(ForestCouncilCard.id, useAsked))
@@ -56,7 +57,8 @@ final case class ForestCouncil private (catalog: ExecutableCatalog)
     if !use.persistent then Some(usePlain -> useAsked)
     else Placements.byUse(ready, use).map(_ => placingPlain -> placingAsked)
 
-  def refusal(ready: ReadyGame, use: PowerUse): Option[PowerUseRefusal] =
+  def refusal(catalog: ExecutableCatalog, ready: ReadyGame, use: PowerUse)
+      : Option[PowerUseRefusal] =
     for
       ruler <- RulerBans.ruler(ready, ForestCouncilCard.id)
       if RulerBans.enemy(ruler, use.user)

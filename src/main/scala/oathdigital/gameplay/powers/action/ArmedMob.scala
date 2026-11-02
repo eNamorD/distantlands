@@ -46,7 +46,8 @@ final case class ArmedMob private (catalog: ExecutableCatalog)
   override def narratedDecisions: Set[String] =
     Set(playerDecisionId, decisionId)
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     Branch((live, _) => askPlayer(live, player)),
     Branch((live, pending) => askAdviser(live, player, pending)),

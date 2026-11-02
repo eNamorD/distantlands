@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
 import oathdigital.gameplay.{NoteSupport, PowerAccess}
 import oathdigital.gameplay.powers.PowerAnswers
 import oathdigital.model._
@@ -37,7 +37,8 @@ case object QuickExit extends PaidAction(QuickExitCard.power):
   override def narratedDecisions: Set[String] =
     Set(targetDecisionId, siteDecisionId)
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     Branch((live, _) => askTarget(live, player, source)),
     Branch((live, pending) => askSite(live, player, pending)),

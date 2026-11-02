@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, PrintedPower, SiteOnly}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower,
+  SiteOnly}
 import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.actions.dice.RollStep
 import oathdigital.model._
@@ -40,7 +41,8 @@ case object GamblingHall extends PaidAction(GamblingHallCard.power):
   override def noteKeys: Vector[NoteKey] = notes.declared
   override def narratedDecisions: Set[String] = Set(decisionId)
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector(
     ModifyDicePool(pool, Dice),
     RollStep(pool, DiceSpec(DiceKind.Defense), Some(player)),

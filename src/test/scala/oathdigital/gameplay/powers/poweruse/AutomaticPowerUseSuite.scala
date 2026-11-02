@@ -5,6 +5,7 @@ import oathdigital.gameplay.powerresolver.{ContributingPower, PowerCtx,
 import oathdigital.gameplay.powers.campaign.KeepRule
 import oathdigital.gameplay.powers.economy.InitiationRite
 import oathdigital.gameplay.powers.travel.Tyrant
+import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.Table
 import oathdigital.testkit.Table.p1
@@ -16,7 +17,8 @@ class AutomaticPowerUseSuite extends munit.FunSuite:
   private val ready = Table.start.turn(p1, Phase.Act).ready
 
   private def ctxAt(power: ContributingPower, window: PowerWindow)
-      : PowerCtx = PowerCtx(ready, p1, power.source, window, Vector.empty,
+      : PowerCtx = PowerCtx(catalog, ready, p1, power.source, window,
+    Vector.empty,
     Sequence(Vector.empty, Some(window)))
 
   test("an automatic use is non-persistent and costs nothing"):

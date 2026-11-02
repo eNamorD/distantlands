@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.wake
 
-import oathdigital.catalog.{Edifice, EdificeFace, Locked, PrintedPower}
+import oathdigital.catalog.{Edifice, EdificeFace, ExecutableCatalog, Locked,
+  PrintedPower}
 import oathdigital.gameplay.{NoteSupport, PowerAccess}
 import oathdigital.gameplay.powerresolver.PhasePower
 import oathdigital.model._
@@ -35,8 +36,9 @@ case object MarbleFountains extends PhasePower:
     NotePart.Text(".")))
   override def noteKeys: Vector[NoteKey] = notes.declared
 
-  def usable(ready: ReadyGame, player: PlayerId,
-      source: DecisionOptionRef): Boolean = source match
+  def usable(catalog: ExecutableCatalog, ready: ReadyGame,
+      player: PlayerId, source: DecisionOptionRef): Boolean =
+    source match
     case DecisionOptionRef.Edifice(edifice) =>
       PowerAccess.pawnSite(ready, player).flatMap(ready.game.current.map.sites.get)
         .exists(_.denizens.exists {
@@ -45,7 +47,8 @@ case object MarbleFountains extends PhasePower:
         })
     case _ => false
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector(
     GainSupply(player, SupplyTrack.Maximum),
     Note(id, states => for

@@ -35,7 +35,8 @@ final case class TamingCharm private (catalog: ExecutableCatalog)
   override def noteKeys: Vector[NoteKey] = TamingCharm.noteKeys
   override def narratedDecisions: Set[String] = Set(decisionId)
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     Branch((live, _) => cards.ask(live, player, decisionId,
       "Taming Charm: discard a Beast or Nomad card at your site")),

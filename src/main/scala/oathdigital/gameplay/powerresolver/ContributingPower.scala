@@ -1,12 +1,15 @@
 package oathdigital.gameplay.powerresolver
 
+import oathdigital.catalog.ExecutableCatalog
 import oathdigital.model.{Answered, CampaignPlanOffer, CardId, CoreOperation, Decide, DecisionOptionRef, NoteKey, OathViolation, OfferedPlan, OfferedReroll, Operation, OperationRestriction, OptionReason, PlayerId, PowerId, LogNote, PowerResolution, PowerSourceRef, PowerWindow, ProcedureRef, ReadyGame, RerollOffer, RuleSourceRef}
 
 /** Everything a contribution may read at the node it hooks. Carries no
-  * mutable state and no catalog -- a power looks up whatever else it needs
-  * (catalog data, other game state) through `state`.
+  * mutable state: `catalog` is the card catalog the walk runs, for a power
+  * that looks other cards up (another card's suit, a site's capacity), and
+  * a power reads the rest of the game through `state`.
   */
 final case class PowerCtx(
+    catalog: ExecutableCatalog,
     state: ReadyGame,
     /** The player whose procedure is running: the walk's actor
       * (`CurrentGameState.walkActor`), the traveller, the recoverer, the
@@ -193,8 +196,10 @@ trait ContributingPower extends NotingPower:
   /** Operation restrictions that hold wherever this power is offered: every
     * walker step checks them, and a composite is checked whole before it is
     * split (global operation restrictions design). Unlike a `Restriction`, it
-    * hooks no window. None by default. */
-  def operationRestrictions: Vector[OperationRestriction] = Vector.empty
+    * hooks no window. None by default. `catalog` is the walk's, for a ban
+    * that reads other cards. */
+  def operationRestrictions(catalog: ExecutableCatalog)
+      : Vector[OperationRestriction] = Vector.empty
   /** The rules this power holds over other powers' uses (catalog batch 8,
     * slice 10). The engine reads them without naming them. None by
     * default. */

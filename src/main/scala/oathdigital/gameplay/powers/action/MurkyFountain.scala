@@ -1,5 +1,6 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.{NoteSupport, PowerAccess}
 import oathdigital.gameplay.actions.dice.RollStep
 import oathdigital.gameplay.powers.wake.MarbleFountainsCard
@@ -30,7 +31,8 @@ case object MurkyFountain extends PaidAction(MarbleFountainsCard.ruined.power):
     NotePart.Text(" was not at its site.")))
   override def noteKeys: Vector[NoteKey] = notes.declared
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = source match
     case DecisionOptionRef.Edifice(edifice) =>
       if !atPawnSite(ready, player, edifice) then Right(Sequence(Vector(

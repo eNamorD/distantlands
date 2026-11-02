@@ -27,7 +27,8 @@ final case class MemoryOfNature private (catalog: ExecutableCatalog)
 
   override def noteKeys: Vector[NoteKey] = MemoryOfNature.noteKeys
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     Branch { (live, _) =>
       val x = beasts(live)

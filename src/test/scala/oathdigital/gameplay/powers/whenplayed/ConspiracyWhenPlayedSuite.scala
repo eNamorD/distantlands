@@ -1,5 +1,6 @@
 package oathdigital.gameplay.powers.whenplayed
 
+import oathdigital.catalog.ExecutableCatalog
 import oathdigital.catalog.holding.{BanditCrownCard, CrackedHornCard}
 import oathdigital.gameplay.PlacementFixture.cardPlayDecisionId
 import oathdigital.gameplay.actions.VisionRules
@@ -272,7 +273,8 @@ class ConspiracyWhenPlayedSuite extends munit.FunSuite:
     def contributions: Map[PowerWindow, Vector[Contribution]] = Map.empty
     override def powerUseRestrictions: Vector[PowerUseRestriction] =
       Vector(this)
-    def refusal(ready: ReadyGame, use: PowerUse): Option[PowerUseRefusal] =
+    def refusal(catalog: ExecutableCatalog, ready: ReadyGame, use: PowerUse)
+      : Option[PowerUseRefusal] =
       Option.when(use.power == ConspiracyWhenPlayed.id)(PowerUseRefusal(id,
         LogNote(Some(PowerSourceRef.Card(conspiracy)), "refused",
           Vector.empty),

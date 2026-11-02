@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.wake
 
-import oathdigital.catalog.{Edifice, EdificeFace, Locked, PrintedPower}
+import oathdigital.catalog.{Edifice, EdificeFace, ExecutableCatalog, Locked,
+  PrintedPower}
 import oathdigital.gameplay.{PowerAccess, SiteRulers}
 import oathdigital.gameplay.operations.PowerUseRules
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
@@ -43,12 +44,13 @@ sealed abstract class PassagesPower extends PhasePower:
   final def passagesSite(ready: ReadyGame): Option[SiteId] =
     EdificeSetupSupport.siteOf(ready, edifice, side)
 
-  final def usable(ready: ReadyGame, player: PlayerId,
-      source: DecisionOptionRef): Boolean =
+  final def usable(catalog: ExecutableCatalog, ready: ReadyGame,
+      player: PlayerId, source: DecisionOptionRef): Boolean =
     passagesSite(ready).exists(PowerAccess.pawnSite(ready, player).contains)
 
-  final def build(ready: ReadyGame, player: PlayerId,
-      source: DecisionOptionRef): Either[OathViolation, Operation] =
+  final def build(catalog: ExecutableCatalog, ready: ReadyGame,
+      player: PlayerId, source: DecisionOptionRef)
+      : Either[OathViolation, Operation] =
     Right(Sequence(Vector[Operation](
       Branch((live, _) => passagesSite(live).toVector.map(site =>
         PawnMoves.siteChoice(decisionId, player,
@@ -116,7 +118,8 @@ case object HiddenPassages extends PassagesPower with ContributingPower
     passagesSite(ready).flatMap(SiteRulers.rulerOf(ready, _)).collect {
       case SiteRuler.Player(player) => player }
 
-  def refusal(ready: ReadyGame, use: PowerUse): Option[PowerUseRefusal] =
+  def refusal(catalog: ExecutableCatalog, ready: ReadyGame, use: PowerUse)
+      : Option[PowerUseRefusal] =
     if use.power != id then None
     else for
       site <- passagesSite(ready)

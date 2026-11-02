@@ -52,7 +52,8 @@ final case class Assassin private (catalog: ExecutableCatalog)
   def limitFor(ready: ReadyGame, player: PlayerId): Option[Int] =
     limit.limitFor(ready, player)
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     Branch((live, _) => ask(live, player)),
     BuildOps((live, pending) => discard(live, player, pending),

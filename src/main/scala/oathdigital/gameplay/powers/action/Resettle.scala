@@ -33,7 +33,8 @@ final case class Resettle private (catalog: ExecutableCatalog)
   override def narratedDecisions: Set[String] =
     Set(adviserDecisionId, siteDecisionId)
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     Branch((live, _) => askAdviser(live, player)),
     Branch((live, pending) => askSite(live, player, pending)),

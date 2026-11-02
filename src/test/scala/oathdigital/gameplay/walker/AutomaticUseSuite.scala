@@ -1,5 +1,6 @@
 package oathdigital.gameplay.walker
 
+import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.operations.PowerUseRules
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerUse, PowerUseRefusal, PowerUseRestriction, PowerUseStep}
@@ -25,7 +26,8 @@ class AutomaticUseSuite extends munit.FunSuite:
     def contributions: Map[PowerWindow, Vector[Contribution]] = Map.empty
     override def powerUseRestrictions: Vector[PowerUseRestriction] =
       Vector(this)
-    def refusal(ready: ReadyGame, use: PowerUse): Option[PowerUseRefusal] =
+    def refusal(catalog: ExecutableCatalog, ready: ReadyGame, use: PowerUse)
+      : Option[PowerUseRefusal] =
       Option.when(use.power == automatic && Look(ready).favor(p1) == 0)(
         PowerUseRefusal(id,
           LogNote(Some(PowerSourceRef.Card(card)), "refused",
@@ -43,7 +45,8 @@ class AutomaticUseSuite extends munit.FunSuite:
       Vector(this)
     private val note = LogNote(Some(PowerSourceRef.Card(card)), "refused",
       Vector.empty)
-    def refusal(ready: ReadyGame, use: PowerUse): Option[PowerUseRefusal] =
+    def refusal(catalog: ExecutableCatalog, ready: ReadyGame, use: PowerUse)
+      : Option[PowerUseRefusal] =
       Option.when(use.power == automatic && Look(ready).favor(p1) == 0)(
         PowerUseRefusal(id, note, OperationReason("test-refused",
           "no favor", OperationReasonKind.Impossible, Some(OperationWaiver(

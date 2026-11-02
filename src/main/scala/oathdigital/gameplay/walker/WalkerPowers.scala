@@ -1,5 +1,7 @@
 package oathdigital.gameplay.walker
 
+import oathdigital.catalog.ExecutableCatalog
+import oathdigital.gameplay.cards.NewFoundations
 import oathdigital.gameplay.operations.OperationRestrictions
 import oathdigital.gameplay.powerresolver.{ContributingPower, ModifierPicks,
   PowerUseRestriction, PowerWindowIndex}
@@ -37,7 +39,12 @@ final case class WalkerPowers(powers: Vector[ContributingPower],
       * "Search and previews"): an automatic use that waits on its rulers
       * is walked as if they let it work, so the walk never parks at its
       * step. */
-    previewing: Boolean = false):
+    previewing: Boolean = false,
+    /** The card catalog the powers look other cards up in, handed to them
+      * as `PowerCtx.catalog`. `WalkerPowerCatalog.default` sets the one it
+      * was built from; a `WalkerPowers` assembled by hand in a test runs
+      * against the production catalog unless it names another. */
+    catalog: ExecutableCatalog = NewFoundations.catalog):
   /** These powers indexed by the windows they hook, built once per instance
     * (see [[PowerWindowIndex]]). */
   lazy val windowIndex: PowerWindowIndex = PowerWindowIndex.of(powers)
@@ -51,7 +58,7 @@ final case class WalkerPowers(powers: Vector[ContributingPower],
     * selected power that discards its own card is not held in play by the
     * active-modifier rule. */
   lazy val operationRestrictions: Vector[OperationRestriction] =
-    restrictionSet.active(powers.flatMap(_.operationRestrictions),
+    restrictionSet.active(powers.flatMap(_.operationRestrictions(catalog)),
       modifiers.filterNot(id => powers.exists(power =>
         power.id == id && power.discardsItself)))
 
