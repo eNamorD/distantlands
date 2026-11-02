@@ -18,7 +18,7 @@ object SmallFriendsCard extends Denizen(DenizenId("177"), "Small Friends", Suit.
   */
 final case class SmallFriends private (catalog: ExecutableCatalog)
     extends ActingSite:
-  val cardId: DenizenId = SmallFriendsCard.id
+  val card: Denizen = SmallFriendsCard
   def id: PowerId = SmallFriends.id
   val noSite: String = "No other site has a Beast card"
   val heading: String = "Small Friends: act as if at which site?"

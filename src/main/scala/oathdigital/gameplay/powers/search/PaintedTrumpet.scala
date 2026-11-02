@@ -36,7 +36,7 @@ object PaintedTrumpetCard extends Relic(RelicId("R23"), "Painted Trumpet", value
   */
 final case class PaintedTrumpet private (catalog: ExecutableCatalog)
     extends SelectedModifier:
-  val cardId: RelicId = PaintedTrumpetCard.id
+  val card: Relic = PaintedTrumpetCard
   def id: PowerId = PaintedTrumpet.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Search)
   override def priority: Int = PaintedTrumpet.Priority

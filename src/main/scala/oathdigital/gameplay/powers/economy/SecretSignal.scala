@@ -40,7 +40,7 @@ final case class SecretSignal private (catalog: ExecutableCatalog)
     extends SelectedModifier:
   import SecretSignal._
 
-  val cardId: DenizenId = SecretSignalCard.id
+  val card: Denizen = SecretSignalCard
   def id: PowerId = SecretSignal.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Trade)
   override def noteKeys: Vector[NoteKey] = SecretSignal.noteKeys

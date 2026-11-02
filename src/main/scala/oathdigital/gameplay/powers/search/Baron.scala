@@ -31,7 +31,7 @@ object BaronCard extends Denizen(DenizenId("250"), "Baron", Suit.Order):
   */
 final case class Baron private (catalog: ExecutableCatalog)
     extends SelectedModifier:
-  val cardId: DenizenId = BaronCard.id
+  val card: Denizen = BaronCard
   def id: PowerId = Baron.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Search)
   private val notes = NoteSet(id)

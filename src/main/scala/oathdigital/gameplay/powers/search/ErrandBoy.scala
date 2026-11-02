@@ -26,7 +26,7 @@ object ErrandBoyCard extends Denizen(DenizenId("11"), "Errand Boy", Suit.Beast):
   */
 final case class ErrandBoy private (catalog: ExecutableCatalog)
     extends SelectedModifier:
-  val cardId: DenizenId = ErrandBoyCard.id
+  val card: Denizen = ErrandBoyCard
   def id: PowerId = ErrandBoy.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Search)
   override def cost: Cost = Cost(favor = ErrandBoy.Favor)

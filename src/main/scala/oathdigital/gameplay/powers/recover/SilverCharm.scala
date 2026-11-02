@@ -34,7 +34,7 @@ object SilverCharmCard extends Relic(RelicId("R31"), "Silver Charm", value = 37,
   */
 final case class SilverCharm private (catalog: ExecutableCatalog)
     extends SelectedModifier:
-  val cardId: RelicId = SilverCharmCard.id
+  val card: Relic = SilverCharmCard
   def id: PowerId = SilverCharm.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Recover)
   override def noteKeys: Vector[NoteKey] = SilverCharm.noteKeys

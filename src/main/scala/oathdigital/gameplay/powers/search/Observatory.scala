@@ -22,7 +22,7 @@ object ObservatoryCard extends Denizen(DenizenId("64"), "Observatory", Suit.Arca
   */
 final case class Observatory private (catalog: ExecutableCatalog)
     extends SelectedModifier:
-  val cardId: DenizenId = ObservatoryCard.id
+  val card: Denizen = ObservatoryCard
   def id: PowerId = Observatory.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Search)
 

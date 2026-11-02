@@ -23,7 +23,7 @@ object VillageIdiotCard extends Denizen(DenizenId("231"), "Village Idiot", Suit.
   */
 final case class VillageIdiot private (catalog: ExecutableCatalog)
     extends SelectedModifier:
-  val cardId: DenizenId = VillageIdiotCard.id
+  val card: Denizen = VillageIdiotCard
   def id: PowerId = VillageIdiot.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Muster)
 
@@ -33,7 +33,7 @@ final case class VillageIdiot private (catalog: ExecutableCatalog)
 
   private def favor(actor: PlayerId): Operation = BuildOps((_, pending) =>
     Right(if PowerAnswers.one(pending, MusterProcedure.decisionId)
-        .contains(DecisionOptionRef.Denizen(cardId)) then
+        .contains(DecisionOptionRef.Denizen(card.id)) then
       Vector[CoreOperation](Gain.Favor(actor, Suit.Hearth, VillageIdiot.Favor))
     else Vector.empty))
 

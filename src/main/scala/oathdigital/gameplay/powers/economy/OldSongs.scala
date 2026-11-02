@@ -26,7 +26,7 @@ object OldSongsCard extends Denizen(DenizenId("229"), "Old Songs", Suit.Hearth):
   */
 final case class OldSongs private (catalog: ExecutableCatalog)
     extends SelectedModifier:
-  val cardId: DenizenId = OldSongsCard.id
+  val card: Denizen = OldSongsCard
   def id: PowerId = OldSongs.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Trade)
   override def priority: Int = EconomySources.ExemptionPriority

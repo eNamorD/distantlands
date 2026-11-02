@@ -17,7 +17,7 @@ object AuguryCard extends Denizen(DenizenId("56"), "Augury", Suit.Arcane):
   */
 final case class Augury private (catalog: ExecutableCatalog)
     extends SelectedModifier:
-  val cardId: DenizenId = AuguryCard.id
+  val card: Denizen = AuguryCard
   def id: PowerId = Augury.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Search)
 

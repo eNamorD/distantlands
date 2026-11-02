@@ -38,7 +38,7 @@ object MushroomsCard extends Denizen(DenizenId("183"), "Mushrooms", Suit.Beast) 
   */
 final case class Mushrooms private (catalog: ExecutableCatalog)
     extends SelectedModifier:
-  val cardId: DenizenId = MushroomsCard.id
+  val card: Denizen = MushroomsCard
   def id: PowerId = Mushrooms.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Search)
   override def cost: Cost = Cost(secret = Mushrooms.Secrets)

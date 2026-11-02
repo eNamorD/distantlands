@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.setup
 
-import oathdigital.catalog.{Edifice, EdificeFace, ExecutableCatalog, Locked,
-  PrintedPower}
+import oathdigital.catalog.{Edifice, EdificeFace, Locked, PrintedPower}
 import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower, PowerCtx, Transform}
 import oathdigital.gameplay.powers.RelicDraws
 import oathdigital.model._
@@ -24,7 +23,6 @@ object GreatForgeCard extends Edifice(EdificeId("E06"), Suit.Nomad):
   * `MarketRule` for the `WhenExplored`/window-sharing rationale.
   */
 sealed abstract class ForgeRule extends ContributingPower:
-  def catalog: ExecutableCatalog
   def edifice: EdificeId
   protected def side: EdificeSide
 
@@ -53,10 +51,10 @@ sealed abstract class ForgeRule extends ContributingPower:
     }))
     Map(PowerWindow.SetupPawnPlaced -> effect, PowerWindow.WhenExplored -> effect)
 
-final case class GreatForge private (catalog: ExecutableCatalog)
-    extends ForgeRule:
+case object GreatForge extends ForgeRule:
+  def id: PowerId = GreatForgeCard.intact.power.id
+
   val edifice: EdificeId = GreatForgeCard.id
-  def id: PowerId = GreatForge.id
   protected def side: EdificeSide = EdificeSide.Intact
 
   private val notes = NoteSet(id)
@@ -69,15 +67,16 @@ final case class GreatForge private (catalog: ExecutableCatalog)
   protected def build(ready: ReadyGame, actor: PlayerId, at: SiteId)
       : Either[OathViolation, Vector[CoreOperation]] =
     Right(RelicDraws.takeTop(ready, actor))
-object GreatForge:
-  val id: PowerId = GreatForgeCard.intact.power.id
-  def forCatalog(catalog: ExecutableCatalog): GreatForge =
-    new GreatForge(catalog)
 
-final case class BrokenForge private (catalog: ExecutableCatalog)
-    extends ForgeRule:
+case object BrokenForge extends ForgeRule:
+  def id: PowerId = GreatForgeCard.ruined.power.id
+
+  /** Every relic at a site in play, in map order. */
+  private def siteRelics(ready: ReadyGame): Vector[CardId] =
+    val current = ready.game.current
+    current.map.inPlay.flatMap(site => current.map.sites(site).relics.map(_.id))
+
   val edifice: EdificeId = GreatForgeCard.id
-  def id: PowerId = BrokenForge.id
   protected def side: EdificeSide = EdificeSide.Ruined
 
   private val notes = NoteSet(id)
@@ -102,12 +101,3 @@ final case class BrokenForge private (catalog: ExecutableCatalog)
         .flatMap(s => current.map.sites(s).relics.map(relic => Discard.Relic(
           relic.id, PositionedLocation(Location.Site(s)), relic.tokens.secrets, actor)))
     }
-object BrokenForge:
-  val id: PowerId = GreatForgeCard.ruined.power.id
-
-  /** Every relic at a site in play, in map order. */
-  private def siteRelics(ready: ReadyGame): Vector[CardId] =
-    val current = ready.game.current
-    current.map.inPlay.flatMap(site => current.map.sites(site).relics.map(_.id))
-  def forCatalog(catalog: ExecutableCatalog): BrokenForge =
-    new BrokenForge(catalog)

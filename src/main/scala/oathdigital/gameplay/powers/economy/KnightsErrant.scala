@@ -21,7 +21,7 @@ object KnightsErrantCard extends Denizen(DenizenId("120"), "Knights Errant", Sui
   */
 final case class KnightsErrant private (catalog: ExecutableCatalog)
     extends SelectedModifier:
-  val cardId: DenizenId = KnightsErrantCard.id
+  val card: Denizen = KnightsErrantCard
   def id: PowerId = KnightsErrant.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Muster)
 

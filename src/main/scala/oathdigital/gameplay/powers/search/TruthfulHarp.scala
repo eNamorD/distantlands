@@ -28,7 +28,7 @@ object TruthfulHarpCard extends Relic(RelicId("R04"), "Truthful Harp", value = 3
   */
 final case class TruthfulHarp private (catalog: ExecutableCatalog)
     extends SelectedModifier:
-  val cardId: RelicId = TruthfulHarpCard.id
+  val card: Relic = TruthfulHarpCard
   def id: PowerId = TruthfulHarp.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Search)
 

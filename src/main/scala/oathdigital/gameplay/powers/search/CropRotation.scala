@@ -30,7 +30,7 @@ object CropRotationCard extends Denizen(DenizenId("128"), "Crop Rotation", Suit.
   */
 final case class CropRotation private (catalog: ExecutableCatalog)
     extends SelectedModifier:
-  val cardId: DenizenId = CropRotationCard.id
+  val card: Denizen = CropRotationCard
   def id: PowerId = CropRotation.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Search)
   private val notes = NoteSet(id)

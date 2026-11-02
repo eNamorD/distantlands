@@ -31,7 +31,7 @@ object LandWardenCard extends Denizen(DenizenId("130"), "Land Warden", Suit.Hear
   */
 final case class LandWarden private (catalog: ExecutableCatalog)
     extends SelectedModifier:
-  val cardId: DenizenId = LandWardenCard.id
+  val card: Denizen = LandWardenCard
   def id: PowerId = LandWarden.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Search)
   override def cost: Cost = Cost(favor = LandWarden.Favor)

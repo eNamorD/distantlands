@@ -137,7 +137,7 @@ class WayStationSuite extends munit.FunSuite:
     assertEquals(Look(result).favor(actor), 0)
 
   test("it folds Late, after every other Travel power, at no priority"):
-    val power = WayStation.forCatalog(catalog)
+    val power = WayStation
     assertEquals(power.contributions(PowerWindow.TravelCost).collect {
       case transform: Transform => transform.phase }, Vector(FoldPhase.Late))
     assertEquals(power.priority, 0)

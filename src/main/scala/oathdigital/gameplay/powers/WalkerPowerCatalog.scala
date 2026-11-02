@@ -117,8 +117,8 @@ object WalkerPowerCatalog:
       PlanRewrites.forCatalog(catalog) ++
       CardPlayTriggers.forCatalog(catalog) ++
       BannerFacePowers.contributions ++
-      Vector(Dazzle.forCatalog(catalog), GreatMarket.forCatalog(catalog),
-        BanditMarket.forCatalog(catalog), GreatForge.forCatalog(catalog),
-        BrokenForge.forCatalog(catalog), ProvingGrounds.forCatalog(catalog),
+      Vector(Dazzle.forCatalog(catalog), GreatMarket,
+        BanditMarket, GreatForge,
+        BrokenForge, ProvingGrounds,
         EmptyGrounds.forCatalog(catalog), TakeWealthLimit,
         ConspiracyWhenPlayed)

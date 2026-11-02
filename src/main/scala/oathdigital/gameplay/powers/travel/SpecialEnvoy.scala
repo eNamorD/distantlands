@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.travel
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, PrintedPower}
 import oathdigital.gameplay.operations.SupplyStrip
 import oathdigital.gameplay.powerresolver.{Contribution, PowerCtx, Transform}
 import oathdigital.gameplay.powers.SelectedModifier
@@ -25,13 +25,19 @@ object SpecialEnvoyCard extends Denizen(DenizenId("158"), "Special Envoy", Suit.
   * is not the traveller's Act Phase to end (catalog batch 8, slice 14,
   * ruling 5).
   */
-final case class SpecialEnvoy private (catalog: ExecutableCatalog)
-    extends SelectedModifier:
-  val cardId: DenizenId = SpecialEnvoyCard.id
-  def id: PowerId = SpecialEnvoy.id
+case object SpecialEnvoy extends SelectedModifier:
+  def id: PowerId = SpecialEnvoyCard.power.id
+  /** Folds after every Travel power, Royal Stables included. */
+  val Priority: Int = RoyalStables.Priority + 1
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "The Act Phase ended." */
+  val ended: NoteKey = notes.key("ended", Vector(
+    NotePart.Text("The Act Phase ended.")))
+
+  val card: Denizen = SpecialEnvoyCard
   def actions: Set[MajorActionType] = Set(MajorActionType.Travel)
   override def priority: Int = SpecialEnvoy.Priority
-  override def noteKeys: Vector[NoteKey] = SpecialEnvoy.noteKeys
 
   def effects: Map[PowerWindow, Vector[Contribution]] = Map(
     PowerWindow.TravelCost -> Vector(Transform((ctx, operations) =>
@@ -44,16 +50,3 @@ final case class SpecialEnvoy private (catalog: ExecutableCatalog)
 
   override def appliesAt(ctx: PowerCtx): Boolean =
     TravelRoute.pawnMove(ctx.operation).nonEmpty
-
-object SpecialEnvoy:
-  val id: PowerId = SpecialEnvoyCard.power.id
-  /** Folds after every Travel power, Royal Stables included. */
-  val Priority: Int = RoyalStables.Priority + 1
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "The Act Phase ended." */
-  val ended: NoteKey = notes.key("ended", Vector(
-    NotePart.Text("The Act Phase ended.")))
-
-  def forCatalog(catalog: ExecutableCatalog): SpecialEnvoy =
-    new SpecialEnvoy(catalog)

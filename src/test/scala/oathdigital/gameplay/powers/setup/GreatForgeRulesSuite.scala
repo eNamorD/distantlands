@@ -45,9 +45,9 @@ class GreatForgeRulesSuite extends munit.FunSuite:
     SetupWalkDriver.driveWithEvents(ready, tree, TriggeredProcedureRef.Setup,
       powers).events
 
-  private val great = GreatForge.forCatalog(catalog)
+  private val great = GreatForge
 
-  private val broken = BrokenForge.forCatalog(catalog)
+  private val broken = BrokenForge
 
   test("Great Forge gives the placing player the top relic facedown"):
     val staged = stagedAt(EdificeSide.Intact)

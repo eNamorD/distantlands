@@ -20,13 +20,13 @@ object HuntingPartyCard extends Denizen(DenizenId("122"), "Hunting Party", Suit.
   */
 final case class HuntingParty private (catalog: ExecutableCatalog)
     extends SelectedModifier:
-  val cardId: DenizenId = HuntingPartyCard.id
+  val card: Denizen = HuntingPartyCard
   def id: PowerId = HuntingParty.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Search)
 
   def effects: Map[PowerWindow, Vector[Contribution]] = Map(
     PowerWindow.SearchActionEligibility -> Vector(Transform((ctx, children) =>
-      children :+ HuntingParty.queued(ctx.actor, cardId))))
+      children :+ HuntingParty.queued(ctx.actor, card.id))))
 
   override def warning(decide: Decide, option: DecisionOptionRef)
       : Option[OptionReason] = option match

@@ -33,7 +33,7 @@ object WineOfWelcomeCard extends Relic(RelicId("R33"), "Wine of Welcome", value 
   */
 final case class WineOfWelcome private (catalog: ExecutableCatalog)
     extends SelectedModifier:
-  val cardId: RelicId = WineOfWelcomeCard.id
+  val card: Relic = WineOfWelcomeCard
   def id: PowerId = WineOfWelcome.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Search)
   override def priority: Int = BottomDraw.Priority

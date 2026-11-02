@@ -29,7 +29,7 @@ object GolemLegionsCard extends Denizen(DenizenId("199"), "Golem Legions", Suit.
   */
 final case class GolemLegions private (catalog: ExecutableCatalog)
     extends SelectedModifier:
-  val cardId: DenizenId = GolemLegionsCard.id
+  val card: Denizen = GolemLegionsCard
   def id: PowerId = GolemLegions.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Muster)
 

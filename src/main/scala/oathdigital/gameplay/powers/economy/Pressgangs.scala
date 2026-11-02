@@ -25,7 +25,7 @@ object PressgangsCard extends Denizen(DenizenId("6"), "Pressgangs", Suit.Order):
   */
 final case class Pressgangs private (catalog: ExecutableCatalog)
     extends SelectedModifier:
-  val cardId: DenizenId = PressgangsCard.id
+  val card: Denizen = PressgangsCard
   def id: PowerId = Pressgangs.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Muster)
   override def priority: Int = EconomySources.ExemptionPriority

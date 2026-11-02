@@ -24,7 +24,7 @@ object RelicWorshipCard extends Denizen(DenizenId("173"), "Relic Worship", Suit.
   */
 final case class RelicWorship private (catalog: ExecutableCatalog)
     extends SelectedModifier:
-  val cardId: DenizenId = RelicWorshipCard.id
+  val card: Denizen = RelicWorshipCard
   def id: PowerId = RelicWorship.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Recover)
   override def cost: Cost = Cost(secret = RelicWorship.Secrets)

@@ -22,7 +22,7 @@ object NewsFromAfarCard extends Denizen(DenizenId("134"), "News from Afar", Suit
   */
 final case class NewsFromAfar private (catalog: ExecutableCatalog)
     extends SelectedModifier:
-  val cardId: DenizenId = NewsFromAfarCard.id
+  val card: Denizen = NewsFromAfarCard
   def id: PowerId = NewsFromAfar.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Search)
   override def cost: Cost = Cost(favor = NewsFromAfar.Favor)

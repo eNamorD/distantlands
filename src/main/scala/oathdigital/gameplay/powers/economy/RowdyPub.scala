@@ -21,7 +21,7 @@ object RowdyPubCard extends Denizen(DenizenId("144"), "Rowdy Pub", Suit.Hearth) 
   */
 final case class RowdyPub private (catalog: ExecutableCatalog)
     extends SelectedModifier:
-  val cardId: DenizenId = RowdyPubCard.id
+  val card: Denizen = RowdyPubCard
   def id: PowerId = RowdyPub.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Muster)
 
@@ -31,7 +31,7 @@ final case class RowdyPub private (catalog: ExecutableCatalog)
 
   private def bonus(actor: PlayerId): Operation = BuildOps((ready, pending) =>
     if PowerAnswers.one(pending, MusterProcedure.decisionId)
-        .contains(DecisionOptionRef.Denizen(cardId)) then
+        .contains(DecisionOptionRef.Denizen(card.id)) then
       PlayerFacts.forceKind(ready, actor).map(kind =>
         Vector[CoreOperation](Gain.Warbands(actor, kind, RowdyPub.Warbands)))
     else Right(Vector.empty))

@@ -21,7 +21,7 @@ object BirdsongCard extends Denizen(DenizenId("176"), "Birdsong", Suit.Beast) wi
   */
 final case class Birdsong private (catalog: ExecutableCatalog)
     extends SelectedModifier:
-  val cardId: DenizenId = BirdsongCard.id
+  val card: Denizen = BirdsongCard
   def id: PowerId = Birdsong.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Trade)
 

@@ -30,7 +30,7 @@ object DisciplesCard extends Denizen(DenizenId("205"), "Disciples", Suit.Arcane)
   */
 final case class Disciples private (catalog: ExecutableCatalog)
     extends SelectedModifier:
-  val cardId: DenizenId = DisciplesCard.id
+  val card: Denizen = DisciplesCard
   def id: PowerId = Disciples.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Search)
 

@@ -30,7 +30,7 @@ object TheOldOakCard extends Denizen(DenizenId("42"), "The Old Oak", Suit.Beast)
   */
 final case class TheOldOak private (catalog: ExecutableCatalog)
     extends SelectedModifier:
-  val cardId: DenizenId = TheOldOakCard.id
+  val card: Denizen = TheOldOakCard
   def id: PowerId = TheOldOak.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Trade)
 
@@ -49,7 +49,7 @@ final case class TheOldOak private (catalog: ExecutableCatalog)
   private def bonus(actor: PlayerId): Operation =
     Deferred.resolve(TheOldOak.deferred)((_, pending, _) =>
       if PowerAnswers.one(pending, TradeProcedure.decisionId)
-          .contains(DecisionOptionRef.Denizen(cardId)) then
+          .contains(DecisionOptionRef.Denizen(card.id)) then
         Vector(Gain.Secrets(actor, TheOldOak.Secrets))
       else Vector.empty)
 

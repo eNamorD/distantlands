@@ -29,7 +29,7 @@ object WelcomingPartyCard extends Denizen(DenizenId("50"), "Welcoming Party", Su
   */
 final case class WelcomingParty private (catalog: ExecutableCatalog)
     extends SelectedModifier:
-  val cardId: DenizenId = WelcomingPartyCard.id
+  val card: Denizen = WelcomingPartyCard
   def id: PowerId = WelcomingParty.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Search)
 

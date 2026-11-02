@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.economy
 
-import oathdigital.catalog.ExecutableCatalog
+import oathdigital.catalog.{ExecutableCatalog, Relic}
 import oathdigital.gameplay.{NoteSupport, PowerAccess, SpitefulMirrorCard}
 import oathdigital.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
 import oathdigital.gameplay.powerresolver.{Contribution, Transform}
@@ -27,7 +27,7 @@ final case class SpitefulMirror private (catalog: ExecutableCatalog)
     extends SelectedModifier:
   import SpitefulMirror._
 
-  val cardId: RelicId = SpitefulMirrorCard.id
+  val card: Relic = SpitefulMirrorCard
   def id: PowerId = SpitefulMirror.id
   def actions: Set[MajorActionType] =
     Set(MajorActionType.Trade, MajorActionType.Muster)

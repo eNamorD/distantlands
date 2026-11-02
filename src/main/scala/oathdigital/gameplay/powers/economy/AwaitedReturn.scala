@@ -28,7 +28,7 @@ object AwaitedReturnCard extends Denizen(DenizenId("150"), "Awaited Return", Sui
   */
 final case class AwaitedReturn private (catalog: ExecutableCatalog)
     extends SelectedModifier:
-  val cardId: DenizenId = AwaitedReturnCard.id
+  val card: Denizen = AwaitedReturnCard
   def id: PowerId = AwaitedReturn.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Trade)
   override def noteKeys: Vector[NoteKey] = AwaitedReturn.noteKeys
