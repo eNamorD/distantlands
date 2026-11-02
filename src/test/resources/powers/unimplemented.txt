@@ -120,14 +120,3 @@ relic.the-grand-scepter.campaign
 relic.the-grand-scepter.negotiation
 relic.whispering-stone
 site.ancient-city.enduring
-site.buried-giant.plains
-site.deep-woods.homeland-beast
-site.dunes.plains
-site.golden-valley.homeland-hearth
-site.great-slum.homeland-discord
-site.painted-towers.homeland-order
-site.salt-flats.plains
-site.shrouded-woods.plains
-site.solitary-pillar.plains
-site.standing-stones.homeland-arcane
-site.steppe.homeland-nomad

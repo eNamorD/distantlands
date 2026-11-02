@@ -25,13 +25,6 @@ object PilgrimageCard extends Denizen(DenizenId("161"), "Pilgrimage", Suit.Nomad
       "and put them on your region's discard pile.")
   val powers: Vector[PrintedPower] = Vector(power)
 
-object AncientBloodlineCard extends Denizen(DenizenId("165"), "Ancient Bloodline", Suit.Nomad) with AdviserOnly:
-  val power = PrintedPower(PowerId("denizen.ancient-bloodline"),
-    persistent = true, cost = Cost.free,
-    text = "Your enemies act as if denizens and relics at sites you " +
-      "rule are **locked**.")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object AncientPactCard extends Denizen(DenizenId("166"), "Ancient Pact", Suit.Nomad) with Locked with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.ancient-pact"),
     persistent = false, cost = Cost.free,

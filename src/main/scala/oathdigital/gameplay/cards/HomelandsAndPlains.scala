@@ -1,10 +1,25 @@
-package oathdigital.catalog.holding
+package oathdigital.gameplay.cards
 
 import oathdigital.catalog.Site
-import oathdigital.model.{PowerId, SiteId, Suit, Tokens}
+import oathdigital.gameplay.actions.RuleNotes
+import oathdigital.model.{PowerId, Suit, SiteId, Tokens}
 
-// Generated from the retired runtime JSON (card classes slice 1).
-// Hand-edited from here on; a card moves out when it is implemented.
+/** The eleven sites whose power no power object runs. The six Homelands'
+  * `homeland-<suit>` handlers are card play's Homeland rule,
+  * `CardPlayRules.homeland`, which writes its line as
+  * `RuleNotes.homelandDiscard`; the five Plains' `plains` handlers print
+  * "This site has no power". Both play correctly with nothing registered,
+  * so `PowerImplementationStatus` counts `handlers` implemented from this
+  * list.
+  */
+object HomelandsAndPlains:
+  val homelands: Vector[Site] = Vector(DeepWoodsSite, GoldenValleySite,
+    GreatSlumSite, PaintedTowersSite, StandingStonesSite, SteppeSite)
+  val plains: Vector[Site] = Vector(BuriedGiantSite, DunesSite,
+    SaltFlatsSite, ShroudedWoodsSite, SolitaryPillarSite)
+  /** The rule that runs every Homeland handler. */
+  val homelandRule: PowerId = RuleNotes.homelandDiscard
+  val handlers: Set[PowerId] = (homelands ++ plains).flatMap(_.handlers).toSet
 
 object BuriedGiantSite extends Site(SiteId("site:buried-giant"), "Buried Giant",
     defense = 1, capacity = 1, relicSlots = 2,

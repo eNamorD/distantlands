@@ -1,5 +1,6 @@
 package oathdigital.gameplay.powers
 
+import oathdigital.gameplay.cards.HomelandsAndPlains
 import oathdigital.gameplay.operations.{AncientBloodline, GrandScepter,
   HallOfMinisters, OperationRestrictions}
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
@@ -29,6 +30,15 @@ class PowerImplementationStatusSuite extends munit.FunSuite:
       "power, is implemented"):
     OperationRestrictions.printedRules.foreach(rule =>
       assert(implemented(rule.id), rule.id.value))
+
+  test("the six Homelands' handlers, which card play's Homeland rule runs, " +
+      "and the five Plains' handlers, which print no power, are implemented"):
+    assertEquals(HomelandsAndPlains.homelands.size, 6)
+    assertEquals(HomelandsAndPlains.plains.size, 5)
+    assert(HomelandsAndPlains.homelands.forall(_.homeland.nonEmpty))
+    assert(HomelandsAndPlains.plains.forall(_.homeland.isEmpty))
+    (HomelandsAndPlains.homelands ++ HomelandsAndPlains.plains)
+      .flatMap(_.handlers).foreach(id => assert(implemented(id), id.value))
 
   test("an id nothing declares at all is not implemented"):
     assert(!implemented(PowerId("denizen.not-a-real-power")))
