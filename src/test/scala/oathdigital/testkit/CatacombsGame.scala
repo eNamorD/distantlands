@@ -1,11 +1,11 @@
 package oathdigital.testkit
 
 import oathdigital.gameplay.actions.RecoverRules
+import oathdigital.gameplay.cards.{BrokenPeaksSite, FairIsleSite}
 import oathdigital.gameplay.powerresolver.ModifierPicks
 import oathdigital.gameplay.powers.WalkerPowerCatalog
 import oathdigital.gameplay.powers.action.DowsingSticksCard
 import oathdigital.gameplay.powers.recover.CatacombsCard
-import oathdigital.gameplay.powers.travel.{BrokenPeaksSite, FairIsleSite}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 

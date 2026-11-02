@@ -1,6 +1,6 @@
 package oathdigital.application
 
-import oathdigital.gameplay.powers.wake.AncientCitySite
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._

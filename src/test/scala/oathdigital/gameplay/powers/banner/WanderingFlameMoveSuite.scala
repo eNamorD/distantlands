@@ -1,10 +1,9 @@
 package oathdigital.gameplay.powers.banner
 
 import oathdigital.catalog.Site
-import oathdigital.gameplay.cards.{BuriedGiantSite, DeepWoodsSite}
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite, DeepWoodsSite}
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.powers.whenplayed.GarrisonCard
 import oathdigital.model._
 import oathdigital.testkit.{ActPowerHarness, Look, PhasePowerHarness, Refusals,

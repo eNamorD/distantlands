@@ -3,10 +3,10 @@ package oathdigital.gameplay.powers.action
 import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog,
   PowerFixture, WalkerPowerCatalog}
 import oathdigital.gameplay.powers.cardplay.VowOfObedienceCard
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._

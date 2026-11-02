@@ -4,10 +4,10 @@ import oathdigital.gameplay.{ModifierPlay, OathRules}
 import oathdigital.gameplay.WalkerDiceFixture.scripted
 import oathdigital.gameplay.actions.dice.RerollChoice
 import oathdigital.gameplay.actions.recover.RecoverProcedure
+import oathdigital.gameplay.cards.FairIsleSite
 import oathdigital.gameplay.powers.WalkerPowerCatalog
 import oathdigital.gameplay.powers.action.DowsingSticksCard
 import oathdigital.gameplay.powers.dice.JinxCard
-import oathdigital.gameplay.powers.travel.FairIsleSite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.powerresolver.ModifierPicks
 import oathdigital.gameplay.walker.{DeltaPayload, LogNoted, WalkerDice,

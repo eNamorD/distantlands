@@ -1,10 +1,10 @@
 package oathdigital.gameplay.walker
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,
   ModifierPicks, Transform}
 import oathdigital.gameplay.powers.campaign.{MercenariesCard, WrestlersCard}
 import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
 import oathdigital.testkit.Table
 import oathdigital.testkit.Table.p1

@@ -1,7 +1,6 @@
 package oathdigital.application
 
-import oathdigital.gameplay.cards.BuriedGiantSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
+import oathdigital.gameplay.cards.{AncientCitySite, BuriedGiantSite}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.protocol.projection.StepOfferProjection
 import oathdigital.testkit.Table

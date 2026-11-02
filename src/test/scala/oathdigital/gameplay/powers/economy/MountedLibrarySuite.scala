@@ -1,9 +1,9 @@
 package oathdigital.gameplay.powers.economy
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powerresolver.{FoldPhase, Transform}
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.{HorseArchersCard, WrestlersCard}
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look, PowerRules,

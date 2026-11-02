@@ -1,9 +1,8 @@
 package oathdigital.gameplay
 
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.operations._
 import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
 import oathdigital.model.TestGameFixtures._
 import oathdigital.testkit.Table

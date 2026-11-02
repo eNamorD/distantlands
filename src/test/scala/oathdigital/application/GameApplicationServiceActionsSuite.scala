@@ -1,10 +1,9 @@
 package oathdigital.application
 
 import oathdigital.gameplay.powers.economy.HallowedSpringCard
-import oathdigital.gameplay.cards.DeepWoodsSite
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  DeepWoodsSite}
 import oathdigital.gameplay.powers.action.{FaeMerchantCard, SecondChanceCard}
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.powers.whenplayed.{ThreateningRoarCard,
   WizardsConclaveCard}
 import oathdigital.testkit.MenuPlay

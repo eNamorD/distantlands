@@ -1,10 +1,10 @@
 package oathdigital.gameplay.powers.setup
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.operations.{AncientBloodlineCard,
   HallOfMinistersCard}
 import oathdigital.gameplay.powers.{NoteText, PlayerFacts, WalkerPowerCatalog}
 import oathdigital.gameplay.powers.action.FaeMerchantCard
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.gameplay.setup.{FirstGameSetupFixture, SetupProcedure, SetupWalkDriver}
 import oathdigital.gameplay.walker.WalkerPowers

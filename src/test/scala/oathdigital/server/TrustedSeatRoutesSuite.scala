@@ -1,6 +1,6 @@
 package oathdigital.server
 
-import oathdigital.gameplay.powers.wake.AncientCitySite
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.model.{PlayerColor, PlayerId}
 
 import java.net.{CookieManager, CookiePolicy, URI}

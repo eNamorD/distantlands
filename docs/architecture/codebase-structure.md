@@ -127,7 +127,9 @@ gameplay.
 1. Verify the catalog handler ID and its `RuleSourceIndex` source.
 2. Move the card object out of `catalog/holding/` into the power's file. Keep
    its `PrintedPower`, and keep the card listed in
-   `gameplay/cards/NewFoundations.scala`.
+   `gameplay/cards/NewFoundations.scala`. The 24 site objects are the
+   exception: all of them live in `gameplay/cards` (`HomelandsAndPlains.scala`
+   and `PoweredSites.scala`), and a site power imports its site from there.
 3. Write the power as a `case object` that names its card object: a
    `SelectedModifier` states `card`, a plan discarded at the end states
    `card`, a `PaidAction` takes the printed power. A `ContributingPower`

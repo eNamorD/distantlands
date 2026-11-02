@@ -3,8 +3,8 @@ package oathdigital.gameplay.powers.campaign
 import oathdigital.catalog.holding.{AutumnWindCard, BrackenCard}
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
+import oathdigital.gameplay.cards.BrokenPeaksSite
 import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
 import oathdigital.model._
 
 /** Battle Axes: a free plan for two attack dice, added or removed, offered

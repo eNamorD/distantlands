@@ -1,8 +1,7 @@
 package oathdigital.gameplay.powers.setup
 
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.{FirstGameSetupFixture, SetupProcedure, SetupWalkDriver}
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._

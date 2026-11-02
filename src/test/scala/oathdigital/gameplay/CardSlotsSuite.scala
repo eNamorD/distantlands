@@ -5,7 +5,8 @@ import oathdigital.gameplay.actions.{AdviserFace, AdviserPlayNote, CardPlay,
   CardPlayRules, PlacementLimit, RuleNotes, VisionRules}
 import oathdigital.gameplay.actions.cardplay.{CardSlot, CardSlots,
   MoreDiscards}
-import oathdigital.gameplay.cards.{BuriedGiantSite, DeepWoodsSite}
+import oathdigital.gameplay.cards.{AncientCitySite, BuriedGiantSite,
+  DeepWoodsSite}
 import oathdigital.gameplay.operations.{AncientBloodline, AncientBloodlineCard,
   HallOfMinisters, HallOfMinistersCard}
 import oathdigital.gameplay.powers.action.{AncientBindingCard, FaeMerchantCard,
@@ -14,7 +15,6 @@ import oathdigital.gameplay.powers.campaign.{CodeOfHonorCard, RainBootsCard,
   SealingWardCard, WrestlersCard}
 import oathdigital.gameplay.powers.economy.CurfewCard
 import oathdigital.gameplay.powers.search.{CropRotationCard, ErrandBoyCard}
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.model._

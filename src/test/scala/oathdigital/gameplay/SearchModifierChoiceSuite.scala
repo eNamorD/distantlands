@@ -2,12 +2,12 @@ package oathdigital.gameplay
 
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
 import oathdigital.gameplay.actions.search.SearchProcedure
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powerresolver.ModifierPicks
 import oathdigital.gameplay.powers.WalkerPowerCatalog
 import oathdigital.gameplay.powers.cardplay.{WildCry, WildCryCard}
 import oathdigital.gameplay.powers.search.{ErrandBoyCard, NewsFromAfar,
   NewsFromAfarCard}
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.OathState.Ready

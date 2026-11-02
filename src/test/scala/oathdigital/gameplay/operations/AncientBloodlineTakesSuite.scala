@@ -3,13 +3,11 @@ package oathdigital.gameplay.operations
 import oathdigital.gameplay.{OathRules, PowerAccess}
 import oathdigital.gameplay.WalkerDiceFixture.scripted
 import oathdigital.gameplay.actions.recover.RecoverProcedure
-import oathdigital.gameplay.cards.DunesSite
+import oathdigital.gameplay.cards.{AncientCitySite, DunesSite, FairIsleSite}
 import oathdigital.gameplay.powers.WalkerPowerCatalog
 import oathdigital.gameplay.powers.action.{DowsingSticksCard, SkeletonKey,
   SkeletonKeyCard, WaysideInnCard, WhistleCard}
-import oathdigital.gameplay.powers.travel.FairIsleSite
-import oathdigital.gameplay.powers.wake.{AncientCitySite, HornedMask,
-  HornedMaskCard}
+import oathdigital.gameplay.powers.wake.{HornedMask, HornedMaskCard}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.OathState.Ready

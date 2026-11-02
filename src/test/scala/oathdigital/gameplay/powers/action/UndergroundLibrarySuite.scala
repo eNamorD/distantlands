@@ -2,9 +2,8 @@ package oathdigital.gameplay.powers.action
 
 import oathdigital.catalog.holding.CrackedHornCard
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
-import oathdigital.gameplay.cards.BuriedGiantSite
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite}
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
 import oathdigital.testkit.{Look, MenuPlay, PhasePowerHarness, Table}

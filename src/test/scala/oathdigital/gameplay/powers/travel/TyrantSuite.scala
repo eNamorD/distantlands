@@ -1,8 +1,7 @@
 package oathdigital.gameplay.powers.travel
 
-import oathdigital.gameplay.cards.DeepWoodsSite
+import oathdigital.gameplay.cards.{AncientCitySite, DeepWoodsSite}
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
 import oathdigital.testkit.{ActPowerHarness, Look, Outcomes, PhasePowerHarness,
   Table}

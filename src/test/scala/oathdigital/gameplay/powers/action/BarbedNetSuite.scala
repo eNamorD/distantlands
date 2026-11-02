@@ -1,8 +1,8 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.catalog.holding.CrackedHornCard
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
 import oathdigital.testkit.{ActPowerHarness, Look, PhasePowerHarness, Refusals,
   Table}

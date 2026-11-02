@@ -1,8 +1,7 @@
 package oathdigital.gameplay.oathkeeper
 
-import oathdigital.gameplay.cards.DunesSite
+import oathdigital.gameplay.cards.{DunesSite, FairIsleSite}
 import oathdigital.gameplay.oathkeeper.OathkeeperOutcome._
-import oathdigital.gameplay.powers.travel.FairIsleSite
 import oathdigital.model._
 import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2, p3}

@@ -2,11 +2,10 @@ package oathdigital.application.gamelog
 
 import oathdigital.application.{GameApplicationService,
   ParkedServiceFixture, TreeDecision}
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.powers.action.{EldersCard, MessengerCard,
   SiegeEnginesCard}
-import oathdigital.gameplay.powers.travel.{BrokenPeaksSite, Hospitality,
-  HospitalityCard}
-import oathdigital.gameplay.powers.wake.AncientCitySite
+import oathdigital.gameplay.powers.travel.{Hospitality, HospitalityCard}
 import oathdigital.model._
 import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2}

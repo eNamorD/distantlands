@@ -2,10 +2,9 @@ package oathdigital.application
 
 import oathdigital.catalog.holding.CrackedHornCard
 import oathdigital.gameplay.actions.VisionRules
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.powers.campaign.WrestlersCard
 import oathdigital.gameplay.powers.setup.GreatForgeCard
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerPowers

@@ -5,15 +5,14 @@ import oathdigital.catalog.holding.CrackedHornCard
 import oathdigital.gameplay.CampaignFixture
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.cards.DunesSite
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite, DunesSite,
+  FairIsleSite}
 import oathdigital.gameplay.oathkeeper.OathkeeperProcedure
 import oathdigital.gameplay.operations.HallOfMinistersCard
 import oathdigital.gameplay.powers.action.DowsingSticksCard
 import oathdigital.gameplay.powers.campaign.{CursedCauldronCard, OutridersCard,
   StickyFireCard, VowOfPeaceCard, WrestlersCard}
 import oathdigital.gameplay.powers.economy.BirdsongCard
-import oathdigital.gameplay.powers.travel.{BrokenPeaksSite, FairIsleSite}
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2, p3}

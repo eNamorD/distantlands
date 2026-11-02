@@ -1,9 +1,9 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.catalog.holding.GlamorCard
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.ArcaneArmorCard
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.powers.whenplayed.WizardsConclaveCard
 import oathdigital.model._
 import oathdigital.protocol.projection.DecisionQueryProjection

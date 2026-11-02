@@ -1,10 +1,9 @@
 package oathdigital.gameplay.powers.search
 
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.powers.{NoteText, PayOrAsk, SearchFixture,
   WalkerPowerCatalog}
 import oathdigital.gameplay.powers.campaign.{MercenariesCard, WrestlersCard}
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._

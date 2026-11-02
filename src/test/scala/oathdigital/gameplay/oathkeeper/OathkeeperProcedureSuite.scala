@@ -1,10 +1,8 @@
 package oathdigital.gameplay.oathkeeper
 
 import oathdigital.gameplay.{OathRules, StateBasedEvaluation, TravelPlay}
-import oathdigital.gameplay.cards.{BuriedGiantSite, DunesSite}
-import oathdigital.gameplay.powers.travel.{BrokenPeaksSite, DesolateShoreSite,
-  FairIsleSite}
-import oathdigital.gameplay.powers.wake.AncientCitySite
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite, DesolateShoreSite, DunesSite, FairIsleSite}
 import oathdigital.model.OathEvent.BanditsRefilled
 import oathdigital.model.OathState.Ready
 import oathdigital.gameplay.phases.PhaseMenu

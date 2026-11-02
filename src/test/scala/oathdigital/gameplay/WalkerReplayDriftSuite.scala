@@ -1,10 +1,9 @@
 package oathdigital.gameplay
 
 import oathdigital.gameplay.actions.recover.RecoverProcedure
-import oathdigital.gameplay.cards.DunesSite
+import oathdigital.gameplay.cards.{DunesSite, FairIsleSite}
 import oathdigital.gameplay.oathkeeper.OathkeeperProcedure
 import oathdigital.gameplay.powers.action.DowsingSticksCard
-import oathdigital.gameplay.powers.travel.FairIsleSite
 import oathdigital.testkit.{CatacombsGame, Look, Outcomes, RecordedOps, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, as}

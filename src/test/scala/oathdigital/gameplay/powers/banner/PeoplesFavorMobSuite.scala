@@ -3,6 +3,7 @@ package oathdigital.gameplay.powers.banner
 import oathdigital.gameplay.{FacedownAdviserPlay, PlacementFixture}
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.{NoteText, PowerFixture, SearchFixture,
   WalkerPowerCatalog}
 import oathdigital.gameplay.powers.action.{ArcaneBrokersCard, HomesteadersCard,
@@ -11,7 +12,6 @@ import oathdigital.gameplay.powers.cardplay.WelcomingPartyCard
 import oathdigital.gameplay.powers.rest.{SilverTongue, SilverTongueCard}
 import oathdigital.gameplay.powers.search.{ErrandBoyCard, LandWardenCard,
   NewsFromAfarCard}
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._

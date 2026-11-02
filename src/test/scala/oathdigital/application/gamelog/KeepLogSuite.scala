@@ -1,10 +1,9 @@
 package oathdigital.application.gamelog
 
-import oathdigital.gameplay.cards.BuriedGiantSite
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite}
 import oathdigital.gameplay.powers.campaign.KeepCard
 import oathdigital.gameplay.powers.economy.BirdsongCard
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
 import oathdigital.testkit.{Dice, MenuPlay, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}

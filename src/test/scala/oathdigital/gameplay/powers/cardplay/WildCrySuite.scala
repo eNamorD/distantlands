@@ -2,12 +2,12 @@ package oathdigital.gameplay.powers.cardplay
 
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powerresolver.PowerCtx
 import oathdigital.gameplay.powers.{PlayerFacts, PowerFixture, SearchFixture}
 import oathdigital.gameplay.powers.action.{HomesteadersCard, WardOfSilenceCard}
 import oathdigital.gameplay.powers.campaign.WrestlersCard
 import oathdigital.gameplay.powers.search.{ErrandBoyCard, LandWardenCard}
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerStepRecorded
 import oathdigital.model._

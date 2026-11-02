@@ -3,9 +3,9 @@ package oathdigital.testkit
 import oathdigital.gameplay.FacedownAdviserPlay
 import oathdigital.gameplay.OathRules
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.action.AncientBindingCard
 import oathdigital.gameplay.powers.campaign.RainBootsCard
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._

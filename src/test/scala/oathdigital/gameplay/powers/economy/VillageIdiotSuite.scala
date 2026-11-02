@@ -1,8 +1,8 @@
 package oathdigital.gameplay.powers.economy
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.SearchFixture
 import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
 import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips

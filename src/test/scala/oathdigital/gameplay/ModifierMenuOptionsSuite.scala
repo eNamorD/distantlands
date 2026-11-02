@@ -3,6 +3,7 @@ package oathdigital.gameplay
 import oathdigital.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
 import oathdigital.gameplay.actions.search.SearchProcedure
 import oathdigital.gameplay.actions.travel.TravelProcedure
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powerresolver.ModifierPicks
 import oathdigital.gameplay.powers.WalkerPowerCatalog
 import oathdigital.gameplay.powers.economy.{AnimalPlaymates,
@@ -10,7 +11,6 @@ import oathdigital.gameplay.powers.economy.{AnimalPlaymates,
 import oathdigital.gameplay.powers.search.{ErrandBoyCard, NewsFromAfar,
   NewsFromAfarCard}
 import oathdigital.gameplay.powers.travel.{Tents, TentsCard, TravelFixture}
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{MenuPlay, ParkedNode, Table}

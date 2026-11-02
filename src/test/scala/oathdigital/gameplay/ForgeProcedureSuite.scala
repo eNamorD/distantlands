@@ -3,11 +3,11 @@ package oathdigital.gameplay
 import oathdigital.catalog.holding.MartialCultureCard
 import oathdigital.gameplay.actions.ForgeRules
 import oathdigital.gameplay.actions.forge.ForgeProcedure
-import oathdigital.gameplay.cards.DeepWoodsSite
+import oathdigital.gameplay.cards.{BrokenPeaksSite, DeepWoodsSite}
 import oathdigital.gameplay.powerresolver.ModifierPicks
 import oathdigital.gameplay.powers.action.MessengerCard
 import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.powers.travel.{BrokenPeaksSite, TentsCard}
+import oathdigital.gameplay.powers.travel.TentsCard
 import oathdigital.gameplay.powers.whenplayed.BanditChiefCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.gameplay.walker.{ChoicePayload, DecisionQueries,

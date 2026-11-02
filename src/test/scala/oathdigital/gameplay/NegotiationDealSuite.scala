@@ -2,11 +2,10 @@ package oathdigital.gameplay
 
 import oathdigital.catalog.holding.GrandMaskCard
 import oathdigital.gameplay.actions.negotiation.NegotiationDeal
-import oathdigital.gameplay.cards.DunesSite
+import oathdigital.gameplay.cards.{BrokenPeaksSite, DunesSite}
 import oathdigital.gameplay.powers.action.BrassHorseCard
 import oathdigital.gameplay.powers.campaign.StickyFireCard
 import oathdigital.gameplay.powers.search.TruthfulHarpCard
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.{AcceptDeal, ChooseManyAnswer, DeclineDeal, ProposeTerms}
 import oathdigital.model.OathViolation.InsufficientFavor

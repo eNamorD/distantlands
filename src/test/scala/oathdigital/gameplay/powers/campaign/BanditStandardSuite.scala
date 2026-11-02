@@ -2,9 +2,8 @@ package oathdigital.gameplay.powers.campaign
 
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.cards.BuriedGiantSite
+import oathdigital.gameplay.cards.{BrokenPeaksSite, BuriedGiantSite}
 import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
 import oathdigital.model._
 
 /** Bandit Standard: a free attacker's plan from a faceup relic, for one attack

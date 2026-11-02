@@ -1,16 +1,14 @@
 package oathdigital.application
 
 import oathdigital.catalog.Site
-import oathdigital.gameplay.cards.{BuriedGiantSite, DeepWoodsSite, DunesSite,
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite, DeepWoodsSite, DesolateShoreSite, DunesSite, FairIsleSite,
   GoldenValleySite}
 import oathdigital.gameplay.powers.action.{FaeMerchantCard, SecondChanceCard}
 import oathdigital.gameplay.powers.campaign.{CursedCauldronCard,
   NatureWorshipCard, StickyFireCard, WrestlersCard}
 import oathdigital.gameplay.powers.economy.BirdsongCard
 import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.powers.travel.{BrokenPeaksSite, DesolateShoreSite,
-  FairIsleSite}
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.powers.whenplayed.{ThreateningRoarCard,
   WizardsConclaveCard}
 import oathdigital.protocol.projection.{ActivePlayerResourcesProjection,

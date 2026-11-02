@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.cardplay
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.targeting.CircletOfCommandCard
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.testkit.MenuPlay
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import oathdigital.gameplay.actions.VisionRules

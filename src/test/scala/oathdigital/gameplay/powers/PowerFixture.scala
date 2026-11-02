@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers
 
-import oathdigital.gameplay.powers.wake.AncientCitySite
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.model._
 import oathdigital.testkit.{Look, Table}
 

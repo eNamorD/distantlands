@@ -2,10 +2,9 @@ package oathdigital.gameplay.powers
 
 import oathdigital.catalog.holding.{MartialCultureCard, VowOfKinshipCard}
 import oathdigital.gameplay.CampaignFixture._
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.powers.action.ConvoysCard
 import oathdigital.gameplay.powers.setup.GreatForgeCard
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 

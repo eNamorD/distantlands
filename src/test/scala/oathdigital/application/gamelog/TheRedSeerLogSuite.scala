@@ -1,10 +1,9 @@
 package oathdigital.application.gamelog
 
-import oathdigital.gameplay.cards.BuriedGiantSite
+import oathdigital.gameplay.cards.{AncientCitySite, BuriedGiantSite}
 import oathdigital.gameplay.powers.OathkeeperGoalChoice
 import oathdigital.gameplay.powers.action.{TheRedSeer, TheRedSeerCard}
 import oathdigital.gameplay.powers.cardplay.LostTapestryCard
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
 import oathdigital.testkit.{MenuPlay, Table}

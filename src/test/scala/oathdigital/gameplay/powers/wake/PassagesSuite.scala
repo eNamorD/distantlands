@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.wake
 
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog}
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._

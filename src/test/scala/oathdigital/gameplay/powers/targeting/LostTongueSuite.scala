@@ -4,9 +4,9 @@ import oathdigital.catalog.holding.CrackedHornCard
 import oathdigital.gameplay.CampaignFixture.{RaidBoard, on, raidBoard}
 import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.actions.campaign.CampaignIds
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import oathdigital.gameplay.powers.campaign.WildMountsCard
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.powers.whenplayed.ConspiracyWhenPlayed
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome,

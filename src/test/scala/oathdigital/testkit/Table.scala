@@ -3,11 +3,10 @@ package oathdigital.testkit
 import oathdigital.application.{CampaignDicePort, GameApplicationService,
   InMemoryEventStreamRepository}
 import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.cards.BuriedGiantSite
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite}
 import oathdigital.gameplay.phases.PhaseMenu
 import oathdigital.gameplay.phases.rest.WarExhaustionRandomPort
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.{FirstGameSetupFixture, GameStartRules}
 import oathdigital.model._
 import oathdigital.model.OathState.Ready

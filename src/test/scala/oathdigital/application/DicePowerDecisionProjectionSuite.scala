@@ -1,9 +1,9 @@
 package oathdigital.application
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.operations.TheGrandScepterCard
 import oathdigital.gameplay.powers.action.{DowsingSticksCard, FaeMerchant,
   FaeMerchantCard, GamblingHall, GamblingHallCard, WhistleCard}
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{ActPowerHarness, Table}

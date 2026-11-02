@@ -1,7 +1,7 @@
 package oathdigital.application.gamelog
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.campaign.StickyFireCard
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.walker.{DeltaPayload, WalkerCompleted,
   WalkerStepRecorded}
 import oathdigital.model._

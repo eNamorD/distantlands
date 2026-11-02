@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.wake
 
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.testkit.MenuPlay
 import oathdigital.gameplay.PowerAccess
 import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture}

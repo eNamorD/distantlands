@@ -3,9 +3,9 @@ package oathdigital.gameplay.powers.campaign
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.{FollowUpPlay, OathRules}
 import oathdigital.gameplay.actions.campaign.CampaignIds
+import oathdigital.gameplay.cards.BrokenPeaksSite
 import oathdigital.gameplay.powers.WalkerPowerCatalog
 import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.FollowUpOffer
 import oathdigital.model._

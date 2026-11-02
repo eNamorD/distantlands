@@ -6,7 +6,8 @@ import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.actions.dice.RerollChoice
 import oathdigital.gameplay.actions.economy.MusterProcedure
 import oathdigital.gameplay.actions.recover.RecoverProcedure
-import oathdigital.gameplay.cards.{BuriedGiantSite, DeepWoodsSite}
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite, DeepWoodsSite, FairIsleSite}
 import oathdigital.gameplay.operations.{OperationPipeline, OperationPolicy}
 import oathdigital.gameplay.phases.wake.ForcedWakeProcedure
 import oathdigital.gameplay.powerresolver.{ModifierPicks, PowerUse,
@@ -20,9 +21,8 @@ import oathdigital.gameplay.powers.campaign.{BattleHonorsCard, FireTalkersCard,
 import oathdigital.gameplay.powers.dice.JinxCard
 import oathdigital.gameplay.powers.economy.{MapLibraryCard, SmallFriendsCard}
 import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.powers.travel.{BrokenPeaksSite, FairIsleSite,
-  TravelFixture, Tyrant, TyrantCard}
-import oathdigital.gameplay.powers.wake.{AncientCitySite, HungerCard}
+import oathdigital.gameplay.powers.travel.{TravelFixture, Tyrant, TyrantCard}
+import oathdigital.gameplay.powers.wake.HungerCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{ProcedureWalker, WalkerPowers}
 import oathdigital.model._

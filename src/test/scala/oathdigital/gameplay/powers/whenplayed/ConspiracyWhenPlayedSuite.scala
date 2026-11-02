@@ -3,13 +3,12 @@ package oathdigital.gameplay.powers.whenplayed
 import oathdigital.catalog.holding.{BanditCrownCard, CrackedHornCard}
 import oathdigital.gameplay.PlacementFixture.cardPlayDecisionId
 import oathdigital.gameplay.actions.VisionRules
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerUse, PowerUseRefusal, PowerUseRestriction}
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome,
   WalkerPowers}

@@ -1,10 +1,11 @@
 package oathdigital.gameplay.walker
 
 import oathdigital.gameplay.actions.travel.TravelProcedure
+import oathdigital.gameplay.cards.NarrowPassSite
 import oathdigital.gameplay.powerresolver.QueuedStarts
 import oathdigital.gameplay.powers.PhasePowerCatalog
 import oathdigital.gameplay.powers.action.PalanquinCard
-import oathdigital.gameplay.powers.travel.{NarrowPassSite, TravelFixture}
+import oathdigital.gameplay.powers.travel.TravelFixture
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.Table.{p1, p2, p3}

@@ -2,12 +2,11 @@ package oathdigital.gameplay
 
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.cards.BuriedGiantSite
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite}
 import oathdigital.gameplay.powers.WalkerPowerCatalog
 import oathdigital.gameplay.powers.campaign.{PlanDriver, SecondWindCard}
-import oathdigital.gameplay.powers.travel.{BrokenPeaksSite, SpecialEnvoy,
-  SpecialEnvoyCard}
-import oathdigital.gameplay.powers.wake.AncientCitySite
+import oathdigital.gameplay.powers.travel.{SpecialEnvoy, SpecialEnvoyCard}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer

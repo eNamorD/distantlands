@@ -1,12 +1,11 @@
 package oathdigital.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.cards.{BuriedGiantSite, DeepWoodsSite}
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite, DeepWoodsSite}
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.PowerFixture.warbandBank
 import oathdigital.gameplay.WalkerRecordedOpsReducer
 import oathdigital.gameplay.powers.economy.VowOfWanderingCard
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
 import oathdigital.testkit.{Look, Outcomes, Table}
 import oathdigital.testkit.Table.p1

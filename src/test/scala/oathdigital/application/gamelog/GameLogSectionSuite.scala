@@ -1,6 +1,6 @@
 package oathdigital.application.gamelog
 
-import oathdigital.gameplay.powers.wake.AncientCitySite
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.model._
 import oathdigital.protocol.projection.{LogEntry}
 import LogScripts._

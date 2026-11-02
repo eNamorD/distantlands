@@ -2,11 +2,10 @@ package oathdigital.application.gamelog
 
 import oathdigital.application.WalkerDecisionProjector
 import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.cards.BuriedGiantSite
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite}
 import oathdigital.gameplay.powers.action.FaeMerchantCard
 import oathdigital.gameplay.powers.campaign.StickyFireCard
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{DeltaPayload, WalkerCompleted,

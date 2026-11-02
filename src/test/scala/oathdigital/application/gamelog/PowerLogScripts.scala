@@ -5,6 +5,7 @@ import oathdigital.application._
 import oathdigital.gameplay.{ModifierPlay, TravelPlay}
 import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.actions.travel.TravelProcedure
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.action.{BarbedNet, BarbedNetCard,
   DowsingSticksCard, GamblingHall, GamblingHallCard, Oracle, OracleCard, Wolves,
   WolvesCard}
@@ -14,7 +15,7 @@ import oathdigital.gameplay.powers.economy.BirdsongCard
 import oathdigital.gameplay.powers.search.{Augury, AuguryCard, NewsFromAfar,
   NewsFromAfarCard}
 import oathdigital.gameplay.powers.travel.{Tents, TentsCard}
-import oathdigital.gameplay.powers.wake.{AncientCitySite, HungerCard}
+import oathdigital.gameplay.powers.wake.HungerCard
 import oathdigital.gameplay.powers.whenplayed.{FamilyHeirloom,
   FamilyHeirloomCard, WizardsConclaveCard}
 import oathdigital.model._

@@ -1,8 +1,8 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
 import oathdigital.gameplay.powers.search.MushroomsCard
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.powers.whenplayed.{BanditChiefCard,
   ThreateningRoarCard}
 import oathdigital.model._

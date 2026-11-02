@@ -1,10 +1,9 @@
 package oathdigital.gameplay.powers.title
 
 import oathdigital.gameplay.{OathRules, TravelPlay}
-import oathdigital.gameplay.cards.DunesSite
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite, DunesSite,
+  FairIsleSite}
 import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.travel.{BrokenPeaksSite, FairIsleSite}
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{DeltaPayload, WalkerPowers,
   WalkerStepRecorded}

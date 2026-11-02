@@ -1,14 +1,13 @@
 package oathdigital.gameplay
 
 import oathdigital.gameplay.CampaignFixture.board
-import oathdigital.gameplay.cards.{BuriedGiantSite, DeepWoodsSite}
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite, DeepWoodsSite, DesolateShoreSite}
 import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
 import oathdigital.gameplay.powers.action.{SecondChanceCard, WildAlliesCard,
   WolvesCard}
 import oathdigital.gameplay.powers.cardplay.WildCryCard
 import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.powers.travel.{BrokenPeaksSite, DesolateShoreSite}
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.powers.whenplayed.AnimalHostCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome,

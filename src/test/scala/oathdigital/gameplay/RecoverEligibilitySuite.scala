@@ -1,7 +1,7 @@
 package oathdigital.gameplay
 
 import oathdigital.gameplay.actions.RecoverRules
-import oathdigital.gameplay.powers.travel.BrokenPeaksSite
+import oathdigital.gameplay.cards.BrokenPeaksSite
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.model._
 import oathdigital.testkit.{MenuPlay, Table}

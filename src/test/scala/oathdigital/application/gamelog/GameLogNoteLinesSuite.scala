@@ -3,11 +3,12 @@ package oathdigital.application.gamelog
 import oathdigital.engine.ReplayStep
 import oathdigital.gameplay.actions.{CardPlayRules, ProcedureNotes,
   RuleNotes, VisionRules}
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.action.{DowsingSticksCard, DreamThief,
   GamblingHall, MagicCarpet, QuickExit, Wolves}
 import oathdigital.gameplay.powers.economy.BirdsongCard
 import oathdigital.gameplay.powers.rest.{SilverTongue, SilverTongueCard}
-import oathdigital.gameplay.powers.wake.{AncientCitySite, Hunger}
+import oathdigital.gameplay.powers.wake.Hunger
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{ChoicePayload, DeltaPayload, LogNoted,
   WalkerCompleted, WalkerParked, WalkerStepRecorded}

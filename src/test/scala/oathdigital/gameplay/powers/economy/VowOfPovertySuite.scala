@@ -2,11 +2,10 @@ package oathdigital.gameplay.powers.economy
 
 import oathdigital.gameplay.ModifierPlay
 import oathdigital.gameplay.actions.economy.TradeProcedure
-import oathdigital.gameplay.cards.BuriedGiantSite
+import oathdigital.gameplay.cards.{AncientCitySite, BuriedGiantSite}
 import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog,
   WalkerPowerCatalog}
 import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._
