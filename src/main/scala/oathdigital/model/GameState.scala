@@ -156,10 +156,14 @@ final case class PowerUseRef(
     powerId: PowerId
 )
 
+/** `roundStarter` is the player who began the round in progress. It is
+  * recorded when the round begins, so a Chancellor who appears mid-round
+  * leaves the round's order alone (ruling R4). */
 final case class GameTracks(
     round: Int,
     visionsDrawn: Int,
-    usurperLimited: Boolean
+    usurperLimited: Boolean,
+    roundStarter: PlayerId
 ):
   require(round >= 1, "round must be positive")
   require(round <= 8, "round must be eight or less")

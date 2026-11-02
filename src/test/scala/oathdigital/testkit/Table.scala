@@ -281,7 +281,8 @@ final case class Table private (private val game: ReadyGame,
   /** `chancellor` and `citizens` play Imperial, with the purple bank of
     * `MaterialBankState.ImperialWarbands` on the table. Their board warbands
     * become purple ones, since a board's kind follows its role. Seat them
-    * before placing any of their warbands at a site. */
+    * before placing any of their warbands at a site. The round runs
+    * from the Chancellor, as one that began with them. */
   def imperial(chancellor: PlayerId, citizens: PlayerId*)(
       using munit.Location): Table =
     val roles = (chancellor -> Role.Chancellor) +:
@@ -292,7 +293,16 @@ final case class Table private (private val game: ReadyGame,
         campaign.lineages.updatedWith(lineage)(_.map(_.copy(role = role))))))
     }.update(ready => ready.copy(banks = ready.banks.copy(warbandSupply =
       ready.banks.warbandSupply.updated(ForceKind.Imperial,
-        MaterialBankState.ImperialWarbands))))
+        MaterialBankState.ImperialWarbands)))).roundStarter(chancellor)
+
+  /** The first-game option that ignores "become a Citizen" powers is off. */
+  def allowingCitizenshipPowers: Table = update(ready => ready.copy(setup =
+    ready.setup.copy(ignoreCitizenshipPowers = false)))
+
+  /** The round in progress began with `player`. */
+  def roundStarter(player: PlayerId): Table =
+    update(_.updateCurrent(current => current.copy(tracks =
+      current.tracks.copy(roundStarter = player))))
 
   /** A bandit stack of its printed capacity at every empty in-play site that
     * has one: the board real play reaches once the refill after a command

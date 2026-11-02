@@ -134,6 +134,13 @@ class DomainValidationSuite extends munit.FunSuite:
       .oathkeeper(Some(Table.p2)).ready.game
     assertEquals(imperialUsurpers(oathkeeperCitizen), Vector.empty)
 
+  test("the round's starter is a seated player"):
+    // Built with a Table step, then validated: the state breaks a rule
+    // on purpose.
+    val unseated = Table.start.roundStarter(PlayerId("nobody")).ready.game
+    assert(DomainValidation.validate(unseated).contains(
+      DomainProblem.UnknownRoundStarter(PlayerId("nobody"))))
+
   private def imperialUsurpers(game: OathGame): Vector[DomainProblem] =
     DomainValidation.validate(game)
       .collect { case problem: DomainProblem.ImperialUsurper => problem }

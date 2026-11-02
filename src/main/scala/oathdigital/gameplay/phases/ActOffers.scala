@@ -49,14 +49,18 @@ object ActOffers:
     minor(ActionRef.PeekSiteRelics, "Peek at relics at your site"),
     minor(ActionRef.RevealOwnedRelic, "Reveal a relic"),
     minor(ActionRef.MoveWarbands, "Move warbands"),
-    minor(ActionRef.TransferWarbands, "Transfer warbands"))
+    minor(ActionRef.TransferWarbands, "Transfer warbands"),
+    minor(ActionRef.SelfExile, "Exile yourself"))
 
   /** The options `actor`'s Act menu lists. Warband Transfers is an
-    * Imperial law, so an Exile's menu leaves it out rather than showing an
-    * option their role can never use. */
+    * Imperial law and self-exile a Citizen's, so a menu leaves out an
+    * option its player's role can never use. */
   def offeredTo(ready: ReadyGame, actor: PlayerId): Vector[ActOffer] =
-    all.filter(offer => offer.procedure != ActionRef.TransferWarbands ||
-      Imperials.isImperial(ready, actor))
+    all.filter(offer => offer.procedure match
+      case ActionRef.TransferWarbands => Imperials.isImperial(ready, actor)
+      case ActionRef.SelfExile =>
+        Imperials.role(ready, actor).contains(Role.Citizen)
+      case _ => true)
 
   /** Why an Act action cannot start, in the player's words, when its
     * refusal is not about Supply or favor. */
@@ -73,6 +77,8 @@ object ActOffers:
       case (ActionRef.MoveWarbands,
           OathViolation.MinorActionUnavailable(detail)) => detail
       case (ActionRef.TransferWarbands,
+          OathViolation.MinorActionUnavailable(detail)) => detail
+      case (ActionRef.SelfExile,
           OathViolation.MinorActionUnavailable(detail)) => detail
       case (ActionRef.PeekSiteRelics, _) => "No relics at your site"
       case (ActionRef.RevealOwnedRelic, _) => "You have no facedown relic"

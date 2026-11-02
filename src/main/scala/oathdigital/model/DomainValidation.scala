@@ -28,6 +28,7 @@ object DomainProblem:
   final case class UnknownForceLineage(site: SiteId, lineage: LineageId)
       extends DomainProblem
   final case class UnknownActivePlayer(player: PlayerId) extends DomainProblem
+  final case class UnknownRoundStarter(player: PlayerId) extends DomainProblem
   final case class UnknownPeoplesFavorHolder(player: PlayerId)
       extends DomainProblem
   final case class UnknownDarkestSecretHolder(player: PlayerId)
@@ -130,6 +131,8 @@ object DomainValidation:
       .sortBy(_.value).foreach(player => problems += UnknownTemporaryHandOwner(player))
     if !playerIds.contains(game.current.turn.activePlayer) then
       problems += UnknownActivePlayer(game.current.turn.activePlayer)
+    if !playerIds.contains(game.current.tracks.roundStarter) then
+      problems += UnknownRoundStarter(game.current.tracks.roundStarter)
 
     map.sites.toVector.sortBy(_._1.value).foreach:
       case (site, SiteState(SiteForces.Occupied(ForceKind.Exile(lineage), _), _, _, _))

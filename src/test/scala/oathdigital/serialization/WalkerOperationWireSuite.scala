@@ -430,6 +430,7 @@ class WalkerOperationWireSuite extends munit.FunSuite:
       ChronicleTaskAssigned(ChronicleTask.Beacon, PlayerId("red")),
       GrandScepterFromBox(PlayerId("red")),
       ImperialWarbandsTaken(8),
+      UsurperLimiterRemoved,
       LineagePointsScored(LineageId("lineage:red"), 3),
       EdificeBuilt(CatalogNames.edifice("Great Market"), site),
       SuitedReserveFromBox(Suit.Beast,

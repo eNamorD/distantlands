@@ -2,10 +2,14 @@ package oathdigital.gameplay
 
 import oathdigital.model._
 
-/** The order of a round (CR p. 17): from the Chancellor, or from the first
-  * player when there is none. */
+/** The order of a round (CR p. 17). A round runs from the player recorded
+  * when it began (ruling R4); the next round begins with the Chancellor,
+  * or with the first player when there is none. */
 object TurnOrder:
   def roundStart(ready: ReadyGame): PlayerId =
+    ready.game.current.tracks.roundStarter
+
+  def nextRoundStart(ready: ReadyGame): PlayerId =
     Imperials.chancellor(ready).getOrElse(ready.setup.firstPlayer)
 
   def order(ready: ReadyGame): Vector[PlayerId] =

@@ -170,13 +170,13 @@ class PhaseMenuSuite extends munit.FunSuite:
     // are the menu's own.
     assertEquals(options(acting().phaseMenuParked.state).map(_.ref)
       .filter(_.isInstanceOf[DecisionOptionRef.Button]),
-      ActOffers.all.map(_.ref).filterNot(_ == act(ActionRef.TransferWarbands))
-        :+ PhaseMenu.Menu.Act.endingOption)
+      ActOffers.all.map(_.ref).filterNot(Set(act(ActionRef.TransferWarbands),
+        act(ActionRef.SelfExile))) :+ PhaseMenu.Menu.Act.endingOption)
     assertEquals(ActOffers.all.map(_.ref.wireId), Vector("search", "travel",
       "campaign", "muster", "trade.favor", "trade.secret", "forge",
       "recover", "challenge", "place-banner-resource", "negotiation",
       "play-facedown-adviser", "peek-site-relics", "reveal-owned-relic",
-      "move-warbands", "transfer-warbands"))
+      "move-warbands", "transfer-warbands", "self-exile"))
 
   test("the Wake menu bands Take Wealth apart from its powers and its " +
       "ending"):

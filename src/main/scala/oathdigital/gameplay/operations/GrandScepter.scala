@@ -48,3 +48,24 @@ case object GrandScepter extends OperationRestriction with PrintedRule:
         !OperationRestrictions.inPlay(to.location)
     case Bury(BuryableCard.Relic(buried), _, _) => buried == relic
     case _ => false
+
+/** Where a new Chancellor takes the Grand Scepter from: its holder, the
+  * site it lies at, or faceup from the box when it is in neither (Chronicle
+  * ruling 10, extended to every source by the Empire phase design, "Grand
+  * Scepter source"). Nothing when `player` holds it already. */
+object GrandScepterSource:
+  def take(ready: ReadyGame, player: PlayerId): Vector[CoreOperation] =
+    val id = TheGrandScepterCard.id
+    val current = ready.game.current
+    val held = current.players.find(_.relics.exists(_.id == id))
+      .map(state => Location.PlayArea(state.player))
+    val atSite = current.map.sites.collectFirst {
+      case (site, state) if state.relics.exists(_.id == id) =>
+        Location.Site(site)
+    }
+    held.orElse(atSite) match
+      case Some(Location.PlayArea(`player`)) => Vector.empty
+      case Some(from) => Vector(Move(Piece.Card(id), PositionedLocation(from),
+        PositionedLocation(Location.PlayArea(player)),
+        resultingOrientation = Some(Orientation.FaceUp)))
+      case None => Vector(GrandScepterFromBox(player))

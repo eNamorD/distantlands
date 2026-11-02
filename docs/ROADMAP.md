@@ -212,10 +212,9 @@ Citizenship and exile, and the Empire part of later-game setup. Design:
 [Empire phase design](superpowers/specs/2026-10-29-empire-phase-design.md).
 Each slice gets its own plan, in this order.
 
-- [ ] **Slice 3, Role changes in play.** Becoming a Citizen or the
-  Chancellor, exile, the Grand Scepter's powers, the five "become a Citizen"
-  denizens, the first-game toggle, and the Throne's Offer Citizenship step,
-  now an empty window.
+- [ ] **Slice 3b, Citizenship sources.** The Grand Scepter's battle plan
+  and its "becomes a Citizen" deal term, the five "become a Citizen"
+  denizens, and the Throne's Offer Citizenship step, now an empty window.
 - [ ] **Slice 4, Later-game setup.** Start game 2 from the Chronicle that the
   Chronicle Phase journals (CR pp. 8-13). Game start refuses a non-empty
   world, any Imperial role and a seated lineage's starting advisers until it
@@ -265,6 +264,17 @@ one.
   [rule gaps design](superpowers/specs/2026-09-26-rule-gaps-in-implemented-cards-design.md).
 
 ### Game Log deferred items
+
+- [ ] **Phase headlines inside an action.** A power or minor action that
+  ends the Act phase (Murky Fountain, Wizard School, Special Envoy, the
+  Grand Scepter's Action, self-exile) posts its "Rest" headline before the
+  action's own line, so the action reads as part of Rest. Hold a headline
+  raised inside an action until after that action's lines. The
+  `scepter-citizen` and `self-exiled` golden logs show it.
+- [ ] **First-player marker with a Chancellor.** `GameProjection` sends
+  `setup.firstPlayer` as the first player, but with a Chancellor seated
+  rounds start from `tracks.roundStarter`. Send the round's starter so the
+  board's marker points at the player who began the round.
 
 - [ ] **Show a parked action's progress in the waiting message.**
   The Game Log posts a line only once its facts are complete, so an action

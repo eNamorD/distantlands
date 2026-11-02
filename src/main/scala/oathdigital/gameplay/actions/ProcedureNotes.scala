@@ -10,7 +10,7 @@ import oathdigital.gameplay.actions.challenge.{ChallengeProcedure,
 import oathdigital.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
 import oathdigital.gameplay.actions.forge.ForgeProcedure
 import oathdigital.gameplay.actions.minor.{MinorActionProcedures,
-  WarbandTransfers}
+  SelfExile, WarbandTransfers}
 import oathdigital.gameplay.actions.negotiation.NegotiationProcedure
 import oathdigital.gameplay.actions.recover.RecoverProcedure
 import oathdigital.gameplay.actions.search.SearchProcedure
@@ -92,6 +92,7 @@ object ProcedureNotes:
       case ActionRef.RevealOwnedRelic => MinorActionProcedures.revealKeys
       case ActionRef.MoveWarbands => MinorActionProcedures.moveKeys
       case ActionRef.TransferWarbands => WarbandTransfers.keys
+      case ActionRef.SelfExile => SelfExile.keys
       case PhaseTransitionRef.FinishRest => FinishRestProcedure.noteKeys
       case TriggeredProcedureRef.Oathkeeper => OathkeeperProcedure.noteKeys
       case TriggeredProcedureRef.Setup => SetupProcedure.noteKeys

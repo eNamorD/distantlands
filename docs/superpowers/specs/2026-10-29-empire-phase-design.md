@@ -1,6 +1,6 @@
 # Empire phase design
 
-Status: designed, 2026-10-29. Slice 1a implemented, 2026-10-29. Slice 1b-i implemented, 2026-10-30. Slice 1b-ii implemented, 2026-11-01. Slice 2 implemented, 2026-11-01.
+Status: designed, 2026-10-29. Slice 1a implemented, 2026-10-29. Slice 1b-i implemented, 2026-10-30. Slice 1b-ii implemented, 2026-11-01. Slice 2 implemented, 2026-11-01. Slice 3a implemented, 2026-11-01.
 
 Roadmap item: **Phase - Empire**. Chancellor and Citizen roles in play,
 Imperial warbands, the Imperial Campaign, the Stable Regime and Successor
@@ -48,7 +48,9 @@ against the code at that time, and its own branch off `0.2.0-alpha`.
 1. **1a, Empire in play outside the Campaign.**
 2. **1b, Imperial Campaign.**
 3. **2, Empire endings.**
-4. **3, Role changes in play.**
+4. **3, Role changes in play**, as two plans: 3a, the role changes with
+   self-exile and the Scepter's Action; 3b, the Scepter's battle plan and
+   deal term, the five denizens and the Throne's offer.
 5. **4, Later-game setup.**
 
 Slices 1a to 3 are reached through test fixtures only: game start keeps

@@ -31,10 +31,10 @@ class RevelationSuite extends munit.FunSuite:
 
   test("each player with favor, in turn order from the first player, burns " +
       "what they choose and gains as many secrets"):
-    // p2 is the first player, so the order is p2, p3, then p1. No Table step
-    // sets the first player, which only this power's turn order reads.
+    // p2 is the first player and began the round, so the order is p2, p3,
+    // then p1. No Table step sets the first player.
     val ready = holdingFavor(2, 1, 3).update(game => game.copy(
-      setup = game.setup.copy(firstPlayer = p2))).ready
+      setup = game.setup.copy(firstPlayer = p2))).roundStarter(p2).ready
     val walked = walkAnswering(ready, power, played, burn(1), burn(2),
       burn(0))
     assertEquals(walked.asked.map(_.owner), Vector(p2, p3, p1))

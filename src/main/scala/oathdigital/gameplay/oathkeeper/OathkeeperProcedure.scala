@@ -18,8 +18,9 @@ import oathdigital.model.DecisionAnswer.ChooseOneAnswer
   * transfer itself. `build` is also `rebuild`: only resume commands are
   * accepted while this parks, so the outcome cannot change under it. The
   * window (catalog batch 2, N7) lets a power append what follows a change
-  * of holder, after the change: every applied `SetOathkeeper` changes the
-  * holder, since the operation rejects an unchanged one.
+  * of holder, after the change: every `SetOathkeeper` this procedure
+  * applies changes the holder, since its outcome never names the current
+  * one. (Only a role change turns an unchanged holder's title back.)
   */
 object OathkeeperProcedure:
   val recipientDecisionId: String = "oathkeeper.recipient"

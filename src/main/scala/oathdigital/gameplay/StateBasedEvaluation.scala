@@ -154,13 +154,19 @@ object StateBasedEvaluation:
             Left(InvalidEventOrder("round-end event is outside the round-end procedure"))
           else if recorded != expected then Left(InvalidEventOrder(
             s"round-end mismatch: expected $expected, recorded $recorded"))
-          else update(state)(current => current.copy(
-            tracks = current.tracks.copy(
-              round = recorded.nextRound.getOrElse(round),
-              usurperLimited = current.tracks.usurperLimited &&
-                recorded.completedRound < 3),
-            turn = current.turn.copy(phase = recorded.nextRound.fold[Phase](
-              Phase.WarExhaustion)(_ => Phase.Wake))))
+          else
+            // After round 8 War Exhaustion runs from the last round's starter.
+            val next = recorded.nextRound.fold(first)(_ =>
+              TurnOrder.nextRoundStart(ready))
+            update(state)(current => current.copy(
+              tracks = current.tracks.copy(
+                round = recorded.nextRound.getOrElse(round),
+                usurperLimited = current.tracks.usurperLimited &&
+                  recorded.completedRound < 3,
+                roundStarter = next),
+              turn = current.turn.copy(activePlayer = next,
+                phase = recorded.nextRound.fold[Phase](
+                  Phase.WarExhaustion)(_ => Phase.Wake))))
         case _ => Left(GameNotStarted)
       case recorded: WarExhaustionResolved => expectedWarExhaustion(state).flatMap:
         case ExactWar(expected) if expected == recorded => update(state)(current => current.copy(
