@@ -8,16 +8,18 @@ import oathdigital.model._
   * 3, refactor P7): every site denizen and ruined edifice of a kept suit at
   * the sites in the actor's region, as far as the generic discard rules
   * permit. Intact edifices are locked, so they stay. The region is the
-  * actor's pawn's, so a card played to a site discards itself when its suit
-  * is kept.
+  * actor's pawn's unless the power names another (Forest Horn), so a card
+  * played to a site discards itself when its suit is kept.
   *
   * A power reads its targets live, from a `Branch` the walker reaches after
   * the card is in place, then discards them in one step. Its line names the
   * targets no site holds after that step, so a card a restriction kept is
   * not named, and it says so when nothing was discarded.
   */
-private[whenplayed] final class RegionDiscard(catalog: ExecutableCatalog,
-    kept: Suit => Boolean):
+private[powers] final class RegionDiscard(catalog: ExecutableCatalog,
+    kept: Suit => Boolean,
+    regionOf: (ReadyGame, PlayerId) => Option[Region] =
+      RegionDiscard.pawnRegion):
 
   /** The kept site denizens and ruined edifices in the actor's region, in
     * map order. A card the catalog does not know is not listed; `discards`
@@ -43,16 +45,14 @@ private[whenplayed] final class RegionDiscard(catalog: ExecutableCatalog,
 
   /** The whole effect of a power that only discards: the discard step, then
     * its line. */
-  def effect(power: PowerId, card: DenizenId, actor: PlayerId)
+  def effect(power: PowerId, card: CardId, actor: PlayerId)
       : Vector[Operation] = Vector(Branch((live, _) => Vector(
     BuildOps((ready, _) => discards(ready, actor)),
     Note(power, RegionDiscard.said(card, targets(live, actor)),
       covers = true))))
 
   private def region(ready: ReadyGame, actor: PlayerId): Option[Region] =
-    val current = ready.game.current
-    current.pawnSite(actor)
-      .flatMap(current.map.regionOf)
+    regionOf(ready, actor)
 
   /** Every site card in the actor's region, with its site, in map order. */
   private def cards(ready: ReadyGame, actor: PlayerId)
@@ -84,7 +84,12 @@ private[whenplayed] final class RegionDiscard(catalog: ExecutableCatalog,
     case _: DenizenState => true
     case edifice: EdificeState => edifice.side == EdificeSide.Ruined
 
-private[whenplayed] object RegionDiscard:
+private[powers] object RegionDiscard:
+  /** The region of `actor`'s pawn: the default reach, "your region". A
+    * power that asks for a region (Forest Horn) passes its own. */
+  val pawnRegion: (ReadyGame, PlayerId) => Option[Region] = (ready, actor) =>
+    ready.game.current.pawnSite(actor).flatMap(ready.game.current.map.regionOf)
+
   /** The keys this object owns, which no one power owns. A power that
     * writes one includes this set. */
   val notes: NoteSet = NoteSet.unowned("RegionDiscard")
@@ -102,7 +107,7 @@ private[whenplayed] object RegionDiscard:
 
   /** "Discarded {cards}." for the cards of `found` that left the sites, or
     * "Nothing was discarded." */
-  def said(card: DenizenId, found: Vector[CardId])(states: NoteStates)
+  def said(card: CardId, found: Vector[CardId])(states: NoteStates)
       : Option[LogNote] =
     val source = PowerSourceRef.Card(card)
     val left = gone(found, states.now)

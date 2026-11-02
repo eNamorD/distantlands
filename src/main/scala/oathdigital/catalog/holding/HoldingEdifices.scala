@@ -63,21 +63,6 @@ object WildPasturesCard extends Edifice(EdificeId("E07"), Suit.Nomad):
         "cards on the map unless the winner rules this card.")
     val powers: Vector[PrintedPower] = Vector(power)
 
-object GiantsPathCard extends Edifice(EdificeId("E09"), Suit.Nomad):
-  object intact extends EdificeFace("Giant's Path") with Locked:
-    val power = PrintedPower(PowerId("edifice.e09.intact"),
-      persistent = false, cost = Cost(secret = 1),
-      text = "**ACTION:** Move this card to another site, then place your " +
-        "pawn there.")
-    val powers: Vector[PrintedPower] = Vector(power)
-  object ruined extends EdificeFace("Giant's Rampage"):
-    val power = PrintedPower(PowerId("edifice.e09.ruined"),
-      persistent = false, cost = Cost(favor = 1, secret = 2),
-      text = "**ACTION:** Bury a denizen at any site _(even here)_. If " +
-        "you do, move Giant's Rampage to that site and place your " +
-        "pawn there.")
-    val powers: Vector[PrintedPower] = Vector(power)
-
 object TempleOfAncestorsCard extends Edifice(EdificeId("E10"), Suit.Nomad):
   object intact extends EdificeFace("Temple of Ancestors") with Locked:
     val power = PrintedPower(PowerId("edifice.e10.intact"),
