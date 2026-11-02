@@ -268,6 +268,7 @@ one.
   [wording ledger](superpowers/specs/2026-10-16-game-log-wording-ledger.md), each
   with where it is built and why it is worth a second look. Recorded in the
   [procedures journal their own notes design](superpowers/specs/2026-10-16-procedures-journal-their-notes-design.md).
+  Audited in the [wording audit](testing/audits/game-log-wording-audit.md).
 - [ ] **A card play's line before the lines its own batch causes.**
   `WalkerSteps.recordBatch` runs `AdviserArrivalPass.after` and an executed
   trigger's follow-up inside the play's own leaf, so a power whose effect
@@ -288,6 +289,7 @@ one.
   seat, and `formatAppended` takes `stateBefore` and `lastStateAfter`
   without checking them. Recorded as separate candidates in the
   [log operation strictness decision](superpowers/specs/2026-10-19-log-operation-strictness-decision.md).
+  Audited in the [split delta audit](testing/audits/split-delta-bracketing-audit.md).
 
 ### Powers-related deferred items
 
@@ -306,6 +308,7 @@ one.
   `WalkerDecisionProjector.waiting` reads only a parked decision's heading and
   Negotiation query, which the look-ahead never narrows, so its second
   `parkedDecide` could skip the look-ahead like the other identity-only callers.
+  Audited in the [walker follow-ups audit](testing/audits/walker-follow-ups-audit.md).
 - [ ] **Mercenaries' player-chosen sign.** Mercenaries adds attack dice
   when its user attacks and removes defense dice from the attacker when it
   defends. The card lets the player choose the sign, and the plan fixes it by side.
