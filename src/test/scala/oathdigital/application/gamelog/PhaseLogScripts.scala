@@ -1,7 +1,7 @@
 package oathdigital.application.gamelog
 
+import oathdigital.gameplay.powers.economy.HallowedSpringCard
 import oathdigital.application._
-import oathdigital.catalog.holding.HallowedSpringCard
 import oathdigital.gameplay.cards.DeepWoodsSite
 import oathdigital.gameplay.phases.PhaseMenu
 import oathdigital.gameplay.phases.wake.TakeWealthProcedure

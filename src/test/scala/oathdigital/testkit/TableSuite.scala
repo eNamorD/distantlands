@@ -1,8 +1,9 @@
 package oathdigital.testkit
 
+import oathdigital.gameplay.powers.economy.HallowedSpringCard
 import oathdigital.application.{GameApplicationService, 
   InMemoryEventStreamRepository, ParkedServiceFixture}
-import oathdigital.catalog.holding.{HallowedSpringCard, MagiciansCodeCard}
+import oathdigital.catalog.holding.MagiciansCodeCard
 import oathdigital.gameplay.StateBasedEvaluation
 import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.cards.{BuriedGiantSite, DunesSite}

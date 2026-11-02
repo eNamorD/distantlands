@@ -2,7 +2,8 @@ package oathdigital.gameplay
 
 import oathdigital.gameplay.operations.{GrandScepter, HallOfMinisters,
   HallOfMinistersCard, LockedCards, OperationConsent, OperationPipeline,
-  OperationPolicy, OperationRestrictions, RestrictionIcons}
+  OperationPolicy, OperationRestrictions, RestrictionIcons,
+  StillBoilingLake}
 import oathdigital.gameplay.powers.campaign.{SealingWardCard, WrestlersCard}
 import oathdigital.gameplay.powers.cardplay.WildCryCard
 import oathdigital.gameplay.powers.economy.MountedLibraryCard
@@ -164,7 +165,8 @@ class OperationRestrictionsSuite extends munit.FunSuite:
     assertEquals(bare.printed.filterNot(restriction =>
       restriction.isInstanceOf[LockedCards] ||
         restriction.isInstanceOf[RestrictionIcons]),
-      Vector[OperationRestriction](HallOfMinisters, GrandScepter))
+      Vector[OperationRestriction](HallOfMinisters, GrandScepter,
+        StillBoilingLake))
     assertEquals(GrandScepter.relic, scepter)
 
   test("the catalog prints a lock for Sealing Ward and Hall of Ministers but " +

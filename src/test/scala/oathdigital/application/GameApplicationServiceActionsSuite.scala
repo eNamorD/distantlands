@@ -1,6 +1,6 @@
 package oathdigital.application
 
-import oathdigital.catalog.holding.HallowedSpringCard
+import oathdigital.gameplay.powers.economy.HallowedSpringCard
 import oathdigital.gameplay.cards.DeepWoodsSite
 import oathdigital.gameplay.powers.action.{FaeMerchantCard, SecondChanceCard}
 import oathdigital.gameplay.powers.travel.BrokenPeaksSite

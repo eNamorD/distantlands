@@ -1,7 +1,7 @@
 package oathdigital.application.gamelog
 
+import oathdigital.gameplay.powers.economy.HallowedSpringCard
 import oathdigital.catalog.Denizen
-import oathdigital.catalog.holding.HallowedSpringCard
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import oathdigital.application._
 import oathdigital.gameplay.ModifierPlay

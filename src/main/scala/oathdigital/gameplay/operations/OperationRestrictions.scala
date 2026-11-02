@@ -45,7 +45,7 @@ object OperationRestrictions:
     * `ConsentPowers` and `RuleNotes` read. An [[AsIfLocked]] rule joins
     * [[LockedCards]]; a rule that is a restriction itself stands alone. */
   val printedRules: Vector[PrintedRule] =
-    Vector(AncientBloodline, HallOfMinisters, GrandScepter)
+    Vector(AncientBloodline, HallOfMinisters, GrandScepter, StillBoilingLake)
 
   /** Only a card at a site or in a play area is in play. A card drawn by a
     * Search and discarded from the temporary hand is not. */

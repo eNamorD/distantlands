@@ -17,7 +17,8 @@ import oathdigital.gameplay.powerresolver.ContributingPower
 object SimplePlans:
   def forCatalog(catalog: ExecutableCatalog): Vector[ContributingPower] =
     Vector(Mercenaries, Wrestlers, FearsomeShield,
-      ToweringRampart, CrackedRampart, BattleHonors, Longbows, BlackSword,
+      ToweringRampart, CrackedRampart, SpiralCastle, SpiralDungeons,
+      BattleHonors, Longbows, BlackSword,
       FireTalkers, NatureWorship.forCatalog(catalog),
       CrackedSage.forCatalog(catalog), VillageConstable, BannerBreakers,
       CrackingGround, WalledGarden.forCatalog(catalog), BanditStandard,

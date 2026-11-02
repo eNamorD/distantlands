@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.holding.HallowedSpringCard
+import oathdigital.gameplay.powers.economy.HallowedSpringCard
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.{CodeOfHonorCard, WildMountsCard}
 import oathdigital.gameplay.powers.search.ErrandBoyCard

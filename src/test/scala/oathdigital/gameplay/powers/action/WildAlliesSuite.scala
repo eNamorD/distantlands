@@ -84,7 +84,7 @@ class WildAlliesSuite extends munit.FunSuite:
 
   test("a Beast edifice and the pawn's own site count, and a facedown " +
       "Beast does not"):
-    val spring = oathdigital.catalog.holding.HallowedSpringCard.id
+    val spring = oathdigital.gameplay.powers.economy.HallowedSpringCard.id
     val ready = alliesWithABeastSiteHoldingTheRival
       .edifice(spring, EdificeSide.Intact, at = home)
       .denizen(WolvesCard.id, at = lonely, facedown = true)

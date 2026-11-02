@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.whenplayed
 
-import oathdigital.catalog.holding.SpiralCastleCard
+import oathdigital.gameplay.powers.campaign.SpiralCastleCard
 import oathdigital.gameplay.operations.{AncientBloodlineCard,
   HallOfMinistersCard}
 import oathdigital.gameplay.powers.NoteText

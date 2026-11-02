@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.economy
 
-import oathdigital.catalog.holding.HallowedSpringCard
+import oathdigital.gameplay.powers.economy.HallowedSpringCard
 import oathdigital.gameplay.ModifierPlay
 import oathdigital.gameplay.powers.action.AlchemistCard
 import oathdigital.gameplay.powers.campaign.WrestlersCard

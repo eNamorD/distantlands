@@ -1,7 +1,7 @@
 package oathdigital.gameplay
 
-import oathdigital.catalog.holding.{ArbiterCard, HallowedSpringCard,
-  IronHandCard}
+import oathdigital.gameplay.powers.economy.HallowedSpringCard
+import oathdigital.catalog.holding.{ArbiterCard, IronHandCard}
 import oathdigital.gameplay.cards.DeepWoodsSite
 import oathdigital.gameplay.powers.campaign.{StickyFireCard, WrestlersCard}
 import oathdigital.gameplay.powers.travel.BrokenPeaksSite

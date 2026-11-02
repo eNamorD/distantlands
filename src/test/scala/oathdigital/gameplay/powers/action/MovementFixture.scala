@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.holding.{FestivalDistrictCard, HallowedSpringCard}
+import oathdigital.gameplay.powers.economy.HallowedSpringCard
+import oathdigital.catalog.holding.FestivalDistrictCard
 import oathdigital.gameplay.cards.{DeepWoodsSite, GoldenValleySite}
 import oathdigital.model._
 import oathdigital.model.OathState.Ready

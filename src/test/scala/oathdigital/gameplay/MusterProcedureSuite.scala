@@ -1,6 +1,7 @@
 package oathdigital.gameplay
 
-import oathdigital.catalog.holding.{HallowedSpringCard, MagiciansCodeCard}
+import oathdigital.gameplay.powers.economy.HallowedSpringCard
+import oathdigital.catalog.holding.MagiciansCodeCard
 import oathdigital.gameplay.actions.economy.{MusterProcedure, MusterSource}
 import oathdigital.gameplay.powers.action.AlchemistCard
 import oathdigital.gameplay.powers.campaign.WrestlersCard

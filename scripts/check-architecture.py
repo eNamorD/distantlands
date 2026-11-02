@@ -275,6 +275,7 @@ powers_reading_the_catalog = {
     "targeting/FortressRules.scala": "reads other cards' suits",
     "targeting/LostTongue.scala": "reads other cards' suits",
     "targeting/TargetProtections.scala": "registry: threads the catalog to the powers below that read it",
+    "travel/ForbiddenForest.scala": "reads the traveller's advisers' suits",
     "travel/ForestPaths.scala": "reads other cards' suits",
     "travel/Hospitality.scala": "reads other cards' suits",
     "travel/TravelModifiers.scala": "registry: threads the catalog to the powers below that read it",
