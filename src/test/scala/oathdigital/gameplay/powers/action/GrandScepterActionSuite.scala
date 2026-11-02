@@ -61,10 +61,10 @@ class GrandScepterActionSuite extends munit.FunSuite:
     val start = exileHolder.boardWarbands(p2, 23)
       .warbandsAt("Broken Peaks", p1, 1).ready
     val parked = used(start)
-    assert(PhasePowerHarness.awaits(parked, Citizenship.replaceDecisionId))
+    assert(PhasePowerHarness.awaits(parked, Citizenship.replaceDecisionId(p1)))
     val peaks = DecisionOptionRef.Site(CatalogNames.site("Broken Peaks"))
     val done = accepted(rules.resolveWalker(parked.state, p1,
-      Citizenship.replaceDecisionId, DecisionAnswer.DistributeAnswer(Vector(
+      Citizenship.replaceDecisionId(p1), DecisionAnswer.DistributeAnswer(Vector(
         DistributeAmount(DecisionOptionRef.Player(p1), 0),
         DistributeAmount(peaks, 1)))))
     val after = ActPowerHarness.replayed(rules, start,

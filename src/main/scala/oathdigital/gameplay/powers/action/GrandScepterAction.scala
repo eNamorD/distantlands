@@ -2,7 +2,7 @@ package oathdigital.gameplay.powers.action
 
 import oathdigital.gameplay.operations.TheGrandScepterCard
 import oathdigital.gameplay.powerresolver.QueuedStarts
-import oathdigital.gameplay.roles.Citizenship
+import oathdigital.gameplay.roles.{Citizenship, RoleNotes}
 import oathdigital.model._
 
 /** The Grand Scepter's ACTION: "You may become a Citizen if an Exile"
@@ -13,10 +13,7 @@ import oathdigital.model._
   * Its line names the new role: "Became a Citizen." */
 case object GrandScepterAction extends PaidAction(TheGrandScepterCard.action):
   private val notes = NoteSet(id)
-  val becameCitizen: NoteKey = notes.key(NoteKey.Used, Vector(
-    NotePart.Text("Became a Citizen.")))
-  val becameChancellor: NoteKey = notes.key("used.chancellor", Vector(
-    NotePart.Text("Became the Chancellor.")))
+  val became: RoleNotes = RoleNotes.declare(notes)
   override def noteKeys: Vector[NoteKey] = notes.declared
 
   override def listed(ready: ReadyGame, player: PlayerId): Boolean =
@@ -33,14 +30,8 @@ case object GrandScepterAction extends PaidAction(TheGrandScepterCard.action):
       : Either[OathViolation, Operation] = source match
     case DecisionOptionRef.Relic(TheGrandScepterCard.id) =>
       Right(Sequence(Vector(Citizenship.become(player),
-        Note(id, becameNote(_, player, source)))))
+        Note(id, states => PowerSourceRef.of(source).flatMap(
+          became.became(states, player, _))))))
     case other => Left(OathViolation.InvalidEventOrder(
       s"${other.kind} is not the Grand Scepter"))
 
-  private def becameNote(states: NoteStates, player: PlayerId,
-      source: DecisionOptionRef): Option[LogNote] = for
-    card <- PowerSourceRef.of(source)
-    role <- Imperials.role(states.now, player)
-    if role.isImperial
-  yield if role == Role.Chancellor then becameChancellor(card)
-    else becameCitizen(card)

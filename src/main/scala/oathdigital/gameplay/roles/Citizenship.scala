@@ -8,10 +8,13 @@ import oathdigital.model.OathViolation.InvalidEventOrder
   * design, "Slice 3"). Becoming Imperial asks the player which warbands
   * turn purple only when the purple bank is short (ruling R18).
   *
-  * The split is read from the tree's first answer to `replaceDecisionId`,
-  * so a tree may make one player Imperial once. */
+  * The split is read from the tree's first answer to the player's own
+  * `replaceDecisionId`, so a tree may make several players Imperial, each
+  * once. */
 object Citizenship:
-  val replaceDecisionId: String = "role.replace-warbands"
+  /** The split a short purple bank asks `player`. */
+  def replaceDecisionId(player: PlayerId): String =
+    s"role.replace-warbands.${player.value}"
   val ignoredReason: String = "Citizenship is ignored due to setup option"
 
   /** Whether the first-game option ignores "become a Citizen" powers. */
@@ -22,7 +25,7 @@ object Citizenship:
     * Empire. */
   def become(actor: PlayerId): Operation = Sequence(Vector(
     Branch((live, _) => query(live, actor).toVector.map(asked =>
-      Decide(replaceDecisionId, actor, asked))),
+      Decide(replaceDecisionId(actor), actor, asked))),
     BuildOps((live, pending) => for
       kept <- answered(live, actor, pending)
       ops <- RoleChanges.becomeImperial(live, actor, kept)
@@ -56,12 +59,13 @@ object Citizenship:
       case DistributeAmount(DecisionOptionRef.Site(site), n) => site -> n }
     Either.cond(board.size == 1 && board.size + sites.size == rows.size,
       RoleChanges.Kept(board.head, sites.toMap),
-      InvalidEventOrder(s"$replaceDecisionId names an unknown place"))
+      InvalidEventOrder(
+        s"${replaceDecisionId(actor)} names an unknown place"))
 
   /** Every warband kept when nothing was asked; otherwise the split. */
   private def answered(ready: ReadyGame, actor: PlayerId,
       pending: PendingTree): Either[OathViolation, RoleChanges.Kept] =
     if query(ready, actor).isEmpty then RoleChanges.keepAll(ready, actor)
-    else PowerAnswers.distribution(pending, replaceDecisionId)
-      .toRight(PowerAnswers.missing(replaceDecisionId))
+    else PowerAnswers.distribution(pending, replaceDecisionId(actor))
+      .toRight(PowerAnswers.missing(replaceDecisionId(actor)))
       .flatMap(kept(actor, _))

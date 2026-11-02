@@ -40,3 +40,10 @@ class CitizenshipSuite extends munit.FunSuite:
   test("the first-game option is on unless a table turns it off"):
     assert(Citizenship.ignored(Table.start.ready))
     assert(!Citizenship.ignored(Table.start.allowingCitizenshipPowers.ready))
+
+  test("each player's split has its own decision, so one tree may make " +
+      "several players Imperial"):
+    assertEquals(Citizenship.replaceDecisionId(p3),
+      "role.replace-warbands.p3")
+    assertNotEquals(Citizenship.replaceDecisionId(p1),
+      Citizenship.replaceDecisionId(p3))
