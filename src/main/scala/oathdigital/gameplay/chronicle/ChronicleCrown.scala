@@ -32,8 +32,12 @@ object ChronicleCrown:
 
   /** If an Exile won: the former Chancellor and every Citizen, even in the
     * box, become Exiles; the Reliquary is discarded; Imperial warbands leave
-    * the map without bandits taking their place; each site the winner rules
-    * keeps one Imperial warband. The winner's newly dormant legacies would
+    * the map without bandits taking their place; each site they held then
+    * takes one warband of a seated former Chancellor's colour, so that
+    * player rules it as an Exile (Chronicle ruling 20, a deviation from CR
+    * p. 36), while a boxed one places none; each site the winner rules
+    * keeps one Imperial warband. The former Chancellor's bank holds 14, and
+    * a map holds at most 8 sites. The winner's newly dormant legacies would
     * become active here; they arrive with the Legacies slice.
     *
     * The winner's board warbands go back to their own bank first: the
@@ -57,6 +61,17 @@ object ChronicleCrown:
       case (site, SiteForces.Occupied(ForceKind.Imperial, n)) =>
         Kill(Piece.Warbands(ForceKind.Imperial, n), at(site))
     }
+    val former = current.players.find(other =>
+      other.player != player.player && ready.game.campaign.lineages
+        .get(other.lineage).exists(_.role == Role.Chancellor))
+    val held = former.toVector.flatMap { chancellor =>
+      val kind = ForceKind.Exile(chancellor.lineage)
+      forces.collect {
+        case (site, SiteForces.Occupied(ForceKind.Imperial, _)) =>
+          Move(Piece.Warbands(kind, 1),
+            PositionedLocation(Location.WarbandBank(kind)), at(site))
+      }
+    }
     val board = Option.when(player.board.warbands > 0)(Move(
       Piece.Warbands(own, player.board.warbands),
       PositionedLocation(Location.PlayArea(player.player)),
@@ -70,7 +85,7 @@ object ChronicleCrown:
     }
     exiled ++ reliquary ++
       Vector(ImperialWarbandsTaken(current.map.inPlay.size)) ++
-      imperialRemoved ++ board ++ replaced :+
+      imperialRemoved ++ held ++ board ++ replaced :+
       RoleChanged(player.lineage, Role.Chancellor)
 
   /** If a Citizen won: the former Chancellor becomes a Citizen. */
