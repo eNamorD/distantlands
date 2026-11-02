@@ -3,7 +3,7 @@ package oathdigital.application
 import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignProcedure,
   PlanAid}
 import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.campaign.ShieldWall
+import oathdigital.gameplay.powers.campaign.{EncirclementCard, ShieldWall}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{ParkedDecisionAssertions, ProcedureWalker,
   WalkerPowers}
@@ -181,6 +181,41 @@ class PlanAidServiceSuite extends munit.FunSuite:
     val reloaded = ParkedServiceFixture.replayingSecond(service, repository)
     assertEquals(present(accepted(reloaded.load(gameId)), "a stored game")
       .state, undone.state)
+
+  test("the defender's window clears the offers made to the attacker"):
+    // p1 and p3 are Citizens and p2 the Chancellor. p1 raids p3. p2 holds
+    // Encirclement and Shield Wall, offers Encirclement to p1, and can
+    // lend Shield Wall to p3.
+    val encirclement = DecisionOptionRef.Denizen(EncirclementCard.id)
+    val attacking = AidWindow(p1, CampaignPlanSide.Attacker, p1)
+    val (service, _) = Table.start.imperial(p2, p1, p3)
+      .turn(p1, Phase.Act).pawn(p3, at = "Ancient City")
+      .boardWarbands(p1, 5).boardWarbands(p3, 2).favor(p2, 2)
+      .adviser(p2, EncirclementCard.id).adviser(p2, ShieldWall.cardId)
+      .oathkeeper(None).service(campaignDice = Dice.raid)
+    val started = accepted(service.handle(gameId, 0L,
+      MenuPlay.starting(p1, ActionRef.Campaign)))
+    val raid = awaiting(started) match
+      case Some((CampaignIds.kind, _)) => resolve(service, started, p1,
+        CampaignIds.kind, ChooseOneAnswer(DecisionOptionRef.Button("raid")))
+      case _ => started
+    val forced = resolve(service, raid, p1, CampaignIds.force,
+      ChooseAmountAnswer(4))
+    assertEquals(awaiting(forced), Some((CampaignIds.attackerPlan, p1)))
+    val offered = accepted(save(service, forced, p2,
+      AidOffer(plans = Vector(encirclement))))
+    assertEquals(Outcomes.ready(offered.state).planAid.window,
+      Some(attacking))
+    val finished = resolve(service, offered, p1, CampaignIds.attackerPlan,
+      ChooseOneAnswer(CampaignIds.finish))
+    assertEquals(awaiting(finished), Some((CampaignIds.defenderPlan, p3)))
+    assert(finished.events.contains(OathEvent.PlanAidCleared),
+      finished.events)
+    assertEquals(Outcomes.ready(finished.state).planAid, PlanAidState())
+    val defended = accepted(save(service, finished, p2,
+      AidOffer(plans = Vector(shieldWall))))
+    assertEquals(Outcomes.ready(defended.state).planAid.window,
+      Some(defending))
 
   test("no offer is accepted when no Imperial plan decision is parked"):
     val (service, _) = table.service(campaignDice = Dice.raid)
