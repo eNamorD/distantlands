@@ -44,8 +44,8 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
     ModifyDicePool | Roll | ModifyRollOutcome | Reroll | SetDieFaces |
     QueueProcedure | Defer | TakeDeferred | ActAsIf | OpenPick | ClosePick
   private type ChronicleOperation = RoleChanged | ChronicleTaskAssigned |
-    GrandScepterFromBox | ImperialWarbandsTaken | ImperialWarbandsAdded | LineagePointsScored |
-    EdificeBuilt | SuitedReserveFromBox
+    GrandScepterFromBox | ImperialWarbandsTaken | ImperialWarbandsAdded |
+    LineagePointsScored | EdificeBuilt | SuitedReserveFromBox
 
   protected final def encodeOperation(operation: CoreOperation): ujson.Value =
     operation match

@@ -125,3 +125,35 @@ class OfferCitizenshipSuite extends munit.FunSuite:
     val after = ready(done)
     Vector(ancientCity, brokenPeaks).foreach(site => assertEquals(
       Look(after).forces(site), SiteForces.Occupied(ForceKind.Imperial, 1)))
+
+  test("with one seated Exile the holder may offer them or no one"):
+    val one = exilesHoldSites.update(state => state.updateCampaign(campaign =>
+      campaign.copy(lineages = campaign.lineages.updatedWith(
+        Look(state).player(p3).lineage)(_.map(_.copy(role = Role.Citizen))))))
+    ChronicleWalk.parked(throneStarted(one).state).get.query match
+      case many: DecisionQuery.ChooseMany =>
+        assertEquals((many.min, many.max, many.options.map(_.ref)),
+          (0, 1, Vector(DecisionOptionRef.Player(p2))))
+      case other => fail(other.toString)
+
+  test("two Exiles who accept both become Citizens, and the walk replays"):
+    val table = exilesHoldSites
+    val done = replied(replied(offered(throneStarted(table), p2, p3), p2,
+      OfferCitizenship.accept), p3, OfferCitizenship.accept)
+    val after = ready(done)
+    assertEquals(Vector(p2, p3).map(Imperials.role(after, _)),
+      Vector(Some(Role.Citizen), Some(Role.Citizen)))
+    Vector(ancientCity, brokenPeaks).foreach(site => assertEquals(
+      Look(after).forces(site), SiteForces.Occupied(ForceKind.Imperial, 1)))
+    val replayed = done.events.foldLeft[Either[OathViolation, OathState]](
+      Right(table.state))((state, event) => state.flatMap(rules.evolve(_,
+      event)))
+    assertEquals(replayed.map(Outcomes.ready), Right(after))
+
+  test("an Exile who rules no site becomes a Citizen with nothing to swap"):
+    val done = replied(offered(throneStarted(
+      ChronicleWalk.throneHeldByChancellorP1.boardWarbands(p3, 2)), p3), p3,
+      OfferCitizenship.accept)
+    val after = ready(done)
+    assertEquals(Imperials.role(after, p3), Some(Role.Citizen))
+    assertEquals(Look(after).player(p3).board.warbands, 0)

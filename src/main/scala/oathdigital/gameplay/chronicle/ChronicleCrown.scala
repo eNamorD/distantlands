@@ -36,8 +36,9 @@ object ChronicleCrown:
     * takes one warband of a seated former Chancellor's colour, so that
     * player rules it as an Exile (Chronicle ruling 20, a deviation from CR
     * p. 36), while a boxed one places none; each site the winner rules
-    * keeps one Imperial warband. The former Chancellor's bank holds 14, and
-    * a map holds at most 8 sites. The winner's newly dormant legacies would
+    * keeps one Imperial warband. Once exiled, the former Chancellor's board
+    * warbands are of their colour, so their bank holds 14 less those; sites
+    * past what it holds stay empty. The winner's newly dormant legacies would
     * become active here; they arrive with the Legacies slice.
     *
     * The winner's board warbands go back to their own bank first: the
@@ -66,11 +67,13 @@ object ChronicleCrown:
         .get(other.lineage).exists(_.role == Role.Chancellor))
     val held = former.toVector.flatMap { chancellor =>
       val kind = ForceKind.Exile(chancellor.lineage)
+      val bank = ready.banks.warbandSupply.getOrElse(kind, 0) -
+        chancellor.board.warbands
       forces.collect {
         case (site, SiteForces.Occupied(ForceKind.Imperial, _)) =>
           Move(Piece.Warbands(kind, 1),
             PositionedLocation(Location.WarbandBank(kind)), at(site))
-      }
+      }.take(math.max(0, bank))
     }
     val board = Option.when(player.board.warbands > 0)(Move(
       Piece.Warbands(own, player.board.warbands),
