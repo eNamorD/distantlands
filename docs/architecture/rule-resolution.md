@@ -140,8 +140,11 @@ or blocks a command.
 
 `PowerImplementationStatus` counts a power as implemented when
 `WalkerPowerCatalog`, `PhasePowerCatalog` or
-`OperationRestrictions.printedRules` covers it. No catalog carries an
-"implemented" flag: being wired in is what implemented means. The UI's
+`OperationRestrictions.printedRules` covers it, or when it is a site
+handler `gameplay/cards/HomelandsAndPlains.scala` lists: a Homeland's, which
+card play's Homeland rule runs, or a Plains', which prints no power. No
+catalog carries an "implemented" flag: being wired in is what implemented
+means. The UI's
 unimplemented-card marker, `ImplementedCardCatalog` and the first-game
 generator read the same status, and `UnimplementedPowersSuite` pins the
 exact unimplemented set in `src/test/resources/powers/unimplemented.txt`.

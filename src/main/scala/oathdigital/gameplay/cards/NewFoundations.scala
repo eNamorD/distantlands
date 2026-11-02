@@ -4,8 +4,8 @@ import oathdigital.catalog.{Denizen, Edifice, ExecutableCatalog, Legacy, Relic, 
 import oathdigital.catalog.holding._
 import oathdigital.gameplay.{MarriageCard, PledgeToDiscordCard,
   SpitefulMirrorCard}
-import oathdigital.gameplay.operations.{HallOfMinistersCard,
-  TheGrandScepterCard}
+import oathdigital.gameplay.operations.{AncientBloodlineCard,
+  HallOfMinistersCard, TheGrandScepterCard}
 import oathdigital.gameplay.powers.action._
 import oathdigital.gameplay.powers.banner._
 import oathdigital.gameplay.powers.burn._

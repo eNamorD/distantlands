@@ -1,8 +1,15 @@
 package oathdigital.gameplay.operations
 
-import oathdigital.catalog.holding.AncientBloodlineCard
+import oathdigital.catalog.{AdviserOnly, Denizen, PrintedPower}
 import oathdigital.gameplay.PowerAccess
 import oathdigital.model._
+
+object AncientBloodlineCard extends Denizen(DenizenId("165"), "Ancient Bloodline", Suit.Nomad) with AdviserOnly:
+  val power = PrintedPower(PowerId("denizen.ancient-bloodline"),
+    persistent = true, cost = Cost.free,
+    text = "Your enemies act as if denizens and relics at sites you " +
+      "rule are **locked**.")
+  val powers: Vector[PrintedPower] = Vector(power)
 
 /** Ancient Bloodline (card 165, adviser-only): "Your enemies act as if
   * denizens and relics at sites you rule are locked."
