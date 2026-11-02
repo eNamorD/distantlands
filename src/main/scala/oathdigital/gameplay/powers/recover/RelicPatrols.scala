@@ -68,9 +68,10 @@ sealed abstract class PatrolRule extends ContributingPower:
     refused
 
 /** Relic Patrols (E17, intact): "Enemies of this card's ruler cannot
-  * recover relics at sites ruled by this card's ruler." A bandit ruler
-  * rules bandit sites, which the ruined face covers, so the intact face
-  * under bandits protects nothing (catalog batch 9, owner question 1). */
+  * recover relics at sites ruled by this card's ruler." Under bandits the
+  * bandits are its ruler, so every player is refused at every bandit site,
+  * as Bandit Patrols refuses them (owner's ruling, catalog batch 9,
+  * "Rulings made while implementing"). */
 case object RelicPatrols extends PatrolRule:
   val edifice: EdificeId = RelicPatrolsCard.id
   val id: PowerId = RelicPatrolsCard.intact.power.id
@@ -79,9 +80,7 @@ case object RelicPatrols extends PatrolRule:
     "ruler's sites."
 
   protected def patrolled(ruler: Option[SiteRuler],
-      patrolsRuler: SiteRuler): Boolean = patrolsRuler match
-    case player: SiteRuler.Player => ruler.contains(player)
-    case _ => false
+      patrolsRuler: SiteRuler): Boolean = ruler.contains(patrolsRuler)
 
 /** Bandit Patrols (E17, ruined): "Enemies of this card's ruler cannot
   * recover relics at sites ruled by bandits." Under bandits every player

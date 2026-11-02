@@ -60,10 +60,16 @@ class RelicPatrolsSuite extends munit.FunSuite:
     allowed(patrolling(EdificeSide.Intact)(_
       .warbandsAt(patrolsSite, p2, 1).bandits(recoverSite, 1)))
 
-  test("Relic Patrols ruled by bandits, or unruled, protects nothing"):
+  test("Relic Patrols ruled by bandits refuses every player at bandit " +
+      "sites, as Bandit Patrols does, and leaves a player's site alone"):
+    refusedWith(patrolling(EdificeSide.Intact)(_
+      .bandits(patrolsSite, 1).bandits(recoverSite, 1)), RelicPatrols.reason)
     allowed(patrolling(EdificeSide.Intact)(_
-      .bandits(patrolsSite, 1).bandits(recoverSite, 1)))
+      .bandits(patrolsSite, 1).warbandsAt(recoverSite, p1, 1)))
+
+  test("unruled Relic Patrols protect nothing"):
     allowed(patrolling(EdificeSide.Intact)(_.warbandsAt(recoverSite, p2, 1)))
+    allowed(patrolling(EdificeSide.Intact)(_.bandits(recoverSite, 1)))
 
   // ---- Bandit Patrols ----
 

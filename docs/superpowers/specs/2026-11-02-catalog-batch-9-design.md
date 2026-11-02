@@ -539,11 +539,13 @@ the questions above.
   apply was left out rather than listed in the consent grid. The seam,
   an askable Act action at the phase menu, joins the Out of scope list
   and would serve Forbidden Forest's start refusal too.
-- **Slice 3.** Relic Patrols under bandits protects nothing (question 1's
-  default); Bandit Patrols under bandits refuses every player at every
-  bandit site. Both faces are inert on the other face's reach. The rule
-  reads the Recover's site as `RecoverProcedure.actorSite` reads it, the
-  pawn site.
+- **Slice 3.** Relic Patrols under bandits protects under bandits, just
+  like Bandit Patrols (owner's ruling, overriding question 1's default):
+  the bandits are its ruler, every player is their enemy, and every player
+  is refused at every bandit site. Bandit Patrols under bandits refuses
+  the same. Both faces are inert on the other face's reach under a player
+  ruler. The rule reads the Recover's site as `RecoverProcedure.actorSite`
+  reads it, the pawn site.
 - **Slice 4: Forbidden Forest is askable after all.** Its refusal is not
   a start refusal: it reads the route, so the destination decision carries
   it, as the Narrow Pass's does. The destination is hidden with "Forbidden
