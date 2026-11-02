@@ -68,6 +68,8 @@ R15. **Hospital.** Hospital saves warbands only if its user rules its site by th
 
 R16. **What aid covers.** Imperial Tactics lets an ally pay a plan's costs and meet its requirements, and nothing more. A plan that counts what its user rules or holds (Great Crusade, Pledge of Defense, Kindred Warriors, Nature Worship) counts only the user's own cards. An ally's pawn at a site meets "your pawn is at this site" (Towering Rampart) (CR p. 35; Empire slice 1b-ii).
 
+R17. **The Grand Scepter counts.** Under Supremacy, the Successor holds more relics than each other Imperial player (card OATH-265). The Grand Scepter is a relic, so it counts in its holder's total (CR p. 19; Empire slice 2).
+
 ## Chronicle rulings
 
 Rulings given by the project owner for the Chronicle Phase ([chronicle.md](chronicle.md)). The rev1 task cards are slightly older than the CR; where they disagree, the CR governs.
