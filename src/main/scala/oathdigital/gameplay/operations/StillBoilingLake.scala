@@ -27,10 +27,15 @@ object BoilingLakeCard extends Edifice(EdificeId("E24"), Suit.Discord):
   * another power opens there (New Growth, Baron) is refused the same way.
   * Nobody may waive it ("Cards cannot"). It stops plays only: a card a power
   * moves there (Giant Python) is not played, and the Lake itself may still
-  * be discarded. It writes no line. Its intact face, Boiling Lake, is a
-  * Travel rule in `gameplay/powers/travel`.
+  * be discarded. A play that discards the Lake first, as the Mob of the
+  * People's Favor allows, goes through: card play judges its plan against
+  * the state before it, so the rule reads its batch (`BatchRestriction`)
+  * and holds nothing when the batch moves the Lake off its site (owner's
+  * ruling, catalog batch 9, "Rulings made while implementing"). It writes
+  * no line. Its intact face, Boiling Lake, is a Travel rule in
+  * `gameplay/powers/travel`.
   */
-case object StillBoilingLake extends OperationRestriction with PrintedRule:
+case object StillBoilingLake extends BatchRestriction with PrintedRule:
   val id: PowerId = BoilingLakeCard.ruined.power.id
   val source: PowerSourceRef = PowerSourceRef.Card(BoilingLakeCard.id)
   /** The refusal's code, which card play words for its slots. */
@@ -44,6 +49,15 @@ case object StillBoilingLake extends OperationRestriction with PrintedRule:
           card.id == BoilingLakeCard.id && card.side == EdificeSide.Ruined
         case _ => false
       } => site
+
+  /** Nothing, once the batch takes the Lake from its site. */
+  def inBatch(operations: Vector[CoreOperation]): OperationRestriction =
+    val discarded = operations.flatMap(Operation.flatten).exists {
+      case Move(Piece.Card(BoilingLakeCard.id), from, _, _, _) =>
+        from.location.isInstanceOf[Location.Site]
+      case _ => false
+    }
+    if discarded then (_, _) => None else this
 
   override def reason(ready: ReadyGame, operation: CoreOperation)
       : Option[OperationReason] = operation match

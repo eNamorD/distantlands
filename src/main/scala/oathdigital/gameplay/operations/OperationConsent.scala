@@ -16,12 +16,13 @@ object OperationConsent:
   /** `restrictions` for one batch of `operations`, which happen at the same
     * time. Enforcement is all-or-nothing (the Hall of Ministers ruling): a
     * grant remembered for any operation of the batch lifts its power for
-    * every operation of the batch by the same requester. */
+    * every operation of the batch by the same requester. A
+    * [[BatchRestriction]] reads the batch first, wrapped or not. */
   def together(ready: ReadyGame, operations: Vector[CoreOperation],
       restrictions: Vector[OperationRestriction])
       : Vector[OperationRestriction] =
     val now = ConsentTurn.of(ready)
-    restrictions.map {
+    restrictions.map(inBatch(_, operations)).map {
       case consented: ConsentedRestriction =>
         consented.copy(together = operations
           .flatMap(consented.inner.reason(ready, _)).flatMap(_.waiver)
@@ -30,6 +31,15 @@ object OperationConsent:
           .map(waiver => waiver.power -> waiver.covers.requester).toSet)
       case other => other
     }
+
+  private def inBatch(restriction: OperationRestriction,
+      operations: Vector[CoreOperation]): OperationRestriction =
+    restriction match
+      case consented: ConsentedRestriction =>
+        consented.copy(inner = inBatch(consented.inner, operations))
+      case batch: BatchRestriction => batch.inBatch(operations)
+      case other => other
+
 
   /** The ask for an option whose plan only `refusals` stop. It exists when
     * every refusal is waivable by a player other than `actor` and nothing it
@@ -69,3 +79,12 @@ object OperationConsent:
     else ask(ready, actor, refusals).orElse(waivers.find(unaskable)
       .orElse(waivers.headOption).map(blocker =>
         OptionReason.Noted(blocker.power, blocker.plain)))
+
+/** A restriction that reads the whole batch its operation runs in, which
+  * [[OperationConsent.together]] hands it before any operation is judged:
+  * a batch's operations are judged against the state before the batch, so
+  * a rule that an earlier operation of the batch lifts (Still Boiling Lake,
+  * discarded by the play it would refuse) reads that here. */
+trait BatchRestriction extends OperationRestriction:
+  /** This restriction as it holds for `operations`. */
+  def inBatch(operations: Vector[CoreOperation]): OperationRestriction

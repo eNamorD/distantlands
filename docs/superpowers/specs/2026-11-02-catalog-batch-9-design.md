@@ -569,6 +569,19 @@ the questions above.
   site's slots read "Still Boiling Lake: Cards cannot be played to this
   site." Two lines outside `gameplay/powers/`, both in the lists the Hall
   of Ministers already sits in.
+- **Slice 5: the Lake is discarded like any ruined edifice.** The owner's
+  ruling confirmed the printed rule and asked that People's Favor and the
+  other discard effects take the Lake and let the play through. The Lake
+  shows no lock (`LockedCards` locks an intact edifice only), so Riots'
+  region discard takes it and the site opens. The Mob's "discard first"
+  was blocked: card play judges a slot's whole plan against the state
+  before it (`OperationConsent.refusals`), so the Replace slot that
+  discards the Lake and then plays to its site met the Lake's own refusal,
+  though the pipeline, which judges each operation after the ones before
+  it, would have run it. `OperationConsent.together` now hands a
+  `BatchRestriction` its batch, and the Lake holds nothing once the batch
+  moves it off its site. The suite plays through the Mob's Replace slot,
+  through Riots, and then to the opened site.
 - **Slice 5.** Hallowed Spring rewrites only a payment of exactly one
   placed and one burnt favor onto a card at its site, the Trade for
   secrets' printed cost; a Trade for favor, and a Trade with a card
@@ -648,6 +661,9 @@ owner.
 - A ruined edifice moved by `SiteSlotMoves` (Giant's Rampage).
 - A `PlacementLimit` that leaves adviser plays only (Temple of Ancestors).
 - A `Swap` between a site's relics and a play area (Underground Library).
+- A restriction reading its batch, `BatchRestriction` in
+  `OperationConsent.together` (Still Boiling Lake, after the owner's
+  ruling on its discard).
 
 Every seam above was used and tested by its first power.
 
