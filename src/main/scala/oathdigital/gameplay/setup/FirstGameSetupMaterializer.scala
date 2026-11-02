@@ -43,6 +43,8 @@ final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
       BannersState(
         PeoplesFavorState(PeoplesFavorFace.Mob, None, 1),
         DarkestSecretState(DarkestSecretFace.WanderingFlame, None, 1)),
+      // While game start refuses Imperial roles the first player begins
+      // round 1; a seated Chancellor would (Empire slice 4).
       GameTracks(1, 0, usurperLimited = true,
         roundStarter = plan.firstPlayer), favorBanks(plan),
       temporaryHands = plan.participants.map(p =>

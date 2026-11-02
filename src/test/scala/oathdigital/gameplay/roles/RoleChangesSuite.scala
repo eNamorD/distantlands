@@ -2,6 +2,7 @@ package oathdigital.gameplay.roles
 
 import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.operations.{OperationExecutor, TheGrandScepterCard}
+import oathdigital.gameplay.powers.PlayerFacts
 import oathdigital.model._
 import oathdigital.testkit.{CatalogNames, Look, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
@@ -53,16 +54,32 @@ class RoleChangesSuite extends munit.FunSuite:
     val ready = exileInAct.boardWarbands(p1, 22).ready
     assertEquals(RoleChanges.purpleAvailable(ready), 2)
     val kept = RoleChanges.Kept(board = 0, sites = Map(peaks -> 2))
+    val own = ForceKind.Exile(Look(ready).player(p3).lineage)
     val after = applied(ready, RoleChanges.becomeImperial(ready, p3, kept))
     val look = Look(after)
     assertEquals(look.player(p3).board.warbands, 0)
     assertEquals(look.forces(peaks),
       SiteForces.Occupied(ForceKind.Imperial, 2))
+    // All 5 of p3's own warbands go back to their bank: the 2 the site
+    // keeps are replaced by purple ones.
+    assertEquals(PlayerFacts.banked(after, own),
+      PlayerFacts.banked(ready, own) + 5)
 
   test("kept counts beyond the bank are refused"):
     val ready = exileInAct.boardWarbands(p1, 22).ready
     assert(RoleChanges.becomeImperial(ready, p3,
       everyPlaceKept(ready, p3)).isLeft)
+
+  test("kept counts must name places the player holds, within each"):
+    val ready = exileInAct.ready
+    def refused(kept: RoleChanges.Kept) =
+      RoleChanges.becomeImperial(ready, p3, kept).isLeft
+    assert(refused(RoleChanges.Kept(2, Map(peaks -> 3,
+      CatalogNames.site("Ancient City") -> 0))))
+    assert(refused(RoleChanges.Kept(-1, Map(peaks -> 3))))
+    assert(refused(RoleChanges.Kept(2, Map(peaks -> 4))))
+    // The bank has room for all 5, so all 5 must turn.
+    assert(refused(RoleChanges.Kept(1, Map(peaks -> 3))))
 
   test("a Usurper title turns to its Oathkeeper side"):
     val ready = exileInAct.oathkeeperGoal(OathkeeperGoal.ThePeople)
@@ -78,6 +95,14 @@ class RoleChangesSuite extends munit.FunSuite:
     val after = applied(ready, RoleChanges.becomeImperial(ready, p3,
       everyPlaceKept(ready, p3)))
     assertEquals(after.game.current.title.holder, Some(p1))
+
+  test("under Supremacy a Usurper title passes too, on its Oathkeeper side"):
+    val ready = exileInAct.oathkeeperGoal(OathkeeperGoal.Supremacy)
+      .oathkeeper(Some(p3), TitleSide.Usurper).ready
+    val after = applied(ready, RoleChanges.becomeImperial(ready, p3,
+      everyPlaceKept(ready, p3)))
+    assertEquals(after.game.current.title,
+      OathkeeperState(Some(p1), TitleSide.Oathkeeper))
 
   /** No Empire: p3, an Exile in their Act, with 2 warbands on their board.
     * p2 holds the Grand Scepter. */
@@ -97,6 +122,32 @@ class RoleChangesSuite extends munit.FunSuite:
     assert(Look(after).player(p3).relics.exists(
       _.id == TheGrandScepterCard.id))
     assert(!after.game.current.tracks.usurperLimited)
+
+  test("a new Chancellor keeps a Usurper title, turned to Oathkeeper"):
+    Vector(OathkeeperGoal.ThePeople, OathkeeperGoal.Supremacy).foreach { goal =>
+      val ready = noEmpire.oathkeeperGoal(goal)
+        .oathkeeper(Some(p3), TitleSide.Usurper).ready
+      val after = applied(ready, RoleChanges.becomeImperial(ready, p3,
+        everyPlaceKept(ready, p3)))
+      assertEquals(after.game.current.title,
+        OathkeeperState(Some(p3), TitleSide.Oathkeeper), clue(goal))
+    }
+
+  test("a new Chancellor takes the Scepter from the site it lies at"):
+    val ready = Table.start.turn(p3, Phase.Act)
+      .pawn(p3, at = "Broken Peaks").relicAt("The Grand Scepter", peaks, facedown = false).ready
+    val after = applied(ready, RoleChanges.becomeImperial(ready, p3,
+      everyPlaceKept(ready, p3)))
+    assert(Look(after).player(p3).relics.exists(
+      _.id == TheGrandScepterCard.id))
+
+  test("a Usurper Limiter already off is left alone"):
+    val ready = noEmpire.update(_.updateCurrent(current => current.copy(
+      tracks = current.tracks.copy(usurperLimited = false)))).ready
+    val ops = present(RoleChanges.becomeImperial(ready, p3,
+      everyPlaceKept(ready, p3)).toOption, "the ops")
+    assert(!ops.contains(UsurperLimiterRemoved), ops)
+    applied(ready, Right(ops))
 
   test("with no one holding the Scepter it comes from the box"):
     val ready = Table.start.turn(p3, Phase.Act)
@@ -127,6 +178,11 @@ class RoleChangesSuite extends munit.FunSuite:
       SiteForces.Occupied(ForceKind.Imperial, 2))
     assertEquals(look.player(p3).board.supply.supply, 7)
     assertEquals(after.game.current.turn.phase, Phase.Rest)
+
+  test("exile off their turn leaves the Act phase alone"):
+    val ready = citizenInAct.turn(p2, Phase.Act).ready
+    val after = applied(ready, RoleChanges.exile(ready, p3))
+    assertEquals(after.game.current.turn, ready.game.current.turn)
 
   test("exile takes no more of their own warbands than their bank holds"):
     // 12 of p3's 14 own warbands stand at Broken Peaks, Exile-coloured.

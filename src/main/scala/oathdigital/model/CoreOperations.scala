@@ -541,9 +541,10 @@ final case class EnterPhase(phase: Phase) extends PrimitiveOperation
   * The holder and the side change together: any change of holder puts the
   * title back on its Oathkeeper side, as every title change in the rules does.
   * Which holder the title should go to is not decided here; that is
-  * `OathkeeperRules.outcome`. The one thing applying this rejects is leaving
-  * the holder as it is (`OperationError.OathkeeperUnchanged`), which is a
-  * doubled or reordered journal rather than a rule about the title.
+  * `OathkeeperRules.outcome`. Applying this rejects leaving the holder as
+  * it is (`OperationError.OathkeeperUnchanged`), a doubled or reordered
+  * journal rather than a rule about the title, unless the title is on its
+  * Usurper side: becoming a Citizen turns it back (CR p. 34).
   */
 final case class SetOathkeeper(holder: Option[PlayerId]) extends PrimitiveOperation
 
@@ -630,8 +631,9 @@ final case class QueueProcedure(entry: QueuedProcedure,
 final case class BeginTurn(player: PlayerId, phase: Phase)
     extends PrimitiveOperation
 
-/** Takes the Usurper Limiter off the round track. It is removed at the end
-  * of round 3, or at once when an Empire starts in play (ruling R5). */
+/** Takes the Usurper Limiter off the round track when an Empire starts in
+  * play (ruling R5). The end of round 3 removes it without an operation,
+  * as `RoundEnded` is applied. */
 case object UsurperLimiterRemoved extends PrimitiveOperation
 
 /** Advances Visions Drawn by one after a world-deck Vision is drawn. */
