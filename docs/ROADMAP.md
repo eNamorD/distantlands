@@ -268,6 +268,7 @@ one.
   [wording ledger](superpowers/specs/2026-10-16-game-log-wording-ledger.md), each
   with where it is built and why it is worth a second look. Recorded in the
   [procedures journal their own notes design](superpowers/specs/2026-10-16-procedures-journal-their-notes-design.md).
+  Audited in the [wording audit](testing/audits/game-log-wording-audit.md).
 - [ ] **A card play's line before the lines its own batch causes.**
   `WalkerSteps.recordBatch` runs `AdviserArrivalPass.after` and an executed
   trigger's follow-up inside the play's own leaf, so a power whose effect
