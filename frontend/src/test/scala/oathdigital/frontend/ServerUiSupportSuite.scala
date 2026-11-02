@@ -28,6 +28,12 @@ class ServerUiSupportSuite extends FunSuite:
     assertEquals(ServerUiSupport.secretSummaryLines(1, 2, 0, 1),
       Vector("1/2 secrets available", "0 facedown on board, 1 committed to cards"))
 
+  test("the winner banner names the kind of win"):
+    val banner = ServerUiSupport.winnerBanner(twoSeatProjection(), "blue-exile",
+      VictoryWords.of(Some("successor")))
+    assertEquals(banner.textContent,
+      "Blue Exile wins — Successor to the Chancellor")
+
   test("banner and Challenge action labels are presentable"):
     assertEquals(ServerUiSupport.actionLabel("challenge"), "Challenge")
     assertEquals(ServerUiSupport.actionLabel("peoples-favor"), "People's Favor")

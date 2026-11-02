@@ -147,7 +147,9 @@ object StateBasedEvaluation:
           val round = ready.game.current.tracks.round
           val expected = RoundEnded(round, Option.when(round < 8)(round + 1))
           val first = TurnOrder.roundStart(ready)
+          // A winning end die ends the game, so no round follows it.
           if ready.game.current.turn.phase != Phase.RoundEnd ||
+              ready.game.current.result.nonEmpty ||
               ready.game.current.turn.activePlayer != first then
             Left(InvalidEventOrder("round-end event is outside the round-end procedure"))
           else if recorded != expected then Left(InvalidEventOrder(

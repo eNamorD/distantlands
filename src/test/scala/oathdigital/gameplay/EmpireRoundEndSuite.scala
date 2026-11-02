@@ -61,6 +61,10 @@ class EmpireRoundEndSuite extends munit.FunSuite:
     val after = Outcomes.ready(accepted(replayed(roundEnd(7), events)))
     assertEquals(after.game.current.result, Some(won))
 
+  test("replay refuses a round after a winning roll"):
+    val won = EndDieRolled(7, 3, Some(GameResult(p1, VictoryKind.StableRegime)))
+    assert(replayed(roundEnd(7), Vector(won, RoundEnded(7, Some(8)))).isLeft)
+
   test("replay refuses a changed face or win"):
     val ready = roundEnd(5)
     assert(replayed(ready, Vector(EndDieRolled(5, 5,

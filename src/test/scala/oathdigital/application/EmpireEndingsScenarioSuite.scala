@@ -23,7 +23,8 @@ class EmpireEndingsScenarioSuite extends munit.FunSuite:
       c.tracks.copy(round = 5, usurperLimited = false))))
 
   test("a 6 on the end die gives the Successor the Chancellor's win"):
-    val (service, _) = table.service(roundEnd = RoundEndChoices.endDie(6))
+    val (service, repository) =
+      table.service(roundEnd = RoundEndChoices.endDie(6))
     val rested = accepted(service.handle(gameId, 0L,
       MenuPlay.starting(p3, PhaseTransitionRef.BeginRest)))
     assertEquals(Outcomes.ready(rested.state).game.current.result,
@@ -33,6 +34,9 @@ class EmpireEndingsScenarioSuite extends munit.FunSuite:
     assert(lines.contains("The end die rolled 6. Stable Regime needed 6."),
       lines)
     assert(lines.contains("p2 won as Successor to the Chancellor"), lines)
+    val reloaded = ParkedServiceFixture.replayingSecond(service, repository)
+    assertEquals(present(accepted(reloaded.load(gameId)), "a stored game")
+      .state, rested.state)
 
   test("a 5 on the end die starts round 6"):
     val (service, _) = table.service(roundEnd = RoundEndChoices.endDie(5))

@@ -4,8 +4,8 @@ import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.StateBasedEvaluation
 import oathdigital.model.{OathTransition, OathViolation, OperationRestriction}
 
-/** Round end after the last player's Rest, moved unchanged from
-  * `Rest.finishRound`.
+/** Round end after the last player's Rest: the end die, the next round or
+  * War Exhaustion, with their randomness from `RoundEndRandomPort`.
   */
 object TurnBoundary:
   def finishRound(catalog: ExecutableCatalog, transition: OathTransition,
