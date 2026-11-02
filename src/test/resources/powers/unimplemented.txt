@@ -51,14 +51,12 @@ edifice.e21.intact
 edifice.e21.ruined
 edifice.e23.intact
 edifice.e23.ruined
-edifice.e24.intact
 edifice.e24.ruined
 edifice.e25.intact
 edifice.e25.ruined
 edifice.e26.intact
 edifice.e26.ruined
 edifice.e27.intact
-edifice.e29.intact
 edifice.e29.ruined
 edifice.e30.intact
 legacy.ancestral-lands
