@@ -100,7 +100,7 @@ final case class BallotBox private (catalog: ExecutableCatalog)
         Option.when(count > covered)(
           Kill(Piece.Warbands(kind, count - covered), at)) ++
         Option.when(covered > 0)(Replace(Piece.Warbands(kind, covered),
-          Piece.Warbands(mine, covered), at))
+          Piece.Warbands(mine, covered), at, by = Some(player)))
     }
 
   /** The player's warbands the step put at the site, and the warbands of

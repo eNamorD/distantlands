@@ -178,10 +178,10 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
       case Kill(warbands, from) => ujson.Obj("kind" -> "kill",
         "warbands" -> encodePiece(warbands),
         "from" -> encodePositionedLocation(from))
-      case Replace(removed, replacements, at, _) => ujson.Obj(
+      case Replace(removed, replacements, at, _, by) => withMover(ujson.Obj(
         "kind" -> "replace", "removed" -> encodePiece(removed),
         "replacements" -> encodePiece(replacements),
-        "at" -> encodePositionedLocation(at))
+        "at" -> encodePositionedLocation(at)), by)
       case Sacrifice(player, warbands, from) => ujson.Obj(
         "kind" -> "sacrifice", "playerId" -> player.value,
         "warbands" -> encodePiece(warbands),
@@ -491,7 +491,7 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
         InvalidValue(path, "replace must exchange equal numbers of warbands"))
       _ <- Either.cond(removed.kind != replacements.kind, (),
         InvalidValue(path, "replacement warbands must have a new color"))
-    yield Replace(removed, replacements, at)
+    yield Replace(removed, replacements, at, by = decodeMover(value))
     case "sacrifice" => for
       piece <- decodePiece(value("warbands"), s"$path.warbands")
       warbands <- asWarbands(piece, s"$path.warbands")

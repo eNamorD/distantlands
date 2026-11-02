@@ -408,10 +408,14 @@ final case class Play(card: CardId, from: PositionedLocation,
     Piece.Card(card), from, PositionedLocation(destination),
     resultingOrientation = Some(orientation)))
 
-/** Swaps warbands for a new color. This is distinct from kill and sacrifice. */
+/** Swaps warbands for a new color. This is distinct from kill and sacrifice.
+  * `by` is the player who performs it, as for `Move`; `None` when nobody
+  * does, as for a role change (ruling R20), so no restriction against a
+  * player holds. */
 final case class Replace(removed: Piece.Warbands,
     replacements: Piece.Warbands, at: PositionedLocation,
-    override val required: Boolean = false)
+    override val required: Boolean = false,
+    by: Option[PlayerId] = None)
     extends CoreOperation:
   require(removed.amount == replacements.amount,
     "replace must exchange equal numbers of warbands")
@@ -420,9 +424,10 @@ final case class Replace(removed: Piece.Warbands,
 
   override val children: Vector[Operation] = Vector(
     Move(removed, at,
-      PositionedLocation(Location.WarbandBank(removed.kind))),
+      PositionedLocation(Location.WarbandBank(removed.kind)), by = by),
     Move(replacements,
-      PositionedLocation(Location.WarbandBank(replacements.kind)), at))
+      PositionedLocation(Location.WarbandBank(replacements.kind)), at,
+      by = by))
   override val simultaneous: Boolean = true
 
 /** Flips a card faceup without triggering When Played powers. */

@@ -100,6 +100,10 @@ class CoreOperationsSuite extends munit.FunSuite:
         PositionedLocation(Location.WarbandBank(ForceKind.Imperial)),
         PositionedLocation(site))))
     assert(replace.simultaneous)
+    val performed = Replace(warbands, imperial, PositionedLocation(site),
+      by = Some(red))
+    assertEquals(Operation.flatten(performed).collect {
+      case move: Move => move.by }, Vector(Some(red), Some(red)))
 
   test("Exchange composes reciprocal Give operations"):
     val favor = Piece.Favor(1)

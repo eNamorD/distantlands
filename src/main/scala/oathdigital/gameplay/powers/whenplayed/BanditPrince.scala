@@ -85,7 +85,7 @@ case object BanditPrince extends WhenPlayedPower:
           "warbands in the bank"))
     yield counts.map { case (site, count) => Replace(
       Piece.Warbands(ForceKind.Bandit, count), Piece.Warbands(kind, count),
-      PositionedLocation(Location.Site(site))) }
+      PositionedLocation(Location.Site(site)), by = Some(actor)) }
 
   override def noteKeys: Vector[NoteKey] = notes.declared
   override def narratedDecisions: Set[String] = Set(decisionId)
