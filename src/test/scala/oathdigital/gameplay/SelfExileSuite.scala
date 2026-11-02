@@ -36,6 +36,8 @@ class SelfExileSuite extends munit.FunSuite:
     assertEquals(Look(after).player(p2).board.favor, 2)
     assertEquals(Look(after).player(p1).board.favor, before + 4)
     assertEquals(Look(after).player(p2).board.warbands, 4)
+    // Their Act ended at once: Rest ran and p3's turn began.
+    assertEquals(after.game.current.turn.activePlayer, p3)
 
   test("a Citizen short of favor sees why"):
     assertEquals(rules.startWalker(citizen(4, 3).state, ActionRef.SelfExile,

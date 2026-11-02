@@ -7,7 +7,8 @@ import oathdigital.gameplay.roles.Citizenship
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, PhasePowerHarness, Table}
+import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look,
+  PhasePowerHarness, Table}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -55,9 +56,23 @@ class GrandScepterActionSuite extends munit.FunSuite:
     val after = ActPowerHarness.replayed(rules, start, used(start).events)
     assertEquals(Imperials.chancellor(after), Some(p1))
 
-  test("a short purple bank asks which warbands turn purple"):
-    val start = exileHolder.boardWarbands(p2, 23).ready
-    assert(PhasePowerHarness.awaits(used(start), Citizenship.replaceDecisionId))
+  test("a short purple bank asks which warbands turn purple, and the split holds"):
+    // The bank holds 1; p1 has 2 on their board and 1 at Broken Peaks.
+    val start = exileHolder.boardWarbands(p2, 23)
+      .warbandsAt("Broken Peaks", p1, 1).ready
+    val parked = used(start)
+    assert(PhasePowerHarness.awaits(parked, Citizenship.replaceDecisionId))
+    val peaks = DecisionOptionRef.Site(CatalogNames.site("Broken Peaks"))
+    val done = accepted(rules.resolveWalker(parked.state, p1,
+      Citizenship.replaceDecisionId, DecisionAnswer.DistributeAnswer(Vector(
+        DistributeAmount(DecisionOptionRef.Player(p1), 0),
+        DistributeAmount(peaks, 1)))))
+    val after = ActPowerHarness.replayed(rules, start,
+      ActPowerHarness.untilWalkEnds(parked.events ++ done.events))
+    assertEquals(Imperials.role(after, p1), Some(Role.Citizen))
+    assertEquals(Look(after).player(p1).board.warbands, 0)
+    assertEquals(Look(after).forces("Broken Peaks"),
+      SiteForces.Occupied(ForceKind.Imperial, 1))
 
   test("the first-game option shows the Action disabled with its reason"):
     val start = exileHolder.update(ready => ready.copy(setup =

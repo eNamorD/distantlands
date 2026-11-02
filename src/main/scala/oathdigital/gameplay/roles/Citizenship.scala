@@ -6,7 +6,10 @@ import oathdigital.model.OathViolation.InvalidEventOrder
 
 /** Role changes as walker trees, shared by every source (Empire phase
   * design, "Slice 3"). Becoming Imperial asks the player which warbands
-  * turn purple only when the purple bank is short (ruling R18). */
+  * turn purple only when the purple bank is short (ruling R18).
+  *
+  * The split is read from the tree's first answer to `replaceDecisionId`,
+  * so a tree may make one player Imperial once. */
 object Citizenship:
   val replaceDecisionId: String = "role.replace-warbands"
   val ignoredReason: String = "Citizenship is ignored due to setup option"

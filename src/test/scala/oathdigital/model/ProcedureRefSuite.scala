@@ -19,7 +19,7 @@ class ProcedureRefSuite extends munit.FunSuite:
         "travel", "take-wealth", "muster", "trade", "challenge",
         "place-banner-resource", "negotiation", "campaign",
         "peek-site-relics", "reveal-owned-relic", "move-warbands",
-        "transfer-warbands"))
+        "transfer-warbands", "self-exile"))
     assertEquals(PhaseTransitionRef.all.map(_.key),
       Vector("end-wake", "begin-rest", "finish-rest"))
     assertEquals(ProcedureRef.all.map(_.key).distinct.size,

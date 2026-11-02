@@ -13,13 +13,11 @@ import oathdigital.model._
   * Its line names the new role: "Became a Citizen." */
 case object GrandScepterAction extends PaidAction(TheGrandScepterCard.action):
   private val notes = NoteSet(id)
-  val becameCitizen: NoteKey = notes.key("used.citizen", Vector(
+  val becameCitizen: NoteKey = notes.key(NoteKey.Used, Vector(
     NotePart.Text("Became a Citizen.")))
   val becameChancellor: NoteKey = notes.key("used.chancellor", Vector(
     NotePart.Text("Became the Chancellor.")))
   override def noteKeys: Vector[NoteKey] = notes.declared
-  override def narratedDecisions: Set[String] =
-    Set(Citizenship.replaceDecisionId)
 
   override def listed(ready: ReadyGame, player: PlayerId): Boolean =
     !Imperials.isImperial(ready, player)

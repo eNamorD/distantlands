@@ -243,7 +243,8 @@ class GameLogPropertiesSuite extends munit.FunSuite:
         "take-wealth",
         "muster", "trade", "challenge", "place-banner-resource",
         "negotiation", "campaign", "peek-site-relics", "reveal-owned-relic",
-        "move-warbands", "transfer-warbands", "finish-rest", "oathkeeper",
+        "move-warbands", "transfer-warbands", "self-exile", "finish-rest",
+        "oathkeeper",
         "setup", "chronicle-sun", "chronicle-throne", "chronicle-world",
         "chronicle-beacon", "chronicle-stars"))
     // A procedure can be marked `Notes` while declaring none, and then its
