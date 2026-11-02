@@ -117,25 +117,18 @@ spectators receive public-only projections and cannot bootstrap or command.
 Non-members, global administrators, and public spectators are denied. Storage
 failure and nonmembership remain distinct internal outcomes.
 
-The optional `DevelopmentIdentityShim` is a separately named test/manual
-authenticator for the `X-Oath-Dev-User` header. Configuration returns no shim
-unless explicitly enabled, and enabling it revalidates that the already
-validated bind host is `127.0.0.1`, `localhost`, or `::1`. It is not an OIDC or
-production session path.
-
-The separately mountable authenticated game transport is:
-
-- `GET /api/authenticated/first-games/{gameId}`; and
-- `POST /api/authenticated/first-games/{gameId}/commands`; and
-- `POST /api/authenticated/first-games/{gameId}/bootstrap`.
-
-In development mode, `OathServer` mounts this transport only when both
-`--session-cookie-name` and `--authenticated-public-origin` are configured
-(or `OATH_SESSION_COOKIE_NAME` and `OATH_AUTHENTICATED_PUBLIC_ORIGIN`).
-Without both, only the existing development transport is mounted; partial
-configuration fails startup. Development mode is loopback-only even when
-authenticated routes are mounted. Trusted-alpha mode ignores both options and
-serves seat routes instead; hosting it is covered in
+No route is mounted on sessions yet: nothing issues one, so the
+authenticated transport was retired (one HTTP gateway design, 2026-11-02)
+down to the parts X6 mounts again: `SessionCookieAuthenticator`,
+`SameOriginCsrfProtection`, `MembershipAuthorizationService`,
+`SessionMembershipActor` (the `ActorResolution` that turns a session's
+membership into a seat or a public view) and `MembershipBootstrap` (the
+owner's bootstrap of a provisioned game). X6 adds a session issuer and
+mounts `GameApiRoutes(SessionMembershipActor, …)` plus a bootstrap route.
+The retired routes were `GET`, `POST commands` and `POST bootstrap` under
+`/api/authenticated/first-games/{gameId}`, mounted in development mode only
+when both `--session-cookie-name` and `--authenticated-public-origin` were
+set; both options are gone. Hosting is covered in
 [quick-start.md](../operations/quick-start.md) and
 [configuration.md](../operations/configuration.md).
 
