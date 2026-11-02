@@ -26,7 +26,7 @@ class CommandProtocolSuite extends munit.FunSuite:
     ResolveWalker("negotiation.deal", DecisionAnswerWire.ProposeTermsWire(
       NegotiationTerms(Vector(NegotiationTransfer("blue", 2, Vector("r1"))),
         Vector(NegotiationDisclosure("blue",
-          NegotiationInformation.HeldRelic("red", "r2")))))),
+          NegotiationInformation.HeldRelic("red", "r2"))), Vector("blue")))),
     ResolveWalker("negotiation.deal", DecisionAnswerWire.AcceptDealWire),
     ResolveWalker("negotiation.deal", DecisionAnswerWire.DeclineDealWire),
     RequestConsent("travel.destination", WalkerStartArgWire("site",

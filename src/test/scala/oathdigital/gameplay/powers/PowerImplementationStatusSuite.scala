@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers
 
 import oathdigital.gameplay.operations.{AncientBloodline, GrandScepter,
+  GrandScepterNegotiation,
   HallOfMinisters, OperationRestrictions}
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.model.PowerId
@@ -21,9 +22,10 @@ class PowerImplementationStatusSuite extends munit.FunSuite:
     covered.foreach(id => assert(implemented(id), id.value))
 
   test("the printed rules are Ancient Bloodline, the Hall of Ministers and " +
-      "the Grand Scepter's restriction"):
+      "the Grand Scepter's restriction and negotiation term"):
     assertEquals(OperationRestrictions.printedRules.map(_.id),
-      Vector(AncientBloodline.id, HallOfMinisters.id, GrandScepter.id))
+      Vector(AncientBloodline.id, HallOfMinisters.id, GrandScepter.id,
+        GrandScepterNegotiation.id))
 
   test("a power a printed operation restriction enforces, with no walker " +
       "power, is implemented"):

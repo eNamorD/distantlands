@@ -1,5 +1,7 @@
 package oathdigital.gameplay.actions.negotiation
 
+import oathdigital.gameplay.operations.TheGrandScepterCard
+import oathdigital.gameplay.roles.Citizenship
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.{AcceptDeal, ChooseManyAnswer, DeclineDeal, ProposeTerms}
 
@@ -9,7 +11,7 @@ final case class DealState(participants: Vector[PlayerId],
     declined: Boolean):
   def hasSubstance: Boolean = terms.values.exists(t =>
     t.transfers.exists(x => x.favor > 0 || x.relics.nonEmpty) ||
-      t.disclosures.nonEmpty)
+      t.disclosures.nonEmpty || t.citizenship.nonEmpty)
   def unanimous: Boolean =
     participants.nonEmpty && accepted == participants.toSet
   def closed: Boolean = declined || unanimous
@@ -88,8 +90,24 @@ object NegotiationDeal:
   private def bounds(state: ReadyGame, author: PlayerId,
       participants: Vector[PlayerId]): NegotiationBounds =
     val player = state.game.current.players.find(_.player == author).get
+    val exiles = offerable(state, author, participants)
+    val ignored = Citizenship.ignored(state)
     NegotiationBounds(participants.filter(_ != author), player.board.favor,
-      player.relics.map(_.id), disclosable(state, player))
+      player.relics.map(_.id), disclosable(state, player),
+      citizenship = exiles,
+      citizenshipRefused = Option.when(ignored && exiles.nonEmpty)(
+        Citizenship.ignoredReason))
+
+  /** The participants `author` may offer Citizenship: the other Exiles,
+    * when `author` holds the Grand Scepter. The holder never names
+    * themself; the Scepter's Action is theirs for that. */
+  private def offerable(state: ReadyGame, author: PlayerId,
+      participants: Vector[PlayerId]): Vector[PlayerId] =
+    val holder = state.game.current.players.find(_.player == author)
+      .exists(_.relics.exists(_.id == TheGrandScepterCard.id))
+    if !holder then Vector.empty
+    else participants.filter(other => other != author &&
+      Imperials.role(state, other).contains(Role.Exile))
 
   /** What `author` may promise to reveal: their facedown advisers and held
     * relics, and site relics they know that are still at that site.
@@ -134,7 +152,16 @@ object NegotiationDeal:
       _ <- Either.cond(terms.transfers.flatMap(_.relics).forall(id =>
         player.relics.exists(_.id == id)), (), OathViolation.NegotiationUnavailable(
         "an offered relic is no longer held by its author"))
+      _ <- Either.cond(terms.citizenship.isEmpty || (!Citizenship.ignored(state) &&
+        terms.citizenship.forall(offerable(state, author,
+          state.game.current.players.map(_.player)).contains)), (),
+        OathViolation.NegotiationUnavailable(
+          "a Citizenship offer no longer stands"))
     yield ()
+
+  /** The players an agreed deal makes Imperial, in participant order. */
+  def citizens(deal: DealState): Vector[PlayerId] =
+    deal.participants.flatMap(deal.terms(_).citizenship).distinct
 
   private def knowledge(deal: DealState): Vector[CoreOperation] =
     deal.participants.flatMap(deal.terms(_).disclosures).map:

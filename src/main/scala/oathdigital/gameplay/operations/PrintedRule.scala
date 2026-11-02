@@ -2,9 +2,9 @@ package oathdigital.gameplay.operations
 
 import oathdigital.model._
 
-/** A card's printed power that an operation restriction enforces, with no
-  * walker or phase power: the Hall of Ministers, Ancient Bloodline and the
-  * Grand Scepter's restriction. `OperationRestrictions.printedRules` lists
+/** A card's printed power that an operation restriction or a procedure
+  * enforces, with no walker or phase power: the Hall of Ministers, Ancient
+  * Bloodline, the Grand Scepter's restriction and its negotiation term. `OperationRestrictions.printedRules` lists
   * each once, and every registry that keys a power by id reads that list:
   * the implemented status, the consent grid and the Game Log's notes.
   */

@@ -50,6 +50,15 @@ case object GrandScepter extends OperationRestriction with PrintedRule:
     case Bury(BuryableCard.Relic(buried), _, _) => buried == relic
     case _ => false
 
+/** The Grand Scepter's "IN NEGOTIATION: May offer Citizenship." No power
+  * runs it: the Negotiation procedure's bounds offer its holder the
+  * Citizenship term (`NegotiationDeal`), and the deal's settlement makes
+  * each named Exile a Citizen. Listed among the printed rules so that the
+  * power reads as implemented. */
+case object GrandScepterNegotiation extends PrintedRule:
+  val id: PowerId = TheGrandScepterCard.negotiation.id
+  val source: PowerSourceRef = PowerSourceRef.Card(TheGrandScepterCard.id)
+
 /** Where a new Chancellor takes the Grand Scepter from: its holder, the
   * site it lies at, or faceup from the box when it is in neither (Chronicle
   * ruling 10, extended to every source by the Empire phase design, "Grand

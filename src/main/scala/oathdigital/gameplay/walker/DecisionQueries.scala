@@ -342,7 +342,7 @@ object DecisionQueries:
       case None => reject(decisionId, "is not open to this player")
       case Some(own) =>
         val recipients = terms.transfers.map(_.recipient) ++
-          terms.disclosures.map(_.recipient)
+          terms.disclosures.map(_.recipient) ++ terms.citizenship
         val relics = terms.transfers.flatMap(_.relics)
         for
           _ <- require(recipients.forall(own.recipients.contains), decisionId,
@@ -356,6 +356,10 @@ object DecisionQueries:
           _ <- require(terms.disclosures.map(_.information)
             .forall(own.disclosures.contains), decisionId,
             "promises a disclosure its author cannot make")
+          _ <- require(terms.citizenship.isEmpty ||
+            (own.citizenshipRefused.isEmpty &&
+              terms.citizenship.forall(own.citizenship.contains)),
+            decisionId, "offers Citizenship it cannot")
         yield ()
 
   private def acceptsPartition(decisionId: String,
