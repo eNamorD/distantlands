@@ -42,10 +42,6 @@ Left behind by earlier phases:
   proportions are deliberate (DESIGN.md), so the fix is a visible scroll
   cue or a smaller decision header rather than new proportions. Observed in
   the browser during the clean-up run of 2026-10-23.
-- [ ] **Split `LogScripts.scala` before it grows.** The log-script support
-  file is at 799 of the 800 lines `BackendArchitectureSuite` allows a test
-  file, so the next script added there fails the build. Split it along the
-  procedures its scripts play.
 
 Left behind by the
 [consent work](superpowers/specs/2026-10-08-consent-system-design.md):

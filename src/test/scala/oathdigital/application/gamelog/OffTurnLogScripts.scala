@@ -13,8 +13,7 @@ import oathdigital.testkit.Table.{p1, p2, p3}
 import LogScripts.{atTable, raidAnswers}
 
 /** Journaled walks by a player who is not the active player, for the Game
-  * Log suites (catalog batch 8, slice 14). Kept beside `LogScripts`, which
-  * is at its size limit. */
+  * Log suites (catalog batch 8, slice 14). Kept beside `LogScripts`. */
 object OffTurnLogScripts:
   /** p1 and p2 at Ancient City, which two bandits rule; p2 holds Sneak
     * Attack faceup. p3 stands at Buried Giant. */
