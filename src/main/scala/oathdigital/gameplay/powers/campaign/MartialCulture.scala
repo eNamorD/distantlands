@@ -63,7 +63,9 @@ case object MartialCulture extends BattlePlan:
   override def later: Map[PowerWindow, PlanUse => Vector[Operation]] =
     Map(PowerWindow.CampaignActionEligibility -> resolve)
 
-  /** After a won Campaign, the question and the role change. */
+  /** After a won Campaign, the question and the role change. Only the
+    * user's role is read again: the card asks whether "you're an Exile",
+    * and the defeated Exile was one when the plan was chosen. */
   private def resolve(use: PlanUse): Vector[Operation] = (for
     user <- use.user
     if use.won.contains(true)

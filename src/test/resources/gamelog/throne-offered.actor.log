@@ -1,0 +1,33 @@
+0.0 round 0 | Round 1
+0.1 turn 0 | [player:p3|p3]'s turn
+0.2 phase 0 | Act
+5.0 phase 0 | Rest
+9.0 round 0 | Round 2
+9.1 turn 0 | [player:p1|p1]'s turn
+9.2 phase 0 | Wake
+10.0 victory 0 | [player:p1|p1] won as the Usurper
+14.0 phase 0 | Chronicle
+17.0 delta 1 | The Empire broke
+18.0 delta 1 | [player:p1|p1] became Chancellor
+20.0 decision 1 | [player:p1|p1] took the Throne task
+25.0 decision 1 | [player:p1|p1] took the World task
+30.0 decision 1 | [player:p1|p1] took the Beacon task
+38.0 decision 1 | [player:p2|p2] took the World task
+43.0 decision 1 | [player:p1|p1] offered Citizenship to [player:p2|p2]
+47.0 delta 1 | Moved 1 Imperial warband to [site:site:broken-peaks|Broken Peaks]
+48.0 decision 1 | [player:p2|p2] accepted Citizenship
+55.0 delta 1 | [player:p1|p1] scored [amount:3 lineage points]
+60.0 decision 1 | The Oathkeeper goal became Protection
+69.0 decision 1 | [player:p2|p2] protected the stack of [card:179|Threatening Roar], [card:180|Fae Merchant] and [card:181|Second Chance]
+74.0 decision 1 | [player:p2|p2] kept a Denizen as a starting adviser
+75.0 delta 1 | [cards:182 183 100 back denizen back denizen back denizen|6 cards] were dispossessed
+87.0 decision 1 | [player:p1|p1] chose Discord, Arcane and Order
+97.0 decision 1 | [player:p1|p1] welcomed [card:21|Naysayers] as a starting adviser
+99.0 delta 1 | [site:site:ancient-city|Ancient City] was archived
+100.0 delta 1 | [site:site:buried-giant|Buried Giant] was archived
+101.0 delta 1 | [site:site:deep-woods|Deep Woods] was archived
+102.0 delta 1 | [site:site:desolate-shore|Desolate Shore] was archived
+103.0 delta 1 | [site:site:dunes|Dunes] was archived
+104.0 delta 1 | [site:site:fair-isle|Fair Isle] was archived
+105.0 delta 1 | [site:site:golden-valley|Golden Valley] was archived
+106.0 delta 1 | [site:site:broken-peaks|Broken Peaks] stays in the Empire

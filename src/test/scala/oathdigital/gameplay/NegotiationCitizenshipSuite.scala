@@ -152,3 +152,22 @@ class NegotiationCitizenshipSuite extends munit.FunSuite:
     assertEquals(Imperials.role(after, p2), Some(Role.Citizen))
     assert(Look(after).player(p3).relics.exists(_.id ==
       TheGrandScepterCard.id))
+
+  test("an Exile who negotiates on their own turn and accepts ends their Act"):
+    // p2, an Exile in their Act, negotiates with p1, the Scepter's holder.
+    val table = Table.start.imperial(p1).turn(p2, Phase.Act)
+      .pawn(p1, at = site).pawn(p2, at = site).pawn(p3, at = "Dunes")
+      .relic(p1, "The Grand Scepter").boardWarbands(p2, 2)
+      .allowingCitizenshipPowers
+    val started = rules.startWalker(Ready(table.ready), ActionRef.Negotiation,
+      p2).getOrElse(fail("Negotiation must start"))
+    val done = Vector[(PlayerId, DecisionAnswer)](p1 -> offering(p2),
+      p1 -> AcceptDeal, p2 -> AcceptDeal).foldLeft(started.state) {
+      case (state, (by, answer)) =>
+        say(state, by, answer).getOrElse(fail(s"${by.value} must be heard"))
+          .state
+    }
+    val after = Outcomes.ready(done)
+    assertEquals(Imperials.role(after, p2), Some(Role.Citizen))
+    // The Act ended: Rest ran and p3's turn began.
+    assertEquals(after.game.current.turn.activePlayer, p3)

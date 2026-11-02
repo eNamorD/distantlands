@@ -15,6 +15,7 @@ import oathdigital.gameplay.phases.rest.FinishRestProcedure
 import oathdigital.gameplay.phases.wake.TakeWealthProcedure
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.setup.SetupProcedure
+import oathdigital.gameplay.chronicle.OfferCitizenship
 import oathdigital.model._
 import oathdigital.protocol.projection.{LogKind, LogSpan}
 import oathdigital.testkit.CatalogNames
@@ -171,6 +172,12 @@ class ProcedureNoteLinesSuite extends munit.FunSuite:
       NegotiationProcedure.becameChancellor).foreach(key =>
         assertEquals(kindOf(ActionRef.Negotiation, key), LogKind.Delta,
           s"${key.name}"))
+
+  test("the Throne's Citizenship offer and answers post at Decision"):
+    Vector(OfferCitizenship.offered, OfferCitizenship.accepted,
+      OfferCitizenship.declined).foreach(key => assertEquals(kindOf(
+        TriggeredProcedureRef.ChronicleThrone, key), LogKind.Decision,
+        key.name))
 
   test("a Negotiation's opening lines post at Action"):
     assertEquals(kindOf(ActionRef.Negotiation,
