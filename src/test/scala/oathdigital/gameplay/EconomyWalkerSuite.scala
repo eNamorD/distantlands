@@ -34,7 +34,8 @@ class EconomyWalkerSuite extends munit.FunSuite:
     .favor(p1, 4).secrets(p1, faceUp = 2).supply(p1, 7).boardWarbands(p1, 3)
 
   /** Magician's Code is Arcane, like Alchemist. */
-  private def withMatchingAdviser: Table = atAlchemist.adviser(p1, MagiciansCodeCard)
+  private def withMatchingAdviser: Table =
+    atAlchemist.adviser(p1, MagiciansCodeCard)
 
   private def start(ready: ReadyGame, action: StartableRef = ActionRef.Muster,
       args: Vector[DecisionOptionRef] = Vector.empty) =
@@ -78,7 +79,8 @@ class EconomyWalkerSuite extends munit.FunSuite:
   test("the action boundary starts the Oathkeeper procedure within the " +
       "answering command"):
     // p2 rules a site and p1 none, so p2 leads the Oath.
-    val started = accepted(start(atAlchemist.warbandsAt(DunesSite, p2, 1).ready))
+    val started = accepted(start(
+      atAlchemist.warbandsAt(DunesSite, p2, 1).ready))
     val answered = accepted(
       answer(started.state, p1, MusterProcedure.decisionId, card))
     assert(answered.events.contains(
@@ -142,7 +144,8 @@ class EconomyWalkerSuite extends munit.FunSuite:
   test("an unimplemented optional Economy power does not block a base Trade"):
     val board = Table.start.pawn(p1, at = AncientCitySite)
       .favor(p1, 4).secrets(p1, faceUp = 2)
-      .edifice(HallowedSpringCard, EdificeSide.Intact, at = AncientCitySite).ready
+      .edifice(HallowedSpringCard, EdificeSide.Intact, at = AncientCitySite)
+      .ready
     val started = start(board, ActionRef.Trade, secret)
       .getOrElse(fail("the Trade must start"))
     val finished = answer(started.state, p1, TradeProcedure.decisionId,

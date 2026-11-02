@@ -53,7 +53,8 @@ class TableSuite extends munit.FunSuite:
 
   test("banditsRefilled leaves the refill nothing to add and keeps the forces " +
       "already at a site"):
-    val held = Table.start.warbandsAt(AncientCitySite, p1, 1).boardWarbands(p1, 2)
+    val held = Table.start.warbandsAt(AncientCitySite, p1, 1)
+      .boardWarbands(p1, 2)
     val table = held.banditsRefilled
     assertEquals(StateBasedEvaluation.banditRefill(catalog, table.state),
       Right(None))
@@ -66,7 +67,8 @@ class TableSuite extends munit.FunSuite:
           "Broken Peaks").capacity))
 
   test("relicDeckTop puts relics on top of the relic deck, first named on top"):
-    val ready = Table.start.relicDeckTop(DowsingSticksCard, StickyFireCard).ready
+    val ready = Table.start.relicDeckTop(DowsingSticksCard, StickyFireCard)
+      .ready
     assertEquals(ready.game.current.commonCards.relicDeck.take(2),
       Vector(DowsingSticksCard.id,
         StickyFireCard.id))
@@ -194,7 +196,8 @@ class TableSuite extends munit.FunSuite:
   test("more warbands than the printed supply are rejected when the state is read"):
     // Bandits print 24, so 25 at one site are one too many.
     val bandits = intercept[munit.FailException](
-      Table.start.bandits(DunesSite, MaterialBankState.BanditWarbands + 1).ready)
+      Table.start.bandits(DunesSite, MaterialBankState.BanditWarbands + 1)
+        .ready)
     assert(bandits.getMessage.contains("Bandit"), bandits.getMessage)
     // A lineage prints 14: 12 on the board and 3 at a site are one too many.
     val exiles = intercept[munit.FailException](
@@ -220,10 +223,6 @@ class TableSuite extends munit.FunSuite:
     // a bank of 6 takes 2 of them.
     val returned = Table.start.boardWarbands(p1, 10).warbandsInBank(p1, 6)
     assertEquals(Look(returned.ready).boardWarbands(p1), 8)
-
-  test("an unknown name fails and lists the closest names"):
-    val failure = intercept[munit.FailException](CatalogNames.denizen("Mercenary"))
-    assert(failure.getMessage.contains("Mercenaries"), failure.getMessage)
 
   test("each step states one fact"):
     val ready = Table.start
@@ -255,7 +254,8 @@ class TableSuite extends munit.FunSuite:
     assertEquals(look.relicsAt(DunesSite), Vector(BrassHorseCard.id))
     assertEquals(look.cardsAt(FairIsleSite),
       Vector(HallowedSpringCard.id))
-    assertEquals(look.forces(FairIsleSite), SiteForces.Occupied(ForceKind.Bandit, 2))
+    assertEquals(look.forces(FairIsleSite),
+      SiteForces.Occupied(ForceKind.Bandit, 2))
     assertEquals(look.forces(DunesSite), SiteForces.Occupied(
       ForceKind.Exile(look.player(p1).lineage), 3))
     assertEquals((look.favor(p1), look.faceUpSecrets(p1),
@@ -278,7 +278,8 @@ class TableSuite extends munit.FunSuite:
   test("withoutAdvisers sends each adviser to the world deck's bottom, in " +
       "the order held, and leaves the other players' advisers alone"):
     val ready = Table.start
-      .adviser(p1, AlchemistCard).adviser(p1, MagiciansCodeCard, facedown = true)
+      .adviser(p1, AlchemistCard)
+      .adviser(p1, MagiciansCodeCard, facedown = true)
       .adviser(p2, EldersCard)
       .withoutAdvisers(p1).ready
     assertEquals(Look(ready).advisers(p1), Vector.empty)
@@ -389,4 +390,5 @@ class TableSuite extends munit.FunSuite:
 
   test("Look.tokensOn fails for a card at no site and in no play area"):
     // The quiet table deals no denizen to a site or a player.
-    intercept[munit.FailException](Look(Table.start.ready).tokensOn(AlchemistCard))
+    intercept[munit.FailException](
+      Look(Table.start.ready).tokensOn(AlchemistCard))

@@ -50,7 +50,8 @@ class CupOfPlentySuite extends munit.FunSuite:
 
   test("a faceup adviser of another suit does not stop the free trade"):
     // Wrestlers is Order; the traded Alchemist is Arcane.
-    assertEquals(supplyAfter(held.adviser(p1, WrestlersCard).ready, modifiers), 7)
+    assertEquals(supplyAfter(held.adviser(p1, WrestlersCard).ready, modifiers),
+      7)
 
   test("a faceup adviser of the traded card's suit makes the trade cost " +
       "Supply"):

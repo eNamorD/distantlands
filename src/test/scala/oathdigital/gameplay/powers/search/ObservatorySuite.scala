@@ -26,8 +26,10 @@ class ObservatorySuite extends munit.FunSuite:
   private val modifiers = Vector(Observatory.id)
   /** Three plain denizens in each region's discard pile; none is played. */
   private val piles: Map[Region, Vector[DenizenId]] = Map(
-    Region.Cradle -> Vector(ThreateningRoarCard, FaeMerchantCard, SecondChanceCard),
-    Region.Provinces -> Vector(WrestlersCard, MercenariesCard, HomesteadersCard),
+    Region.Cradle -> Vector(ThreateningRoarCard, FaeMerchantCard,
+      SecondChanceCard),
+    Region.Provinces -> Vector(WrestlersCard, MercenariesCard,
+      HomesteadersCard),
     Region.Hinterland -> Vector(DefameCard, ScryerCard, BlackmailCard))
     .view.mapValues(_.map(_.id)).toMap
   /** The world deck, then each region's pile in region order. */

@@ -96,7 +96,8 @@ object PowerLogScripts:
     * never empty. */
   def gamblingHall(using munit.Location): Script =
     val card = GamblingHallCard.id
-    val table = tableWithOnePawnPerSite.denizen(GamblingHallCard, AncientCitySite)
+    val table = tableWithOnePawnPerSite.denizen(GamblingHallCard,
+      AncientCitySite)
       .favor(p1, 2).banditsRefilled
     val richest = Suit.all.maxBy(suit => table.ready.banks.favor(suit))
     val (service, act) = atTable("gambling-hall", table)

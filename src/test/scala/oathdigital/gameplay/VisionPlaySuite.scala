@@ -143,7 +143,8 @@ class VisionPlaySuite extends munit.FunSuite:
       "with nothing to take is boxed"):
     // p1 holds Conspiracy facedown; p2 and p3 stand elsewhere, so no one
     // shares p1's site and it has nothing to take.
-    val staged = atHome.pawn(p2, at = BrokenPeaksSite).pawn(p3, at = BuriedGiantSite)
+    val staged = atHome.pawn(p2, at = BrokenPeaksSite)
+      .pawn(p3, at = BuriedGiantSite)
       .adviser(actor, conspiracy, facedown = true).ready
     val started = accepted(FacedownAdviserPlay.parkedOnPlacement(rules,
       OathState.Ready(staged), actor, conspiracy))

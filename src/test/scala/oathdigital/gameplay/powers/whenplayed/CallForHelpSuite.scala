@@ -63,7 +63,8 @@ class CallForHelpSuite extends munit.FunSuite:
 
   test("keeping on drawing asks again, for no more than what is left of six"):
     val ready = cradlePile(OldSongsCard, SpinningBeeCard, DeedWriterCard,
-      LandWardenCard, DefameCard, SecondWindCard, ZealotsCard, UnstableSummonCard)
+      LandWardenCard, DefameCard, SecondWindCard, ZealotsCard,
+      UnstableSummonCard)
       .ready
     val walked = walkAnswering(ready, power, played, amount(5),
       chooseOne(CallForHelp.keep), amount(1))

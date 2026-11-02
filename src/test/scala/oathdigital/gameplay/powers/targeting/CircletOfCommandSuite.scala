@@ -65,7 +65,8 @@ class CircletOfCommandSuite extends munit.FunSuite:
     * Horn, the Circlet on `circletSide` and the People's Favor. */
   private def conspiracyTargets(circletSide: Orientation): ConspiracyWalk =
     val ready = Table.start.pawn(p1, at = AncientCitySite)
-      .pawn(p2, at = AncientCitySite).peoplesFavor(Some(p2), favor = 1).hand(p1, conspiracy)
+      .pawn(p2, at = AncientCitySite).peoplesFavor(Some(p2), favor = 1)
+      .hand(p1, conspiracy)
       .relic(p2, crackedHorn)
       .relic(p2, circlet, facedown = circletSide == Orientation.FaceDown)
       .ready

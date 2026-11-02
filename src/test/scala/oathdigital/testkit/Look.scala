@@ -31,13 +31,13 @@ final class Look private (ready: ReadyGame):
     .getOrElse(throw AssertionError(s"$p has no pawn on the map"))
 
   /** The cards a site lists: its denizens and edifices. */
-  def cardsAt(site: SiteRef)(using munit.Location): Vector[CardId] =
+  def cardsAt(site: SiteRef): Vector[CardId] =
     current.map.sites(CardRefs.siteId(site)).denizens.map(_.id)
-  def relicsAt(site: SiteRef)(using munit.Location): Vector[RelicId] =
+  def relicsAt(site: SiteRef): Vector[RelicId] =
     current.map.sites(CardRefs.siteId(site)).relics.map(_.id)
-  def forces(site: SiteRef)(using munit.Location): SiteForces =
+  def forces(site: SiteRef): SiteForces =
     current.map.sites(CardRefs.siteId(site)).forces
-  def siteTokens(site: SiteRef)(using munit.Location): Tokens =
+  def siteTokens(site: SiteRef): Tokens =
     current.map.sites(CardRefs.siteId(site)).tokens
 
   def phase: Phase = current.turn.phase

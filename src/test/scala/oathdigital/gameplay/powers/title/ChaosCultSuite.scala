@@ -27,7 +27,8 @@ class ChaosCultSuite extends munit.FunSuite:
   private def staged(rulers: Vector[PlayerId], facedown: Boolean = false,
       holder: Option[PlayerId] = None): Table =
     rulers.zip(Vector(DunesSite, FairIsleSite)).foldLeft(Table.start
-      .pawn(active, AncientCitySite).adviser(cultist, power.cardId, facedown = facedown)
+      .pawn(active, AncientCitySite)
+      .adviser(cultist, power.cardId, facedown = facedown)
       .oathkeeper(holder)
       .favor(p1, 2).favor(p2, 2).favor(p3, 2)) { case (t, (ruler, site)) =>
         t.warbandsAt(site, ruler, 1) }

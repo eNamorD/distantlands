@@ -19,8 +19,10 @@ class DisciplesSuite extends munit.FunSuite:
   private val disciples = DisciplesCard.id
   private val modifiers = Vector(Disciples.id)
   // Hearth and Order denizens whose powers these tests do not use.
-  private val deckTop = Vector(HomesteadersCard, LandWardenCard, NewsFromAfarCard)
-  private val discardPile = Vector(CodeOfHonorCard, MessengerCard, ShieldWallCard)
+  private val deckTop = Vector(HomesteadersCard, LandWardenCard,
+    NewsFromAfarCard)
+  private val discardPile = Vector(CodeOfHonorCard, MessengerCard,
+    ShieldWallCard)
   private val region = Region.Cradle // Ancient City's region
   private val startingSupply = 5
 

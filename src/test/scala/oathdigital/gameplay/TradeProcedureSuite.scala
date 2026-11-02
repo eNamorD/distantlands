@@ -96,7 +96,8 @@ class TradeProcedureSuite extends munit.FunSuite:
   test("an intact edifice is a legal Trade source"):
     val ready = Table.start.pawn(p1, at = AncientCitySite)
       .favor(p1, 4).secrets(p1, faceUp = 2)
-      .edifice(HallowedSpringCard, EdificeSide.Intact, at = AncientCitySite).ready
+      .edifice(HallowedSpringCard, EdificeSide.Intact, at = AncientCitySite)
+      .ready
     val options = StartPreview.firstDecisionOptions(catalog, ready, p1,
         ActionRef.Trade, WalkerPowers.empty,
         TradeProcedure.selection(TradeResource.Secret))

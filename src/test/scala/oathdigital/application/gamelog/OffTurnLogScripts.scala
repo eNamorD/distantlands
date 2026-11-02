@@ -18,7 +18,7 @@ import LogScripts.{atTable, raidAnswers}
 object OffTurnLogScripts:
   /** p1 and p2 at Ancient City, which two bandits rule; p2 holds Sneak
     * Attack faceup. p3 stands at Buried Giant. */
-  private def sneakAttackTable(using munit.Location): Table =
+  private def sneakAttackTable: Table =
     Table.start.pawn(p1, AncientCitySite).pawn(p2, AncientCitySite)
       .pawn(p3, BuriedGiantSite).bandits(AncientCitySite, 2)
       .adviser(p2, SneakAttackCard.id).banditsRefilled

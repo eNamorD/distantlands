@@ -103,7 +103,8 @@ class CrystalVialSuite extends munit.FunSuite:
   test("the edifice at the site is buried whichever face it shows"):
     Vector(EdificeSide.Intact, EdificeSide.Ruined).foreach { side =>
       val edifice = MarbleFountainsCard.id
-      val ready = Table.from(staged).edifice(edifice, side, at = AncientCitySite)
+      val ready = Table.from(staged)
+        .edifice(edifice, side, at = AncientCitySite)
         .ready
       val t = accepted(use(ready, power, source))
       val done = accepted(answer(t, actor, CrystalVial.decisionId,

@@ -28,10 +28,12 @@ class BarbedNetSuite extends munit.FunSuite:
     * relic when `relicsAtSite` is false. */
   private def staged(relicsAtSite: Boolean = true, faceUp: Int = 3)
       : ReadyGame =
-    val holding = Table.start.turn(actor, Phase.Act).pawn(actor, AncientCitySite)
+    val holding = Table.start.turn(actor, Phase.Act)
+      .pawn(actor, AncientCitySite)
       .relic(actor, net).secrets(actor, faceUp)
     if relicsAtSite then
-      holding.relicAt(taken, AncientCitySite).relicAt(left, AncientCitySite).ready
+      holding.relicAt(taken, AncientCitySite).relicAt(left, AncientCitySite)
+        .ready
     else holding.ready
   private def atSite(ready: ReadyGame): Vector[RelicId] =
     ready.game.current.map.sites(actorsSite(ready)).relics.map(_.id)

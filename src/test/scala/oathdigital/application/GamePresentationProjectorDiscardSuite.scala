@@ -16,7 +16,8 @@ class GamePresentationProjectorDiscardSuite extends munit.FunSuite:
       .getOrElse(fail("no cradle"))
 
   // Appended in this order, so Scryer is on top.
-  private val table = Table.start.discarded(Region.Cradle, MagiciansCodeCard, ScryerCard)
+  private val table = Table.start.discarded(Region.Cradle, MagiciansCodeCard,
+    ScryerCard)
 
   test("a discard pile projects each card as a back and the top card's kind"):
     val region = cradle(table.ready, p2)

@@ -59,7 +59,8 @@ class GameLogRareLinesSuite extends munit.FunSuite:
       Table.start.pawn(p1, AncientCitySite).pawn(p2, BrokenPeaksSite)
         .pawn(p3, BuriedGiantSite).turn(p1, Phase.Wake)
         .boardWarbands(p1, 3).boardWarbands(p2, 2)
-        .banditsRefilled.bandits(AncientCitySite, 0).bandits(BuriedGiantSite, 0))
+        .banditsRefilled.bandits(AncientCitySite, 0)
+        .bandits(BuriedGiantSite, 0))
     waking.endingWake(p1)
     Script("rare-warbands", service, p1)
 

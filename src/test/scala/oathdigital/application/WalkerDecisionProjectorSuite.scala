@@ -725,7 +725,8 @@ class WalkerDecisionProjectorSuite extends munit.FunSuite:
   test("an unavailable option projects its state and written reason"):
     val context = parked(ActionRef.Recover)
     val tree = Sequence(Decide("test.decide", p1, DecisionQuery.ChooseOne(
-      Vector(DecisionOption.Site(siteRef(DunesSite)), DecisionOption.Unavailable(
+      Vector(DecisionOption.Site(siteRef(DunesSite)),
+        DecisionOption.Unavailable(
         DecisionOption.Site(siteRef(BrokenPeaksSite)),
         OptionReason.Written("Not ruled by the defender"))))))
     val options = projectorFor(tree).project(context).flatMap(_.query)
@@ -778,7 +779,8 @@ class WalkerDecisionProjectorSuite extends munit.FunSuite:
     val context = parked(ActionRef.Recover)
     val absent = DecisionOptionRef.Relic(RelicId("relic:not-on-this-board"))
     val tree = Sequence(Decide("test.decide", p1, DecisionQuery.ChooseOne(
-      Vector(DecisionOption.Site(siteRef(DunesSite)), DecisionOption.Unavailable(
+      Vector(DecisionOption.Site(siteRef(DunesSite)),
+        DecisionOption.Unavailable(
         DecisionOption.Relic(absent), OptionReason.Written("No"))))))
     assertEquals(projectorFor(tree).project(context).flatMap(_.query)
       .map(_.offeredOptions.map(_.id)),
