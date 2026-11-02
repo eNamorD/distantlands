@@ -120,5 +120,6 @@ object WalkerPowerCatalog:
       Vector(Dazzle.forCatalog(catalog), GreatMarket.forCatalog(catalog),
         BanditMarket.forCatalog(catalog), GreatForge.forCatalog(catalog),
         BrokenForge.forCatalog(catalog), ProvingGrounds.forCatalog(catalog),
-        EmptyGrounds.forCatalog(catalog), TakeWealthLimit,
+        EmptyGrounds.forCatalog(catalog), HallOfMockery, LostGuardians,
+        RuinedSchool, BrokenHorn, TakeWealthLimit,
         ConspiracyWhenPlayed)
