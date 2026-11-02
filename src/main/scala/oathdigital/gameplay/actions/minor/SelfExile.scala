@@ -1,7 +1,6 @@
 package oathdigital.gameplay.actions.minor
 
 import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.gameplay.powers.PlayerFacts
 import oathdigital.gameplay.roles.Citizenship
 import oathdigital.model._
 import oathdigital.model.OathViolation._
@@ -19,8 +18,8 @@ object SelfExile:
   def keys: Vector[NoteKey] = notes.declared
 
   def price(ready: ReadyGame, actor: PlayerId): Int =
-    PlayerFacts.player(ready, actor).fold(_ => Minimum,
-      state => math.max(Minimum, state.board.warbands))
+    math.max(Minimum, ready.game.current.players.find(_.player == actor)
+      .fold(0)(_.board.warbands))
 
   val build: MinorActionProcedures.Build = (_, ready, actor, args) => for
     _ <- MinorActionProcedures.started(ready, actor, args,
@@ -29,7 +28,8 @@ object SelfExile:
       MinorActionUnavailable("Only a Citizen exiles themself"))
     chancellor <- Imperials.chancellor(ready).toRight(
       MinorActionUnavailable("There is no Chancellor to pay"))
-    state <- PlayerFacts.player(ready, actor)
+    state <- ready.game.current.players.find(_.player == actor)
+      .toRight(WrongPlayer(ready.game.current.turn.activePlayer, actor))
     cost = price(ready, actor)
     _ <- Either.cond(state.board.favor >= cost, (), MinorActionUnavailable(
       s"You need $cost favor to give the Chancellor"))
