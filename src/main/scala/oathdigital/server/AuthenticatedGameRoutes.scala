@@ -65,16 +65,14 @@ final class AuthenticatedGameGateway(
   ): Either[AuthenticatedGameFailure, GameProjection] =
     authorization.authorizeCommand(gameId, principal)
       .left.map(Authorization.apply)
-      .flatMap { actor =>
-        GameIntentMapper.bind(actor.access.playerId, request.intent)
+      .flatMap { seat =>
+        GameIntentMapper.map(request.intent)
           .left.map(InvalidIntent.apply)
-          .flatMap(command => service.handle(gameId,
-            request.expectedNextSequence, command).left.map(Application.apply))
-          .map(accepted => projector.project(
-            gameId,
-            accepted.loaded,
-            actor.access.playerId
-          ))
+          .flatMap(intent => service.handle(gameId,
+            request.expectedNextSequence,
+            GameCommand.Issued(seat.playerId, intent)).left.map(Application.apply))
+          .map(accepted => projector.project(gameId, accepted.loaded,
+            seat.playerId))
       }
 
   def bootstrap(

@@ -111,7 +111,8 @@ player IDs do not cross this boundary.
 `IdentityRepository` into one of three access contexts. Owners may bootstrap
 but have public-only projection scope and cannot submit player commands.
 Players receive private projection scope for their single membership-derived
-`PlayerId`; `AuthorizedPlayer` constructs commands with that actor. Explicit
+`PlayerId`, which the gateway binds as the actor of every `GameCommand.Issued`
+it submits. Explicit
 spectators receive public-only projections and cannot bootstrap or command.
 Non-members, global administrators, and public spectators are denied. Storage
 failure and nonmembership remain distinct internal outcomes.

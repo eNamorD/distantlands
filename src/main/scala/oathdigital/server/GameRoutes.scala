@@ -129,12 +129,13 @@ final class GameRoutes(
                           s"${error.path}: ${error.message}"
                         ))
                       case Right(request) =>
-                        GameIntentMapper.bind(PlayerId(validPlayerId), request.intent) match
+                        GameIntentMapper.map(request.intent) match
                           case Left(error) => complete(jsonResponse(StatusCodes.BadRequest,
                             "malformed-request", s"${error.path}: ${error.message}"))
-                          case Right(command) => completeAsync(gateway.submit(
+                          case Right(intent) => completeAsync(gateway.submit(
                             validGameId, PlayerId(validPlayerId),
-                            request.expectedNextSequence, command))
+                            request.expectedNextSequence,
+                            GameCommand.Issued(PlayerId(validPlayerId), intent)))
                   }
       }
     }

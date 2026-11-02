@@ -39,8 +39,8 @@ final class TrustedGameGateway(service: GameApplicationService, projector: GameP
   def submit(gameId: String, seat: TrustedSeat, request: ActorlessCommandRequest)
       : Either[TrustedSeatFailure, GameProjection] = for
     player <- actor(gameId, seat)
-    command <- GameIntentMapper.bind(player, request.intent)
-      .left.map(_ => InvalidIntent)
-    accepted <- service.handle(gameId, request.expectedNextSequence, command).left.map(Application.apply)
+    intent <- GameIntentMapper.map(request.intent).left.map(_ => InvalidIntent)
+    accepted <- service.handle(gameId, request.expectedNextSequence,
+      GameCommand.Issued(player, intent)).left.map(Application.apply)
   yield projector.project(gameId, accepted.loaded, player)
     .copy(viewerPlayerId = Some(player.value))

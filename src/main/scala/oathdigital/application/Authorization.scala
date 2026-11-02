@@ -39,31 +39,10 @@ object ProjectionScope:
   case object PublicOnly extends ProjectionScope
   final case class PlayerPrivate(playerId: PlayerId) extends ProjectionScope
 
-object AuthorizedPlayer:
-  private[application] def forPlayer(playerId: PlayerId): AuthorizedPlayer =
-    AuthorizedPlayer(GameAccessContext.Player("transport", UserId("transport"), playerId))
-
 final case class ProjectionAuthorization(
     access: GameAccessContext,
     scope: ProjectionScope
 )
-
-final case class AuthorizedPlayer private[application] (
-    access: GameAccessContext.Player
-):
-  def undo: GameCommand = GameCommand.Undo(access.playerId)
-  def redo: GameCommand = GameCommand.Redo(access.playerId)
-  def resolveWalker(treeDecision: TreeDecision): GameCommand =
-    GameCommand.ResolveWalker(access.playerId, treeDecision)
-  def requestConsent(decisionId: String, target: DecisionOptionRef,
-      granters: Vector[PlayerId] = Vector.empty): GameCommand =
-    GameCommand.RequestConsent(access.playerId, decisionId, target, granters)
-  def answerConsent(choice: ConsentChoice): GameCommand =
-    GameCommand.AnswerConsent(access.playerId, choice)
-  def setConsentPreference(power: PowerId, requester: PlayerId,
-      setting: ConsentSetting): GameCommand =
-    GameCommand.SetConsentPreference(access.playerId, power, requester,
-      setting)
 
 sealed trait AuthorizationFailure extends Product with Serializable
 object AuthorizationFailure:
@@ -125,11 +104,11 @@ final class MembershipAuthorizationService(repository: IdentityRepository):
         ProjectionAuthorization(player, PlayerPrivate(player.playerId))
       case other => ProjectionAuthorization(other, PublicOnly)
 
+  /** The seat `principal` may command from: only a player holds one. */
   def authorizeCommand(
       gameId: String,
       principal: AuthenticatedPrincipal
-  ): Either[AuthorizationFailure, AuthorizedPlayer] =
+  ): Either[AuthorizationFailure, GameAccessContext.Player] =
     resolve(gameId, principal).flatMap:
-      case player: GameAccessContext.Player =>
-        Right(AuthorizedPlayer(player))
+      case player: GameAccessContext.Player => Right(player)
       case _ => Left(Forbidden("command"))
