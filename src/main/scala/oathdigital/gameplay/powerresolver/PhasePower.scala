@@ -79,6 +79,11 @@ trait PhasePower extends NotingPower:
   def refusal(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef,
       starts: QueuedStarts): Option[String] = None
 
+  /** Whether `player`'s menus list the power at all. A power their role
+    * can never use is left out, as an Exile's menu leaves out Warband
+    * Transfers. `true` by default. */
+  def listed(ready: ReadyGame, player: PlayerId): Boolean = true
+
 /** `useRestrictions` are the power-use restrictions the walker powers
   * declare (catalog batch 8, slice 10), so a phase power is judged by the
   * same rules a walker power is. */

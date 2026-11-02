@@ -115,7 +115,6 @@ relic.obsidian-cage.action
 relic.obsidian-cage.campaign
 relic.sigil-of-the-eye
 relic.sigil-of-the-heart
-relic.the-grand-scepter.action
 relic.the-grand-scepter.campaign
 relic.the-grand-scepter.negotiation
 relic.whispering-stone

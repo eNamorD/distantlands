@@ -125,7 +125,7 @@ object PhaseMenu:
           case ActionClass.Minor => OptionGroup.Minor))
     val sourced = for
       power <- phasePowers.powers
-      if !power.forced &&
+      if !power.forced && power.listed(ready, actor) &&
         PhasePowerProcedure.timingOf(menu.phase).contains(power.timing)
       (found, ref) <- PhasePowerProcedure.sources(catalog, ready, actor,
         power)
