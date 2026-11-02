@@ -34,13 +34,14 @@ These are not claimed errors in the rulebook. They are places where an implement
    resolver; legacy, Vision exhaustion, era, and other ties remain unresolved
    in their own contexts (CR pp. 16, 19, 36-37).
 8. **First game exception.** CR recommends ignoring "become Citizen" powers in the first game, wording this as a recommendation rather than a strict prohibition. Product rules need a configurable or explicit interpretation (CR p. 30; CR p. 34 uses similar guidance).
+    Resolved in part: a setup option, on by default, ignores these powers and shows them disabled (Empire slice 3a); the Settings Feature phase lets players change it.
 9. **Campaign target legality under Pass and zero-capacity sites.** Target generation must combine campaign type, ruler, region Pass consent, and special no-capacity cases (CR pp. 21-22, 30-31).
 10. **Chronicle actor availability.** Banner task assignment can target "anyone"; player attendance may change between games. Define whether absent/stored lineages can be assigned tasks or whether "anyone" means current participants (CR p. 36).
     Resolved: only players seated for the game receive tasks ([Chronicle rulings](#chronicle-rulings), ruling 1).
 
 ## Empire rulings
 
-Rulings for the Empire in play ([Empire phase design](../superpowers/specs/2026-10-29-empire-phase-design.md), "Rulings"). Slice 1a implements R1 to R3 and the Usurper ruling.
+Rulings for the Empire in play ([Empire phase design](../superpowers/specs/2026-10-29-empire-phase-design.md), "Rulings"). Slice 1a implements R1 to R3 and the Usurper ruling; slice 3a implements R4, R5 and the Usurper flip of R7.
 
 R1. **One ruler.** On an Imperial player's turn only that player rules Imperial sites; the Chancellor does not also rule them. A site has exactly one ruler (CR p. 15).
 
@@ -48,7 +49,11 @@ R2. **The Chancellor outside any turn.** Outside any turn, as in the end-of-roun
 
 R3. **A Citizen's Supply.** A Citizen refreshes to the Chancellor's current Supply, which includes the Chancellor's own carried surplus, plus their own unspent Supply, capped at 7.
 
-R7. **No Imperial Usurper in play.** An Imperial player never holds the Usurper side of the Oathkeeper title during play. An Exile who holds it and becomes a Citizen flips it to Oathkeeper at once (Empire slice 3 implements the flip), so domain validation rejects an Imperial player on the Usurper side outside the Chronicle phase. The check is suspended in the Chronicle phase, where the Chronicle crowns the Usurper winner after the game has ended.
+R4. **A mid-round Chancellor.** A Chancellor who appears mid-round leaves the current round's order unchanged; the next round starts with them. The round's first player is recorded when the round begins (CR p. 17; Empire slice 3a).
+
+R5. **The Usurper Limiter.** Its limit applies only in games with no Empire, so it ends, and its marker is removed, when an Empire starts in play (CR p. 19; Empire slice 3a).
+
+R7. **No Imperial Usurper in play.** An Imperial player never holds the Usurper side of the Oathkeeper title during play. An Exile who holds it and becomes a Citizen flips it to Oathkeeper at once (Empire slice 3a implements the flip), so domain validation rejects an Imperial player on the Usurper side outside the Chronicle phase. The check is suspended in the Chronicle phase, where the Chronicle crowns the Usurper winner after the game has ended.
 
 R8. **Warband Transfers consent names the transfer.** The partner is asked after the player has chosen the way and the amount, so the ask names them: "Asked {Blue} for consent to give them 3 warbands." Each consent covers one exact transfer. A refusal stops only that way and amount for the turn; the player may ask about a different one.
 

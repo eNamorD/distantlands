@@ -265,6 +265,17 @@ one.
 
 ### Game Log deferred items
 
+- [ ] **Phase headlines inside an action.** A power or minor action that
+  ends the Act phase (Murky Fountain, Wizard School, Special Envoy, the
+  Grand Scepter's Action, self-exile) posts its "Rest" headline before the
+  action's own line, so the action reads as part of Rest. Hold a headline
+  raised inside an action until after that action's lines. The
+  `scepter-citizen` and `self-exiled` golden logs show it.
+- [ ] **First-player marker with a Chancellor.** `GameProjection` sends
+  `setup.firstPlayer` as the first player, but with a Chancellor seated
+  rounds start from `tracks.roundStarter`. Send the round's starter so the
+  board's marker points at the player who began the round.
+
 - [ ] **Show a parked action's progress in the waiting message.**
   The Game Log posts a line only once its facts are complete, so an action
   that is still parked says nothing about its choices so far. The table's
