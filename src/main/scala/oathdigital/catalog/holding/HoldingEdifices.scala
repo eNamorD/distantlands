@@ -214,18 +214,3 @@ object HiddenPassagesCard extends Edifice(EdificeId("E25"), Suit.Hearth):
       text = "**WAKE:** If your pawn is at this site, you may burn " +
         "[favor-burnt] to place your pawn on any site.")
     val powers: Vector[PrintedPower] = Vector(power)
-
-object HallowedSpringCard extends Edifice(EdificeId("E26"), Suit.Beast):
-  object intact extends EdificeFace("Hallowed Spring") with Locked:
-    val power = PrintedPower(PowerId("edifice.e26.intact"),
-      persistent = true, cost = Cost.free,
-      text = "When trading at this site for [secret], you **must** place " +
-        "both [favor] on the card you are trading with _(instead of " +
-        "burning one)_.")
-    val powers: Vector[PrintedPower] = Vector(power)
-  object ruined extends EdificeFace("Hiding Place"):
-    val power = PrintedPower(PowerId("edifice.e26.ruined"),
-      persistent = true, cost = Cost.free,
-      text = "CHRONICLE (THRONE): This site's ruler may secretly keep a " +
-        "relic they have facedown. They start the next game with it.")
-    val powers: Vector[PrintedPower] = Vector(power)
