@@ -1,11 +1,15 @@
 package oathdigital.gameplay.powers.poweruse
 
+import oathdigital.gameplay.cards.DeepWoodsSite
 import oathdigital.gameplay.powerresolver.ModifierPicks
 import oathdigital.gameplay.powers.{SearchFixture, WalkerPowerCatalog}
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.search.{MushroomsCard, NewsFromAfarCard}
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, MenuPlay, ParkedNode, Table}
+import oathdigital.testkit.{MenuPlay, ParkedNode, Table}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -13,9 +17,9 @@ import oathdigital.testkit.Unwrap.accepted
 class SpellBreakerModifierSuite extends munit.FunSuite:
   import SearchFixture.rules
 
-  private val breaker = CatalogNames.denizen("Spell Breaker")
-  private val mushrooms = CatalogNames.denizen("Mushrooms")
-  private val woods = CatalogNames.site("Deep Woods")
+  private val breaker = SpellBreakerCard.id
+  private val mushrooms = MushroomsCard.id
+  private val woods = DeepWoodsSite.id
   private val mushroomsRef = DecisionOptionRef.Denizen(mushrooms)
   private val decisionId =
     ModifierPicks.decisionId(PowerWindow.SearchModifierSelection)
@@ -26,9 +30,9 @@ class SpellBreakerModifierSuite extends munit.FunSuite:
     * default. */
   private def mushroomsBesideBreaker(
       ruled: Table => Table = _.warbandsAt(woods, p2, 1)): ReadyGame =
-    ruled(Table.start.pawn(p1, "Ancient City")
-      .denizen(mushrooms, at = "Ancient City").supply(p1, 5)
-      .discarded(Region.Cradle, CatalogNames.denizen("Wrestlers"))
+    ruled(Table.start.pawn(p1, AncientCitySite)
+      .denizen(mushrooms, at = AncientCitySite).supply(p1, 5)
+      .discarded(Region.Cradle, WrestlersCard.id)
       .denizen(breaker, at = woods)).ready
 
   /** The modifier decision's Mushrooms option, once p1 starts a Search. */
@@ -50,7 +54,7 @@ class SpellBreakerModifierSuite extends munit.FunSuite:
   test("under bandits it shows Spell Breaker's reason"):
     // News from Afar, faceup and affordable, keeps the pass asking: a pass
     // with nothing to pick or ask about is not asked.
-    val news = CatalogNames.denizen("News from Afar")
+    val news = NewsFromAfarCard.id
     assertEquals(mushroomsPick(mushroomsBesideBreaker(_.bandits(woods, 2)
       .favor(p1, 2).adviser(p1, news))),
       DecisionOption.Unavailable(DecisionOption.Denizen(mushroomsRef),

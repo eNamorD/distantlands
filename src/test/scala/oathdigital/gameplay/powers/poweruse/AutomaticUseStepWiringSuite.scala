@@ -1,19 +1,22 @@
 package oathdigital.gameplay.powers.poweruse
 
 import oathdigital.gameplay.actions.VisionRules
+import oathdigital.gameplay.cards.DeepWoodsSite
 import oathdigital.gameplay.operations.PowerUseRules
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerUse, PowerUseRefusal, PowerUseRestriction, PowerUseStep}
+import oathdigital.gameplay.powers.campaign.WrestlersCard
 import oathdigital.gameplay.powers.economy.{VowOfBeastkin,
   VowOfWanderingMuster}
 import oathdigital.gameplay.powers.travel.{Hospitality, Tyrant}
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.powers.whenplayed.{ConspiracyWhenPlayed,
   ThreateningRoar, ThreateningRoarCard}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{ParkedUses, LogNoted, ProcedureWalker,
   WalkerOutcome, WalkerPowers}
 import oathdigital.model._
-import oathdigital.testkit.{AppendedAutomaticUses, CatalogNames, Table}
+import oathdigital.testkit.{AppendedAutomaticUses, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, present}
 
@@ -21,7 +24,7 @@ import oathdigital.testkit.Unwrap.{accepted, present}
   * waivable refusal stops it, and stays deactivated by a refusal
   * remembered this turn (automatic power consent design, slice 2). */
 class AutomaticUseStepWiringSuite extends munit.FunSuite:
-  private val refusingCard = CatalogNames.denizen("Wrestlers")
+  private val refusingCard = WrestlersCard.id
   private val refusingSource = PowerSourceRef.Card(refusingCard)
 
   /** The key p3's answer on `use` is remembered under. */
@@ -51,8 +54,8 @@ class AutomaticUseStepWiringSuite extends munit.FunSuite:
     * node, as `HospitalitySuite` stages it. */
   private val p2Travels: Operation = Sequence(Vector[Operation](Move(
     Piece.Pawn(p2), PositionedLocation(Location.Site(
-      CatalogNames.site("Ancient City"))), PositionedLocation(Location.Site(
-      CatalogNames.site("Deep Woods"))))), Some(PowerWindow.TravelCost))
+      AncientCitySite.id)), PositionedLocation(Location.Site(
+      DeepWoodsSite.id)))), Some(PowerWindow.TravelCost))
 
   /** A Muster's gain node: one warband for p1. */
   private val p1MusterGain: Operation = Sequence(Vector[Operation](

@@ -2,9 +2,11 @@ package oathdigital.gameplay.powers.cardplay
 
 import oathdigital.gameplay.PlacementFixture
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.walker.{WalkerOutcome, WalkerPowers}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Table}
+import oathdigital.testkit.{Look, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Unwrap
 
@@ -14,10 +16,10 @@ class VowOfWisdomSuite extends munit.FunSuite:
   import PlacementFixture.{answer, build, park}
 
   private val actor = Table.p1
-  private val vow = CatalogNames.denizen("Vow of Wisdom")
+  private val vow = VowOfWisdomCard.id
   /** A plain Order denizen. */
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
-  private val home = CatalogNames.site("Ancient City")
+  private val wrestlers = WrestlersCard.id
+  private val home = AncientCitySite.id
   private val powers = WalkerPowers(Vector(VowOfWisdom))
   private val toSite = DecisionOptionRef.SiteSlot(home, 0)
 

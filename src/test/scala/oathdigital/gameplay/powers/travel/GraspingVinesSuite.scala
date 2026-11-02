@@ -3,8 +3,8 @@ package oathdigital.gameplay.powers.travel
 import oathdigital.gameplay.powers.{NoteText, PayOrAsk, PowerFixture}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes,
-  PlacementPicks, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, Outcomes, PlacementPicks,
+  Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Unwrap.{accepted, present}
 
@@ -12,7 +12,7 @@ class GraspingVinesSuite extends munit.FunSuite:
   import PowerFixture._
   import TravelFixture._
 
-  private val vines = CatalogNames.denizen("Grasping Vines")
+  private val vines = GraspingVinesCard.id
   private val rival = Table.p2
   private def warbands(ready: ReadyGame): Int = Look(ready).boardWarbands(actor)
 
@@ -119,7 +119,7 @@ class GraspingVinesSuite extends munit.FunSuite:
   test("with Toll Roads too, both steps are asked before either is paid"):
     // The rival also rules the coast and Toll Roads at the Provinces' plains.
     val ready = on(vinesAtHome(Some(rival)))(_
-      .denizen(CatalogNames.denizen("Toll Roads"), at = provincePlains)
+      .denizen(TollRoadsCard.id, at = provincePlains)
       .warbandsAt(provincePlains, rival, 1).warbandsAt(coast, rival, 1)
       .favor(actor, 1))
     val first = accepted(travel(ready, coast))

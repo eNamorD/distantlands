@@ -1,15 +1,17 @@
 package oathdigital.gameplay.powers.targeting
 
+import oathdigital.catalog.holding.CrackedHornCard
 import oathdigital.gameplay.CampaignFixture.{RaidBoard, raidBoard}
 import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powerresolver.{OptionRestriction, PowerCtx}
 import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{ProcedureWalker, WalkerPowers}
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, Table}
+import oathdigital.testkit.{Look, Outcomes, Table}
 import oathdigital.testkit.Unwrap.{accepted, as, present}
 import oathdigital.testkit.Table.{p1, p2}
 
@@ -52,7 +54,7 @@ class CircletOfCommandSuite extends munit.FunSuite:
 
   private val conspiracy = VisionRules.Conspiracy
 
-  private val crackedHorn = CatalogNames.relic("Cracked Horn")
+  private val crackedHorn = CrackedHornCard.id
 
   /** The game a Conspiracy walk ran on, the target options it parked on, and
     * its events. */
@@ -62,8 +64,8 @@ class CircletOfCommandSuite extends munit.FunSuite:
   /** p1 plays Conspiracy at Ancient City, where p2 stands holding Cracked
     * Horn, the Circlet on `circletSide` and the People's Favor. */
   private def conspiracyTargets(circletSide: Orientation): ConspiracyWalk =
-    val ready = Table.start.pawn(p1, at = "Ancient City")
-      .pawn(p2, at = "Ancient City").peoplesFavor(Some(p2), favor = 1).hand(p1, conspiracy)
+    val ready = Table.start.pawn(p1, at = AncientCitySite)
+      .pawn(p2, at = AncientCitySite).peoplesFavor(Some(p2), favor = 1).hand(p1, conspiracy)
       .relic(p2, crackedHorn)
       .relic(p2, circlet, facedown = circletSide == Orientation.FaceDown)
       .ready

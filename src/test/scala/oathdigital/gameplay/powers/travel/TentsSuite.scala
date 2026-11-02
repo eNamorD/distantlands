@@ -5,7 +5,7 @@ import oathdigital.gameplay.actions.travel.TravelProcedure
 import oathdigital.gameplay.powers.PowerFixture
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes}
+import oathdigital.testkit.{ActPowerHarness, Look, Outcomes}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Unwrap.accepted
 
@@ -13,7 +13,7 @@ class TentsSuite extends munit.FunSuite:
   import PowerFixture._
   import TravelFixture._
 
-  private val tents = CatalogNames.denizen("Tents")
+  private val tents = TentsCard.id
   private val modifiers = Vector(Tents.id)
   /** The actor holds Tents as a faceup adviser and 1 favor, at Buried Giant,
     * the Cradle's plains. */
@@ -75,7 +75,7 @@ class TentsSuite extends munit.FunSuite:
 
   test("Tents and Forest Paths together need two favor: with one, picking " +
       "Tents leaves Forest Paths unpaid for"):
-    val paths = CatalogNames.denizen("Forest Paths")
+    val paths = ForestPathsCard.id
     val both = Vector(Tents.id, ForestPaths.id)
     def ready(favor: Int) = on(held)(_.adviser(actor, paths)
       .favor(actor, favor))

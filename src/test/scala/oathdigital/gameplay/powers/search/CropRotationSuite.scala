@@ -4,13 +4,17 @@ import oathdigital.gameplay.FacedownAdviserPlay
 import oathdigital.gameplay.actions.CardPlayRules
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import oathdigital.gameplay.operations.HallOfMinistersCard
 import oathdigital.gameplay.powers.{NoteText, SearchFixture, WalkerPowerCatalog}
+import oathdigital.gameplay.powers.action.MessengerCard
 import oathdigital.gameplay.powers.banner.PeoplesFavorMob
+import oathdigital.gameplay.powers.campaign.{CodeOfHonorCard, ShieldWallCard}
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look,
-  PlacementPicks, Refusals, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, PlacementPicks, Refusals,
+  Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.{accepted, present}
@@ -19,14 +23,14 @@ class CropRotationSuite extends munit.FunSuite:
   import SearchFixture.{discardMore, keep, place, placeReplacing, rules, start}
 
   private val walkerPowers = WalkerPowerCatalog.default(catalog)
-  private val crop = CatalogNames.denizen("Crop Rotation")
+  private val crop = CropRotationCard.id
   private val modifiers = Vector(CropRotation.id)
   /** The Beast card each Search keeps and plays. */
-  private val played = CatalogNames.denizen("Errand Boy")
+  private val played = ErrandBoyCard.id
   // Order denizens whose powers these tests do not use, to fill the site.
-  private val fillers = Vector("Code of Honor", "Messenger", "Shield Wall")
-    .map(CatalogNames.denizen(_))
-  private val home = CatalogNames.site("Ancient City")
+  private val fillers = Vector(CodeOfHonorCard.id, MessengerCard.id,
+    ShieldWallCard.id)
+  private val home = AncientCitySite.id
   private val capacity = 3 // Ancient City's printed capacity
 
   /** p1 in Act at Ancient City with 5 Supply, the world deck topped by
@@ -105,7 +109,7 @@ class CropRotationSuite extends munit.FunSuite:
     assert(siteCards(SearchFixture.after(replaced)).contains(played))
 
   test("it covers a ruined edifice too: an edifice is a denizen for placement"):
-    val hall = CatalogNames.edifice("Hall of Ministers")
+    val hall = HallOfMinistersCard.id
     val ready = Table.from(staged(Vector(fillers(0))))
       .edifice(hall, EdificeSide.Ruined, at = home).ready
     assertEquals(siteSlots(toPlacement(ready)),

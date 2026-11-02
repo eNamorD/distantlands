@@ -2,31 +2,35 @@ package oathdigital.gameplay.powers.economy
 
 import oathdigital.gameplay.ModifierPlay
 import oathdigital.gameplay.actions.economy.TradeProcedure
+import oathdigital.gameplay.cards.BuriedGiantSite
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.action.AlchemistCard
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, EconomyActions,
-  Look, Outcomes, PhasePowerHarness, PowerRules, Table}
+import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look, Outcomes,
+  PhasePowerHarness, PowerRules, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
 
 class SecretSignalSuite extends munit.FunSuite:
-  private val signal = CatalogNames.denizen("Secret Signal")
+  private val signal = SecretSignalCard.id
   private val power = SecretSignal.forCatalog(catalog)
   private val selected = Vector(SecretSignal.id)
   /** p1's pawn site. */
-  private val home = CatalogNames.site("Ancient City")
+  private val home = AncientCitySite.id
   /** An empty site in play, for Moving Market's move. */
-  private val giant = CatalogNames.site("Buried Giant")
+  private val giant = BuriedGiantSite.id
   /** A plain Order denizen. */
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
+  private val wrestlers = WrestlersCard.id
   /** A plain Arcane denizen. */
-  private val alchemist = CatalogNames.denizen("Alchemist")
-  private val market = CatalogNames.denizen("Moving Market")
-  private val merchants = CatalogNames.denizen("Skilled Merchants")
+  private val alchemist = AlchemistCard.id
+  private val market = MovingMarketCard.id
+  private val merchants = SkilledMerchantsCard.id
   private val rules = PowerRules.withWalkerPowers
 
   /** p1 at Ancient City holding Secret Signal, with Wrestlers and Alchemist

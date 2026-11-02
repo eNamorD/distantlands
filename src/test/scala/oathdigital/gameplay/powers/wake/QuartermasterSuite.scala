@@ -1,22 +1,22 @@
 package oathdigital.gameplay.powers.wake
 
+import oathdigital.gameplay.cards.DeepWoodsSite
 import oathdigital.testkit.MenuPlay
 import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes,
-  Refusals, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, Outcomes, Refusals, Table}
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
 import oathdigital.testkit.PhasePowerHarness
 
 class QuartermasterSuite extends munit.FunSuite:
-  private val quartermaster = CatalogNames.denizen("Quartermaster")
+  private val quartermaster = QuartermasterCard.id
   private val source = DecisionOptionRef.Denizen(quartermaster)
-  private val home = CatalogNames.site("Ancient City")
-  private val far = CatalogNames.site("Deep Woods")
+  private val home = AncientCitySite.id
+  private val far = DeepWoodsSite.id
   private val rules = ActPowerHarness.rules()
 
   /** p1's Wake with `supply` Supply and Quartermaster at Deep Woods. p1 rules

@@ -5,11 +5,11 @@ import oathdigital.gameplay.actions.cardplay.{CardPlayProcedure, CardSlots}
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import oathdigital.gameplay.powers.{PowerFixture, SearchFixture,
   WalkerPowerCatalog}
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.protocol.projection.ConsentAskProjection
-import oathdigital.testkit.{CatalogNames, PhasePowerHarness, PlacementPicks,
-  Table}
+import oathdigital.testkit.{PhasePowerHarness, PlacementPicks, Table}
 import oathdigital.testkit.Unwrap.{accepted, present}
 
 /** Which faceup plays Secret Police makes askable (consent design, ruling 1
@@ -19,10 +19,10 @@ class SecretPoliceConsentSuite extends munit.FunSuite:
   import PowerFixture.actor
   import VisionPlayFixture.{fromAdvisers, searched}
 
-  private val police = CatalogNames.denizen("Secret Police")
-  private val vow = CatalogNames.denizen("Vow of Obedience")
+  private val police = SecretPoliceCard.id
+  private val vow = VowOfObedienceCard.id
   private val other = Table.p2
-  private val home = CatalogNames.site("Ancient City")
+  private val home = AncientCitySite.id
   private val faith = VisionRules.Faith
   private val placement = CardPlayProcedure.placementDecisionId(faith)
   private val spot = DecisionOptionRef.RevealedVision(actor)

@@ -5,6 +5,9 @@ import oathdigital.gameplay.WalkerDiceFixture.scripted
 import oathdigital.gameplay.actions.dice.RerollChoice
 import oathdigital.gameplay.actions.recover.RecoverProcedure
 import oathdigital.gameplay.powers.WalkerPowerCatalog
+import oathdigital.gameplay.powers.action.DowsingSticksCard
+import oathdigital.gameplay.powers.dice.JinxCard
+import oathdigital.gameplay.powers.travel.FairIsleSite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.powerresolver.ModifierPicks
 import oathdigital.gameplay.walker.{DeltaPayload, LogNoted, WalkerDice,
@@ -12,8 +15,8 @@ import oathdigital.gameplay.walker.{DeltaPayload, LogNoted, WalkerDice,
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.{ChooseManyAnswer, ChooseOneAnswer}
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, EconomyActions,
-  Look, Outcomes, Table}
+import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look, Outcomes,
+  Table}
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Unwrap.accepted
@@ -35,8 +38,8 @@ class SilverCharmSuite extends munit.FunSuite:
   /** p1's Act at Fair Isle, whose Recover difficulty is 3, with Dowsing
     * Sticks facedown there, holding Silver Charm and 4 Supply. */
   private def silverCharmAtFairIsle: Table = Table.start
-    .pawn(p1, "Fair Isle").relicAt("Dowsing Sticks", "Fair Isle")
-    .relic(p1, "Silver Charm").supply(p1, 4)
+    .pawn(p1, FairIsleSite).relicAt(DowsingSticksCard, FairIsleSite)
+    .relic(p1, SilverCharmCard).supply(p1, 4)
 
   /** p1's Recover from `table` up to its first park, with Silver Charm
     * picked unless `picked` is false. */
@@ -189,7 +192,7 @@ class SilverCharmSuite extends munit.FunSuite:
     // Jinx is kept on the first throw. On the second, Silver Charm rerolls
     // die 1 with the two new dice, and Jinx then rerolls those three,
     // leaving die 2 as it was.
-    val jinx = CatalogNames.denizen("Jinx")
+    val jinx = JinxCard.id
     val table = silverCharmAtFairIsle.adviser(p1, jinx)
       .secrets(p1, faceUp = 1)
     val rules = rulesRolling(scripted(Vector(Blank, Blank),

@@ -1,8 +1,10 @@
 package oathdigital.gameplay.powers.whenplayed
 
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.campaign.{LancersCard, WildMountsCard}
+import oathdigital.gameplay.powers.setup.GreatForgeCard
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, Table}
+import oathdigital.testkit.{Look, Outcomes, Table}
 import oathdigital.testkit.Unwrap.as
 
 class GreatHerdSuite extends munit.FunSuite:
@@ -11,10 +13,10 @@ class GreatHerdSuite extends munit.FunSuite:
   private val power = registered[GreatHerd]
   private val herd = power.cardId
   private val played = hookAt(herd, homeSite)
-  private val wildMounts = CatalogNames.denizen("Wild Mounts")
-  private val lancers = CatalogNames.denizen("Lancers")
+  private val wildMounts = WildMountsCard.id
+  private val lancers = LancersCard.id
   // One Nomad edifice: Great Forge intact, Broken Forge ruined.
-  private val forge = CatalogNames.edifice("Great Forge")
+  private val forge = GreatForgeCard.id
   /** Great Herd is site-only: it stands at p1's site. */
   private val start = Table.start.denizen(herd, at = homeSite)
 
@@ -31,7 +33,7 @@ class GreatHerdSuite extends munit.FunSuite:
     // are not offered.
     val ready = start.denizen(wildMounts, at = nearSite)
       .denizen(lancers, at = homeSite)
-      .edifice("Great Forge", EdificeSide.Intact, at = awaySite).ready
+      .edifice(GreatForgeCard, EdificeSide.Intact, at = awaySite).ready
     val first = Outcomes.parked(fire(ready, power, played))
     assertEquals(question(ready, power, played, first.tree).decisionId,
       GreatHerd.decisionId)
@@ -54,7 +56,7 @@ class GreatHerdSuite extends munit.FunSuite:
       covers = false)))
 
   test("a ruined Nomad edifice can be swapped too"):
-    val ready = start.edifice("Broken Forge", EdificeSide.Ruined, at = awaySite)
+    val ready = start.edifice(GreatForgeCard, EdificeSide.Ruined, at = awaySite)
       .ready
     val first = Outcomes.parked(fire(ready, power, played))
     assertEquals(offered(ready, first.tree),

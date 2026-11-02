@@ -1,24 +1,27 @@
 package oathdigital.gameplay.powers.targeting
 
+import oathdigital.catalog.holding.CrackedHornCard
 import oathdigital.gameplay.CampaignFixture.{RaidBoard, on, raidBoard}
 import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome,
   WalkerPowers}
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.{accepted, as, present}
 
 class ForgottenVaultSuite extends munit.FunSuite:
   import TargetingFixture._
 
-  private val vault = CatalogNames.denizen("Forgotten Vault")
+  private val vault = ForgottenVaultCard.id
   /** The Conspiracy tests' Vault site. */
-  private val vaultSite = CatalogNames.site("Broken Peaks")
+  private val vaultSite = BrokenPeaksSite.id
   private val raid = ChooseOneAnswer(DecisionOptionRef.Button("raid"))
   private val power = ForgottenVault.forCatalog(catalog)
 
@@ -59,7 +62,7 @@ class ForgottenVaultSuite extends munit.FunSuite:
 
   private val conspiracy = VisionRules.Conspiracy
 
-  private val crackedHorn = CatalogNames.relic("Cracked Horn")
+  private val crackedHorn = CrackedHornCard.id
 
   /** The target options a Conspiracy walk parked on (empty when nothing was
     * asked), and its journal. */
@@ -71,8 +74,8 @@ class ForgottenVaultSuite extends munit.FunSuite:
     * Broken Peaks, which p2 rules. */
   private def conspiracyTargets(banner: Boolean,
       side: Orientation = Orientation.FaceUp): ConspiracyWalk =
-    val staged = Table.start.pawn(p1, at = "Ancient City")
-      .pawn(p2, at = "Ancient City").hand(p1, conspiracy)
+    val staged = Table.start.pawn(p1, at = AncientCitySite)
+      .pawn(p2, at = AncientCitySite).hand(p1, conspiracy)
       .relic(p2, crackedHorn, facedown = side == Orientation.FaceDown)
     val bannered =
       if banner then staged.peoplesFavor(Some(p2), favor = 1) else staged

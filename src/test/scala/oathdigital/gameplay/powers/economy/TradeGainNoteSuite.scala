@@ -1,10 +1,13 @@
 package oathdigital.gameplay.powers.economy
 
+import oathdigital.catalog.holding.BrackenCard
 import oathdigital.gameplay.actions.ProcedureNotes
 import oathdigital.gameplay.actions.economy.TradeProcedure
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.campaign.{HorseArchersCard, WrestlersCard}
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, EconomyActions, PowerRules, Table}
+import oathdigital.testkit.{EconomyActions, PowerRules, Table}
 import oathdigital.testkit.Table.p1
 
 /** What the Trade's own line says when a `TradeGain` power rewrites the gain
@@ -18,16 +21,16 @@ import oathdigital.testkit.Table.p1
   */
 class TradeGainNoteSuite extends munit.FunSuite:
   private val rules = PowerRules.withWalkerPowers
-  private val home = CatalogNames.site("Ancient City")
-  private val oak = CatalogNames.denizen("The Old Oak")
-  private val library = CatalogNames.denizen("Mounted Library")
-  private val signal = CatalogNames.denizen("Secret Signal")
+  private val home = AncientCitySite.id
+  private val oak = TheOldOakCard.id
+  private val library = MountedLibraryCard.id
+  private val signal = SecretSignalCard.id
   /** A Beast adviser, so a Trade with The Old Oak gains 1 secret. */
-  private val bracken = CatalogNames.denizen("Bracken")
+  private val bracken = BrackenCard.id
   /** A Nomad adviser, so a Trade with Mounted Library gains 1 secret. */
-  private val horseArchers = CatalogNames.denizen("Horse Archers")
+  private val horseArchers = HorseArchersCard.id
   /** A plain Order denizen to Trade with. */
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
+  private val wrestlers = WrestlersCard.id
 
   /** The Trade's own lines in `events`, as plain sentences. */
   private def traded(events: Vector[OathEvent]): Vector[String] =

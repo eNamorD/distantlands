@@ -1,9 +1,11 @@
 package oathdigital.gameplay.powers.banner
 
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look,
-  PhasePowerHarness, Refusals, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, PhasePowerHarness, Refusals,
+  Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.{p1, p3}
 import oathdigital.testkit.Unwrap.accepted
@@ -14,8 +16,8 @@ class WanderingFlamePlaceSuite extends munit.FunSuite:
   import PhasePowerHarness.{after, backToActing, ops, replayed, use}
   import ActPowerHarness.usableIds
 
-  private val ancientCity = CatalogNames.site("Ancient City")
-  private val brokenPeaks = CatalogNames.site("Broken Peaks")
+  private val ancientCity = AncientCitySite.id
+  private val brokenPeaks = BrokenPeaksSite.id
   private val power = WanderingFlamePlace
 
   /** p1's Act at Ancient City holding the Darkest Secret, with its one

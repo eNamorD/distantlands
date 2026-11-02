@@ -3,28 +3,32 @@ package oathdigital.gameplay.powers.economy
 import oathdigital.gameplay.ModifierPlay
 import oathdigital.gameplay.actions.economy.TradeProcedure
 import oathdigital.gameplay.powers.WalkerPowerCatalog
+import oathdigital.gameplay.powers.action.AlchemistCard
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.ModifierOffers
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, EconomyActions,
-  Look, PhasePowerHarness, PowerRules, Refusals, Table}
+import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look,
+  PhasePowerHarness, PowerRules, Refusals, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
 
 class OldSongsSuite extends munit.FunSuite:
-  private val songs = CatalogNames.denizen("Old Songs")
+  private val songs = OldSongsCard.id
   private val selected = Vector(OldSongs.id)
-  private val home = CatalogNames.site("Ancient City")
+  private val home = AncientCitySite.id
   /** A plain Arcane denizen, holding one secret. */
-  private val alchemist = CatalogNames.denizen("Alchemist")
+  private val alchemist = AlchemistCard.id
   /** A plain Order denizen, holding one secret and one favor. */
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
+  private val wrestlers = WrestlersCard.id
   /** A plain Beast denizen, holding nothing. */
-  private val errandBoy = CatalogNames.denizen("Errand Boy")
-  private val merchants = CatalogNames.denizen("Skilled Merchants")
+  private val errandBoy = ErrandBoyCard.id
+  private val merchants = SkilledMerchantsCard.id
   /** Another site in play in the pawn's region. */
   private val near = Table.otherSiteInRegionOf(home)
   private val rules = PowerRules.withWalkerPowers

@@ -1,9 +1,16 @@
 package oathdigital.gameplay.powers.whenplayed
 
+import oathdigital.catalog.holding.{SchoolOfVinesCard, SpiralCastleCard}
+import oathdigital.gameplay.operations.{AncientBloodlineCard,
+  HallOfMinistersCard}
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.action.HomesteadersCard
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.search.{ErrandBoyCard, LandWardenCard}
+import oathdigital.gameplay.powers.setup.ProvingGroundsCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Outcomes}
+import oathdigital.testkit.{Look, Outcomes}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.rejected
 
@@ -12,8 +19,8 @@ class DazzleSuite extends munit.FunSuite:
 
   private val power = Dazzle.forCatalog(catalog)
   private val dazzle = power.cardId
-  private val homesteaders = CatalogNames.denizen("Homesteaders")
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
+  private val homesteaders = HomesteadersCard.id
+  private val wrestlers = WrestlersCard.id
 
   /** p1 holds Dazzle faceup, at `homeSite`. */
   private val holding = p1AtHomeSite.adviser(p1, dazzle)
@@ -58,7 +65,7 @@ class DazzleSuite extends munit.FunSuite:
     val ready = holding
       .warbandsAt(homeSite, p1, 1).denizen(homesteaders, at = homeSite)
       .warbandsAt(nearSite, p2, 1).denizen(wrestlers, at = nearSite)
-      .edifice("Hall of Ministers", EdificeSide.Intact, at = nearSite).ready
+      .edifice(HallOfMinistersCard, EdificeSide.Intact, at = nearSite).ready
     val done = Outcomes.finished(play(ready, power, dazzle))
     assert(!Look(done.treeless).cardsAt(homeSite).contains(homesteaders))
     assert(Look(done.treeless).cardsAt(nearSite).contains(wrestlers))
@@ -70,7 +77,7 @@ class DazzleSuite extends munit.FunSuite:
     val ready = holding
       .warbandsAt(homeSite, p1, 1).denizen(homesteaders, at = homeSite)
       .warbandsAt(nearSite, p2, 1).denizen(wrestlers, at = nearSite)
-      .adviser(p2, CatalogNames.denizen("Ancient Bloodline")).ready
+      .adviser(p2, AncientBloodlineCard.id).ready
     val done = Outcomes.finished(play(ready, power, dazzle))
     assert(Look(done.treeless).cardsAt(nearSite).contains(wrestlers))
     assertEquals(discarded(done.events), Vector(homesteaders))
@@ -87,13 +94,13 @@ class DazzleSuite extends munit.FunSuite:
 
   test("Dazzle discards a ruined Hearth edifice, not an intact one or " +
       "another suit's"):
-    val emptyGrounds = CatalogNames.edifice("Empty Grounds")
-    val spiralCastle = CatalogNames.edifice("Spiral Castle")
-    val ruinedSchool = CatalogNames.edifice("Ruined School")
+    val emptyGrounds = ProvingGroundsCard.id
+    val spiralCastle = SpiralCastleCard.id
+    val ruinedSchool = SchoolOfVinesCard.id
     val ready = holding
-      .edifice("Empty Grounds", EdificeSide.Ruined, at = homeSite)
-      .edifice("Spiral Castle", EdificeSide.Intact, at = homeSite)
-      .edifice("Ruined School", EdificeSide.Ruined, at = homeSite).ready
+      .edifice(ProvingGroundsCard, EdificeSide.Ruined, at = homeSite)
+      .edifice(SpiralCastleCard, EdificeSide.Intact, at = homeSite)
+      .edifice(SchoolOfVinesCard, EdificeSide.Ruined, at = homeSite).ready
     val after = Outcomes.finished(play(ready, power, dazzle)).treeless
     val remaining = Look(after).cardsAt(homeSite)
     assert(!remaining.contains(emptyGrounds),
@@ -104,8 +111,8 @@ class DazzleSuite extends munit.FunSuite:
       Some(emptyGrounds))
 
   test("Dazzle leaves other suits and other regions alone"):
-    val errandBoy = CatalogNames.denizen("Errand Boy")
-    val landWarden = CatalogNames.denizen("Land Warden")
+    val errandBoy = ErrandBoyCard.id
+    val landWarden = LandWardenCard.id
     val ready = holding
       .denizen(errandBoy, at = homeSite)
       .denizen(homesteaders, at = homeSite)

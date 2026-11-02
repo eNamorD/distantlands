@@ -6,12 +6,18 @@ import oathdigital.gameplay.WalkerDiceFixture.scripted
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.actions.dice.RerollChoice
 import oathdigital.gameplay.actions.recover.RecoverProcedure
+import oathdigital.gameplay.cards.DeepWoodsSite
 import oathdigital.gameplay.powers.WalkerPowerCatalog
+import oathdigital.gameplay.powers.action.DowsingSticksCard
+import oathdigital.gameplay.powers.campaign.{ArcaneArmorCard, BattleHonorsCard,
+  FireTalkersCard, GleamingArmorCard, WatchdogCard}
 import oathdigital.gameplay.powers.campaign.PlanDriver._
+import oathdigital.gameplay.powers.dice.JinxCard
+import oathdigital.gameplay.powers.travel.FairIsleSite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, ParkedNode, Table}
+import oathdigital.testkit.{ParkedNode, Table}
 import oathdigital.testkit.Unwrap.accepted
 
 /** Spell Breaker over battle plans and rerolls (catalog batch 8, slice
@@ -22,16 +28,16 @@ class SpellBreakerOfferSuite extends munit.FunSuite:
   import AttackDieFace.HollowSword
   import DefenseDieFace.{Blank, TwoShields}
 
-  private val breaker = CatalogNames.denizen("Spell Breaker")
-  private val woods = CatalogNames.site("Deep Woods")
-  private val fireTalkers = CatalogNames.denizen("Fire Talkers")
+  private val breaker = SpellBreakerCard.id
+  private val woods = DeepWoodsSite.id
+  private val fireTalkers = FireTalkersCard.id
   private val fireTalkersRef = DecisionOptionRef.Denizen(fireTalkers)
-  private val armor = CatalogNames.denizen("Gleaming Armor")
-  private val honors = CatalogNames.denizen("Battle Honors")
-  private val watchdog = CatalogNames.denizen("Watchdog")
+  private val armor = GleamingArmorCard.id
+  private val honors = BattleHonorsCard.id
+  private val watchdog = WatchdogCard.id
   private val watchdogRef = DecisionOptionRef.Denizen(watchdog)
   private val titleRef: DecisionOptionRef = DecisionOptionRef.Button("title")
-  private val jinx = CatalogNames.denizen("Jinx")
+  private val jinx = JinxCard.id
   private val jinxRef = DecisionOptionRef.Denizen(jinx)
   private val jinxReroll = RerollChoice.optionRef(jinx)
   private val broken = Some(OptionReason.Noted(SpellBreaker.id,
@@ -98,10 +104,10 @@ class SpellBreakerOfferSuite extends munit.FunSuite:
     * up, with Spell Breaker ruled by p2, parked on its first reroll
     * choice. */
   private def recoverRolledBesideBreaker: OathTransition =
-    val site = CatalogNames.site("Fair Isle")
+    val site = FairIsleSite.id
     val start = Table.start.turn(Table.p1, Phase.Act)
       .pawn(Table.p1, at = site)
-      .relicAt(CatalogNames.relic("Dowsing Sticks"), at = site)
+      .relicAt(DowsingSticksCard.id, at = site)
       .adviser(Table.p1, jinx).secrets(Table.p1, faceUp = 2)
       .denizen(breaker, at = woods).warbandsAt(woods, Table.p2, 1).ready
     val game = new OathRules(catalog,
@@ -141,7 +147,7 @@ class SpellBreakerOfferSuite extends munit.FunSuite:
         "[secret] Reroll all with Jinx"), reason)))
 
   test("an enemy's Arcane Armor, which pays X secrets, is withheld too"):
-    val arcane = CatalogNames.denizen("Arcane Armor")
+    val arcane = ArcaneArmorCard.id
     val base = rivalRulesOriginAndHoldsOathkeeper(
       board(warbands = 5, supply = 7))
     val held = on(withAdviserFor(base, base.rival, arcane,

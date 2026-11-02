@@ -1,12 +1,18 @@
 package oathdigital.gameplay.powers.rest
 
+import oathdigital.catalog.holding.HallOfDebateCard
+import oathdigital.gameplay.powers.action.{ConvoysCard, HomesteadersCard}
+import oathdigital.gameplay.powers.campaign.RainBootsCard
+import oathdigital.gameplay.powers.search.DisciplesCard
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
+import oathdigital.gameplay.powers.wake.AncientCitySite
+import oathdigital.gameplay.powers.whenplayed.BanditChiefCard
 import oathdigital.model.OathState.Ready
 import oathdigital.gameplay.phases.PhaseMenu
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Outcomes,
-  PowerRules}
+import oathdigital.testkit.{ActPowerHarness, Outcomes, PowerRules}
 import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
@@ -22,9 +28,9 @@ class LeagueTreatySuite extends munit.FunSuite:
   /** The worked example: 2 favor each on an Arcane (Disciples), a Discord
     * (Bandit Chief) and a Hearth (Homesteaders) card in the Cradle. */
   private def withExample(table: Table): Table =
-    table.withFavoredCard("Disciples", at = "Ancient City", favor = 2)
-      .withFavoredCard("Bandit Chief", at = "Broken Peaks", favor = 2)
-      .withFavoredCard("Homesteaders", at = "Ancient City", favor = 2)
+    table.withFavoredCard(DisciplesCard, at = AncientCitySite, favor = 2)
+      .withFavoredCard(BanditChiefCard, at = BrokenPeaksSite, favor = 2)
+      .withFavoredCard(HomesteadersCard, at = AncientCitySite, favor = 2)
   /** The worked example's favor, by suit. */
   private val exampleFavorBySuit = Vector(Suit.Arcane -> 2, Suit.Discord -> 2,
     Suit.Hearth -> 2)
@@ -83,8 +89,8 @@ class LeagueTreatySuite extends munit.FunSuite:
     val owner = p2 // off p1's turn
     // Two Nomad cards: Rain Boots with 2 favor, Convoys with 1.
     val ready = leagueTreatyAct(Some(owner))
-      .withFavoredCard("Rain Boots", at = "Ancient City", favor = 2)
-      .withFavoredCard("Convoys", at = "Broken Peaks", favor = 1).ready
+      .withFavoredCard(RainBootsCard, at = AncientCitySite, favor = 2)
+      .withFavoredCard(ConvoysCard, at = BrokenPeaksSite, favor = 1).ready
     val destination = LeagueTreatyContribution.destinationDecisionId(ready,
       p1, treatySite, treatyCard)
     val parked = accepted(
@@ -128,10 +134,10 @@ class LeagueTreatySuite extends munit.FunSuite:
   test("favor on an edifice in the region moves with the rest, on either face"):
     Vector(EdificeSide.Intact, EdificeSide.Ruined).foreach { side =>
       val owner = p2 // off p1's turn
-      val edifice = CatalogNames.edifice("Hall of Debate")
+      val edifice = HallOfDebateCard.id
       val edificeSuit = Suit.Discord // Hall of Debate's printed suit
       val ready = leagueTreatyAct(Some(owner))
-        .withFavoredCard("Disciples", at = "Ancient City", favor = 1)
+        .withFavoredCard(DisciplesCard, at = AncientCitySite, favor = 1)
         .edifice(edifice, side, at = treatySite).tokens(edifice, favor = 2)
         .ready
       // A suit that is neither Arcane nor Discord.

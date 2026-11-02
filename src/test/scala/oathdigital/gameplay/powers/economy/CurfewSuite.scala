@@ -3,12 +3,15 @@ package oathdigital.gameplay.powers.economy
 import oathdigital.gameplay.OathRules
 import oathdigital.gameplay.actions.economy.TradeProcedure
 import oathdigital.gameplay.powers.{NoteText, PayOrAsk, WalkerPowerCatalog}
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, EconomyActions,
-  Look, Outcomes, PlacementPicks, Table}
+import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look, Outcomes,
+  PlacementPicks, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.{accepted, present}
@@ -17,14 +20,14 @@ import oathdigital.testkit.StartPreview
 /** Curfew's ruler toll on a Trade. The toll is shared with Forced Labor
   * (`RulerToll`); its bandit case is pinned here only. */
 class CurfewSuite extends munit.FunSuite:
-  private val curfew = CatalogNames.denizen("Curfew")
+  private val curfew = CurfewCard.id
   private val power = Curfew.forCatalog(catalog)
   /** p1's pawn site, where p1 trades. */
-  private val home = CatalogNames.site("Ancient City")
+  private val home = AncientCitySite.id
   /** Where Curfew stands. */
-  private val peaks = CatalogNames.site("Broken Peaks")
+  private val peaks = BrokenPeaksSite.id
   /** A plain Order denizen to Trade with. */
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
+  private val wrestlers = WrestlersCard.id
   private val rules = new OathRules(catalog,
     walkerPowerCatalog = WalkerPowerCatalog.default(catalog))
   private val automatic = WalkerPowers.selected(

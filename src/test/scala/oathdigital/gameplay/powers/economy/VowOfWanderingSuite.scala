@@ -1,20 +1,23 @@
 package oathdigital.gameplay.powers.economy
 
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, EconomyActions,
-  Look, PowerRules, Table}
+import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look, PowerRules,
+  Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.AppendedAutomaticUses
 
 class VowOfWanderingSuite extends munit.FunSuite:
-  private val vow = CatalogNames.denizen("Vow of Wandering")
-  private val beastkin = CatalogNames.denizen("Vow of Beastkin")
-  private val home = CatalogNames.site("Ancient City")
+  private val vow = VowOfWanderingCard.id
+  private val beastkin = VowOfBeastkinCard.id
+  private val home = AncientCitySite.id
   /** A plain Beast denizen to Muster on. It matches no Nomad adviser. */
-  private val errandBoy = CatalogNames.denizen("Errand Boy")
+  private val errandBoy = ErrandBoyCard.id
   private val rules = PowerRules.withWalkerPowers
 
   /** p1 at Ancient City beside Errand Boy, with 1 favor and 7 Supply to pay
@@ -74,7 +77,7 @@ class VowOfWanderingSuite extends munit.FunSuite:
     }
 
   // ---- the restriction ----------------------------------------------------
-  private val near = CatalogNames.site("Broken Peaks")
+  private val near = BrokenPeaksSite.id
   private val placing = VowOfWandering.operationRestrictions.head
   private val refusal = Some(OperationReason("vow-of-wandering",
     "Vow of Wandering forbids placing warbands on sites",

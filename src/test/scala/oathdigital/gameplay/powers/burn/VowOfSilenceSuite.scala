@@ -5,22 +5,23 @@ import oathdigital.gameplay.CampaignFixture.{on, raidBoard, rules,
 import oathdigital.gameplay.actions.BannerRules
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.action.DemonTail
+import oathdigital.gameplay.powers.action.{DemonTail, DemonTailCard}
+import oathdigital.gameplay.powers.campaign.BookBurningCard
 import oathdigital.gameplay.powers.campaign.PlanDriver.{awaits, commit,
   winningDice}
 import oathdigital.gameplay.powers.targeting.TargetingFixture
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, MenuPlay,
-  Outcomes, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, MenuPlay, Outcomes, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
 
 class VowOfSilenceSuite extends munit.FunSuite:
-  private val vow = CatalogNames.denizen("Vow of Silence")
-  private val tail = CatalogNames.relic("Demon Tail")
-  private val bookBurning = CatalogNames.denizen("Book Burning")
+  private val vow = VowOfSilenceCard.id
+  private val tail = DemonTailCard.id
+  private val bookBurning = BookBurningCard.id
   private val game = ActPowerHarness.rulesWithPrintedRestrictions()
 
   /** The lines Vow of Silence journaled in `events`. */
@@ -123,11 +124,11 @@ class VowOfSilenceSuite extends munit.FunSuite:
   test("a holder who could challenge only for the Darkest Secret cannot " +
       "start a Challenge, and the menu says why"):
     // p1 holds the People's Favor already, so it is not theirs to challenge.
-    val ready0 = Table.start.pawn(p1, at = "Ancient City").favor(p1, 6)
+    val ready0 = Table.start.pawn(p1, at = AncientCitySite).favor(p1, 6)
       .secrets(p1, faceUp = 6, faceDown = 4)
       .peoplesFavor(Some(p1), favor = 2)
       .darkestSecret(Some(p2), secrets = 1)
-      .pawn(p2, at = "Ancient City").adviser(p1, vow).ready
+      .pawn(p2, at = AncientCitySite).adviser(p1, vow).ready
     MenuPlay.menuOptionFor(catalog, ready0, ActionRef.Challenge) match
       case DecisionOption.Unavailable(_, reason) => assertEquals(reason,
         OptionReason.Written("Vow of Silence prevents you from " +

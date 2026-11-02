@@ -2,9 +2,17 @@ package oathdigital.gameplay.powers.search
 
 import oathdigital.gameplay.SearchPlay
 import oathdigital.gameplay.powers.SearchFixture
+import oathdigital.gameplay.powers.action.{FaeMerchantCard, HomesteadersCard,
+  ScryerCard, SecondChanceCard}
+import oathdigital.gameplay.powers.campaign.{MercenariesCard, WrestlersCard}
+import oathdigital.gameplay.powers.economy.DefameCard
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
+import oathdigital.gameplay.powers.wake.AncientCitySite
+import oathdigital.gameplay.powers.whenplayed.{BlackmailCard,
+  ThreateningRoarCard}
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look, Table}
+import oathdigital.testkit.{Look, Table}
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
 
@@ -14,15 +22,14 @@ import oathdigital.testkit.Unwrap.accepted
 class ObservatorySuite extends munit.FunSuite:
   import SearchFixture.rules
 
-  private val observatory = CatalogNames.denizen("Observatory")
+  private val observatory = ObservatoryCard.id
   private val modifiers = Vector(Observatory.id)
   /** Three plain denizens in each region's discard pile; none is played. */
   private val piles: Map[Region, Vector[DenizenId]] = Map(
-    Region.Cradle -> Vector("Threatening Roar", "Fae Merchant",
-      "Second Chance"),
-    Region.Provinces -> Vector("Wrestlers", "Mercenaries", "Homesteaders"),
-    Region.Hinterland -> Vector("Defame", "Scryer", "Blackmail"))
-    .view.mapValues(_.map(CatalogNames.denizen(_))).toMap
+    Region.Cradle -> Vector(ThreateningRoarCard, FaeMerchantCard, SecondChanceCard),
+    Region.Provinces -> Vector(WrestlersCard, MercenariesCard, HomesteadersCard),
+    Region.Hinterland -> Vector(DefameCard, ScryerCard, BlackmailCard))
+    .view.mapValues(_.map(_.id)).toMap
   /** The world deck, then each region's pile in region order. */
   private val everySource: Vector[DecisionOptionRef] =
     (SearchSource.WorldDeck +: Region.all.map(SearchSource.RegionalDiscard(_)))
@@ -31,7 +38,7 @@ class ObservatorySuite extends munit.FunSuite:
   /** p1 at Ancient City (Cradle), which holds Observatory, with 5 Supply
     * and three cards in each region's discard pile. */
   private def besideObservatory: Table = Region.all.foldLeft(Table.start
-      .pawn(p1, "Ancient City").denizen(observatory, at = "Ancient City")
+      .pawn(p1, AncientCitySite).denizen(observatory, at = AncientCitySite)
       .supply(p1, 5))((table, region) => table.discarded(region,
     piles(region)*))
 
@@ -57,5 +64,5 @@ class ObservatorySuite extends munit.FunSuite:
       accepted(rules.offerableWalkerPowers(ready, p1, ActionRef.Search))
         .map(_.id)
     assert(offered(besideObservatory.ready).contains(Observatory.id))
-    assert(!offered(besideObservatory.pawn(p1, "Broken Peaks").ready)
+    assert(!offered(besideObservatory.pawn(p1, BrokenPeaksSite).ready)
       .contains(Observatory.id))

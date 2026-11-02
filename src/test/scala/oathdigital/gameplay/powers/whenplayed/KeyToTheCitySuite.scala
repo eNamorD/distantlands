@@ -1,12 +1,13 @@
 package oathdigital.gameplay.powers.whenplayed
 
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.economy.VowOfWanderingCard
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, Table}
+import oathdigital.testkit.{Look, Outcomes, Table}
 import oathdigital.testkit.Table.{p1, p2}
 
 class KeyToTheCitySuite extends munit.FunSuite:
-  private val vow = CatalogNames.denizen("Vow of Wandering")
+  private val vow = VowOfWanderingCard.id
   private val forbidden = NoteText.Said("vow-of-wandering",
     "Vow of Wandering forbids placing warbands on sites.", covers = false)
   import WhenPlayedHarness._

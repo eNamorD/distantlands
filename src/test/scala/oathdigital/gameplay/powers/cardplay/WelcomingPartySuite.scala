@@ -4,22 +4,25 @@ import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.powerresolver.PowerCtx
 import oathdigital.gameplay.powers.{PowerFixture, SearchFixture}
+import oathdigital.gameplay.powers.action.{ArcaneBrokersCard, WardOfSilenceCard}
+import oathdigital.gameplay.powers.campaign.ArcaneArmorCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, Table}
 
 class WelcomingPartySuite extends munit.FunSuite:
   import PowerFixture._
   import SearchFixture._
 
-  private val party = CatalogNames.denizen("Welcoming Party")
+  private val party = WelcomingPartyCard.id
   private val modifiers = Vector(WelcomingParty.id)
   // Three Arcane denizens whose powers these tests do not use; p1 plays the
   // first, Ward of Silence.
-  private val plain = Vector("Ward of Silence", "Arcane Brokers",
-    "Arcane Armor").map(CatalogNames.denizen(_))
+  private val plain = Vector(WardOfSilenceCard.id, ArcaneBrokersCard.id,
+    ArcaneArmorCard.id)
   // p1's site on the quiet table.
-  private val home = CatalogNames.site("Ancient City")
+  private val home = AncientCitySite.id
 
   /** p1 at Ancient City beside Welcoming Party, the deck topped by `top`. */
   private def partyAtHome(top: Vector[WorldCardId]): Table =
@@ -47,7 +50,7 @@ class WelcomingPartySuite extends munit.FunSuite:
   test("beside Vow of Wisdom, a play to a site still gains the Hearth " +
       "favor, and the play's own favor becomes a secret"):
     val ready = partyAtHome(plain)
-      .adviser(actor, CatalogNames.denizen("Vow of Wisdom")).ready
+      .adviser(actor, VowOfWisdomCard.id).ready
     val after = SearchFixture.after(play(ready, modifiers, plain.head,
       PlayedAs.AtSite))
     assertEquals(hearthBank(after), hearthBank(ready) - 1)

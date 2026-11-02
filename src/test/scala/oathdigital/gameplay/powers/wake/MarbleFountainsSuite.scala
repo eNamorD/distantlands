@@ -1,5 +1,6 @@
 package oathdigital.gameplay.powers.wake
 
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
 import oathdigital.testkit.MenuPlay
 import oathdigital.gameplay.PowerAccess
 import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture}
@@ -7,20 +8,19 @@ import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes,
-  Refusals, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, Outcomes, Refusals, Table}
 import oathdigital.testkit.Unwrap.accepted
 import oathdigital.testkit.PhasePowerHarness
 
 class MarbleFountainsSuite extends munit.FunSuite:
   import PowerFixture._
 
-  private val fountains = CatalogNames.edifice("Marble Fountains")
+  private val fountains = MarbleFountainsCard.id
   private val source = DecisionOptionRef.Edifice(fountains)
   private val rules = ActPowerHarness.rules()
   // The actor's site, and another site.
-  private val home = CatalogNames.site("Ancient City")
-  private val far = CatalogNames.site("Broken Peaks")
+  private val home = AncientCitySite.id
+  private val far = BrokenPeaksSite.id
 
   /** The actor in Wake with 1 Supply, so a refresh shows. The edifice is at
     * the actor's site, or at `far`, which the actor rules with one warband,

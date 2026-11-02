@@ -3,8 +3,7 @@ package oathdigital.gameplay.powers.travel
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes,
-  PhasePowerHarness}
+import oathdigital.testkit.{ActPowerHarness, Look, Outcomes, PhasePowerHarness}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Unwrap.accepted
 
@@ -12,8 +11,8 @@ class SpecialEnvoySuite extends munit.FunSuite:
   import PowerFixture._
   import TravelFixture._
 
-  private val envoy = CatalogNames.denizen("Special Envoy")
-  private val drum = CatalogNames.relic("Dragonskin Drum")
+  private val envoy = SpecialEnvoyCard.id
+  private val drum = DragonskinDrumCard.id
   private val power = SpecialEnvoy.forCatalog(catalog)
   private val modifiers = Vector(SpecialEnvoy.id)
 

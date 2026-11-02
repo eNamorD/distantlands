@@ -2,27 +2,30 @@ package oathdigital.gameplay.powers.economy
 
 import oathdigital.gameplay.ModifierPlay
 import oathdigital.gameplay.actions.economy.TradeProcedure
+import oathdigital.gameplay.cards.BuriedGiantSite
 import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog,
   WalkerPowerCatalog}
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, EconomyActions, Look,
-  Outcomes, PowerRules, Table}
+import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look, Outcomes,
+  PowerRules, Table}
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
 import oathdigital.testkit.PhasePowerHarness
 import oathdigital.testkit.StartPreview
 
 class VowOfPovertySuite extends munit.FunSuite:
-  private val vow = CatalogNames.denizen("Vow of Poverty")
-  private val home = CatalogNames.site("Ancient City")
-  private val giant = CatalogNames.site("Buried Giant")
+  private val vow = VowOfPovertyCard.id
+  private val home = AncientCitySite.id
+  private val giant = BuriedGiantSite.id
   /** A plain Order denizen to Trade with. */
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
-  private val market = CatalogNames.denizen("Moving Market")
+  private val wrestlers = WrestlersCard.id
+  private val market = MovingMarketCard.id
   private val rules = PowerRules.withWalkerAndPhasePowers
   private val parked = PowerRules.parkedUnderWalkerAndPhasePowers
   private val automatic = WalkerPowers.selected(

@@ -1,9 +1,11 @@
 package oathdigital.gameplay.powers.economy
 
 import oathdigital.gameplay.powers.SearchFixture
+import oathdigital.gameplay.powers.action.{FaeMerchantCard, SecondChanceCard}
+import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, EconomyActions,
-  Look, Table}
+import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
@@ -11,11 +13,11 @@ import oathdigital.testkit.Unwrap.accepted
 class TheOldOakSuite extends munit.FunSuite:
   import SearchFixture.rules
 
-  private val oak = CatalogNames.denizen("The Old Oak")
+  private val oak = TheOldOakCard.id
   // Beast cards with no Trade or Muster power: an adviser, and another card
   // at the site.
-  private val adviser = CatalogNames.denizen("Errand Boy")
-  private val otherBeast = CatalogNames.denizen("Fae Merchant")
+  private val adviser = ErrandBoyCard.id
+  private val otherBeast = FaeMerchantCard.id
   private val modifiers = Vector(TheOldOak.id)
 
   /** p1 holds Errand Boy as an adviser, faceup unless `facedown`, and stands
@@ -24,8 +26,8 @@ class TheOldOakSuite extends munit.FunSuite:
   private def board(facedown: Boolean = false): ReadyGame = Table.start
     .favor(p1, 2).secrets(p1, faceUp = 1)
     .adviser(p1, adviser, facedown = facedown)
-    .pawn(p1, at = "Ancient City").denizen(oak, at = "Ancient City")
-    .denizen(otherBeast, at = "Ancient City").ready
+    .pawn(p1, at = AncientCitySite).denizen(oak, at = AncientCitySite)
+    .denizen(otherBeast, at = AncientCitySite).ready
 
   private def secrets(ready: ReadyGame): Int =
     Look(ready).faceUpSecrets(p1) + Look(ready).faceDownSecrets(p1)
@@ -68,9 +70,9 @@ class TheOldOakSuite extends munit.FunSuite:
 
   test("several faceup beast advisers still add only one secret to the " +
       "base gain, which is one per matching adviser"):
-    val third = CatalogNames.denizen("Second Chance")
+    val third = SecondChanceCard.id
     val ready = Table.start.favor(p1, 2).secrets(p1, faceUp = 1)
       .adviser(p1, adviser).adviser(p1, third)
-      .pawn(p1, at = "Ancient City").denizen(oak, at = "Ancient City").ready
+      .pawn(p1, at = AncientCitySite).denizen(oak, at = AncientCitySite).ready
     assertEquals(secrets(trade(ready, Vector.empty, oak).result), 1 + 2)
     assertEquals(secrets(trade(ready, modifiers, oak).result), 1 + 2 + 1)

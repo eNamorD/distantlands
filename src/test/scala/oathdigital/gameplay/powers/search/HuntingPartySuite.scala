@@ -1,5 +1,9 @@
 package oathdigital.gameplay.powers.search
 
+import oathdigital.gameplay.powers.action.MessengerCard
+import oathdigital.gameplay.powers.campaign.{CodeOfHonorCard, MercenariesCard,
+  ShieldWallCard, WrestlersCard}
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.testkit.MenuPlay
 import oathdigital.application.{GameCommand, GameProjector, LoadedGame,
   TreeDecision}
@@ -11,30 +15,30 @@ import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
 import oathdigital.protocol.projection.DecisionQueryProjection
-import oathdigital.testkit.{CatalogNames, Situation, Table}
+import oathdigital.testkit.{Situation, Table}
 import oathdigital.testkit.Table.p1
 
 /** Hunting Party (card 122): after a Search of the world deck, a Campaign is
   * owed, spending no Supply; a discard pile warns and stays choosable
   * (follow-up actions design, ruling 10). */
 class HuntingPartySuite extends munit.FunSuite:
-  private val hunting = CatalogNames.denizen("Hunting Party")
+  private val hunting = HuntingPartyCard.id
   private val modifiers = Vector(HuntingParty.id)
   private val owed = QueuedProcedure(p1, ActionRef.Campaign, Vector.empty,
       Some(PowerSourceRef.Card(hunting)), QueueKind.Offer)
   private val region = Region.Cradle // Ancient City's region
   /** Plain denizens for the world deck and the Cradle discard. */
-  private val deckTop = Vector("Wrestlers", "Errand Boy", "Mercenaries")
-    .map(CatalogNames.denizen(_))
-  private val discardPile = Vector("Code of Honor", "Messenger", "Shield Wall")
-    .map(CatalogNames.denizen(_))
+  private val deckTop = Vector(WrestlersCard.id, ErrandBoyCard.id,
+    MercenariesCard.id)
+  private val discardPile = Vector(CodeOfHonorCard.id, MessengerCard.id,
+    ShieldWallCard.id)
 
   /** p1 in Act at Ancient City holding Hunting Party faceup, with 5 Supply,
     * the world deck topped by three plain cards and the Cradle discard
     * holding three more. */
   private def board: Table = Table.start
     .worldDeckTop(deckTop*).discarded(region, discardPile*)
-    .pawn(p1, "Ancient City").supply(p1, 5).adviser(p1, hunting)
+    .pawn(p1, AncientCitySite).supply(p1, 5).adviser(p1, hunting)
 
   /** The offer the driver makes after a whole Search of `pile` with
     * `selected`, read from the Skip that answers it; every other later

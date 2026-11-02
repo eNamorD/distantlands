@@ -1,10 +1,14 @@
 package oathdigital.gameplay.powers.poweruse
 
+import oathdigital.gameplay.cards.DeepWoodsSite
 import oathdigital.gameplay.powerresolver.PowerUse
-import oathdigital.gameplay.powers.action.RovingTerror
+import oathdigital.gameplay.powers.action.{GiantPythonCard, RovingTerror,
+  RovingTerrorCard}
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, MenuPlay, Table}
+import oathdigital.testkit.{MenuPlay, Table}
 import oathdigital.testkit.Table.{p1, p2}
 
 /** Giant Python's restriction (card 186): "Other cards at this site cannot
@@ -12,11 +16,11 @@ import oathdigital.testkit.Table.{p1, p2}
   * (catalog batch 8, slice 10, part 3). It binds every player and nobody
   * may waive it. */
 class GiantPythonRestrictionSuite extends munit.FunSuite:
-  private val python = CatalogNames.denizen("Giant Python")
-  private val home = CatalogNames.site("Ancient City")
-  private val woods = CatalogNames.site("Deep Woods")
-  private val terror = CatalogNames.denizen("Roving Terror")
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
+  private val python = GiantPythonCard.id
+  private val home = AncientCitySite.id
+  private val woods = DeepWoodsSite.id
+  private val terror = RovingTerrorCard.id
+  private val wrestlers = WrestlersCard.id
   private val source = PowerSourceRef.Card(python)
 
   /** p1's Act at Ancient City, ruled by p1, with Giant Python and Roving

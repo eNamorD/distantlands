@@ -1,29 +1,33 @@
 package oathdigital.application
 
+import oathdigital.catalog.holding.HallOfDebateCard
 import oathdigital.gameplay.phases.PhaseMenu
 import oathdigital.gameplay.powerresolver.PhasePowers
-import oathdigital.gameplay.powers.rest.SilverTongueFixture
+import oathdigital.gameplay.powers.action.WhistleCard
+import oathdigital.gameplay.powers.economy.GolemLegionsCard
+import oathdigital.gameplay.powers.rest.{SilverTongueCard, SilverTongueFixture}
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, MenuPlay, Table, TestCards}
+import oathdigital.testkit.{MenuPlay, Table, TestCards}
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.present
 
 class PhasePowerMenuSuite extends munit.FunSuite:
   private val projector = new GameProjector(catalog)
-  private val silverTongueId = CatalogNames.denizen("Silver Tongue").value
+  private val silverTongueId = SilverTongueCard.id.value
 
   test("a usable REST power is offered in the Rest menu"):
     // Golem Legions (Arcane) shows at p1's site, and the Arcane bank holds 3
     // favor: Silver Tongue has a bank to take from.
-    val ready = SilverTongueFixture.silverTongueRest(Vector("Golem Legions"),
+    val ready = SilverTongueFixture.silverTongueRest(Vector(GolemLegionsCard),
       Set(Suit.Arcane))
     val menu = MenuPlay.options(Table.from(ready).phaseMenuParked.state,
       catalog)
     assertEquals(menu.map(option => option.ref -> option.available),
       Vector[(DecisionOptionRef, Boolean)](
-        DecisionOptionRef.Denizen(CatalogNames.denizen("Silver Tongue")) ->
+        DecisionOptionRef.Denizen(SilverTongueCard.id) ->
           true,
         PhaseMenu.Menu.Rest.endingOption -> true))
 
@@ -49,7 +53,7 @@ class PhasePowerMenuSuite extends munit.FunSuite:
     import oathdigital.gameplay.PhasePowerFixture.TestPower
     // p1 holds the Whistle faceup; TestPower stands in for the Whistle's
     // printed power.
-    val relic = CatalogNames.relic("Whistle")
+    val relic = WhistleCard.id
     val held = Table.start.relic(p1, relic).ready
     val sources = RuleSourceIndex.enumerate(catalog, held)
     val powerId = present(sources.collectFirst {
@@ -68,7 +72,7 @@ class PhasePowerMenuSuite extends munit.FunSuite:
     // Hall of Debate stands at Ancient City, p1's site; the copied catalog
     // grafts onto its intact face the power Magician's Code prints, which
     // TestPower stands in for.
-    val id = CatalogNames.edifice("Hall of Debate")
+    val id = HallOfDebateCard.id
     val edifice = present(catalog.edifices.find(_.id.value == id.value),
       "Hall of Debate")
     val printed = present(present(catalog.denizens.find(_.id.value ==
@@ -77,8 +81,8 @@ class PhasePowerMenuSuite extends munit.FunSuite:
     val powered = catalog.copy(edifices = catalog.edifices.map(e =>
       if e.id == edifice.id then TestCards.edificeLike(e)(
         intact = e.intact.powers :+ printed) else e))
-    val state = Table.start.pawn(p1, "Ancient City")
-      .edifice(id, EdificeSide.Intact, at = "Ancient City")
+    val state = Table.start.pawn(p1, AncientCitySite)
+      .edifice(id, EdificeSide.Intact, at = AncientCitySite)
     val menu = MenuPlay.options(state.phaseMenuParked.state, powered,
       WalkerPowers.empty,
       PhasePowers(Vector(TestPower(powerId, PowerTiming.Act))))
@@ -88,19 +92,19 @@ class PhasePowerMenuSuite extends munit.FunSuite:
   test("an unusable power is shown unavailable in the Rest menu"):
     // Only the Nomad bank holds favor, and the Arcane bank, Golem Legions'
     // suit, is empty: Silver Tongue has nothing to take.
-    val ready = SilverTongueFixture.silverTongueRest(Vector("Golem Legions"),
+    val ready = SilverTongueFixture.silverTongueRest(Vector(GolemLegionsCard),
       Set(Suit.Nomad))
     val menu = MenuPlay.options(Table.from(ready).phaseMenuParked.state,
       catalog)
     assertEquals(menu.map(option => option.ref -> option.available),
       Vector[(DecisionOptionRef, Boolean)](
-        DecisionOptionRef.Denizen(CatalogNames.denizen("Silver Tongue")) ->
+        DecisionOptionRef.Denizen(SilverTongueCard.id) ->
           false,
         PhaseMenu.Menu.Rest.endingOption -> true))
 
   test("the Rest menu still offers Finish Rest when catalog drift removes " +
       "the power"):
-    val ready = SilverTongueFixture.silverTongueRest(Vector("Golem Legions"),
+    val ready = SilverTongueFixture.silverTongueRest(Vector(GolemLegionsCard),
       Set(Suit.Arcane))
     val drifted = catalog.copy(denizens = catalog.denizens.filterNot(_.id.value ==
       silverTongueId))
@@ -114,7 +118,7 @@ class PhasePowerMenuSuite extends munit.FunSuite:
   test("a projected Act menu bands every option for the panel"):
     // The panel groups by the band alone, so every option the menu offers
     // must carry one (decision-id vocabulary decision, item 1).
-    val parked = Table.start.pawn(p1, at = CatalogNames.site("Ancient City"))
+    val parked = Table.start.pawn(p1, at = AncientCitySite.id)
       .supply(p1, 7).phaseMenuParked
     val projected = projector.project("project-act-menu",
       LoadedGame(parked.state, 1L), p1)
@@ -168,5 +172,5 @@ class PhasePowerMenuSuite extends munit.FunSuite:
     val menu = MenuPlay.options(Table.from(ready).phaseMenuParked.state,
       catalog)
     assert(menu.exists(option => option.ref ==
-      DecisionOptionRef.Site(CatalogNames.site("Ancient City")) &&
+      DecisionOptionRef.Site(AncientCitySite.id) &&
       option.available), menu)

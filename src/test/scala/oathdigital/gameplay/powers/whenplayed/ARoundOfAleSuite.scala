@@ -1,9 +1,15 @@
 package oathdigital.gameplay.powers.whenplayed
 
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.action.HomesteadersCard
+import oathdigital.gameplay.powers.economy.DefameCard
+import oathdigital.gameplay.powers.rest.LeagueTreatyCard
+import oathdigital.gameplay.powers.search.PaintedTrumpetCard
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.walker.{LogNoted, WalkerStepRecorded}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, Table}
+import oathdigital.testkit.{Look, Outcomes, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 
 class ARoundOfAleSuite extends munit.FunSuite:
@@ -12,7 +18,7 @@ class ARoundOfAleSuite extends munit.FunSuite:
   private val power = registered[ARoundOfAle]
   private val ale = power.cardId
   private val atHome = hookAt(ale, homeSite)
-  private val peaks = CatalogNames.site("Broken Peaks")
+  private val peaks = BrokenPeaksSite.id
   private val cleanupLine = NoteText.Said("cleanup",
     "Triggering resource cleanup.", covers = false)
 
@@ -22,10 +28,10 @@ class ARoundOfAleSuite extends munit.FunSuite:
     // at Broken Peaks holds 1 favor and 1 secret. p3's Painted Trumpet holds
     // 1 secret. p1 holds 1 faceup and 2 facedown secrets, p2 1 facedown.
     val ready = Table.start.denizen(ale, at = homeSite)
-      .adviser(p2, "Homesteaders").tokens("Homesteaders", favor = 2)
-      .denizen("Defame", at = peaks)
-      .tokens("Defame", favor = 1, secrets = 1)
-      .relic(p3, "Painted Trumpet").tokens("Painted Trumpet", secrets = 1)
+      .adviser(p2, HomesteadersCard).tokens(HomesteadersCard, favor = 2)
+      .denizen(DefameCard, at = peaks)
+      .tokens(DefameCard, favor = 1, secrets = 1)
+      .relic(p3, PaintedTrumpetCard).tokens(PaintedTrumpetCard, secrets = 1)
       .secrets(p1, faceUp = 1, faceDown = 2)
       .secrets(p2, faceUp = 0, faceDown = 1).ready
     val done = Outcomes.finished(fire(ready, power, atHome))
@@ -33,8 +39,9 @@ class ARoundOfAleSuite extends munit.FunSuite:
     assertEquals(end.bankFavor(Suit.Hearth), before.bankFavor(Suit.Hearth) + 2)
     assertEquals(end.bankFavor(Suit.Discord),
       before.bankFavor(Suit.Discord) + 1)
-    Vector("Homesteaders", "Defame", "Painted Trumpet").foreach(card =>
-      assertEquals(end.tokensOn(card), Tokens.empty, card))
+    for card <- Vector(HomesteadersCard, DefameCard) do
+      assertEquals(end.tokensOn(card), Tokens.empty, card.name)
+    assertEquals(end.tokensOn(PaintedTrumpetCard), Tokens.empty)
     // 1 faceup, 2 turned faceup, and 1 each from Defame and the Trumpet.
     assertEquals((end.faceUpSecrets(p1), end.faceDownSecrets(p1)), (5, 0))
     assertEquals((end.faceUpSecrets(p2), end.faceDownSecrets(p2)), (0, 1))
@@ -42,7 +49,7 @@ class ARoundOfAleSuite extends munit.FunSuite:
   test("its line comes before the cleanup step"):
     // One card with favor on it, so the cleanup has a step to record.
     val ready = Table.start.denizen(ale, at = homeSite)
-      .adviser(p2, "Homesteaders").tokens("Homesteaders", favor = 2).ready
+      .adviser(p2, HomesteadersCard).tokens(HomesteadersCard, favor = 2).ready
     val done = Outcomes.finished(fire(ready, power, atHome))
     assertEquals(said(power, done.events), Vector(cleanupLine))
     // The cleanup is the walk's last step, and the line comes before it.
@@ -53,8 +60,8 @@ class ARoundOfAleSuite extends munit.FunSuite:
 
   test("the recorded operations rebuild the end state"):
     val ready = Table.start.denizen(ale, at = homeSite)
-      .adviser(p2, "Homesteaders").tokens("Homesteaders", favor = 2)
-      .denizen("Defame", at = peaks).tokens("Defame", secrets = 1)
+      .adviser(p2, HomesteadersCard).tokens(HomesteadersCard, favor = 2)
+      .denizen(DefameCard, at = peaks).tokens(DefameCard, secrets = 1)
       .secrets(p1, faceUp = 1, faceDown = 2).ready
     val done = Outcomes.finished(fire(ready, power, atHome))
     assertJournalRebuilds(ready, done.events, done.treeless)
@@ -63,11 +70,11 @@ class ARoundOfAleSuite extends munit.FunSuite:
       "window opens"):
     // League Treaty at Ancient City, ruled by one of p2's warbands, would ask
     // p2 where the Cradle's card favor goes at Rest.
-    val ready = Table.start.warbandsAt("Ancient City", p2, 1)
-      .denizen("League Treaty", at = "Ancient City")
-      .denizen("Defame", at = "Broken Peaks").tokens("Defame", favor = 2)
-      .denizen("Homesteaders", at = "Ancient City")
-      .tokens("Homesteaders", favor = 2)
+    val ready = Table.start.warbandsAt(AncientCitySite, p2, 1)
+      .denizen(LeagueTreatyCard, at = AncientCitySite)
+      .denizen(DefameCard, at = BrokenPeaksSite).tokens(DefameCard, favor = 2)
+      .denizen(HomesteadersCard, at = AncientCitySite)
+      .tokens(HomesteadersCard, favor = 2)
       .denizen(ale, at = peaks).ready
     val done = Outcomes.finished(fireWithEveryPower(ready,
       hookAt(ale, peaks)))

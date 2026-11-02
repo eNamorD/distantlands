@@ -1,14 +1,16 @@
 package oathdigital.gameplay.powers.title
 
 import oathdigital.gameplay.{OathRules, TravelPlay}
+import oathdigital.gameplay.cards.DunesSite
 import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
+import oathdigital.gameplay.powers.travel.{BrokenPeaksSite, FairIsleSite}
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{DeltaPayload, WalkerPowers,
   WalkerStepRecorded}
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes,
-  Table}
+import oathdigital.testkit.{ActPowerHarness, Look, Outcomes, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -24,8 +26,8 @@ class ChaosCultSuite extends munit.FunSuite:
     * with p1's pawn at Ancient City. */
   private def staged(rulers: Vector[PlayerId], facedown: Boolean = false,
       holder: Option[PlayerId] = None): Table =
-    rulers.zip(Vector("Dunes", "Fair Isle")).foldLeft(Table.start
-      .pawn(active, "Ancient City").adviser(cultist, power.cardId, facedown = facedown)
+    rulers.zip(Vector(DunesSite, FairIsleSite)).foldLeft(Table.start
+      .pawn(active, AncientCitySite).adviser(cultist, power.cardId, facedown = facedown)
       .oathkeeper(holder)
       .favor(p1, 2).favor(p2, 2).favor(p3, 2)) { case (t, (ruler, site)) =>
         t.warbandsAt(site, ruler, 1) }
@@ -33,7 +35,7 @@ class ChaosCultSuite extends munit.FunSuite:
   /** p1 travels to Broken Peaks; its action boundary settles the title. */
   private def travel(ready: ReadyGame) =
     TravelPlay.travelled(rules, Ready(ready), active,
-      CatalogNames.site("Broken Peaks"))
+      BrokenPeaksSite.id)
 
   test("Chaos Cult is in the default walker catalog and automatic"):
     assert(WalkerPowerCatalog.default(catalog).powers.contains(power))

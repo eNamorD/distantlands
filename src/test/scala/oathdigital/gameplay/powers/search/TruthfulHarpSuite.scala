@@ -3,11 +3,11 @@ package oathdigital.gameplay.powers.search
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import oathdigital.gameplay.actions.search.SearchProcedure
 import oathdigital.gameplay.powers.{NoteText, PowerFixture, SearchFixture}
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, PowerRules,
-  Table}
+import oathdigital.testkit.{ActPowerHarness, Look, PowerRules, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.{p2, p3}
 import oathdigital.testkit.Unwrap.accepted
@@ -16,7 +16,7 @@ class TruthfulHarpSuite extends munit.FunSuite:
   import PowerFixture._
   import SearchFixture._
 
-  private val harp = CatalogNames.relic("Truthful Harp")
+  private val harp = TruthfulHarpCard.id
   // The players besides p1, who see what p1 reveals.
   private val viewers = Vector(p2, p3)
   private val onlyHarp = Vector(TruthfulHarp.id)
@@ -67,8 +67,8 @@ class TruthfulHarpSuite extends munit.FunSuite:
 
   test("the Harp and Augury stack, and the reveal covers all six cards"):
     val top = discordCards.take(8)
-    val augury = CatalogNames.denizen("Augury")
-    val ready = Table.from(withHarp(top)).denizen(augury, at = "Ancient City")
+    val augury = AuguryCard.id
+    val ready = Table.from(withHarp(top)).denizen(augury, at = AncientCitySite)
       .ready
     val started = accepted(start(ready, both))
     assertEquals(hand(started), top.take(6))

@@ -2,26 +2,30 @@ package oathdigital.gameplay.powers.economy
 
 import oathdigital.gameplay.actions.economy.MusterProcedure
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.action.MessengerCard
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, EconomyActions,
-  Look, PhasePowerHarness, PowerRules, Refusals, Table}
+import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look,
+  PhasePowerHarness, PowerRules, Refusals, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
 import oathdigital.testkit.AppendedAutomaticUses
 
 class VowOfBeastkinSuite extends munit.FunSuite:
-  private val vow = CatalogNames.denizen("Vow of Beastkin")
+  private val vow = VowOfBeastkinCard.id
   private val power = VowOfBeastkin.forCatalog(catalog)
-  private val home = CatalogNames.site("Ancient City")
+  private val home = AncientCitySite.id
   /** A plain Beast denizen to Muster on. */
-  private val errandBoy = CatalogNames.denizen("Errand Boy")
+  private val errandBoy = ErrandBoyCard.id
   /** A plain Order denizen, which matches no Beast adviser. */
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
+  private val wrestlers = WrestlersCard.id
   /** An Order adviser, so that Wrestlers matches one. */
-  private val messenger = CatalogNames.denizen("Messenger")
+  private val messenger = MessengerCard.id
   private val rules = PowerRules.withWalkerPowers
 
   /** p1 at Ancient City beside Errand Boy and Wrestlers, with 1 favor and 7

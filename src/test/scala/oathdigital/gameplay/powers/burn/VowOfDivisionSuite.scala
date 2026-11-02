@@ -9,12 +9,12 @@ import oathdigital.gameplay.powers.campaign.PlanDriver.{awaits, commit,
 import oathdigital.gameplay.powers.targeting.TargetingFixture
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, MenuPlay}
+import oathdigital.testkit.{Look, MenuPlay}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.{p1, p2}
 
 class VowOfDivisionSuite extends munit.FunSuite:
-  private val vow = CatalogNames.denizen("Vow of Division")
+  private val vow = VowOfDivisionCard.id
 
   /** The lines Vow of Division journaled in `events`. */
   private def said(events: Vector[OathEvent]): Vector[NoteText.Said] =

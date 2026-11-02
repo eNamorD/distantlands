@@ -5,12 +5,18 @@ import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import oathdigital.gameplay.powers.{NoteText, PowerFixture, SearchFixture,
   WalkerPowerCatalog}
-import oathdigital.gameplay.powers.rest.SilverTongue
+import oathdigital.gameplay.powers.action.{ArcaneBrokersCard, HomesteadersCard,
+  WardOfSilenceCard}
+import oathdigital.gameplay.powers.cardplay.WelcomingPartyCard
+import oathdigital.gameplay.powers.rest.{SilverTongue, SilverTongueCard}
+import oathdigital.gameplay.powers.search.{ErrandBoyCard, LandWardenCard,
+  NewsFromAfarCard}
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look,
-  PlacementPicks, Refusals, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, PlacementPicks, Refusals,
+  Table}
 import oathdigital.testkit.Table.p3
 import oathdigital.testkit.Unwrap.accepted
 
@@ -19,16 +25,16 @@ class PeoplesFavorMobSuite extends munit.FunSuite:
   import SearchFixture.{keep, place, placeReplacing, rules, start}
 
   private val walkerPowers = WalkerPowerCatalog.default(catalog)
-  private val ancientCity = CatalogNames.site("Ancient City")
+  private val ancientCity = AncientCitySite.id
   /** The Beast card each Search keeps and plays, above two Arcane cards. */
-  private val played = CatalogNames.denizen("Errand Boy")
+  private val played = ErrandBoyCard.id
   private val drawn = Vector[WorldCardId](played,
-    CatalogNames.denizen("Ward of Silence"),
-    CatalogNames.denizen("Arcane Brokers"))
+    WardOfSilenceCard.id,
+    ArcaneBrokersCard.id)
   // Hearth denizens whose powers these tests do not use.
-  private val homesteaders = CatalogNames.denizen("Homesteaders")
-  private val landWarden = CatalogNames.denizen("Land Warden")
-  private val newsFromAfar = CatalogNames.denizen("News from Afar")
+  private val homesteaders = HomesteadersCard.id
+  private val landWarden = LandWardenCard.id
+  private val newsFromAfar = NewsFromAfarCard.id
   private val capacity = 3 // Ancient City's printed capacity
 
   /** p1's Act at Ancient City, which holds `siteCards`, searching a world
@@ -153,7 +159,7 @@ class PeoplesFavorMobSuite extends munit.FunSuite:
 
   test("it composes with Silver Tongue's limit of two advisers, both from " +
       "the production walker powers"):
-    val tongue = CatalogNames.denizen("Silver Tongue")
+    val tongue = SilverTongueCard.id
     val (kept, adviser) = (homesteaders, landWarden)
     // p1 plays `played` from hand at Ancient City, which holds `kept`, while
     // holding the People's Favor on Mob, a faceup Silver Tongue and a
@@ -180,7 +186,7 @@ class PeoplesFavorMobSuite extends munit.FunSuite:
 
   test("it leaves a selected card's power alone: Welcoming Party still pays " +
       "once, and the selected card itself cannot be replaced"):
-    val party = CatalogNames.denizen("Welcoming Party")
+    val party = WelcomingPartyCard.id
     val kept = homesteaders
     val ready = atActorsSite(searchAtAncientCityHolding(Vector(kept)), party)
     val selected = Vector(oathdigital.gameplay.powers.cardplay.WelcomingParty.id)

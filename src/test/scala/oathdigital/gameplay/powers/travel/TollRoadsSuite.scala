@@ -3,8 +3,7 @@ package oathdigital.gameplay.powers.travel
 import oathdigital.gameplay.powers.{NoteText, PayOrAsk, PowerFixture}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes,
-  Table}
+import oathdigital.testkit.{ActPowerHarness, Look, Outcomes, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Unwrap.accepted
 
@@ -12,7 +11,7 @@ class TollRoadsSuite extends munit.FunSuite:
   import PowerFixture._
   import TravelFixture._
 
-  private val toll = CatalogNames.denizen("Toll Roads")
+  private val toll = TollRoadsCard.id
   private val rival = Table.p2
 
   /** Toll Roads stands at `provincePlains`, and `rival` rules it and the

@@ -3,9 +3,15 @@ package oathdigital.gameplay.powers.search
 import oathdigital.gameplay.{ModifierPlay, SearchPlay}
 import oathdigital.gameplay.actions.search.SearchProcedure
 import oathdigital.gameplay.powers.{PayOrAsk, SearchFixture}
+import oathdigital.gameplay.powers.action.{FaeMerchantCard, HomesteadersCard,
+  SecondChanceCard}
+import oathdigital.gameplay.powers.campaign.{MercenariesCard, WrestlersCard}
+import oathdigital.gameplay.powers.travel.BrokenPeaksSite
+import oathdigital.gameplay.powers.wake.AncientCitySite
+import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look, Table}
+import oathdigital.testkit.{Look, Table}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -15,19 +21,19 @@ import oathdigital.testkit.Unwrap.accepted
 class MushroomsSuite extends munit.FunSuite:
   import SearchFixture.rules
 
-  private val mushrooms = CatalogNames.denizen("Mushrooms")
+  private val mushrooms = MushroomsCard.id
   private val modifiers = Vector(Mushrooms.id)
   /** The Cradle pile, first named at the bottom. */
-  private val cradle = Vector("Threatening Roar", "Fae Merchant",
-    "Second Chance").map(CatalogNames.denizen(_))
-  private val provinces = Vector("Wrestlers", "Mercenaries", "Homesteaders")
-    .map(CatalogNames.denizen(_))
+  private val cradle = Vector(ThreateningRoarCard.id, FaeMerchantCard.id,
+    SecondChanceCard.id)
+  private val provinces = Vector(WrestlersCard.id, MercenariesCard.id,
+    HomesteadersCard.id)
 
   /** p1 at Ancient City (Cradle), which holds Mushrooms, with 5 Supply,
     * the start's 1 faceup secret, and three cards in the Cradle and
     * Provinces discard piles. */
   private def besideMushrooms: Table = Table.start
-    .pawn(p1, "Ancient City").denizen(mushrooms, at = "Ancient City")
+    .pawn(p1, AncientCitySite).denizen(mushrooms, at = AncientCitySite)
     .supply(p1, 5).discarded(Region.Cradle, cradle*)
     .discarded(Region.Provinces, provinces*)
 
@@ -57,9 +63,9 @@ class MushroomsSuite extends munit.FunSuite:
     assertEquals(Look(after).player(p1).board.faceUpSecrets, 0)
 
   test("a ruler's toll is still paid: only the Supply is waived"):
-    val home = CatalogNames.site("Ancient City")
-    val peaks = CatalogNames.site("Broken Peaks")
-    val table = besideMushrooms.denizen("Forced Labor", at = "Broken Peaks")
+    val home = AncientCitySite.id
+    val peaks = BrokenPeaksSite.id
+    val table = besideMushrooms.denizen(ForcedLaborCard, at = BrokenPeaksSite)
       .warbandsAt(peaks, p2, 1).warbandsAt(home, p2, 1)
     val before = Look(table.ready)
     val started = accepted(ModifierPlay.started(rules, Ready(table.ready),
@@ -75,14 +81,14 @@ class MushroomsSuite extends munit.FunSuite:
     assertEquals(after.supply(p1), 5)
 
   test("with Augury it draws two cards from the bottom"):
-    val table = besideMushrooms.denizen("Augury", at = "Ancient City")
+    val table = besideMushrooms.denizen(AuguryCard, at = AncientCitySite)
     val after = searched(table, Region.Cradle,
       Vector(Mushrooms.id, Augury.id))
     assertEquals(after.game.current.temporaryHands(p1), cradle.take(2))
 
   test("with Observatory it draws the bottom card of another region's " +
       "pile"):
-    val table = besideMushrooms.denizen("Observatory", at = "Ancient City")
+    val table = besideMushrooms.denizen(ObservatoryCard, at = AncientCitySite)
     val after = searched(table, Region.Provinces,
       Vector(Mushrooms.id, Observatory.id))
     assertEquals(after.game.current.temporaryHands(p1),

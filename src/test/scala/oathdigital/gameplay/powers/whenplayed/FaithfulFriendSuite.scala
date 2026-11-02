@@ -1,7 +1,8 @@
 package oathdigital.gameplay.powers.whenplayed
 
+import oathdigital.gameplay.powers.campaign.WrestlersCard
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, Table}
+import oathdigital.testkit.{Look, Outcomes, Table}
 import oathdigital.testkit.Table.p1
 
 class FaithfulFriendSuite extends munit.FunSuite:
@@ -27,7 +28,7 @@ class FaithfulFriendSuite extends munit.FunSuite:
     assertEquals(Look(done.treeless).player(p1).board.supply, SupplyTrack(7))
 
   test("another card being played does nothing"):
-    val other = CatalogNames.denizen("Wrestlers")
+    val other = WrestlersCard.id
     val ready = withSupply(2).adviser(p1, other).ready
     val done = Outcomes.finished(play(ready, power, other))
     assertEquals(ops(done.events), Vector.empty)

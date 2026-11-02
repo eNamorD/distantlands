@@ -4,11 +4,12 @@ import oathdigital.gameplay.CampaignFixture
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powerresolver.{PowerCtx, Restriction}
 import oathdigital.gameplay.powers.WalkerPowerCatalog
+import oathdigital.gameplay.powers.action.HomesteadersCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Unwrap.{accepted, as}
 import oathdigital.testkit.StartPreview
 
@@ -19,9 +20,9 @@ class DiplomatSuite extends munit.FunSuite:
   import CampaignFixture.{Board, board, on, withEnemyAtOrigin}
   import TargetingFixture.{optionsAt, parkedOn, start}
 
-  private val card = CatalogNames.denizen("Diplomat")
+  private val card = DiplomatCard.id
   /** A hearth card with no Campaign power. */
-  private val hearth = CatalogNames.denizen("Homesteaders")
+  private val hearth = HomesteadersCard.id
   private val powers = WalkerPowers.selected(
     WalkerPowerCatalog.default(catalog), Vector.empty)
   private val conquest = DecisionOptionRef.Button("conquest")

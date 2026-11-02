@@ -8,13 +8,13 @@ import oathdigital.gameplay.powers.campaign.PlanDriver.{commit, winningDice}
 import oathdigital.gameplay.powers.targeting.TargetingFixture
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes}
+import oathdigital.testkit.{ActPowerHarness, Look, Outcomes}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
 
 class SecretTestamentSuite extends munit.FunSuite:
-  private val testament = CatalogNames.relic("Secret Testament")
+  private val testament = SecretTestamentCard.id
   private val game = ActPowerHarness.rulesWithPrintedRestrictions()
 
   /** The lines Secret Testament journaled in `events`. */

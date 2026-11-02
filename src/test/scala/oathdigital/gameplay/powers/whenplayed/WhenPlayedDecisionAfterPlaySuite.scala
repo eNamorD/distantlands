@@ -4,8 +4,11 @@ import oathdigital.gameplay.FacedownAdviserPlay
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import oathdigital.gameplay.powers.{PowerFixture, SearchFixture}
 import oathdigital.gameplay.powers.SearchFixture._
+import oathdigital.gameplay.powers.action.{ArcaneBrokersCard, DowsingSticksCard,
+  WardOfSilenceCard}
+import oathdigital.gameplay.powers.campaign.ArcaneArmorCard
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Table}
+import oathdigital.testkit.{Look, Table}
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
 
@@ -20,7 +23,7 @@ class WhenPlayedDecisionAfterPlaySuite extends munit.FunSuite:
   private val take = DecisionAnswer.ChooseOneAnswer(FamilyHeirloom.keep)
   private val bottom = DecisionAnswer.ChooseOneAnswer(FamilyHeirloom.bottom)
   /** The relic Family Heirloom draws. */
-  private val top = CatalogNames.relic("Dowsing Sticks")
+  private val top = DowsingSticksCard.id
 
   /** A Search that draws only `cards`, with 5 Supply and Dowsing Sticks on
     * top of the relic deck. */
@@ -70,9 +73,9 @@ class WhenPlayedDecisionAfterPlaySuite extends munit.FunSuite:
   test("a Replace slot plays the card in the place of an adviser, and the " +
       "question after the play still resolves"):
     // The adviser area holds 3, so these fill it.
-    val wardOfSilence = CatalogNames.denizen("Ward of Silence")
+    val wardOfSilence = WardOfSilenceCard.id
     val full = searching(Vector(heirloom)).adviser(p1, wardOfSilence)
-      .adviser(p1, "Arcane Brokers").adviser(p1, "Arcane Armor").ready
+      .adviser(p1, ArcaneBrokersCard).adviser(p1, ArcaneArmorCard).ready
     val replaced = accepted(for
       started <- start(full)
       chosen <- keep(started, heirloom)

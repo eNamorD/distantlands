@@ -2,9 +2,11 @@ package oathdigital.gameplay.powers
 
 import oathdigital.gameplay.powerresolver.{Contribution, ModifierPicks,
   PowerCtx}
+import oathdigital.gameplay.powers.travel.TentsCard
+import oathdigital.gameplay.powers.wake.AncientCitySite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Table.p1
 
 /** The kit every selected modifier stands on: it is offered only for its own
@@ -14,7 +16,7 @@ import oathdigital.testkit.Table.p1
 class SelectedModifierSuite extends munit.FunSuite:
   import PowerFixture._
 
-  private val card = CatalogNames.denizen("Tents")
+  private val card = TentsCard.id
 
   /** Stub of SelectedModifier: on a catalog modifier id (the Tents id unless
     * `idValue` says another), so its resolution is the catalog's; the card,
@@ -41,7 +43,7 @@ class SelectedModifierSuite extends munit.FunSuite:
   private def free = Probe(card, Cost.free, travel)
   /** p1's Act at Ancient City with Tents at the site and `favor` favor. */
   private def tentsAtAncientCity(favor: Int = 1): Table =
-    Table.start.pawn(p1, "Ancient City").denizen(card, at = "Ancient City")
+    Table.start.pawn(p1, AncientCitySite).denizen(card, at = AncientCitySite)
       .favor(p1, favor)
 
   test("it is offered for its own action and no other"):
