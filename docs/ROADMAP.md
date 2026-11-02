@@ -102,7 +102,11 @@ did":
 Cards that need an engine change first, grouped by the missing mechanism.
 [Catalog batch 8](superpowers/specs/2026-10-12-catalog-batch-8-design.md#out-of-scope)
 left these out: each costs a slice or more per card, or belongs with another
-phase.
+phase. The
+[catalog batch 9 design](superpowers/specs/2026-11-02-catalog-batch-9-design.md)
+(2026-11-02) triaged every remaining power, took 22 edifice faces whose
+mechanisms exist, and its "Out of scope" section is the refreshed version of
+this list.
 
 - **Search Party:** a card played after its WHEN PLAYED, as if searched.
   Nested inside the WHEN PLAYED, the played card fires neither its own WHEN
