@@ -421,7 +421,8 @@ before treating the numbers below as current.
   derived codec must still report a stale client bundle, which strict
   unknown-field rejection does today. The operation codec co-changed with
   `CoreOperations` in 13 of 16 commits; count its mechanical arms before
-  deciding it the same way.
+  deciding it the same way. Design note:
+  [derive the wire codecs](superpowers/specs/2026-11-02-derive-wire-codecs-design.md).
 - [ ] **One command vocabulary.** Each command is written in seven files
   (intent, codec, decoder, mapper, command, authorization builder, service
   arm); `AuthorizedPlayer.forPlayer` mints a "transport" access context to
