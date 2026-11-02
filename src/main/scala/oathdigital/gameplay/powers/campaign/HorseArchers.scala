@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, PrintedPower}
 import oathdigital.model._
 
 object HorseArchersCard extends Denizen(DenizenId("24"), "Horse Archers", Suit.Nomad):
@@ -17,10 +17,11 @@ object HorseArchersCard extends Denizen(DenizenId("24"), "Horse Archers", Suit.N
   * resolved, whoever won, as Warning Signals is. A bandit defender applies it
   * at a site it rules, and it is discarded then too.
   */
-final case class HorseArchers private (catalog: ExecutableCatalog)
-    extends BattlePlan with DiscardedAtEnd:
-  val cardId: DenizenId = HorseArchersCard.id
-  def id: PowerId = HorseArchers.id
+case object HorseArchers extends BattlePlan with DiscardedAtEnd:
+  val id: PowerId = HorseArchersCard.power.id
+  val Dice: Int = 3
+
+  val card: Denizen = HorseArchersCard
   def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] =
     Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
@@ -29,10 +30,3 @@ final case class HorseArchers private (catalog: ExecutableCatalog)
     context.denizen(cardId).map(source => CampaignPlanOffer(source,
       PlanDice.label("Horse Archers", context.side, HorseArchers.Dice),
       Vector.empty, Vector(PlanDice.effect(context.side, HorseArchers.Dice))))
-
-object HorseArchers:
-  val id: PowerId = HorseArchersCard.power.id
-  val Dice: Int = 3
-
-  def forCatalog(catalog: ExecutableCatalog): HorseArchers =
-    new HorseArchers(catalog)

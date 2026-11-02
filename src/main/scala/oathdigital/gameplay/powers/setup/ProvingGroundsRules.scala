@@ -25,10 +25,14 @@ object ProvingGroundsCard extends Edifice(EdificeId("E22"), Suit.Hearth):
 /** E22, both faces (2026-09-21 Chronicle design, "Setup powers"). See
   * `MarketRule` for the `WhenExplored`/window-sharing rationale.
   */
-final case class ProvingGrounds private (catalog: ExecutableCatalog)
-    extends ContributingPower:
+case object ProvingGrounds extends ContributingPower:
+  val id: PowerId = ProvingGroundsCard.intact.power.id
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "{player} gained {3 warbands}." */
+  val gained: NoteKey = NoteSupport.gainedKey(notes, "gained")
+
   val edifice: EdificeId = ProvingGroundsCard.id
-  def id: PowerId = ProvingGrounds.id
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
 
   private def at(ctx: PowerCtx): Option[(PlayerId, SiteId)] =
@@ -40,7 +44,6 @@ final case class ProvingGrounds private (catalog: ExecutableCatalog)
 
   override def applicable(ctx: PowerCtx): Boolean = at(ctx).isDefined
 
-  override def noteKeys: Vector[NoteKey] = ProvingGrounds.noteKeys
 
   private def build(ready: ReadyGame, actor: PlayerId)
       : Either[OathViolation, Vector[CoreOperation]] =
@@ -56,14 +59,6 @@ final case class ProvingGrounds private (catalog: ExecutableCatalog)
       case None => ops
     }))
     Map(PowerWindow.SetupPawnPlaced -> effect, PowerWindow.WhenExplored -> effect)
-object ProvingGrounds:
-  val id: PowerId = ProvingGroundsCard.intact.power.id
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "{player} gained {3 warbands}." */
-  val gained: NoteKey = NoteSupport.gainedKey(notes, "gained")
-  def forCatalog(catalog: ExecutableCatalog): ProvingGrounds =
-    new ProvingGrounds(catalog)
 
 /** Discards all OTHER denizens in this region -- edifices count as denizens
   * for this clause specifically (design spec table), and a discarded ruined

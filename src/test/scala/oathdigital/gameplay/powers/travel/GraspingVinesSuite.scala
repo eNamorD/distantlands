@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.travel
 
 import oathdigital.gameplay.powers.{NoteText, PayOrAsk, PowerFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes,
   PlacementPicks, Table}
@@ -24,7 +23,7 @@ class GraspingVinesSuite extends munit.FunSuite:
       ruler.fold(vinesTable.bandits(cradlePlains, 1))(
         vinesTable.warbandsAt(cradlePlains, _, 1)))
 
-  private val power = GraspingVines.forCatalog(catalog)
+  private val power = GraspingVines
 
   private def said(events: Vector[OathEvent]): Vector[NoteText.Said] =
     NoteText.said(power.id, power.noteKeys, events)

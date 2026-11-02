@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, PrintedPower}
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.model._
 
@@ -24,25 +24,7 @@ object MountedPatrolCard extends Denizen(DenizenId("163"), "Mounted Patrol", Sui
   *
   * It writes "The attack pool was halved to {n} dice.", with the dice left.
   */
-final case class MountedPatrol private (catalog: ExecutableCatalog)
-    extends BattlePlan with DiscardedAtEnd:
-  val cardId: DenizenId = MountedPatrolCard.id
-  def id: PowerId = MountedPatrol.id
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
-  def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Defender)
-  override def planNoteKeys: Vector[NoteKey] = MountedPatrol.ownNoteKeys
-
-  def plan(context: PlanContext): Option[CampaignPlanOffer] =
-    context.denizen(cardId).map(source => CampaignPlanOffer(source,
-      "Mounted Patrol: halve the attack pool", Vector.empty, Vector.empty))
-
-  override def wrapping: Map[PowerWindow, BattlePlan.Wrap] = Map(
-    PowerWindow.CampaignAttackRoll -> ((_, _, children) => Vector(
-      MountedPatrol.halve,
-      Note(id, states => Some(MountedPatrol.halved(PowerSourceRef.Card(cardId),
-        NoteArg.Number(MountedPatrol.pool(states.now)))))) ++ children))
-
-object MountedPatrol:
+case object MountedPatrol extends BattlePlan with DiscardedAtEnd:
   val id: PowerId = MountedPatrolCard.power.id
   private val notes = NoteSet(id)
   /** This plan's own keys. Its `noteKeys` adds the discard's
@@ -65,5 +47,17 @@ object MountedPatrol:
       ModifyDicePool(CampaignIds.attackPool, -cut)).toVector)
   })
 
-  def forCatalog(catalog: ExecutableCatalog): MountedPatrol =
-    new MountedPatrol(catalog)
+  val card: Denizen = MountedPatrolCard
+  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
+  def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Defender)
+  override def planNoteKeys: Vector[NoteKey] = MountedPatrol.ownNoteKeys
+
+  def plan(context: PlanContext): Option[CampaignPlanOffer] =
+    context.denizen(cardId).map(source => CampaignPlanOffer(source,
+      "Mounted Patrol: halve the attack pool", Vector.empty, Vector.empty))
+
+  override def wrapping: Map[PowerWindow, BattlePlan.Wrap] = Map(
+    PowerWindow.CampaignAttackRoll -> ((_, _, children) => Vector(
+      MountedPatrol.halve,
+      Note(id, states => Some(MountedPatrol.halved(PowerSourceRef.Card(cardId),
+        NoteArg.Number(MountedPatrol.pool(states.now)))))) ++ children))

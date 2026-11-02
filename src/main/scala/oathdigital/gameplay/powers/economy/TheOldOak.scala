@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.economy
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
+import oathdigital.catalog.{Denizen, PrintedPower, SiteOnly}
 import oathdigital.gameplay.actions.economy.TradeProcedure
 import oathdigital.gameplay.powerresolver.{Contribution, Deferred,
   OperationRewrite, Transform}
@@ -28,10 +28,13 @@ object TheOldOakCard extends Denizen(DenizenId("42"), "The Old Oak", Suit.Beast)
   * is added whatever the Trade, so the window's node count never depends on
   * the answer. The generic gain line tells the secret.
   */
-final case class TheOldOak private (catalog: ExecutableCatalog)
-    extends SelectedModifier:
-  val cardId: DenizenId = TheOldOakCard.id
-  def id: PowerId = TheOldOak.id
+case object TheOldOak extends SelectedModifier:
+  val id: PowerId = TheOldOakCard.power.id
+  val Secrets: Int = 1
+  /** The Trade's secret gain, recorded as it runs. */
+  val deferred: DeferralKey = DeferralKey("the-old-oak")
+
+  val card: Denizen = TheOldOakCard
   def actions: Set[MajorActionType] = Set(MajorActionType.Trade)
 
   def effects: Map[PowerWindow, Vector[Contribution]] = Map(
@@ -49,15 +52,6 @@ final case class TheOldOak private (catalog: ExecutableCatalog)
   private def bonus(actor: PlayerId): Operation =
     Deferred.resolve(TheOldOak.deferred)((_, pending, _) =>
       if PowerAnswers.one(pending, TradeProcedure.decisionId)
-          .contains(DecisionOptionRef.Denizen(cardId)) then
+          .contains(DecisionOptionRef.Denizen(card.id)) then
         Vector(Gain.Secrets(actor, TheOldOak.Secrets))
       else Vector.empty)
-
-object TheOldOak:
-  val id: PowerId = TheOldOakCard.power.id
-  val Secrets: Int = 1
-  /** The Trade's secret gain, recorded as it runs. */
-  val deferred: DeferralKey = DeferralKey("the-old-oak")
-
-  def forCatalog(catalog: ExecutableCatalog): TheOldOak =
-    new TheOldOak(catalog)

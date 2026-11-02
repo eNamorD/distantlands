@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.travel
 
 import oathdigital.gameplay.powers.{NoteText, PayOrAsk, PowerFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{CatalogNames, Look, Outcomes, PlacementPicks,
   Table}
@@ -14,7 +13,7 @@ class TollRoadsConsentSuite extends munit.FunSuite:
   import TravelFixture._
 
   private val rival = Table.p2
-  private val power = TollRoads.forCatalog(catalog)
+  private val power = TollRoads
   private val card = PowerSourceRef.Card(TollRoadsCard.id)
   private val free = TollRoads.free(coast)
   private val key = ConsentKey(TollRoads.id, actor, TollRoads.decisionId, free)

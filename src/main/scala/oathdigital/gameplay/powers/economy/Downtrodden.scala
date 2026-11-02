@@ -27,7 +27,7 @@ object DowntroddenCard extends Denizen(DenizenId("81"), "Downtrodden", Suit.Disc
   */
 final case class Downtrodden private (catalog: ExecutableCatalog)
     extends SelectedModifier:
-  val cardId: DenizenId = DowntroddenCard.id
+  val card: Denizen = DowntroddenCard
   def id: PowerId = Downtrodden.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Muster)
 

@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
+import oathdigital.catalog.{Denizen, PrintedPower, SiteOnly}
 import oathdigital.gameplay.actions.BannerRules
 import oathdigital.model._
 
@@ -26,10 +26,10 @@ object HeartsAndMindsCard extends Denizen(DenizenId("138"),
   * It writes no line of its own, only the discard's "Discarded after the
   * Campaign.".
   */
-final case class HeartsAndMinds private (catalog: ExecutableCatalog)
-    extends BattlePlan with DiscardedAtEnd:
-  val cardId: DenizenId = HeartsAndMindsCard.id
-  def id: PowerId = HeartsAndMinds.id
+case object HeartsAndMinds extends BattlePlan with DiscardedAtEnd:
+  val id: PowerId = HeartsAndMindsCard.power.id
+
+  val card: Denizen = HeartsAndMindsCard
   def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Defender)
 
@@ -43,14 +43,8 @@ final case class HeartsAndMinds private (catalog: ExecutableCatalog)
 
   override def endDiscard: PlanUse => Vector[Operation] = use =>
     if use.user.exists(favored(use.ready, _)) then Vector.empty
-    else PlanDiscard.afterCampaign(catalog, id, use, cardId)
+    else PlanDiscard.afterCampaign(id, use, card)
 
   private def favored(ready: ReadyGame, player: PlayerId): Boolean =
     BannerRules.holder(ready.game.current, Banner.PeoplesFavor)
       .contains(player)
-
-object HeartsAndMinds:
-  val id: PowerId = HeartsAndMindsCard.power.id
-
-  def forCatalog(catalog: ExecutableCatalog): HeartsAndMinds =
-    new HeartsAndMinds(catalog)

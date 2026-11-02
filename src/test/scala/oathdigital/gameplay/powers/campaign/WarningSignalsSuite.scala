@@ -4,7 +4,6 @@ import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{CatalogNames, Look}
 import oathdigital.model.DecisionAnswer._
@@ -188,7 +187,7 @@ class WarningSignalsSuite extends munit.FunSuite:
 
   // ---- Lines ----
 
-  private val power = WarningSignals.forCatalog(catalog)
+  private val power = WarningSignals
   test("the arrangement is written as the Signals' line, after the answer"):
     val b = defending
     val asked = chosen(b)

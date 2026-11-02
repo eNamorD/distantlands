@@ -3,7 +3,6 @@ package oathdigital.gameplay.powers.economy
 import oathdigital.gameplay.ModifierPlay
 import oathdigital.gameplay.actions.economy.TradeProcedure
 import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
 import oathdigital.model.OathState.Ready
@@ -15,7 +14,7 @@ import oathdigital.testkit.Unwrap.accepted
 
 class SecretSignalSuite extends munit.FunSuite:
   private val signal = CatalogNames.denizen("Secret Signal")
-  private val power = SecretSignal.forCatalog(catalog)
+  private val power = SecretSignal
   private val selected = Vector(SecretSignal.id)
   /** p1's pawn site. */
   private val home = CatalogNames.site("Ancient City")

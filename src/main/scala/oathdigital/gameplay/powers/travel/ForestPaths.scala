@@ -33,7 +33,7 @@ object ForestPathsCard extends Denizen(DenizenId("43"), "Forest Paths", Suit.Bea
   */
 final case class ForestPaths private (catalog: ExecutableCatalog)
     extends SelectedModifier:
-  val cardId: DenizenId = ForestPathsCard.id
+  val card: Denizen = ForestPathsCard
   def id: PowerId = ForestPaths.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Travel)
   override def cost: Cost = Cost(favor = ForestPaths.Favor)

@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.targeting
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
+import oathdigital.catalog.{Denizen, PrintedPower, SiteOnly}
 import oathdigital.gameplay.SiteRulers
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution, OptionRestriction, PowerCtx}
 import oathdigital.gameplay.powers.CatalogResolution
@@ -28,14 +28,19 @@ object ForgottenVaultCard extends Denizen(DenizenId("75"), "Forgotten Vault", Su
   *
   * The Game Log posts identical notes once per action.
   */
-final case class ForgottenVault private (catalog: ExecutableCatalog)
-    extends ContributingPower:
+case object ForgottenVault extends ContributingPower:
+  val id: PowerId = ForgottenVaultCard.power.id
+
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "{ruler}'s relics cannot be targeted." */
+  val shielded: NoteKey = notes.key("shielded", Vector(NotePart.Arg(0),
+    NotePart.Text("'s relics cannot be targeted.")))
+
   val cardId: DenizenId = ForgottenVaultCard.id
-  def id: PowerId = ForgottenVault.id
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
   override lazy val resolution: PowerResolution =
-    CatalogResolution.of(catalog, id)
-  override def noteKeys: Vector[NoteKey] = ForgottenVault.noteKeys
+    CatalogResolution.of(ForgottenVaultCard.power)
 
   def contributions: Map[PowerWindow, Vector[Contribution]] = Map(
     PowerWindow.CampaignTargetSelection ->
@@ -64,15 +69,3 @@ final case class ForgottenVault private (catalog: ExecutableCatalog)
           p.player == owner && p.relics.exists(_.id == relic))
       case DecisionOptionRef.RelicSlot(slotOwner, _) => slotOwner == owner
       case _ => false)
-
-object ForgottenVault:
-  val id: PowerId = ForgottenVaultCard.power.id
-
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "{ruler}'s relics cannot be targeted." */
-  val shielded: NoteKey = notes.key("shielded", Vector(NotePart.Arg(0),
-    NotePart.Text("'s relics cannot be targeted.")))
-
-  def forCatalog(catalog: ExecutableCatalog): ForgottenVault =
-    new ForgottenVault(catalog)

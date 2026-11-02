@@ -20,7 +20,7 @@ object RivalKhanCard extends Denizen(DenizenId("156"), "Rival Khan", Suit.Nomad)
   */
 final case class RivalKhan private (catalog: ExecutableCatalog)
     extends BattlePlan with DiscardedAtEnd:
-  val cardId: DenizenId = RivalKhanCard.id
+  val card: Denizen = RivalKhanCard
   def id: PowerId = RivalKhan.id
   def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] =

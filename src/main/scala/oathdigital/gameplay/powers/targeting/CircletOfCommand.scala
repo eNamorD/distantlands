@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.targeting
 
-import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
+import oathdigital.catalog.{PrintedPower, Relic}
 import oathdigital.gameplay.actions.BannerRules
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution, OptionRestriction, PowerCtx}
 import oathdigital.gameplay.powers.CatalogResolution
@@ -29,15 +29,20 @@ object CircletOfCommandCard extends Relic(RelicId("R15"), "Circlet of Command", 
   * targeted.", naming the holder (power log lines design, "Removed and
   * hidden options").
   */
-final case class CircletOfCommand private (catalog: ExecutableCatalog)
-    extends ContributingPower:
+case object CircletOfCommand extends ContributingPower:
+  val id: PowerId = CircletOfCommandCard.power.id
+
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "{Blue}'s banners and relics cannot be targeted." */
+  val shielded: NoteKey = notes.key("shielded", Vector(NotePart.Arg(0),
+    NotePart.Text("'s banners and relics cannot be targeted.")))
+
   val cardId: RelicId = CircletOfCommandCard.id
-  def id: PowerId = CircletOfCommand.id
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
   override lazy val resolution: PowerResolution =
-    CatalogResolution.of(catalog, id)
+    CatalogResolution.of(CircletOfCommandCard.power)
 
-  override def noteKeys: Vector[NoteKey] = CircletOfCommand.noteKeys
 
   def contributions: Map[PowerWindow, Vector[Contribution]] = Map(
     PowerWindow.CampaignTargetSelection ->
@@ -75,15 +80,3 @@ final case class CircletOfCommand private (catalog: ExecutableCatalog)
         !current.players.find(_.player == owner).flatMap(_.relics.lift(slot))
           .exists(_.id == cardId)
       case _ => false
-
-object CircletOfCommand:
-  val id: PowerId = CircletOfCommandCard.power.id
-
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "{Blue}'s banners and relics cannot be targeted." */
-  val shielded: NoteKey = notes.key("shielded", Vector(NotePart.Arg(0),
-    NotePart.Text("'s banners and relics cannot be targeted.")))
-
-  def forCatalog(catalog: ExecutableCatalog): CircletOfCommand =
-    new CircletOfCommand(catalog)

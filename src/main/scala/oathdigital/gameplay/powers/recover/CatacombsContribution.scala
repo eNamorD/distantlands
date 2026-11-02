@@ -31,16 +31,14 @@ final case class CatacombsContribution private (catalog: ExecutableCatalog)
   def id: PowerId = CatacombsContribution.id
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
   override lazy val resolution: PowerResolution =
-    CatalogResolution.of(catalog, id)
+    CatalogResolution.of(CatacombsCard.power)
   override def selectionCard: Option[CardId] = Some(cardId)
   /** Its use at its selection window: its pick pays one secret onto its
     * card (catalog batch 8, slice 10). */
   override def use(ctx: PowerCtx): Option[PowerUse] =
-    for
-      _ <- SelectedModifier.selectionAction(ctx.window)
-      printed <- catalog.printedPower(id)
-    yield PowerUse.of(ctx.actor, printed, cardId, secret = true,
-      places = true)
+    SelectedModifier.selectionAction(ctx.window).map(_ =>
+      PowerUse.of(ctx.actor, CatacombsCard.power, cardId, secret = true,
+        places = true))
   override def selectionWindows: Set[PowerWindow] =
     Set(PowerWindow.RecoverModifierSelection)
   // Stable across the action: card presence, never the relic/secrets spent.
@@ -56,7 +54,8 @@ final case class CatacombsContribution private (catalog: ExecutableCatalog)
     }
   override def selectionPayments(ready: ReadyGame, actor: PlayerId)
       : Vector[CoreOperation] =
-    Vector(Costs.onCard(actor, cardId, Cost(secret = 1), catalog))
+    Vector(Costs.onCard(actor, cardId, Cost(secret = 1),
+      Some(CatacombsCard.suit), intoOccupied = false))
   def contributions: Map[PowerWindow, Vector[Contribution]] =
     Map(PowerWindow.RecoverActionEligibility -> Vector(
       Transform((ctx, ops) => place(ctx.actor) +: ops)))

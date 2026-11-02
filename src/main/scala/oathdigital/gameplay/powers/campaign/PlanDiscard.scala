@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
+import oathdigital.catalog.{Denizen, ExecutableCatalog}
 import oathdigital.gameplay.EffectiveSuit
 import oathdigital.gameplay.actions.CardPlay
 import oathdigital.gameplay.actions.campaign.CampaignSetup
@@ -20,8 +20,14 @@ import oathdigital.model._
   * of a plan (Wild Mounts) finds the discard itself, however it was built.
   */
 object PlanDiscard:
+  /** The discard of a plan's own card, whose object gives its suit. */
+  def denizen(user: PlayerId, card: Denizen): Operation =
+    BuildOps((ready, _) => operations(ready, user, card.id, Some(card.suit)))
+
+  /** The discard of any denizen `card`, its suit read from `catalog`. */
   def denizen(catalog: ExecutableCatalog, user: PlayerId, card: DenizenId)
-      : Operation = BuildOps((ready, _) => operations(catalog, ready, user, card))
+      : Operation = BuildOps((ready, _) =>
+      operations(ready, user, card, catalog.suitOf(card)))
 
   /** The keys this object owns, which no one power owns. A power that
     * writes one includes this set. */
@@ -33,10 +39,10 @@ object PlanDiscard:
   /** The standard discard of `card` once the Campaign has resolved, whoever
     * won, and `power`'s line. A bandit defender has no user, so the attacker
     * is the acting player of its discard. */
-  def afterCampaign(catalog: ExecutableCatalog, power: PowerId, use: PlanUse,
-      card: DenizenId): Vector[Operation] = Vector(
-    denizen(catalog, use.user.getOrElse(use.actor), card),
-    discardedNote(power, card))
+  def afterCampaign(power: PowerId, use: PlanUse, card: Denizen)
+      : Vector[Operation] = Vector(
+    denizen(use.user.getOrElse(use.actor), card),
+    discardedNote(power, card.id))
 
   /** `power`'s "Discarded after the Campaign." for `card`, written only when
     * the step before it took the card to a discard pile. */
@@ -49,8 +55,8 @@ object PlanDiscard:
   private def inDiscard(ready: ReadyGame, card: DenizenId): Boolean =
     ready.game.current.commonCards.regionalDiscards.values.exists(_.contains(card))
 
-  private def operations(catalog: ExecutableCatalog, ready: ReadyGame,
-      user: PlayerId, card: DenizenId)
+  private def operations(ready: ReadyGame, user: PlayerId, card: DenizenId,
+      printedSuit: Option[Suit])
       : Either[OathViolation, Vector[CoreOperation]] =
     val current = ready.game.current
     val player = current.players.find(_.player == user)
@@ -71,9 +77,10 @@ object PlanDiscard:
       case Some((from, tokens, region)) =>
         for
           own <- region.toRight(OathViolation.PawnSiteMissing(user))
-          // A plan from the user's advisers is read before it leaves.
-          suit <- EffectiveSuit.of(catalog, ready, card)
-            .toRight(OathViolation.UnknownWorldCard(card))
+          // A plan from the user's advisers is read before it leaves, so
+          // a Pledge to Discord holder's plan goes to the Discord bank.
+          suit <- (if EffectiveSuit.pledged(ready, card) then Some(Suit.Discord)
+            else printedSuit).toRight(OathViolation.UnknownWorldCard(card))
         yield Vector[CoreOperation](Discard.Denizen(card, from,
           CardPlay.nextRegion(own), suit, tokens.favor, tokens.secrets, user,
           required = true))

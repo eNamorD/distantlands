@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.search
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, PrintedPower}
 import oathdigital.gameplay.actions.search.SearchProcedure
 import oathdigital.gameplay.powerresolver.{Contribution, PowerCtx, Transform}
 import oathdigital.gameplay.powers.SelectedModifier
@@ -24,10 +24,12 @@ object ErrandBoyCard extends Denizen(DenizenId("11"), "Errand Boy", Suit.Beast):
   * writes no line: the start line names it, and the Search line names the
   * pile.
   */
-final case class ErrandBoy private (catalog: ExecutableCatalog)
-    extends SelectedModifier:
-  val cardId: DenizenId = ErrandBoyCard.id
-  def id: PowerId = ErrandBoy.id
+case object ErrandBoy extends SelectedModifier:
+  val id: PowerId = ErrandBoyCard.power.id
+  val Favor: Int = 1
+  val idle: String = "Errand Boy does nothing here"
+
+  val card: Denizen = ErrandBoyCard
   def actions: Set[MajorActionType] = Set(MajorActionType.Search)
   override def cost: Cost = Cost(favor = ErrandBoy.Favor)
 
@@ -45,11 +47,3 @@ final case class ErrandBoy private (catalog: ExecutableCatalog)
       .map(SearchSource.ref)
     SearchSources.warned(ctx, SearchSources.withPiles(ctx, operations,
       Region.all.filterNot(_ == own)), idle, ErrandBoy.idle)
-
-object ErrandBoy:
-  val id: PowerId = ErrandBoyCard.power.id
-  val Favor: Int = 1
-  val idle: String = "Errand Boy does nothing here"
-
-  def forCatalog(catalog: ExecutableCatalog): ErrandBoy =
-    new ErrandBoy(catalog)

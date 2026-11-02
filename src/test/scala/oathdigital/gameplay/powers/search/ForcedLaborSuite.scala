@@ -19,7 +19,7 @@ class ForcedLaborSuite extends munit.FunSuite:
   import SearchFixture.rules
 
   private val labor = CatalogNames.denizen("Forced Labor")
-  private val power = ForcedLabor.forCatalog(catalog)
+  private val power = ForcedLabor
   /** p1's pawn site. */
   private val home = CatalogNames.site("Ancient City")
   /** Where Forced Labor stands. */

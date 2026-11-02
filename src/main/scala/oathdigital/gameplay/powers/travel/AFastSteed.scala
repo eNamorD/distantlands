@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.travel
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, PrintedPower}
 import oathdigital.gameplay.operations.SupplyStrip
 import oathdigital.gameplay.powerresolver.{Contribution, PowerCtx, Transform}
 import oathdigital.gameplay.powers.{PlayerFacts, SelectedModifier}
@@ -23,10 +23,13 @@ object AFastSteedCard extends Denizen(DenizenId("172"), "A Fast Steed", Suit.Nom
   * choice to select it. The start line's cost span shows what was paid, so
   * it writes no line. The catalog's id carries a typo, `old-fast-steed`.
   */
-final case class AFastSteed private (catalog: ExecutableCatalog)
-    extends SelectedModifier:
-  val cardId: DenizenId = AFastSteedCard.id
-  def id: PowerId = AFastSteed.id
+case object AFastSteed extends SelectedModifier:
+  val id: PowerId = AFastSteedCard.power.id
+  val Favor: Int = 1
+  /** The most warbands on the board for which Travel is free. */
+  val MostWarbands: Int = 3
+
+  val card: Denizen = AFastSteedCard
   def actions: Set[MajorActionType] = Set(MajorActionType.Travel)
   override def cost: Cost = Cost(favor = AFastSteed.Favor)
 
@@ -42,12 +45,3 @@ final case class AFastSteed private (catalog: ExecutableCatalog)
   private def fewWarbands(ready: ReadyGame, actor: PlayerId): Boolean =
     PlayerFacts.player(ready, actor)
       .exists(_.board.warbands <= AFastSteed.MostWarbands)
-
-object AFastSteed:
-  val id: PowerId = AFastSteedCard.power.id
-  val Favor: Int = 1
-  /** The most warbands on the board for which Travel is free. */
-  val MostWarbands: Int = 3
-
-  def forCatalog(catalog: ExecutableCatalog): AFastSteed =
-    new AFastSteed(catalog)

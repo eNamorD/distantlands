@@ -20,7 +20,7 @@ class ForgottenVaultSuite extends munit.FunSuite:
   /** The Conspiracy tests' Vault site. */
   private val vaultSite = CatalogNames.site("Broken Peaks")
   private val raid = ChooseOneAnswer(DecisionOptionRef.Button("raid"))
-  private val power = ForgottenVault.forCatalog(catalog)
+  private val power = ForgottenVault
 
   private def notes(events: Vector[OathEvent]): Vector[NoteText.Said] =
     NoteText.said(power.id, power.noteKeys, events)

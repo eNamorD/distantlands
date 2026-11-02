@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, PrintedPower}
 import oathdigital.model._
 
 object MercenariesCard extends Denizen(DenizenId("12"), "Mercenaries", Suit.Discord):
@@ -23,10 +23,16 @@ object MercenariesCard extends Denizen(DenizenId("12"), "Mercenaries", Suit.Disc
   * The discard writes "Discarded after {Red} lost.", read from the discard's
   * step.
   */
-final case class Mercenaries private (catalog: ExecutableCatalog)
-    extends BattlePlan:
+case object Mercenaries extends BattlePlan:
+  val id: PowerId = MercenariesCard.power.id
+  val Dice: Int = 3
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "Discarded after {Red} lost." */
+  val discarded: NoteKey = notes.key("discarded", Vector(
+    NotePart.Text("Discarded after "), NotePart.Arg(0), NotePart.Text(" lost.")))
+
   val cardId: DenizenId = MercenariesCard.id
-  def id: PowerId = Mercenaries.id
   def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] =
     Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
@@ -42,13 +48,12 @@ final case class Mercenaries private (catalog: ExecutableCatalog)
         Vector(effect))
     }
 
-  override def noteKeys: Vector[NoteKey] = Mercenaries.noteKeys
 
   override def later: Map[PowerWindow, PlanUse => Vector[Operation]] = Map(
     PowerWindow.CampaignActionEligibility -> (use =>
       if !use.won.contains(false) then Vector.empty
       else use.user.toVector.flatMap(user => Vector(
-        PlanDiscard.denizen(catalog, user, cardId),
+        PlanDiscard.denizen(user, MercenariesCard),
         Note(id, discardNote(user))))))
 
   /** Its line, when the discard's step took the card out of play. */
@@ -62,15 +67,3 @@ final case class Mercenaries private (catalog: ExecutableCatalog)
     val current = ready.game.current
     current.players.exists(_.advisers.exists(_.id == cardId)) ||
       current.map.sites.values.exists(_.denizens.exists(_.id == cardId))
-
-object Mercenaries:
-  val id: PowerId = MercenariesCard.power.id
-  val Dice: Int = 3
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "Discarded after {Red} lost." */
-  val discarded: NoteKey = notes.key("discarded", Vector(
-    NotePart.Text("Discarded after "), NotePart.Arg(0), NotePart.Text(" lost.")))
-
-  def forCatalog(catalog: ExecutableCatalog): Mercenaries =
-    new Mercenaries(catalog)
