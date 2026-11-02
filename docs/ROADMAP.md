@@ -94,8 +94,6 @@ section describes each seam below in a paragraph.
 - **Own-power lock exemption:** Giant's Path.
 - **Dispossessed shuffles:** Great Spire, Fallen Spire, Pilgrimage.
 - **Vision collection:** Desecrated Ground.
-- **A card taken from under a deck's end:** Squalid District's skipped
-  Vision.
 - **As-if ruler:** Bandit Crown.
 - **Favor source redirection:** Vow of Kinship.
 - **An askable Act action:** consent for Relic Patrols and Bandit Patrols.

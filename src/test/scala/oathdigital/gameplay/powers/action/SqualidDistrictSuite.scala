@@ -12,8 +12,8 @@ import oathdigital.testkit.Outcomes.{assertWireRoundTrips, ready}
 import oathdigital.testkit.Unwrap.accepted
 
 /** Squalid District (catalog batch 9, slice 9): discard facedown advisers,
-  * draw as many denizens from the world deck's bottom as facedown
-  * advisers. */
+  * draw as many cards from the world deck's bottom as facedown advisers,
+  * a Vision among them advancing the Visions Drawn track. */
 class SqualidDistrictSuite extends munit.FunSuite:
   import PowerFixture._
   import PhasePowerHarness.{awaits, backToActing, replayed, rules}
@@ -63,29 +63,50 @@ class SqualidDistrictSuite extends munit.FunSuite:
     assert(Look(after).inRegionalDiscard(WrestlersCard.id))
     assert(Look(after).inRegionalDiscard(faith))
     assertEquals(NoteText.said(power, done.events), Vector(NoteText.Said(
-      NoteKey.Used, "Discarded 2 facedown advisers and drew 2 denizens " +
+      NoteKey.Used, "Discarded 2 facedown advisers and drew 2 cards " +
         "facedown.", covers = false)))
     assertEquals(replayed(start, parked.events ++ done.events),
       Right(done.state))
     assertWireRoundTrips(parked.events ++ done.events)
 
-  test("a Vision at the deck's bottom stops the draw, and a short deck " +
-      "draws fewer"):
-    val start = staged(_.worldDeckBottom(EldersCard, faith))
-    val done = accepted(choose(accepted(use(start)).state, 0))
+  test("a Vision at the deck's bottom is drawn as a facedown adviser and " +
+      "advances the Visions Drawn track once per Vision drawn"):
+    // Both advisers go, and two Visions come from the deck's bottom, so the
+    // track advances twice.
+    val (conquest, sanctuary) = (VisionRules.Conquest, VisionRules.Sanctuary)
+    val start = staged(_.worldDeckBottom(EldersCard, conquest, sanctuary))
+    val parked = accepted(use(start))
+    val done = accepted(choose(parked.state, 0, 1))
     val after = ready(done.state)
-    assert(!Look(after).advisers(actor).contains(EldersCard.id))
-    assert(after.game.current.commonCards.worldDeck.lastOption.contains(faith))
+    assertEquals(Look(after).player(actor).advisers.toSet,
+      Set[AdviserState](DenizenState(WolvesCard.id, Orientation.FaceUp,
+        Tokens.empty),
+        VisionState(sanctuary, Orientation.FaceDown),
+        VisionState(conquest, Orientation.FaceDown)))
+    assert(Look(after).inRegionalDiscard(faith))
+    assertEquals(after.game.current.commonCards.worldDeck.lastOption,
+      Some(EldersCard.id))
+    assertEquals(after.game.current.tracks.visionsDrawn,
+      start.game.current.tracks.visionsDrawn + 2)
     assertEquals(NoteText.said(power, done.events), Vector(NoteText.Said(
-      NoteKey.Used, "Discarded 1 facedown adviser and drew 0 denizens " +
+      NoteKey.Used, "Discarded 2 facedown advisers and drew 2 cards " +
         "facedown.", covers = false)))
+    assertEquals(replayed(start, parked.events ++ done.events),
+      Right(done.state))
+    assertWireRoundTrips(parked.events ++ done.events)
+
+  test("a denizen drawn leaves the track alone, and a short deck draws " +
+      "fewer"):
+    val one = accepted(choose(accepted(use(staged())).state, 0))
+    assertEquals(ready(one.state).game.current.tracks.visionsDrawn,
+      staged().game.current.tracks.visionsDrawn)
     val short = staged().updateCurrent(c => c.copy(commonCards =
       c.commonCards.copy(worldDeck = Vector(EldersCard.id))))
     val fewer = accepted(choose(accepted(use(short)).state, 0, 1))
     assertEquals(Look(ready(fewer.state)).advisers(actor).toSet,
       Set[CardId](WolvesCard.id, EldersCard.id))
     assertEquals(NoteText.said(power, fewer.events), Vector(NoteText.Said(
-      NoteKey.Used, "Discarded 2 facedown advisers and drew 1 denizen " +
+      NoteKey.Used, "Discarded 2 facedown advisers and drew 1 card " +
         "facedown.", covers = false)))
 
   test("choosing nothing changes no adviser; with no facedown adviser " +

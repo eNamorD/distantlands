@@ -600,21 +600,26 @@ the questions above.
   one line, "Buried {card} at {site}; Giant's Rampage and {Blue} now stand
   there.", covers the bury and both moves; a denizen at its own site is
   buried where it stands and nothing moves.
-- **Slice 9: Squalid District stops at a Vision.** Question 5's default,
-  skipping a Vision at the deck's bottom, needs a card to leave a deck
-  from under another, which the position guard refuses: a card taken from
-  a stack must be at the end it names (`CardMovementOperations`). So the
-  draw takes the bottom cards while they are denizens and stops at a
-  Vision, drawing fewer; the Vision stays where it lies. The question is
-  asked only when a facedown adviser is held (a choose-many cannot be
-  passed when empty), and its line counts what was discarded and drawn:
-  "Discarded 2 facedown advisers and drew 1 denizen facedown."
+- **Slice 9: Squalid District draws a Vision.** Owner's ruling, overriding
+  question 5's default: the District is not a Search modifier and does
+  not follow Search's restrictions, so the draw takes the bottom cards
+  whatever they are, with no special logic. A Vision drawn becomes a
+  facedown adviser like a denizen and advances the Visions Drawn track,
+  once per Vision drawn. No new seam: each card is at the deck's bottom
+  when its move comes, the end the move names, so the position guard
+  accepts the run (`CardMovementOperations.cardSourceOrderViolations`
+  judges the batch in order). Only the deck running out draws fewer. The
+  question is asked only when a facedown adviser is held (a choose-many
+  cannot be passed when empty), and its line counts what was discarded
+  and drawn without naming the kind, since a facedown draw is hidden:
+  "Discarded 2 facedown advisers and drew 2 cards facedown."
 - **Slice 9.** Temple of Ancestors limits the nested play through its own
   `Transform` at `SearchPlayAdviser`, applicable only while its walk runs
   (`ctx.procedure`), so the site slots read "Temple of Ancestors: the card
   goes to your advisers" and the adviser plays and the discard stay open.
   A Vision drawn advances the Visions Drawn track and may be revealed or
-  discarded (question 6's default).
+  discarded (question 6's default, confirmed as the owner's ruling; the
+  suite asserts the advance).
 - **Slice 10.** Underground Library peeks at every relic of its region for
   the user, asks the site relic by `SiteRelicSlot` and the given relic by
   `RelicSlot`, flips a faceup given relic facedown before the `Swap`
@@ -687,9 +692,6 @@ What remains after this batch, for the roadmap's engine-blocked item.
   the Dispossessed is private to everyone (rules 15.6).
 - **Vision collection** (Desecrated Ground): `PlayerState.revealedVision`
   is one card.
-- **A card taken from under a deck's end** (Squalid District's skipped
-  Vision): the position guard lets a card leave a stack only from the end
-  it names.
 - **As-if ruler** (Bandit Crown): `PowerAccess.ruledSites`, `RuledCards`
   and `PlanContext.rules` read `SiteRule.ruler`. The FAQ adds the refill
   and the last-warband minor action.

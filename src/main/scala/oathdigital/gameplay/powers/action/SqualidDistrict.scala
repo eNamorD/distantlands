@@ -29,12 +29,14 @@ object FestivalDistrictCard extends Edifice(EdificeId("E21"), Suit.Hearth):
   * The question is a choose-many over the user's facedown adviser slots,
   * which names no facedown card. Each chosen adviser is discarded as card
   * play discards one, to the region after the pawn's; a Vision goes the
-  * same way. Then as many denizens are drawn from the deck's bottom into
-  * the play area facedown, as Horned Mask takes a card; the deck running
-  * out, or a Vision reached at the bottom, draws fewer (catalog batch 9,
-  * "Rulings made while implementing"). With no facedown adviser nothing is asked and the cost stays
-  * paid. Its line: "Discarded 2 facedown advisers and drew 2
-  * denizens facedown." The intact face is a Negotiation power and is not
+  * same way. Then as many cards are drawn from the deck's bottom into the
+  * play area facedown, as Horned Mask takes a card, whatever they are: a
+  * Vision drawn becomes a facedown adviser and advances the Visions Drawn
+  * track, once per Vision, since the draw is no Search (owner's ruling,
+  * catalog batch 9, "Rulings made while implementing"). The deck running
+  * out draws fewer. With no facedown adviser nothing is asked and the cost
+  * stays paid. Its line: "Discarded 2 facedown advisers and drew 2 cards
+  * facedown." The intact face is a Negotiation power and is not
   * implemented.
   */
 final case class SqualidDistrict private (catalog: ExecutableCatalog)
@@ -79,20 +81,21 @@ final case class SqualidDistrict private (catalog: ExecutableCatalog)
         .map(suit => Discard.Denizen(denizen, from, region, suit, 0, 0,
           player, required = true))
 
-  /** Up to `count` denizens from the deck's bottom, each into the play
-    * area facedown. A Vision reached stops the draw: a card leaves a deck
-    * only from its end, so the denizens above a Vision stay. */
+  /** Up to `count` cards from the deck's bottom, bottom first, each into
+    * the play area facedown; each Vision among them advances the Visions
+    * Drawn track. Each card is at the bottom when its turn comes, which is
+    * the end the move names. */
   private def drawn(ready: ReadyGame, player: PlayerId, count: Int)
       : Vector[CoreOperation] =
-    ready.game.current.commonCards.worldDeck.reverse
-      .takeWhile(_.isInstanceOf[DenizenId])
-      .collect { case denizen: DenizenId => denizen }.take(count)
-      .map(card => Move(Piece.Card(card),
+    ready.game.current.commonCards.worldDeck.reverse.take(count)
+      .flatMap(card => Move(Piece.Card(card),
         PositionedLocation(Location.Deck(CardDeck.World),
           StackPosition.Bottom),
         PositionedLocation(Location.PlayArea(player)),
         resultingOrientation = Some(Orientation.FaceDown),
-        by = Some(player)))
+        by = Some(player)) +:
+        Option.when(card.isInstanceOf[VisionId])(AdvanceVisionsDrawn)
+          .toVector)
 
 object SqualidDistrict:
   val id: PowerId = FestivalDistrictCard.ruined.power.id
@@ -100,12 +103,12 @@ object SqualidDistrict:
   val heading: String = "Squalid District: discard which facedown advisers?"
   private val notes = NoteSet(id)
   def noteKeys: Vector[NoteKey] = notes.declared
-  /** "Discarded {2} facedown advisers and drew {2} denizens facedown." */
+  /** "Discarded {2} facedown advisers and drew {2} cards facedown." */
   val swapped: NoteKey = notes.key(NoteKey.Used, Vector(
     NotePart.Text("Discarded "), NotePart.Arg(0),
     NotePart.Plural(0, " facedown adviser and drew ",
       " facedown advisers and drew "), NotePart.Arg(1),
-    NotePart.Plural(1, " denizen facedown.", " denizens facedown.")))
+    NotePart.Plural(1, " card facedown.", " cards facedown.")))
   /** "Discarded no adviser." */
   val nothing: NoteKey = notes.key("used.none", Vector(
     NotePart.Text("Discarded no adviser.")))
