@@ -72,7 +72,7 @@ class AutomaticUseStepWiringSuite extends munit.FunSuite:
       CardPlayedFaceup(VisionRules.Conspiracy, RuleSourceRef.GameRule(
         ConspiracyWhenPlayed.id.value))),
     ("Tyrant", Tyrant, PowerWindow.TravelCost, p2Travels),
-    ("Hospitality", Hospitality.forCatalog(catalog), PowerWindow.TravelCost,
+    ("Hospitality", Hospitality, PowerWindow.TravelCost,
       p2Travels),
     ("Vow of Beastkin", VowOfBeastkin.forCatalog(catalog),
       PowerWindow.MusterGain, p1MusterGain),

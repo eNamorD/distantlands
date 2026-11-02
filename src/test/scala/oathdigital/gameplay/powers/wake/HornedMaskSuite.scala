@@ -23,7 +23,7 @@ class HornedMaskSuite extends munit.FunSuite:
 
   private val mask = HornedMaskCard.id
   private val source = DecisionOptionRef.Relic(mask)
-  private val power = HornedMask(catalog)
+  private val power = HornedMask
   private val inn = WaysideInnCard.id
   private val elders = EldersCard.id
   private val wolves = WolvesCard.id

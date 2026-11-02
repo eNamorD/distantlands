@@ -4,7 +4,6 @@ import oathdigital.gameplay.powers.economy.HallowedSpringCard
 import oathdigital.gameplay.actions.travel.TravelProcedure
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
 import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{ActPowerHarness, Look, Outcomes}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
@@ -22,7 +21,7 @@ class ForestPathsSuite extends munit.FunSuite:
   private def held = on(board(supply = 7))(_.adviser(actor, paths)
     .favor(actor, 1))
 
-  private val power = ForestPaths.forCatalog(catalog)
+  private val power = ForestPaths
 
   private def said(events: Vector[OathEvent]): Vector[NoteText.Said] =
     NoteText.said(power.id, power.noteKeys, events)

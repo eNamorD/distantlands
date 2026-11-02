@@ -5,7 +5,6 @@ import oathdigital.gameplay.cards.BuriedGiantSite
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.search.DisciplesCard
 import oathdigital.gameplay.powers.targeting.{LostTongue, LostTongueCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{Look, Outcomes, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
@@ -76,7 +75,7 @@ class WizardsConclaveSuite extends munit.FunSuite:
     val ready = Table.start.adviser(p1, conclave).adviser(p2, LostTongueCard)
       .darkestSecret(Some(p2), 1).ready
     val done = Outcomes.finished(playBeside(ready, power, conclave,
-      LostTongue.forCatalog(catalog)))
+      LostTongue))
     assertEquals(Look(done.treeless).darkestSecretHolder, Some(p2))
     assertEquals(said(power, done.events), Vector(NoteText.Said("none",
       "The Darkest Secret did not move.", covers = false)))

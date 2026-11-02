@@ -76,7 +76,7 @@ object WalkerPowerCatalog:
     * union built from `default` would build a union to build a union. */
   private[powers] def contributing(catalog: ExecutableCatalog)
       : Vector[ContributingPower] =
-    Vector(CatacombsContribution.forCatalog(catalog)) ++
+    Vector(CatacombsContribution) ++
       Vector(RelicPatrols, BanditPatrols) ++
       Vector(VowOfPeaceContribution) ++
       Vector(VowOfSilence, VowOfDivision) ++
@@ -84,17 +84,17 @@ object WalkerPowerCatalog:
       Vector(SecretTestament) ++
       Vector(YewStaff) ++
       Vector(SpellBreaker) ++
-      Vector(ForestCouncil.forCatalog(catalog)) ++
+      Vector(ForestCouncil) ++
       Vector(CityWall) ++
       Vector(GiantPythonRestriction) ++
       Vector(HiddenPassages) ++
       Vector(TempleOfAncestors.forCatalog(catalog)) ++
       TravelSitePowers.all ++
-      Vector(BoilingLakeTravel, ForbiddenForest.forCatalog(catalog)) ++
+      Vector(BoilingLakeTravel, ForbiddenForest) ++
       Vector(HallowedSpring) ++
-      TravelModifiers.forCatalog(catalog) ++
-      Vector(LeagueTreatyContribution.forCatalog(catalog)) ++
-      Vector(SilverTongue.forCatalog(catalog)) ++
+      TravelModifiers.all ++
+      Vector(LeagueTreatyContribution) ++
+      Vector(SilverTongue) ++
       Vector(Insomnia) ++
       Vector(Assassin.forCatalog(catalog)) ++
       Vector(LostTapestry) ++
@@ -110,7 +110,7 @@ object WalkerPowerCatalog:
       WhenPlayedPowers.forCatalog(catalog) ++
       Vector(ChaosCult) ++
       ActionModifiers.forCatalog(catalog) ++
-      TargetProtections.forCatalog(catalog) ++
+      TargetProtections.all ++
       Vector(KnightsErrant) ++
       Vector(Marriage) ++
       Vector(PledgeToDiscord) ++
@@ -125,6 +125,6 @@ object WalkerPowerCatalog:
       Vector(Dazzle.forCatalog(catalog), GreatMarket,
         BanditMarket, GreatForge,
         BrokenForge, ProvingGrounds,
-        EmptyGrounds.forCatalog(catalog), HallOfMockery, LostGuardians,
+        EmptyGrounds, HallOfMockery, LostGuardians,
         RuinedSchool, BrokenHorn, TakeWealthLimit,
         ConspiracyWhenPlayed)

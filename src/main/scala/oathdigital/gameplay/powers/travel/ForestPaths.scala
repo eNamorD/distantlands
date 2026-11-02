@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.travel
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, PrintedPower}
 import oathdigital.gameplay.operations.SupplyStrip
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution, PowerCtx, Transform}
 import oathdigital.gameplay.powers.SelectedModifier
@@ -31,13 +31,18 @@ object ForestPathsCard extends Denizen(DenizenId("43"), "Forest Paths", Suit.Bea
   * While it ignores the site powers it writes "Ignoring site powers."; its
   * Supply waiver writes nothing (power log lines design, "No line").
   */
-final case class ForestPaths private (catalog: ExecutableCatalog)
-    extends SelectedModifier:
+case object ForestPaths extends SelectedModifier:
+  val id: PowerId = ForestPathsCard.power.id
+  val Favor: Int = 1
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "Ignoring site powers." */
+  val ignoring: NoteKey = notes.key("ignoring",
+    Vector(NotePart.Text("Ignoring site powers.")))
+
   val card: Denizen = ForestPathsCard
-  def id: PowerId = ForestPaths.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Travel)
   override def cost: Cost = Cost(favor = ForestPaths.Favor)
-  override def noteKeys: Vector[NoteKey] = ForestPaths.noteKeys
 
   def effects: Map[PowerWindow, Vector[Contribution]] = Map(
     PowerWindow.TravelCost -> Vector(Transform((ctx, operations) =>
@@ -54,22 +59,10 @@ final case class ForestPaths private (catalog: ExecutableCatalog)
   private def beastAtDestination(ctx: PowerCtx): Boolean =
     TravelRoute.pawnMove(ctx.operation).exists(route =>
       TravelPayments.holdsSuit(ctx.state, route.destination, Suit.Beast,
-        catalog.suitOf(_)))
+        ctx.catalog.suitOf(_)))
 
   override def ignores(ctx: PowerCtx, other: ContributingPower): Boolean =
     beastAtDestination(ctx) && (other.source match {
       case _: RuleSourceRef.Site => true
       case _ => false
     })
-
-object ForestPaths:
-  val id: PowerId = ForestPathsCard.power.id
-  val Favor: Int = 1
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "Ignoring site powers." */
-  val ignoring: NoteKey = notes.key("ignoring",
-    Vector(NotePart.Text("Ignoring site powers.")))
-
-  def forCatalog(catalog: ExecutableCatalog): ForestPaths =
-    new ForestPaths(catalog)

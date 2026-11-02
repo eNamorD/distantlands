@@ -24,7 +24,7 @@ object AdviserLimit:
   val Default: Int = CardPlayRules.DefaultAdviserLimit
 
   def of(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId): Int =
-    Vector(SilverTongue.forCatalog(catalog).limitFor(ready, player),
+    Vector(SilverTongue.limitFor(ready, player),
       Insomnia.limitFor(ready, player),
       Assassin.forCatalog(catalog).limitFor(ready, player))
       .flatten.minOption.getOrElse(

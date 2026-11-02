@@ -36,7 +36,7 @@ final case class Blackmail private (catalog: ExecutableCatalog)
   import Blackmail._
   def id: PowerId = Blackmail.id
 
-  private val lostTongue = LostTongue.forCatalog(catalog)
+  private val lostTongue = LostTongue
 
   override def noteKeys: Vector[NoteKey] = Blackmail.noteKeys
   override def narratedDecisions: Set[String] =
@@ -68,7 +68,7 @@ final case class Blackmail private (catalog: ExecutableCatalog)
     PowerAccess.pawnSite(ready, actor).toVector.flatMap(site => for
       other <- ready.game.current.players
       if other.player != actor && other.pawnSite.contains(site) &&
-        !lostTongue.protects(ready, actor, other.player)
+        !lostTongue.protects(catalog, ready, actor, other.player)
       (relic, slot) <- other.relics.zipWithIndex
     yield Target(other.player, slot, relic))
 

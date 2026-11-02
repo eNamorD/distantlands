@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.travel
 
-import oathdigital.catalog.{Edifice, EdificeFace, ExecutableCatalog, Locked,
-  PrintedPower}
+import oathdigital.catalog.{Edifice, EdificeFace, Locked, PrintedPower}
 import oathdigital.gameplay.{EffectiveSuit, SiteRulers}
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerCtx, Restriction, Waiver}
@@ -39,12 +38,32 @@ object ForbiddenForestCard extends Edifice(EdificeId("E29"), Suit.Beast):
   * The ruined face, Bandit Forest, binds Imperials only and is not
   * implemented.
   */
-final case class ForbiddenForest private (catalog: ExecutableCatalog)
-    extends ContributingPower:
-  import ForbiddenForest._
-  def id: PowerId = ForbiddenForest.id
+case object ForbiddenForest extends ContributingPower:
+  val id: PowerId = ForbiddenForestCard.intact.power.id
+  val card: PowerSourceRef = PowerSourceRef.Card(ForbiddenForestCard.id)
+  val reason: String = "Forbidden Forest: Cannot travel here without a " +
+    "Beast adviser."
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "Cannot travel here without a Beast adviser.": the destination's
+    * reason when nobody may be asked. */
+  val noTravel: NoteKey = notes.key("no-travel", Vector(NotePart.Text(
+    "Cannot travel here without a Beast adviser.")))
+  /** "... or ruler's consent.": the reason while its ruler may be asked. */
+  val noTravelConsent: NoteKey = notes.key("no-travel-consent", Vector(
+    NotePart.Text("Cannot travel here without a Beast adviser or ruler's " +
+      "consent.")))
+
+  def forestSite(ready: ReadyGame): Option[SiteId] =
+    EdificeSetupSupport.siteOf(ready, ForbiddenForestCard.id,
+      EdificeSide.Intact)
+
+  /** The player who rules the Forest's site, who may consent. */
+  def granter(ready: ReadyGame): Option[PlayerId] =
+    forestSite(ready).flatMap(SiteRulers.rulerOf(ready, _)).collect {
+      case SiteRuler.Player(player) => player }
+
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
-  override def noteKeys: Vector[NoteKey] = ForbiddenForest.noteKeys
 
   def contributions: Map[PowerWindow, Vector[Contribution]] = Map(
     PowerWindow.TravelActionEligibility -> Vector(Restriction(
@@ -60,33 +79,6 @@ final case class ForbiddenForest private (catalog: ExecutableCatalog)
     if route.destination == site
     ruler <- SiteRulers.rulerOf(ctx.state, site)
     if SiteRule.enemies(ruler, SiteRuler.Player(route.player))
-    if EffectiveSuit.count(catalog, ctx.state, route.player, Suit.Beast) == 0
+    if EffectiveSuit.count(ctx.catalog, ctx.state, route.player,
+      Suit.Beast) == 0
   yield OathViolation.StartUnavailable(reason)
-
-object ForbiddenForest:
-  val id: PowerId = ForbiddenForestCard.intact.power.id
-  val card: PowerSourceRef = PowerSourceRef.Card(ForbiddenForestCard.id)
-  val reason: String = "Forbidden Forest: Cannot travel here without a " +
-    "Beast adviser."
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "Cannot travel here without a Beast adviser.": the destination's
-    * reason when nobody may be asked. */
-  val noTravel: NoteKey = notes.key("no-travel", Vector(NotePart.Text(
-    "Cannot travel here without a Beast adviser.")))
-  /** "... or ruler's consent.": the reason while its ruler may be asked. */
-  val noTravelConsent: NoteKey = notes.key("no-travel-consent", Vector(
-    NotePart.Text("Cannot travel here without a Beast adviser or ruler's " +
-      "consent.")))
-
-  def forCatalog(catalog: ExecutableCatalog): ForbiddenForest =
-    new ForbiddenForest(catalog)
-
-  def forestSite(ready: ReadyGame): Option[SiteId] =
-    EdificeSetupSupport.siteOf(ready, ForbiddenForestCard.id,
-      EdificeSide.Intact)
-
-  /** The player who rules the Forest's site, who may consent. */
-  def granter(ready: ReadyGame): Option[PlayerId] =
-    forestSite(ready).flatMap(SiteRulers.rulerOf(ready, _)).collect {
-      case SiteRuler.Player(player) => player }

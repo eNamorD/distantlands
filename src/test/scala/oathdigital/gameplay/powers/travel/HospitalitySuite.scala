@@ -9,7 +9,6 @@ import oathdigital.model._
 import oathdigital.testkit.{ActPowerHarness, Look, Outcomes, PhasePowerHarness}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Unwrap.accepted
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.testkit.{AppendedAutomaticUses, Table}
 
 /** Hospitality: after its holder travels, 1 favor from a bank matching both
@@ -135,6 +134,6 @@ class HospitalitySuite extends munit.FunSuite:
 
   test("its gain is an automatic use of the traveller's, judged where it " +
       "runs"):
-    assertEquals(AppendedAutomaticUses.at(Hospitality.forCatalog(catalog),
+    assertEquals(AppendedAutomaticUses.at(Hospitality,
       PowerWindow.TravelCost, p2Travels), Vector(AppendedAutomaticUses.Named(
       Table.p2, Hospitality.id, HospitalityCard.id)))

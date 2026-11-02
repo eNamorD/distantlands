@@ -124,7 +124,7 @@ class AncientBloodlineTakesSuite extends munit.FunSuite:
       .relic(p1, mask).denizen(inn, at = home)
       .warbandsAt(home, p2, 1).adviser(p2, bloodline).ready
     assert(PowerAccess.ruledSites(ready, p2).contains(home))
-    val t = accepted(use(ready, HornedMask(catalog),
+    val t = accepted(use(ready, HornedMask,
       DecisionOptionRef.Relic(mask)))
     assert(awaits(t, HornedMask.denizenDecisionId))
     val row = rowFor(t, DecisionOptionRef.Denizen(inn))

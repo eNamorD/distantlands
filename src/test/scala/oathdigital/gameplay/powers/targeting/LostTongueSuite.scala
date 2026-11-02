@@ -24,7 +24,7 @@ class LostTongueSuite extends munit.FunSuite:
   /** A plain Nomad card: holding it faceup, a player rules a nomad card. */
   private val nomadCard = WildMountsCard.id
   private val crackedHorn = CrackedHornCard.id
-  private val power = LostTongue.forCatalog(catalog)
+  private val power = LostTongue
   private val raid = ChooseOneAnswer(DecisionOptionRef.Button("raid"))
   private val parked = PowerRules.parkedUnderWalkerPowers
 

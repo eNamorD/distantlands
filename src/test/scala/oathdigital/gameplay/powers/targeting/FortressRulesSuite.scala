@@ -60,9 +60,9 @@ class FortressRulesSuite extends munit.FunSuite:
       : Vector[NoteText.Said] =
     NoteText.said(power.id, power.noteKeys, from.events)
 
-  private val oaken = OakenFortress.forCatalog(catalog)
+  private val oaken = OakenFortress
 
-  private val rotting = RottingFortress.forCatalog(catalog)
+  private val rotting = RottingFortress
 
   test("the Oaken Fortress removes its ruler from a Raid: only the Conquest " +
       "is left"):
@@ -150,7 +150,7 @@ class FortressRulesSuite extends munit.FunSuite:
 
   test("a Campaign already under way is never refused by the start rule"):
     val b = fortified(EdificeSide.Ruined, ruled = false)
-    val power = RottingFortress.forCatalog(catalog)
+    val power = RottingFortress
     val restriction = as[Restriction](
       power.contributions(PowerWindow.CampaignActionEligibility).head)
     def ctx(state: ReadyGame) = PowerCtx(catalog, state, b.actor, power.source,

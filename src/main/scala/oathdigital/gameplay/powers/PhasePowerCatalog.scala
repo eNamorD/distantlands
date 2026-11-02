@@ -18,7 +18,7 @@ import oathdigital.gameplay.powers.wake.{HiddenPassages, Hunger,
   */
 object PhasePowerCatalog:
   def default(catalog: ExecutableCatalog): PhasePowers =
-    PhasePowers(Vector(SilverTongue.forCatalog(catalog)) ++
+    PhasePowers(Vector(SilverTongue) ++
       Vector(Insomnia) ++
       Vector(VowOfObedience) ++
       Vector(VowOfPoverty) ++
@@ -31,6 +31,6 @@ object PhasePowerCatalog:
       OtherActionPowers.forCatalog(catalog) ++
       WorldActionPowers.forCatalog(catalog) ++
       BannerFacePowers.phasePowers ++
-      Vector(Hunger.forCatalog(catalog)) ++
+      Vector(Hunger) ++
       RiverSitePower.all,
       WalkerPowerCatalog.useRestrictions(catalog))

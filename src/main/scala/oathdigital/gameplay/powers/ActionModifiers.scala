@@ -23,9 +23,9 @@ import oathdigital.gameplay.powers.search.{Augury, Baron, CropRotation,
 object ActionModifiers:
   def forCatalog(catalog: ExecutableCatalog): Vector[ContributingPower] =
     Vector[ContributingPower](Augury, TruthfulHarp, Disciples, CropRotation,
-      Baron, NewGrowth.forCatalog(catalog), ForestWarden.forCatalog(catalog),
+      Baron, NewGrowth, ForestWarden,
       NewsFromAfar, HuntingParty, Observatory, ErrandBoy, Mushrooms,
-      WineOfWelcome, PaintedTrumpet, SpinningBee.forCatalog(catalog),
+      WineOfWelcome, PaintedTrumpet, SpinningBee,
       LandWarden, CupOfPlenty.forCatalog(catalog),
       AnimalPlaymates.forCatalog(catalog), Birdsong.forCatalog(catalog),
       TheOldOak, RowdyPub, VillageIdiot, Downtrodden.forCatalog(catalog),

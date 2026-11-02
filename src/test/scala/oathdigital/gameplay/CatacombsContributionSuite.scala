@@ -234,7 +234,7 @@ class CatacombsContributionSuite extends munit.FunSuite:
 
   test("Catacombs pays its secret onto its card, as its selection payment"):
     val fixture = reliclessSite(secrets = 1)
-    val power = CatacombsContribution.forCatalog(catalog)
+    val power = CatacombsContribution
     assertEquals(power.selectionPayments(fixture.ready, fixture.actor),
       Vector(Costs.onCard(fixture.actor, power.cardId, Cost(secret = 1),
         catalog)))

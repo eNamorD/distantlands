@@ -37,52 +37,13 @@ object HospitalityCard extends Denizen(DenizenId("171"), "Hospitality",
   * It writes no line. The question is under the `travel.` prefix, so it
   * posts no "Chose" line, and the generic gain line names the bank.
   */
-final case class Hospitality private (catalog: ExecutableCatalog)
-    extends ContributingPower:
-  import Hospitality._
-  def id: PowerId = Hospitality.id
-  def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
-
-  def contributions: Map[PowerWindow, Vector[Contribution]] = Map(
-    PowerWindow.TravelCost -> Vector(Transform((ctx, operations) =>
-      TravelRoute.pawnMove(ctx.operation).fold(operations)(route =>
-        operations :+ AutomaticUse(route.player, id, HospitalityCard.id,
-          (live, _) => welcome(live, route.player, route.destination))))))
-
-  override def applicable(ctx: PowerCtx): Boolean =
-    TravelRoute.pawnMove(ctx.operation).exists(route =>
-      holds(ctx.state, route.player))
-
-  /** The banks matching both a card at `site` and one of `guest`'s faceup
-    * advisers, in suit order. */
-  private def matching(ready: ReadyGame, guest: PlayerId, site: SiteId)
-      : Vector[Suit] =
-    val atSite = ready.game.current.map.sites.get(site).toVector
-      .flatMap(_.denizens).flatMap(card => catalog.suitOf(card.id)).toSet
-    Suit.all.filter(suit => atSite(suit) &&
-      EffectiveSuit.count(catalog, ready, guest, suit) > 0)
-
-  private def welcome(ready: ReadyGame, guest: PlayerId, site: SiteId)
-      : Vector[Operation] =
-    val banks = matching(ready, guest, site)
-    banks.filter(stocked(ready, _)) match
-      case Vector() => Vector.empty
-      case Vector(only) => Vector(gain(guest, _ => Some(only)))
-      case _ => Vector(
-        Decide(decisionId, guest, DecisionQuery.ChooseOne(
-          banks.map(option(ready, _)), heading = Some(heading))),
-        gain(guest, chosen))
-
-object Hospitality:
+case object Hospitality extends ContributingPower:
   val id: PowerId = HospitalityCard.power.id
   val Favor: Int = 1
   /** Under the `travel.` prefix, so the Game Log narrates it. */
   val decisionId: String = "travel.hospitality"
   val heading: String = "Hospitality: gain 1 favor from which bank?"
   val emptyBank: String = "This bank is empty"
-
-  def forCatalog(catalog: ExecutableCatalog): Hospitality =
-    new Hospitality(catalog)
 
   private def stocked(ready: ReadyGame, suit: Suit): Boolean =
     ready.banks.favor.getOrElse(suit, 0) > 0
@@ -112,3 +73,36 @@ object Hospitality:
           card == HospitalityCard.id
         case _ => false
       })
+
+  def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
+
+  def contributions: Map[PowerWindow, Vector[Contribution]] = Map(
+    PowerWindow.TravelCost -> Vector(Transform((ctx, operations) =>
+      TravelRoute.pawnMove(ctx.operation).fold(operations)(route =>
+        operations :+ AutomaticUse(route.player, id, HospitalityCard.id,
+          (live, _) => welcome(ctx.catalog, live, route.player,
+            route.destination))))))
+
+  override def applicable(ctx: PowerCtx): Boolean =
+    TravelRoute.pawnMove(ctx.operation).exists(route =>
+      holds(ctx.state, route.player))
+
+  /** The banks matching both a card at `site` and one of `guest`'s faceup
+    * advisers, in suit order. */
+  private def matching(catalog: ExecutableCatalog, ready: ReadyGame,
+      guest: PlayerId, site: SiteId): Vector[Suit] =
+    val atSite = ready.game.current.map.sites.get(site).toVector
+      .flatMap(_.denizens).flatMap(card => catalog.suitOf(card.id)).toSet
+    Suit.all.filter(suit => atSite(suit) &&
+      EffectiveSuit.count(catalog, ready, guest, suit) > 0)
+
+  private def welcome(catalog: ExecutableCatalog, ready: ReadyGame,
+      guest: PlayerId, site: SiteId): Vector[Operation] =
+    val banks = matching(catalog, ready, guest, site)
+    banks.filter(stocked(ready, _)) match
+      case Vector() => Vector.empty
+      case Vector(only) => Vector(gain(guest, _ => Some(only)))
+      case _ => Vector(
+        Decide(decisionId, guest, DecisionQuery.ChooseOne(
+          banks.map(option(ready, _)), heading = Some(heading))),
+        gain(guest, chosen))

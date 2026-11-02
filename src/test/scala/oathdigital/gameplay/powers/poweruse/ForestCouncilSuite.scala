@@ -33,7 +33,7 @@ class ForestCouncilSuite extends munit.FunSuite:
   private val wrestlers = WrestlersCard.id
   private val errandBoy = ErrandBoyCard.id
   private val errandBoyRef = DecisionOptionRef.Denizen(errandBoy)
-  private val power = ForestCouncil.forCatalog(catalog)
+  private val power = ForestCouncil
   private val source = PowerSourceRef.Card(council)
 
   /** p1's Act at Ancient City with 4 favor and 7 Supply, beside Errand Boy

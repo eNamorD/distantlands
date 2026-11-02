@@ -37,7 +37,7 @@ final case class RelicThief private (catalog: ExecutableCatalog)
     extends PaidAction(RelicThiefCard.power):
   import RelicThief._
 
-  private val lostTongue = LostTongue.forCatalog(catalog)
+  private val lostTongue = LostTongue
 
   override def noteKeys: Vector[NoteKey] = RelicThief.noteKeys
   override def narratedDecisions: Set[String] = Set(decisionId)
@@ -59,7 +59,7 @@ final case class RelicThief private (catalog: ExecutableCatalog)
     PowerAccess.pawnSite(ready, actor).toVector.flatMap(site => for
       other <- ready.game.current.players
       if other.player != actor && other.pawnSite.contains(site) &&
-        !lostTongue.protects(ready, actor, other.player)
+        !lostTongue.protects(catalog, ready, actor, other.player)
       relic <- other.relics.collect {
         case RelicState(id, Orientation.FaceUp, _) => id }
     yield Target(other.player, relic))

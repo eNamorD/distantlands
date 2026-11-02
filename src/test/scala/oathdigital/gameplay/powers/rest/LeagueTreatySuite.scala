@@ -8,7 +8,6 @@ import oathdigital.gameplay.powers.setup.HallOfDebateCard
 import oathdigital.gameplay.powers.whenplayed.BanditChiefCard
 import oathdigital.model.OathState.Ready
 import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.model._
 import oathdigital.testkit.{ActPowerHarness, Outcomes, PowerRules}
@@ -47,7 +46,7 @@ class LeagueTreatySuite extends munit.FunSuite:
     assertNotEquals(next, resting)
     walkerParked.assertMenuParked(state, PhaseMenu.Menu.Wake, next)
 
-  private val power = LeagueTreatyContribution.forCatalog(catalog)
+  private val power = LeagueTreatyContribution
 
   private def said(events: Vector[OathEvent]): Vector[NoteText.Said] =
     NoteText.said(power.id, power.noteKeys, events)

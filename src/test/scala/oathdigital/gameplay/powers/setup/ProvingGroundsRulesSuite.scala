@@ -50,7 +50,7 @@ class ProvingGroundsRulesSuite extends munit.FunSuite:
 
   private val proving = ProvingGrounds
 
-  private val empty = EmptyGrounds.forCatalog(catalog)
+  private val empty = EmptyGrounds
 
   test("Proving Grounds gives the placing player three warbands"):
     val staged = stagedAt(EdificeSide.Intact)

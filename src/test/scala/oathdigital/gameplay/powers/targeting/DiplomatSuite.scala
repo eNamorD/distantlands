@@ -91,7 +91,7 @@ class DiplomatSuite extends munit.FunSuite:
 
   test("a Campaign already under way is never refused by the start rule"):
     val b = rivalRulesOriginWithDiplomat
-    val power = Diplomat.forCatalog(catalog)
+    val power = Diplomat
     val restriction = as[Restriction](
       power.contributions(PowerWindow.CampaignActionEligibility).head)
     def ctx(state: ReadyGame) = PowerCtx(catalog, state, b.actor, power.source,

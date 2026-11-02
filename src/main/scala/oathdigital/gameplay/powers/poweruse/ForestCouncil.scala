@@ -28,62 +28,10 @@ object ForestCouncilCard extends Denizen(DenizenId("194"), "Forest Council", Sui
   * outside a Campaign. One grant, under the card's use key, covers both.
   * It writes no line.
   */
-final case class ForestCouncil private (catalog: ExecutableCatalog)
-    extends ContributingPower with PowerUseRestriction:
-  import ForestCouncil._
-
-  def id: PowerId = ForestCouncil.id
-  def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
-  def contributions: Map[PowerWindow, Vector[Contribution]] = Map.empty
-  override def noteKeys: Vector[NoteKey] = ForestCouncil.noteKeys
-  override def powerUseRestrictions: Vector[PowerUseRestriction] =
-    Vector(this)
-  override def operationRestrictions(catalog: ExecutableCatalog)
-      : Vector[OperationRestriction] =
-    Vector(placing)
-  override def waiver: Option[Waiver] =
-    Some(RulerBans.waiver(ForestCouncilCard.id, useAsked))
-
-  private def beast(ready: ReadyGame, card: CardId): Boolean =
-    EffectiveSuit.of(catalog, ready, card).contains(Suit.Beast)
-
-  private def covers(player: PlayerId, card: CardId): ConsentKey =
-    ConsentKey(id, player, PowerUseRules.useKey, PowerUseRules.cardRef(card))
-
-  /** The plain and asked reasons for `use`: the use's own when it is
-    * non-persistent, the placing ones when its cost places now. */
-  private def reasons(ready: ReadyGame, use: PowerUse)
-      : Option[(NoteKey, NoteKey)] =
-    if !use.persistent then Some(usePlain -> useAsked)
-    else Placements.byUse(ready, use).map(_ => placingPlain -> placingAsked)
-
-  def refusal(catalog: ExecutableCatalog, ready: ReadyGame, use: PowerUse)
-      : Option[PowerUseRefusal] =
-    for
-      ruler <- RulerBans.ruler(ready, ForestCouncilCard.id)
-      if RulerBans.enemy(ruler, use.user)
-      card <- use.card
-      if beast(ready, card)
-      keys <- reasons(ready, use)
-    yield RulerBans.refusal(id, ForestCouncilCard.id, ruler, use.user,
-      covers(use.user, card), keys._1, keys._2, "forest-council")
-
-  private object placing extends OperationRestriction:
-    def reason(ready: ReadyGame, operation: CoreOperation)
-        : Option[OperationReason] =
-      for
-        placed <- Placements.onto(ready, operation)
-        if beast(ready, placed._2)
-        ruler <- RulerBans.ruler(ready, ForestCouncilCard.id)
-        if RulerBans.enemy(ruler, placed._1)
-      yield RulerBans.reason(id, ForestCouncilCard.id, ruler, placed._1,
-        covers(placed._1, placed._2), placingPlain, placingAsked,
-        "forest-council-placing")
-
-object ForestCouncil:
+case object ForestCouncil extends ContributingPower with PowerUseRestriction:
   val id: PowerId = ForestCouncilCard.power.id
   private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
+  override def noteKeys: Vector[NoteKey] = notes.declared
   /** "Cannot use non-persistent powers of Beast cards." */
   val usePlain: NoteKey = notes.key("no-beast-powers", Vector(NotePart.Text(
     "Cannot use non-persistent powers of Beast cards.")))
@@ -102,5 +50,49 @@ object ForestCouncil:
   /** "{card} stays deactivated." (automatic power consent design). */
   val staysDeactivated: NoteKey = notes.borrow(PowerUseStep.staysDeactivated)
 
-  def forCatalog(catalog: ExecutableCatalog): ForestCouncil =
-    new ForestCouncil(catalog)
+  def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
+  def contributions: Map[PowerWindow, Vector[Contribution]] = Map.empty
+  override def powerUseRestrictions: Vector[PowerUseRestriction] =
+    Vector(this)
+  override def operationRestrictions(catalog: ExecutableCatalog)
+      : Vector[OperationRestriction] =
+    Vector(placing(catalog))
+  override def waiver: Option[Waiver] =
+    Some(RulerBans.waiver(ForestCouncilCard.id, useAsked))
+
+  private def beast(catalog: ExecutableCatalog,
+      ready: ReadyGame, card: CardId): Boolean =
+    EffectiveSuit.of(catalog, ready, card).contains(Suit.Beast)
+
+  private def covers(player: PlayerId, card: CardId): ConsentKey =
+    ConsentKey(id, player, PowerUseRules.useKey, PowerUseRules.cardRef(card))
+
+  /** The plain and asked reasons for `use`: the use's own when it is
+    * non-persistent, the placing ones when its cost places now. */
+  private def reasons(ready: ReadyGame, use: PowerUse)
+      : Option[(NoteKey, NoteKey)] =
+    if !use.persistent then Some(usePlain -> useAsked)
+    else Placements.byUse(ready, use).map(_ => placingPlain -> placingAsked)
+
+  def refusal(catalog: ExecutableCatalog, ready: ReadyGame, use: PowerUse)
+      : Option[PowerUseRefusal] =
+    for
+      ruler <- RulerBans.ruler(ready, ForestCouncilCard.id)
+      if RulerBans.enemy(ruler, use.user)
+      card <- use.card
+      if beast(catalog, ready, card)
+      keys <- reasons(ready, use)
+    yield RulerBans.refusal(id, ForestCouncilCard.id, ruler, use.user,
+      covers(use.user, card), keys._1, keys._2, "forest-council")
+
+  /** The placing ban, reading suits from `catalog`. */
+  private def placing(catalog: ExecutableCatalog): OperationRestriction =
+    (ready, operation) =>
+      for
+        placed <- Placements.onto(ready, operation)
+        if beast(catalog, ready, placed._2)
+        ruler <- RulerBans.ruler(ready, ForestCouncilCard.id)
+        if RulerBans.enemy(ruler, placed._1)
+      yield RulerBans.reason(id, ForestCouncilCard.id, ruler, placed._1,
+        covers(placed._1, placed._2), placingPlain, placingAsked,
+        "forest-council-placing")

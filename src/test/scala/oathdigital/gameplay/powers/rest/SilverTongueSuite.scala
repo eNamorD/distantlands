@@ -34,7 +34,7 @@ class SilverTongueSuite extends munit.FunSuite:
       : Vector[DecisionOption] =
     val tree = accepted(CardPlayProcedure.build(catalog, ready, actor, played,
       CardPlayProcedure.Origin.TemporaryHand))
-    val powers = WalkerPowers(Vector(SilverTongue.forCatalog(catalog)))
+    val powers = WalkerPowers(Vector(SilverTongue))
     val parked = as[WalkerOutcome.Parked](accepted(
       ProcedureWalker.advance(ready, tree, None, powers))).tree
     as[DecisionQuery.ChooseOne](present(
@@ -133,6 +133,6 @@ class SilverTongueSuite extends munit.FunSuite:
       Set(Suit.Arcane))
     val used = accepted(
       rules.startWalker(Ready(ready), use, actor, Vector(source)))
-    assertEquals(NoteText.said(SilverTongue.forCatalog(catalog), used.events),
+    assertEquals(NoteText.said(SilverTongue, used.events),
       Vector(NoteText.Said(NoteKey.Used,
         s"${actor.value} took 1 favor from the Arcane bank.", covers = true)))

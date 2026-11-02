@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.rest
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower,
+  SiteOnly}
 import oathdigital.gameplay.powers.CatalogResolution
 import oathdigital.gameplay.powerresolver._
 import oathdigital.model._
@@ -26,19 +27,47 @@ object LeagueTreatyCard extends Denizen(DenizenId("237"), "League Treaty", Suit.
   * moves. The line follows the moves, so it never comes before either
   * decision.
   */
-final case class LeagueTreatyContribution private (catalog: ExecutableCatalog)
-    extends ContributingPower:
-  val cardId: DenizenId = LeagueTreatyCard.id
-  import LeagueTreatyContribution._
+case object LeagueTreatyContribution extends ContributingPower:
+  val id: PowerId = LeagueTreatyCard.power.id
+  private val Decline = "decline"
 
-  def id: PowerId = LeagueTreatyContribution.id
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "{Blue} sent {3 favor} to {the Nomad bank}." */
+  val sent: NoteKey = notes.key("sent", Vector(NotePart.Arg(0),
+    NotePart.Text(" sent "), NotePart.Arg(1), NotePart.Text(" to "),
+    NotePart.Arg(2), NotePart.Text(".")))
+
+  private def stem(ready: ReadyGame, rester: PlayerId, site: SiteId,
+      card: DenizenId) = s"rest-${ready.game.current.tracks.round}-" +
+    s"${rester.value}-${id.value}-${site.value}-${card.value}"
+  def destinationDecisionId(ready: ReadyGame, rester: PlayerId, site: SiteId,
+      card: DenizenId): String = stem(ready, rester, site, card) + "-destination"
+  def distributionDecisionId(ready: ReadyGame, rester: PlayerId, site: SiteId,
+      card: DenizenId): String = stem(ready, rester, site, card) + "-distribution"
+
+  private def chosenBank(pending: PendingTree, decision: String): Option[Suit] =
+    pending.answered.collectFirst:
+      case Answered(`decision`, DecisionAnswer.ChooseOneAnswer(
+        DecisionOptionRef.FavorBank(suit)), _) => suit
+
+  private def amounts(pending: PendingTree, decision: String)
+      : Either[OathViolation, Map[Suit, Int]] = pending.answered.collectFirst {
+    case Answered(`decision`, DecisionAnswer.DistributeAnswer(rows), _) =>
+      rows.collect { case DistributeAmount(DecisionOptionRef.FavorBank(suit), n) =>
+        suit -> n }.toMap
+  }.toRight(OathViolation.InvalidEventOrder(
+    s"no League Treaty distribution answer is recorded for $decision"))
+
+  val cardId: DenizenId = LeagueTreatyCard.id
+
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
   override lazy val resolution: PowerResolution =
-    CatalogResolution.of(catalog, id)
-  override def noteKeys: Vector[NoteKey] = LeagueTreatyContribution.noteKeys
+    CatalogResolution.of(LeagueTreatyCard.power)
   def contributions: Map[PowerWindow, Vector[Contribution]] =
     Map(PowerWindow.RestReturnFavor -> Vector(Transform((ctx, ops) =>
-      treaty(ctx.state).fold(ops)(inserted(ctx.state, ctx.actor, _) ++ ops))))
+      treaty(ctx.catalog, ctx.state).fold(ops)(
+        inserted(ctx.state, ctx.actor, _) ++ ops))))
 
   /** One region card holding favor, in map site order then site card order. */
   private final case class Holding(card: CardId, suit: Suit, favor: Int)
@@ -48,7 +77,8 @@ final case class LeagueTreatyContribution private (catalog: ExecutableCatalog)
     def suits: Vector[Suit] = Suit.all.filter(favorOf(_) > 0)
     def total: Int = holdings.map(_.favor).sum
 
-  private def treaty(ready: ReadyGame): Option[Treaty] =
+  private def treaty(catalog: ExecutableCatalog,
+      ready: ReadyGame): Option[Treaty] =
     val current = ready.game.current
     for
       site <- current.map.inPlay.find(id => current.map.sites.get(id).exists(
@@ -134,38 +164,3 @@ final case class LeagueTreatyContribution private (catalog: ExecutableCatalog)
           PositionedLocation(Location.FavorBank(bank))))
       }._2
     }
-
-object LeagueTreatyContribution:
-  val id: PowerId = LeagueTreatyCard.power.id
-  private val Decline = "decline"
-
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "{Blue} sent {3 favor} to {the Nomad bank}." */
-  val sent: NoteKey = notes.key("sent", Vector(NotePart.Arg(0),
-    NotePart.Text(" sent "), NotePart.Arg(1), NotePart.Text(" to "),
-    NotePart.Arg(2), NotePart.Text(".")))
-
-  def forCatalog(catalog: ExecutableCatalog): LeagueTreatyContribution =
-    new LeagueTreatyContribution(catalog)
-
-  private def stem(ready: ReadyGame, rester: PlayerId, site: SiteId,
-      card: DenizenId) = s"rest-${ready.game.current.tracks.round}-" +
-    s"${rester.value}-${id.value}-${site.value}-${card.value}"
-  def destinationDecisionId(ready: ReadyGame, rester: PlayerId, site: SiteId,
-      card: DenizenId): String = stem(ready, rester, site, card) + "-destination"
-  def distributionDecisionId(ready: ReadyGame, rester: PlayerId, site: SiteId,
-      card: DenizenId): String = stem(ready, rester, site, card) + "-distribution"
-
-  private def chosenBank(pending: PendingTree, decision: String): Option[Suit] =
-    pending.answered.collectFirst:
-      case Answered(`decision`, DecisionAnswer.ChooseOneAnswer(
-        DecisionOptionRef.FavorBank(suit)), _) => suit
-
-  private def amounts(pending: PendingTree, decision: String)
-      : Either[OathViolation, Map[Suit, Int]] = pending.answered.collectFirst {
-    case Answered(`decision`, DecisionAnswer.DistributeAnswer(rows), _) =>
-      rows.collect { case DistributeAmount(DecisionOptionRef.FavorBank(suit), n) =>
-        suit -> n }.toMap
-  }.toRight(OathViolation.InvalidEventOrder(
-    s"no League Treaty distribution answer is recorded for $decision"))

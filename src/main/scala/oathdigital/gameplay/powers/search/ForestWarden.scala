@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.search
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, PrintedPower}
 import oathdigital.gameplay.EffectiveSuit
 import oathdigital.gameplay.actions.{CardPlayRules, DiscardPermission,
   SiteRemoval}
@@ -31,10 +31,10 @@ object ForestWardenCard extends Denizen(DenizenId("218"), "Forest Warden",
   * Its line, "May bury a card at {site} first.", travels in the
   * permission, and card play writes it for the bury it allowed.
   */
-final case class ForestWarden private (catalog: ExecutableCatalog)
-    extends SelectedModifier:
+case object ForestWarden extends SelectedModifier:
+  val id: PowerId = ForestWardenCard.power.id
+
   val card: Denizen = ForestWardenCard
-  def id: PowerId = ForestWarden.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Search)
   private val notes = NoteSet(id)
   notes.include(CardPlayRules.notes)
@@ -44,14 +44,8 @@ final case class ForestWarden private (catalog: ExecutableCatalog)
     PowerWindow.SearchPlayAdviser -> Vector(Transform((ctx, children) =>
       ctx.operation match
         case tree: CardPlayProcedure.PlacementTree
-            if EffectiveSuit.of(catalog, ctx.state, tree.card)
+            if EffectiveSuit.of(ctx.catalog, ctx.state, tree.card)
               .contains(Suit.Beast) =>
           tree.adjust(children)(_.permitSiteDiscard(DiscardPermission.lined(
             id, PowerSourceRef.Card(cardId), SiteRemoval.Bury)))
         case _ => children)))
-
-object ForestWarden:
-  val id: PowerId = ForestWardenCard.power.id
-
-  def forCatalog(catalog: ExecutableCatalog): ForestWarden =
-    new ForestWarden(catalog)

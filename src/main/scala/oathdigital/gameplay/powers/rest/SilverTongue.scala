@@ -20,14 +20,18 @@ object SilverTongueCard extends Denizen(DenizenId("92"), "Silver Tongue", Suit.D
   * adviser limit is a [[HolderAdviserLimit]], a registered transform at
   * `SearchPlayAdviser`, which Insomnia shares.
   */
-final case class SilverTongue private (catalog: ExecutableCatalog)
-    extends PhasePower with ContributingPower:
+case object SilverTongue extends PhasePower with ContributingPower:
+  val id: PowerId = SilverTongueCard.power.id
+  /** How many advisers the holder may have, in either orientation. */
+  val HolderLimit: Int = 2
+
+  def choiceDecisionId(ready: ReadyGame, player: PlayerId): String =
+    s"silver-tongue-${ready.game.current.tracks.round}-${player.value}"
+
   val cardId: DenizenId = SilverTongueCard.id
-  import SilverTongue._
 
   private val limit = HolderAdviserLimit(cardId, HolderLimit)
 
-  def id: PowerId = SilverTongue.id
   def timing: PowerTiming = PowerTiming.Rest
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
   private val notes = NoteSet(id)
@@ -36,13 +40,14 @@ final case class SilverTongue private (catalog: ExecutableCatalog)
 
   def usable(catalog: ExecutableCatalog, ready: ReadyGame,
       player: PlayerId, source: DecisionOptionRef): Boolean =
-    stocked(ready, player).nonEmpty
+    stocked(catalog, ready, player).nonEmpty
 
   def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
       source: DecisionOptionRef)
       : Either[OathViolation, Operation] =
     val choice = choiceDecisionId(ready, player)
-    Right(Sequence(Vector(Branch((state, _) => stocked(state, player) match {
+    Right(Sequence(Vector(Branch((state, _) =>
+      stocked(catalog, state, player) match {
       case Vector(only) => Vector(take(player, _ => Right(only)))
       case several => Vector(
         Decide(choice, player, DecisionQuery.ChooseOne(several.map(suit =>
@@ -68,7 +73,8 @@ final case class SilverTongue private (catalog: ExecutableCatalog)
   /** Suits of faceup denizens and edifices at the player's pawn site whose
     * bank holds favor, in suit order.
     */
-  private def stocked(ready: ReadyGame, player: PlayerId): Vector[Suit] =
+  private def stocked(catalog: ExecutableCatalog,
+      ready: ReadyGame, player: PlayerId): Vector[Suit] =
     val current = ready.game.current
     val cards = current.pawnSite(player)
       .flatMap(current.map.sites.get).toVector.flatMap(_.denizens.collect {
@@ -83,13 +89,3 @@ final case class SilverTongue private (catalog: ExecutableCatalog)
     BuildOps((_, pending) => suit(pending).map(bank => Vector(Move(
       Piece.Favor(1), PositionedLocation(Location.FavorBank(bank)),
       PositionedLocation(Location.PlayArea(player))))))
-
-object SilverTongue:
-  val id: PowerId = SilverTongueCard.power.id
-  /** How many advisers the holder may have, in either orientation. */
-  val HolderLimit: Int = 2
-  def forCatalog(catalog: ExecutableCatalog): SilverTongue =
-    new SilverTongue(catalog)
-
-  def choiceDecisionId(ready: ReadyGame, player: PlayerId): String =
-    s"silver-tongue-${ready.game.current.tracks.round}-${player.value}"
