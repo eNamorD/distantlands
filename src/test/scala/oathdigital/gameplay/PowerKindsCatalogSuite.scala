@@ -44,8 +44,8 @@ class PowerKindsCatalogSuite extends munit.FunSuite:
   test("Dazzle is a When Played power whatever its flag: it must fire on the " +
       "play, so it does not derive its resolution from the flag"):
     assertEquals(flag("denizen.dazzle"), Some(false))
-    assertEquals(oathdigital.gameplay.powers.whenplayed.Dazzle
-      .forCatalog(catalog).resolution, PowerResolution.Automatic)
+    assertEquals(oathdigital.gameplay.powers.whenplayed.Dazzle.resolution,
+      PowerResolution.Automatic)
 
   test("Vow of Obedience's rule is automatic whatever its flag: the flag is " +
       "false because of its REST"):

@@ -12,7 +12,7 @@ import oathdigital.testkit.Unwrap.{as, rejected}
 class TwinBrotherSuite extends munit.FunSuite:
   import WhenPlayedHarness._
 
-  private val power = registered[TwinBrother]
+  private val power = registered[TwinBrother.type]
   private val card = power.cardId
   private val played = hook(card)
   // Horse Archers and Faithful Friend are Nomad, Faithful Friend locked;

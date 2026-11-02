@@ -13,7 +13,7 @@ import oathdigital.testkit.Table.{p1, p2}
 class AnimalHostSuite extends munit.FunSuite:
   import WhenPlayedHarness._
 
-  private val power = registered[AnimalHost]
+  private val power = registered[AnimalHost.type]
   private val host = power.cardId
 
   private def gained(n: Int): NoteText.Said = NoteText.Said("gained",

@@ -8,7 +8,6 @@ import oathdigital.gameplay.powers.action.HomesteadersCard
 import oathdigital.gameplay.powers.campaign.WrestlersCard
 import oathdigital.gameplay.powers.search.{ErrandBoyCard, LandWardenCard}
 import oathdigital.gameplay.powers.setup.{ProvingGroundsCard, SchoolOfVinesCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.model._
 import oathdigital.testkit.{Look, Outcomes}
 import oathdigital.testkit.Table.{p1, p2}
@@ -17,7 +16,7 @@ import oathdigital.testkit.Unwrap.rejected
 class DazzleSuite extends munit.FunSuite:
   import WhenPlayedHarness._
 
-  private val power = Dazzle.forCatalog(catalog)
+  private val power = Dazzle
   private val dazzle = power.cardId
   private val homesteaders = HomesteadersCard.id
   private val wrestlers = WrestlersCard.id

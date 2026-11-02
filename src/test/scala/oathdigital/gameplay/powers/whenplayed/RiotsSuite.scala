@@ -13,7 +13,7 @@ import oathdigital.testkit.Table.{p1, p2}
 class RiotsSuite extends munit.FunSuite:
   import WhenPlayedHarness._
 
-  private val power = registered[Riots]
+  private val power = registered[Riots.type]
   private val riots = power.cardId
   private val homesteaders = HomesteadersCard.id
   private val landWarden = LandWardenCard.id

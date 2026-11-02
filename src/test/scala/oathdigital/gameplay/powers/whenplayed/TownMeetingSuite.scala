@@ -11,7 +11,7 @@ import oathdigital.testkit.Table.p1
 class TownMeetingSuite extends munit.FunSuite:
   import WhenPlayedHarness._
 
-  private val power = registered[TownMeeting]
+  private val power = registered[TownMeeting.type]
   private val meeting = power.cardId
   private val played = hook(meeting)
 

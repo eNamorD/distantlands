@@ -11,7 +11,7 @@ import oathdigital.testkit.Table.p1
 class FabledFeastSuite extends munit.FunSuite:
   import WhenPlayedHarness._
 
-  private val power = registered[FabledFeast]
+  private val power = registered[FabledFeast.type]
   private val feast = power.cardId
   private val played = hook(feast)
 

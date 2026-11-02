@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.cardplay
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
-  PrintedPower}
+import oathdigital.catalog.{AdviserOnly, Denizen, PrintedPower}
 import oathdigital.gameplay.actions.CardPlayRules
 import oathdigital.model._
 
@@ -24,18 +23,7 @@ object FamilyWagonCard extends Denizen(DenizenId("168"), "Family Wagon", Suit.No
   *  - `AdviserLimit.of` gives the holder no limit, before the lowering
   *    powers apply (`lifts`).
   */
-final case class FamilyWagon private (catalog: ExecutableCatalog)
-    extends SuitOnlyAdvisers:
-  def id: PowerId = FamilyWagon.id
-  def cardId: DenizenId = FamilyWagon.cardId
-  def suit: Suit = Suit.Nomad
-  def buryWarning: String = FamilyWagon.buryWarning
-  def ruleName: String = FamilyWagonCard.name
-  def pledgeDecisionId: String = FamilyWagon.pledgeDecisionId
-  override protected def playRules(rules: CardPlayRules): CardPlayRules =
-    rules.liftWhileFaceUp(cardId)
-
-object FamilyWagon:
+case object FamilyWagon extends SuitOnlyAdvisers:
   val id: PowerId = FamilyWagonCard.power.id
   val cardId: DenizenId = FamilyWagonCard.id
   /** The note on a card play Family Wagon will bury. */
@@ -43,9 +31,11 @@ object FamilyWagon:
   /** The question that orders Pledge to Discord's bury. */
   val pledgeDecisionId: String = "power.family-wagon.pledge"
 
-  def forCatalog(catalog: ExecutableCatalog): FamilyWagon =
-    new FamilyWagon(catalog)
-
   /** Whether `player` has Family Wagon faceup, and so no adviser limit. */
   def lifts(ready: ReadyGame, player: PlayerId): Boolean =
     SuitOnlyAdvisers.hasFaceUp(ready, player, cardId)
+
+  def suit: Suit = Suit.Nomad
+  def ruleName: String = FamilyWagonCard.name
+  override protected def playRules(rules: CardPlayRules): CardPlayRules =
+    rules.liftWhileFaceUp(cardId)

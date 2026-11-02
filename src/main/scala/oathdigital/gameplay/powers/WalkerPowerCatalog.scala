@@ -99,15 +99,15 @@ object WalkerPowerCatalog:
       Vector(Assassin.forCatalog(catalog)) ++
       Vector(LostTapestry) ++
       Vector(PiedPiper) ++
-      Vector(FamilyWagon.forCatalog(catalog)) ++
-      Vector(VowOfUnionAdvisers.forCatalog(catalog)) ++
+      Vector(FamilyWagon) ++
+      Vector(VowOfUnionAdvisers) ++
       Vector(ASmallFavor) ++
       Vector(FaithfulFriend) ++
       Vector(Garrison) ++
       Vector(FamilyHeirloom) ++
       Vector(ShiftingFog) ++
-      Vector(TwinBrother.forCatalog(catalog)) ++
-      WhenPlayedPowers.forCatalog(catalog) ++
+      Vector(TwinBrother) ++
+      WhenPlayedPowers.all ++
       Vector(ChaosCult) ++
       ActionModifiers.forCatalog(catalog) ++
       TargetProtections.all ++
@@ -120,9 +120,9 @@ object WalkerPowerCatalog:
       SimplePlans.forCatalog(catalog) ++
       PlanRestrictions.forCatalog(catalog) ++
       PlanRewrites.forCatalog(catalog) ++
-      CardPlayTriggers.forCatalog(catalog) ++
+      CardPlayTriggers.all ++
       BannerFacePowers.contributions ++
-      Vector(Dazzle.forCatalog(catalog), GreatMarket,
+      Vector(Dazzle, GreatMarket,
         BanditMarket, GreatForge,
         BrokenForge, ProvingGrounds,
         EmptyGrounds, HallOfMockery, LostGuardians,

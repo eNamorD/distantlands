@@ -1,6 +1,5 @@
 package oathdigital.gameplay.powers.cardplay
 
-import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.powerresolver.ContributingPower
 
 /** The powers that act when a card is played, registered together: the
@@ -8,7 +7,7 @@ import oathdigital.gameplay.powerresolver.ContributingPower
   * names its card, so all are always present.
   */
 object CardPlayTriggers:
-  def forCatalog(catalog: ExecutableCatalog): Vector[ContributingPower] =
-    Vector[ContributingPower](WildCry.forCatalog(catalog), WelcomingParty,
-      Gossip, BookBinders, SaddleMakers.forCatalog(catalog), VowOfObedience,
+  val all: Vector[ContributingPower] =
+    Vector[ContributingPower](WildCry, WelcomingParty,
+      Gossip, BookBinders, SaddleMakers, VowOfObedience,
       SecretPolice, SacredGround, VowOfWisdom)

@@ -23,7 +23,7 @@ class VowOfUnionAdvisersSuite extends munit.FunSuite:
 
   private val actor = Table.p1
   private val vow = VowOfUnionCard.id
-  private val power = VowOfUnionAdvisers.forCatalog(catalog)
+  private val power = VowOfUnionAdvisers
   // Beasts with no WHEN PLAYED.
   private val faeMerchant = FaeMerchantCard.id
   private val secondChance = SecondChanceCard.id

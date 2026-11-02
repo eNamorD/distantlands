@@ -30,11 +30,10 @@ final case class ForestHorn private (catalog: ExecutableCatalog)
       Region.all.map(region => DecisionOption.Button(button(region),
         region.toString)), heading = Some(heading))),
     Branch((live, pending) => chosen(pending).toVector.flatMap { region =>
-      val discard = new RegionDiscard(catalog, _ != Suit.Beast,
-        (_, _) => Some(region))
-      val found = discard.targets(live, player)
+      val discard = new RegionDiscard(_ != Suit.Beast, (_, _) => Some(region))
+      val found = discard.targets(catalog, live, player)
       Vector[Operation](
-        BuildOps((ready, _) => discard.discards(ready, player)),
+        BuildOps((ready, _) => discard.discards(catalog, ready, player)),
         Note(id, said(found), covers = true))
     }))))
 

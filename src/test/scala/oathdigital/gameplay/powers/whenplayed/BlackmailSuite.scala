@@ -13,7 +13,7 @@ import oathdigital.testkit.Table.{p1, p2, p3}
 class BlackmailSuite extends munit.FunSuite:
   import WhenPlayedHarness._
 
-  private val power = registered[Blackmail]
+  private val power = registered[Blackmail.type]
   private val blackmail = power.cardId
   private val played = hook(blackmail)
   private val horn = CrackedHornCard.id

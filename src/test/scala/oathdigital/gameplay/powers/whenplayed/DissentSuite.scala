@@ -13,7 +13,7 @@ import oathdigital.testkit.Table.{p1, p2, p3}
 class DissentSuite extends munit.FunSuite:
   import WhenPlayedHarness._
 
-  private val power = registered[Dissent]
+  private val power = registered[Dissent.type]
   private val dissent = power.cardId
 
   private def placed(player: PlayerId, n: Int): NoteText.Said =

@@ -12,7 +12,7 @@ import oathdigital.testkit.Table.{p1, p2, p3}
 class WizardsConclaveSuite extends munit.FunSuite:
   import WhenPlayedHarness._
 
-  private val power = registered[WizardsConclave]
+  private val power = registered[WizardsConclave.type]
   private val conclave = power.cardId
   private val played = hook(conclave)
 

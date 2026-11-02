@@ -26,7 +26,7 @@ class FamilyWagonSuite extends munit.FunSuite:
 
   private val actor = Table.p1
   private val wagon = FamilyWagonCard.id
-  private val power = FamilyWagon.forCatalog(catalog)
+  private val power = FamilyWagon
   // Nomads.
   private val elders = EldersCard.id
   private val rainBoots = RainBootsCard.id

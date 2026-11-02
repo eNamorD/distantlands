@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.cardplay
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, PrintedPower}
 import oathdigital.gameplay.EffectiveSuit
 import oathdigital.gameplay.powerresolver.{Contribution, PowerCtx, Transform}
 import oathdigital.gameplay.powers.{PlayerFacts, SelectedModifier}
@@ -22,10 +22,12 @@ object WildCryCard extends Denizen(DenizenId("189"), "Wild Cry", Suit.Beast):
   * resume. Gaining warbands is best-effort: an empty warband bank gives what
   * it holds.
   */
-final case class WildCry private (catalog: ExecutableCatalog)
-    extends SelectedModifier:
+case object WildCry extends SelectedModifier:
+  val id: PowerId = WildCryCard.power.id
+  val Supply: Int = 1
+  val Warbands: Int = 2
+
   val card: Denizen = WildCryCard
-  def id: PowerId = WildCry.id
   def actions: Set[MajorActionType] = Set(MajorActionType.Search)
 
   def effects: Map[PowerWindow, Vector[Contribution]] = Map(
@@ -35,18 +37,10 @@ final case class WildCry private (catalog: ExecutableCatalog)
   override def appliesAt(ctx: PowerCtx): Boolean = ctx.operation match
     case CardPlayedFaceup(card: DenizenId, _) =>
       card != cardId &&
-        EffectiveSuit.of(catalog, ctx.state, card).contains(Suit.Beast)
+        EffectiveSuit.of(ctx.catalog, ctx.state, card).contains(Suit.Beast)
     case _ => false
 
   private def effects(actor: PlayerId): Vector[Operation] = Vector(
     GainSupply(actor, WildCry.Supply),
     BuildOps((ready, _) => PlayerFacts.forceKind(ready, actor).map(kind =>
       Vector(Gain.Warbands(actor, kind, WildCry.Warbands)))))
-
-object WildCry:
-  val id: PowerId = WildCryCard.power.id
-  val Supply: Int = 1
-  val Warbands: Int = 2
-
-  def forCatalog(catalog: ExecutableCatalog): WildCry =
-    new WildCry(catalog)

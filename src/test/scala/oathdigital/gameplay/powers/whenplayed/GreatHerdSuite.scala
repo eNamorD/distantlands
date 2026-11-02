@@ -10,7 +10,7 @@ import oathdigital.testkit.Unwrap.as
 class GreatHerdSuite extends munit.FunSuite:
   import WhenPlayedHarness._
 
-  private val power = registered[GreatHerd]
+  private val power = registered[GreatHerd.type]
   private val herd = power.cardId
   private val played = hookAt(herd, homeSite)
   private val wildMounts = WildMountsCard.id

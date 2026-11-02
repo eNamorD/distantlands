@@ -133,7 +133,7 @@ class StillBoilingLakeSuite extends munit.FunSuite:
     assert(!LockedCards.showing(ready, lake))
     assert(LockedCards.showing(lakeAtHome(EdificeSide.Intact), lake))
     val done = Outcomes.finished(WhenPlayedHarness.play(ready,
-      WhenPlayedHarness.registered[Riots], RiotsCard.id))
+      WhenPlayedHarness.registered[Riots.type], RiotsCard.id))
     val after = done.treeless
     assertEquals(Look(after).cardsAt(home), Vector.empty)
     assert(after.game.current.commonCards.edificeDeck.contains(lake))

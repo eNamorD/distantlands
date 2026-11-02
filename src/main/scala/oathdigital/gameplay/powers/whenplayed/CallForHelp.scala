@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.whenplayed
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog, Locked,
-  PrintedPower}
+import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
+  Locked, PrintedPower}
 import oathdigital.gameplay.{NoteSupport, PowerAccess}
 import oathdigital.gameplay.actions.CardPlay
 import oathdigital.gameplay.powerresolver.PowerCtx
@@ -34,13 +34,31 @@ object CallForHelpCard extends Denizen(DenizenId("246"), "Call for Help", Suit.N
   * One line per draw covers that draw's Revealed lines. With nothing drawn,
   * one line says so.
   */
-final case class CallForHelp private (catalog: ExecutableCatalog)
-    extends WhenPlayedPower:
-  val cardId: DenizenId = CallForHelpCard.id
-  import CallForHelp._
-  def id: PowerId = CallForHelp.id
+case object CallForHelp extends WhenPlayedPower:
+  val id: PowerId = CallForHelpCard.power.id
+  val amountDecisionId: String = "cardplay.call-for-help.amount"
+  val continueDecisionId: String = "cardplay.call-for-help.continue"
+  /** The most cards drawn in all. */
+  val Most: Int = 6
+  /** The warbands each Nomad card drawn gives. */
+  val PerNomad: Int = 2
+  val keep: DecisionOptionRef.Button = DecisionOptionRef.Button("keep-drawing")
+  val stop: DecisionOptionRef.Button = DecisionOptionRef.Button("stop")
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "Revealed and discarded {cards}, and gained {n warbands}." */
+  val revealed: NoteKey = notes.key("revealed", Vector(
+    NotePart.Text("Revealed and discarded "), NotePart.Arg(0),
+    NotePart.Text(", and gained "), NotePart.Arg(1), NotePart.Text(".")))
+  /** "Revealed and discarded {cards}." */
+  val discarded: NoteKey = notes.key("discarded", Vector(
+    NotePart.Text("Revealed and discarded "), NotePart.Arg(0),
+    NotePart.Text(".")))
+  /** "Nothing was revealed." */
+  val none: NoteKey = notes.key("none", Vector(
+    NotePart.Text("Nothing was revealed.")))
 
-  override def noteKeys: Vector[NoteKey] = CallForHelp.noteKeys
+  val cardId: DenizenId = CallForHelpCard.id
 
   private def cardSource: PowerSourceRef = PowerSourceRef.Card(cardId)
 
@@ -49,7 +67,8 @@ final case class CallForHelp private (catalog: ExecutableCatalog)
       Repeat((_, pending) => drawing(pending.answered),
         Sequence(Vector[Operation](
           Branch((live, pending) => askAmount(live, ctx.actor, pending)),
-          BuildOps((live, pending) => Right(draw(live, ctx.actor, pending))),
+          BuildOps((live, pending) =>
+            Right(draw(ctx.catalog, live, ctx.actor, pending))),
           Note(id, drawnNote(_, ctx.actor), covers = true),
           Branch((live, pending) => askContinue(live, ctx.actor, pending))))),
       Note(id, nothingNote))
@@ -85,7 +104,8 @@ final case class CallForHelp private (catalog: ExecutableCatalog)
   /** The pass's cards off the top of the pile, top first, each moved to the
     * top of the next region's pile and revealed there, and the warbands
     * their Nomad cards give. Nothing for an amount of 0. */
-  private def draw(ready: ReadyGame, actor: PlayerId, pending: PendingTree)
+  private def draw(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId, pending: PendingTree)
       : Vector[CoreOperation] =
     amounts(pending.answered).lastOption.filter(_ > 0)
       .zip(home(ready, actor)).toVector.flatMap { (amount, region) =>
@@ -98,11 +118,12 @@ final case class CallForHelp private (catalog: ExecutableCatalog)
             PositionedLocation(Location.RegionalDiscard(next),
               StackPosition.Top)),
           Reveal(card, Location.RegionalDiscard(next)))) ++
-          gain(ready, actor, drawn)
+          gain(catalog, ready, actor, drawn)
       }
 
   /** 2 warbands per Nomad card drawn, up to the actor's bank. */
-  private def gain(ready: ReadyGame, actor: PlayerId,
+  private def gain(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId,
       drawn: Vector[WorldCardId]): Vector[CoreOperation] =
     val earned = PerNomad *
       drawn.count(card => catalog.suitOf(card).contains(Suit.Nomad))
@@ -141,30 +162,3 @@ final case class CallForHelp private (catalog: ExecutableCatalog)
   /** "Nothing was revealed." when no pass drew a card. */
   private def nothingNote(states: NoteStates): Option[LogNote] =
     Option.when(amounts(states.answered).sum == 0)(none(cardSource))
-
-object CallForHelp:
-  val id: PowerId = CallForHelpCard.power.id
-  val amountDecisionId: String = "cardplay.call-for-help.amount"
-  val continueDecisionId: String = "cardplay.call-for-help.continue"
-  /** The most cards drawn in all. */
-  val Most: Int = 6
-  /** The warbands each Nomad card drawn gives. */
-  val PerNomad: Int = 2
-  val keep: DecisionOptionRef.Button = DecisionOptionRef.Button("keep-drawing")
-  val stop: DecisionOptionRef.Button = DecisionOptionRef.Button("stop")
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "Revealed and discarded {cards}, and gained {n warbands}." */
-  val revealed: NoteKey = notes.key("revealed", Vector(
-    NotePart.Text("Revealed and discarded "), NotePart.Arg(0),
-    NotePart.Text(", and gained "), NotePart.Arg(1), NotePart.Text(".")))
-  /** "Revealed and discarded {cards}." */
-  val discarded: NoteKey = notes.key("discarded", Vector(
-    NotePart.Text("Revealed and discarded "), NotePart.Arg(0),
-    NotePart.Text(".")))
-  /** "Nothing was revealed." */
-  val none: NoteKey = notes.key("none", Vector(
-    NotePart.Text("Nothing was revealed.")))
-
-  def forCatalog(catalog: ExecutableCatalog): CallForHelp =
-    new CallForHelp(catalog)

@@ -25,28 +25,33 @@ object AnimalHostCard extends Denizen(DenizenId("190"), "Animal Host", Suit.Beas
   * effort, so it takes what the bank holds. A gain of 0 writes the `none`
   * line.
   */
-final case class AnimalHost private (catalog: ExecutableCatalog)
-    extends WhenPlayedPower:
-  val cardId: DenizenId = AnimalHostCard.id
-  import AnimalHost._
-  def id: PowerId = AnimalHost.id
+case object AnimalHost extends WhenPlayedPower:
+  val id: PowerId = AnimalHostCard.power.id
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "{Red} gained {n warbands}." */
+  val gained: NoteKey = NoteSupport.gainedKey(notes, "gained")
+  /** "{Red} gained no warbands." */
+  val none: NoteKey = notes.key("none", Vector(NotePart.Arg(0),
+    NotePart.Text(" gained no warbands.")))
 
-  override def noteKeys: Vector[NoteKey] = AnimalHost.noteKeys
+  val cardId: DenizenId = AnimalHostCard.id
 
   def effect(ctx: PowerCtx): Vector[Operation] =
-    Vector(BuildOps((ready, _) => gain(ready, ctx.actor)),
+    Vector(BuildOps((ready, _) => gain(ctx.catalog, ready, ctx.actor)),
       Note(id, gainedNote(_, ctx.actor)))
 
-  private def gain(ready: ReadyGame, actor: PlayerId)
+  private def gain(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId)
       : Either[OathViolation, Vector[CoreOperation]] =
-    val count = beasts(ready)
+    val count = beasts(catalog, ready)
     if count == 0 then Right(Vector.empty)
     else PlayerFacts.forceKind(ready, actor).map(kind =>
       Vector(Gain.Warbands(actor, kind, count)))
 
   /** The faceup Beast denizens and the Beast edifices at every site in
     * play. */
-  private def beasts(ready: ReadyGame): Int =
+  private def beasts(catalog: ExecutableCatalog, ready: ReadyGame): Int =
     val map = ready.game.current.map
     map.inPlay.flatMap(map.sites.get).flatMap(_.denizens).count {
       case DenizenState(card, Orientation.FaceUp, _) =>
@@ -64,16 +69,3 @@ final case class AnimalHost private (catalog: ExecutableCatalog)
     Some(if count > 0 then gained(source, NoteArg.Player(actor),
       NoteArg.Amount(count, NoteUnit.Warband))
     else none(source, NoteArg.Player(actor)))
-
-object AnimalHost:
-  val id: PowerId = AnimalHostCard.power.id
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "{Red} gained {n warbands}." */
-  val gained: NoteKey = NoteSupport.gainedKey(notes, "gained")
-  /** "{Red} gained no warbands." */
-  val none: NoteKey = notes.key("none", Vector(NotePart.Arg(0),
-    NotePart.Text(" gained no warbands.")))
-
-  def forCatalog(catalog: ExecutableCatalog): AnimalHost =
-    new AnimalHost(catalog)

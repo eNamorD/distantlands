@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.cardplay
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
-  PrintedPower}
+import oathdigital.catalog.{AdviserOnly, Denizen, PrintedPower}
 import oathdigital.gameplay.{EffectiveSuit, NoteSupport, PowerAccess}
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerCtx, Transform}
@@ -31,14 +30,18 @@ object SaddleMakersCard extends Denizen(DenizenId("142"), "Saddle Makers", Suit.
   * gained 2 favor from the Nomad bank.", covers the generic gain line and
   * reads the gain's step, so an empty bank writes nothing.
   */
-final case class SaddleMakers private (catalog: ExecutableCatalog)
-    extends ContributingPower:
+case object SaddleMakers extends ContributingPower:
+  val id: PowerId = SaddleMakersCard.power.id
+  val Favor: Int = 2
+  val Suits: Set[Suit] = Set(Suit.Nomad, Suit.Order)
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  val gained: NoteKey = NoteSupport.gainedFromKey(notes, "gained")
+
   val cardId: DenizenId = SaddleMakersCard.id
-  def id: PowerId = SaddleMakers.id
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
   override lazy val resolution: PowerResolution =
-    CatalogResolution.of(catalog, id)
-  override def noteKeys: Vector[NoteKey] = SaddleMakers.noteKeys
+    CatalogResolution.of(SaddleMakersCard.power)
 
   def contributions: Map[PowerWindow, Vector[Contribution]] = Map(
     PowerWindow.ActionCardPlayedFaceup -> Vector(Transform((ctx, children) =>
@@ -52,7 +55,7 @@ final case class SaddleMakers private (catalog: ExecutableCatalog)
     ctx.operation match
       case CardPlayedFaceup(card: DenizenId, _) =>
         for
-          suit <- EffectiveSuit.of(catalog, ctx.state, card)
+          suit <- EffectiveSuit.of(ctx.catalog, ctx.state, card)
             .filter(SaddleMakers.Suits)
           holder <- holderOf(ctx.state).filter(_ != ctx.actor)
         yield Vector[Operation](Gain.Favor(holder, suit, SaddleMakers.Favor),
@@ -62,14 +65,3 @@ final case class SaddleMakers private (catalog: ExecutableCatalog)
 
   private def holderOf(ready: ReadyGame): Option[PlayerId] =
     PowerAccess.faceupAdviserHolder(ready, cardId)
-
-object SaddleMakers:
-  val id: PowerId = SaddleMakersCard.power.id
-  val Favor: Int = 2
-  val Suits: Set[Suit] = Set(Suit.Nomad, Suit.Order)
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  val gained: NoteKey = NoteSupport.gainedFromKey(notes, "gained")
-
-  def forCatalog(catalog: ExecutableCatalog): SaddleMakers =
-    new SaddleMakers(catalog)

@@ -16,7 +16,7 @@ import oathdigital.testkit.Table.{p1, p2, p3}
 class CallForHelpSuite extends munit.FunSuite:
   import WhenPlayedHarness._
 
-  private val power = registered[CallForHelp]
+  private val power = registered[CallForHelp.type]
   private val help = power.cardId
   private val played = hook(help)
   /** p1's pawn stands in the Cradle. */

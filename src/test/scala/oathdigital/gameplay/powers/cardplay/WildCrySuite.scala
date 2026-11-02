@@ -88,7 +88,7 @@ class WildCrySuite extends munit.FunSuite:
 
   test("a card does not trigger on its own play"):
     val hook = CardPlayedFaceup(wildCry, RuleSourceRef.Adviser(actor, wildCry))
-    val power = WildCry.forCatalog(catalog)
+    val power = WildCry
     val ctx = PowerCtx(catalog, Table.start.denizen(wildCry, at = home).ready,
       actor, power.source,
       PowerWindow.ActionCardPlayedFaceup, Vector.empty, hook)

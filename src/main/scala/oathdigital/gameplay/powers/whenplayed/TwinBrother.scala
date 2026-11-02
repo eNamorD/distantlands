@@ -31,19 +31,27 @@ object TwinBrotherCard extends Denizen(DenizenId("170"), "Twin Brother", Suit.No
   * same children on resume.
   *
   */
-final case class TwinBrother private (catalog: ExecutableCatalog)
-    extends WhenPlayedPower:
-  val cardId: DenizenId = TwinBrotherCard.id
-  import TwinBrother._
-  def id: PowerId = TwinBrother.id
+case object TwinBrother extends WhenPlayedPower:
+  val id: PowerId = TwinBrotherCard.power.id
+  val decisionId: String = "cardplay.twin-brother.swap"
+  val keep: DecisionOptionRef.Button = DecisionOptionRef.Button("keep")
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "{Red} swapped it for {Blue}'s {card}." */
+  val swapped: NoteKey = notes.key("swapped", Vector(NotePart.Arg(0),
+    NotePart.Text(" swapped it for "), NotePart.Arg(1), NotePart.Text("'s "),
+    NotePart.Arg(2), NotePart.Text(".")))
 
-  override def noteKeys: Vector[NoteKey] = TwinBrother.noteKeys
+  private final case class Candidate(owner: PlayerId, card: DenizenId)
+
+  val cardId: DenizenId = TwinBrotherCard.id
+
   override def narratedDecisions: Set[String] = Set(decisionId)
 
   def effect(ctx: PowerCtx): Vector[Operation] =
     val actor = ctx.actor
     Vector(Branch((live, _) =>
-      val found = candidates(live, actor)
+      val found = candidates(ctx.catalog, live, actor)
       if found.isEmpty then Vector.empty
       else Vector(
         Decide(decisionId, actor, DecisionQuery.ChooseOne(
@@ -51,11 +59,12 @@ final case class TwinBrother private (catalog: ExecutableCatalog)
             DecisionOption.Button(keep, "Keep Twin Brother"),
           heading = Some("Twin Brother: swap it for another player's faceup " +
             "nomad adviser?"))),
-        BuildOps((ready, pending) => swap(ready, actor, pending),
+        BuildOps((ready, pending) => swap(ctx.catalog, ready, actor, pending),
           required = true),
         Note(id, swappedNote(actor)))))
 
-  private def candidates(ready: ReadyGame, actor: PlayerId): Vector[Candidate] =
+  private def candidates(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId): Vector[Candidate] =
     for
       held <- ready.game.current.players if held.player != actor
       card <- held.advisers.collect {
@@ -63,14 +72,16 @@ final case class TwinBrother private (catalog: ExecutableCatalog)
       if EffectiveSuit.of(catalog, ready, card).contains(Suit.Nomad)
     yield Candidate(held.player, card)
 
-  private def swap(ready: ReadyGame, actor: PlayerId, pending: PendingTree)
+  private def swap(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId, pending: PendingTree)
       : Either[OathViolation, Vector[CoreOperation]] =
     pending.answered.collectFirst {
       case Answered(`decisionId`, DecisionAnswer.ChooseOneAnswer(ref), _) => ref
     } match
       case Some(`keep`) => Right(Vector.empty)
       case Some(DecisionOptionRef.Denizen(target)) =>
-        candidates(ready, actor).find(_.card == target).toRight(OathViolation
+        candidates(catalog, ready, actor).find(_.card == target)
+          .toRight(OathViolation
           .InvalidEventOrder(s"${target.value} is not a nomad adviser Twin " +
             "Brother can swap with")).map(chosen => Vector(Swap(cardId,
           PositionedLocation(Location.PlayArea(actor)), chosen.card,
@@ -92,19 +103,3 @@ final case class TwinBrother private (catalog: ExecutableCatalog)
       .exists(_.advisers.exists(_.id == target))
   yield swapped(PowerSourceRef.Card(cardId), NoteArg.Player(actor),
     NoteArg.Player(owner), NoteArg.Card(target))
-
-object TwinBrother:
-  val id: PowerId = TwinBrotherCard.power.id
-  val decisionId: String = "cardplay.twin-brother.swap"
-  val keep: DecisionOptionRef.Button = DecisionOptionRef.Button("keep")
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "{Red} swapped it for {Blue}'s {card}." */
-  val swapped: NoteKey = notes.key("swapped", Vector(NotePart.Arg(0),
-    NotePart.Text(" swapped it for "), NotePart.Arg(1), NotePart.Text("'s "),
-    NotePart.Arg(2), NotePart.Text(".")))
-
-  private final case class Candidate(owner: PlayerId, card: DenizenId)
-
-  def forCatalog(catalog: ExecutableCatalog): TwinBrother =
-    new TwinBrother(catalog)

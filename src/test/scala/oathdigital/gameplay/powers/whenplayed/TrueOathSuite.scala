@@ -11,7 +11,7 @@ import oathdigital.testkit.Table.p1
 class TrueOathSuite extends munit.FunSuite:
   import WhenPlayedHarness._
 
-  private val power = registered[TrueOath]
+  private val power = registered[TrueOath.type]
   private val oath = power.cardId
   private val played = hook(oath)
 

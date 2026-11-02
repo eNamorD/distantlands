@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.whenplayed
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower,
-  SiteOnly}
+import oathdigital.catalog.{Denizen, PrintedPower, SiteOnly}
 import oathdigital.gameplay.phases.RestCleanup
 import oathdigital.gameplay.powerresolver.PowerCtx
 import oathdigital.model._
@@ -24,26 +23,18 @@ object ARoundOfAleCard extends Denizen(DenizenId("129"), "A Round of Ale", Suit.
   * used this turn stay used. Its line comes first, and the cleanup writes
   * no generic line.
   */
-final case class ARoundOfAle private (catalog: ExecutableCatalog)
-    extends WhenPlayedPower:
-  val cardId: DenizenId = ARoundOfAleCard.id
-  import ARoundOfAle._
-  def id: PowerId = ARoundOfAle.id
-
-  override def noteKeys: Vector[NoteKey] = ARoundOfAle.noteKeys
-
-  def effect(ctx: PowerCtx): Vector[Operation] =
-    Vector(
-      Note(id, _ => Some(cleanup(PowerSourceRef.Card(cardId)))),
-      BuildOps((ready, _) => RestCleanup.operations(catalog, ready, ctx.actor)))
-
-object ARoundOfAle:
+case object ARoundOfAle extends WhenPlayedPower:
   val id: PowerId = ARoundOfAleCard.power.id
   private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
+  override def noteKeys: Vector[NoteKey] = notes.declared
   /** "Triggering resource cleanup." */
   val cleanup: NoteKey = notes.key("cleanup", Vector(
     NotePart.Text("Triggering resource cleanup.")))
 
-  def forCatalog(catalog: ExecutableCatalog): ARoundOfAle =
-    new ARoundOfAle(catalog)
+  val cardId: DenizenId = ARoundOfAleCard.id
+
+  def effect(ctx: PowerCtx): Vector[Operation] =
+    Vector(
+      Note(id, _ => Some(cleanup(PowerSourceRef.Card(cardId)))),
+      BuildOps((ready, _) =>
+        RestCleanup.operations(ctx.catalog, ready, ctx.actor)))

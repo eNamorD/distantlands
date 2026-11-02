@@ -16,28 +16,28 @@ import oathdigital.model._
   * targets no site holds after that step, so a card a restriction kept is
   * not named, and it says so when nothing was discarded.
   */
-private[powers] final class RegionDiscard(catalog: ExecutableCatalog,
-    kept: Suit => Boolean,
+private[powers] final class RegionDiscard(kept: Suit => Boolean,
     regionOf: (ReadyGame, PlayerId) => Option[Region] =
       RegionDiscard.pawnRegion):
 
   /** The kept site denizens and ruined edifices in the actor's region, in
     * map order. A card the catalog does not know is not listed; `discards`
     * rejects it. */
-  def targets(ready: ReadyGame, actor: PlayerId): Vector[CardId] =
+  def targets(catalog: ExecutableCatalog, ready: ReadyGame, actor: PlayerId)
+      : Vector[CardId] =
     cards(ready, actor).collect {
       case (_, card) if discardable(card) &&
           catalog.suitOf(card.id).exists(kept) => card.id }
 
   /** A discard of each target, read live, to the next region's discard
     * pile. */
-  def discards(ready: ReadyGame, actor: PlayerId)
+  def discards(catalog: ExecutableCatalog, ready: ReadyGame, actor: PlayerId)
       : Either[OathViolation, Vector[CoreOperation]] =
     region(ready, actor).toRight(OathViolation.PawnSiteMissing(actor))
       .flatMap(origin => cards(ready, actor).foldLeft[Either[OathViolation,
           Vector[CoreOperation]]](Right(Vector.empty)) {
         case (acc, (site, card)) => acc.flatMap(done =>
-          suitOf(card).map(suit =>
+          suitOf(catalog, card).map(suit =>
             if kept(suit) then done ++ discard(site, card, suit,
               CardPlay.nextRegion(origin), actor)
             else done))
@@ -45,10 +45,10 @@ private[powers] final class RegionDiscard(catalog: ExecutableCatalog,
 
   /** The whole effect of a power that only discards: the discard step, then
     * its line. */
-  def effect(power: PowerId, card: CardId, actor: PlayerId)
-      : Vector[Operation] = Vector(Branch((live, _) => Vector(
-    BuildOps((ready, _) => discards(ready, actor)),
-    Note(power, RegionDiscard.said(card, targets(live, actor)),
+  def effect(catalog: ExecutableCatalog, power: PowerId, card: CardId,
+      actor: PlayerId): Vector[Operation] = Vector(Branch((live, _) => Vector(
+    BuildOps((ready, _) => discards(catalog, ready, actor)),
+    Note(power, RegionDiscard.said(card, targets(catalog, live, actor)),
       covers = true))))
 
   private def region(ready: ReadyGame, actor: PlayerId): Option[Region] =
@@ -63,7 +63,8 @@ private[powers] final class RegionDiscard(catalog: ExecutableCatalog,
       .flatMap(site => map.sites.get(site).toVector
         .flatMap(_.denizens.map(site -> _))))
 
-  private def suitOf(card: SiteDenizenState): Either[OathViolation, Suit] =
+  private def suitOf(catalog: ExecutableCatalog, card: SiteDenizenState)
+      : Either[OathViolation, Suit] =
     catalog.suitOf(card.id).toRight(card match {
       case denizen: DenizenState => OathViolation.UnknownWorldCard(denizen.id)
       case edifice: EdificeState => OathViolation.UnknownEdifice(edifice.id)

@@ -8,7 +8,6 @@ import oathdigital.gameplay.powers.{NoteText, PowerFixture, SearchFixture}
 import oathdigital.gameplay.powers.action.{EldersCard, HomesteadersCard}
 import oathdigital.gameplay.powers.campaign.{RainBootsCard, WrestlersCard}
 import oathdigital.gameplay.powers.search.LandWardenCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.PartitionAnswer
 import oathdigital.testkit.{Look, PhasePowerHarness, Table}
@@ -20,7 +19,7 @@ import oathdigital.testkit.Unwrap.accepted
 class FamilyWagonPledgeSuite extends munit.FunSuite:
   import PowerFixture.actor
 
-  private val power = FamilyWagon.forCatalog(catalog)
+  private val power = FamilyWagon
   private val wagon = FamilyWagonCard.id
   private val pledge = PledgeToDiscordCard.id
   private val elders = EldersCard.id

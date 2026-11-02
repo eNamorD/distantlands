@@ -64,7 +64,7 @@ class AutomaticUseStepWiringSuite extends munit.FunSuite:
 
   private val wrapped: Vector[(String, ContributingPower, PowerWindow,
       Operation)] = Vector(
-    ("Threatening Roar", ThreateningRoar.forCatalog(catalog),
+    ("Threatening Roar", ThreateningRoar,
       PowerWindow.ActionCardPlayedFaceup, CardPlayedFaceup(
         ThreateningRoarCard.id, RuleSourceRef.GameRule(
           ThreateningRoar.id.value))),

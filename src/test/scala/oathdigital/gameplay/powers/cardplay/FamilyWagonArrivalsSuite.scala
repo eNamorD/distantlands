@@ -6,7 +6,6 @@ import oathdigital.gameplay.powers.action.{EldersCard, Enchantress,
   EnchantressCard, PiedPiper, PiedPiperCard, WaysideInnCard}
 import oathdigital.gameplay.powers.campaign.{LancersCard, RainBootsCard}
 import oathdigital.gameplay.powers.wake.{HornedMask, HornedMaskCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.LogNoted
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
@@ -21,7 +20,7 @@ import oathdigital.testkit.Unwrap.accepted
   */
 class FamilyWagonArrivalsSuite extends munit.FunSuite:
   private val rules = PowerRules.withWalkerAndPhasePowers
-  private val power = FamilyWagon.forCatalog(catalog)
+  private val power = FamilyWagon
   private val wagon = FamilyWagonCard.id
   // Nomads.
   private val elders = EldersCard.id

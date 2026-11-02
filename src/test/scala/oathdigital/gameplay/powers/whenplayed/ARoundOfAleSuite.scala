@@ -14,7 +14,7 @@ import oathdigital.testkit.Table.{p1, p2, p3}
 class ARoundOfAleSuite extends munit.FunSuite:
   import WhenPlayedHarness._
 
-  private val power = registered[ARoundOfAle]
+  private val power = registered[ARoundOfAle.type]
   private val ale = power.cardId
   private val atHome = hookAt(ale, homeSite)
   private val peaks = BrokenPeaksSite.id

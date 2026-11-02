@@ -168,7 +168,7 @@ class ForestCouncilSuite extends munit.FunSuite:
     // a Beast card at p1's site. Forest Council stands outside p1's
     // region, where the Roar does not reach.
     import WhenPlayedHarness.{awaySite, homeSite, p1AtHomeSite}
-    val roar = WhenPlayedHarness.registered[ThreateningRoar]
+    val roar = WhenPlayedHarness.registered[ThreateningRoar.type]
     def errandBoyStays(ruled: Table => Table): Boolean =
       val ready = ruled(p1AtHomeSite.adviser(p1, roar.cardId)
         .denizen(errandBoy, at = homeSite).denizen(council, at = awaySite))
@@ -211,7 +211,7 @@ class ForestCouncilSuite extends munit.FunSuite:
   test("an enemy's Beast When Played power waits on Forest Council's " +
       "ruler, whose remembered answer decides it"):
     import WhenPlayedHarness.{awaySite, homeSite, p1AtHomeSite}
-    val roar = WhenPlayedHarness.registered[ThreateningRoar]
+    val roar = WhenPlayedHarness.registered[ThreateningRoar.type]
     val councilRuledByP2 = p1AtHomeSite.adviser(p1, roar.cardId)
       .denizen(errandBoy, at = homeSite).denizen(council, at = awaySite)
       .warbandsAt(awaySite, p2, 1).ready

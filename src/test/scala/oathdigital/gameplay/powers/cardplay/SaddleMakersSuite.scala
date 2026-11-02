@@ -6,7 +6,6 @@ import oathdigital.gameplay.powers.action.{HomesteadersCard, MessengerCard}
 import oathdigital.gameplay.powers.campaign.{CodeOfHonorCard, LancersCard,
   MountainGiantCard, ShieldWallCard, WildMountsCard}
 import oathdigital.gameplay.powers.search.{LandWardenCard, NewsFromAfarCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{ActPowerHarness, Look, Table}
 
@@ -43,7 +42,7 @@ class SaddleMakersSuite extends munit.FunSuite:
   private def bank(ready: ReadyGame, suit: Suit): Int =
     ready.banks.favor.getOrElse(suit, 0)
 
-  private val power = SaddleMakers.forCatalog(catalog)
+  private val power = SaddleMakers
 
   private def said(events: Vector[OathEvent]): Vector[NoteText.Said] =
     NoteText.said(power.id, power.noteKeys, events)

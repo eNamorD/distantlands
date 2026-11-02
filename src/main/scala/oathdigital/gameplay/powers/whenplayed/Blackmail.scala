@@ -30,15 +30,33 @@ object BlackmailCard extends Denizen(DenizenId("82"), "Blackmail", Suit.Discord)
   *
   * No generic line exists for either move, so the lines cover nothing.
   */
-final case class Blackmail private (catalog: ExecutableCatalog)
-    extends WhenPlayedPower:
+case object Blackmail extends WhenPlayedPower:
+  val id: PowerId = BlackmailCard.power.id
+  val relicDecisionId: String = "cardplay.blackmail.relic"
+  val answerDecisionId: String = "cardplay.blackmail.answer"
+  /** The favor that keeps the relic. */
+  val Price: Int = 3
+  val pay: DecisionOptionRef.Button = DecisionOptionRef.Button("pay")
+  val handOver: DecisionOptionRef.Button =
+    DecisionOptionRef.Button("hand-over")
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "{Blue} gave {3 favor} to keep {relic}." */
+  val paid: NoteKey = notes.key("paid", Vector(NotePart.Arg(0),
+    NotePart.Text(" gave "), NotePart.Arg(1), NotePart.Text(" to keep "),
+    NotePart.Arg(2), NotePart.Text(".")))
+  /** "Took {relic} from {Blue}." */
+  val took: NoteKey = notes.key("took", Vector(NotePart.Text("Took "),
+    NotePart.Arg(0), NotePart.Text(" from "), NotePart.Arg(1),
+    NotePart.Text(".")))
+  /** "No relic could be taken." */
+  val none: NoteKey = notes.key("none", Vector(
+    NotePart.Text("No relic could be taken.")))
+
   val cardId: DenizenId = BlackmailCard.id
-  import Blackmail._
-  def id: PowerId = Blackmail.id
 
   private val lostTongue = LostTongue
 
-  override def noteKeys: Vector[NoteKey] = Blackmail.noteKeys
   override def narratedDecisions: Set[String] =
     Set(relicDecisionId, answerDecisionId)
 
@@ -46,9 +64,10 @@ final case class Blackmail private (catalog: ExecutableCatalog)
 
   def effect(ctx: PowerCtx): Vector[Operation] =
     Vector(
-      Branch((live, _) => askRelic(live, ctx.actor)),
-      Branch((live, pending) => askHolder(live, ctx.actor, pending)),
-      Branch((live, pending) => settle(live, ctx.actor, pending)))
+      Branch((live, _) => askRelic(ctx.catalog, live, ctx.actor)),
+      Branch((live, pending) =>
+        askHolder(ctx.catalog, live, ctx.actor, pending)),
+      Branch((live, pending) => settle(ctx.catalog, live, ctx.actor, pending)))
 
   /** One relic the actor may choose: its holder, its slot and its state. */
   private final case class Target(owner: PlayerId, slot: Int,
@@ -64,7 +83,8 @@ final case class Blackmail private (catalog: ExecutableCatalog)
 
   /** The relics of the other players at the actor's site that Lost Tongue
     * leaves takeable, in seat then relic order. */
-  private def targets(ready: ReadyGame, actor: PlayerId): Vector[Target] =
+  private def targets(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId): Vector[Target] =
     PowerAccess.pawnSite(ready, actor).toVector.flatMap(site => for
       other <- ready.game.current.players
       if other.player != actor && other.pawnSite.contains(site) &&
@@ -72,21 +92,24 @@ final case class Blackmail private (catalog: ExecutableCatalog)
       (relic, slot) <- other.relics.zipWithIndex
     yield Target(other.player, slot, relic))
 
-  private def askRelic(ready: ReadyGame, actor: PlayerId): Vector[Operation] =
-    targets(ready, actor) match
+  private def askRelic(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId): Vector[Operation] =
+    targets(catalog, ready, actor) match
       case Vector() => Vector(Note(id, _ => Some(none(cardSource))))
       case found => Vector(Decide(relicDecisionId, actor,
         DecisionQuery.ChooseOne(found.map(_.option), heading = Some(
           "Blackmail: choose a relic held by a player at your site"))))
 
-  private def chosen(ready: ReadyGame, actor: PlayerId, pending: PendingTree)
+  private def chosen(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId, pending: PendingTree)
       : Option[Target] = PowerAnswers.one(pending, relicDecisionId)
-    .flatMap(ref => targets(ready, actor).find(_.ref == ref))
+    .flatMap(ref => targets(catalog, ready, actor).find(_.ref == ref))
 
   /** The holder's question, when they hold the price. */
-  private def askHolder(ready: ReadyGame, actor: PlayerId,
+  private def askHolder(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId,
       pending: PendingTree): Vector[Operation] =
-    chosen(ready, actor, pending).filter(target =>
+    chosen(catalog, ready, actor, pending).filter(target =>
         NoteSupport.board(ready, target.owner).exists(_.favor >= Price))
       .toVector.map(target => Decide(answerDecisionId, target.owner,
         DecisionQuery.ChooseOne(Vector(
@@ -96,9 +119,10 @@ final case class Blackmail private (catalog: ExecutableCatalog)
             "or hand it over"))))
 
   /** The favor given, or the relic taken, then its line. */
-  private def settle(ready: ReadyGame, actor: PlayerId, pending: PendingTree)
-      : Vector[Operation] = chosen(ready, actor, pending).toVector.flatMap {
-    target =>
+  private def settle(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId, pending: PendingTree)
+      : Vector[Operation] =
+    chosen(catalog, ready, actor, pending).toVector.flatMap { target =>
       if PowerAnswers.one(pending, answerDecisionId).contains(pay) then Vector(
         BuildOps((_, _) => Right(Vector(Give(Piece.Favor(Price), target.owner,
           Location.PlayArea(target.owner), Location.PlayArea(actor))))),
@@ -126,29 +150,3 @@ final case class Blackmail private (catalog: ExecutableCatalog)
       held.relics.exists(_.id == target.relic.id)))(
     took(cardSource, NoteArg.Card(target.relic.id),
       NoteArg.Player(target.owner)))
-
-object Blackmail:
-  val id: PowerId = BlackmailCard.power.id
-  val relicDecisionId: String = "cardplay.blackmail.relic"
-  val answerDecisionId: String = "cardplay.blackmail.answer"
-  /** The favor that keeps the relic. */
-  val Price: Int = 3
-  val pay: DecisionOptionRef.Button = DecisionOptionRef.Button("pay")
-  val handOver: DecisionOptionRef.Button =
-    DecisionOptionRef.Button("hand-over")
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "{Blue} gave {3 favor} to keep {relic}." */
-  val paid: NoteKey = notes.key("paid", Vector(NotePart.Arg(0),
-    NotePart.Text(" gave "), NotePart.Arg(1), NotePart.Text(" to keep "),
-    NotePart.Arg(2), NotePart.Text(".")))
-  /** "Took {relic} from {Blue}." */
-  val took: NoteKey = notes.key("took", Vector(NotePart.Text("Took "),
-    NotePart.Arg(0), NotePart.Text(" from "), NotePart.Arg(1),
-    NotePart.Text(".")))
-  /** "No relic could be taken." */
-  val none: NoteKey = notes.key("none", Vector(
-    NotePart.Text("No relic could be taken.")))
-
-  def forCatalog(catalog: ExecutableCatalog): Blackmail =
-    new Blackmail(catalog)

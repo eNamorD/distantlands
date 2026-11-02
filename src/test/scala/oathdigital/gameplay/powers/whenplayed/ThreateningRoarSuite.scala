@@ -9,13 +9,12 @@ import oathdigital.gameplay.powers.targeting.OakenFortressCard
 import oathdigital.model._
 import oathdigital.testkit.{Look, Outcomes}
 import oathdigital.testkit.Table.p1
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.testkit.AppendedAutomaticUses
 
 class ThreateningRoarSuite extends munit.FunSuite:
   import WhenPlayedHarness._
 
-  private val power = registered[ThreateningRoar]
+  private val power = registered[ThreateningRoar.type]
   private val roar = power.cardId
   private val errandBoy = ErrandBoyCard.id
   private val faeMerchant = FaeMerchantCard.id
@@ -67,7 +66,7 @@ class ThreateningRoarSuite extends munit.FunSuite:
   test("its effect is an automatic use of the card's player"):
     val played = CardPlayedFaceup(ThreateningRoarCard.id,
       RuleSourceRef.GameRule(ThreateningRoar.id.value))
-    assertEquals(AppendedAutomaticUses.at(ThreateningRoar.forCatalog(catalog),
+    assertEquals(AppendedAutomaticUses.at(ThreateningRoar,
       PowerWindow.ActionCardPlayedFaceup, played), Vector(
       AppendedAutomaticUses.Named(p1, ThreateningRoar.id,
         ThreateningRoarCard.id)))
