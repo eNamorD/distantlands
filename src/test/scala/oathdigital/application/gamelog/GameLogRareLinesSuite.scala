@@ -4,6 +4,7 @@ import oathdigital.application.WalkerDecisionProjector
 import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
+import oathdigital.gameplay.operations.BoilingLakeCard
 import oathdigital.gameplay.powers.action.FaeMerchantCard
 import oathdigital.gameplay.powers.campaign.StickyFireCard
 import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
@@ -122,6 +123,30 @@ class GameLogRareLinesSuite extends munit.FunSuite:
     assert(lines.contains("Discarded a Vision to the Hinterland discard"),
       lines)
 
+  test("a relic set aside posts one line, named only as the viewer sees it"):
+    // Sticky Fire lies facedown at Broken Peaks, so an observer sees a back.
+    val lines = posted(ActionRef.Travel, Discard.Relic(relic,
+      PositionedLocation(Location.Site(site)), secrets = 0, other))
+    assert(lines.contains(s"${playerLabel(other)} set aside a Relic"), lines)
+
+  test("a ruined edifice set aside posts one line, by whoever discarded it"):
+    val board =
+      val (service, waking) = atTable("rare-edifice",
+        Table.start.pawn(p1, AncientCitySite).turn(p1, Phase.Wake)
+          .edifice(BoilingLakeCard, EdificeSide.Ruined, at = AncientCitySite)
+          .banditsRefilled)
+      waking.endingWake(p1)
+      Script("rare-edifice", service, p1)
+    def discarded(actorless: Boolean) = Discard.RuinedEdifice(
+      BoilingLakeCard.id, PositionedLocation(Location.Site(ancientCity)),
+      BoilingLakeCard.suit, favor = 0, secrets = 0, p1,
+      actorless = actorless)
+    // The ruined face lies faceup, so every viewer reads its name.
+    val byActor = postedOn(board, ActionRef.Travel, discarded(false))
+    assert(byActor.contains("Set aside Still Boiling Lake"), byActor)
+    val byNoOne = postedOn(board, ActionRef.Travel, discarded(true))
+    assert(byNoOne.contains("Set aside Still Boiling Lake"), byNoOne)
+
   test("dice read as their faces' rulebook names, and no dice or mixed dice " +
       "read as nothing"):
     assertEquals(LogWords.dice(Vector(AttackDieFace.HollowSword,
@@ -149,12 +174,12 @@ class GameLogRareLinesSuite extends munit.FunSuite:
     assertEquals(said(DecisionOptionRef.Denizen(denizen)), "a Denizen")
     assertEquals(said(DecisionOptionRef.Relic(relic)), "a Relic")
     // A slot reads as its index plus one. A relic slot always reads
-    // facedown, whatever p2 holds; p2's Birdsong is facedown; adviser slot
-    // 10 is empty and names no face.
+    // facedown, whatever p2 holds; p2's facedown Birdsong is counted, not
+    // placed; adviser slot 10 is empty and names no face.
     assertEquals(said(DecisionOptionRef.RelicSlot(other, 0)),
       s"${playerLabel(other)}'s facedown relic (slot 1)")
     assertEquals(said(DecisionOptionRef.AdviserSlot(other, 0)),
-      s"${playerLabel(other)}'s facedown adviser (slot 1)")
+      s"a Denizen from ${playerLabel(other)}'s advisers")
     assertEquals(said(DecisionOptionRef.AdviserSlot(other, 9)),
       s"${playerLabel(other)}'s adviser (slot 10)")
     assertEquals(said(DecisionOptionRef.Banner(Banner.PeoplesFavor)),

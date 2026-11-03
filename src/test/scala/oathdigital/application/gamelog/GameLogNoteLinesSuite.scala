@@ -396,7 +396,7 @@ class GameLogNoteLinesSuite extends munit.FunSuite:
     // headline it files under; `GreatForgeRulesSuite` pins the order a
     // real power's line takes against the pawn's.
     assert(all.slice(line + 1, all.indexOf("Round 1"))
-      .exists(_.contains(" placed pawn at ")), all)
+      .exists(_.contains(" placed their pawn at ")), all)
     assertPrefixStable(noted)
 
   test("a power that names its notes' source reads under that name, not its site"):

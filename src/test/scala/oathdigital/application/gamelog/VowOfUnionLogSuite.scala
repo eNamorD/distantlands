@@ -58,7 +58,7 @@ class VowOfUnionLogSuite extends munit.FunSuite:
         ChooseOneAnswer(CampaignIds.skip)
     }
     assert(log.exists(_.startsWith("Campaign")), log.mkString("\n"))
-    assert(log.contains("Skipped the Campaign."), log.mkString("\n"))
+    assert(log.contains("Skipped the Campaign"), log.mkString("\n"))
     assert(!log.exists(_.contains("Skip Campaign")), log.mkString("\n"))
 
   test("a Campaign left with nothing to attack says so"):
@@ -73,5 +73,5 @@ class VowOfUnionLogSuite extends munit.FunSuite:
     val log = texts(format(Script("vow-of-union-ended", service, p1),
       Some(p3)))
     assert(log.exists(_.startsWith("Campaign")), log.mkString("\n"))
-    assert(log.contains("Nothing left to attack: the Campaign ended."),
+    assert(log.contains("Ended the Campaign with nothing left to attack"),
       log.mkString("\n"))

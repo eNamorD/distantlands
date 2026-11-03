@@ -434,6 +434,16 @@ class WalkerDecisionProjectorSuite extends munit.FunSuite:
     assertEquals(projector.waiting(ctx(Some(active))), waiting)
     assertEquals(projector.waiting(ctx(None)), waiting)
 
+  test("a waiting viewer reads the heading the awaited player reads"):
+    // The waiting line skips the look-ahead, which never narrows a heading
+    // except to a Continue screen; for an ordinary choice the two agree.
+    val OffTurnPark(ready, projector) = parkedOffTurn
+    def ctx(viewer: Option[PlayerId]) = ScopedProjectionContext(ready, viewer)
+    val owners = projector.project(ctx(Some(p2))).flatMap(_.query)
+      .flatMap(_.heading)
+    assertEquals(owners, Some("Answer"))
+    assertEquals(projector.waiting(ctx(Some(p1))).flatMap(_.heading), owners)
+
   /** The production Oathkeeper tree parked on a tie: it is p1's Act, and
     * p2 holds the title while p1 and p3 each rule a site, a tie p2 breaks.
     * The tree comes from the default `declaredTree`, so the registry entry,

@@ -1,6 +1,13 @@
 # Derive the wire codecs
 
-> Status: design note, 2026-11-02, for the roadmap's architecture candidate
+> Status: probed, 2026-11-03. The owner approved the recommended
+> defaults: derive, as a Mirror deriver with no new dependency, probe
+> first, and only if the probe is green without a macro. It is not; see
+> "Probe result". Question 3 landed on its own: an unexpected field on a
+> projection now reports a stale bundle, as an unknown variant does.
+> Question 5 stands: the operation codec stays hand-written.
+>
+> Written as a design note, 2026-11-02, for the roadmap's architecture candidate
 > "Derive the wire codecs" (architecture scans of 2026-10-23). It re-measures
 > the candidate at `0d1ae92`, evaluates how a codec can be derived in this
 > build without a new dependency, counts the operation codec's mechanical
@@ -267,6 +274,35 @@ architecture and link checks, `git diff --check`).
    `docs/architecture/codebase-structure.md` ("Add shared DTO/codec fields
    only when the wire contract truly changes" becomes "add the field; the
    codec is derived").
+
+## Probe result
+
+Slice 1 asks for the consent and log DTOs to derive byte-equal to their
+hand-written codecs without a macro. Read against those codecs, they
+cannot, for three reasons, each enough alone:
+
+- **Presence follows the default, not the type.** The codecs write a field
+  with no default always and a defaulted field only when it is not its
+  default: `ConsentAlternativeProjection.paying` (no default) is always
+  written, `ConsentWaitingProjection.either` (`= false`) only when true. A
+  `Boolean` is a `Boolean` to a Mirror, so the cheap `Absent` route either
+  drops `paying: false` or writes `either: false`.
+- **The same type is spelt two ways.** `ConsentPreferencesProjection.cardId`
+  and `LogEntry.section` default to `None` and are written as `null`, while
+  `ConsentWaitingProjection.use` (also `= None`) is omitted. Presence is a
+  per-field choice the codecs made, not a rule a deriver could state.
+- **Renamed and computed fields.** `LogSpan.Text(value)` is written as
+  `"text"`, and `LogSpan.Dice(first, rest)` writes a computed `faces` key
+  that its decoder validates (non-empty, one die). Those need per-field
+  overrides on top of any derivation.
+
+So the probe stops here, as the slice says. Two ways remain, both larger
+than the probe assumed: the `scala.quoted` defaults macro with per-field
+overrides for the renamed and computed fields and a one-time move of the
+`null` fields to omission (the standing rules allow a wire change in
+place), or leaving the codecs hand-written. Neither is worth starting
+while the wire changes as rarely as it does; the roadmap item waits for a
+wire-heavy phase.
 
 ## Risks
 

@@ -8,4 +8,4 @@
 10.0 action 1 | Nothing happened in Wake
 10.1 phase 0 | Act
 21.0 section 1 trade@17 | Trade[cost:1 Supply]
-24.0 action 1 trade@17 | Traded with [card:E26|Hiding Place] for no secrets
+24.0 action 1 trade@17 | Traded with [card:E26|Hiding Place] and gained no secrets

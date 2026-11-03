@@ -15,7 +15,7 @@ class GameLogSetupSuite extends munit.FunSuite:
     // `woken` replays Setup: its placements and keeps are the subject.
     val script = woken
     val lines = texts(setupLines(script, None))
-    assertEquals(lines.count(_.contains(" placed pawn at ")),
+    assertEquals(lines.count(_.contains(" placed their pawn at ")),
       script.players.size, lines)
     assertEquals(lines.count(_.contains(" kept ")), script.players.size, lines)
     // Turn order runs from the first player through the seats.
@@ -23,7 +23,7 @@ class GameLogSetupSuite extends munit.FunSuite:
     val seats = ready.game.current.players.map(_.player)
     val first = seats.indexOf(ready.setup.firstPlayer)
     val order = (seats.drop(first) ++ seats.take(first)).map(_.value)
-    assertEquals(lines.filter(_.contains(" placed pawn at "))
+    assertEquals(lines.filter(_.contains(" placed their pawn at "))
       .map(_.takeWhile(_ != ' ')), order)
     assertEquals(lines.filter(_.contains(" kept ")).map(_.takeWhile(_ != ' ')),
       order)

@@ -127,6 +127,23 @@ class OathRulesWalkerPowerSuite extends munit.FunSuite:
       answer.decisionId, answer.answer),
       Left(violation))
 
+  test("a start and its resume walk the same procedure, as a restriction " +
+      "reads it"):
+    // Refuses any walk that is not a Recover's. Before a start passed its
+    // procedure, the start command saw none and was refused, while the
+    // resume, reading the parked fact, passed.
+    val recoverOnly = WalkerPowers(Vector(PowerStubs.RestrictionStub(
+      PowerId("test.recover-only"), window, (ctx, _) =>
+        Option.unless(ctx.procedure.contains(ActionRef.Recover))(violation))))
+    val ready = Table.start.ready
+    val started = accepted(rules(p1, recoverOnly)
+      .startWalker(Ready(ready), ActionRef.Recover, p1))
+    val resumed = accepted(rules(p1, recoverOnly).resolveWalker(started.state,
+      p1, RecoverProcedure.choiceDecisionId,
+      DecisionAnswer.ChooseOneAnswer(WalkerStubs.continueOption)))
+    assertEquals(Outcomes.ready(resumed.state).game.current.walkerProcedure,
+      Some(ActionRef.Recover))
+
   // -------------------------------------------------------------------------
   // C1: the requester bound by the transport must match the rebuilt
   // decision's owner. `Authorization.authorizeCommand` only proves the

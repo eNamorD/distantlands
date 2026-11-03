@@ -248,14 +248,6 @@ one.
   target is empty, or a bank with no stock. The game should warn the player
   before they commit, without refusing the choice. Recorded while designing
   Catalog batch 2.
-- [ ] **Improve the Game Log lines the wording ledger collects.** The
-  procedures-journal-their-notes migration, done 2026-10-17, kept wording
-  fixed inside its commits, so a golden diff meant one thing. The lines it
-  passed over are listed in the
-  [wording ledger](superpowers/specs/2026-10-16-game-log-wording-ledger.md), each
-  with where it is built and why it is worth a second look. Recorded in the
-  [procedures journal their own notes design](superpowers/specs/2026-10-16-procedures-journal-their-notes-design.md).
-  Audited in the [wording audit](testing/audits/game-log-wording-audit.md).
 - [ ] **A card play's line before the lines its own batch causes.**
   `WalkerSteps.recordBatch` runs `AdviserArrivalPass.after` and an executed
   trigger's follow-up inside the play's own leaf, so a power whose effect
@@ -265,18 +257,6 @@ one.
   `CoreOperation`. See the wording ledger, "A card play's line now follows
   the lines its own batch caused". Recorded in the procedures journal their
   own notes design of 2026-10-16.
-- [ ] **Check that a split delta's steps bracket their operation.**
-  `DetailLines.deltas` wraps each split part in
-  `OpStep(part, step.before, step.after)`, so every part carries the whole
-  step's before and after states rather than its own. A line that reads
-  visibility from those states may show or hide the wrong thing. Write a test
-  that splits a step with a hidden part before changing anything. Two
-  smaller leftovers sit beside it: `GameLogFormatter.format` re-applies the
-  whole journal once per standing undo marker on every request for every
-  seat, and `formatAppended` takes `stateBefore` and `lastStateAfter`
-  without checking them. Recorded as separate candidates in the
-  [log operation strictness decision](superpowers/specs/2026-10-19-log-operation-strictness-decision.md).
-  Audited in the [split delta audit](testing/audits/split-delta-bracketing-audit.md).
 
 ### Powers-related deferred items
 
@@ -284,18 +264,22 @@ one.
   builders that still lack them, as playtests find options people wonder
   about. Left by the
   [board decisions design](superpowers/specs/2026-10-03-board-decisions-design.md).
-- [ ] **Walker follow-ups.** Audit the first-game rules the walker actions
-  dropped as gates (exile-only roles, unaltered Foundations, inactive legacies).
-  Add the remaining attacker, defender and bandit battle plan families,
-  non-deterministic loss choices, and the additional Raid, victory, defeat and
-  At End handlers that the Campaign timing windows already expose.
-  At an action's start, window folds and the restriction look-ahead
-  see no walker procedure (`PowerCtx.procedure` is `None`), while every later
-  command sees it. Make them agree before a Restriction reads the procedure.
-  `WalkerDecisionProjector.waiting` reads only a parked decision's heading and
-  Negotiation query, which the look-ahead never narrows, so its second
-  `parkedDecide` could skip the look-ahead like the other identity-only callers.
-  Audited in the [walker follow-ups audit](testing/audits/walker-follow-ups-audit.md).
+- [ ] **The last battle plans: Glamor, Relic Hunter, Obsidian Cage.** Every
+  other New Foundations battle plan is implemented. Each is one slice, with
+  the owner's rulings of 2026-11-03:
+  - **Glamor:** used in the battle plan step like any plan; its user then
+    chooses how many of the enemy's board secrets to target, all but the
+    last, and those join the Campaign's targets, adding a defense die
+    each. If victorious, the user takes them.
+  - **Relic Hunter:** Conquest only, since only a Conquest has targeted
+    sites. Facedown relics at the targeted sites may be targeted, a
+    defense die each, and relics taken may go to the bottom of the relic
+    deck.
+  - **Obsidian Cage:** a victorious user moves the enemy's unkilled
+    warbands onto the Cage, which needs a warband location on a card.
+    Bandit warbands are always killed, so none reach the Cage.
+  See the [walker follow-ups audit](testing/audits/walker-follow-ups-audit.md),
+  section 2.
 - [ ] **Mercenaries' player-chosen sign.** Mercenaries adds attack dice
   when its user attacks and removes defense dice from the attacker when it
   defends. The card lets the player choose the sign, and the plan fixes it by side.
@@ -405,14 +389,15 @@ before treating the numbers below as current.
   re-spells four `cardplay.*` prefixes that `CardPlayProcedure` keeps private,
   to recover the subject card that CONTEXT.md defines and no model field
   carries. The procedure would declare it on the `Decide`.
-- [ ] **Derive the wire codecs.** The shared protocol has 94 DTOs, 86
-  hand-written `exact` key sets, 1,647 codec lines and 1,026 codec-suite
-  lines, and a third of a typical wire commit is codec and codec test. A
-  derived codec must still report a stale client bundle, which strict
-  unknown-field rejection does today. The operation codec co-changed with
-  `CoreOperations` in 13 of 16 commits; count its mechanical arms before
-  deciding it the same way. Design note:
-  [derive the wire codecs](superpowers/specs/2026-11-02-derive-wire-codecs-design.md).
+- [ ] **Derive the wire codecs, with a defaults macro.** The probe of
+  2026-11-03 stopped on the design note's own condition: no Mirror-only
+  deriver reproduces today's wire, because a field's presence follows its
+  case-class default, which a Mirror cannot see, and a few fields are
+  renamed or computed. Deriving now needs the note's `scala.quoted`
+  defaults macro plus per-field overrides, or a wire change in place.
+  Decide when a wire-heavy phase begins. Design note:
+  [derive the wire codecs](superpowers/specs/2026-11-02-derive-wire-codecs-design.md),
+  "Probe result".
 - [ ] **One frontend client (optional).** The development shell still talks
   to `/api/dev/first-games/{gameId}?playerId=` through its own
   `HttpGameClient`; mounting the dev API at `/games/{gameId}/api` with the

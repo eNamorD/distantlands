@@ -27,7 +27,9 @@ private[gamelog] final case class Run(procedure: ProcedureRef, actor: PlayerId,
   * and no further (spec, "Posting").
   */
 private[gamelog] final class LogJournal(
-    steps: Vector[ReplayStep[OathState, OathEvent]]):
+    steps: Vector[ReplayStep[OathState, OathEvent]],
+    applied: ReplayStep[OathState, OathEvent] => Vector[OpStep] =
+      LogJournal.opSteps):
   private val closings: Vector[Option[Int]] =
     steps.indices.foldRight(List.empty[Option[Int]]) { (index, later) =>
       val next = later.headOption.flatten
@@ -36,7 +38,7 @@ private[gamelog] final class LogJournal(
         case _ => next) :: later
     }.toVector
 
-  private val batches: Vector[Vector[OpStep]] = steps.map(LogJournal.opSteps)
+  private val batches: Vector[Vector[OpStep]] = steps.map(applied)
 
   def size: Int = steps.size
   def event(index: Int): OathEvent = steps(index).event.event
@@ -100,6 +102,14 @@ private[gamelog] final class LogJournal(
     }.sum
 
 private[gamelog] object LogJournal:
+  /** `opSteps`, applying each step once however many journals of one
+    * request read it: a voided step's operations and states are the same
+    * values in every prefix that holds it. Keyed by journal sequence, which
+    * is unique per step. */
+  def sharedOpSteps(): ReplayStep[OathState, OathEvent] => Vector[OpStep] =
+    val done = scala.collection.mutable.HashMap.empty[Long, Vector[OpStep]]
+    step => done.getOrElseUpdate(step.event.index, opSteps(step))
+
   def ready(state: OathState): Option[ReadyGame] = state match
     case OathState.Ready(ready) => Some(ready)
     case _ => None
@@ -117,7 +127,7 @@ private[gamelog] object LogJournal:
     * it yields no history to format. Only a hand-built step can reach this,
     * and swallowing the rejection let a test narrate lines from a state its
     * operations never reached (log operation strictness decision). */
-  private def opSteps(step: ReplayStep[OathState, OathEvent]): Vector[OpStep] =
+  def opSteps(step: ReplayStep[OathState, OathEvent]): Vector[OpStep] =
     (step.before, step.event.event) match
       case (OathState.Ready(start),
           WalkerStepRecorded(_, DeltaPayload(ops), _)) =>

@@ -23,10 +23,11 @@ final case class PowerCtx(
     nodePath: Vector[String],
     /** Exact windowed operation a contribution is being collected for. */
     operation: Operation,
-    /** The procedure the window is walked for, when it is known: the
-      * procedure of the parked position a command resumes, or the one a
-      * modifier is being selected for. `None` for the command that starts a
-      * procedure, which has not recorded one yet.
+    /** The procedure the window is walked for: the procedure a command
+      * starts, the one whose parked position it resumes, or the one a
+      * modifier is being selected for. A start and every resume of one
+      * procedure see the same value. `None` only outside any procedure's
+      * walk, such as a window gathered for a projection.
       */
     procedure: Option[ProcedureRef] = None,
     /** The decisions answered so far in the running action, oldest first. A

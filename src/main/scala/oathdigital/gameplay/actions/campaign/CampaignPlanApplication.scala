@@ -225,8 +225,16 @@ final class CampaignPlanApplication(catalog: ExecutableCatalog,
   private def effect(effect: CampaignPlanEffect): Operation = effect match
     case CampaignPlanEffect.AddAttackDice(count) =>
       ModifyDicePool(CampaignIds.attackPool, count)
+    // Empty Attack Pool (rules, "Use battle plans"): each die the attack
+    // pool lacks becomes a defense die added to the defense pool.
     case CampaignPlanEffect.RemoveAttackDice(count) =>
-      ModifyDicePool(CampaignIds.attackPool, -count)
+      BuildOps((state, _) =>
+        val held = state.game.current.rollPools.get(CampaignIds.attackPool)
+          .fold(0)(_.count)
+        val removed = count min held
+        Right(Vector(ModifyDicePool(CampaignIds.attackPool, -removed),
+          ModifyDicePool(CampaignIds.defensePool, count - removed))
+          .filter(_.delta != 0)))
     case CampaignPlanEffect.AddDefenseDice(count) =>
       ModifyDicePool(CampaignIds.defensePool, count)
     case CampaignPlanEffect.Run(operations) => Sequence(operations)

@@ -39,17 +39,17 @@ class GameLogCampaignSuite extends munit.FunSuite:
     // The loss sentence is three sentences now, one per node that applies
     // its clauses (slice 4). Half of a one-warband board is none, so
     // "lost" may be absent; the relocation never is, and it is last.
-    assert(all.last.startsWith(s"${playerLabel(defender)} ") &&
-      all.last.contains(" was sent to "), all)
+    assert(all.last.startsWith(s"Sent ${playerLabel(defender)}'s pawn to "),
+      all)
     assert(!all.last.contains(" lost "), all.last)
 
   test("a plan a defender chose names the defender, and a bandit's names " +
       "the bandits"):
     val chosen = lines(defenderChoseAPlan)
     assert(chosen.exists(line =>
-      line == s"${playerLabel(p2)} activated Towering Rampart"), chosen)
+      line == s"${playerLabel(p2)} used Towering Rampart"), chosen)
     val bandits = lines(banditPlanApplied)
-    assert(bandits.contains("The bandits activated Towering Rampart"),
+    assert(bandits.contains("The bandits used Towering Rampart"),
       bandits)
 
   test("a total a plan rewrites is told once, after the plan's own line"):
@@ -81,13 +81,13 @@ class GameLogCampaignSuite extends munit.FunSuite:
       "attack"):
     val script = raidUnderCarefulPlans
     val all = lines(script)
-    val from = all.indexOf("Activated Careful Plans")
+    val from = all.indexOf("Used Careful Plans")
     assert(from >= 0, all)
     // Dice.raid rolls a sword on every attack die and a blank on every
     // defense die. The three warbands sacrificed are added to the attack
     // after it is rolled, as in the printed order.
     assertEquals(all.slice(from, from + 7), Vector(
-      "Activated Careful Plans",
+      "Used Careful Plans",
       "Rolled blank, blank for the defense",
       "Defense: 3",
       "Rolled sword, sword, sword for the attack",

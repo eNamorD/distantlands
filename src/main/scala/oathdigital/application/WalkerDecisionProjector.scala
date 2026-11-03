@@ -122,8 +122,11 @@ private[application] final class WalkerDecisionProjector(
       parked.pending, parked.powers, parked.awaited, Some(parked.awaited),
       previewed = false)
   yield
+    // No look-ahead: the waiting line reads the heading, the deal and the
+    // id, which it never narrows. A choice whose every option it would
+    // hide shows the owner a Continue heading the waiting line lacks.
     val decide = ProcedureWalker.parkedDecide(context.ready, parked.tree,
-      parked.pending, parked.powers)
+      parked.pending, parked.powers, probing = false)
     WalkerWaitingProjection(parked.awaited.value,
       decide.flatMap(_.query.heading),
       parked.owners.filter(_ != parked.awaited).toVector.map(_.value).sorted,

@@ -43,7 +43,7 @@ class WayStationLogSuite extends munit.FunSuite:
     // The tag, then the toll, then where the Travel went.
     val order = Vector(log.indexOf("Travel"),
       log.indexOf("Way Station: Gave 1 favor to p2."),
-      log.indexOf("Travelled to Broken Peaks"))
+      log.indexOf("Traveled to Broken Peaks"))
     assert(order.forall(_ >= 0) && order == order.sorted, log.toString)
     assert(!log.exists(_.startsWith("Chose")), log.toString)
 

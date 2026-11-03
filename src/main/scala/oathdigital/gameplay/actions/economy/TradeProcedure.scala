@@ -21,23 +21,23 @@ object TradeProcedure:
   val tradedForFavor: NoteKey = notes.key("traded-favor", Vector(
     NotePart.Text("Traded with "), NotePart.Arg(0), NotePart.Text(" for "),
     NotePart.Arg(1), NotePart.Text(" favor")))
-  /** "Traded with Hiding Place for no favor": the suit's bank was empty, or
-    * a power removed the gain. The rule this replaced wrote "for no
-    * secrets" here whichever resource the Trade was for, which was wrong
+  /** "Traded with Hiding Place and gained no favor": the suit's bank was
+    * empty, or a power removed the gain. The rule this replaced wrote "for
+    * no secrets" here whichever resource the Trade was for, which was wrong
     * and which no test covered (slice 3 plan-time ruling 3). */
   val tradedForNoFavor: NoteKey = notes.key("traded-no-favor", Vector(
     NotePart.Text("Traded with "), NotePart.Arg(0),
-    NotePart.Text(" for no favor")))
+    NotePart.Text(" and gained no favor")))
   /** "Traded with Hiding Place for 2 secrets". */
   val tradedForSecrets: NoteKey = notes.key("traded-secrets", Vector(
     NotePart.Text("Traded with "), NotePart.Arg(0), NotePart.Text(" for "),
     NotePart.Arg(1), NotePart.Text(" "),
     NotePart.Plural(1, "secret", "secrets")))
-  /** "Traded with Hiding Place for no secrets": no adviser matched, so the
-    * Trade requested no gain at all. */
+  /** "Traded with Hiding Place and gained no secrets": no adviser matched,
+    * so the Trade requested no gain at all. */
   val tradedForNoSecrets: NoteKey = notes.key("traded-no-secrets", Vector(
     NotePart.Text("Traded with "), NotePart.Arg(0),
-    NotePart.Text(" for no secrets")))
+    NotePart.Text(" and gained no secrets")))
   def noteKeys: Vector[NoteKey] = notes.declared
 
   private def kind(resource: TradeResource, actor: PlayerId)
@@ -80,8 +80,8 @@ object TradeProcedure:
     *
     * A Trade for secrets with no matching adviser requests no gain at all,
     * so the window holds only this note and `previous` is the cost: the
-    * difference is zero and the line is "for no secrets", which is what the
-    * rule wrote at completion.
+    * difference is zero and the line says it "gained no secrets", the case
+    * the rule wrote at completion.
     */
   private def tradedNote(resource: TradeResource, actor: PlayerId,
       states: NoteStates, source: MusterSource): Option[LogNote] =

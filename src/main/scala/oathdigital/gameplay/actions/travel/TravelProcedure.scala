@@ -48,9 +48,9 @@ object TravelProcedure:
   private val startLabel = "Start Travel"
 
   private val notes = NoteSet(ProcedureNotes.id(ActionRef.Travel))
-  /** "Travelled to Broken Peaks". */
+  /** "Traveled to Broken Peaks". */
   val travelled: NoteKey = notes.key("travelled", Vector(
-    NotePart.Text("Travelled to "), NotePart.Arg(0)))
+    NotePart.Text("Traveled to "), NotePart.Arg(0)))
   def noteKeys: Vector[NoteKey] = notes.declared
 
   def build(catalog: ExecutableCatalog, state: ReadyGame,

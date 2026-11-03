@@ -229,7 +229,7 @@ class ProcedureNoteLinesSuite extends munit.FunSuite:
   // the wording ledger).
   test("a Trade for favor that gained none says no favor"):
     assertEquals(said(ActionRef.Trade, TradeProcedure.tradedForNoFavor,
-      NoteArg.Card(roar)), "Traded with a Denizen for no favor")
+      NoteArg.Card(roar)), "Traded with a Denizen and gained no favor")
 
   test("both Recover lines post at Action"):
     assertEquals(kindOf(ActionRef.Recover, RecoverProcedure.recovered),
@@ -324,7 +324,7 @@ class ProcedureNoteLinesSuite extends munit.FunSuite:
       "p2 burned 1 favor, discarded a Denizen and set aside a Relic")
     assertEquals(said(ActionRef.Campaign, CampaignNotes.sentTo,
       NoteArg.Player(PlayerId("p2")), NoteArg.Site(brokenPeaks)),
-      "p2 was sent to Broken Peaks")
+      "Sent p2's pawn to Broken Peaks")
 
   test("Campaign's winner, spoils, placement and plan lines"):
     assertEquals(said(ActionRef.Campaign, CampaignNotes.playerWins,
@@ -342,23 +342,23 @@ class ProcedureNoteLinesSuite extends munit.FunSuite:
       NoteArg.Placements(Vector(1 -> brokenPeaks))),
       "Placed 1 warband on Broken Peaks")
     assertEquals(said(ActionRef.Campaign, CampaignNotes.activatedPlan,
-      NoteArg.Card(birdsong)), "Activated a Denizen")
+      NoteArg.Card(birdsong)), "Used a Denizen")
     assertEquals(said(ActionRef.Campaign,
       CampaignNotes.playerActivatedPlan, NoteArg.Player(PlayerId("p2")),
-      NoteArg.Card(birdsong)), "p2 activated a Denizen")
+      NoteArg.Card(birdsong)), "p2 used a Denizen")
     assertEquals(said(ActionRef.Campaign,
       CampaignNotes.banditsActivatedPlan, NoteArg.Card(birdsong)),
-      "The bandits activated a Denizen")
+      "The bandits used a Denizen")
     assertEquals(said(ActionRef.Campaign,
       CampaignNotes.activatedOathkeeperTitle,
       NoteArg.Player(PlayerId("p2"))),
-      "p2 activated the Oathkeeper title")
+      "p2 used the Oathkeeper title")
     assertEquals(said(ActionRef.Campaign,
       CampaignNotes.activatedUsurperTitle, NoteArg.Player(PlayerId("p2"))),
-      "p2 activated the Usurper title")
+      "p2 used the Usurper title")
 
   test("a Campaign that ended before its battle says why"):
     assertEquals(said(ActionRef.Campaign, CampaignNotes.skipped),
-      "Skipped the Campaign.")
+      "Skipped the Campaign")
     assertEquals(said(ActionRef.Campaign, CampaignNotes.nothingToAttack),
-      "Nothing left to attack: the Campaign ended.")
+      "Ended the Campaign with nothing left to attack")

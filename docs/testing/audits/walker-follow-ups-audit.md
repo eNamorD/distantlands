@@ -1,6 +1,18 @@
 # Audit: the walker follow-ups
 
-> Status: read-only audit, 2026-11-02, of the ROADMAP item "Walker
+> Status: followed up, 2026-11-03, with the owner's recommended defaults.
+> Section 1 landed as commit b5da1f60 (a start walks its procedure), section
+> 6 as 27f0a52e (the waiting line skips the look-ahead) and question 3 as
+> cafeebd0 (Empty Attack Pool, applied where every remove-attack-dice plan
+> takes effect). Section 5 and question 4 are overtaken: the Empire branch
+> seats Imperials, and `GameStartRules` refuses the Chronicle shapes not
+> yet supported. Of section 2's seven cards, Spiral Castle and the Hall of
+> Debate and Tome Guardians restrictions landed in catalog batch 9 and
+> Martial Culture and the Scepter's plan with the Empire; Glamor, Relic
+> Hunter and Obsidian Cage have the owner's rulings of 2026-11-03, recorded
+> under the roadmap's "The last battle plans", and wait to be built.
+>
+> Written as a read-only audit, 2026-11-02, of the ROADMAP item "Walker
 > follow-ups" under Powers-related deferred items. The item was recorded by
 > the [campaign walker design](../../superpowers/specs/2026-09-19-campaign-walker-design.md)
 > ("Deferred, and recorded") and

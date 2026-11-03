@@ -1,6 +1,21 @@
 # Audit: do a split delta's steps bracket their operation?
 
-> Status: read-only audit, 2026-11-02, of the ROADMAP item "Check that a
+> Status: settled, 2026-11-03. The owner answered question 1 against the
+> default: `Discard.Relic` and `Discard.RuinedEdifice` stay whole and post
+> "{Blue} set aside {card}" (commit 239e8c85, which also made `OpStep` true
+> by construction, slice 1). For question 2 the owner asked for the
+> project's testing guidance to decide; it ruled out both tests below.
+> The `parts` unit test restates `parts`' whole list in a second
+> hand-written list, which drifts and only fails when someone remembers
+> it. The property test guards an error that cannot happen once a part is
+> judged at its step's states: the engine applies a composite atomically,
+> so those states are the only honest bracket, and `delta` now takes the
+> part beside its step instead of a hand-built `OpStep`. The new lines
+> have focused tests in `GameLogRareLinesSuite`. Slice 2 is therefore not
+> done; slice 3 landed as commit 287b3023 and slice 4 (commit 59aa8a3e) as a `formatAppended`
+> that folds each appended batch rather than checking one it was handed.
+>
+> Written as a read-only audit, 2026-11-02, of the ROADMAP item "Check that a
 > split delta's steps bracket their operation" under Game Log deferred
 > items, which the
 > [log operation strictness decision](../../superpowers/specs/2026-10-19-log-operation-strictness-decision.md)

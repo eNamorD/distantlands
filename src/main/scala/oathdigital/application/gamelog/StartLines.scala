@@ -71,7 +71,7 @@ private[gamelog] final class StartLines(words: LogWords,
     else
       val spent = journal.supplySpent(at, run.actor)
       Option.when(spent > 0)(Posted(LogKind.Action,
-        Vector(Text("Continued"), LogSpan.Cost(spent))))
+        Vector(Text("Continued recovering"), LogSpan.Cost(spent))))
 
   private def completing(journal: LogJournal, at: Int): Boolean =
     journal.event(at).isInstanceOf[WalkerCompleted]

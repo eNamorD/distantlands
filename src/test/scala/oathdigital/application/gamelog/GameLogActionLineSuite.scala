@@ -81,8 +81,9 @@ class GameLogActionLineSuite extends munit.FunSuite:
     val script = trade
     val mine = lines(script, None)
     assert(mine.exists(_.startsWith("Trade −")), mine)
-    assert(mine.exists(line => "^Traded with .+ for (no|\\d+) secrets?$".r
-      .matches(line)), mine)
+    assert(mine.exists(line =>
+      "^Traded with .+ (for \\d+ secrets?|and gained no secrets)$".r
+        .matches(line)), mine)
 
   test("Take Wealth: one line naming the site, and no tag"):
     val script = takeWealth
@@ -96,7 +97,7 @@ class GameLogActionLineSuite extends munit.FunSuite:
     val mine = lines(script, None)
     // Recover's printed cost, paid again for the one continue: 1 Supply.
     assert(mine.contains("Recover −1 Supply"), mine)
-    assertEquals(mine.count(_ == "Continued −1 Supply"), 1, mine)
+    assertEquals(mine.count(_ == "Continued recovering −1 Supply"), 1, mine)
     assert(mine.last.startsWith("Failed to recover at "), mine)
 
   test("a successful Recover names the relic to the recoverer only"):
