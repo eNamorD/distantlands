@@ -16,7 +16,8 @@ import oathdigital.model._
   *
   * Bandits lose nothing more: every targeted bandit already died. Each kill
   * reads the board when it runs, so when Sticky Fire and Shield Wall both
-  * kill the same force, the second finds nothing left to kill.
+  * kill the same force, the second finds nothing left to kill. Obsidian
+  * Cage reads the same force and moves it onto the Cage instead.
   */
 private[campaign] object KillWholeForce:
   /** A player defender's board before the losses run, and what a Conquest
@@ -33,41 +34,57 @@ private[campaign] object KillWholeForce:
         Returns(board(ready, defender), total - total / 2)
       case _ => Returns(0, 0)
 
-  /** The defeated defender's whole force, as the losses left it. A Conquest
-    * defender loses what the losses returned and is still on its board: the
-    * smaller of the returned amount and how much the board has grown. */
-  def ofDefender(ready: ReadyGame, result: CampaignResult, returns: Returns)
-      : Either[OathViolation, Vector[CoreOperation]] = result.defender match
-    case CampaignDefender.Player(defender) => result.kind match
-      case CampaignKind.Conquest => killed(ready, defender,
-        math.min(returns.returned, board(ready, defender) - returns.board))
-      case CampaignKind.Raid => killed(ready, defender, board(ready, defender))
-    case CampaignDefender.Bandits => Right(Vector.empty)
+  /** Warbands of one force standing at one place. */
+  final case class Stack(at: Location, kind: ForceKind, count: Int):
+    def kill: CoreOperation =
+      Kill(Piece.Warbands(kind, count), PositionedLocation(at))
 
-  /** The defeated attacker's whole board, and their warbands at a queued
-    * origin. */
+  /** The defeated defender's whole force, as the losses left it. A Conquest
+    * defender's force is what the losses returned and is still on its
+    * board: the smaller of the returned amount and how much the board has
+    * grown. A Raid defender's is its whole board. Bandits have none left. */
+  def defenderForce(ready: ReadyGame, result: CampaignResult,
+      returns: Returns): Either[OathViolation, Vector[Stack]] =
+    result.defender match
+      case CampaignDefender.Player(defender) => result.kind match
+        case CampaignKind.Conquest => onBoard(ready, defender,
+          math.min(returns.returned, board(ready, defender) - returns.board))
+        case CampaignKind.Raid => onBoard(ready, defender,
+          board(ready, defender))
+      case CampaignDefender.Bandits => Right(Vector.empty)
+
+  /** The defeated attacker's whole force: their whole board, and their
+    * warbands at a queued origin. */
+  def attackerForce(ready: ReadyGame, result: CampaignResult)
+      : Either[OathViolation, Vector[Stack]] =
+    onBoard(ready, result.attacker, board(ready, result.attacker)).flatMap(
+      boardStack => atOrigin(ready, result).map(boardStack ++ _))
+
+  /** The defeated defender's whole force, killed. */
+  def ofDefender(ready: ReadyGame, result: CampaignResult, returns: Returns)
+      : Either[OathViolation, Vector[CoreOperation]] =
+    defenderForce(ready, result, returns).map(_.map(_.kill))
+
+  /** The defeated attacker's whole force, killed. */
   def ofAttacker(ready: ReadyGame, result: CampaignResult)
       : Either[OathViolation, Vector[CoreOperation]] =
-    killed(ready, result.attacker, board(ready, result.attacker)).flatMap(
-      onBoard => atOrigin(ready, result).map(onBoard ++ _))
+    attackerForce(ready, result).map(_.map(_.kill))
 
   /** The attacker's warbands at the origin, as the losses left them. */
   private def atOrigin(ready: ReadyGame, result: CampaignResult)
-      : Either[OathViolation, Vector[CoreOperation]] =
+      : Either[OathViolation, Vector[Stack]] =
     result.originForce.fold(Right(Vector.empty))(origin =>
       PlayerFacts.forceKind(ready, result.attacker).map(kind =>
         ready.game.current.map.sites.get(origin.site).map(_.forces).toVector
           .collect { case SiteForces.Occupied(`kind`, count) if count > 0 =>
-            Kill(Piece.Warbands(kind, count),
-              PositionedLocation(Location.Site(origin.site))) }))
+            Stack(Location.Site(origin.site), kind, count) }))
 
   private def board(ready: ReadyGame, player: PlayerId): Int =
     ready.game.current.players.find(_.player == player)
       .fold(0)(_.board.warbands)
 
-  private def killed(ready: ReadyGame, player: PlayerId, amount: Int)
-      : Either[OathViolation, Vector[CoreOperation]] =
+  private def onBoard(ready: ReadyGame, player: PlayerId, amount: Int)
+      : Either[OathViolation, Vector[Stack]] =
     if amount <= 0 then Right(Vector.empty)
-    else PlayerFacts.forceKind(ready, player).map(kind => Vector(Kill(
-      Piece.Warbands(kind, amount),
-      PositionedLocation(Location.PlayArea(player)))))
+    else PlayerFacts.forceKind(ready, player).map(kind => Vector(
+      Stack(Location.PlayArea(player), kind, amount)))

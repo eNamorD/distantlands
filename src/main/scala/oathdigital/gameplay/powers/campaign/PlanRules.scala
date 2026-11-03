@@ -25,8 +25,9 @@ import oathdigital.gameplay.powerresolver.ContributingPower
   * (an amount asked when applied, and a discard at the end on three),
   * Herald (a favor after another player's Campaign), Sneak Attack (a
   * Campaign offered back against its attacker) and Vow of Union
-  * (warbands moved at the start of any Campaign) and Keep (a Raid's defeat
-  * replaced). Each names its card, so all are always present.
+  * (warbands moved at the start of any Campaign), Keep (a Raid's defeat
+  * replaced) and Relic Hunter (relics targeted when applied, taken in a
+  * won Conquest's placement). Each names its card, so all are always present.
   */
 object PlanRules:
   val all: Vector[ContributingPower] =
@@ -40,4 +41,4 @@ object PlanRules:
       MountainGiant, MountedPatrol, ShieldWall,
       BillowingFog, TravelingDoctor, CursedCauldron,
       SaltTheEarth, SealingWard, Herald, SneakAttack,
-      VowOfUnion, KeepRule)
+      VowOfUnion, KeepRule, RelicHunter, Glamor, ObsidianCage)

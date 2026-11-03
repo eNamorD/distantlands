@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.holding.{GlamorCard, SearchPartyCard}
+import oathdigital.catalog.holding.{MagiciansCodeCard, SearchPartyCard}
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.NoteText
@@ -50,7 +50,7 @@ class RivalKhanSuite extends munit.FunSuite:
     val base = rivalRulesOriginAndHoldsOathkeeper(
       board(warbands = 5, supply = 7))
     val b = withAdviserFor(withAdviser(base, card, Orientation.FaceUp),
-      base.rival, planlessCard(GlamorCard), Orientation.FaceUp)
+      base.rival, planlessCard(MagiciansCodeCard), Orientation.FaceUp)
     assert(!commit(rules(losingDice), b, 3).offers(b.actor, b.actor,
       CampaignIds.attackerPlan, ref))
 

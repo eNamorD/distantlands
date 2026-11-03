@@ -278,8 +278,20 @@ final case class CurrentGameState(
     // each paid (`PlayedPick`). Walker scratch: replay rebuilds it from the
     // recorded `OpenPick`, payments and `ClosePick`, and the walker and
     // `WalkerCompleted` clear it with the dice pools.
-    walkerPicks: Vector[PlayedPick] = Vector.empty
+    walkerPicks: Vector[PlayedPick] = Vector.empty,
+    // Warbands that stand on a card rather than a board or a site, by card
+    // and force (Obsidian Cage). They stay on the card wherever it goes,
+    // and count as out of their bank. A kind with none is absent.
+    warbandsOnCards: Map[CardId, Map[ForceKind, Int]] = Map.empty
 ):
+  /** The warbands of `kind` on `card`. */
+  def warbandsOn(card: CardId, kind: ForceKind): Int =
+    warbandsOnCards.get(card).flatMap(_.get(kind)).getOrElse(0)
+
+  /** Every warband of `kind` standing on a card. */
+  def warbandsOnCardsOf(kind: ForceKind): Int =
+    warbandsOnCards.valuesIterator.map(_.getOrElse(kind, 0)).sum
+
   /** The player the current walk belongs to (catalog batch 8, slice 14):
     * the actor of the queue entry it was started from, else the turn's
     * player. A queued walk's actor may be off turn (Sneak Attack, a

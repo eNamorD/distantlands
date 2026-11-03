@@ -12,11 +12,3 @@ object CouncilSeatCard extends Denizen(DenizenId("123"), "Council Seat", Suit.Or
     text = "If you're a Citizen, you **cannot** be exiled, even by " +
       "yourself.")
   val powers: Vector[PrintedPower] = Vector(power)
-
-object RelicHunterCard extends Denizen(DenizenId("126"), "Relic Hunter", Suit.Order):
-  val power = PrintedPower(PowerId("denizen.relic-hunter"),
-    persistent = false, cost = Cost.free,
-    text = "You may target facedown relics at targeted sites, adding 1 " +
-      "[defense-die] per relic. You may put any relics you take on " +
-      "the bottom of the relic deck.")
-  val powers: Vector[PrintedPower] = Vector(power)

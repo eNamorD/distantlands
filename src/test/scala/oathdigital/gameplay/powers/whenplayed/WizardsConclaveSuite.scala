@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.whenplayed
 
-import oathdigital.catalog.holding.GlamorCard
+import oathdigital.gameplay.powers.campaign.GlamorCard
 import oathdigital.gameplay.cards.BuriedGiantSite
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.search.DisciplesCard

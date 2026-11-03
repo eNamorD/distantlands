@@ -227,7 +227,7 @@ Against the card data (`cards/content/card-data/oath/en-US/*.yml`, tag
 | --- | --- | --- | --- |
 | Glamor (207) | `catalog/holding/HoldingArcaneDenizens.scala:17-23` | Raid may also target the enemy's secrets except their last; +1 defense die each; taken on victory | `CampaignTargetSelection` (new target kind), `CampaignGatherPools`, `CampaignRaidTransfer` |
 | Relic Hunter (126) | `HoldingOrderDenizens.scala:25-31` | Conquest may target facedown relics at targeted sites, +1 defense die each; taken relics may go to the relic deck's bottom | `CampaignTargetSelection`, `CampaignGatherPools`, `CampaignLosses`/`CampaignPlacement` (a Conquest has no transfer step today) |
-| Obsidian Cage (R18) | `HoldingRelics.scala:37-46` | on victory, the enemy's unkilled force moves onto the card; an Action returns them | `CampaignLosses`; a new card location for warbands |
+| Obsidian Cage (R18) | `gameplay/powers/campaign/ObsidianCage.scala`, `gameplay/powers/action/ObsidianCageAction.scala` | on victory, the enemy's unkilled force moves onto the card; an Action returns them | `CampaignLosses`; a new card location for warbands |
 | Spiral Castle / Spiral Dungeons (E23) | `HoldingEdifices.scala:238-250` | Raid victory: defender's pawn placed at this site and loses 2 Supply; ruined: attacker's pawn, bandits use it | `CampaignRaidRelocation` (replace the decision), `CampaignActionEligibility` for the attacker's pawn |
 | Martial Culture (10) | `HoldingOrderDenizens.scala:10-16` | an Exile who defeats another Exile may become a Citizen | Empire: no Citizen can exist yet |
 | The Grand Scepter's plan | `gameplay/operations/GrandScepter.scala:11-14` | an Imperial victorious against a Citizen exiles them | Empire |
@@ -248,6 +248,125 @@ Two rules of the step itself deserve a check rather than a card:
 The bandit family is complete as far as the rules go: bandits use
 cost-free plans they rule (`CampaignPlanChoice.banditPlans`), and the one
 deterministic bandit plan the design named (Watchdog) is in `BattlePlans`.
+
+### Relic Hunter: rulings made while implementing
+
+Relic Hunter (126) is implemented in
+`gameplay/powers/campaign/RelicHunter.scala`, under the owner's rulings of
+2026-11-03 (Conquest only; facedown relics at the targeted sites, a defense
+die each; taken on victory; any may go to the bottom of the relic deck).
+What the card and the rulings left open was decided as follows, for the
+owner to confirm:
+
+- **When the relics are chosen.** As the Glamor ruling has it: the plan is
+  used in the attacker's plan window like any plan, and its user then
+  chooses which relics to target. The question is the plan's amount
+  (`PlanAmount`), a `ChooseMany` of `SiteRelicSlot`s, so no option
+  discloses a facedown relic. Zero is a legal answer, and adds nothing.
+- **Which relics.** Every facedown relic at a site the Conquest targets,
+  the origin included (FAQ: a relic is targeted only with its site). A
+  relic a restriction would not let the attacker take (Ancient Bloodline)
+  is shown unavailable with its reason. With no relic to target the plan
+  is shown unavailable: "No facedown relic at the targeted sites".
+- **Where the take happens.** In the Conquest's placement window, after
+  the survivors are placed. The window now stands on every Conquest
+  victory, even with no survivor (`CampaignConquest`), so the take always
+  has its place. It comes before every "At End" plan, so Salt the Earth
+  buries the site after the relics are gone.
+- **How the bottom choice is made.** The attacker peeks at the targeted
+  relics, then answers one `ChooseMany` for those to put on the bottom of
+  the relic deck, then every targeted relic is taken, facedown as it lay,
+  and the chosen ones are moved to the bottom. "Any relics you take" means
+  the relics this plan took; nothing else is taken in a Conquest.
+- **An untaken relic.** A defeated attacker takes nothing, and the targeted
+  relics stay at their sites.
+- **Lines.** "Targeted 2 facedown relics for 2 defense dice." when the
+  relics are chosen; "Took {relics}." and "Put {relics} on the bottom of
+  the relic deck." when they are taken. The peeks keep their generic
+  "Peeked at" lines. The other seats see the relics' backs (golden
+  `relic-hunter`).
+
+### Glamor: rulings made while implementing
+
+Glamor (207) is implemented in `gameplay/powers/campaign/Glamor.scala`,
+under the owner's ruling of 2026-11-03 (chosen in the battle plan step
+like any plan; its user then chooses how many secrets to target, and those
+join the Campaign's targets). What the card and the ruling left open was
+decided as follows, for the owner to confirm:
+
+- **Who and where.** An attacker's plan, in a Raid or a Conquest against a
+  player defender. Bandits have no board, so it is never offered against
+  them. "Your enemy" is the Campaign's defender.
+- **How many.** The plan's amount, a `ChooseAmount` from one to the
+  defender's board secrets less one, faceup and facedown counted alike
+  (FAQ for Book Burning: "all of their secrets except one, whether face up
+  or down"). With one secret or none, the plan is shown unavailable: "The
+  defender has no secret but their last". Each targeted secret adds one
+  defense die.
+- **Where the take happens.** In a Raid, in the transfer window, after the
+  printed takes and consequences and before the pawn's relocation. In a
+  Conquest, in the placement window, as Relic Hunter's take.
+- **Which secrets, which side.** Faceup secrets are taken first, as Sleight
+  of Hand and Witch's Bargain take them, so the defender keeps a facedown
+  one when they have one. Each taken secret keeps its side (`Take` with a
+  `sourceSide`): a facedown secret arrives facedown on the attacker's
+  board and flips at their cleanup.
+- **A board that shrank.** The take is cut to leave the defender one
+  secret, should their board have lost any since the targeting (a burnt
+  secret cost, say). A defense plan's paid secrets flip facedown and stay
+  on the board, so they still count.
+- **Defeat.** A defeated attacker takes nothing.
+- **Lines.** "Targeted 2 secrets for 2 defense dice." when chosen, and
+  "Took 2 secrets from Blue." when taken, parallel to the Raid's "Took …
+  from Blue" (golden `glamor`).
+
+### Obsidian Cage: rulings made while implementing
+
+Obsidian Cage's battle plan (R18) is implemented in
+`gameplay/powers/campaign/ObsidianCage.scala`, under the owner's ruling of
+2026-11-03 (bandit warbands are always killed, so none reach the Cage).
+What the card, the FAQ and the ruling left open was decided as follows,
+for the owner to confirm:
+
+- **Side.** Either side: the card's braid is printed red into blue, and
+  "your enemy's force" reads for both. Its holder uses it from the faceup
+  relic, for free. Against bandits it is shown unavailable: "Bandit
+  warbands are always killed, so none reach the Cage".
+- **The enemy's unkilled force.** The force as the losses left it, read as
+  Shield Wall and Sticky Fire read the force they kill (`KillWholeForce`,
+  ruling R4): a Conquest defender's warbands the victory returned to its
+  board (not the board it held before), a Raid defender's whole board, and
+  a defeated attacker's whole board with its warbands at a queued origin.
+- **Timing.** In the losses window, after the losses, so a Conquest's
+  placement and a Raid's transfer follow it. Hospital and Sticky Fire fold
+  in the same window; their order with the Cage is the fold's, not pinned
+  by a test.
+- **The location.** Warbands on a card are kept by card and force in
+  `CurrentGameState.warbandsOnCards`, so they stay on the Cage wherever it
+  goes and keep an Exile's colour. They count as out of their bank
+  (`PlayerFacts.banked`, the operation guard's bank count). The table shows
+  them on the held relic's details, one entry per force, in its owner's
+  colour (`CardDetailsProjection.warbands`, empty when absent on the wire,
+  as `powers` is).
+- **Lines.** "Moved 2 of Blue's warbands onto Obsidian Cage.", or "Moved 2
+  warbands onto Obsidian Cage." when they are the actor's (golden
+  `obsidian-cage`).
+- **The Action.** Free, used by the Cage's holder
+  (`gameplay/powers/action/ObsidianCageAction.scala`). "Any board of the
+  same color" is every board whose warbands are of a caged force: an
+  Exile's lineage player's, the Chancellor's and Citizens' for Imperial
+  ones. One board asks how many, from one; several ask a distribution of at
+  least one. It is offered only while a caged force has a board. Lines:
+  "Returned 2 warbands from Obsidian Cage to Blue." and "Took back 1
+  warband from Obsidian Cage." for the user's own.
+- **The return (FAQ).** No in-game power returns a held relic to the relic
+  deck; the Chronicle's Throne does, so before the Reliquary is stocked
+  every warband on a card goes home as the Action would, with nothing
+  asked: an Exile's to that lineage's player, Imperial ones to the
+  Chancellor, a force with no board to its bank. An Exile who has become a
+  Citizen gets as many purple warbands as the Imperial bank holds, and the
+  Exile ones return to their bank (FAQ: they become purple); that path is
+  not pinned by a test.
 The roadmap's separate item "Record a bandit's applied battle plan as an
 event" covers how that use is journaled.
 
@@ -285,14 +404,14 @@ is bound to each (`grep -l PowerWindow.<name>` under `gameplay/powers`):
 | Window | Bound today | Rules still unbound |
 | --- | --- | --- |
 | `CampaignAfterOutcome` | `VictoriousNow` (Peace Envoy, Hearts and Minds) | none |
-| `CampaignLosses` | Billowing Fog, Traveling Doctor (`SparedForce`), Sticky Fire, Shield Wall (`KillWholeForce`), Hospital, Cursed Cauldron, Peace Envoy | Obsidian Cage |
+| `CampaignLosses` | Billowing Fog, Traveling Doctor (`SparedForce`), Sticky Fire, Shield Wall (`KillWholeForce`), Hospital, Cursed Cauldron, Peace Envoy, Obsidian Cage | none |
 | `CampaignSkullLosses`, `CampaignSacrificeLosses` | Hospital, Cursed Cauldron | none |
-| `CampaignPlacement` | Vow of Wandering | Relic Hunter's relic take (if modelled as part of the Conquest resolution) |
-| `CampaignRaidTransfer` | the `BattlePlan` trait (no card) | Glamor's secrets |
+| `CampaignPlacement` | Vow of Wandering, Relic Hunter (its take) | none |
+| `CampaignRaidTransfer` | the `BattlePlan` trait, Glamor (its take) | none |
 | `CampaignRaidConsequences` | Keep | none |
 | `CampaignRaidRelocation` | Keep | Spiral Castle |
 | `CampaignActionEligibility` (the root, "At End") | Battle Honors, Book Burning, Careful Plans, `DiscardedAtEnd` (Pledge of Defense, Rain Boots, Rival Khan, Great Crusade, Mounted Patrol, Lancers, Horse Archers, Storm Caller, Warning Signals), Field Promotion, Herald, Hospital, Mercenaries, Military Parade, Salt the Earth, Second Wind, Sneak Attack, Tribute Spoils, Vow of Peace, Wild Mounts, Diplomat, the fortress rules | Spiral Dungeons (attacker's pawn and Supply), Martial Culture, Grand Scepter |
-| `CampaignTargetSelection` | Circlet of Command, Forgotten Vault, Lost Tongue, the Pass | Hall of Debate and Tome Guardians (`HoldingEdifices.scala:8-16, 190-198`: the ruler's enemies cannot target the banner they hold), Glamor and Relic Hunter's new target kinds |
+| `CampaignTargetSelection` | Circlet of Command, Forgotten Vault, Lost Tongue, the Pass | Hall of Debate and Tome Guardians (`HoldingEdifices.scala:8-16, 190-198`: the ruler's enemies cannot target the banner they hold), none for Glamor or Relic Hunter, which ask their targets as the plan's own question |
 
 The Raid step order (takes, then consequences in their own window, then
 relocation; `CampaignRaid.scala:11-30`) matches the rules' four Raid

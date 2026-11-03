@@ -4,6 +4,7 @@ import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.{OathRules, WalkerDiceFixture}
 import oathdigital.gameplay.operations.TheGrandScepterCard
 import oathdigital.gameplay.powers.WalkerPowerCatalog
+import oathdigital.gameplay.powers.campaign.ObsidianCageCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{Outcomes, Table}
@@ -105,3 +106,17 @@ class ReliquaryAndRelicsSuite extends munit.FunSuite:
   test("Scatter leaves the Grand Scepter with its holder"):
     val after = done(throneStarted(empire.relic(p1, TheGrandScepterCard.id)))
     assertEquals(relicsOf(after, p1), Vector(TheGrandScepterCard.id))
+
+  test("warbands on Obsidian Cage go back to their boards before the " +
+      "relics leave their holders"):
+    val cage = ObsidianCageCard.id
+    val table = empire.relic(p2, cage).boardWarbands(p2, 1)
+      .warbandsOnCard(cage, p2, 2).warbandsOnCard(cage, p1, 1)
+    val board = (ready: ReadyGame, player: PlayerId) =>
+      ready.game.current.players.find(_.player == player).get.board.warbands
+    val before = table.ready
+    val after = done(throneStarted(table))
+    assertEquals(after.game.current.warbandsOnCards, Map.empty)
+    assertEquals(board(after, p2), 1 + 2)
+    // p1, the Chancellor, takes back the purple warband.
+    assertEquals(board(after, p1), board(before, p1) + 1)

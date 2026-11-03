@@ -1,10 +1,11 @@
 package oathdigital.gameplay.powers.campaign
 
 import oathdigital.gameplay.powers.economy.HallowedSpringCard
-import oathdigital.catalog.holding.{CouncilSeatCard, RelicHunterCard}
+import oathdigital.catalog.holding.CouncilSeatCard
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.campaign.PlanDriver._
+import oathdigital.gameplay.powers.whenplayed.RoyalTaxCard
 import oathdigital.model._
 import oathdigital.testkit.Look
 
@@ -17,9 +18,10 @@ class TributeSpoilsSuite extends munit.FunSuite:
   private val honors = BattleHonorsCard.id
   private val honorsRef: DecisionOptionRef =
     DecisionOptionRef.Denizen(honors)
+  // Royal Tax is implemented, but its power offers no battle plan.
   // Martial Culture's plan needs an Exile user who rules its site; it
   // stands at the bandits' origin here, so it offers none.
-  private val orders = planless(RelicHunterCard, CouncilSeatCard) :+
+  private val orders = (RoyalTaxCard.id +: planless(CouncilSeatCard)) :+
     MartialCultureCard.id
   // Beast, on either face: Hallowed Spring intact, Hiding Place ruined.
   private val beastEdifice = HallowedSpringCard.id

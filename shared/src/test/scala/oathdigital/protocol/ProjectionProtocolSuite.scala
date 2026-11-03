@@ -168,6 +168,14 @@ class ProjectionProtocolSuite extends munit.FunSuite:
         discardTopCardKind = Some("denizen"))))
     assertRoundTrips(withPile)
 
+  test("warbands caged on a held relic round-trip, one entry per force"):
+    val cage = known.copy(cardId = "R18", cardKind = "relic", warbands = Vector(
+      SiteForcesProjection.Exile(2, "p2", PlayerColor.Blue,
+        "Blue Warbands"),
+      SiteForcesProjection.Imperial(1, "Imperial Warbands")))
+    assertRoundTrips(projection.copy(playerBoards = projection.playerBoards
+      .map(_.copy(relics = Vector(cage)))))
+
   test("a board's bag figures and the Supply bands round-trip"):
     val withBag = projection.copy(
       playerBoards = projection.playerBoards.map(_.copy(bankedWarbands = 5,

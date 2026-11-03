@@ -21,7 +21,7 @@ object ChronicleGeneratorFailure:
  * without its edifice card just because none of its suit's five are
  * implemented yet); a 60-denizen world deck, 10 per suit (every implemented
  * denizen of the suit, up to 10, topped up with random unimplemented ones);
- * 12 dispossessed denizens, 2 unimplemented per suit, drawn from what the 60
+ * 12 dispossessed denizens, 2 per suit, drawn from what the 60
  * left behind; and the full ordinary relic deck. Both decks are ordered
  * implemented-first by `policy`. `implemented` is the per-power answer
  * `ImplementedCardCatalog` reads. Self-validates the counts before returning.
@@ -78,7 +78,9 @@ object FirstGameChronicleGenerator:
 
   /** Per suit: every implemented denizen (up to 10, chosen at random past
     * that) goes into the world deck, random unimplemented ones fill it to 10,
-    * and the next 2 unimplemented ones are dispossessed. */
+    * and 2 of the denizens left out, implemented or not, are dispossessed.
+    * The catalog nears completion, so a suit may have no unimplemented
+    * denizen to spare. */
   private def denizenPools(catalog: ExecutableCatalog,
       implementedPower: PowerId => Boolean, random: ChronicleRandomPort)
       : Either[ChronicleGeneratorFailure, (Vector[DenizenId], Vector[DenizenId])] =
@@ -92,13 +94,13 @@ object FirstGameChronicleGenerator:
         val (impl, unimpl) = suited.partition(implemented)
         val chosenImpl = random.shuffle(impl).take(PerSuit)
         val filler = PerSuit - chosenImpl.size
-        if unimpl.size < filler + DispossessedPerSuit then
+        if suited.size < PerSuit + DispossessedPerSuit then
           Left(TooFewSuitDenizens(suit, impl.size, unimpl.size))
         else
-          val shuffledUnimpl = random.shuffle(unimpl)
-          Right((worldPool ++ chosenImpl ++ shuffledUnimpl.take(filler),
-            dispossessedPool ++
-              shuffledUnimpl.slice(filler, filler + DispossessedPerSuit)))
+          val world = chosenImpl ++ random.shuffle(unimpl).take(filler)
+          val left = random.shuffle(suited.filterNot(world.contains))
+          Right((worldPool ++ world,
+            dispossessedPool ++ left.take(DispossessedPerSuit)))
       }
 
   private def validate(catalog: ExecutableCatalog, chronicle: Chronicle)

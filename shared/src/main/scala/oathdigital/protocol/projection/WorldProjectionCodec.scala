@@ -23,12 +23,13 @@ private[protocol] object WorldProjectionCodec:
     "side" -> stringOption(value.side), "favor" -> value.favor, "secrets" -> value.secrets,
     "relicValue" -> intOption(value.relicValue), "defense" -> intOption(value.defense),
     "hidden" -> value.hidden, "implemented" -> value.implemented,
-    "powers" -> encoded(value.powers)(encodePowerFace))
+    "powers" -> encoded(value.powers)(encodePowerFace),
+    "warbands" -> encoded(value.warbands)(encodeForces))
   def decodeCard(raw: ujson.Value, path: String): Result[CardDetailsProjection] = for
     value <- obj(raw, path)
     _ <- exact(value, Set("cardId", "cardKind", "name", "suit", "restrictions",
       "rulesText", "orientation", "side", "favor", "secrets", "relicValue",
-      "defense", "hidden", "implemented", "powers"), path)
+      "defense", "hidden", "implemented", "powers", "warbands"), path)
     cardId <- string(value, "cardId", path)
     kind <- string(value, "cardKind", path)
     name <- string(value, "name", path)
@@ -45,9 +46,12 @@ private[protocol] object WorldProjectionCodec:
     implemented <- boolOr(value, "implemented", path, true)
     powers <- default(value, "powers", path, Vector.empty[PowerFaceProjection])(
       (raw, child) => array(raw, child).flatMap(traverse(_, child)(decodePowerFace)))
+    warbands <- default(value, "warbands", path,
+      Vector.empty[SiteForcesProjection])((raw, child) =>
+      array(raw, child).flatMap(traverse(_, child)(decodeForces)))
   yield CardDetailsProjection(cardId, kind, name, suit, restrictions, rulesText,
     orientation, side, favor, secrets, relicValue, defense, hidden, implemented,
-    powers)
+    powers, warbands)
 
   private def encodePowerFace(value: PowerFaceProjection): ujson.Value =
     ujson.Obj("text" -> value.text, "cost" -> encoded(value.cost)(ujson.Str(_)),

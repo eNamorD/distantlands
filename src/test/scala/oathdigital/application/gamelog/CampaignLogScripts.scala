@@ -4,8 +4,10 @@ import oathdigital.application.CampaignDicePort
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
-import oathdigital.gameplay.powers.campaign.{OutridersCard, StickyFire,
-  StickyFireCard, ToweringRampartCard}
+import oathdigital.catalog.holding.{CrackedHornCard, GrandMaskCard}
+import oathdigital.gameplay.powers.campaign.{Glamor, GlamorCard,
+  ObsidianCageCard, OutridersCard, RelicHunter, RelicHunterCard, StickyFire, StickyFireCard,
+  ToweringRampartCard}
 import oathdigital.gameplay.powers.economy.BirdsongCard
 import oathdigital.gameplay.powers.search.WineOfWelcomeCard
 import oathdigital.model._
@@ -176,10 +178,102 @@ object CampaignLogScripts:
     }).after(MenuPlay.start(p1, ActionRef.Campaign))
     Script("sticky-fire", service, p1)
 
+  private val relicHunter = RelicHunterCard.id
+
+  /** p1 holds Relic Hunter faceup and conquers Ancient City, where the
+    * Grand Mask and the Cracked Horn lie facedown. p1 targets both, for two
+    * defense dice, wins with four swords against the bandits' three and
+    * blank dice, places two warbands, takes both relics and puts the Cracked
+    * Horn on the bottom of the relic deck. The other seat sees the relics'
+    * backs.
+    */
+  def conquestHuntingRelics(using munit.Location): Script =
+    val site = AncientCitySite.id
+    val both = Vector(DecisionOptionRef.SiteRelicSlot(site, 0),
+      DecisionOptionRef.SiteRelicSlot(site, 1))
+    val (service, act) = atTable("relic-hunter", Table.start
+      .pawn(p1, AncientCitySite).pawn(p2, BrokenPeaksSite)
+      .pawn(p3, BuriedGiantSite)
+      .boardWarbands(p1, 4)
+      .adviser(p1, relicHunter)
+      .relicAt(GrandMaskCard, AncientCitySite)
+      .relicAt(CrackedHornCard, AncientCitySite)
+      .banditsRefilled, Dice.raid)
+    val answers: Answers = {
+      case Park(Decide(CampaignIds.force, _,
+          amount: DecisionQuery.ChooseAmount, _, _, _, _), _, _, _) =>
+        ChooseAmountAnswer(amount.max)
+      case park if park.decisionId == CampaignIds.attackerPlan &&
+          offers(park, DecisionOptionRef.Denizen(relicHunter)) =>
+        ChooseOneAnswer(DecisionOptionRef.Denizen(relicHunter))
+      case park if park.decisionId == CampaignIds.attackerPlan ||
+          park.decisionId == CampaignIds.defenderPlan =>
+        ChooseOneAnswer(CampaignIds.finish)
+      case park if park.decisionId == RelicHunter.decisionId =>
+        ChooseManyAnswer(both)
+      case park if park.decisionId == CampaignIds.sacrifice =>
+        ChooseAmountAnswer(0)
+      case park if park.decisionId == CampaignIds.placement =>
+        ChooseAmountAnswer(2)
+      case park if park.decisionId == RelicHunter.bottomDecisionId =>
+        ChooseManyAnswer(Vector(both(1)))
+    }
+    act.withAnswers(answers).after(MenuPlay.start(p1, ActionRef.Campaign))
+    Script("relic-hunter", service, p1)
+
+  private val glamor = GlamorCard.id
+
+  /** p1 holds Glamor faceup and Raids p2, who shares Ancient City with two
+    * faceup secrets and one facedown. p1 targets two, for two defense dice,
+    * wins with three swords against one board warband and blank dice, and
+    * takes the two faceup secrets.
+    */
+  def raidGlamoringSecrets(using munit.Location): Script =
+    val (service, act) = atTable("glamor", Table.start
+      .pawn(p1, AncientCitySite).pawn(p2, AncientCitySite)
+      .pawn(p3, BuriedGiantSite)
+      .boardWarbands(p1, 3).boardWarbands(p2, 1)
+      .adviser(p1, glamor)
+      .secrets(p1, faceUp = 0)
+      .secrets(p2, faceUp = 2, faceDown = 1)
+      .banditsRefilled, Dice.raid)
+    raidAnswers(act, {
+      case park if park.decisionId == CampaignIds.attackerPlan &&
+          offers(park, DecisionOptionRef.Denizen(glamor)) =>
+        ChooseOneAnswer(DecisionOptionRef.Denizen(glamor))
+      case park if park.decisionId == Glamor.decisionId =>
+        ChooseAmountAnswer(2)
+    }).after(MenuPlay.start(p1, ActionRef.Campaign))
+    Script("glamor", service, p1)
+
+  private val cage = ObsidianCageCard.id
+
+  /** p1 holds Obsidian Cage faceup and Raids p2, who shares Ancient City
+    * with three board warbands. p1 wins with three swords and three
+    * sacrificed against three warbands and blank dice; the losses kill one
+    * of p2's three, and the other two go onto the Cage.
+    */
+  def raidCagingTheDefender(using munit.Location): Script =
+    val (service, act) = atTable("obsidian-cage", Table.start
+      .pawn(p1, AncientCitySite).pawn(p2, AncientCitySite)
+      .pawn(p3, BuriedGiantSite)
+      .boardWarbands(p1, 3).boardWarbands(p2, 3)
+      .relic(p1, cage)
+      .banditsRefilled, Dice.raid)
+    raidAnswers(act, {
+      case park if park.decisionId == CampaignIds.attackerPlan &&
+          offers(park, DecisionOptionRef.Relic(cage)) =>
+        ChooseOneAnswer(DecisionOptionRef.Relic(cage))
+    }).after(MenuPlay.start(p1, ActionRef.Campaign))
+    Script("obsidian-cage", service, p1)
+
   /** The scripts this file adds to the golden registry. */
   val named: Vector[(String, () => Script)] = Vector(
     "raid-spoils" -> (() => raidTakingRelicAndBanner),
     "conquest-placed" -> (() => conquestPlacingWarbands),
+    "relic-hunter" -> (() => conquestHuntingRelics),
+    "glamor" -> (() => raidGlamoringSecrets),
+    "obsidian-cage" -> (() => raidCagingTheDefender),
     "captains-raid" -> (() => CaptainsLogScripts.captainsRaidFromARuledSite),
     "captains-raid-lost" ->
       (() => CaptainsLogScripts.captainsRaidLostWithASplit))

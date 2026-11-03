@@ -48,6 +48,18 @@ class CardFaceSuite extends munit.FunSuite:
     assert(!node.textContent.contains("Suit:"), node.textContent)
     assert(!node.textContent.contains("Favor:"), node.textContent)
 
+  test("warbands caged on a card show as counted warbands in their colour"):
+    val cage = knowable.copy(orientation = Some("face-up"), warbands = Vector(
+      SiteForces.Exile(2, "p2", oathdigital.model.PlayerColor.Blue,
+        "Blue Warbands")))
+    val node = CardFace.render(cage)
+    val group = firstMatch(node, ".card-tokens .card-warbands.force-blue")
+    assertEquals(group.map(_.getAttribute("title")), Some("Blue Warbands x2"))
+    assertEquals(all(node, ".card-warbands .token-glyph")
+      .map(_.getAttribute("aria-label")), Vector("warband"))
+    assertEquals(all(node, ".card-warbands .card-token-count")
+      .map(_.textContent), Vector("2"))
+
   test("a face carries its initials for the zoomed-out map, out of the accessible name"):
     val node = CardFace.render(faceUp)
     val short = firstMatch(node, ".card-name-short")

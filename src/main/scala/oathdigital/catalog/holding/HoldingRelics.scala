@@ -34,17 +34,6 @@ object RingOfDevotionCard extends Relic(RelicId("R12"), "Ring of Devotion", valu
       "of the next region out.")
   val powers: Vector[PrintedPower] = Vector(power)
 
-object ObsidianCageCard extends Relic(RelicId("R18"), "Obsidian Cage", value = 72, defense = 3):
-  val campaign = PrintedPower(PowerId("relic.obsidian-cage.campaign"),
-    persistent = false, cost = Cost.free,
-    text = "If you're victorious, move all unkilled warbands in your " +
-      "enemy's force to Obsidian Cage.")
-  val action = PrintedPower(PowerId("relic.obsidian-cage.action"),
-    persistent = false, cost = Cost.free,
-    text = "**ACTION:** Move any number of warbands from Obsidian Cage " +
-      "to any board of the same color.")
-  val powers: Vector[PrintedPower] = Vector(campaign, action)
-
 object AncientWritCard extends Relic(RelicId("R22"), "Ancient Writ", value = 81, defense = 1):
   val power = PrintedPower(PowerId("relic.ancient-grit"),
     persistent = false, cost = Cost.free,

@@ -49,13 +49,11 @@ class FirstGameChronicleGeneratorSuite extends munit.FunSuite:
       assertEquals(suited.size, 10)
     }
 
-  test("the dispossessed pile has 12 unimplemented denizens, 2 per suit, " +
-      "disjoint from the world deck"):
+  test("the dispossessed pile has 12 denizens, 2 per suit, disjoint from " +
+      "the world deck"):
     val chronicle = generated
-    val implemented = ImplementedCardCatalog.denizens(catalog, status)
     assertEquals(chronicle.dispossessed.size, 12)
     assertEquals(chronicle.dispossessed.distinct.size, 12)
-    assert(chronicle.dispossessed.forall(id => !implemented(id)))
     assertEquals(chronicle.worldDeck.toSet intersect chronicle.dispossessed.toSet,
       Set.empty[oathdigital.model.DenizenId])
     Suit.all.foreach { suit =>
