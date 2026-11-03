@@ -9,8 +9,8 @@
 > yet supported. Of section 2's seven cards, Spiral Castle and the Hall of
 > Debate and Tome Guardians restrictions landed in catalog batch 9 and
 > Martial Culture and the Scepter's plan with the Empire; Glamor, Relic
-> Hunter and Obsidian Cage wait on the owner's rulings (roadmap, "The last
-> battle plans").
+> Hunter and Obsidian Cage have the owner's rulings of 2026-11-03, recorded
+> under the roadmap's "The last battle plans", and wait to be built.
 >
 > Written as a read-only audit, 2026-11-02, of the ROADMAP item "Walker
 > follow-ups" under Powers-related deferred items. The item was recorded by
