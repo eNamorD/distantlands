@@ -149,12 +149,12 @@ class GameLogRareLinesSuite extends munit.FunSuite:
     assertEquals(said(DecisionOptionRef.Denizen(denizen)), "a Denizen")
     assertEquals(said(DecisionOptionRef.Relic(relic)), "a Relic")
     // A slot reads as its index plus one. A relic slot always reads
-    // facedown, whatever p2 holds; p2's Birdsong is facedown; adviser slot
-    // 10 is empty and names no face.
+    // facedown, whatever p2 holds; p2's facedown Birdsong is counted, not
+    // placed; adviser slot 10 is empty and names no face.
     assertEquals(said(DecisionOptionRef.RelicSlot(other, 0)),
       s"${playerLabel(other)}'s facedown relic (slot 1)")
     assertEquals(said(DecisionOptionRef.AdviserSlot(other, 0)),
-      s"${playerLabel(other)}'s facedown adviser (slot 1)")
+      s"a Denizen from ${playerLabel(other)}'s advisers")
     assertEquals(said(DecisionOptionRef.AdviserSlot(other, 9)),
       s"${playerLabel(other)}'s adviser (slot 10)")
     assertEquals(said(DecisionOptionRef.Banner(Banner.PeoplesFavor)),

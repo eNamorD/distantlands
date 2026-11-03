@@ -30,8 +30,14 @@ private[gamelog] final class ChoiceWords(words: LogWords,
       before.game.current.players.find(_.player == owner)
         .flatMap(_.advisers.lift(slot)).fold(Vector[LogSpan](
           words.player(owner), Text(s"'s adviser (slot ${slot + 1})")))(held =>
-          words.player(owner) +: Text("'s ") +:
-            words.slotted(held.id, owner, before, after, viewer))
+          // A card the viewer may not identify is counted, never placed:
+          // its slot is a position its holder may not have shown.
+          words.card(held.id, before, after, viewer) match
+            case CardWord.Named(span) =>
+              Vector(words.player(owner), Text("'s "), span)
+            case back: CardWord.Back =>
+              words.one(back) ++ Vector(Text(" from "), words.player(owner),
+                Text("'s advisers")))
     case DecisionOptionRef.Banner(banner) => Vector(words.banner(banner))
     case DecisionOptionRef.Deck(deck) => Vector(Text(words.label(deck.key)))
     case DecisionOptionRef.FavorBank(suit) => Vector(Text(s"the $suit bank"))
