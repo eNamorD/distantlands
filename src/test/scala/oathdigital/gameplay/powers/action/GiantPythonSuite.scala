@@ -6,7 +6,6 @@ import oathdigital.gameplay.operations.AncientBloodlineCard
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.banner.YewStaffCard
 import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
@@ -21,7 +20,7 @@ class GiantPythonSuite extends munit.FunSuite:
 
   private val python = GiantPythonCard.id
   private val source = DecisionOptionRef.Denizen(python)
-  private val power = GiantPython.forCatalog(catalog)
+  private val power = GiantPython
   private val home = AncientCitySite.id
   /** Capacity 1. */
   private val peaks = BrokenPeaksSite.id

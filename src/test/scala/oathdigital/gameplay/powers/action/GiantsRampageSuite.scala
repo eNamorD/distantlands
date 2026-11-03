@@ -3,7 +3,6 @@ package oathdigital.gameplay.powers.action
 import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
 import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
 import oathdigital.testkit.{Look, MenuPlay, PhasePowerHarness, Table}
@@ -19,7 +18,7 @@ class GiantsRampageSuite extends munit.FunSuite:
 
   private val rampage = GiantsRampage.edifice
   private val source = DecisionOptionRef.Edifice(rampage)
-  private val power = GiantsRampage.forCatalog(catalog)
+  private val power = GiantsRampage
   private val home = AncientCitySite.id
   private val peaks = BrokenPeaksSite.id
 

@@ -4,7 +4,6 @@ import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.rest.InsomniaCard
 import oathdigital.gameplay.powers.search.LandWardenCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
@@ -16,7 +15,7 @@ class BedOfRootsSuite extends munit.FunSuite:
 
   private val bed = BedOfRootsCard.id
   private val source = DecisionOptionRef.Denizen(bed)
-  private val power = BedOfRoots.forCatalog(catalog)
+  private val power = BedOfRoots
   // Two Hearth denizens whose powers these tests do not use.
   private val homesteaders = HomesteadersCard.id
   private val landWarden = LandWardenCard.id

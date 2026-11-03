@@ -6,7 +6,6 @@ import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.WrestlersCard
 import oathdigital.gameplay.powers.search.ErrandBoyCard
 import oathdigital.gameplay.powers.setup.HallOfDebateCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
@@ -18,7 +17,7 @@ class RovingTerrorSuite extends munit.FunSuite:
 
   private val terror = RovingTerrorCard.id
   private val source = DecisionOptionRef.Denizen(terror)
-  private val power = RovingTerror.forCatalog(catalog)
+  private val power = RovingTerror
   /** p1's pawn site, and two other sites in play. */
   private val home = AncientCitySite.id
   private val peaks = BrokenPeaksSite.id

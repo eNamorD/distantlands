@@ -5,7 +5,6 @@ import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.CodeOfHonorCard
 import oathdigital.gameplay.powers.rest.InsomniaCard
 import oathdigital.gameplay.powers.search.{LandWardenCard, NewsFromAfarCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
@@ -17,7 +16,7 @@ class HonorGuardSuite extends munit.FunSuite:
 
   private val guard = HonorGuardCard.id
   private val source = DecisionOptionRef.Denizen(guard)
-  private val power = HonorGuard.forCatalog(catalog)
+  private val power = HonorGuard
   // Denizens whose powers these tests do not use.
   private val homesteaders = HomesteadersCard.id
   private val landWarden = LandWardenCard.id

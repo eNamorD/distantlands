@@ -26,11 +26,27 @@ object OracleCard extends Denizen(DenizenId("160"), "Oracle", Suit.Nomad) with S
   * the temporary hand, or, once it is played, from the placement answer, as
   * a Search does.
   */
-final case class Oracle private (catalog: ExecutableCatalog)
-    extends PaidAction(OracleCard.power):
-  import Oracle._
+case object Oracle extends PaidAction(OracleCard.power):
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "{Red} drew {Vision} from the world deck." */
+  val drew: NoteKey = notes.key(NoteKey.Used, Vector(NotePart.Arg(0),
+    NotePart.Text(" drew "), NotePart.Arg(1),
+    NotePart.Text(" from the world deck.")))
+  /** "The world deck held no Vision." */
+  val noVision: NoteKey = notes.key("used.none",
+    Vector(NotePart.Text("The world deck held no Vision.")))
 
-  override def noteKeys: Vector[NoteKey] = Oracle.noteKeys
+  /** The Vision closest to the top of the world deck, stored top first. */
+  private def first(ready: ReadyGame): Option[VisionId] =
+    ready.game.current.commonCards.worldDeck.collectFirst {
+      case vision: VisionId => vision }
+
+  /** The Vision in the player's temporary hand: the one Oracle drew, until
+    * it is played. */
+  private def held(ready: ReadyGame, player: PlayerId): Option[VisionId] =
+    ready.game.current.temporaryHands.getOrElse(player, Vector.empty)
+      .collectFirst { case vision: VisionId => vision }
 
   def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
       source: DecisionOptionRef)
@@ -46,29 +62,3 @@ final case class Oracle private (catalog: ExecutableCatalog)
       .orElse(CardPlayProcedure.placedCard(pending)).toVector.map(vision =>
         CardPlayProcedure.unchecked(catalog, live, player, vision,
           CardPlayProcedure.Origin.TemporaryHand))))))
-
-object Oracle:
-  val id: PowerId = OracleCard.power.id
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "{Red} drew {Vision} from the world deck." */
-  val drew: NoteKey = notes.key(NoteKey.Used, Vector(NotePart.Arg(0),
-    NotePart.Text(" drew "), NotePart.Arg(1),
-    NotePart.Text(" from the world deck.")))
-  /** "The world deck held no Vision." */
-  val noVision: NoteKey = notes.key("used.none",
-    Vector(NotePart.Text("The world deck held no Vision.")))
-
-  def forCatalog(catalog: ExecutableCatalog): Oracle =
-    new Oracle(catalog)
-
-  /** The Vision closest to the top of the world deck, stored top first. */
-  private def first(ready: ReadyGame): Option[VisionId] =
-    ready.game.current.commonCards.worldDeck.collectFirst {
-      case vision: VisionId => vision }
-
-  /** The Vision in the player's temporary hand: the one Oracle drew, until
-    * it is played. */
-  private def held(ready: ReadyGame, player: PlayerId): Option[VisionId] =
-    ready.game.current.temporaryHands.getOrElse(player, Vector.empty)
-      .collectFirst { case vision: VisionId => vision }

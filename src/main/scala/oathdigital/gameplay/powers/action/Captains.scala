@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, PrintedPower, SiteOnly}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower,
+  SiteOnly}
 import oathdigital.gameplay.PowerAccess
 import oathdigital.model._
 
@@ -29,6 +30,7 @@ case object Captains extends CampaignFromSite(CaptainsCard.power, CaptainsCard.i
   protected def noSite: String =
     "No site you rule where a Campaign could start"
 
-  protected def sites(ready: ReadyGame, player: PlayerId): Vector[SiteId] =
+  protected def sites(catalog: ExecutableCatalog, ready: ReadyGame,
+      player: PlayerId): Vector[SiteId] =
     val ruled = PowerAccess.ruledSites(ready, player)
     ready.game.current.map.inPlay.filter(ruled.contains)

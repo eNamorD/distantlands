@@ -6,7 +6,6 @@ import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.WrestlersCard
 import oathdigital.gameplay.powers.search.{ErrandBoyCard, LandWardenCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
@@ -18,7 +17,7 @@ class HomesteadersSuite extends munit.FunSuite:
 
   private val homesteaders = HomesteadersCard.id
   private val source = DecisionOptionRef.Denizen(homesteaders)
-  private val power = Homesteaders.forCatalog(catalog)
+  private val power = Homesteaders
   /** p1's pawn site, with room for three cards. */
   private val home = AncientCitySite.id
   /** A plain Hearth denizen. */

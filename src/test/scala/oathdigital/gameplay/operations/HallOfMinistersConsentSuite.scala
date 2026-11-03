@@ -5,7 +5,6 @@ import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
 import oathdigital.gameplay.powers.action.{RovingTerror, RovingTerrorCard}
 import oathdigital.gameplay.powers.campaign.WrestlersCard
 import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.protocol.projection.ConsentAskProjection
 import oathdigital.testkit.{Look, PhasePowerHarness, Table}
@@ -20,7 +19,7 @@ class HallOfMinistersConsentSuite extends munit.FunSuite:
 
   private val terror = RovingTerrorCard.id
   private val source = DecisionOptionRef.Denizen(terror)
-  private val power = RovingTerror.forCatalog(catalog)
+  private val power = RovingTerror
   private val home = AncientCitySite.id
   private val woods = DeepWoodsSite.id
   private val peaks = BrokenPeaksSite.id

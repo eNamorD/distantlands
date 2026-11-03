@@ -21,7 +21,7 @@ class TempleOfAncestorsSuite extends munit.FunSuite:
 
   private val temple = TempleOfAncestorsCard.id
   private val source = DecisionOptionRef.Edifice(temple)
-  private val power = TempleOfAncestors.forCatalog(catalog)
+  private val power = TempleOfAncestors
   private val rules = PowerRules.withWalkerAndPhasePowers
   private val walkerPowers = WalkerPowerCatalog.default(catalog)
   private val phasePowers = PhasePowerCatalog.default(catalog)

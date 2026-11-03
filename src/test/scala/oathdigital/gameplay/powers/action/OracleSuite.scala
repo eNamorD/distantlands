@@ -23,7 +23,7 @@ class OracleSuite extends munit.FunSuite:
   private val source = DecisionOptionRef.Denizen(oracle)
   private val faith = VisionRules.Faith
   private val vow = VowOfObedienceCard.id
-  private val power = Oracle.forCatalog(catalog)
+  private val power = Oracle
   private val placement = CardPlayProcedure.placementDecisionId(faith)
   /** The production walker rules and phase powers, so a Restriction such as
     * Vow of Obedience's hides what it forbids. */

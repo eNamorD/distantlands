@@ -3,7 +3,6 @@ package oathdigital.gameplay.powers.action
 import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.search.{ErrandBoyCard, LandWardenCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
@@ -15,7 +14,7 @@ class SingingMaskSuite extends munit.FunSuite:
   import SingingMask.{amountDecisionId, cardDecisionId, directionDecisionId,
     toBanner}
 
-  private val power = SingingMask.forCatalog(catalog)
+  private val power = SingingMask
   private val mask = SingingMaskCard.id
   private val source = DecisionOptionRef.Relic(mask)
   private val home = AncientCitySite.id

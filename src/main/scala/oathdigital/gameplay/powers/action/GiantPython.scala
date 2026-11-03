@@ -34,13 +34,22 @@ object GiantPythonCard extends Denizen(DenizenId("186"), "Giant Python", Suit.Be
   * Its line covers the generic discard and move lines: "Moved {card} to
   * {site}." or "Replaced {card} at {site}."
   */
-final case class GiantPython private (catalog: ExecutableCatalog)
-    extends PaidAction(GiantPythonCard.action):
-  import GiantPython._
+case object GiantPython extends PaidAction(GiantPythonCard.action):
+  val decisionId: String = "power.giant-python.slot"
+  val heading: String = "Giant Python: move to which slot?"
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "Moved {card} to {site}." */
+  val moved: NoteKey = notes.key(NoteKey.Used, Vector(NotePart.Text("Moved "),
+    NotePart.Arg(0), NotePart.Text(" to "), NotePart.Arg(1),
+    NotePart.Text(".")))
+  /** "Replaced {card} at {site}." */
+  val replaced: NoteKey = notes.key("used.replaced", Vector(
+    NotePart.Text("Replaced "), NotePart.Arg(0), NotePart.Text(" at "),
+    NotePart.Arg(1), NotePart.Text(".")))
 
   private val slots = new SiteSlotMoves(GiantPythonCard.id,
     empty = true)
-  override def noteKeys: Vector[NoteKey] = GiantPython.noteKeys
   override def narratedDecisions: Set[String] = Set(decisionId)
 
   override def usable(catalog: ExecutableCatalog, ready: ReadyGame,
@@ -54,12 +63,13 @@ final case class GiantPython private (catalog: ExecutableCatalog)
     Branch((live, _) => Vector(Decide(decisionId, player,
       DecisionQuery.ChooseOne(slots.options(catalog, live, player),
         heading = Some(heading)), passWhenEmpty = true))),
-    BuildOps((live, pending) => move(live, player, pending),
+    BuildOps((live, pending) => move(catalog, live, player, pending),
       required = true),
-    Note(this.id, movedNote(_, source), covers = true))))
+    Note(this.id, movedNote(catalog, _, source), covers = true))))
 
   /** No answer means Continue was pressed, and Giant Python stays. */
-  private def move(ready: ReadyGame, actor: PlayerId,
+  private def move(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId,
       pending: PendingTree): Either[OathViolation, Vector[CoreOperation]] =
     PowerAnswers.one(pending, decisionId) match
       case None => Right(Vector.empty)
@@ -70,7 +80,8 @@ final case class GiantPython private (catalog: ExecutableCatalog)
 
   /** The chosen slot, read before the step, once Giant Python stands at
     * its site. */
-  private def movedNote(states: NoteStates, source: DecisionOptionRef)
+  private def movedNote(catalog: ExecutableCatalog,
+      states: NoteStates, source: DecisionOptionRef)
       : Option[LogNote] =
     for
       card <- PowerSourceRef.of(source)
@@ -83,21 +94,3 @@ final case class GiantPython private (catalog: ExecutableCatalog)
       NoteArg.Card(GiantPythonCard.id), NoteArg.Site(chosen.site)))(
       gone => replaced(card, NoteArg.Card(gone._1.id),
         NoteArg.Site(chosen.site)))
-
-object GiantPython:
-  val id: PowerId = GiantPythonCard.action.id
-  val decisionId: String = "power.giant-python.slot"
-  val heading: String = "Giant Python: move to which slot?"
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "Moved {card} to {site}." */
-  val moved: NoteKey = notes.key(NoteKey.Used, Vector(NotePart.Text("Moved "),
-    NotePart.Arg(0), NotePart.Text(" to "), NotePart.Arg(1),
-    NotePart.Text(".")))
-  /** "Replaced {card} at {site}." */
-  val replaced: NoteKey = notes.key("used.replaced", Vector(
-    NotePart.Text("Replaced "), NotePart.Arg(0), NotePart.Text(" at "),
-    NotePart.Arg(1), NotePart.Text(".")))
-
-  def forCatalog(catalog: ExecutableCatalog): GiantPython =
-    new GiantPython(catalog)

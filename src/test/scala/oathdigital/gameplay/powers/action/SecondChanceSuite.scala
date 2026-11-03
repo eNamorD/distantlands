@@ -3,7 +3,6 @@ package oathdigital.gameplay.powers.action
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.CodeOfHonorCard
 import oathdigital.gameplay.powers.economy.DefameCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
@@ -15,7 +14,7 @@ class SecondChanceSuite extends munit.FunSuite:
 
   private val chance = SecondChanceCard.id
   private val source = DecisionOptionRef.Denizen(chance)
-  private val power = SecondChance.forCatalog(catalog)
+  private val power = SecondChance
   // Denizens whose powers these tests do not use: only their suits matter.
   private val codeOfHonor = CodeOfHonorCard.id
   private val defame = DefameCard.id

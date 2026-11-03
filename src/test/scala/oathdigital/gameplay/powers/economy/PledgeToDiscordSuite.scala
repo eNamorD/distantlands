@@ -10,7 +10,6 @@ import oathdigital.gameplay.powers.action.{HomesteadersCard, HonorGuard,
 import oathdigital.gameplay.powers.campaign.WrestlersCard
 import oathdigital.gameplay.powers.cardplay.{WildCry, WildCryCard}
 import oathdigital.gameplay.powers.search.{ErrandBoyCard, LandWardenCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
 import oathdigital.model.OathState.Ready
@@ -56,7 +55,7 @@ class PledgeToDiscordSuite extends munit.FunSuite:
       .adviser(p1, guard).favor(p1, 3).pawn(p2, at = home)
       .adviser(p2, pledge).adviser(p2, wrestlers)
       .tokens(wrestlers, favor = 1).ready
-    val power = HonorGuard.forCatalog(catalog)
+    val power = HonorGuard
     val source = DecisionOptionRef.Denizen(guard)
     val asked = accepted(PhasePowerHarness.use(ready, power, source))
     assertEquals(PhasePowerHarness.offered(asked, p1), Some(Vector(

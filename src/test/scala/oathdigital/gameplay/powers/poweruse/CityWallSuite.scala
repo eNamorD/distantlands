@@ -92,7 +92,7 @@ class CityWallSuite extends munit.FunSuite:
   private val terror = RovingTerrorCard.id
   private val terrorRef = DecisionOptionRef.Denizen(terror)
 
-  private val rovingTerror = RovingTerror.forCatalog(catalog)
+  private val rovingTerror = RovingTerror
 
   /** p1's Act at Ancient City beside Roving Terror and City Wall, which p2
     * rules, with Wrestlers at Broken Peaks to replace, as

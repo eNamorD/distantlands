@@ -25,25 +25,44 @@ object SingingMaskCard extends Relic(RelicId("R28"), "Singing Mask", value = 54,
   * `Move`. With no card to choose nothing is asked, and with nothing moved
   * one line says so. No generic line exists for the move.
   */
-final case class SingingMask private (catalog: ExecutableCatalog)
-    extends PaidAction(SingingMaskCard.power):
-  import SingingMask._
+case object SingingMask extends PaidAction(SingingMaskCard.power):
+  val cardDecisionId: String = "power.singing-mask.card"
+  val directionDecisionId: String = "power.singing-mask.direction"
+  val amountDecisionId: String = "power.singing-mask.amount"
+  /** The most favor it moves. */
+  val Most: Int = 2
+  val toBanner: DecisionOptionRef.Button =
+    DecisionOptionRef.Button("to-peoples-favor")
+  val toBank: DecisionOptionRef.Button = DecisionOptionRef.Button("to-bank")
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "Moved {n favor} from {the Beast bank} to the {People's Favor}." */
+  val moved: NoteKey = notes.key(NoteKey.Used, Vector(NotePart.Text("Moved "),
+    NotePart.Arg(0), NotePart.Text(" from "), NotePart.Arg(1),
+    NotePart.Text(" to the "), NotePart.Arg(2), NotePart.Text(".")))
+  /** "Moved {n favor} from the {People's Favor} to {the Beast bank}." */
+  val returned: NoteKey = notes.key("used.returned", Vector(
+    NotePart.Text("Moved "), NotePart.Arg(0), NotePart.Text(" from the "),
+    NotePart.Arg(1), NotePart.Text(" to "), NotePart.Arg(2),
+    NotePart.Text(".")))
+  /** "No favor moved." */
+  val nothing: NoteKey = notes.key("used.none", Vector(
+    NotePart.Text("No favor moved.")))
 
   private val siteCards = new SiteCards(Suit.all.toSet)
   private val banner =
     PositionedLocation(Location.OnBanner(Banner.PeoplesFavor))
 
-  override def noteKeys: Vector[NoteKey] = SingingMask.noteKeys
   override def narratedDecisions: Set[String] =
     Set(cardDecisionId, directionDecisionId, amountDecisionId)
 
   def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
       source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
-    Branch((live, _) => askCard(live, player)),
-    Branch((live, pending) => askDirection(live, player, pending)),
-    Branch((live, pending) => askAmount(live, player, pending)),
-    BuildOps((live, pending) => Right(move(live, player, pending))),
+    Branch((live, _) => askCard(catalog, live, player)),
+    Branch((live, pending) => askDirection(catalog, live, player, pending)),
+    Branch((live, pending) => askAmount(catalog, live, player, pending)),
+    BuildOps((live, pending) => Right(move(catalog, live, player, pending))),
     Note(this.id, movedNote(_, source)))))
 
   private def stock(ready: ReadyGame, suit: Suit): Int =
@@ -53,24 +72,27 @@ final case class SingingMask private (catalog: ExecutableCatalog)
     ready.game.current.banners.peoplesFavor.favor
 
   /** The cards at the pawn's site with favor to move, each with its suit. */
-  private def cards(ready: ReadyGame, actor: PlayerId)
+  private def cards(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId)
       : Vector[(SiteDenizenState, Suit)] =
     PowerAccess.pawnSite(ready, actor).toVector
       .flatMap(siteCards.at(catalog, ready, _))
       .filter((_, suit) => stock(ready, suit) > 0 || onBanner(ready) > 0)
 
-  private def askCard(ready: ReadyGame, actor: PlayerId): Vector[Operation] =
-    cards(ready, actor) match
+  private def askCard(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId): Vector[Operation] =
+    cards(catalog, ready, actor) match
       case Vector() => Vector.empty
       case found => Vector(Decide(cardDecisionId, actor,
         DecisionQuery.ChooseOne(found.map((card, _) => siteCards.option(card)),
           heading = Some("Singing Mask: choose a card at your site"))))
 
   /** The chosen card's suit. */
-  private def suitChosen(ready: ReadyGame, actor: PlayerId,
+  private def suitChosen(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId,
       pending: PendingTree): Option[Suit] = for
     answer <- PowerAnswers.one(pending, cardDecisionId)
-    (_, suit) <- cards(ready, actor)
+    (_, suit) <- cards(catalog, ready, actor)
       .find((card, _) => siteCards.refOf(card) == answer)
   yield suit
 
@@ -80,9 +102,10 @@ final case class SingingMask private (catalog: ExecutableCatalog)
     Option.when(stock(ready, suit) > 0)(toBanner).toVector ++
       Option.when(onBanner(ready) > 0)(toBank)
 
-  private def askDirection(ready: ReadyGame, actor: PlayerId,
+  private def askDirection(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId,
       pending: PendingTree): Vector[Operation] =
-    suitChosen(ready, actor, pending).toVector.flatMap(suit =>
+    suitChosen(catalog, ready, actor, pending).toVector.flatMap(suit =>
       if directions(ready, suit).size < 2 then Vector.empty
       else Vector(Decide(directionDecisionId, actor, DecisionQuery.ChooseOne(
         Vector(
@@ -91,9 +114,10 @@ final case class SingingMask private (catalog: ExecutableCatalog)
         heading = Some("Singing Mask: choose which way the favor moves")))))
 
   /** The chosen suit and its way: the only open one, or the answer. */
-  private def way(ready: ReadyGame, actor: PlayerId, pending: PendingTree)
+  private def way(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId, pending: PendingTree)
       : Option[(Suit, DecisionOptionRef.Button)] =
-    suitChosen(ready, actor, pending).flatMap(suit =>
+    suitChosen(catalog, ready, actor, pending).flatMap(suit =>
       directions(ready, suit) match
         case Vector(only) => Some(suit -> only)
         case Vector(_, _) => PowerAnswers.one(pending, directionDecisionId)
@@ -106,16 +130,18 @@ final case class SingingMask private (catalog: ExecutableCatalog)
       direction: DecisionOptionRef.Button): Int =
     if direction == toBanner then stock(ready, suit) else onBanner(ready)
 
-  private def askAmount(ready: ReadyGame, actor: PlayerId,
+  private def askAmount(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId,
       pending: PendingTree): Vector[Operation] =
-    way(ready, actor, pending).toVector.map((suit, direction) =>
+    way(catalog, ready, actor, pending).toVector.map((suit, direction) =>
       Decide(amountDecisionId, actor, DecisionQuery.ChooseAmount(0,
         math.min(Most, giving(ready, suit, direction)),
         Some("Singing Mask: move up to 2 favor"), "Move favor")))
 
-  private def move(ready: ReadyGame, actor: PlayerId, pending: PendingTree)
+  private def move(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId, pending: PendingTree)
       : Vector[CoreOperation] = (for
-    (suit, direction) <- way(ready, actor, pending)
+    (suit, direction) <- way(catalog, ready, actor, pending)
     amount <- PowerAnswers.amount(pending, amountDecisionId)
     if amount > 0
     bank = PositionedLocation(Location.FavorBank(suit))
@@ -142,31 +168,3 @@ final case class SingingMask private (catalog: ExecutableCatalog)
       NoteArg.Amount(-change, NoteUnit.Favor),
       NoteArg.Banner(Banner.PeoplesFavor), NoteArg.Bank(suit)))
     else None
-
-object SingingMask:
-  val id: PowerId = SingingMaskCard.power.id
-  val cardDecisionId: String = "power.singing-mask.card"
-  val directionDecisionId: String = "power.singing-mask.direction"
-  val amountDecisionId: String = "power.singing-mask.amount"
-  /** The most favor it moves. */
-  val Most: Int = 2
-  val toBanner: DecisionOptionRef.Button =
-    DecisionOptionRef.Button("to-peoples-favor")
-  val toBank: DecisionOptionRef.Button = DecisionOptionRef.Button("to-bank")
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "Moved {n favor} from {the Beast bank} to the {People's Favor}." */
-  val moved: NoteKey = notes.key(NoteKey.Used, Vector(NotePart.Text("Moved "),
-    NotePart.Arg(0), NotePart.Text(" from "), NotePart.Arg(1),
-    NotePart.Text(" to the "), NotePart.Arg(2), NotePart.Text(".")))
-  /** "Moved {n favor} from the {People's Favor} to {the Beast bank}." */
-  val returned: NoteKey = notes.key("used.returned", Vector(
-    NotePart.Text("Moved "), NotePart.Arg(0), NotePart.Text(" from the "),
-    NotePart.Arg(1), NotePart.Text(" to "), NotePart.Arg(2),
-    NotePart.Text(".")))
-  /** "No favor moved." */
-  val nothing: NoteKey = notes.key("used.none", Vector(
-    NotePart.Text("No favor moved.")))
-
-  def forCatalog(catalog: ExecutableCatalog): SingingMask =
-    new SingingMask(catalog)

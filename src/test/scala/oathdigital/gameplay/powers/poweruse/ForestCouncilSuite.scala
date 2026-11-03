@@ -156,7 +156,7 @@ class ForestCouncilSuite extends munit.FunSuite:
       .denizen(MessengerCard.id,
         at = BrokenPeaksSite.id).ready
     MenuPlay.menuOptionFor(catalog, ready, ActionRef.UsePower(
-        RovingTerror.forCatalog(catalog).id),
+        RovingTerror.id),
         Vector(DecisionOptionRef.Denizen(terror))) match
       case DecisionOption.Unavailable(_, ask: OptionReason.Askable) =>
         assertEquals(ask.power, ForestCouncil.id)

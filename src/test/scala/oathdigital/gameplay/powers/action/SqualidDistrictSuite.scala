@@ -4,7 +4,6 @@ import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
 import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
 import oathdigital.testkit.{Look, MenuPlay, PhasePowerHarness, Table}
@@ -20,7 +19,7 @@ class SqualidDistrictSuite extends munit.FunSuite:
 
   private val district = FestivalDistrictCard.id
   private val source = DecisionOptionRef.Edifice(district)
-  private val power = SqualidDistrict.forCatalog(catalog)
+  private val power = SqualidDistrict
   private val faith = VisionRules.Faith
 
   /** p1's Act at Ancient City beside the ruined District with 2 favor,

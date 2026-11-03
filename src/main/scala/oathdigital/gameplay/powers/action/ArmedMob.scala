@@ -38,119 +38,10 @@ object ArmedMobCard extends Denizen(DenizenId("53"), "Armed Mob", Suit.Hearth) w
   *
   * Its line covers the generic Discarded line.
   */
-final case class ArmedMob private (catalog: ExecutableCatalog)
-    extends PaidAction(ArmedMobCard.power):
-  import ArmedMob._
-
-  override def noteKeys: Vector[NoteKey] = ArmedMob.noteKeys
-  override def narratedDecisions: Set[String] =
-    Set(playerDecisionId, decisionId)
-
-  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
-      source: DecisionOptionRef)
-      : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
-    Branch((live, _) => askPlayer(live, player)),
-    Branch((live, pending) => askAdviser(live, player, pending)),
-    BuildOps((live, pending) => discard(live, player, pending),
-      required = true),
-    Note(this.id, discardedNote(_, player, source), covers = true))))
-
-  /** Whose adviser to discard, while two players are targets and one of
-    * them has a faceup adviser. A target with none is shown unavailable. */
-  private def askPlayer(ready: ReadyGame, actor: PlayerId)
-      : Vector[Operation] =
-    val found = targets(ready, actor)
-    if found.size < 2 || found.forall(candidates(ready, _).isEmpty) then
-      Vector.empty
-    else Vector(Decide(playerDecisionId, actor, DecisionQuery.ChooseOne(
-      found.map { owner =>
-        val option = DecisionOption.Player(DecisionOptionRef.Player(owner))
-        if candidates(ready, owner).nonEmpty then option
-        else DecisionOption.Unavailable(option,
-          OptionReason.Written(noAdviser))
-      },
-      heading = Some(playerHeading))))
-
-  private def askAdviser(ready: ReadyGame, actor: PlayerId,
-      pending: PendingTree): Vector[Operation] =
-    val target = owner(ready, actor, pending)
-    Vector(Decide(decisionId, actor, DecisionQuery.ChooseOne(
-      target.toVector.flatMap(candidates(ready, _)).map(card =>
-        DecisionOption.Denizen(DecisionOptionRef.Denizen(card.id))),
-      heading = Some(adviserHeading(target.contains(actor)))),
-      passWhenEmpty = true))
-
-  /** The target the discard comes from: the player chosen, else the only
-    * target. */
-  private def owner(ready: ReadyGame, actor: PlayerId, pending: PendingTree)
-      : Option[PlayerId] =
-    PowerAnswers.one(pending, playerDecisionId) match
-      case Some(DecisionOptionRef.Player(chosen)) => Some(chosen)
-      case _ => targets(ready, actor) match
-        case Vector(only) => Some(only)
-        case _ => None
-
-  /** No answer means there was no target or nothing it could lose. */
-  private def discard(ready: ReadyGame, actor: PlayerId, pending: PendingTree)
-      : Either[OathViolation, Vector[CoreOperation]] =
-    PowerAnswers.one(pending, decisionId) match
-      case None => Right(Vector.empty)
-      case Some(ref) => discardOf(ready, actor, pending, ref)
-
-  private def discardOf(ready: ReadyGame, actor: PlayerId,
-      pending: PendingTree, ref: DecisionOptionRef)
-      : Either[OathViolation, Vector[CoreOperation]] =
-    for
-      target <- owner(ready, actor, pending).toRight(
-        OathViolation.InvalidEventOrder("no player is an Armed Mob target"))
-      chosen <- candidates(ready, target)
-        .find(card => DecisionOptionRef.Denizen(card.id) == ref)
-        .toRight(OathViolation.InvalidEventOrder(
-          s"${ref.wireId} is not an adviser Armed Mob can discard"))
-      suit <- EffectiveSuit.of(catalog, ready, chosen.id)
-        .toRight(OathViolation.UnknownWorldCard(chosen.id))
-      region <- PowerAccess.pawnSite(ready, actor)
-        .flatMap(ready.game.current.map.regionOf).map(CardPlay.nextRegion)
-        .toRight(OathViolation.PawnSiteMissing(actor))
-    yield Vector[CoreOperation](Discard.Denizen(chosen.id,
-      PositionedLocation(Location.PlayArea(target)), region, suit,
-      chosen.tokens.favor, chosen.tokens.secrets, actor, required = true))
-
-  /** The card discarded and its owner; with no card chosen, why. */
-  private def discardedNote(states: NoteStates, actor: PlayerId,
-      source: DecisionOptionRef): Option[LogNote] =
-    PowerSourceRef.of(source).flatMap(card =>
-      NoteSupport.answer(states, decisionId) match
-        case Some(DecisionOptionRef.Denizen(chosen)) =>
-          discardedLine(states, actor, card, chosen)
-        case _ => Some(unansweredLine(states, actor, card)))
-
-  /** Why nothing was discarded: no target, a target with nothing to lose,
-    * or two such targets. */
-  private def unansweredLine(states: NoteStates, actor: PlayerId,
-      card: PowerSourceRef): LogNote =
-    NoteSupport.answer(states, playerDecisionId) match
-      case Some(DecisionOptionRef.Player(chosen)) =>
-        bare(card, NoteArg.Player(chosen))
-      case _ => targets(states.now, actor) match
-        case Vector() => nobody(card)
-        case Vector(only) => bare(card, NoteArg.Player(only))
-        case _ => neither(card)
-
-  /** The owner is whoever held the card before the discard. */
-  private def discardedLine(states: NoteStates, actor: PlayerId,
-      card: PowerSourceRef, chosen: DenizenId): Option[LogNote] = for
-    step <- states.previous
-    owner <- step._1.game.current.players
-      .find(_.advisers.exists(_.id == chosen)).map(_.player)
-  yield discarded(card, NoteArg.Player(actor), NoteArg.Card(chosen),
-    NoteArg.Player(owner))
-
-object ArmedMob:
-  val id: PowerId = ArmedMobCard.power.id
+case object ArmedMob extends PaidAction(ArmedMobCard.power):
   val decisionId: String = "power.armed-mob.adviser"
   private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
+  override def noteKeys: Vector[NoteKey] = notes.declared
   val playerDecisionId: String = "power.armed-mob.player"
   val playerHeading: String =
     "Armed Mob: discard a faceup adviser of which player?"
@@ -198,5 +89,107 @@ object ArmedMob:
       _.advisers.collect {
         case card @ DenizenState(_, Orientation.FaceUp, _) => card })
 
-  def forCatalog(catalog: ExecutableCatalog): ArmedMob =
-    new ArmedMob(catalog)
+  override def narratedDecisions: Set[String] =
+    Set(playerDecisionId, decisionId)
+
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
+      : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
+    Branch((live, _) => askPlayer(live, player)),
+    Branch((live, pending) => askAdviser(live, player, pending)),
+    BuildOps((live, pending) => discard(catalog, live, player, pending),
+      required = true),
+    Note(this.id, discardedNote(_, player, source), covers = true))))
+
+  /** Whose adviser to discard, while two players are targets and one of
+    * them has a faceup adviser. A target with none is shown unavailable. */
+  private def askPlayer(ready: ReadyGame, actor: PlayerId)
+      : Vector[Operation] =
+    val found = targets(ready, actor)
+    if found.size < 2 || found.forall(candidates(ready, _).isEmpty) then
+      Vector.empty
+    else Vector(Decide(playerDecisionId, actor, DecisionQuery.ChooseOne(
+      found.map { owner =>
+        val option = DecisionOption.Player(DecisionOptionRef.Player(owner))
+        if candidates(ready, owner).nonEmpty then option
+        else DecisionOption.Unavailable(option,
+          OptionReason.Written(noAdviser))
+      },
+      heading = Some(playerHeading))))
+
+  private def askAdviser(ready: ReadyGame, actor: PlayerId,
+      pending: PendingTree): Vector[Operation] =
+    val target = owner(ready, actor, pending)
+    Vector(Decide(decisionId, actor, DecisionQuery.ChooseOne(
+      target.toVector.flatMap(candidates(ready, _)).map(card =>
+        DecisionOption.Denizen(DecisionOptionRef.Denizen(card.id))),
+      heading = Some(adviserHeading(target.contains(actor)))),
+      passWhenEmpty = true))
+
+  /** The target the discard comes from: the player chosen, else the only
+    * target. */
+  private def owner(ready: ReadyGame, actor: PlayerId, pending: PendingTree)
+      : Option[PlayerId] =
+    PowerAnswers.one(pending, playerDecisionId) match
+      case Some(DecisionOptionRef.Player(chosen)) => Some(chosen)
+      case _ => targets(ready, actor) match
+        case Vector(only) => Some(only)
+        case _ => None
+
+  /** No answer means there was no target or nothing it could lose. */
+  private def discard(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId, pending: PendingTree)
+      : Either[OathViolation, Vector[CoreOperation]] =
+    PowerAnswers.one(pending, decisionId) match
+      case None => Right(Vector.empty)
+      case Some(ref) => discardOf(catalog, ready, actor, pending, ref)
+
+  private def discardOf(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId,
+      pending: PendingTree, ref: DecisionOptionRef)
+      : Either[OathViolation, Vector[CoreOperation]] =
+    for
+      target <- owner(ready, actor, pending).toRight(
+        OathViolation.InvalidEventOrder("no player is an Armed Mob target"))
+      chosen <- candidates(ready, target)
+        .find(card => DecisionOptionRef.Denizen(card.id) == ref)
+        .toRight(OathViolation.InvalidEventOrder(
+          s"${ref.wireId} is not an adviser Armed Mob can discard"))
+      suit <- EffectiveSuit.of(catalog, ready, chosen.id)
+        .toRight(OathViolation.UnknownWorldCard(chosen.id))
+      region <- PowerAccess.pawnSite(ready, actor)
+        .flatMap(ready.game.current.map.regionOf).map(CardPlay.nextRegion)
+        .toRight(OathViolation.PawnSiteMissing(actor))
+    yield Vector[CoreOperation](Discard.Denizen(chosen.id,
+      PositionedLocation(Location.PlayArea(target)), region, suit,
+      chosen.tokens.favor, chosen.tokens.secrets, actor, required = true))
+
+  /** The card discarded and its owner; with no card chosen, why. */
+  private def discardedNote(states: NoteStates, actor: PlayerId,
+      source: DecisionOptionRef): Option[LogNote] =
+    PowerSourceRef.of(source).flatMap(card =>
+      NoteSupport.answer(states, decisionId) match
+        case Some(DecisionOptionRef.Denizen(chosen)) =>
+          discardedLine(states, actor, card, chosen)
+        case _ => Some(unansweredLine(states, actor, card)))
+
+  /** Why nothing was discarded: no target, a target with nothing to lose,
+    * or two such targets. */
+  private def unansweredLine(states: NoteStates, actor: PlayerId,
+      card: PowerSourceRef): LogNote =
+    NoteSupport.answer(states, playerDecisionId) match
+      case Some(DecisionOptionRef.Player(chosen)) =>
+        bare(card, NoteArg.Player(chosen))
+      case _ => targets(states.now, actor) match
+        case Vector() => nobody(card)
+        case Vector(only) => bare(card, NoteArg.Player(only))
+        case _ => neither(card)
+
+  /** The owner is whoever held the card before the discard. */
+  private def discardedLine(states: NoteStates, actor: PlayerId,
+      card: PowerSourceRef, chosen: DenizenId): Option[LogNote] = for
+    step <- states.previous
+    owner <- step._1.game.current.players
+      .find(_.advisers.exists(_.id == chosen)).map(_.player)
+  yield discarded(card, NoteArg.Player(actor), NoteArg.Card(chosen),
+    NoteArg.Player(owner))

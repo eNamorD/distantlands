@@ -5,7 +5,6 @@ import oathdigital.gameplay.powers.campaign.WrestlersCard
 import oathdigital.gameplay.powers.setup.{ForestHornCard, SchoolOfVinesCard}
 import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
 import oathdigital.testkit.{Look, MenuPlay, PhasePowerHarness, Table}
@@ -20,7 +19,7 @@ class ForestHornSuite extends munit.FunSuite:
 
   private val horn = ForestHornCard.id
   private val source = DecisionOptionRef.Edifice(horn)
-  private val power = ForestHorn.forCatalog(catalog)
+  private val power = ForestHorn
   private val home = AncientCitySite.id
   /** The Cradle's other site. */
   private val peaks = BrokenPeaksSite.id

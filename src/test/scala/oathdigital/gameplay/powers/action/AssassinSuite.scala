@@ -20,7 +20,7 @@ import oathdigital.testkit.Unwrap.accepted
 class AssassinSuite extends munit.FunSuite:
   import PhasePowerHarness._
 
-  private val power = Assassin.forCatalog(catalog)
+  private val power = Assassin
   private val assassin = AssassinCard.id
   private val source = DecisionOptionRef.Denizen(assassin)
   private val home = AncientCitySite.id

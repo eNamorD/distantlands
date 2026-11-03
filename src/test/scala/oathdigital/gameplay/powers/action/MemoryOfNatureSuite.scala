@@ -4,7 +4,6 @@ import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.powers.economy.HallowedSpringCard
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
@@ -16,7 +15,7 @@ class MemoryOfNatureSuite extends munit.FunSuite:
 
   private val nature = MemoryOfNatureCard.id
   private val source = DecisionOptionRef.Denizen(nature)
-  private val power = MemoryOfNature.forCatalog(catalog)
+  private val power = MemoryOfNature
   // Three Beast denizens, and a Beast edifice on its intact face.
   private val errandBoy = ErrandBoyCard.id
   private val faeMerchant = FaeMerchantCard.id

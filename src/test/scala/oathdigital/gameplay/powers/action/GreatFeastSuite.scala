@@ -5,7 +5,6 @@ import oathdigital.gameplay.operations.HallOfMinistersCard
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.WildMountsCard
 import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
@@ -17,7 +16,7 @@ class GreatFeastSuite extends munit.FunSuite:
 
   private val feast = GreatFeastCard.id
   private val source = DecisionOptionRef.Denizen(feast)
-  private val power = GreatFeast.forCatalog(catalog)
+  private val power = GreatFeast
   private val home = AncientCitySite.id
   // Denizens whose powers these tests do not use, a Beast and a Nomad.
   private val errandBoy = ErrandBoyCard.id

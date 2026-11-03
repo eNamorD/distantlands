@@ -26,18 +26,33 @@ object BedOfRootsCard extends Denizen(DenizenId("212"), "Bed of Roots", Suit.Bea
   * Its line names the card and the secrets gained, not those returned, and
   * covers the generic Buried and gain lines.
   */
-final case class BedOfRoots private (catalog: ExecutableCatalog)
-    extends PaidAction(BedOfRootsCard.power):
-  import BedOfRoots._
+case object BedOfRoots extends PaidAction(BedOfRootsCard.power):
+  val decisionId: String = "power.bed-of-roots.adviser"
+  val Gained: Int = 2
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "{Red} buried {card} and gained {n secrets}." */
+  val buried: NoteKey = notes.key(NoteKey.Used, Vector(NotePart.Arg(0),
+    NotePart.Text(" buried "), NotePart.Arg(1),
+    NotePart.Text(" and gained "), NotePart.Arg(2), NotePart.Text(".")))
+  /** "{Red} had no faceup adviser." */
+  val bare: NoteKey = notes.key("used.none", Vector(NotePart.Arg(0),
+    NotePart.Text(" had no faceup adviser.")))
 
-  override def noteKeys: Vector[NoteKey] = BedOfRoots.noteKeys
+  /** The player's faceup denizen advisers, in adviser order. */
+  private def candidates(ready: ReadyGame, player: PlayerId)
+      : Vector[DenizenState] =
+    PlayerFacts.player(ready, player).toOption.toVector.flatMap(_.advisers
+      .collect { case card @ DenizenState(_, Orientation.FaceUp, _) => card })
+
   override def narratedDecisions: Set[String] = Set(decisionId)
 
   def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
       source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     Branch((live, _) => ask(live, player)),
-    BuildOps((live, pending) => bury(live, player, pending), required = true),
+    BuildOps((live, pending) => bury(catalog, live, player, pending),
+      required = true),
     Note(this.id, buriedNote(_, player, source), covers = true))))
 
   private def ask(ready: ReadyGame, player: PlayerId): Vector[Operation] =
@@ -48,7 +63,8 @@ final case class BedOfRoots private (catalog: ExecutableCatalog)
         "gain 2 secrets")), passWhenEmpty = true))
 
   /** No answer means the player had no faceup adviser to offer. */
-  private def bury(ready: ReadyGame, player: PlayerId, pending: PendingTree)
+  private def bury(catalog: ExecutableCatalog,
+      ready: ReadyGame, player: PlayerId, pending: PendingTree)
       : Either[OathViolation, Vector[CoreOperation]] =
     PowerAnswers.one(pending, decisionId) match
       case None => Right(Vector.empty)
@@ -79,26 +95,3 @@ final case class BedOfRoots private (catalog: ExecutableCatalog)
       NoteArg.Amount(NoteSupport.secrets(step, player) -
         chosen.tokens.secrets, NoteUnit.Secret)))
       .getOrElse(bare(card, NoteArg.Player(player))))
-
-object BedOfRoots:
-  val id: PowerId = BedOfRootsCard.power.id
-  val decisionId: String = "power.bed-of-roots.adviser"
-  val Gained: Int = 2
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "{Red} buried {card} and gained {n secrets}." */
-  val buried: NoteKey = notes.key(NoteKey.Used, Vector(NotePart.Arg(0),
-    NotePart.Text(" buried "), NotePart.Arg(1),
-    NotePart.Text(" and gained "), NotePart.Arg(2), NotePart.Text(".")))
-  /** "{Red} had no faceup adviser." */
-  val bare: NoteKey = notes.key("used.none", Vector(NotePart.Arg(0),
-    NotePart.Text(" had no faceup adviser.")))
-
-  /** The player's faceup denizen advisers, in adviser order. */
-  private def candidates(ready: ReadyGame, player: PlayerId)
-      : Vector[DenizenState] =
-    PlayerFacts.player(ready, player).toOption.toVector.flatMap(_.advisers
-      .collect { case card @ DenizenState(_, Orientation.FaceUp, _) => card })
-
-  def forCatalog(catalog: ExecutableCatalog): BedOfRoots =
-    new BedOfRoots(catalog)

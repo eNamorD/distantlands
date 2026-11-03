@@ -25,11 +25,11 @@ object PhasePowerCatalog:
       Vector[PhasePower](WaysideInn, Elders, MagicWaterskin, MarbleFountains,
         Quartermaster, StonePortal, SinkingPassages, HiddenPassages) ++
       DiceAndRelicDrawPowers.powers ++
-      TargetPowers.forCatalog(catalog) ++
-      MovementPowers.forCatalog(catalog) ++
-      SelfActionPowers.forCatalog(catalog) ++
-      OtherActionPowers.forCatalog(catalog) ++
-      WorldActionPowers.forCatalog(catalog) ++
+      TargetPowers.all ++
+      MovementPowers.all ++
+      SelfActionPowers.all ++
+      OtherActionPowers.all ++
+      WorldActionPowers.all ++
       BannerFacePowers.phasePowers ++
       Vector(Hunger) ++
       RiverSitePower.all,

@@ -27,40 +27,51 @@ object HonorGuardCard extends Denizen(DenizenId("251"), "Honor Guard", Suit.Orde
   *
   * Its line covers the generic Buried line.
   */
-final case class HonorGuard private (catalog: ExecutableCatalog)
-    extends PaidAction(HonorGuardCard.power):
-  import HonorGuard._
+case object HonorGuard extends PaidAction(HonorGuardCard.power):
+  val decisionId: String = "power.honor-guard.adviser"
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "{Red} buried {card} from {Blue}'s advisers." */
+  val buried: NoteKey = notes.key(NoteKey.Used, Vector(NotePart.Arg(0),
+    NotePart.Text(" buried "), NotePart.Arg(1), NotePart.Text(" from "),
+    NotePart.Arg(2), NotePart.Text("'s advisers.")))
+  /** "No adviser could be buried." */
+  val spared: NoteKey = notes.key("used.none", Vector(
+    NotePart.Text("No adviser could be buried.")))
 
-  override def noteKeys: Vector[NoteKey] = HonorGuard.noteKeys
   override def narratedDecisions: Set[String] = Set(decisionId)
 
   def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
       source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
-    Branch((live, _) => ask(live, player)),
-    BuildOps((live, pending) => bury(live, player, pending)),
-    Note(this.id, buriedNote(_, player, source), covers = true))))
+    Branch((live, _) => ask(catalog, live, player)),
+    BuildOps((live, pending) => bury(catalog, live, player, pending)),
+    Note(this.id, buriedNote(catalog, _, player, source), covers = true))))
 
   private final case class Candidate(owner: PlayerId, card: DenizenState)
 
-  private def ordered(ready: ReadyGame, owner: PlayerState): Boolean =
+  private def ordered(catalog: ExecutableCatalog,
+      ready: ReadyGame, owner: PlayerState): Boolean =
     owner.advisers.exists {
       case DenizenState(card, Orientation.FaceUp, _) =>
         EffectiveSuit.of(catalog, ready, card).contains(Suit.Order)
       case _ => false
     }
 
-  private def candidates(ready: ReadyGame, actor: PlayerId): Vector[Candidate] =
+  private def candidates(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId): Vector[Candidate] =
     val site = PowerAccess.pawnSite(ready, actor)
     for
       owner <- ready.game.current.players
-      if site.nonEmpty && owner.pawnSite == site && !ordered(ready, owner)
+      if site.nonEmpty && owner.pawnSite == site &&
+        !ordered(catalog, ready, owner)
       card <- owner.advisers.collect {
         case card @ DenizenState(_, Orientation.FaceUp, _) => card }
     yield Candidate(owner.player, card)
 
-  private def ask(ready: ReadyGame, actor: PlayerId): Vector[Operation] =
-    candidates(ready, actor) match
+  private def ask(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId): Vector[Operation] =
+    candidates(catalog, ready, actor) match
       case Vector() => Vector.empty
       case found => Vector(Decide(decisionId, actor, DecisionQuery.ChooseOne(
         found.map(c => DecisionOption.Denizen(
@@ -69,16 +80,18 @@ final case class HonorGuard private (catalog: ExecutableCatalog)
           "your site with no Order adviser"))))
 
   /** No answer means no adviser could be buried. */
-  private def bury(ready: ReadyGame, actor: PlayerId, pending: PendingTree)
+  private def bury(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId, pending: PendingTree)
       : Either[OathViolation, Vector[CoreOperation]] =
     PowerAnswers.one(pending, decisionId) match
       case None => Right(Vector.empty)
-      case Some(ref) => burial(ready, actor, ref)
+      case Some(ref) => burial(catalog, ready, actor, ref)
 
-  private def burial(ready: ReadyGame, actor: PlayerId,
+  private def burial(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId,
       ref: DecisionOptionRef): Either[OathViolation, Vector[CoreOperation]] =
     for
-      chosen <- candidates(ready, actor)
+      chosen <- candidates(catalog, ready, actor)
         .find(c => DecisionOptionRef.Denizen(c.card.id) == ref)
         .toRight(OathViolation.InvalidEventOrder(
           s"${ref.wireId} is not an adviser Honor Guard can bury"))
@@ -91,33 +104,19 @@ final case class HonorGuard private (catalog: ExecutableCatalog)
       chosen.card.tokens.favor, chosen.card.tokens.secrets, actor)
 
   /** The chosen adviser, read where it stood before the bury step. */
-  private def buriedNote(states: NoteStates, actor: PlayerId,
+  private def buriedNote(catalog: ExecutableCatalog,
+      states: NoteStates, actor: PlayerId,
       source: DecisionOptionRef): Option[LogNote] =
     PowerSourceRef.of(source).flatMap(card =>
       NoteSupport.answer(states, decisionId) match
         case None => Some(spared(card))
-        case Some(ref) => buriedLine(states, actor, card, ref))
+        case Some(ref) => buriedLine(catalog, states, actor, card, ref))
 
-  private def buriedLine(states: NoteStates, actor: PlayerId,
+  private def buriedLine(catalog: ExecutableCatalog,
+      states: NoteStates, actor: PlayerId,
       card: PowerSourceRef, ref: DecisionOptionRef): Option[LogNote] = for
     step <- states.previous
-    chosen <- candidates(step._1, actor)
+    chosen <- candidates(catalog, step._1, actor)
       .find(c => DecisionOptionRef.Denizen(c.card.id) == ref)
   yield buried(card, NoteArg.Player(actor), NoteArg.Card(chosen.card.id),
     NoteArg.Player(chosen.owner))
-
-object HonorGuard:
-  val id: PowerId = HonorGuardCard.power.id
-  val decisionId: String = "power.honor-guard.adviser"
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "{Red} buried {card} from {Blue}'s advisers." */
-  val buried: NoteKey = notes.key(NoteKey.Used, Vector(NotePart.Arg(0),
-    NotePart.Text(" buried "), NotePart.Arg(1), NotePart.Text(" from "),
-    NotePart.Arg(2), NotePart.Text("'s advisers.")))
-  /** "No adviser could be buried." */
-  val spared: NoteKey = notes.key("used.none", Vector(
-    NotePart.Text("No adviser could be buried.")))
-
-  def forCatalog(catalog: ExecutableCatalog): HonorGuard =
-    new HonorGuard(catalog)

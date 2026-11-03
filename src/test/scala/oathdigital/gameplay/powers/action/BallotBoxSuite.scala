@@ -4,7 +4,6 @@ import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.CodeOfHonorCard
 import oathdigital.gameplay.powers.economy.VowOfWanderingCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
@@ -19,7 +18,7 @@ class BallotBoxSuite extends munit.FunSuite:
 
   private val box = BallotBoxCard.id
   private val source = DecisionOptionRef.Denizen(box)
-  private val power = BallotBox.forCatalog(catalog)
+  private val power = BallotBox
   private val home = AncientCitySite.id
   // Denizens whose powers these tests do not use: one Hearth, two Order.
   private val homesteaders = HomesteadersCard.id

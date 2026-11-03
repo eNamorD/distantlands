@@ -5,7 +5,6 @@ import oathdigital.gameplay.powers.economy.HallowedSpringCard
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.{CodeOfHonorCard, WildMountsCard}
 import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
@@ -17,7 +16,7 @@ class TamingCharmSuite extends munit.FunSuite:
 
   private val charm = TamingCharmCard.id
   private val source = DecisionOptionRef.Denizen(charm)
-  private val power = TamingCharm.forCatalog(catalog)
+  private val power = TamingCharm
   private val home = AncientCitySite.id
   // Denizens whose powers these tests do not use, and a Beast edifice.
   private val errandBoy = ErrandBoyCard.id

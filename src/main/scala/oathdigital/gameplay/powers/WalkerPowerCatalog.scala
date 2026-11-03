@@ -88,7 +88,7 @@ object WalkerPowerCatalog:
       Vector(CityWall) ++
       Vector(GiantPythonRestriction) ++
       Vector(HiddenPassages) ++
-      Vector(TempleOfAncestors.forCatalog(catalog)) ++
+      Vector(TempleOfAncestors) ++
       TravelSitePowers.all ++
       Vector(BoilingLakeTravel, ForbiddenForest) ++
       Vector(HallowedSpring) ++
@@ -96,7 +96,7 @@ object WalkerPowerCatalog:
       Vector(LeagueTreatyContribution) ++
       Vector(SilverTongue) ++
       Vector(Insomnia) ++
-      Vector(Assassin.forCatalog(catalog)) ++
+      Vector(Assassin) ++
       Vector(LostTapestry) ++
       Vector(PiedPiper) ++
       Vector(FamilyWagon) ++

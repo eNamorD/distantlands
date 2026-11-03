@@ -39,71 +39,12 @@ object FestivalDistrictCard extends Edifice(EdificeId("E21"), Suit.Hearth):
   * facedown." The intact face is a Negotiation power and is not
   * implemented.
   */
-final case class SqualidDistrict private (catalog: ExecutableCatalog)
+case object SqualidDistrict
     extends PaidAction(FestivalDistrictCard.ruined.power):
-  import SqualidDistrict._
-  override def noteKeys: Vector[NoteKey] = SqualidDistrict.noteKeys
-  override def narratedDecisions: Set[String] = Set(decisionId)
-
-  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
-      source: DecisionOptionRef)
-      : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
-    Branch((live, _) => Option.when(facedown(live, player).nonEmpty)(
-      Decide(decisionId, player, DecisionQuery.ChooseMany(0,
-        facedown(live, player).size,
-        facedown(live, player).map(held => DecisionOption.AdviserSlot(
-          DecisionOptionRef.AdviserSlot(player, held.slot))),
-        heading = Some(heading)))).toVector),
-    BuildOps((live, pending) => swap(live, player, pending),
-      required = true),
-    Note(id, line(_, player)))))
-
-  private def swap(ready: ReadyGame, player: PlayerId, pending: PendingTree)
-      : Either[OathViolation, Vector[CoreOperation]] =
-    val chosen = PowerAnswers.many(pending, decisionId).getOrElse(Vector.empty)
-    val held = facedown(ready, player).filter(adviser =>
-      chosen.contains(DecisionOptionRef.AdviserSlot(player, adviser.slot)))
-    for
-      region <- CardPlay.discardRegion(ready, player).toRight(
-        OathViolation.PawnSiteMissing(player))
-      discards <- held.foldLeft[Either[OathViolation, Vector[CoreOperation]]](
-        Right(Vector.empty))((acc, adviser) => acc.flatMap(done =>
-          discard(adviser.card, player, region).map(done :+ _)))
-    yield discards ++ drawn(ready, player, held.size)
-
-  private def discard(card: WorldCardId, player: PlayerId, region: Region)
-      : Either[OathViolation, CoreOperation] =
-    val from = PositionedLocation(Location.PlayArea(player))
-    card match
-      case vision: VisionId =>
-        Right(Discard.Vision(vision, from, region))
-      case denizen: DenizenId => catalog.suitOf(denizen)
-        .toRight(OathViolation.UnknownWorldCard(denizen))
-        .map(suit => Discard.Denizen(denizen, from, region, suit, 0, 0,
-          player, required = true))
-
-  /** Up to `count` cards from the deck's bottom, bottom first, each into
-    * the play area facedown; each Vision among them advances the Visions
-    * Drawn track. Each card is at the bottom when its turn comes, which is
-    * the end the move names. */
-  private def drawn(ready: ReadyGame, player: PlayerId, count: Int)
-      : Vector[CoreOperation] =
-    ready.game.current.commonCards.worldDeck.reverse.take(count)
-      .flatMap(card => Move(Piece.Card(card),
-        PositionedLocation(Location.Deck(CardDeck.World),
-          StackPosition.Bottom),
-        PositionedLocation(Location.PlayArea(player)),
-        resultingOrientation = Some(Orientation.FaceDown),
-        by = Some(player)) +:
-        Option.when(card.isInstanceOf[VisionId])(AdvanceVisionsDrawn)
-          .toVector)
-
-object SqualidDistrict:
-  val id: PowerId = FestivalDistrictCard.ruined.power.id
   val decisionId: String = "power.squalid-district.advisers"
   val heading: String = "Squalid District: discard which facedown advisers?"
   private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
+  override def noteKeys: Vector[NoteKey] = notes.declared
   /** "Discarded {2} facedown advisers and drew {2} cards facedown." */
   val swapped: NoteKey = notes.key(NoteKey.Used, Vector(
     NotePart.Text("Discarded "), NotePart.Arg(0),
@@ -113,9 +54,6 @@ object SqualidDistrict:
   /** "Discarded no adviser." */
   val nothing: NoteKey = notes.key("used.none", Vector(
     NotePart.Text("Discarded no adviser.")))
-
-  def forCatalog(catalog: ExecutableCatalog): SqualidDistrict =
-    new SqualidDistrict(catalog)
 
   /** A facedown adviser of the user: its slot and its card. */
   final case class Facedown(slot: Int, card: WorldCardId)
@@ -144,3 +82,60 @@ object SqualidDistrict:
           .worldDeck.size
         swapped(card, NoteArg.Number(chosen), NoteArg.Number(drawnCount))
     }
+
+  override def narratedDecisions: Set[String] = Set(decisionId)
+
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
+      : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
+    Branch((live, _) => Option.when(facedown(live, player).nonEmpty)(
+      Decide(decisionId, player, DecisionQuery.ChooseMany(0,
+        facedown(live, player).size,
+        facedown(live, player).map(held => DecisionOption.AdviserSlot(
+          DecisionOptionRef.AdviserSlot(player, held.slot))),
+        heading = Some(heading)))).toVector),
+    BuildOps((live, pending) => swap(catalog, live, player, pending),
+      required = true),
+    Note(id, line(_, player)))))
+
+  private def swap(catalog: ExecutableCatalog,
+      ready: ReadyGame, player: PlayerId, pending: PendingTree)
+      : Either[OathViolation, Vector[CoreOperation]] =
+    val chosen = PowerAnswers.many(pending, decisionId).getOrElse(Vector.empty)
+    val held = facedown(ready, player).filter(adviser =>
+      chosen.contains(DecisionOptionRef.AdviserSlot(player, adviser.slot)))
+    for
+      region <- CardPlay.discardRegion(ready, player).toRight(
+        OathViolation.PawnSiteMissing(player))
+      discards <- held.foldLeft[Either[OathViolation, Vector[CoreOperation]]](
+        Right(Vector.empty))((acc, adviser) => acc.flatMap(done =>
+          discard(catalog, adviser.card, player, region).map(done :+ _)))
+    yield discards ++ drawn(ready, player, held.size)
+
+  private def discard(catalog: ExecutableCatalog,
+      card: WorldCardId, player: PlayerId, region: Region)
+      : Either[OathViolation, CoreOperation] =
+    val from = PositionedLocation(Location.PlayArea(player))
+    card match
+      case vision: VisionId =>
+        Right(Discard.Vision(vision, from, region))
+      case denizen: DenizenId => catalog.suitOf(denizen)
+        .toRight(OathViolation.UnknownWorldCard(denizen))
+        .map(suit => Discard.Denizen(denizen, from, region, suit, 0, 0,
+          player, required = true))
+
+  /** Up to `count` cards from the deck's bottom, bottom first, each into
+    * the play area facedown; each Vision among them advances the Visions
+    * Drawn track. Each card is at the bottom when its turn comes, which is
+    * the end the move names. */
+  private def drawn(ready: ReadyGame, player: PlayerId, count: Int)
+      : Vector[CoreOperation] =
+    ready.game.current.commonCards.worldDeck.reverse.take(count)
+      .flatMap(card => Move(Piece.Card(card),
+        PositionedLocation(Location.Deck(CardDeck.World),
+          StackPosition.Bottom),
+        PositionedLocation(Location.PlayArea(player)),
+        resultingOrientation = Some(Orientation.FaceDown),
+        by = Some(player)) +:
+        Option.when(card.isInstanceOf[VisionId])(AdvanceVisionsDrawn)
+          .toVector)

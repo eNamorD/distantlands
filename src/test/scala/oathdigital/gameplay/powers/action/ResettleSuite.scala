@@ -7,7 +7,6 @@ import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.{MountainGiantCard, WildMountsCard}
 import oathdigital.gameplay.powers.search.{ErrandBoyCard, LandWardenCard}
 import oathdigital.gameplay.powers.whenplayed.FaithfulFriendCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
@@ -19,7 +18,7 @@ class ResettleSuite extends munit.FunSuite:
 
   private val resettle = ResettleCard.id
   private val source = DecisionOptionRef.Denizen(resettle)
-  private val power = Resettle.forCatalog(catalog)
+  private val power = Resettle
   /** p1's pawn site, with room for three cards. */
   private val home = AncientCitySite.id
   /** Two sites with room for one card each. */

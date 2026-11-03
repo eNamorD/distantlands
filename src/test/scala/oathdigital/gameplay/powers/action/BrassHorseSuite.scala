@@ -6,7 +6,6 @@ import oathdigital.gameplay.cards.{AncientCitySite, BuriedGiantSite,
   DeepWoodsSite, DesolateShoreSite, DunesSite}
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
 import oathdigital.gameplay.powers.campaign.{InsectSwarmCard, VowOfUnionCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{Look, PhasePowerHarness, Refusals, Table}
 import oathdigital.testkit.ActPowerHarness.usableIds
@@ -134,7 +133,7 @@ class BrassHorseSuite extends munit.FunSuite:
 
   test("it writes the card it revealed in place of the generic line, then where the pawn went"):
     val done = accepted(use(cradleTopped(beastTop), BrassHorse.id, horse))
-    assertEquals(NoteText.said(new BrassHorse(catalog), done.events), Vector(
+    assertEquals(NoteText.said(BrassHorse, done.events), Vector(
       NoteText.Said(NoteKey.Used, s"${actor.value} revealed ${beastTop.value}.",
         covers = true),
       NoteText.Said("placed",

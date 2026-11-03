@@ -33,21 +33,34 @@ object RelicThiefCard extends Denizen(DenizenId("95"), "Relic Thief", Suit.Disco
   * No generic line exists for the take, so the line covers nothing, and the
   * roll keeps its "Rolled" line.
   */
-final case class RelicThief private (catalog: ExecutableCatalog)
-    extends PaidAction(RelicThiefCard.power):
-  import RelicThief._
+case object RelicThief extends PaidAction(RelicThiefCard.power):
+  val decisionId: String = "power.relic-thief.relic"
+  /** Its own dice pool. */
+  val pool: PoolKey = PoolKey("relic-thief")
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "Rolled no shield and took {relic} from {Blue}." */
+  val took: NoteKey = notes.key(NoteKey.Used, Vector(
+    NotePart.Text("Rolled no shield and took "), NotePart.Arg(0),
+    NotePart.Text(" from "), NotePart.Arg(1), NotePart.Text(".")))
+  /** "Rolled a shield; {Blue} kept {relic}." */
+  val kept: NoteKey = notes.key("used.kept", Vector(
+    NotePart.Text("Rolled a shield; "), NotePart.Arg(0),
+    NotePart.Text(" kept "), NotePart.Arg(1), NotePart.Text(".")))
+  /** "No faceup relic could be taken." */
+  val nothing: NoteKey = notes.key("used.none", Vector(
+    NotePart.Text("No faceup relic could be taken.")))
 
   private val lostTongue = LostTongue
 
-  override def noteKeys: Vector[NoteKey] = RelicThief.noteKeys
   override def narratedDecisions: Set[String] = Set(decisionId)
 
   def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
       source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
-    Branch((live, _) => ask(live, player)),
-    Branch((live, pending) => roll(live, player, pending)),
-    BuildOps((live, pending) => Right(steal(live, player, pending))),
+    Branch((live, _) => ask(catalog, live, player)),
+    Branch((live, pending) => roll(catalog, live, player, pending)),
+    BuildOps((live, pending) => Right(steal(catalog, live, player, pending))),
     Note(this.id, stolenNote(_, player, source)))))
 
   private final case class Target(owner: PlayerId, relic: RelicId):
@@ -55,7 +68,8 @@ final case class RelicThief private (catalog: ExecutableCatalog)
 
   /** The faceup relics of the other players at the player's site that Lost
     * Tongue leaves takeable, in seat then relic order. */
-  private def targets(ready: ReadyGame, actor: PlayerId): Vector[Target] =
+  private def targets(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId): Vector[Target] =
     PowerAccess.pawnSite(ready, actor).toVector.flatMap(site => for
       other <- ready.game.current.players
       if other.player != actor && other.pawnSite.contains(site) &&
@@ -64,8 +78,9 @@ final case class RelicThief private (catalog: ExecutableCatalog)
         case RelicState(id, Orientation.FaceUp, _) => id }
     yield Target(other.player, relic))
 
-  private def ask(ready: ReadyGame, actor: PlayerId): Vector[Operation] =
-    targets(ready, actor) match
+  private def ask(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId): Vector[Operation] =
+    targets(catalog, ready, actor) match
       case Vector() => Vector.empty
       case found => Vector(Decide(decisionId, actor, DecisionQuery.ChooseOne(
         found.map(target =>
@@ -73,24 +88,28 @@ final case class RelicThief private (catalog: ExecutableCatalog)
         heading = Some("Relic Thief: choose a faceup relic held by a player " +
           "at your site"))))
 
-  private def chosen(ready: ReadyGame, actor: PlayerId, pending: PendingTree)
+  private def chosen(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId, pending: PendingTree)
       : Option[Target] = PowerAnswers.one(pending, decisionId)
-    .flatMap(ref => targets(ready, actor).find(_.ref == ref))
+    .flatMap(ref => targets(catalog, ready, actor).find(_.ref == ref))
 
-  private def defense(relic: RelicId): Int =
+  private def defense(catalog: ExecutableCatalog, relic: RelicId): Int =
     catalog.relic(relic).fold(0)(_.defense)
 
   /** The chosen relic's defense dice, rolled at once; none at defense 0. */
-  private def roll(ready: ReadyGame, actor: PlayerId, pending: PendingTree)
-      : Vector[Operation] = chosen(ready, actor, pending)
-    .map(target => defense(target.relic)).filter(_ > 0).toVector
+  private def roll(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId, pending: PendingTree)
+      : Vector[Operation] = chosen(catalog, ready, actor, pending)
+    .map(target => defense(catalog, target.relic)).filter(_ > 0).toVector
     .flatMap(dice => Vector[Operation](ModifyDicePool(pool, dice),
       RollStep(pool, DiceSpec(DiceKind.Defense), Some(actor))))
 
   /** The take, when the relic rolled nothing or the roll shows no shield. */
-  private def steal(ready: ReadyGame, actor: PlayerId, pending: PendingTree)
-      : Vector[CoreOperation] = chosen(ready, actor, pending).filter(target =>
-    defense(target.relic) == 0 || RollResults.score(ready, pool) == 0)
+  private def steal(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId, pending: PendingTree)
+      : Vector[CoreOperation] =
+    chosen(catalog, ready, actor, pending).filter(target =>
+    defense(catalog, target.relic) == 0 || RollResults.score(ready, pool) == 0)
     .toVector.map(target => Take(Piece.Card(target.relic), actor,
       Location.PlayArea(target.owner), Location.PlayArea(actor)))
 
@@ -114,25 +133,3 @@ final case class RelicThief private (catalog: ExecutableCatalog)
   private def holderOf(ready: ReadyGame, relic: RelicId): Option[PlayerId] =
     ready.game.current.players.find(_.relics.exists(_.id == relic))
       .map(_.player)
-
-object RelicThief:
-  val id: PowerId = RelicThiefCard.power.id
-  val decisionId: String = "power.relic-thief.relic"
-  /** Its own dice pool. */
-  val pool: PoolKey = PoolKey("relic-thief")
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "Rolled no shield and took {relic} from {Blue}." */
-  val took: NoteKey = notes.key(NoteKey.Used, Vector(
-    NotePart.Text("Rolled no shield and took "), NotePart.Arg(0),
-    NotePart.Text(" from "), NotePart.Arg(1), NotePart.Text(".")))
-  /** "Rolled a shield; {Blue} kept {relic}." */
-  val kept: NoteKey = notes.key("used.kept", Vector(
-    NotePart.Text("Rolled a shield; "), NotePart.Arg(0),
-    NotePart.Text(" kept "), NotePart.Arg(1), NotePart.Text(".")))
-  /** "No faceup relic could be taken." */
-  val nothing: NoteKey = notes.key("used.none", Vector(
-    NotePart.Text("No faceup relic could be taken.")))
-
-  def forCatalog(catalog: ExecutableCatalog): RelicThief =
-    new RelicThief(catalog)

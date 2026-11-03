@@ -24,7 +24,7 @@ class SpellBreakerPhaseSuite extends munit.FunSuite:
   private val woods = DeepWoodsSite.id
   private val peaks = BrokenPeaksSite.id
   private val terrorRef = DecisionOptionRef.Denizen(terror)
-  private val power = RovingTerror.forCatalog(catalog)
+  private val power = RovingTerror
   private val covers = ConsentKey(SpellBreaker.id, p1, "power.use",
     terrorRef)
 

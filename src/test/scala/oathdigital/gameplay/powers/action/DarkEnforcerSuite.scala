@@ -5,7 +5,6 @@ import oathdigital.gameplay.operations.HallOfMinistersCard
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.CodeOfHonorCard
 import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
@@ -17,7 +16,7 @@ class DarkEnforcerSuite extends munit.FunSuite:
 
   private val enforcer = DarkEnforcerCard.id
   private val source = DecisionOptionRef.Denizen(enforcer)
-  private val power = DarkEnforcer.forCatalog(catalog)
+  private val power = DarkEnforcer
   private val home = AncientCitySite.id
   // One denizen of each suit the tests need; their powers go unused.
   private val codeOfHonor = CodeOfHonorCard.id

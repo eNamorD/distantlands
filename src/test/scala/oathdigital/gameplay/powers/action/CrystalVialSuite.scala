@@ -5,7 +5,6 @@ import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
 import oathdigital.gameplay.powers.campaign.{BattleHonorsCard, WrestlersCard}
 import oathdigital.gameplay.powers.wake.MarbleFountainsCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{Look, PhasePowerHarness, Refusals, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
@@ -18,7 +17,7 @@ class CrystalVialSuite extends munit.FunSuite:
 
   private val vial = CrystalVialCard.id
   private val source = DecisionOptionRef.Relic(vial)
-  private val power = CrystalVial(catalog)
+  private val power = CrystalVial
   private val inn = WaysideInnCard.id
   private val faith = VisionRules.Faith
   private val elders = EldersCard.id

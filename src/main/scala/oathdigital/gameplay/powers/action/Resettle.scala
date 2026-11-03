@@ -25,27 +25,36 @@ object ResettleCard extends Denizen(DenizenId("159"), "Resettle", Suit.Nomad) wi
   * candidate too. The card carries its favor and secrets. After Continue
   * one line says nothing moved.
   */
-final case class Resettle private (catalog: ExecutableCatalog)
-    extends PaidAction(ResettleCard.power):
-  import Resettle._
+case object Resettle extends PaidAction(ResettleCard.power):
+  val adviserDecisionId: String = "power.resettle.adviser"
+  val siteDecisionId: String = "power.resettle.site"
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "Moved {Blue}'s {card} to {site}." */
+  val moved: NoteKey = notes.key(NoteKey.Used, Vector(NotePart.Text("Moved "),
+    NotePart.Arg(0), NotePart.Text("'s "), NotePart.Arg(1),
+    NotePart.Text(" to "), NotePart.Arg(2), NotePart.Text(".")))
+  /** "No Nomad adviser could be moved." */
+  val nothing: NoteKey = notes.key("used.none", Vector(
+    NotePart.Text("No Nomad adviser could be moved.")))
 
-  override def noteKeys: Vector[NoteKey] = Resettle.noteKeys
   override def narratedDecisions: Set[String] =
     Set(adviserDecisionId, siteDecisionId)
 
   def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
       source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
-    Branch((live, _) => askAdviser(live, player)),
-    Branch((live, pending) => askSite(live, player, pending)),
-    BuildOps((live, pending) => move(live, pending), required = true),
+    Branch((live, _) => askAdviser(catalog, live, player)),
+    Branch((live, pending) => askSite(catalog, live, player, pending)),
+    BuildOps((live, pending) => move(catalog, live, pending), required = true),
     Note(this.id, movedNote(_, source)))))
 
   private final case class Candidate(owner: PlayerId, card: DenizenId)
 
   /** Every player's faceup Nomad denizen advisers, in seat then adviser
     * order, while some site in play has room. */
-  private def candidates(ready: ReadyGame): Vector[Candidate] =
+  private def candidates(catalog: ExecutableCatalog,
+      ready: ReadyGame): Vector[Candidate] =
     if SiteRoom.open(catalog, ready).isEmpty then Vector.empty
     else for
       player <- ready.game.current.players
@@ -55,15 +64,17 @@ final case class Resettle private (catalog: ExecutableCatalog)
               id }
     yield Candidate(player.player, card)
 
-  private def askAdviser(ready: ReadyGame, actor: PlayerId): Vector[Operation] =
+  private def askAdviser(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId): Vector[Operation] =
     Vector(Decide(adviserDecisionId, actor,
-      DecisionQuery.ChooseOne(candidates(ready).map(c =>
+      DecisionQuery.ChooseOne(candidates(catalog, ready).map(c =>
         DecisionOption.Denizen(DecisionOptionRef.Denizen(c.card))),
         heading = Some("Resettle: choose a faceup Nomad adviser to move")),
       passWhenEmpty = true))
 
   /** Asked once an adviser is chosen. */
-  private def askSite(ready: ReadyGame, actor: PlayerId,
+  private def askSite(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId,
       pending: PendingTree): Vector[Operation] =
     if PowerAnswers.one(pending, adviserDecisionId).isEmpty then Vector.empty
     else Vector(Decide(siteDecisionId, actor, DecisionQuery.ChooseOne(
@@ -72,13 +83,14 @@ final case class Resettle private (catalog: ExecutableCatalog)
       heading = Some("Resettle: choose the site to move it to"))))
 
   /** No adviser answer means no adviser could be moved. */
-  private def move(ready: ReadyGame, pending: PendingTree)
+  private def move(catalog: ExecutableCatalog,
+      ready: ReadyGame, pending: PendingTree)
       : Either[OathViolation, Vector[CoreOperation]] =
     (PowerAnswers.one(pending, adviserDecisionId),
         PowerAnswers.one(pending, siteDecisionId)) match
       case (None, _) => Right(Vector.empty)
       case (Some(ref), Some(DecisionOptionRef.Site(site))) => (for
-          chosen <- candidates(ready)
+          chosen <- candidates(catalog, ready)
             .find(c => DecisionOptionRef.Denizen(c.card) == ref)
           if SiteRoom.open(catalog, ready).contains(site)
         yield Vector[CoreOperation](Move(Piece.Card(chosen.card),
@@ -106,20 +118,3 @@ final case class Resettle private (catalog: ExecutableCatalog)
         .exists(_.denizens.exists(_.id == chosen))
     yield moved(card, NoteArg.Player(owner.player), NoteArg.Card(chosen),
       NoteArg.Site(site))).getOrElse(nothing(card)))
-
-object Resettle:
-  val id: PowerId = ResettleCard.power.id
-  val adviserDecisionId: String = "power.resettle.adviser"
-  val siteDecisionId: String = "power.resettle.site"
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "Moved {Blue}'s {card} to {site}." */
-  val moved: NoteKey = notes.key(NoteKey.Used, Vector(NotePart.Text("Moved "),
-    NotePart.Arg(0), NotePart.Text("'s "), NotePart.Arg(1),
-    NotePart.Text(" to "), NotePart.Arg(2), NotePart.Text(".")))
-  /** "No Nomad adviser could be moved." */
-  val nothing: NoteKey = notes.key("used.none", Vector(
-    NotePart.Text("No Nomad adviser could be moved.")))
-
-  def forCatalog(catalog: ExecutableCatalog): Resettle =
-    new Resettle(catalog)

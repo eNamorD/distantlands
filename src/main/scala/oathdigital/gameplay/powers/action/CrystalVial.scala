@@ -23,18 +23,23 @@ object CrystalVialCard extends Relic(RelicId("R21"), "Crystal Vial", value = 71,
   * from live state. The power holds the catalog because `Bury.standard`
   * needs the card's suit to return favor.
   */
-final case class CrystalVial(catalog: ExecutableCatalog)
-    extends PaidAction(CrystalVialCard.power):
-  import CrystalVial._
+case object CrystalVial extends PaidAction(CrystalVialCard.power):
+  val decisionId: String = "power.crystal-vial.card"
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  val buried: NoteKey = notes.key(NoteKey.Used, Vector(NotePart.Arg(0),
+    NotePart.Text(" buried "), NotePart.Arg(1), NotePart.Text(".")))
 
-  override def noteKeys: Vector[NoteKey] = CrystalVial.noteKeys
+  private[action] final case class Candidate(ref: DecisionOptionRef,
+      card: BuryableCard, from: Location, tokens: Tokens)
+
   override def narratedDecisions: Set[String] = Set(decisionId)
 
   def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
       source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     Branch((live, _) => ask(live, player)),
-    BuildOps((live, pending) => bury(live, player, pending)),
+    BuildOps((live, pending) => bury(catalog, live, player, pending)),
     Note(this.id, buriedNote(_, player, source), covers = true))))
 
   /** The chosen card, read where it stood before the bury step. */
@@ -71,7 +76,8 @@ final case class CrystalVial(catalog: ExecutableCatalog)
       found.flatMap(c => DecisionOption.forRef(c.ref)), heading = Some(
         "Crystal Vial: bury an adviser of yours or a card at your site"))))
 
-  private def bury(ready: ReadyGame, actor: PlayerId, pending: PendingTree)
+  private def bury(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId, pending: PendingTree)
       : Either[OathViolation, Vector[CoreOperation]] =
     val found = candidates(ready, actor)
     if found.isEmpty then Right(Vector.empty)
@@ -86,14 +92,3 @@ final case class CrystalVial(catalog: ExecutableCatalog)
           s"no suit is known for ${chosen.card.id.value}"))
     yield Bury.standard(chosen.card, PositionedLocation(chosen.from), suit,
       chosen.tokens.favor, chosen.tokens.secrets, actor)
-
-object CrystalVial:
-  val id: PowerId = CrystalVialCard.power.id
-  val decisionId: String = "power.crystal-vial.card"
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  val buried: NoteKey = notes.key(NoteKey.Used, Vector(NotePart.Arg(0),
-    NotePart.Text(" buried "), NotePart.Arg(1), NotePart.Text(".")))
-
-  private[action] final case class Candidate(ref: DecisionOptionRef,
-      card: BuryableCard, from: Location, tokens: Tokens)

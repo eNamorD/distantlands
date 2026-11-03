@@ -22,20 +22,26 @@ object DarkEnforcerCard extends Denizen(DenizenId("227"), "Dark Enforcer", Suit.
   * Its line names the cards that left the site, as Dazzle's does, and
   * covers the generic discard lines. With none, the line names the site.
   */
-final case class DarkEnforcer private (catalog: ExecutableCatalog)
-    extends PaidAction(DarkEnforcerCard.power):
-  import DarkEnforcer._
+case object DarkEnforcer extends PaidAction(DarkEnforcerCard.power):
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "Discarded {cards}." */
+  val discarded: NoteKey = notes.key(NoteKey.Used, Vector(
+    NotePart.Text("Discarded "), NotePart.Arg(0), NotePart.Text(".")))
+  /** "{site} held no Order or Hearth card to discard." */
+  val kept: NoteKey = notes.key("used.none", Vector(NotePart.Arg(0),
+    NotePart.Text(" held no Order or Hearth card to discard.")))
 
   private val cards = new SiteCards(Set(Suit.Order, Suit.Hearth))
-  override def noteKeys: Vector[NoteKey] = DarkEnforcer.noteKeys
 
   def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
       source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
-    BuildOps((live, _) => discards(live, player)),
-    Note(this.id, discardedNote(_, player, source), covers = true))))
+    BuildOps((live, _) => discards(catalog, live, player)),
+    Note(this.id, discardedNote(catalog, _, player, source), covers = true))))
 
-  private def discards(ready: ReadyGame, player: PlayerId)
+  private def discards(catalog: ExecutableCatalog,
+      ready: ReadyGame, player: PlayerId)
       : Either[OathViolation, Vector[CoreOperation]] =
     PowerAccess.pawnSite(ready, player).toVector.flatMap(here =>
       cards.at(catalog, ready, here).map((card, suit) =>
@@ -46,7 +52,8 @@ final case class DarkEnforcer private (catalog: ExecutableCatalog)
 
   /** The cards at the site before the step that are gone after it. None
     * gone names the site. */
-  private def discardedNote(states: NoteStates, player: PlayerId,
+  private def discardedNote(catalog: ExecutableCatalog,
+      states: NoteStates, player: PlayerId,
       source: DecisionOptionRef): Option[LogNote] = for
     card <- PowerSourceRef.of(source)
     site <- PowerAccess.pawnSite(states.now, player)
@@ -58,17 +65,3 @@ final case class DarkEnforcer private (catalog: ExecutableCatalog)
           .exists(_.denizens.exists(_.id == id))))
     if gone.nonEmpty then discarded(card, NoteArg.Cards(gone))
     else kept(card, NoteArg.Site(site))
-
-object DarkEnforcer:
-  val id: PowerId = DarkEnforcerCard.power.id
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "Discarded {cards}." */
-  val discarded: NoteKey = notes.key(NoteKey.Used, Vector(
-    NotePart.Text("Discarded "), NotePart.Arg(0), NotePart.Text(".")))
-  /** "{site} held no Order or Hearth card to discard." */
-  val kept: NoteKey = notes.key("used.none", Vector(NotePart.Arg(0),
-    NotePart.Text(" held no Order or Hearth card to discard.")))
-
-  def forCatalog(catalog: ExecutableCatalog): DarkEnforcer =
-    new DarkEnforcer(catalog)

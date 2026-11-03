@@ -20,7 +20,7 @@ class RelicThiefSuite extends munit.FunSuite:
   import ActPowerHarness._
 
   private val walkerParked = PhasePowerHarness.parked
-  private val power = RelicThief.forCatalog(catalog)
+  private val power = RelicThief
   private val thief = RelicThiefCard.id
   private val source = DecisionOptionRef.Denizen(thief)
   private val home = AncientCitySite.id

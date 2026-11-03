@@ -17,34 +17,13 @@ import oathdigital.model._
   * line covers the generic discard lines: "Discarded {cards}." or "Nothing
   * was discarded."
   */
-final case class ForestHorn private (catalog: ExecutableCatalog)
-    extends PaidAction(ForestHornCard.intact.power):
-  import ForestHorn._
-  override def noteKeys: Vector[NoteKey] = ForestHorn.noteKeys
-  override def narratedDecisions: Set[String] = Set(decisionId)
-
-  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
-      source: DecisionOptionRef)
-      : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
-    Decide(decisionId, player, DecisionQuery.ChooseOne(
-      Region.all.map(region => DecisionOption.Button(button(region),
-        region.toString)), heading = Some(heading))),
-    Branch((live, pending) => chosen(pending).toVector.flatMap { region =>
-      val discard = new RegionDiscard(_ != Suit.Beast, (_, _) => Some(region))
-      val found = discard.targets(catalog, live, player)
-      Vector[Operation](
-        BuildOps((ready, _) => discard.discards(catalog, ready, player)),
-        Note(id, said(found), covers = true))
-    }))))
-
-object ForestHorn:
-  val id: PowerId = ForestHornCard.intact.power.id
+case object ForestHorn extends PaidAction(ForestHornCard.intact.power):
   val decisionId: String = "power.forest-horn.region"
   val heading: String = "Forest Horn: discard the non-Beast denizens of " +
     "which region?"
 
   private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
+  override def noteKeys: Vector[NoteKey] = notes.declared
   /** "Discarded {cards}." */
   val discarded: NoteKey = notes.key(NoteKey.Used, Vector(
     NotePart.Text("Discarded "), NotePart.Arg(0), NotePart.Text(".")))
@@ -60,9 +39,6 @@ object ForestHorn:
     Some(if left.nonEmpty then discarded(card, NoteArg.Cards(left))
       else none(card))
 
-  def forCatalog(catalog: ExecutableCatalog): ForestHorn =
-    new ForestHorn(catalog)
-
   /** The option that names `region`. */
   def button(region: Region): DecisionOptionRef.Button =
     DecisionOptionRef.Button(s"region.${region.toString.toLowerCase}")
@@ -70,3 +46,19 @@ object ForestHorn:
   private def chosen(pending: PendingTree): Option[Region] =
     PowerAnswers.one(pending, decisionId).flatMap(ref =>
       Region.all.find(button(_) == ref))
+
+  override def narratedDecisions: Set[String] = Set(decisionId)
+
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
+      : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
+    Decide(decisionId, player, DecisionQuery.ChooseOne(
+      Region.all.map(region => DecisionOption.Button(button(region),
+        region.toString)), heading = Some(heading))),
+    Branch((live, pending) => chosen(pending).toVector.flatMap { region =>
+      val discard = new RegionDiscard(_ != Suit.Beast, (_, _) => Some(region))
+      val found = discard.targets(catalog, live, player)
+      Vector[Operation](
+        BuildOps((ready, _) => discard.discards(catalog, ready, player)),
+        Note(id, said(found), covers = true))
+    }))))

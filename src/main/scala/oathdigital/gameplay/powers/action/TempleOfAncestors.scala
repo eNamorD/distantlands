@@ -41,12 +41,37 @@ object TempleOfAncestorsCard extends Edifice(EdificeId("E10"), Suit.Nomad):
   * advisers" (owner question 6). An empty deck draws nothing and asks
   * nothing. The ruined face is a Chronicle step and is not implemented.
   */
-final case class TempleOfAncestors private (catalog: ExecutableCatalog)
+case object TempleOfAncestors
     extends PaidAction(TempleOfAncestorsCard.intact.power)
     with ContributingPower:
-  import TempleOfAncestors._
+  val toAdvisers: String = "Temple of Ancestors: the card goes to your " +
+    "advisers"
+  /** Only an adviser play, or the discard, stays open. */
+  val adviserRule: PlacementLimit = PlacementLimit(
+    OptionReason.Written(toAdvisers), {
+      case SearchPlacement.Site(_, _) => false
+      case _ => true
+    })
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "{Blue} drew {card} from the bottom of the world deck." */
+  val drew: NoteKey = notes.key(NoteKey.Used, Vector(NotePart.Arg(0),
+    NotePart.Text(" drew "), NotePart.Arg(1),
+    NotePart.Text(" from the bottom of the world deck.")))
+  /** "The world deck was empty." */
+  val emptyDeck: NoteKey = notes.key("used.none",
+    Vector(NotePart.Text("The world deck was empty.")))
+
+  /** The world deck's bottom card, stored last. */
+  private def bottom(ready: ReadyGame): Option[WorldCardId] =
+    ready.game.current.commonCards.worldDeck.lastOption
+
+  /** The card in the player's temporary hand, until it is played. */
+  private def held(ready: ReadyGame, player: PlayerId): Option[WorldCardId] =
+    ready.game.current.temporaryHands.getOrElse(player, Vector.empty)
+      .headOption
+
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
-  override def noteKeys: Vector[NoteKey] = TempleOfAncestors.noteKeys
 
   def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
       source: DecisionOptionRef)
@@ -75,35 +100,3 @@ final case class TempleOfAncestors private (catalog: ExecutableCatalog)
 
   override def applicable(ctx: PowerCtx): Boolean =
     ctx.procedure.contains(ActionRef.UsePower(id))
-
-object TempleOfAncestors:
-  val id: PowerId = TempleOfAncestorsCard.intact.power.id
-  val toAdvisers: String = "Temple of Ancestors: the card goes to your " +
-    "advisers"
-  /** Only an adviser play, or the discard, stays open. */
-  val adviserRule: PlacementLimit = PlacementLimit(
-    OptionReason.Written(toAdvisers), {
-      case SearchPlacement.Site(_, _) => false
-      case _ => true
-    })
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "{Blue} drew {card} from the bottom of the world deck." */
-  val drew: NoteKey = notes.key(NoteKey.Used, Vector(NotePart.Arg(0),
-    NotePart.Text(" drew "), NotePart.Arg(1),
-    NotePart.Text(" from the bottom of the world deck.")))
-  /** "The world deck was empty." */
-  val emptyDeck: NoteKey = notes.key("used.none",
-    Vector(NotePart.Text("The world deck was empty.")))
-
-  def forCatalog(catalog: ExecutableCatalog): TempleOfAncestors =
-    new TempleOfAncestors(catalog)
-
-  /** The world deck's bottom card, stored last. */
-  private def bottom(ready: ReadyGame): Option[WorldCardId] =
-    ready.game.current.commonCards.worldDeck.lastOption
-
-  /** The card in the player's temporary hand, until it is played. */
-  private def held(ready: ReadyGame, player: PlayerId): Option[WorldCardId] =
-    ready.game.current.temporaryHands.getOrElse(player, Vector.empty)
-      .headOption
