@@ -110,6 +110,8 @@ object OperationStateAdapter:
         case SiteForces.Occupied(`kind`, count) => count
         case _ => 0
     case Location.WarbandBank(`kind`) => warbandsInBank(ready, kind)
+    case Location.OnCard(id) => cardTokens(ready, id).map(_ =>
+      ready.game.current.warbandsOn(id, kind))
     case _ => Left(IncompatibleLocation(Piece.Warbands(kind, 1), at))
 
   private def cardTokens(
@@ -146,7 +148,8 @@ object OperationStateAdapter:
         case SiteForces.Occupied(`kind`, count) => count
         case _ => 0
     }.sum
-    val inPlay = onBoards + atSites
+    val inPlay = onBoards + atSites +
+      ready.game.current.warbandsOnCardsOf(kind)
 
     ready.banks.warbandSupply.get(kind)
       .toRight(UnknownWarbandSupply(kind)).flatMap { supply =>

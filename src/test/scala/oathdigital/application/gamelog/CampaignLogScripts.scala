@@ -6,7 +6,7 @@ import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
 import oathdigital.catalog.holding.{CrackedHornCard, GrandMaskCard}
 import oathdigital.gameplay.powers.campaign.{Glamor, GlamorCard,
-  OutridersCard, RelicHunter, RelicHunterCard, StickyFire, StickyFireCard,
+  ObsidianCageCard, OutridersCard, RelicHunter, RelicHunterCard, StickyFire, StickyFireCard,
   ToweringRampartCard}
 import oathdigital.gameplay.powers.economy.BirdsongCard
 import oathdigital.gameplay.powers.search.WineOfWelcomeCard
@@ -246,12 +246,34 @@ object CampaignLogScripts:
     }).after(MenuPlay.start(p1, ActionRef.Campaign))
     Script("glamor", service, p1)
 
+  private val cage = ObsidianCageCard.id
+
+  /** p1 holds Obsidian Cage faceup and Raids p2, who shares Ancient City
+    * with three board warbands. p1 wins with three swords and three
+    * sacrificed against three warbands and blank dice; the losses kill one
+    * of p2's three, and the other two go onto the Cage.
+    */
+  def raidCagingTheDefender(using munit.Location): Script =
+    val (service, act) = atTable("obsidian-cage", Table.start
+      .pawn(p1, AncientCitySite).pawn(p2, AncientCitySite)
+      .pawn(p3, BuriedGiantSite)
+      .boardWarbands(p1, 3).boardWarbands(p2, 3)
+      .relic(p1, cage)
+      .banditsRefilled, Dice.raid)
+    raidAnswers(act, {
+      case park if park.decisionId == CampaignIds.attackerPlan &&
+          offers(park, DecisionOptionRef.Relic(cage)) =>
+        ChooseOneAnswer(DecisionOptionRef.Relic(cage))
+    }).after(MenuPlay.start(p1, ActionRef.Campaign))
+    Script("obsidian-cage", service, p1)
+
   /** The scripts this file adds to the golden registry. */
   val named: Vector[(String, () => Script)] = Vector(
     "raid-spoils" -> (() => raidTakingRelicAndBanner),
     "conquest-placed" -> (() => conquestPlacingWarbands),
     "relic-hunter" -> (() => conquestHuntingRelics),
     "glamor" -> (() => raidGlamoringSecrets),
+    "obsidian-cage" -> (() => raidCagingTheDefender),
     "captains-raid" -> (() => CaptainsLogScripts.captainsRaidFromARuledSite),
     "captains-raid-lost" ->
       (() => CaptainsLogScripts.captainsRaidLostWithASplit))

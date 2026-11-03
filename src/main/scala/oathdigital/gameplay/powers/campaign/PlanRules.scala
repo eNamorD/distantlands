@@ -41,4 +41,4 @@ object PlanRules:
       MountainGiant, MountedPatrol, ShieldWall,
       BillowingFog, TravelingDoctor, CursedCauldron,
       SaltTheEarth, SealingWard, Herald, SneakAttack,
-      VowOfUnion, KeepRule, RelicHunter, Glamor)
+      VowOfUnion, KeepRule, RelicHunter, Glamor, ObsidianCage)

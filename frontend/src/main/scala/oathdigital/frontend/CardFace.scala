@@ -153,6 +153,14 @@ private[frontend] object CardFace:
     val tokens = element("span", "card-tokens")
     if card.favor > 0 then counted("favor", card.favor).foreach(tokens.appendChild)
     if card.secrets > 0 then counted("secret", card.secrets).foreach(tokens.appendChild)
+    // Warbands on the card (Obsidian Cage), each force in its colour.
+    card.warbands.foreach { forces =>
+      val group = element("span",
+        s"card-warbands ${ServerUiSupport.forceCssClass(forces)}")
+      group.setAttribute("title", ServerUiSupport.forceText(forces))
+      counted("warband", forces.count).foreach(group.appendChild)
+      tokens.appendChild(group)
+    }
     // Defense is rolled against, so it is drawn as the dice that roll it. It
     // rides the header's right end rather than floating over the corner: a
     // name long enough to wrap would otherwise run under the dice. The

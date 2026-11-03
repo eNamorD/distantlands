@@ -28,8 +28,9 @@ object PlayerFacts:
       case SiteForces.Occupied(`kind`, count) => count }.sum
 
   /** The warbands of `kind` left in their bank: the printed supply less
-    * those on boards and at sites. The one count Rest's Supply band and the
+    * those on boards, at sites and on cards (Obsidian Cage). The one count Rest's Supply band and the
     * table's Supply overlay are both read from. */
   def banked(ready: ReadyGame, kind: ForceKind): Int =
     math.max(0, ready.banks.warbandSupply.getOrElse(kind, 0) -
-      onBoards(ready, kind) - atSites(ready, kind))
+      onBoards(ready, kind) - atSites(ready, kind) -
+      ready.game.current.warbandsOnCardsOf(kind))

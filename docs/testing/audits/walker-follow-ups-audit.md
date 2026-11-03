@@ -227,7 +227,7 @@ Against the card data (`cards/content/card-data/oath/en-US/*.yml`, tag
 | --- | --- | --- | --- |
 | Glamor (207) | `catalog/holding/HoldingArcaneDenizens.scala:17-23` | Raid may also target the enemy's secrets except their last; +1 defense die each; taken on victory | `CampaignTargetSelection` (new target kind), `CampaignGatherPools`, `CampaignRaidTransfer` |
 | Relic Hunter (126) | `HoldingOrderDenizens.scala:25-31` | Conquest may target facedown relics at targeted sites, +1 defense die each; taken relics may go to the relic deck's bottom | `CampaignTargetSelection`, `CampaignGatherPools`, `CampaignLosses`/`CampaignPlacement` (a Conquest has no transfer step today) |
-| Obsidian Cage (R18) | `HoldingRelics.scala:37-46` | on victory, the enemy's unkilled force moves onto the card; an Action returns them | `CampaignLosses`; a new card location for warbands |
+| Obsidian Cage (R18) | `gameplay/powers/campaign/ObsidianCage.scala` (plan built; Action not) | on victory, the enemy's unkilled force moves onto the card; an Action returns them | `CampaignLosses`; a new card location for warbands |
 | Spiral Castle / Spiral Dungeons (E23) | `HoldingEdifices.scala:238-250` | Raid victory: defender's pawn placed at this site and loses 2 Supply; ruined: attacker's pawn, bandits use it | `CampaignRaidRelocation` (replace the decision), `CampaignActionEligibility` for the attacker's pawn |
 | Martial Culture (10) | `HoldingOrderDenizens.scala:10-16` | an Exile who defeats another Exile may become a Citizen | Empire: no Citizen can exist yet |
 | The Grand Scepter's plan | `gameplay/operations/GrandScepter.scala:11-14` | an Imperial victorious against a Citizen exiles them | Empire |
@@ -319,6 +319,42 @@ decided as follows, for the owner to confirm:
 - **Lines.** "Targeted 2 secrets for 2 defense dice." when chosen, and
   "Took 2 secrets from Blue." when taken, parallel to the Raid's "Took …
   from Blue" (golden `glamor`).
+
+### Obsidian Cage: rulings made while implementing
+
+Obsidian Cage's battle plan (R18) is implemented in
+`gameplay/powers/campaign/ObsidianCage.scala`, under the owner's ruling of
+2026-11-03 (bandit warbands are always killed, so none reach the Cage).
+What the card, the FAQ and the ruling left open was decided as follows,
+for the owner to confirm:
+
+- **Side.** Either side: the card's braid is printed red into blue, and
+  "your enemy's force" reads for both. Its holder uses it from the faceup
+  relic, for free. Against bandits it is shown unavailable: "Bandit
+  warbands are always killed, so none reach the Cage".
+- **The enemy's unkilled force.** The force as the losses left it, read as
+  Shield Wall and Sticky Fire read the force they kill (`KillWholeForce`,
+  ruling R4): a Conquest defender's warbands the victory returned to its
+  board (not the board it held before), a Raid defender's whole board, and
+  a defeated attacker's whole board with its warbands at a queued origin.
+- **Timing.** In the losses window, after the losses, so a Conquest's
+  placement and a Raid's transfer follow it. Hospital and Sticky Fire fold
+  in the same window; their order with the Cage is the fold's, not pinned
+  by a test.
+- **The location.** Warbands on a card are kept by card and force in
+  `CurrentGameState.warbandsOnCards`, so they stay on the Cage wherever it
+  goes and keep an Exile's colour. They count as out of their bank
+  (`PlayerFacts.banked`, the operation guard's bank count). The table shows
+  them on the held relic's details, one entry per force, in its owner's
+  colour (`CardDetailsProjection.warbands`, empty when absent on the wire,
+  as `powers` is).
+- **Lines.** "Moved 2 of Blue's warbands onto Obsidian Cage.", or "Moved 2
+  warbands onto Obsidian Cage." when they are the actor's (golden
+  `obsidian-cage`).
+- **Not built.** The Action, and the FAQ's return when the Cage goes back
+  to the relic deck: see the roadmap item "Obsidian Cage's Action". A Cage
+  that reaches the Chronicle with warbands on it keeps them counted out of
+  their bank there.
 The roadmap's separate item "Record a bandit's applied battle plan as an
 event" covers how that use is journaled.
 
@@ -356,7 +392,7 @@ is bound to each (`grep -l PowerWindow.<name>` under `gameplay/powers`):
 | Window | Bound today | Rules still unbound |
 | --- | --- | --- |
 | `CampaignAfterOutcome` | `VictoriousNow` (Peace Envoy, Hearts and Minds) | none |
-| `CampaignLosses` | Billowing Fog, Traveling Doctor (`SparedForce`), Sticky Fire, Shield Wall (`KillWholeForce`), Hospital, Cursed Cauldron, Peace Envoy | Obsidian Cage |
+| `CampaignLosses` | Billowing Fog, Traveling Doctor (`SparedForce`), Sticky Fire, Shield Wall (`KillWholeForce`), Hospital, Cursed Cauldron, Peace Envoy, Obsidian Cage | none |
 | `CampaignSkullLosses`, `CampaignSacrificeLosses` | Hospital, Cursed Cauldron | none |
 | `CampaignPlacement` | Vow of Wandering, Relic Hunter (its take) | none |
 | `CampaignRaidTransfer` | the `BattlePlan` trait, Glamor (its take) | none |

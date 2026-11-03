@@ -1,0 +1,17 @@
+0.0 round 0 | Round 1
+0.1 turn 0 | [player:p1|p1]'s turn
+0.2 phase 0 | Act
+8.0 section 1 campaign@4 | Campaign[cost:2 Supply]
+8.1 action 1 campaign@4 | Raid against [player:p2|p2]
+12.0 decision 1 campaign@4 | Targets: [player:p2|p2]'s pawn
+13.0 delta 1 campaign@4 | Attack Pool: 3, Defense Pool: 2
+18.0 decision 1 campaign@4 | Used [card:R18|Obsidian Cage]
+21.0 roll 1 campaign@4 | Rolled [dice:attack one-sword one-sword one-sword|sword, sword, sword] for the attack
+23.0 roll 1 campaign@4 | Attack: 3
+27.0 decision 1 campaign@4 | Sacrificed 3 warbands for an attack of 6
+29.0 roll 1 campaign@4 | Rolled [dice:defense blank blank|blank, blank] for the defense
+31.0 roll 1 campaign@4 | Defense: 3
+33.0 action 1 campaign@4 | [player:p1|p1] wins!
+35.0 delta 1 campaign@4 | [player:p2|p2] lost 1 warband
+37.0 trigger 1 campaign@4 | [card:R18|Obsidian Cage]: Moved 2 of [player:p2|p2]'s warbands onto Obsidian Cage.
+42.0 delta 1 campaign@4 | Sent [player:p2|p2]'s pawn to [site:site:broken-peaks|Broken Peaks]

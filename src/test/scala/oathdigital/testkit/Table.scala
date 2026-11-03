@@ -179,6 +179,17 @@ final case class Table private (private val game: ReadyGame,
     forces(at, n, PlayerForceKind.of(game, playerOf(owner)).getOrElse(
       munit.Assertions.fail(s"$owner has no warbands of their own")))
 
+  /** `n` of `owner`'s warbands standing on `card` (Obsidian Cage), out of
+    * their bank. */
+  def warbandsOnCard(card: CardRef, owner: PlayerId, n: Int)(
+      using munit.Location): Table =
+    val kind = PlayerForceKind.of(game, playerOf(owner)).getOrElse(
+      munit.Assertions.fail(s"$owner has no warbands of their own"))
+    val id = CardRefs.cardId(card)
+    update(ready => ready.updateCurrent(current => current.copy(
+      warbandsOnCards = current.warbandsOnCards.updated(id,
+        current.warbandsOnCards.getOrElse(id, Map.empty).updated(kind, n)))))
+
   /** `chancellor` and `citizens` play Imperial, with the purple bank of
     * `MaterialBankState.ImperialWarbands` on the table. Their board warbands
     * become purple ones, since a board's kind follows its role. Seat them

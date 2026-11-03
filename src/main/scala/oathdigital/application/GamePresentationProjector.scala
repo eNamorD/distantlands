@@ -180,8 +180,8 @@ private[application] final class GamePresentationProjector(
           else hiddenCard(cardKind(card.id))),
         player.relics.map(card =>
           if identifies(card.id, card.orientation, PlayerCardArea.Relics) then
-            withTokens(cardDetails(card.id, Some(card.orientation),
-              hidden = false), card.tokens)
+            withWarbands(withTokens(cardDetails(card.id, Some(card.orientation),
+              hidden = false), card.tokens), ready, card.id)
           else hiddenCard("relic")),
         player.revealedVision.map(card => cardDetails(card.id,
           Some(card.orientation), hidden = false)),
@@ -189,6 +189,24 @@ private[application] final class GamePresentationProjector(
         banked, printed, atSites, restBase, bands,
         AdviserLimit.drawn(catalog, ready, player.player))
     }
+
+  /** The warbands standing on `card` (Obsidian Cage), one entry per
+    * force: an Exile's by the colour of the player of that lineage. */
+  private def withWarbands(details: CardDetailsProjection, ready: ReadyGame,
+      card: CardId): CardDetailsProjection =
+    val current = ready.game.current
+    details.copy(warbands = current.warbandsOnCards.getOrElse(card, Map.empty)
+      .toVector.filter(_._2 > 0).flatMap {
+        case (ForceKind.Exile(lineage), count) => current.players
+          .find(_.lineage == lineage).flatMap(player =>
+            ready.playerColors.get(player.player).map(color =>
+              SiteForcesProjection.Exile(count, player.player.value, color,
+                s"${color.key.capitalize} Warbands")))
+        case (ForceKind.Imperial, count) =>
+          Some(SiteForcesProjection.Imperial(count, "Imperial Warbands"))
+        case (ForceKind.Bandit, count) =>
+          Some(SiteForcesProjection.Bandit(count, "Bandit Warbands"))
+      }.sortBy(_.label))
 
   private def withTokens(details: CardDetailsProjection,
       tokens: Tokens): CardDetailsProjection =

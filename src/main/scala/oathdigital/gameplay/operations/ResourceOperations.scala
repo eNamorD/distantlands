@@ -277,6 +277,16 @@ private[operations] object ResourceOperations:
             if next == 0 then SiteForces.Empty
             else SiteForces.Occupied(kind, next)))
     }
+    // Warbands on a card (Obsidian Cage): sufficiency is the guard's.
+    case Location.OnCard(id) =>
+      val current = ready.game.current
+      val held = current.warbandsOnCards.getOrElse(id, Map.empty)
+      val next = current.warbandsOn(id, kind) + delta
+      val updated = if next == 0 then held - kind else held.updated(kind, next)
+      Right(ready.copy(game = ready.game.copy(current = current.copy(
+        warbandsOnCards =
+          if updated.isEmpty then current.warbandsOnCards - id
+          else current.warbandsOnCards.updated(id, updated)))))
     case _ => Left(IncompatibleLocation(Piece.Warbands(kind, math.max(1,
       math.abs(delta))), at))
 

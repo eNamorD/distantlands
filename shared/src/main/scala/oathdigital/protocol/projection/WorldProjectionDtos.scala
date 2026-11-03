@@ -21,7 +21,10 @@ final case class CardDetailsProjection(
     defense: Option[Int] = None,
     hidden: Boolean = false,
     implemented: Boolean = true,
-    powers: Vector[PowerFaceProjection] = Vector.empty
+    powers: Vector[PowerFaceProjection] = Vector.empty,
+    /** Warbands standing on the card, one entry per force (Obsidian
+      * Cage). */
+    warbands: Vector[SiteForcesProjection] = Vector.empty
 )
 /** One printed power as its card lays it out: a braid above it, black when
   * `persistent`, with the `cost` tokens on it in printed order ("favor",
