@@ -381,14 +381,15 @@ before treating the numbers below as current.
   re-spells four `cardplay.*` prefixes that `CardPlayProcedure` keeps private,
   to recover the subject card that CONTEXT.md defines and no model field
   carries. The procedure would declare it on the `Decide`.
-- [ ] **Derive the wire codecs.** The shared protocol has 94 DTOs, 86
-  hand-written `exact` key sets, 1,647 codec lines and 1,026 codec-suite
-  lines, and a third of a typical wire commit is codec and codec test. A
-  derived codec must still report a stale client bundle, which strict
-  unknown-field rejection does today. The operation codec co-changed with
-  `CoreOperations` in 13 of 16 commits; count its mechanical arms before
-  deciding it the same way. Design note:
-  [derive the wire codecs](superpowers/specs/2026-11-02-derive-wire-codecs-design.md).
+- [ ] **Derive the wire codecs, with a defaults macro.** The probe of
+  2026-11-03 stopped on the design note's own condition: no Mirror-only
+  deriver reproduces today's wire, because a field's presence follows its
+  case-class default, which a Mirror cannot see, and a few fields are
+  renamed or computed. Deriving now needs the note's `scala.quoted`
+  defaults macro plus per-field overrides, or a wire change in place.
+  Decide when a wire-heavy phase begins. Design note:
+  [derive the wire codecs](superpowers/specs/2026-11-02-derive-wire-codecs-design.md),
+  "Probe result".
 - [ ] **One frontend client (optional).** The development shell still talks
   to `/api/dev/first-games/{gameId}?playerId=` through its own
   `HttpGameClient`; mounting the dev API at `/games/{gameId}/api` with the

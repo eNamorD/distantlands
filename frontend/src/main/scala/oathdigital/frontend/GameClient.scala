@@ -88,9 +88,10 @@ object GameClientFailure:
     override val message: String =
       s"Stale position; refreshed without retrying. $detail"
   /** A projection this build cannot parse: the server sent a variant of a
-    * discriminated wire type this client does not know. The frontend ships
-    * inside the server's own resources, so in normal operation there is no
-    * skew window; what remains is a browser holding a stale cached bundle.
+    * discriminated wire type, or a field, this client does not know. The
+    * frontend ships inside the server's own resources, so in normal
+    * operation there is no skew window; what remains is a browser holding a
+    * stale cached bundle.
     */
   final case class UnsupportedProjection(path: String, detail: String)
       extends GameClientFailure:
@@ -202,18 +203,14 @@ object GameJson:
       decodeProjection(response.body)
     else Left(responseFailure(response))
 
-  /** As `decodeProjection`: a variant this build does not know means the
-    * bundle in this browser is stale, which the session can act on, and any
-    * other decode failure means the payload is wrong, which it cannot. */
+  /** As `decodeProjection`: a variant or a field this build does not know
+    * means the bundle in this browser is stale, which the session can act
+    * on, and any other decode failure means the payload is wrong, which it
+    * cannot. */
   def logResponse(response: TransportResponse)
       : Either[GameClientFailure, LogPage] =
     if response.status >= 200 && response.status < 300 then
-      LogPageCodec.decode(response.body).left.map:
-        case unknown: ProtocolDecodeFailure.UnknownVariant =>
-          GameClientFailure.UnsupportedProjection(unknown.path,
-            unknown.message)
-        case error => GameClientFailure.DecodeFailure(error.path,
-          error.message)
+      LogPageCodec.decode(response.body).left.map(projectionFailure)
     else Left(responseFailure(response))
 
   def responseFailure(response: TransportResponse): GameClientFailure =
@@ -228,10 +225,16 @@ object GameJson:
     ActorlessCommandCodec.encode(ActorlessCommandRequest(sequence, command))
 
   def decodeProjection(json: String): Either[GameClientFailure, GameProjection] =
-    GameProjectionCodec.decode(json).left.map:
-      case unknown: ProtocolDecodeFailure.UnknownVariant =>
-        GameClientFailure.UnsupportedProjection(unknown.path, unknown.message)
-      case error => GameClientFailure.DecodeFailure(error.path, error.message)
+    GameProjectionCodec.decode(json).left.map(projectionFailure)
+
+  /** An unknown variant or field is a newer server's wire, so the bundle is
+    * stale; anything else is a payload this build should have parsed. */
+  private def projectionFailure(error: ProtocolDecodeFailure)
+      : GameClientFailure = error match
+    case _: ProtocolDecodeFailure.UnknownVariant |
+        _: ProtocolDecodeFailure.UnexpectedField =>
+      GameClientFailure.UnsupportedProjection(error.path, error.message)
+    case _ => GameClientFailure.DecodeFailure(error.path, error.message)
 
   def decodeError(json: String): Either[GameClientFailure, (String, String)] =
     try

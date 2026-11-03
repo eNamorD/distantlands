@@ -298,6 +298,16 @@ class HttpGameClientSuite extends FunSuite:
     val remaining = mutable.Queue(responses*)
     ScriptedTransport((_, _, _) => Future.successful(remaining.dequeue()))
 
+  test("a log page carrying a field this build lacks is unsupported"):
+    val newer = """{"gameId":"g","after":0,"nextSequence":1,"entries":[],""" +
+      """"omens":[]}"""
+    val transport = transportAnsweringInOrder(
+      Vector(Right(TransportResponse(200, newer))))
+    new HttpGameClient(transport).loadLog("g", "red", 0L).map { result =>
+      assertEquals(result, Left(GameClientFailure.UnsupportedProjection(
+        "$.omens", "unexpected field")))
+    }
+
   test("a log page naming a span kind this build lacks is unsupported"):
     val unknown = """{"gameId":"g","after":0,"nextSequence":1,"entries":[""" +
       """{"sequence":0,"ordinal":0,"kind":"turn","spans":[""" +
