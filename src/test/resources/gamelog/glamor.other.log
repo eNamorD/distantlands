@@ -1,0 +1,17 @@
+0.0 round 0 | Round 1
+0.1 turn 0 | [player:p1|p1]'s turn
+0.2 phase 0 | Act
+8.0 section 1 campaign@4 | Campaign[cost:2 Supply]
+8.1 action 1 campaign@4 | Raid against [player:p2|p2]
+12.0 decision 1 campaign@4 | Targets: [player:p2|p2]'s pawn
+13.0 delta 1 campaign@4 | Attack Pool: 3, Defense Pool: 2
+18.0 decision 1 campaign@4 | Used [card:207|Glamor]
+24.0 trigger 1 campaign@4 | [card:207|Glamor]: Targeted 2 secrets for 2 defense dice.
+26.0 roll 1 campaign@4 | Rolled [dice:attack one-sword one-sword one-sword|sword, sword, sword] for the attack
+28.0 roll 1 campaign@4 | Attack: 3
+32.0 decision 1 campaign@4 | Sacrificed 3 warbands for an attack of 6
+34.0 roll 1 campaign@4 | Rolled [dice:defense blank blank blank blank|blank, blank, blank, blank] for the defense
+36.0 roll 1 campaign@4 | Defense: 1
+38.0 action 1 campaign@4 | [player:p1|p1] wins!
+40.0 trigger 1 campaign@4 | [card:207|Glamor]: Took [amount:2 secrets] from [player:p2|p2].
+45.0 delta 1 campaign@4 | Sent [player:p2|p2]'s pawn to [site:site:broken-peaks|Broken Peaks]

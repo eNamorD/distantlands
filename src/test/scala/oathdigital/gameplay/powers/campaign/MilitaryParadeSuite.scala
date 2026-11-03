@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.holding.{BrackenCard, CouncilSeatCard, GlamorCard}
+import oathdigital.catalog.holding.{BrackenCard, CouncilSeatCard,
+  MagiciansCodeCard}
 import oathdigital.gameplay.MarriageCard
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.powers.whenplayed.RoyalTaxCard
@@ -22,7 +23,7 @@ class MilitaryParadeSuite extends munit.FunSuite:
   // Royal Tax is implemented, but its power offers no battle plan.
   private val orders = planless(CouncilSeatCard) :+ RoyalTaxCard.id
   private val beast = planlessCard(BrackenCard)
-  private val arcane = planlessCard(GlamorCard)
+  private val arcane = planlessCard(MagiciansCodeCard)
   /** Implemented, but its power offers no battle plan. */
   private val marriage = MarriageCard.id
 

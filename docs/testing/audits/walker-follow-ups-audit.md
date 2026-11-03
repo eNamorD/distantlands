@@ -285,6 +285,40 @@ owner to confirm:
   the relic deck." when they are taken. The peeks keep their generic
   "Peeked at" lines. The other seats see the relics' backs (golden
   `relic-hunter`).
+
+### Glamor: rulings made while implementing
+
+Glamor (207) is implemented in `gameplay/powers/campaign/Glamor.scala`,
+under the owner's ruling of 2026-11-03 (chosen in the battle plan step
+like any plan; its user then chooses how many secrets to target, and those
+join the Campaign's targets). What the card and the ruling left open was
+decided as follows, for the owner to confirm:
+
+- **Who and where.** An attacker's plan, in a Raid or a Conquest against a
+  player defender. Bandits have no board, so it is never offered against
+  them. "Your enemy" is the Campaign's defender.
+- **How many.** The plan's amount, a `ChooseAmount` from one to the
+  defender's board secrets less one, faceup and facedown counted alike
+  (FAQ for Book Burning: "all of their secrets except one, whether face up
+  or down"). With one secret or none, the plan is shown unavailable: "The
+  defender has no secret but their last". Each targeted secret adds one
+  defense die.
+- **Where the take happens.** In a Raid, in the transfer window, after the
+  printed takes and consequences and before the pawn's relocation. In a
+  Conquest, in the placement window, as Relic Hunter's take.
+- **Which secrets, which side.** Faceup secrets are taken first, as Sleight
+  of Hand and Witch's Bargain take them, so the defender keeps a facedown
+  one when they have one. Each taken secret keeps its side (`Take` with a
+  `sourceSide`): a facedown secret arrives facedown on the attacker's
+  board and flips at their cleanup.
+- **A board that shrank.** The take is cut to leave the defender one
+  secret, should their board have lost any since the targeting (a burnt
+  secret cost, say). A defense plan's paid secrets flip facedown and stay
+  on the board, so they still count.
+- **Defeat.** A defeated attacker takes nothing.
+- **Lines.** "Targeted 2 secrets for 2 defense dice." when chosen, and
+  "Took 2 secrets from Blue." when taken, parallel to the Raid's "Took …
+  from Blue" (golden `glamor`).
 The roadmap's separate item "Record a bandit's applied battle plan as an
 event" covers how that use is journaled.
 
@@ -325,11 +359,11 @@ is bound to each (`grep -l PowerWindow.<name>` under `gameplay/powers`):
 | `CampaignLosses` | Billowing Fog, Traveling Doctor (`SparedForce`), Sticky Fire, Shield Wall (`KillWholeForce`), Hospital, Cursed Cauldron, Peace Envoy | Obsidian Cage |
 | `CampaignSkullLosses`, `CampaignSacrificeLosses` | Hospital, Cursed Cauldron | none |
 | `CampaignPlacement` | Vow of Wandering, Relic Hunter (its take) | none |
-| `CampaignRaidTransfer` | the `BattlePlan` trait (no card) | Glamor's secrets |
+| `CampaignRaidTransfer` | the `BattlePlan` trait, Glamor (its take) | none |
 | `CampaignRaidConsequences` | Keep | none |
 | `CampaignRaidRelocation` | Keep | Spiral Castle |
 | `CampaignActionEligibility` (the root, "At End") | Battle Honors, Book Burning, Careful Plans, `DiscardedAtEnd` (Pledge of Defense, Rain Boots, Rival Khan, Great Crusade, Mounted Patrol, Lancers, Horse Archers, Storm Caller, Warning Signals), Field Promotion, Herald, Hospital, Mercenaries, Military Parade, Salt the Earth, Second Wind, Sneak Attack, Tribute Spoils, Vow of Peace, Wild Mounts, Diplomat, the fortress rules | Spiral Dungeons (attacker's pawn and Supply), Martial Culture, Grand Scepter |
-| `CampaignTargetSelection` | Circlet of Command, Forgotten Vault, Lost Tongue, the Pass | Hall of Debate and Tome Guardians (`HoldingEdifices.scala:8-16, 190-198`: the ruler's enemies cannot target the banner they hold), Glamor's new target kind (Relic Hunter asks its relics as the plan's own question) |
+| `CampaignTargetSelection` | Circlet of Command, Forgotten Vault, Lost Tongue, the Pass | Hall of Debate and Tome Guardians (`HoldingEdifices.scala:8-16, 190-198`: the ruler's enemies cannot target the banner they hold), none for Glamor or Relic Hunter, which ask their targets as the plan's own question |
 
 The Raid step order (takes, then consequences in their own window, then
 relocation; `CampaignRaid.scala:11-30`) matches the rules' four Raid

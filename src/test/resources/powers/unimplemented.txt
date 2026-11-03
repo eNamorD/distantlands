@@ -6,7 +6,6 @@ denizen.council-seat
 denizen.deed-writer
 denizen.false-prophet
 denizen.favored-son
-denizen.glamor
 denizen.magicians-code
 denizen.master-of-disguise
 denizen.naysayers

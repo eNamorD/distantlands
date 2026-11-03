@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.holding.GlamorCard
+import oathdigital.catalog.holding.MagiciansCodeCard
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.campaign.PlanDriver._
@@ -13,7 +13,7 @@ import oathdigital.testkit.Look
 class CrackedSageSuite extends munit.FunSuite:
   private val card = CrackedSageCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
-  private val arcane = planlessCard(GlamorCard)
+  private val arcane = planlessCard(MagiciansCodeCard)
 
   private def funded(b: Board, who: PlayerId): Board =
     on(b)(_.favor(who, 2).secrets(who, faceUp = 1))

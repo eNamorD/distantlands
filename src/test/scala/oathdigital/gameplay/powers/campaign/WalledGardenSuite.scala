@@ -1,7 +1,8 @@
 package oathdigital.gameplay.powers.campaign
 
 import oathdigital.gameplay.powers.economy.HallowedSpringCard
-import oathdigital.catalog.holding.{AutumnWindCard, BrackenCard, GlamorCard}
+import oathdigital.catalog.holding.{AutumnWindCard, BrackenCard,
+  MagiciansCodeCard}
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignPlans}
 import oathdigital.gameplay.cards.{BrokenPeaksSite, BuriedGiantSite,
@@ -16,7 +17,7 @@ class WalledGardenSuite extends munit.FunSuite:
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
   private val beasts = planless(BrackenCard, AutumnWindCard)
   private val beast = beasts.head
-  private val arcane = planlessCard(GlamorCard)
+  private val arcane = planlessCard(MagiciansCodeCard)
   // Beast, on either face: Hallowed Spring intact, Hiding Place ruined.
   private val beastEdifice = HallowedSpringCard.id
 
