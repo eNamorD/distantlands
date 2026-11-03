@@ -316,6 +316,11 @@ private[application] final class GamePresentationProjector(
       case CardContainer.Lineage(lineage, LineageCardArea.StartingAdvisers) =>
         viewer.exists(player => ready.game.current.players
           .exists(seat => seat.player == player && seat.lineage == lineage))
+      // The Chancellor chooses a Reliquary relic in Setup (CR p. 8, Empire
+      // ruling R29); nobody else, and nobody later, sees the pile.
+      case CardContainer.Reliquary =>
+        ready.game.current.turn.phase == Phase.Setup &&
+          viewer.exists(Imperials.chancellor(ready).contains)
       case _ => false
 
   /** [[identifiesCard]] for the card wherever it lies in `ready`: its own

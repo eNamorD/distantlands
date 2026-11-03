@@ -499,6 +499,7 @@ procedure.self-exile left = Gave {0} to {1} and became an Exile.
 procedure.setup kept-adviser = {0} kept {1}
 procedure.setup placed-pawn = {0} placed pawn at {1}
 procedure.setup revealed-card = {0} revealed {1}
+procedure.setup took-relic = {0} took a relic from the Reliquary
 procedure.take-wealth took-favor = Took 1 favor from {0}
 procedure.take-wealth took-secret = Took 1 secret from {0}
 procedure.trade traded-favor = Traded with {0} for {1} favor
