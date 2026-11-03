@@ -52,8 +52,9 @@ object CampaignPlanCost:
   case object SacrificeWarband extends CampaignPlanCost
 
 /** What a chosen battle plan does once it is paid, in order. `RemoveAttackDice`
-  * takes what the attack pool holds, up to the count, so a pool of two loses
-  * two and an empty pool loses none. `Run` is the escape hatch for a plan whose
+  * takes what the attack pool holds, up to the count, and adds a defense die
+  * for each die the pool lacks (Empty Attack Pool), so a pool of one losing
+  * two loses one and the defense pool gains one. `Run` is the escape hatch for a plan whose
   * effect is not a dice change: it runs the operations as they are.
   */
 sealed trait CampaignPlanEffect extends Product with Serializable

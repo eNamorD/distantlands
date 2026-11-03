@@ -352,7 +352,7 @@ class CampaignPlanWindowSuite extends munit.FunSuite:
   // ---- effects ------------------------------------------------------------
 
   test("a defender plan that removes attack dice takes what the pool holds, " +
-      "and none from an empty pool"):
+      "and adds a defense die for each die it lacks (Empty Attack Pool)"):
     val base = rivalRulesOriginAndHoldsOathkeeper(
       board(warbands = 5, supply = 7))
     val b = withAdviserFor(base, base.rival, outriders, Orientation.FaceUp)
@@ -362,13 +362,16 @@ class CampaignPlanWindowSuite extends munit.FunSuite:
     val forced = startedAndCommitted(g, b, force = 2).forced
     val picked = pick(g, forced, b.rival, CampaignIds.defenderPlan,
       denizen(outriders))
-    assert(
-      RecordedOps.all(picked.events).contains(ModifyDicePool(CampaignIds.attackPool, -2)))
+    assertEquals(RecordedOps.all(picked.events).collect {
+      case pool: ModifyDicePool => pool }, Vector(
+      ModifyDicePool(CampaignIds.attackPool, -2),
+      ModifyDicePool(CampaignIds.defensePool, 1)))
     val none = startedAndCommitted(g, b, force = 0).forced
-    val nothing = pick(g, none, b.rival, CampaignIds.defenderPlan,
+    val empty = pick(g, none, b.rival, CampaignIds.defenderPlan,
       denizen(outriders))
-    assertEquals(RecordedOps.all(nothing.events).collect { case pool: ModifyDicePool => pool },
-      Vector.empty)
+    assertEquals(RecordedOps.all(empty.events).collect {
+      case pool: ModifyDicePool => pool },
+      Vector(ModifyDicePool(CampaignIds.defensePool, 3)))
 
   test("a plan's own operations run after its payment"):
     val base = board(warbands = 5, supply = 4)
