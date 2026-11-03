@@ -13,7 +13,7 @@ import oathdigital.protocol.projection._
 /** Assembles a player-scoped projection from authoritative state. */
 final class GameProjector(catalog: ExecutableCatalog, phasePowers: PhasePowers):
   def this(catalog: ExecutableCatalog) =
-    this(catalog, PhasePowerCatalog.default(catalog))
+    this(catalog, PhasePowerCatalog.default)
 
   private val presentation = new GamePresentationProjector(catalog)
   private val walkerDecisions = new WalkerDecisionProjector(catalog,
@@ -22,7 +22,7 @@ final class GameProjector(catalog: ExecutableCatalog, phasePowers: PhasePowers):
   private val pendingProjector =
     new PendingProjector(presentation, walkerDecisions)
   private val consent = new ConsentProjector(presentation, walkerDecisions,
-    ConsentPowers.default(catalog))
+    ConsentPowers.default)
 
   private val logs = new gamelog.GameLogProjector(catalog, presentation)
 

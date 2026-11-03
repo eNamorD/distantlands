@@ -33,7 +33,7 @@ class QueuedStartConsentSuite extends munit.FunSuite:
   private def verdict(ready: ReadyGame, entry: QueuedProcedure)
       : QueuedStarts.Verdict =
     QueuedStart.consent(catalog, ready, entry, powers(Vector.empty),
-      PhasePowerCatalog.default(catalog))
+      PhasePowerCatalog.default)
 
   test("an open route starts"):
     assertEquals(verdict(p2BesideP1WithThePassHeldBy(None), p2SentTo(coast)),

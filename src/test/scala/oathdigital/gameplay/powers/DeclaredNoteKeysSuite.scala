@@ -25,14 +25,14 @@ class DeclaredNoteKeysSuite extends munit.FunSuite:
   private val listings: Vector[(PowerId, Vector[NoteKey])] =
     WalkerPowerCatalog.default(catalog).powers.map(power =>
       power.id -> power.noteKeys) ++
-    PhasePowerCatalog.default(catalog).powers.map(power =>
+    PhasePowerCatalog.default.powers.map(power =>
       power.id -> power.noteKeys) ++ RuleNotes.all
 
   /** One entry per power, from the union the Game Log and the walker read,
     * so this fixture records what they see and not a second derivation of
     * it. A power listed in both catalogs has one declared set there. */
   private val declared: Vector[(PowerId, Vector[NoteKey])] =
-    DeclaredNotes.of(catalog).keys.toVector
+    DeclaredNotes.default.keys.toVector
 
   /** A key's sentence, as the parts that render it: text as itself, an
     * argument as `{index}`, a plural as `{index?one|many}`. A key's name
@@ -83,7 +83,7 @@ class DeclaredNoteKeysSuite extends munit.FunSuite:
       "the registry knows an id it built itself")
     assert(!ProcedureNotes.writes(PowerId("denizen.wolves")),
       "a power is not a procedure")
-    val union = DeclaredNotes.of(catalog)
+    val union = DeclaredNotes.default
     ProcedureRef.all.foreach: procedure =>
       assert(union.knows(ProcedureNotes.id(procedure)),
         s"the union covers ${procedure.key}")

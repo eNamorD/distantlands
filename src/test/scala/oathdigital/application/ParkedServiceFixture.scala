@@ -38,7 +38,7 @@ object ParkedServiceFixture:
     * (`GameApplicationService.scala:87-90`).
     */
   val parkedAssertions = new ParkedDecisionAssertions(catalog,
-    WalkerPowerCatalog.default(catalog), PhasePowerCatalog.default(catalog))
+    WalkerPowerCatalog.default(catalog), PhasePowerCatalog.default)
 
   /** `actor` starts playing a facedown adviser; the walk parks on the pick. */
   def playFacedownAdviser(actor: PlayerId): GameCommand =

@@ -50,7 +50,7 @@ class OracleSuite extends munit.FunSuite:
   private def place(from: OathTransition, way: PlayedAs) =
     rules.resolveWalker(from.state, actor, placement,
       PlacementPicks.parkedAnswer(from.state, way,
-        WalkerPowerCatalog.default(catalog), PhasePowerCatalog.default(catalog)))
+        WalkerPowerCatalog.default(catalog), PhasePowerCatalog.default))
   private def replayed(from: ReadyGame, events: Vector[OathEvent]) =
     events.foldLeft[Either[OathViolation, OathState]](
       Right(OathState.Ready(from)))((state, event) =>
@@ -60,7 +60,7 @@ class OracleSuite extends munit.FunSuite:
     * after the restriction look-ahead. */
   private def buttons(from: OathTransition): Vector[PlayedAs] =
     PlacementPicks.offered(PlacementPicks.parkedOptions(from.state,
-      WalkerPowerCatalog.default(catalog), PhasePowerCatalog.default(catalog)))
+      WalkerPowerCatalog.default(catalog), PhasePowerCatalog.default))
 
   test("it places two secrets and draws the first Vision, the cards above " +
       "it staying in place"):

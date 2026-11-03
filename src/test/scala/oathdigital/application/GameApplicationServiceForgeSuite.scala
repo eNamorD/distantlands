@@ -59,7 +59,7 @@ class GameApplicationServiceForgeSuite extends munit.FunSuite:
     * unparked tree instead. */
   private val forgeParkedAssertions = new ParkedDecisionAssertions(
     mixedForgeCostCatalog, WalkerPowerCatalog.default(mixedForgeCostCatalog),
-    PhasePowerCatalog.default(mixedForgeCostCatalog))
+    PhasePowerCatalog.default)
 
   /** The projection `viewer` gets at the stream's current position. */
   private def projected(run: ParkedForgeRun, gameId: String,

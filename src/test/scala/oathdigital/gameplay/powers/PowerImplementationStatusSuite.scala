@@ -14,11 +14,11 @@ import oathdigital.model.PowerId
   * set in `UnimplementedPowersSuite`.
   */
 class PowerImplementationStatusSuite extends munit.FunSuite:
-  private val implemented = PowerImplementationStatus.implemented(catalog)
+  private val implemented = PowerImplementationStatus.implemented
 
   test("a power the walker or phase catalog covers is implemented"):
     val covered = WalkerPowerCatalog.default(catalog).powers.map(_.id) ++
-      PhasePowerCatalog.default(catalog).powers.map(_.id)
+      PhasePowerCatalog.default.powers.map(_.id)
     covered.foreach(id => assert(implemented(id), id.value))
 
   test("the printed rules are Ancient Bloodline, the Hall of Ministers, the " +

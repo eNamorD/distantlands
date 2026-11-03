@@ -8,7 +8,7 @@ import oathdigital.model.{CardId, Chronicle, DenizenId, EdificeId, Suit}
 import oathdigital.testkit.Unwrap.{accepted, present}
 
 class FirstGameChronicleGeneratorSuite extends munit.FunSuite:
-  private val status = PowerImplementationStatus.implemented(catalog)
+  private val status = PowerImplementationStatus.implemented
   private val random = ChronicleRandomPort.random
   private val policy = ShufflePolicy.implementedFirst
 

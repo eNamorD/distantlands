@@ -11,7 +11,6 @@ import oathdigital.gameplay.powers.economy.Curfew
 import oathdigital.gameplay.powers.search.ForcedLabor
 import oathdigital.gameplay.powers.travel.{GraspingVines, NarrowPassSitePower,
   TollRoads, TollRoadsCard, TravelFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2}
@@ -20,7 +19,7 @@ import oathdigital.testkit.Table.{p1, p2}
   * rulings 1, 4 and 16). */
 class ConsentPowersSuite extends munit.FunSuite:
   import TravelFixture.{board, on, pass}
-  private val powers = ConsentPowers.default(catalog)
+  private val powers = ConsentPowers.default
   private val ruled = on(board())(_.warbandsAt(pass, p2, 1))
 
   test("the Narrow Pass is waivable, named for its site"):

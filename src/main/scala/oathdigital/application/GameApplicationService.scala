@@ -103,11 +103,11 @@ final class GameApplicationService(
   private val rules = new OathRules(catalog,
     warExhaustionRandomPort = warExhaustionRandomPort,
     walkerPowerCatalog = WalkerPowerCatalog.default(catalog),
-    phasePowerCatalog = PhasePowerCatalog.default(catalog),
+    phasePowerCatalog = PhasePowerCatalog.default,
     walkerDice = CampaignDicePort.walkerDice(campaignDicePort))
   private val presentation = new GamePresentationProjector(catalog)
   private val journalFold = new JournalFold(rules.evolve)
-  private val consent = new ConsentDesk(rules, ConsentPowers.default(catalog))
+  private val consent = new ConsentDesk(rules, ConsentPowers.default)
   private val coupling = new UndoCoupling(state =>
     rules.powerUseStep(state).nonEmpty)
   private val log = new gamelog.GameLogFormatter(catalog, presentation)

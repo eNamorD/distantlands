@@ -164,7 +164,7 @@ class OathDriverSuite extends munit.FunSuite:
       "once it is used"):
     val withPowers = new OathRules(catalog,
       walkerPowerCatalog = WalkerPowerCatalog.default(catalog),
-      phasePowerCatalog = PhasePowerCatalog.default(catalog),
+      phasePowerCatalog = PhasePowerCatalog.default,
       walkerDice = WalkerDiceFixture.blanks)
     val start = table.adviser(p1, InsomniaCard).state
     val rested = accepted(withPowers.startWalker(start,

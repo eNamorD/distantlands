@@ -59,10 +59,11 @@ A tree node may carry a `PowerWindow`. When the walker reaches the node,
    `ContributingPower.sortKey`: priority, the source's stable key, then the
    power id.
 
-`PowerCtx` is what a contribution reads: `state`, `actor` (the player whose
-procedure is running, which can differ from a parked decision's owner),
-`source`, `window`, `nodePath`, the hooked `operation`, the `procedure` and
-the decisions `answered` so far.
+`PowerCtx` is what a contribution reads: the `catalog` the walk runs
+(`WalkerPowers.catalog`, for a power that looks other cards up), `state`,
+`actor` (the player whose procedure is running, which can differ from a
+parked decision's owner), `source`, `window`, `nodePath`, the hooked
+`operation`, the `procedure` and the decisions `answered` so far.
 
 A contribution is one of:
 

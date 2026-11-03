@@ -20,7 +20,7 @@ import oathdigital.testkit.Table.{p1, p2, p3}
 class QueuedStartSuite extends munit.FunSuite:
   private val walkerPowers = WalkerPowers.selected(
     WalkerPowerCatalog.default(catalog), Vector.empty)
-  private val phasePowers = PhasePowerCatalog.default(catalog)
+  private val phasePowers = PhasePowerCatalog.default
   // Fair Isle has a Recover difficulty.
   private val fairIsle = FairIsleSite.id
   private val relic = DowsingSticksCard.id

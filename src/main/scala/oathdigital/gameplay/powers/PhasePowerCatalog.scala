@@ -1,6 +1,5 @@
 package oathdigital.gameplay.powers
 
-import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.powerresolver.{PhasePower, PhasePowers}
 import oathdigital.gameplay.powers.action.{DiceAndRelicDrawPowers, Elders, MagicWaterskin, MovementPowers, OtherActionPowers, SelfActionPowers, TargetPowers, WaysideInn,
   WorldActionPowers}
@@ -12,12 +11,11 @@ import oathdigital.gameplay.powers.action.StonePortal
 import oathdigital.gameplay.powers.wake.{HiddenPassages, Hunger,
   MarbleFountains, Quartermaster, RiverSitePower, SinkingPassages}
 
-/** The production phase powers, beside [[WalkerPowerCatalog]]. A site power
-  * whose site is absent from `catalog` is omitted; every other card power
-  * names its card and is always present.
+/** The production phase powers, beside [[WalkerPowerCatalog]]. Every power
+  * names its card, so all are always present.
   */
 object PhasePowerCatalog:
-  def default(catalog: ExecutableCatalog): PhasePowers =
+  val default: PhasePowers =
     PhasePowers(Vector(SilverTongue) ++
       Vector(Insomnia) ++
       Vector(VowOfObedience) ++
@@ -33,4 +31,4 @@ object PhasePowerCatalog:
       BannerFacePowers.phasePowers ++
       Vector(Hunger) ++
       RiverSitePower.all,
-      WalkerPowerCatalog.useRestrictions(catalog))
+      WalkerPowerCatalog.useRestrictions)

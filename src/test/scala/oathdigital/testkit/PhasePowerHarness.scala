@@ -25,14 +25,14 @@ object PhasePowerHarness:
     walkerPowerCatalog = WalkerPowers(Vector.empty,
       restrictionSet = OperationRestrictions.forCatalog(catalog),
       declared = PowerRules.declared),
-    phasePowerCatalog = PhasePowerCatalog.default(catalog))
+    phasePowerCatalog = PhasePowerCatalog.default)
   private val projector = new GameProjector(catalog)
 
   /** The parked decision, rebuilt from state with the same catalog and
     * phase power catalog `rules` was built with.
     */
   val parked = new ParkedDecisionAssertions(catalog,
-    phasePowerCatalog = PhasePowerCatalog.default(catalog))
+    phasePowerCatalog = PhasePowerCatalog.default)
 
   /** Every player but the actor, in turn order. */
   def others(ready: ReadyGame): Vector[PlayerId] =
@@ -88,7 +88,7 @@ object PhasePowerHarness:
   /** The phase powers the actor's phase menu offers available now, under
     * the printed operation restrictions. */
   def usableNow(ready: ReadyGame): Vector[MenuPower] =
-    menuPowers(catalog, ready, actor, PhasePowerCatalog.default(catalog),
+    menuPowers(catalog, ready, actor, PhasePowerCatalog.default,
       WalkerPowers(Vector.empty,
         restrictionSet = OperationRestrictions.forCatalog(catalog)))
 

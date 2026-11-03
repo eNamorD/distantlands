@@ -21,7 +21,7 @@ import oathdigital.testkit.Unwrap.accepted
 class HungerSuite extends munit.FunSuite:
   import PowerFixture.actor
 
-  private val phasePowers = PhasePowerCatalog.default(catalog)
+  private val phasePowers = PhasePowerCatalog.default
   private val rules = new OathRules(catalog, phasePowerCatalog = phasePowers)
   private val parked = new ParkedDecisionAssertions(catalog,
     phasePowerCatalog = phasePowers)

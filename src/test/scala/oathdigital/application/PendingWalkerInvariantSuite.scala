@@ -25,7 +25,7 @@ class PendingWalkerInvariantSuite extends munit.FunSuite:
     * (`GameApplicationService.scala:87-90`).
     */
   private val parkedAssertions = new ParkedDecisionAssertions(catalog,
-    WalkerPowerCatalog.default(catalog), PhasePowerCatalog.default(catalog))
+    WalkerPowerCatalog.default(catalog), PhasePowerCatalog.default)
 
   /** One instance of every `GameCommand` constructor, bound to `actor`. */
   private def everyCommand(actor: PlayerId): Vector[GameCommand] = Vector(

@@ -36,7 +36,7 @@ class ElderSuite extends munit.FunSuite:
   test("one favor is not enough"):
     val broke = staged(favor = 1)
     assertEquals(PhasePowerHarness.menuPowers(catalog, broke, actor,
-        PhasePowerCatalog.default(catalog), WalkerPowers.empty), Vector.empty)
+        PhasePowerCatalog.default, WalkerPowers.empty), Vector.empty)
     assertEquals(use(broke).left.toOption,
       Some(OathViolation.InsufficientFavor(2, 1)))
 

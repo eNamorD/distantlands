@@ -23,7 +23,7 @@ class UnimplementedPowersSuite extends munit.FunSuite:
     sys.env.get("UNIMPLEMENTED_SNAPSHOT").contains("write")
 
   private def rendered: String =
-    val implemented = PowerImplementationStatus.implemented(catalog)
+    val implemented = PowerImplementationStatus.implemented
     CatalogHandlerInventory.handlerIds(catalog)
       .filterNot(id => implemented(PowerId(id)))
       .sorted.mkString("", "\n", "\n")

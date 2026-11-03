@@ -87,7 +87,7 @@ class AncientBloodlineSuite extends munit.FunSuite:
       turn = Some(ConsentTurn.of(ready))))
     assertEquals(ConsentedRestriction(lock).reason(granted,
       sticksTakenBy(p1)), None)
-    assertEquals(ConsentPowers.default(catalog)
+    assertEquals(ConsentPowers.default
       .granter(ready, AncientBloodline.id), Some(p2))
 
   test("the printed set holds the lock, and the card counts as " +
@@ -97,5 +97,5 @@ class AncientBloodlineSuite extends munit.FunSuite:
       case locked: LockedCards => locked.asIf.contains(AncientBloodline)
       case _ => false
     })
-    assert(PowerImplementationStatus.implemented(catalog)(
+    assert(PowerImplementationStatus.implemented(
       AncientBloodline.id))

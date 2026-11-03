@@ -44,7 +44,7 @@ class WakeAutoEndSuite extends munit.FunSuite:
     assertNotEquals(next.activePlayer, actor)
     val inWake = Table.from(restedReady).backInPhase(Phase.Wake).ready
     assertEquals(PhasePowerHarness.menuPowers(catalog, inWake,
-        next.activePlayer, PhasePowerCatalog.default(catalog),
+        next.activePlayer, PhasePowerCatalog.default,
         WalkerPowers.empty), Vector.empty)
     assertEquals(completed(rested.events), Vector(PhaseTransitionRef.BeginRest,
       PhaseTransitionRef.FinishRest, PhaseTransitionRef.EndWake))

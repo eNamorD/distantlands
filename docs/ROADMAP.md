@@ -25,17 +25,6 @@ campaign-continuity and Empire rules.
 
 Left behind by earlier phases:
 
-- [ ] **Put the catalog on `PowerCtx`.** The sweep of 2026-11-02 made every
-  power that only threaded the catalog a case object
-  ([Card classes](superpowers/specs/2026-10-01-card-classes-design.md)), and
-  `scripts/check-architecture.py` lists the 119 power files that still take
-  `catalog: ExecutableCatalog`, each with its reason: they look other cards
-  up, mostly another card's suit through `EffectiveSuit`, or a site's
-  capacity. Those parameters, and the registries' `forCatalog` constructors
-  that thread to them, go away only once the walker hands the catalog to
-  powers through `PowerCtx` (or `ReadyGame`) instead of construction. The
-  projectors, the Game Log and the action procedures take it for genuine
-  lookups and stay as they are.
 - [ ] **Show that the action pane scrolls at 1024×700.** At that size the
   action pane is about 330px tall, and the Keep and Discard zones of the
   starting-adviser decision sit wholly below the sticky confirm button with
@@ -456,13 +445,15 @@ before treating the numbers below as current.
 
 ## Standing rules
 
-- New code reads cards from their card objects. A new class takes no
-  `catalog: ExecutableCatalog` parameter and adds no `forCatalog`
-  constructor only to pass the catalog on (`scripts/check-architecture.py`
-  lists the powers allowed one, each with its reason), and a new test names
-  cards and sites by their card objects (`AlchemistCard`, `DeepWoodsSite`),
-  never by a printed name looked up at run time (BackendArchitectureSuite
-  checks).
+- New code reads cards from their card objects. A power is a `case object`
+  that holds no `catalog: ExecutableCatalog` and offers no `forCatalog`
+  constructor: one that looks other cards up reads `PowerCtx.catalog`, or
+  the `catalog` its hook is handed (`PhasePower.build`,
+  `operationRestrictions`, `PowerUseRestriction.refusal`, `AdviserArrivals`,
+  `ExecutedBatch`, `PlanContext`), and `scripts/check-architecture.py`
+  refuses any other. A new test names cards and sites by their card objects
+  (`AlchemistCard`, `DeepWoodsSite`), never by a printed name looked up at
+  run time (BackendArchitectureSuite checks).
 - The verification gate is the complete JVM and Scala.js suites, the optimized
   Scala.js linker, the card catalog suite, the architecture and documentation-link
   checks, and diff validation.

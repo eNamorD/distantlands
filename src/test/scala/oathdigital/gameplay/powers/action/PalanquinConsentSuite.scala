@@ -47,7 +47,7 @@ class PalanquinConsentSuite extends munit.FunSuite:
 
   private def parkedDecide(state: OathState): Decide =
     ParkedNode.of(state, catalog, WalkerPowerCatalog.default(catalog),
-      PhasePowerCatalog.default(catalog)) match
+      PhasePowerCatalog.default) match
       case Right(Some(ParkedNode.Decision(_, decide, _))) => decide
       case other => fail(s"expected a parked decision, got $other")
 

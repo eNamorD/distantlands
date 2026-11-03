@@ -40,14 +40,14 @@ class WaysideInnSuite extends munit.FunSuite:
   test("it is unusable without favor to place"):
     val broke = staged(favor = 0, supply = 2)
     assertEquals(PhasePowerHarness.menuPowers(catalog, broke, actor,
-        PhasePowerCatalog.default(catalog), WalkerPowers.empty), Vector.empty)
+        PhasePowerCatalog.default, WalkerPowers.empty), Vector.empty)
     assertEquals(use(broke).left.toOption,
       Some(OathViolation.InsufficientFavor(1, 0)))
 
   test("it is usable in the Act phase only"):
     val wake = inPhase(staged(favor = 3, supply = 2), Phase.Wake)
     assertEquals(PhasePowerHarness.menuPowers(catalog, wake, actor,
-        PhasePowerCatalog.default(catalog), WalkerPowers.empty), Vector.empty)
+        PhasePowerCatalog.default, WalkerPowers.empty), Vector.empty)
 
   test("it writes the Supply it gained as its own line"):
     val done = accepted(use(staged(favor = 3, supply = 2)))

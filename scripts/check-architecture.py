@@ -172,28 +172,27 @@ for path in sources:
 # card classes design of 2026-10-01), and a power that looks other cards up
 # (another card's suit, a site's capacity, a relic's defense) reads the
 # catalog the walker hands it: `PowerCtx.catalog`, or the `catalog` its
-# phase-power or restriction hook takes. A power class that still holds a
-# `catalog: ExecutableCatalog` constructor parameter, or offers a
-# `forCatalog` constructor, is listed here with its reason; a new one is a
-# violation until it earns an entry.
+# phase-power or restriction hook takes. No power class holds a `catalog:
+# ExecutableCatalog` constructor parameter or offers a `forCatalog`
+# constructor; the only files allowed one are the context records listed
+# here, each with its reason.
 POWERS_ROOT = "src/main/scala/oathdigital/gameplay/powers"
 catalog_parameter = re.compile(
     r"(?:class|trait|object)\s+\w+[^\n(]*\(\s*catalog: ExecutableCatalog"
     r"|def forCatalog\b|def catalog: ExecutableCatalog")
-powers_reading_the_catalog = {
+catalog_holders = {
     "campaign/PlanContext.scala": "context records: the catalog a plan reads, as PowerCtx carries it",
 }
 for path in scala_sources(ROOT / POWERS_ROOT):
     rel = relative(path)[len(POWERS_ROOT) + 1:]
     if catalog_parameter.search(path.read_text(encoding="utf-8")):
-        if rel not in powers_reading_the_catalog:
+        if rel not in catalog_holders:
             errors.append(f"{relative(path)}: a power holds the catalog or "
                           "offers forCatalog; read it from PowerCtx or the "
-                          "hook's catalog, or list the file with its reason "
-                          "in check-architecture.py")
-    elif rel in powers_reading_the_catalog:
-        errors.append(f"{relative(path)}: listed as reading the catalog but no "
-                      "longer does; drop its entry from check-architecture.py")
+                          "hook's catalog")
+    elif rel in catalog_holders:
+        errors.append(f"{relative(path)}: listed as holding the catalog but "
+                      "no longer does; drop its entry from check-architecture.py")
 
 if errors:
     print("architecture check failed:")

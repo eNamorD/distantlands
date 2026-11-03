@@ -204,7 +204,7 @@ object SituationDriver:
       catalog: ExecutableCatalog, repository: Option[EventStreamRepository],
       gameId: String, answers: Answers) extends SituationDriver:
     private val walkerPowers = WalkerPowerCatalog.default(catalog)
-    private val phasePowers = PhasePowerCatalog.default(catalog)
+    private val phasePowers = PhasePowerCatalog.default
 
     def withPolicy(answers: Answers): SituationDriver =
       copy(answers = answers)

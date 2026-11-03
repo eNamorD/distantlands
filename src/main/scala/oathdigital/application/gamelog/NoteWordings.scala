@@ -40,13 +40,13 @@ private[application] object NoteWordings:
     val walkers = WalkerPowerCatalog.default(catalog)
     // The catalog built the union already; building a second one here would
     // walk both power catalogs again for the same answer.
-    val declared = walkers.declared.getOrElse(DeclaredNotes.of(catalog))
+    val declared = walkers.declared.getOrElse(DeclaredNotes.default)
     val templates = declared.keys.toVector.flatMap((power, keys) =>
       keys.map(key => (power, key.name) -> key.template)).toMap
     val named = walkers.powers.map(power =>
       of(power.id, Vector.empty, power.noteSource,
         power.narratedDecisions)) ++
-      PhasePowerCatalog.default(catalog).powers.map(power =>
+      PhasePowerCatalog.default.powers.map(power =>
         of(power.id, Vector.empty, power.noteSource,
           power.narratedDecisions))
     named.foldLeft(NoteWordings(templates))(_ ++ _)

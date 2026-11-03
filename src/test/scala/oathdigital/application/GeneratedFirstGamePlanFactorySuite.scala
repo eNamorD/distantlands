@@ -13,7 +13,7 @@ class GeneratedFirstGamePlanFactorySuite extends munit.FunSuite:
 
   test("implemented cards are still dealt first after setup: seeded discards, " +
       "hands, then the world deck; site relic slots, then the relic deck"):
-    val status = PowerImplementationStatus.implemented(catalog)
+    val status = PowerImplementationStatus.implemented
     val denizens = ImplementedCardCatalog.denizens(catalog, status)
     val relics = ImplementedCardCatalog.ordinaryRelics(catalog, status)
     def implementedFirst[A](cards: Vector[A], implemented: A => Boolean): Boolean =

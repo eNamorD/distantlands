@@ -39,7 +39,7 @@ class PassagesSuite extends munit.FunSuite:
 
   private def offered(ready: ReadyGame, power: PowerId): Boolean =
     PhasePowerHarness.menuPowers(catalog, ready, p1,
-      PhasePowerCatalog.default(catalog), WalkerPowers.empty)
+      PhasePowerCatalog.default, WalkerPowers.empty)
       .exists(_.power.id == power)
 
   private def menuOption(ready: ReadyGame, power: PowerId)(

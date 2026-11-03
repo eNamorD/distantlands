@@ -397,7 +397,7 @@ class CityWallSuite extends munit.FunSuite:
     def holding(steps: Table => Table): ReadyGame =
       steps(Table.start.adviser(p2, HungerCard).adviser(p2, WrestlersCard)
         .pawn(p2, at = peaks).denizen(wall, at = peaks)).ready
-    val phasePowers = PhasePowerCatalog.default(catalog)
+    val phasePowers = PhasePowerCatalog.default
     def forced(ready: ReadyGame) =
       ForcedWakeProcedure.due(catalog, ready, p2, phasePowers)
     assert(forced(holding(_.warbandsAt(peaks, p1, 1))).nonEmpty)

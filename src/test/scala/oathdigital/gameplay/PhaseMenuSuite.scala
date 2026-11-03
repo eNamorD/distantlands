@@ -29,7 +29,7 @@ import oathdigital.testkit.Unwrap.accepted
   * the driver leaves it. */
 class PhaseMenuSuite extends munit.FunSuite:
   private val walkerPowers = WalkerPowerCatalog.default(catalog)
-  private val phasePowers = PhasePowerCatalog.default(catalog)
+  private val phasePowers = PhasePowerCatalog.default
   private val rules = PowerRules.withWalkerAndPhasePowers
   private val ancientCity = AncientCitySite.id
   private val insomniaCard = InsomniaCard.id

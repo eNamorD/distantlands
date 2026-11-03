@@ -57,14 +57,14 @@ class MarbleFountainsSuite extends munit.FunSuite:
     assert(PowerAccess.locate(away, actor, fountains).isDefined,
       "the edifice must be reachable, or this test proves nothing")
     assertEquals(PhasePowerHarness.menuPowers(catalog, away, actor,
-        PhasePowerCatalog.default(catalog), WalkerPowers.empty), Vector.empty)
+        PhasePowerCatalog.default, WalkerPowers.empty), Vector.empty)
     assertEquals(use(away).left.toOption,
       Some(Refusals.nothingToDo(MarbleFountains.id, source)))
 
   test("a ruined Marble Fountains offers nothing"):
     val ruined = staged(EdificeSide.Ruined)
     assertEquals(PhasePowerHarness.menuPowers(catalog, ruined, actor,
-        PhasePowerCatalog.default(catalog), WalkerPowers.empty), Vector.empty)
+        PhasePowerCatalog.default, WalkerPowers.empty), Vector.empty)
 
   test("it writes the Supply it refreshed to"):
     val done = accepted(use(staged()))

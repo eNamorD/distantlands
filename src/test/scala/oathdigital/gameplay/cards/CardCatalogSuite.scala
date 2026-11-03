@@ -108,7 +108,7 @@ class CardCatalogSuite extends munit.FunSuite:
     // Take Wealth is a standing Wake rule of the game, not a printed power.
     val gameRules = Set(PowerId("site.take-wealth"))
     val registered = (WalkerPowerCatalog.default(catalog).powers.map(_.id) ++
-      PhasePowerCatalog.default(catalog).powers.map(_.id))
+      PhasePowerCatalog.default.powers.map(_.id))
       .filter(id => cardPrefixes.exists(id.value.startsWith))
       .filterNot(gameRules)
     assertEquals(registered.filterNot(printed).distinct, Vector.empty)
@@ -119,7 +119,7 @@ class CardCatalogSuite extends munit.FunSuite:
     // any implemented power sits beside that power. The status is the one
     // judge, so a card implemented as an operation restriction or a site
     // handler a game rule runs leaves holding too.
-    val implemented = PowerImplementationStatus.implemented(catalog)
+    val implemented = PowerImplementationStatus.implemented
     def held(card: AnyRef): Boolean =
       card.getClass.getPackageName == "oathdigital.catalog.holding"
     def misplaced(card: AnyRef, name: String, powers: Vector[PowerId])
@@ -142,7 +142,7 @@ class CardCatalogSuite extends munit.FunSuite:
   test("card powers are registered whichever cards a catalog lists"):
     def cardPowers(listed: ExecutableCatalog): Set[PowerId] =
       (WalkerPowerCatalog.default(listed).powers.map(_.id) ++
-        PhasePowerCatalog.default(listed).powers.map(_.id))
+        PhasePowerCatalog.default.powers.map(_.id))
         .filter(id => Vector("denizen.", "relic.", "edifice.", "site.")
           .exists(id.value.startsWith)).toSet
     assertEquals(cardPowers(catalog.copy(denizens = Vector.empty,

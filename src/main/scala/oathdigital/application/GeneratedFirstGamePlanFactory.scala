@@ -24,7 +24,7 @@ final class GeneratedFirstGamePlanFactory(
     val resolvedConfig = shuffledSeating(config)
     for
       chronicle <- FirstGameChronicleGenerator.generate(catalog,
-          PowerImplementationStatus.implemented(catalog), random, policy)
+          PowerImplementationStatus.implemented, random, policy)
         .left.map(failure => BootstrapPlanFailure(failure.toString))
     yield FirstGamePlan(chronicle, resolvedConfig)
 

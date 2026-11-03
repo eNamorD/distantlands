@@ -167,7 +167,7 @@ object Situation:
       warExhaustion: WarExhaustionRandomPort = WarExhaustionRandomPort.random)
       : SituationDriver =
     rules(catalog, WalkerPowerCatalog.default(catalog),
-      PhasePowerCatalog.default(catalog),
+      PhasePowerCatalog.default,
       CampaignDicePort.walkerDice(campaignDice), warExhaustion)
 
   /** Drives `service` as `gameId`, which must hold no stream yet, and

@@ -48,13 +48,13 @@ private[application] final class WalkerDecisionProjector(
     phasePowers: PhasePowers = PhasePowers.empty):
   private val deals = new NegotiationDealProjector(presentation)
   private lazy val reasons = new gamelog.NoteReasons(catalog, presentation)
-  private lazy val consentPowers = ConsentPowers.default(catalog)
+  private lazy val consentPowers = ConsentPowers.default
   private lazy val consentNames = new ConsentNames(presentation,
     consentPowers)
 
   def this(catalog: ExecutableCatalog, presentation: GamePresentationProjector) =
     this(catalog, presentation, WalkerPowerCatalog.default(catalog),
-      WalkerDecisionProjector.declaredTree, PhasePowerCatalog.default(catalog))
+      WalkerDecisionProjector.declaredTree, PhasePowerCatalog.default)
 
   private def parkedPosition(context: ScopedProjectionContext)
       : Option[WalkerDecisionProjector.Parked] =

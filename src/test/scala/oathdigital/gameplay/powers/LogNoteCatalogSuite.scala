@@ -9,7 +9,7 @@ class LogNoteCatalogSuite extends munit.FunSuite:
   private val declared: Vector[(PowerId, Vector[NoteKey])] =
     WalkerPowerCatalog.default(catalog).powers.map(power =>
       power.id -> power.noteKeys) ++
-    PhasePowerCatalog.default(catalog).powers.map(power =>
+    PhasePowerCatalog.default.powers.map(power =>
       power.id -> power.noteKeys) ++ RuleNotes.all
 
   test("a power names each of its notes once"):
@@ -35,6 +35,6 @@ class LogNoteCatalogSuite extends munit.FunSuite:
   test("every phase power but a forced one declares its own used line"):
     // A forced power is never a `UsePower`, so it has no "Used" line to
     // replace, and its lines are trigger lines.
-    PhasePowerCatalog.default(catalog).powers.foreach(power =>
+    PhasePowerCatalog.default.powers.foreach(power =>
       assertEquals(power.noteKeys.exists(_.name == NoteKey.Used), !power.forced,
         power.id.value))

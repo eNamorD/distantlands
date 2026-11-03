@@ -33,7 +33,7 @@ class WardOfSilenceSuite extends munit.FunSuite:
   /** The options of the decision the use is parked on. */
   private def parkedOptions(t: OathTransition): Vector[DecisionOption] =
     ParkedNode.of(t.state, catalog,
-      phasePowers = PhasePowerCatalog.default(catalog)) match
+      phasePowers = PhasePowerCatalog.default) match
       case Right(Some(ParkedNode.Decision(_, decide, _))) =>
         decide.query match
           case one: DecisionQuery.ChooseOne => one.options
@@ -43,7 +43,7 @@ class WardOfSilenceSuite extends munit.FunSuite:
   /** Why the Act menu shows Ward of Silence unavailable, if it does. */
   private def menuReason(ready: ReadyGame): Option[OptionReason] =
     PhaseMenu.offers(PhaseMenu.Menu.Act, catalog, ready, p1,
-      PhasePowerCatalog.default(catalog), WalkerPowers.empty)
+      PhasePowerCatalog.default, WalkerPowers.empty)
       .map(offer => MenuPlay.withoutBand(offer.option)).collectFirst {
         case DecisionOption.Unavailable(shown, reason)
             if shown.ref == source => reason

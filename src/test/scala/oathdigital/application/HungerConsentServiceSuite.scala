@@ -55,7 +55,7 @@ class HungerConsentServiceSuite extends munit.FunSuite:
   private def parkedDecisionId(at: GameAccepted)(using munit.Location)
       : String =
     ParkedNode.of(at.state, catalog, WalkerPowerCatalog.default(catalog),
-      PhasePowerCatalog.default(catalog)) match
+      PhasePowerCatalog.default) match
       case Right(Some(node)) => node.decisionId
       case other => fail(s"expected a parked decision, got $other")
 

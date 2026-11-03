@@ -42,7 +42,7 @@ class WildAlliesSuite extends munit.FunSuite:
   /** The options of the site question the use is parked on. */
   private def siteOptions(t: OathTransition): Vector[DecisionOption] =
     ParkedNode.of(t.state, catalog, WalkerPowerCatalog.default(catalog),
-        PhasePowerCatalog.default(catalog)) match
+        PhasePowerCatalog.default) match
       case Right(Some(ParkedNode.Decision(_, decide, _))) =>
         assertEquals(decide.decisionId, WildAllies.siteDecisionId)
         decide.query match

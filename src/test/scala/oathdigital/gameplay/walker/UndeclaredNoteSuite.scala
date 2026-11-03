@@ -12,7 +12,7 @@ import oathdigital.model.{ActionRef, NoteArg, PlayerId, PowerId, LogNote,
   * render nothing for it. The walker refuses to journal it instead (derive
   * note keys design, "The walker check"). */
 class UndeclaredNoteSuite extends munit.FunSuite:
-  private val declared = Some(DeclaredNotes.of(catalog))
+  private val declared = Some(DeclaredNotes.default)
   private val power = WarningSignals.id
   private val source = PowerSourceRef.Card(WarningSignalsCard.id)
 
@@ -40,7 +40,7 @@ class UndeclaredNoteSuite extends munit.FunSuite:
   test("a power the catalogs never heard of writes what it likes"):
     val invented = PowerId("denizen.nonesuch")
     val note = LogNote(Some(source), "whatever", Vector.empty)
-    assert(!DeclaredNotes.of(catalog).knows(invented))
+    assert(!DeclaredNotes.default.knows(invented))
     assertEquals(
       NoteCheck.journal(declared, invented, note, covers = false).map(_.note),
       Some(note))
@@ -49,7 +49,7 @@ class UndeclaredNoteSuite extends munit.FunSuite:
     val quiet = WalkerPowerCatalog.default(catalog).powers
       .find(_.noteKeys.isEmpty).map(_.id)
       .getOrElse(fail("no catalog power declares an empty key set"))
-    assert(DeclaredNotes.of(catalog).knows(quiet))
+    assert(DeclaredNotes.default.knows(quiet))
     intercept[AssertionError](NoteCheck.journal(declared, quiet,
       LogNote(Some(source), "whatever", Vector.empty), covers = false))
 
@@ -66,7 +66,7 @@ class UndeclaredNoteSuite extends munit.FunSuite:
 
   test("a procedure is held to its declared keys like a power"):
     val muster = ProcedureNotes.id(ActionRef.Muster)
-    assert(DeclaredNotes.of(catalog).knows(muster),
+    assert(DeclaredNotes.default.knows(muster),
       "a procedure is covered by the union")
     val declaredKey = LogNote(None, MusterProcedure.mustered.name,
       Vector.empty)
@@ -79,7 +79,7 @@ class UndeclaredNoteSuite extends munit.FunSuite:
 
   test("a procedure that has not migrated writes no note at all"):
     val campaign = ProcedureNotes.id(ActionRef.Campaign)
-    assert(DeclaredNotes.of(catalog).knows(campaign),
+    assert(DeclaredNotes.default.knows(campaign),
       "an unmigrated procedure is covered by the union, so it is refused " +
         "rather than unrecognised")
     val thrown = intercept[AssertionError](NoteCheck.journal(declared, campaign,

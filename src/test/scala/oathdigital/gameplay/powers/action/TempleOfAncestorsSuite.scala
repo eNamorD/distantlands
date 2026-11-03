@@ -24,7 +24,7 @@ class TempleOfAncestorsSuite extends munit.FunSuite:
   private val power = TempleOfAncestors
   private val rules = PowerRules.withWalkerAndPhasePowers
   private val walkerPowers = WalkerPowerCatalog.default(catalog)
-  private val phasePowers = PhasePowerCatalog.default(catalog)
+  private val phasePowers = PhasePowerCatalog.default
 
   /** p1's Act at Ancient City beside the intact Temple with 2 favor, and
     * `bottom` at the bottom of the world deck. */

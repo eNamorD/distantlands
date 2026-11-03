@@ -35,7 +35,7 @@ object PlanDriver:
   /** These denizens, after checking that no power of theirs is implemented
     * yet: held as advisers, they offer no battle plan of their own. */
   def planless(cards: Denizen*): Vector[DenizenId] =
-    val implemented = PowerImplementationStatus.implemented(catalog)
+    val implemented = PowerImplementationStatus.implemented
     cards.toVector.map { card =>
       assert(card.powers.forall(power => !implemented(power.id)),
         s"${card.name} has an implemented power, so it may offer a battle plan")

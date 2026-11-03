@@ -112,7 +112,7 @@ class VowOfObedienceSuite extends munit.FunSuite:
 
   test("REST: with every bank empty the power is not offered"):
     assert(!PhasePowerHarness.menuPowers(catalog, resting(Map.empty), actor,
-        PhasePowerCatalog.default(catalog), WalkerPowers.empty)
+        PhasePowerCatalog.default, WalkerPowers.empty)
       .exists(_.power.id == VowOfObedience.id))
 
   test("REST: the take is written as its own line, covering the generic one"):

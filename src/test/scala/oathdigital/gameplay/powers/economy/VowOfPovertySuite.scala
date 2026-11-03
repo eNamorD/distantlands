@@ -52,7 +52,7 @@ class VowOfPovertySuite extends munit.FunSuite:
 
   private def usable(ready: ReadyGame): Boolean =
     PhasePowerHarness.menuPowers(catalog, ready, p1,
-      PhasePowerCatalog.default(catalog), WalkerPowers.empty)
+      PhasePowerCatalog.default, WalkerPowers.empty)
       .exists(_.power.id == VowOfPoverty.id)
 
   test("its holder is not offered Trade for favor, and may still Trade for " +

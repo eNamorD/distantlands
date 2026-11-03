@@ -59,7 +59,7 @@ class SpellBreakerSuite extends munit.FunSuite:
       secretUse(p1)), None)
 
   test("the consent grid lists it, granted by its ruler"):
-    val powers = ConsentPowers.default(catalog)
+    val powers = ConsentPowers.default
     assertEquals(powers.granter(breakerAtDeepWoods(), SpellBreaker.id),
       Some(p2))
     assertEquals(powers.source(SpellBreaker.id),

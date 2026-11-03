@@ -23,9 +23,9 @@ import oathdigital.testkit.Unwrap.accepted
 class PendingWalkerRulesSuite extends munit.FunSuite:
   private val rules = new OathRules(catalog,
     walkerPowerCatalog = WalkerPowerCatalog.default(catalog),
-    phasePowerCatalog = PhasePowerCatalog.default(catalog))
+    phasePowerCatalog = PhasePowerCatalog.default)
   private val walkerParked = new ParkedDecisionAssertions(catalog,
-    WalkerPowerCatalog.default(catalog), PhasePowerCatalog.default(catalog))
+    WalkerPowerCatalog.default(catalog), PhasePowerCatalog.default)
   private val pending = OathViolation.InvalidEventOrder(
     "a walker procedure is already pending")
 

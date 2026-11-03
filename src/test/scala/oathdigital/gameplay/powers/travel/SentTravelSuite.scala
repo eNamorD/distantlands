@@ -48,7 +48,7 @@ class SentTravelSuite extends munit.FunSuite:
   private def startRefusal(ready: ReadyGame, entry: QueuedProcedure)
       : Option[OathViolation] =
     QueuedStart.refusal(catalog, ready, entry, powers(Vector.empty),
-      PhasePowerCatalog.default(catalog))
+      PhasePowerCatalog.default)
 
   /** `ready` remembering p3's grant of Dunes as p2's destination. */
   private def p3GrantedDunesToP2(ready: ReadyGame): ReadyGame =

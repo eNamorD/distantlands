@@ -45,7 +45,7 @@ class PalanquinSuite extends munit.FunSuite:
 
   private def parkedDecide(state: OathState): Decide =
     ParkedNode.of(state, catalog, WalkerPowerCatalog.default(catalog),
-      PhasePowerCatalog.default(catalog)) match
+      PhasePowerCatalog.default) match
       case Right(Some(ParkedNode.Decision(_, decide, _))) => decide
       case other => fail(s"expected a parked decision, got $other")
 
@@ -57,7 +57,7 @@ class PalanquinSuite extends munit.FunSuite:
   /** Why the Act menu shows Palanquin unavailable, if it does. */
   private def menuReason(ready: ReadyGame): Option[OptionReason] =
     PhaseMenu.offers(PhaseMenu.Menu.Act, catalog, ready, p1,
-      PhasePowerCatalog.default(catalog), WalkerPowers.empty)
+      PhasePowerCatalog.default, WalkerPowers.empty)
       .map(offer => MenuPlay.withoutBand(offer.option)).collectFirst {
         case DecisionOption.Unavailable(shown, reason)
             if shown.ref == source => reason

@@ -135,11 +135,15 @@ gameplay.
    `card`, a `PaidAction` takes the printed power. A `ContributingPower`
    declares `contributions` by `PowerWindow`: `Transform`, `Restriction`,
    `OptionRestriction`, `Offer` or `OfferReroll`. A `PhasePower` is a WAKE,
-   ACTION or REST power used as an action. Only a power that looks other
-   cards up (another card's suit through `EffectiveSuit`, a site's
-   capacity, a relic's defense) takes a `catalog: ExecutableCatalog`
-   parameter behind a `forCatalog` constructor, and
-   `scripts/check-architecture.py` lists each such file with its reason.
+   ACTION or REST power used as an action. A power that looks other cards
+   up (another card's suit through `EffectiveSuit`, a site's capacity, a
+   relic's defense) reads the catalog the walker hands it: `ctx.catalog` in
+   a contribution, the `catalog` of `build` and `usable` in a phase power,
+   or the one its hook carries (`operationRestrictions`,
+   `PowerUseRestriction.refusal`, `AdviserArrivals`, `ExecutedBatch`,
+   `PlanContext`). It never holds one: `scripts/check-architecture.py`
+   refuses a `catalog: ExecutableCatalog` constructor parameter and a
+   `forCatalog` constructor under `gameplay/powers`.
 4. Register it in `WalkerPowerCatalog` or `PhasePowerCatalog`, or both.
    Registration marks the handler implemented (`PowerImplementationStatus`).
 5. Declare its Game Log keys as `noteKeys`. `DeclaredNotes` refuses a note

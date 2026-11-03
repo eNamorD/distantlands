@@ -78,7 +78,7 @@ class InsomniaSuite extends munit.FunSuite:
   test("a facedown Insomnia offers no REST power and sets no limit"):
     val ready = resting(facedown = true)
     assert(!PhasePowerHarness.menuPowers(catalog, ready, p1,
-        PhasePowerCatalog.default(catalog), WalkerPowers.empty)
+        PhasePowerCatalog.default, WalkerPowers.empty)
       .exists(_.power.id == Insomnia.id))
     assertEquals(AdviserLimit.of(catalog, ready, p1), AdviserLimit.Default)
 

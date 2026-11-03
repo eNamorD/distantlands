@@ -46,7 +46,7 @@ class ArmedMobSuite extends munit.FunSuite:
     * unavailable options. */
   private def parkedChooseOne(t: OathTransition): DecisionQuery.ChooseOne =
     ParkedNode.of(t.state, catalog,
-      phasePowers = PhasePowerCatalog.default(catalog)) match
+      phasePowers = PhasePowerCatalog.default) match
       case Right(Some(ParkedNode.Decision(_, decide, _))) =>
         decide.query match
           case query: DecisionQuery.ChooseOne => query

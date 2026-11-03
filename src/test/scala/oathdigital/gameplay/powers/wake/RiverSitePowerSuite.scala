@@ -32,7 +32,7 @@ class RiverSitePowerSuite extends munit.FunSuite:
   test("every River the catalog prints is a registered phase power"):
     val printed = catalog.sites.flatMap(_.handlers).filter(
       _.value.endsWith(".river")).map(_.value).toSet
-    assertEquals(PhasePowerCatalog.default(catalog).powers.collect {
+    assertEquals(PhasePowerCatalog.default.powers.collect {
       case power: RiverSitePower => power.id.value }.toSet, printed)
 
   test("it is usable in the Wake at a River while another River is in play"):

@@ -58,7 +58,7 @@ object ActMenuBudget:
   def main(args: Array[String]): Unit =
     val walkerPowers = WalkerPowers.selected(
       WalkerPowerCatalog.default(catalog), Vector.empty)
-    val phasePowers = PhasePowerCatalog.default(catalog)
+    val phasePowers = PhasePowerCatalog.default
     // A rich board answers "Start" at once; a poor one cannot afford any
     // start, so every option searches all its modifier picks to the end.
     val boards = Vector(7, 0).map { supply =>

@@ -34,7 +34,7 @@ class QuartermasterSuite extends munit.FunSuite:
 
   private def offered(ready: ReadyGame): Boolean =
     PhasePowerHarness.menuPowers(catalog, ready, p1,
-      PhasePowerCatalog.default(catalog), WalkerPowers.empty)
+      PhasePowerCatalog.default, WalkerPowers.empty)
       .exists(_.power.id == Quartermaster.id)
 
   test("its site's ruler gains 1 Supply, wherever their pawn is"):
