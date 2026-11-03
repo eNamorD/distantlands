@@ -27,7 +27,7 @@ class UndoProjectionSuite extends munit.FunSuite:
     // The batch opens with the Travel tag ("Travel", 2 Supply); the note
     // skips it for the line that says what changed.
     assertEquals(projector.project("g", moved.loaded, p1).undo,
-      Some(StepOfferProjection("Undo: Travelled to Buried Giant")))
+      Some(StepOfferProjection("Undo: Traveled to Buried Giant")))
     assertEquals(projector.project("g", moved.loaded, p2).undo, None)
     assertEquals(projector.projectPublic("g", moved.loaded).undo, None)
 
@@ -57,7 +57,7 @@ class UndoProjectionSuite extends munit.FunSuite:
     val undone = accepted(service.handle("g", moved.nextSequence,
       Commands.undo(p1)))
     assertEquals(projector.project("g", undone.loaded, p1).redo,
-      Some(StepOfferProjection("Redo: Travelled to Buried Giant")))
+      Some(StepOfferProjection("Redo: Traveled to Buried Giant")))
     assertEquals(projector.project("g", undone.loaded, p2).redo, None)
     assertEquals(projector.projectPublic("g", undone.loaded).redo, None)
 

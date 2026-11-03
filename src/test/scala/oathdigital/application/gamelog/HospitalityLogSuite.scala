@@ -53,4 +53,4 @@ class HospitalityLogSuite extends munit.FunSuite:
 
   test("the Travel still posts its own line when a power follows its move"):
     val log = travelledToBrokenPeaksPickingOrder
-    assert(log.exists(_.startsWith("Travelled to ")), log.toString)
+    assert(log.exists(_.startsWith("Traveled to ")), log.toString)

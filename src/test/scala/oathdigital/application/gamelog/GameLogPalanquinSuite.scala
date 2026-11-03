@@ -25,5 +25,5 @@ class GameLogPalanquinSuite extends munit.FunSuite:
     val after = all.drop(tag + 1)
     // The sent Travel journals its own line, as a picked one does
     // (procedures journal their own notes design, slice 2).
-    assert(after.contains("Travelled to Buried Giant"), after)
+    assert(after.contains("Traveled to Buried Giant"), after)
     assert(!after.exists(_.startsWith(playerLabel(p2))), after)

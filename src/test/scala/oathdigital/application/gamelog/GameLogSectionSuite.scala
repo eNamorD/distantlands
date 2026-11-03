@@ -16,7 +16,7 @@ class GameLogSectionSuite extends munit.FunSuite:
 
   test("the lines of one action share one section, keyed by its first event"):
     val travel = withAction(format(round, None), "travel")
-    // The tag (or start line) and "Travelled to".
+    // The tag (or start line) and "Traveled to".
     assertEquals(travel.size, 2, travel)
     assertEquals(travel.map(_.section).distinct.size, 1, travel)
     // Travel's opening line posts at its cost step, after the destination
@@ -38,7 +38,7 @@ class GameLogSectionSuite extends munit.FunSuite:
     assertEquals(entryStarting(format(oathkeeperTie, None),
       "Oathkeeper passed to ").section, None)
     val placed = format(woken, None).filter(entry =>
-      text(entry).contains(" placed pawn at "))
+      text(entry).contains(" placed their pawn at "))
     assert(placed.nonEmpty)
     assert(placed.forall(_.section.isEmpty), placed)
 

@@ -19,7 +19,7 @@ class GameLogStartLineSuite extends munit.FunSuite:
     // A tag with no modifiers has no line of its own: the action's line
     // follows it.
     val travelled = entries(entries.indexOf(tag) + 1)
-    assert(text(travelled).startsWith("Travelled to "), text(travelled))
+    assert(text(travelled).startsWith("Traveled to "), text(travelled))
     assertEquals(travelled.section, tag.section)
     val cost = tag.spans.collect { case cost: LogSpan.Cost => cost }
     assertEquals(cost.size, 1)
@@ -141,5 +141,5 @@ class GameLogStartLineSuite extends munit.FunSuite:
     assertEquals(text(tag), "Travel")
     assertEquals(text(entries(entries.indexOf(tag) + 1)), "With Tents")
     assert(text(entries(entries.indexOf(tag) + 2))
-      .startsWith("Travelled to "), texts(entries))
+      .startsWith("Traveled to "), texts(entries))
     assert(!texts(entries).exists(_.startsWith("Chose")), texts(entries))

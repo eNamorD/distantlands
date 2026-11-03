@@ -4,7 +4,7 @@
 5.0 action 1 | Nothing happened in Wake
 5.1 phase 0 | Act
 16.0 section 1 travel@12 | Travel[cost:2 Supply]
-18.0 action 1 travel@12 | Travelled to [site:site:broken-peaks|Broken Peaks]
+18.0 action 1 travel@12 | Traveled to [site:site:broken-peaks|Broken Peaks]
 27.0 phase 0 | Rest
 30.0 delta 1 | Increased supply from 5 to 7
 31.0 turn 0 | [player:p2|p2]'s turn

@@ -52,10 +52,10 @@ object SetupProcedure:
   val adviserDiscardKey: String = "discard"
 
   private val notes = NoteSet(ProcedureNotes.id(TriggeredProcedureRef.Setup))
-  /** "p2 placed pawn at Ancient City". Setup has no turn yet, so every line
+  /** "p2 placed their pawn at Ancient City". Setup has no turn yet, so every line
     * names its player. */
   val placedPawn: NoteKey = notes.key("placed-pawn", Vector(
-    NotePart.Arg(0), NotePart.Text(" placed pawn at "), NotePart.Arg(1)))
+    NotePart.Arg(0), NotePart.Text(" placed their pawn at "), NotePart.Arg(1)))
   val keptAdviser: NoteKey = notes.key("kept-adviser", Vector(
     NotePart.Arg(0), NotePart.Text(" kept "), NotePart.Arg(1)))
   val revealedCard: NoteKey = notes.key("revealed-card", Vector(

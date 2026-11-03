@@ -1,10 +1,10 @@
 0.0 round 0 | Setup
 5.0 action 1 | [player:p1|p1] took a relic from the Reliquary
-10.0 action 1 | [player:p1|p1] placed pawn at [site:site:ancient-city|Ancient City]
+10.0 action 1 | [player:p1|p1] placed their pawn at [site:site:ancient-city|Ancient City]
 15.0 decision 1 | [player:p1|p1] kept [card:207|Glamor]
-23.0 action 1 | [player:p2|p2] placed pawn at [site:site:ancient-city|Ancient City]
+23.0 action 1 | [player:p2|p2] placed their pawn at [site:site:ancient-city|Ancient City]
 28.0 decision 1 | [player:p2|p2] kept a Denizen
-36.0 action 1 | [player:p3|p3] placed pawn at [site:site:broken-peaks|Broken Peaks]
+36.0 action 1 | [player:p3|p3] placed their pawn at [site:site:broken-peaks|Broken Peaks]
 41.0 decision 1 | [player:p3|p3] kept a Denizen
 42.0 round 0 | Round 1
 42.1 turn 0 | [player:p1|p1]'s turn
