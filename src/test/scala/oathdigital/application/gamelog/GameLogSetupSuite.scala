@@ -4,6 +4,7 @@ import oathdigital.model._
 import oathdigital.protocol.projection.{LogEntry, LogSpan}
 import oathdigital.testkit.Outcomes
 import LogScripts._
+import LaterGameLogScripts.laterGameWoken
 
 class GameLogSetupSuite extends munit.FunSuite:
   private def setupLines(script: Script, viewer: Option[PlayerId])
@@ -58,3 +59,12 @@ class GameLogSetupSuite extends munit.FunSuite:
       assertEquals(texts(setupLines(script, Some(viewer)))
         .filter(_.contains(" revealed ")), public, viewer)
     }
+
+  test("a later game's Chancellor takes a Reliquary relic first, named to " +
+      "nobody"):
+    // `laterGameWoken` replays a later game's Setup: its first line is the
+    // subject.
+    val script = laterGameWoken
+    Vector(None, Some(script.actor), Some(PlayerId("p2"))).foreach(viewer =>
+      assertEquals(texts(setupLines(script, viewer)).headOption,
+        Some("p1 took a relic from the Reliquary")))

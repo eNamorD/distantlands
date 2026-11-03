@@ -3,7 +3,7 @@ package oathdigital.application.chronicle
 import java.nio.charset.StandardCharsets.UTF_8
 import java.security.MessageDigest
 
-import oathdigital.model.Chronicle
+import oathdigital.model.{Chronicle, Role}
 import oathdigital.protocol.{ChronicleEntry, ChronicleScore, ChronicleSummary}
 
 /** A Chronicle as a browser keeps it (Chronicle browsing design, "Digest"
@@ -28,4 +28,8 @@ object ChronicleEntries:
         era.games.size + 1),
       era.targetScore,
       chronicle.lineages.map(lineage =>
-        ChronicleScore(lineage.id.value, era.score(lineage.id))))
+        ChronicleScore(lineage.id.value, era.score(lineage.id),
+          lineage.role match
+            case Role.Chancellor => Some("chancellor")
+            case Role.Citizen => Some("citizen")
+            case Role.Exile => None)))

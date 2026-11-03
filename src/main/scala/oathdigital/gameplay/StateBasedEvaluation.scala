@@ -28,13 +28,20 @@ object StateBasedEvaluation:
     VisionRules.Rebellion, VisionRules.Sanctuary, VisionRules.Faith)
   def banditRefill(catalog: ExecutableCatalog, state: OathState)
       : Either[OathViolation, Option[OathEvent]] = supported(state).map { ready =>
-    val refills = ready.game.current.map.inPlay.flatMap { siteId =>
+    val refills = emptySites(catalog, ready)
+    Option.when(refills.nonEmpty)(BanditsRefilled(refills))
+  }
+
+  /** The in-play sites with no warbands and a capacity above 0, each with
+    * the bandits it takes: its capacity. Later-game setup fills them too
+    * (Empire ruling R30). */
+  def emptySites(catalog: ExecutableCatalog, ready: ReadyGame)
+      : Vector[(SiteId, Int)] =
+    ready.game.current.map.inPlay.flatMap { siteId =>
       ready.game.current.map.sites.get(siteId).collect:
         case SiteState(SiteForces.Empty, _, _, _) if capacity(catalog, siteId) > 0 =>
           siteId -> capacity(catalog, siteId)
     }
-    Option.when(refills.nonEmpty)(BanditsRefilled(refills))
-  }
 
   private def capacity(catalog: ExecutableCatalog, site: SiteId): Int =
     catalog.site(site).fold(0)(_.capacity)

@@ -12,19 +12,21 @@ final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
     val adviserMap = adviserChoices.toMap
     val relicsBySite = assignRelics(plan)
     val edifices = plan.homelandEdifices.toMap
+    val purple = plan.empire.fold(Set.empty[SiteId])(empire =>
+      empire.sites.take(MaterialBankState.ImperialWarbands -
+        3 * empire.imperial.size).map(_.site).toSet)
+    val empireSites = plan.empire.fold(Map.empty[SiteId, StoredSite])(
+      _.sites.map(stored => stored.site -> stored).toMap)
+    val atlasSites = plan.atlasSites.map(stored => stored.site -> stored).toMap
     val map = MapState(
       plan.orderedSites.take(2),
       plan.orderedSites.slice(2, 5),
       plan.orderedSites.slice(5, 8),
       plan.orderedSites.map { siteId =>
-        val definition = catalog.site(siteId).get
-        val forces = if definition.capacity == 0 then SiteForces.Empty
-          else SiteForces.Occupied(ForceKind.Bandit, definition.capacity)
-        val denizens = edifices.get(siteId).toVector.map(id =>
-          EdificeState(id, EdificeSide.Ruined, Tokens.empty))
-        val relics = relicsBySite.getOrElse(siteId, Vector.empty).map(id =>
-          RelicState(id, Orientation.FaceDown, Tokens.empty))
-        siteId -> SiteState(forces, denizens, relics, definition.startingResources)
+        val drawn = relicsBySite.getOrElse(siteId, Vector.empty)
+        siteId -> empireSites.get(siteId).map(empireSite(_, purple(siteId)))
+          .orElse(atlasSites.get(siteId).map(atlasSite(_, drawn)))
+          .getOrElse(firstGameSite(siteId, edifices.get(siteId), drawn))
       }.toMap)
     val usedRelics = relicsBySite.valuesIterator.flatten.toSet
     val players = plan.participants.map { participant =>
@@ -38,30 +40,87 @@ final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
     FirstGameSetupMaterial(players, map,
       CardZones(plan.worldDeckOrder, plan.relicOrder.filterNot(usedRelics),
         catalog.edifices.map(e => EdificeId(e.id.value))
-          .filterNot(edifices.values.toSet), Vector.empty,
+          .filterNot(edificesOn(map)), Vector.empty,
         initialDiscards(plan, placementMap, adviserMap)),
       BannersState(
         PeoplesFavorState(PeoplesFavorFace.Mob, None, 1),
         DarkestSecretState(DarkestSecretFace.WanderingFlame, None, 1)),
-      // While game start refuses Imperial roles the first player begins
-      // round 1; a seated Chancellor would (Empire slice 4).
+      // The first player begins round 1: in a later game, the Chancellor.
       GameTracks(1, 0, usurperLimited = true,
-        roundStarter = plan.firstPlayer), favorBanks(plan),
+        roundStarter = plan.firstPlayer), favorBanks(plan, map),
       temporaryHands = plan.participants.map(p =>
         p.playerId -> handFor(plan, p.playerId)).toMap)
 
+  /** A player's 3 cards in Foundation IV, dealt in seat order to the
+    * players with no starting advisers; none for a player with them. */
   def handFor(plan: FirstGameSetupPlan, playerId: PlayerId): Vector[DenizenId] =
-    val index = plan.participants.indexWhere(_.playerId == playerId)
-    plan.denizenOrder.slice(6 + index * 3, 9 + index * 3)
+    val index = plan.participants
+      .filterNot(p => plan.startingAdvisers.contains(p.playerId))
+      .indexWhere(_.playerId == playerId)
+    if index < 0 then Vector.empty
+    else plan.denizenOrder.slice(6 + index * 3, 9 + index * 3)
 
+  /** A first game deals every relic slot; a later game deals only the
+    * slots an atlas site's stored relics leave open, and none at the
+    * Empire's sites (Empire ruling R27). */
   private def assignRelics(plan: FirstGameSetupPlan): Map[SiteId, Vector[RelicId]] =
+    val stored = plan.atlasSites.map(site => site.site -> site).toMap
+    val empire = plan.empire.fold(Set.empty[SiteId])(_.sites.map(_.site).toSet)
     var offset = 0
     plan.orderedSites.map { site =>
-      val count = catalog.site(site).get.relicSlots
+      val slots = catalog.site(site).get.relicSlots
+      val count = if empire(site) then 0
+        else stored.get(site).fold(slots)(atlas => math.max(0,
+          slots - atlas.items.count(_.isInstanceOf[RelicId])))
       val assigned = plan.relicOrder.slice(offset, offset + count)
       offset += count
       site -> assigned
     }.toMap
+
+  private def bandits(site: SiteId): SiteForces =
+    val capacity = catalog.site(site).get.capacity
+    if capacity == 0 then SiteForces.Empty
+    else SiteForces.Occupied(ForceKind.Bandit, capacity)
+
+  private def faceDown(relics: Vector[RelicId]): Vector[RelicState] =
+    relics.map(RelicState(_, Orientation.FaceDown, Tokens.empty))
+
+  private def firstGameSite(site: SiteId, edifice: Option[EdificeId],
+      drawn: Vector[RelicId]): SiteState =
+    SiteState(bandits(site), edifice.toVector.map(id =>
+        EdificeState(id, EdificeSide.Ruined, Tokens.empty)),
+      faceDown(drawn), catalog.site(site).get.startingResources)
+
+  /** An Empire site: its stored edifice intact, its denizens faceup, its
+    * stored relics facedown, and an Imperial warband while the supply
+    * lasts (Empire ruling R30). A short site stays empty for game start's
+    * bandits. */
+  private def empireSite(stored: StoredSite, purple: Boolean): SiteState =
+    SiteState(if purple then SiteForces.Occupied(ForceKind.Imperial, 1)
+        else SiteForces.Empty,
+      storedDenizens(stored, EdificeSide.Intact), faceDown(storedRelics(stored)),
+      catalog.site(stored.site).get.startingResources)
+
+  /** An atlas site in a later game keeps its stored cards, its edifice
+    * ruined, and fills its open relic slots (Empire ruling R27). */
+  private def atlasSite(stored: StoredSite, drawn: Vector[RelicId]): SiteState =
+    SiteState(bandits(stored.site), storedDenizens(stored, EdificeSide.Ruined),
+      faceDown(storedRelics(stored) ++ drawn),
+      catalog.site(stored.site).get.startingResources)
+
+  private def storedDenizens(stored: StoredSite, side: EdificeSide)
+      : Vector[SiteDenizenState] = stored.items.collect {
+    case id: EdificeId => EdificeState(id, side, Tokens.empty)
+    case id: DenizenId => DenizenState(id, Orientation.FaceUp, Tokens.empty)
+  }
+
+  private def storedRelics(stored: StoredSite): Vector[RelicId] =
+    stored.items.collect { case id: RelicId => id }
+
+  private def edificesOn(map: MapState): Set[EdificeId] =
+    map.sites.values.flatMap(_.denizens).collect {
+      case EdificeState(id, _, _) => id
+    }.toSet
 
   private def initialDiscards(plan: FirstGameSetupPlan,
       placements: Map[PlayerId, SiteId],
@@ -87,9 +146,13 @@ final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
     else if plan.orderedSites.slice(2, 5).contains(site) then Region.Provinces
     else Region.Hinterland
 
-  private def favorBanks(plan: FirstGameSetupPlan): Map[Suit, Int] =
+  /** Foundation II: 3 favor per suit, 1 more with 5 or more players, and 1
+    * more per denizen of that suit on the map, edifices included. */
+  private def favorBanks(plan: FirstGameSetupPlan, map: MapState)
+      : Map[Suit, Int] =
     val bonus = if plan.participants.size >= 5 then 1 else 0
-    val edificeSuits = plan.homelandEdifices.map { case (_, id) =>
-      catalog.edifice(id).get.suit
-    }
-    Suit.all.map(suit => suit -> (3 + bonus + edificeSuits.count(_ == suit))).toMap
+    val suits = map.sites.values.flatMap(_.denizens).flatMap {
+      case EdificeState(id, _, _) => catalog.edifice(id).map(_.suit)
+      case DenizenState(id, _, _) => catalog.denizen(id).map(_.suit)
+    }.toVector
+    Suit.all.map(suit => suit -> (3 + bonus + suits.count(_ == suit))).toMap

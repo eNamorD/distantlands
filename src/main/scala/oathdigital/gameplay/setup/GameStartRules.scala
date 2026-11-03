@@ -12,8 +12,9 @@ import oathdigital.model.OathViolation._
  * `FirstGameSetupRules`.
  *
  * Validation here is only what Setup itself needs: known and unique ids
- * across every Chronicle field (`ChronicleAccounting`),
- * enough cards to deal, and one edifice per Homeland in play. The old
+ * across every Chronicle field (`ChronicleAccounting`), a later game's
+ * Empire (`EmpireSetupRules`), enough cards to deal, and, in a first game,
+ * one edifice per Homeland in play (Empire ruling R26). The old
  * plan's suit-count and Vision-packet audit is the generator's own job now
  * (`FirstGameChronicleGenerator.validate`), checked once at generation
  * time rather than again at every setup.
@@ -25,15 +26,15 @@ object GameStartRules:
       plan <- buildPlan(catalog, chronicle, orders)
       material = new FirstGameSetupMaterializer(catalog)
         .materialize(plan, Vector.empty, Vector.empty)
-      // An edifice the Chronicle stores at an atlas site stays there: it is
-      // not also in the edifice deck. The materializer only knows the edifices
-      // at the 8 sites in play.
-      storedEdifices = chronicle.atlasBox.flatMap(_.items)
+      // An edifice the Chronicle stores at a site stays there: it is not also
+      // in the edifice deck. The materializer only knows the edifices at the
+      // 8 sites in play.
+      storedEdifices = (chronicle.atlasBox ++ chronicle.world).flatMap(_.items)
         .collect { case id: EdificeId => id }.toSet
       commonCards = material.commonCards.copy(edificeDeck =
         material.commonCards.edificeDeck.filterNot(storedEdifices))
       // A seated lineage the Chronicle lists starts from its record;
-      // `buildPlan` refuses what that record needs later-game setup for.
+      // `buildPlan` refuses what that record needs Legacies for.
       recorded = chronicle.lineages.map(lineage => lineage.id -> lineage).toMap
       lineages = plan.participants.map(participant =>
         participant.lineageId -> recorded.getOrElse(participant.lineageId,
@@ -42,8 +43,14 @@ object GameStartRules:
       ).toMap
       foundations = FoundationNumber.all.map(number =>
         number -> FoundationState(FoundationFace.Normal, Set.empty)).toMap
-      atlas = AtlasState(chronicle.atlasBox.drop(8).map(stored =>
-        AtlasEntry.StoredSite(stored.site, Vector.empty, Vector.empty,
+      // The atlas past the sites in play keeps every stored card, the
+      // inverse of `ChronicleExtraction.extract`'s `carried`.
+      atlas = AtlasState(chronicle.atlasBox.drop(8 - chronicle.world.size)
+        .map(stored => AtlasEntry.StoredSite(stored.site,
+          stored.items.collect { case id: DenizenId =>
+            DenizenState(id, Orientation.FaceUp, Tokens.empty) },
+          stored.items.collect { case id: RelicId =>
+            RelicState(id, Orientation.FaceDown, Tokens.empty) },
           stored.items.collectFirst { case id: EdificeId => id })))
       game = OathGame(
         CampaignState(atlas, foundations, lineages, chronicle.reliquary,
@@ -54,54 +61,73 @@ object GameStartRules:
           material.banners, OathkeeperState(None, TitleSide.Oathkeeper),
           TurnState(orders.firstPlayer, Phase.Setup, Set.empty),
           material.tracks, None, material.temporaryHands))
-      problems = DomainValidation.validate(game)
+      ready = LaterGameSetup(catalog, ReadyGame.start(game,
+        plan.participants.map(p => p.playerId -> p.color).toMap,
+        orders.firstPlayer, material.favorBanks), plan)
+      problems = DomainValidation.validate(ready.game)
       _ <- Either.cond(problems.isEmpty, (), InvalidAggregate(problems))
-    yield ReadyGame.start(game,
-      plan.participants.map(p => p.playerId -> p.color).toMap,
-      orders.firstPlayer, material.favorBanks)
+    yield ready
 
   private def buildPlan(catalog: ExecutableCatalog, chronicle: Chronicle,
       orders: SetupOrders): Either[OathViolation, FirstGameSetupPlan] =
+    val slots = 8 - chronicle.world.size
+    val drawers = SetupDeal.drawers(chronicle, orders.participants)
     for
-      _ <- Either.cond(chronicle.world.isEmpty, (),
-        UnsupportedChronicle("a non-empty world requires the Empire"))
       _ <- Either.cond(chronicle.lineages.forall(_.startingRelics.isEmpty), (),
         UnsupportedChronicle("starting relics require Legacies"))
-      _ <- Either.cond(chronicle.lineages.forall(!_.role.isImperial), (),
-        UnsupportedChronicle("Imperial roles require the Empire"))
       seated = orders.participants.map(_.lineageId).toSet
       records = chronicle.lineages.filter(lineage => seated(lineage.id))
       _ <- Either.cond(records.forall(_.legacies.isEmpty), (),
         UnsupportedChronicle("legacies require Legacies"))
-      _ <- Either.cond(records.forall(_.startingAdvisers.isEmpty), (),
-        UnsupportedChronicle("starting advisers require later-game setup"))
-      _ <- Either.cond(chronicle.atlasBox.size >= 8, (),
+      _ <- validateParticipants(orders)
+      empire <- EmpireSetupRules.resolve(chronicle, orders)
+      _ <- Either.cond(chronicle.atlasBox.size >= slots, (),
         UnsupportedChronicle(
-          s"at least 8 atlas sites are required, got ${chronicle.atlasBox.size}"))
-      _ <- Either.cond(
+          s"at least $slots atlas sites are required, got ${chronicle.atlasBox.size}"))
+      atlasSites = chronicle.atlasBox.take(slots)
+      // A later game keeps every card stored at its sites (R27); a first
+      // game's sites hold only their Homeland edifices (R26).
+      _ <- Either.cond(empire.nonEmpty ||
         chronicle.atlasBox.forall(_.items.forall(_.isInstanceOf[EdificeId])), (),
         UnsupportedChronicle(
           "stored denizens or relics on an atlas site are not supported yet"))
       _ <- validateIds(catalog, chronicle)
       _ <- Either.cond(
-        chronicle.worldDeck.size >= 6 + orders.participants.size * 3, (),
+        chronicle.worldDeck.size >= SetupDeal.dealt(drawers), (),
         UnsupportedChronicle("not enough world-deck cards to deal"))
-      inPlay = chronicle.atlasBox.take(8)
-      homelands <- homelandEdifices(catalog, inPlay)
-      _ <- Either.cond(
-        chronicle.relicDeck.size >= inPlay.map(s => relicSlots(catalog, s.site)).sum,
+      homelands <- if empire.isEmpty then homelandEdifices(catalog, atlasSites)
+        else Right(Vector.empty)
+      _ <- Either.cond(chronicle.relicDeck.size >=
+          atlasSites.map(emptyRelicSlots(catalog, _)).sum,
         (), UnsupportedChronicle("not enough relics to fill site slots"))
-      _ <- validateParticipants(orders)
-      _ <- validateDeal(chronicle, orders)
+      _ <- validateDeal(chronicle, orders, drawers)
     yield FirstGameSetupPlan(orders.participants, orders.firstPlayer,
-      inPlay.map(_.site), orders.denizenOrder, orders.worldDeckOrder,
-      orders.relicOrder, homelands, chronicle.oathkeeperGoal)
+      (chronicle.world ++ atlasSites).map(_.site), orders.denizenOrder,
+      orders.worldDeckOrder, orders.relicOrder, homelands,
+      chronicle.oathkeeperGoal, empire, if empire.isEmpty then Vector.empty
+        else atlasSites, startingAdvisers(chronicle, orders))
+
+  /** A site's relic slots its stored relics leave open, never fewer than 0
+    * (R27). */
+  private def emptyRelicSlots(catalog: ExecutableCatalog, stored: StoredSite)
+      : Int =
+    math.max(0, relicSlots(catalog, stored.site) -
+      stored.items.count(_.isInstanceOf[RelicId]))
+
+  private def startingAdvisers(chronicle: Chronicle, orders: SetupOrders)
+      : Map[PlayerId, Vector[AdviserState]] =
+    val players = orders.participants.map(p => p.lineageId -> p.playerId).toMap
+    chronicle.lineages.flatMap(lineage => players.get(lineage.id)
+      .filter(_ => lineage.startingAdvisers.nonEmpty)
+      .map(_ -> lineage.startingAdvisers)).toMap
 
   /** The deal holds the Chronicle's decks, each card once, in any order; the
-    * world deck below the dealt cards is the rest of `denizenOrder`. */
-  private def validateDeal(chronicle: Chronicle, orders: SetupOrders)
-      : Either[OathViolation, Unit] =
-    val dealt = 6 + orders.participants.size * 3
+    * world deck below the dealt cards holds the rest of `denizenOrder`, in
+    * order unless a short deck was mixed with the Visions (CR p. 12). */
+  private def validateDeal(chronicle: Chronicle, orders: SetupOrders,
+      drawers: Int): Either[OathViolation, Unit] =
+    val rest = orders.denizenOrder.drop(SetupDeal.dealt(drawers))
+    val deck = orders.worldDeckOrder.collect { case id: DenizenId => id }
     for
       _ <- Either.cond(orders.denizenOrder.sortBy(_.value) ==
           chronicle.worldDeck.sortBy(_.value), (),
@@ -109,8 +135,8 @@ object GameStartRules:
       _ <- Either.cond(orders.relicOrder.sortBy(_.value) ==
           chronicle.relicDeck.sortBy(_.value), (),
         UnsupportedChronicle("the deal does not hold the Chronicle's relic deck"))
-      _ <- Either.cond(orders.worldDeckOrder.collect { case id: DenizenId => id }
-          == orders.denizenOrder.drop(dealt), (),
+      _ <- Either.cond(deck == rest || (rest.size < 25 &&
+          deck.sortBy(_.value) == rest.sortBy(_.value)), (),
         UnsupportedChronicle("the world deck is not the rest of the deal"))
     yield ()
 

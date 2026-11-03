@@ -267,7 +267,9 @@ private[application] final class GamePresentationProjector(
     *    the last three, the facedown stack (CR p. 38).
     *  - A lineage's starting advisers are named only to the player seated
     *    with that lineage.
-    *  - Everything else -- other decks, the reliquary, set-aside relics, the
+    *  - The Reliquary is named only to the Chancellor, and only in Setup,
+    *    where they pick one of its relics (Empire ruling R29).
+    *  - Everything else -- other decks, set-aside relics, the
     *    dispossessed pile, suited reserves, atlas sites -- is never
     *    identified. A card in a deck has no orientation at all, so it must be
     *    rejected by its container rather than by being facedown.
@@ -316,6 +318,11 @@ private[application] final class GamePresentationProjector(
       case CardContainer.Lineage(lineage, LineageCardArea.StartingAdvisers) =>
         viewer.exists(player => ready.game.current.players
           .exists(seat => seat.player == player && seat.lineage == lineage))
+      // The Chancellor chooses a Reliquary relic in Setup (CR p. 8, Empire
+      // ruling R29); nobody else, and nobody later, sees the pile.
+      case CardContainer.Reliquary =>
+        ready.game.current.turn.phase == Phase.Setup &&
+          viewer.exists(Imperials.chancellor(ready).contains)
       case _ => false
 
   /** [[identifiesCard]] for the card wherever it lies in `ready`: its own

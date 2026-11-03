@@ -1,5 +1,6 @@
 package oathdigital.gameplay.setup
 
+import oathdigital.application.{ChronicleFirstGamePlan, FirstGameBootstrapConfig}
 import oathdigital.gameplay.cards.GreatSlumSite
 import oathdigital.gameplay.powers.setup.HallOfDebateCard
 import oathdigital.model._
@@ -72,17 +73,6 @@ class GameStartRulesSuite extends munit.FunSuite:
     assertEquals(ready.game.campaign.lineages(unlisted), LineageState(unlisted,
       None, Role.Exile, Vector.empty, Vector.empty))
 
-  test("game start refuses an Imperial role, even in the box, until the " +
-      "Empire"):
-    val seated = orders.participants.head.lineageId
-    for (lineage, role) <- Vector(seated -> Role.Chancellor,
-        LineageId("l9") -> Role.Citizen) do
-      val imperial = chronicle.copy(lineages = Vector(LineageState(lineage,
-        None, role, Vector.empty, Vector.empty)))
-      assertEquals(GameStartRules.evolve(catalog, imperial, orders),
-        Left(OathViolation.UnsupportedChronicle(
-          "Imperial roles require the Empire")))
-
   test("game start refuses a seated lineage's legacies until Legacies"):
     val legacy = LegacyState(LegacyId(catalog.legacies.head.id.value),
       active = true)
@@ -92,16 +82,84 @@ class GameStartRulesSuite extends munit.FunSuite:
     assertEquals(GameStartRules.evolve(catalog, keeping, orders),
       Left(OathViolation.UnsupportedChronicle("legacies require Legacies")))
 
-  test("game start refuses a seated lineage's starting advisers until " +
-      "later-game setup"):
-    val adviser = DenizenState(chronicle.worldDeck.head, Orientation.FaceDown,
-      Tokens.empty)
-    val keeping = chronicle.copy(worldDeck = chronicle.worldDeck.tail,
-      lineages = Vector(LineageState(orders.participants.head.lineageId, None,
-        Role.Exile, Vector.empty, Vector(adviser))))
-    assertEquals(GameStartRules.evolve(catalog, keeping, orders),
+  test("a later game with a seated Chancellor starts"):
+    val record = LaterGameFixture.chronicle(LineageId("l1"), LineageId("l2"))
+    accepted(GameStartRules.evolve(catalog, record,
+      LaterGameFixture.orders(record, PlayerId("p1"))))
+
+  test("game start refuses a later game whose first player is not the " +
+      "Chancellor"):
+    val record = LaterGameFixture.chronicle(LineageId("l1"), LineageId("l2"))
+    assertEquals(GameStartRules.evolve(catalog, record,
+        LaterGameFixture.orders(record, PlayerId("p2"))),
       Left(OathViolation.UnsupportedChronicle(
-        "starting advisers require later-game setup")))
+        "the first player must be the Chancellor")))
+
+  test("with the Chancellor absent, the first player must be a seated " +
+      "Citizen"):
+    val record = LaterGameFixture.chronicle(LineageId("l9"), LineageId("l2"))
+    accepted(GameStartRules.evolve(catalog, record,
+      LaterGameFixture.orders(record, PlayerId("p2"))))
+    assertEquals(GameStartRules.evolve(catalog, record,
+        LaterGameFixture.orders(record, PlayerId("p1"))),
+      Left(OathViolation.UnsupportedChronicle(
+        "the first player must be a seated Citizen")))
+
+  test("game start refuses an Empire-less later game until Wide Horizons"):
+    val record = LaterGameFixture.chronicle(LineageId("l9"), LineageId("l8"))
+    assertEquals(GameStartRules.evolve(catalog, record,
+        LaterGameFixture.orders(record, PlayerId("p1"))),
+      Left(OathViolation.UnsupportedChronicle(
+        "an Empire-less later game requires Wide Horizons")))
+
+  test("game start refuses an Empire with no site (R28)"):
+    val record = LaterGameFixture.chronicle(LineageId("l1"), world = 0)
+    assertEquals(GameStartRules.evolve(catalog, record,
+        LaterGameFixture.orders(record, PlayerId("p1"))),
+      Left(OathViolation.UnsupportedChronicle(
+        "an Empire needs at least one site")))
+
+  test("game start refuses an Empire of more than 8 sites"):
+    val record = LaterGameFixture.chronicle(LineageId("l1"), world = 8)
+    val extra = record.copy(world = record.world :+
+      StoredSite(GreatSlumSite.id))
+    assertEquals(GameStartRules.evolve(catalog, extra,
+        LaterGameFixture.orders(extra, PlayerId("p1"))),
+      Left(OathViolation.UnsupportedChronicle(
+        "an Empire cannot hold more than 8 sites")))
+
+  test("a later game's short deck is accepted mixed with the Visions, and " +
+      "refused when it is not the rest of the deal"):
+    // Every card but 15 dealt and 20 left leaves a deck under 25.
+    val record = LaterGameFixture.chronicle(LineageId("l1"))
+    val short = record.copy(worldDeck = record.worldDeck.take(6 + 9 + 20))
+    val mixed = ChronicleFirstGamePlan.dealOrder(
+      FirstGameBootstrapConfig(orders.participants, PlayerId("p1")), 3,
+      short.worldDeck, short.relicDeck, _.reverse)
+    accepted(GameStartRules.evolve(catalog, short, mixed))
+    assertEquals(GameStartRules.evolve(catalog, short, mixed.copy(
+        worldDeckOrder = mixed.worldDeckOrder.init)),
+      Left(OathViolation.UnsupportedChronicle(
+        "the world deck is not the rest of the deal")))
+
+  test("a later game skips the Homeland edifice check (R26)"):
+    val record = LaterGameFixture.chronicle(LineageId("l1"))
+    val bare = record.copy(atlasBox = record.atlasBox.map(site =>
+      site.copy(items = site.items.filterNot(_.isInstanceOf[EdificeId]))))
+    accepted(GameStartRules.evolve(catalog, bare,
+      LaterGameFixture.orders(bare, PlayerId("p1"))))
+
+  test("a later game accepts stored denizens and relics at atlas sites (R27)"):
+    val record = LaterGameFixture.chronicle(LineageId("l1"))
+    val relic = record.relicDeck.head
+    val denizen = record.worldDeck.head
+    val atlas = record.atlasBox.head
+    val stored = record.copy(relicDeck = record.relicDeck.tail,
+      worldDeck = record.worldDeck.tail,
+      atlasBox = atlas.copy(items = atlas.items ++ Vector(denizen, relic)) +:
+        record.atlasBox.tail)
+    accepted(GameStartRules.evolve(catalog, stored,
+      LaterGameFixture.orders(stored, PlayerId("p1"))))
 
   test("game start takes the era and Oathkeeper goal from the Chronicle"):
     val l9 = LineageId("l9")

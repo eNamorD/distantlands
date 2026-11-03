@@ -6,6 +6,6 @@ package oathdigital.application.gamelog
 object GoldenScripts:
   val named: Vector[(String, () => Script)] =
     LogScripts.named ++ CampaignLogScripts.named ++ ChronicleLogScripts.named ++
-      ImperialLogScripts.named
+      ImperialLogScripts.named ++ LaterGameLogScripts.named
 
   def all: Vector[Script] = named.map(_._2())

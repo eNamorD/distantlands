@@ -17,6 +17,20 @@ class ChronicleProtocolSuite extends munit.FunSuite:
     assert(!ChronicleEntryCodec.encodeValue(imported)("summary").obj
       .contains("game"))
 
+  test("a summary row carries an Imperial role and omits an Exile's"):
+    val imperial = entry.copy(summary = entry.summary.copy(scores = Vector(
+      ChronicleScore("red-lineage", 4, Some("chancellor")),
+      ChronicleScore("blue-lineage", 2))))
+    val rows = ChronicleEntryCodec.encodeValue(imperial)("summary")("scores")
+    assertEquals(rows(0)("role").str, "chancellor")
+    assert(!rows(1).obj.contains("role"))
+    assertEquals(roundTripped(imperial), Right(imperial))
+
+  test("a summary row refuses an unknown role"):
+    val raw = ChronicleEntryCodec.encodeValue(entry)
+    raw("summary")("scores")(0)("role") = "usurper"
+    assert(ChronicleEntryCodec.decodeValue(raw, "$").isLeft)
+
   test("an entry refuses an unknown field"):
     val raw = ChronicleEntryCodec.encodeValue(entry)
     raw("extra") = 1

@@ -13,11 +13,16 @@ import oathdigital.model.OathViolation._
  *
  * {{{
  * Sequence(                                              // no window
+ *   Branch(                                              // a later game's
+ *     Decide(reliquary-pick, chancellor),                // Chancellor, when the
+ *     BuildOps(keep the relic facedown),                 // Reliquary holds one
+ *     Note(took a relic))
  *   Sequence(                                            // per participant
- *     Decide(pawn-placement, participant),
+ *     Decide(pawn-placement, participant),               // legal sites only
  *     BuildOps(place the pawn)                           // window = SetupPawnPlaced
- *     Decide(adviser-choice, participant),
- *     BuildOps(keep one adviser, discard the other two),
+ *     Branch(                                            // only with a hand
+ *       Decide(adviser-choice, participant),
+ *       BuildOps(keep one adviser, discard the other two)),
  *     Branch(                                            // CR p. 13, Reveal Cards
  *       Decide(reveal, participant),                     // only when one can be
  *       BuildOps(reveal the chosen cards)))
@@ -55,8 +60,12 @@ object SetupProcedure:
     NotePart.Arg(0), NotePart.Text(" kept "), NotePart.Arg(1)))
   val revealedCard: NoteKey = notes.key("revealed-card", Vector(
     NotePart.Arg(0), NotePart.Text(" revealed "), NotePart.Arg(1)))
+  /** "p1 took a relic from the Reliquary" (Empire ruling R29). */
+  val tookRelic: NoteKey = notes.key("took-relic", Vector(
+    NotePart.Arg(0), NotePart.Text(" took a relic from the Reliquary")))
   def noteKeys: Vector[NoteKey] = notes.declared
 
+  val reliquaryDecisionId: String = "setup.reliquary-pick"
   def pawnDecisionId(player: PlayerId): String =
     s"setup.pawn-placement.${player.value}"
   def adviserDecisionId(player: PlayerId): String =
@@ -88,12 +97,38 @@ object SetupProcedure:
 
   private def tree(catalog: ExecutableCatalog, ready: ReadyGame): Operation =
     val participants = turnOrder(ready)
-    val siteOptions = ready.game.current.map.inPlay.map(site =>
-      DecisionOption.Site(DecisionOptionRef.Site(site)))
-    val steps = participants.map(playerStep(catalog, ready, _, siteOptions))
+    val steps = participants.map(playerStep(catalog, ready, _))
     val setupEnd = Sequence(Vector.empty, Some(PowerWindow.SetupEnd))
-    Sequence(steps :+ setupEnd :+
-      BeginTurn(participants.head.playerId, Phase.Wake))
+    Sequence(Imperials.chancellor(ready).map(reliquaryPick).toVector ++
+      steps :+ setupEnd :+ BeginTurn(participants.head.playerId, Phase.Wake))
+
+  /** A later game's Chancellor first keeps one Reliquary relic facedown
+    * (CR p. 8, Empire ruling R29). An empty Reliquary asks nothing. */
+  private def reliquaryPick(chancellor: PlayerId): Operation =
+    Branch((state, _) =>
+      val relics = state.game.campaign.reliquary
+      if relics.isEmpty then Vector.empty
+      else Vector(
+        Decide(reliquaryDecisionId, chancellor, DecisionQuery.ChooseOne(
+          relics.map(id => DecisionOption.Relic(DecisionOptionRef.Relic(id))),
+          heading = Some("Take a relic from the Reliquary"),
+          confirmVerb = Some("Take"))),
+        BuildOps(takeRelic(chancellor)),
+        Note(ProcedureNotes.id(TriggeredProcedureRef.Setup), _ =>
+          Some(tookRelic.sourceless(NoteArg.Player(chancellor))))))
+
+  private def takeRelic(chancellor: PlayerId)
+      : (ReadyGame, PendingTree) => Either[OathViolation, Vector[CoreOperation]] =
+    (_, pending) =>
+      pending.answered.find(_.decisionId == reliquaryDecisionId)
+        .map(_.answer) match
+        case Some(DecisionAnswer.ChooseOneAnswer(DecisionOptionRef.Relic(id))) =>
+          Right(Vector(Move(Piece.Card(id),
+            PositionedLocation(Location.Reliquary),
+            PositionedLocation(Location.PlayArea(chancellor)),
+            resultingOrientation = Some(Orientation.FaceDown))))
+        case _ => Left(InvalidEventOrder(
+          s"no relic answer is recorded for $reliquaryDecisionId"))
 
   private def turnOrder(ready: ReadyGame): Vector[FirstGameParticipant] =
     val order = ready.game.current.players.map(_.player)
@@ -105,8 +140,7 @@ object SetupProcedure:
     }
 
   private def playerStep(catalog: ExecutableCatalog, ready: ReadyGame,
-      participant: FirstGameParticipant,
-      siteOptions: Vector[DecisionOption.Site]): Operation =
+      participant: FirstGameParticipant): Operation =
     val pawnId = pawnDecisionId(participant.playerId)
     val adviserId = adviserDecisionId(participant.playerId)
     val hand = ready.game.current.temporaryHands
@@ -114,6 +148,8 @@ object SetupProcedure:
       .collect { case id: DenizenId => id }
     val handOptions = hand.map(id =>
       DecisionOption.Denizen(DecisionOptionRef.Denizen(id)))
+    val siteOptions = SetupPawnSites.legal(ready, participant.playerId)
+      .map(site => DecisionOption.Site(DecisionOptionRef.Site(site)))
     Sequence(Vector(
       Decide(pawnId, participant.playerId,
         DecisionQuery.ChooseOne(siteOptions,
@@ -132,15 +168,19 @@ object SetupProcedure:
         Note(ProcedureNotes.id(TriggeredProcedureRef.Setup),
           placedPawnNote(participant.playerId))),
         Some(PowerWindow.SetupPawnPlaced)),
-      Decide(adviserId, participant.playerId,
-        DecisionQuery.Partition(
-          Vector(DecisionSection(adviserKeepKey, "Keep", 1, Some(1)),
-            DecisionSection(adviserDiscardKey, "Discard", 0)),
-          handOptions, heading = Some("Choose your starting adviser"),
-          confirmLabel = Some("Confirm Adviser"))),
-      BuildOps(chooseAdviser(participant.playerId, adviserId)),
-      Note(ProcedureNotes.id(TriggeredProcedureRef.Setup),
-        keptAdviserNote(participant.playerId, adviserId)),
+      // A player with starting advisers drew no hand (CR p. 11).
+      Branch((_, _) =>
+        if hand.isEmpty then Vector.empty
+        else Vector(
+          Decide(adviserId, participant.playerId,
+            DecisionQuery.Partition(
+              Vector(DecisionSection(adviserKeepKey, "Keep", 1, Some(1)),
+                DecisionSection(adviserDiscardKey, "Discard", 0)),
+              handOptions, heading = Some("Choose your starting adviser"),
+              confirmLabel = Some("Confirm Adviser"))),
+          BuildOps(chooseAdviser(participant.playerId, adviserId)),
+          Note(ProcedureNotes.id(TriggeredProcedureRef.Setup),
+            keptAdviserNote(participant.playerId, adviserId)))),
       revealCards(catalog, participant.playerId)))
 
   /** Where `player`'s pawn stands once it has been placed. */

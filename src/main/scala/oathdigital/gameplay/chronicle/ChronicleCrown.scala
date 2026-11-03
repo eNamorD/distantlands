@@ -38,8 +38,9 @@ object ChronicleCrown:
     * p. 36), while a boxed one places none; each site the winner rules
     * keeps one Imperial warband. Once exiled, the former Chancellor's board
     * warbands are of their colour, so their bank holds 14 less those; the
-    * step assumes an unlimited supply and adds what the bank lacks. The winner's newly dormant legacies would
-    * become active here; they arrive with the Legacies slice.
+    * step assumes an unlimited supply and adds what the bank lacks. The
+    * winner's newly dormant legacies would become active here; they arrive
+    * with the Legacies slice.
     *
     * The winner's board warbands go back to their own bank first: the
     * winner swaps boards for the Chancellor's, and once they are Imperial
