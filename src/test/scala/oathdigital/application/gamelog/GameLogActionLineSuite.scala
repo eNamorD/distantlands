@@ -97,7 +97,7 @@ class GameLogActionLineSuite extends munit.FunSuite:
     val mine = lines(script, None)
     // Recover's printed cost, paid again for the one continue: 1 Supply.
     assert(mine.contains("Recover −1 Supply"), mine)
-    assertEquals(mine.count(_ == "Continued −1 Supply"), 1, mine)
+    assertEquals(mine.count(_ == "Continued recovering −1 Supply"), 1, mine)
     assert(mine.last.startsWith("Failed to recover at "), mine)
 
   test("a successful Recover names the relic to the recoverer only"):
