@@ -72,8 +72,7 @@ private[gamelog] final class DetailLines(words: LogWords,
     val playedFaceup = placement(journal, run, at, PlayedAs.Faceup)
     val found = journal.ops(at).flatMap(step =>
       DetailLines.parts(step.operation).flatMap(part =>
-        delta(run, OpStep(part, step.before, step.after), placedDiscard,
-          playedFaceup, viewer)))
+        delta(run, part, step, placedDiscard, playedFaceup, viewer)))
     found.foldLeft(Vector.empty[DetailLines.Found]) {
       case (done :+ DetailLines.Discarded(who, region, cards),
           DetailLines.Discarded(next, again, more))
@@ -87,15 +86,19 @@ private[gamelog] final class DetailLines(words: LogWords,
           LogSpan.Text(s" to the ${region.key.capitalize} discard")))
     }
 
-  private def delta(run: Run, step: OpStep, placedDiscard: Option[CardId],
-      playedFaceup: Option[CardId], viewer: Option[PlayerId])
-      : Vector[DetailLines.Found] =
+  /** The line, if any, for `operation`, one of `step`'s parts. A composite
+    * is applied as one operation, so no state exists between its children:
+    * a part is judged at its whole step's states. */
+  private def delta(run: Run, operation: CoreOperation, step: OpStep,
+      placedDiscard: Option[CardId], playedFaceup: Option[CardId],
+      viewer: Option[PlayerId]): Vector[DetailLines.Found] =
     import DetailLines.{Discarded, Line}
     val actor = run.actor
-    val OpStep(operation, before, after) = step
+    val OpStep(_, before, after) = step
     def line(spans: Vector[LogSpan]) =
       Vector(Line(Posted(LogKind.Delta, spans)))
     def card(id: CardId) = words.card(id, before, after, viewer)
+    def asItLay(id: CardId) = words.seen(id, Vector(after, before), viewer)
     def gainedFavor(player: PlayerId, suit: Suit, amount: Int) =
       if run.procedure == ActionRef.Trade && player == actor then Vector.empty
       else line(words.subject(player, actor, "gained") :+
@@ -132,6 +135,15 @@ private[gamelog] final class DetailLines(words: LogWords,
       case discard: Discard.Vision if !placedDiscard.contains(discard.card) =>
         Vector(Discarded(Vector(LogSpan.Text("Discarded ")), discard.to,
           Vector(card(discard.card))))
+      // A card set aside is named as it lay: a set-aside edifice shows its
+      // intact face, but the face discarded was the ruined one.
+      case discard: Discard.RuinedEdifice =>
+        line(discard.by.fold(Vector(LogSpan.Text("Set aside ")))(
+          words.subject(_, actor, "set aside")) ++
+          words.one(asItLay(discard.card)))
+      case discard: Discard.Relic =>
+        line(words.subject(discard.actingPlayer, actor, "set aside") ++
+          words.one(asItLay(discard.card)))
       case Bury(buried, _, _) =>
         line(LogSpan.Text("Buried ") +: words.one(card(buried.id)))
       case Peek(peeker, id, _) if run.procedure != ActionRef.Negotiation &&
@@ -192,7 +204,8 @@ private[gamelog] object DetailLines:
     * their children. */
   def parts(operation: CoreOperation): Vector[CoreOperation] = operation match
     case _: Gain.Favor | _: Gain.Secrets | _: Draw | _: Discard.Denizen |
-        _: Discard.Vision | _: Reveal => Vector(operation)
+        _: Discard.Vision | _: Discard.RuinedEdifice | _: Discard.Relic |
+        _: Reveal => Vector(operation)
     case _: LeafOperation => Vector(operation)
     case composite => composite.children.collect {
       case child: CoreOperation => child }.flatMap(parts)

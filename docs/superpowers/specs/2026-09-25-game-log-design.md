@@ -105,6 +105,9 @@ the same operation application replay uses (`WalkerReplay.executeRecorded`,
 exposed one operation at a time). Every line and every visibility judgement
 is therefore made against the state immediately before and after the
 operation it describes, not the whole batch.
+A composite operation is applied as one operation: the engine applies its
+children together, so no state exists between two of them. A line about
+one of a composite's children is judged at the composite's states.
 
 The formatter reads operations, not `DeltaMeaning`. `DeltaMeaning` falls back
 to an operation's class name for every batch that is not a dice-pool change, a
