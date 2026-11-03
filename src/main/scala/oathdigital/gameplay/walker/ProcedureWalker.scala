@@ -1,7 +1,7 @@
 package oathdigital.gameplay.walker
 
 import oathdigital.gameplay.operations.OperationResolution
-import oathdigital.model.{Answered, AutomaticUse, Branch, Burn, BuildOps, ConsentKey, ConsentTurn, CoreOperation, Decide, DecisionAnswer, DecisionOptionRef, DieFace, EndWalk, Note, NoteStates, OathState, OathViolation, Operation, OptionReason, PayCost, PendingTree, PlayerId, PoolKey, PowerId, PowerWindow, LeafOperation, ProcedureRef, ReadyGame, Repeat, Reroll, Roll, RollMode, Shuffle, TakeDeferred, WalkerEvent}
+import oathdigital.model.{Answered, AutomaticUse, Branch, Burn, BuildOps, ConsentKey, ConsentTurn, CoreOperation, Decide, DecisionAnswer, DecisionOptionRef, DieFace, EndWalk, Note, NoteStates, OathState, OathViolation, Operation, OptionReason, PayCost, PendingTree, PlayerId, PoolKey, PowerId, PowerWindow, LeafOperation, ProcedureRef, ReadyGame, Repeat, Reroll, Roll, RollMode, Shuffle, Simultaneous, TakeDeferred, WalkerEvent}
 
 /** Auto-walk engine over an [[oathdigital.model.Operation]] action tree (Tasks 3-5).
   *
@@ -127,9 +127,9 @@ object ProcedureWalker:
     * 5.3).
     *
     * The resumed node is the leaf addressed by `pending.at` and MUST be a
-    * `Decide` whose `decisionId` equals `answer.decisionId` (a Roll park, a
-    * mismatched decision id, or any other position rejects with an
-    * `OathViolation`). Semantics: check the answer's submitter against the
+    * `Decide` whose `decisionId` equals `answer.decisionId`, or a
+    * `Simultaneous` node with that decision open (a Roll park, a mismatched
+    * decision id, or any other position rejects with an `OathViolation`). Semantics: check the answer's submitter against the
     * node's `owner`, validate the submitted answer against its query, append
     * ONE [[WalkerStepRecorded]] carrying [[ChoicePayload]] (the answer is a
     * state write into `pending.answered`, so the payload holds no operation
@@ -149,12 +149,8 @@ object ProcedureWalker:
       Vector.empty, Some(pending.at), AnswerResume(answer), WalkerHooks.none)
       .flatMap(toOutcome)
 
-  /** Collects every restriction violation from every windowed node in `tree`
-    * (spec decision 9's `Restriction` kind), run against the tree root --
-    * `OathRules` calls this once per command, before the walk (Task 3
-    * wiring rule). See [[WalkerPowerGather.restrictionViolations]] for the
-    * traversal (split out to keep this file under the project's line bound).
-    */
+  /** Every restriction violation in `tree`, which `OathRules` checks once per
+    * command before the walk: see [[WalkerPowerGather.restrictionViolations]]. */
   def restrictionViolations(tree: Operation, powers: WalkerPowers,
       state: ReadyGame, actor: PlayerId,
       answered: Vector[oathdigital.model.Answered] = Vector.empty,
@@ -241,6 +237,8 @@ object ProcedureWalker:
     node match
       case repeat: Repeat => walkRepeat(repeat, ctx, path, cursor, resume, hooks)
       case branch: Branch => walkBranch(branch, ctx, path, cursor, resume, hooks)
+      case node: Simultaneous =>
+        walkSimultaneous(node, ctx, path, cursor, resume, hooks)
       case use: AutomaticUse => walkFolded(None, use, AutomaticUses.children(
         use, ctx.state, PendingTree(at = path, answered = ctx.answered),
         ctx.powers, cursor), ctx, path, cursor, resume,
@@ -335,6 +333,55 @@ object ProcedureWalker:
     val branchTree = PendingTree(at = path, answered = ctx.answered)
     walkFolded(branch.window, branch, branch.select(ctx.state, branchTree), ctx, path,
       cursor, resume, hooks)
+
+  /** A [[Simultaneous]] node. Fresh, it parks at its own path (a search
+    * walks its children in order). An answer at the node answers the child
+    * it names, runs that child's tail, and parks again while a child is
+    * open. A cursor into a child walks on as a `Sequence` would. */
+  private def walkSimultaneous(node: Simultaneous, ctx: WalkCtx,
+      path: Vector[String], cursor: Option[Vector[String]], resume: Resume,
+      hooks: WalkerHooks): Either[OathViolation, Step] =
+    val at = s"the Simultaneous node at ${path.mkString(".")}"
+    SimultaneousChildren.malformed(node) match
+      case Some(reason) =>
+        Left(OathViolation.InvalidEventOrder(s"$at is malformed: $reason"))
+      case None => cursor match
+        case None if ctx.searching =>
+          continue(node.children, 0, ctx, path, None, resume, hooks)
+        case None => Right(Park(path, ctx))
+        case Some(rest) if rest.nonEmpty =>
+          walkChildren(node.children, ctx, path, cursor, resume, hooks)
+        case Some(_) => resume match
+          case PlainResume => Right(Park(path, ctx))
+          case RollResume(_) => Left(OathViolation.InvalidEventOrder(
+            s"roll() resumed at $at; expected a Roll"))
+          case AnswerResume(answer) =>
+            SimultaneousChildren.open(node, ctx.answered)
+                .find(_._2.decisionId == answer.decisionId) match
+              case None => Left(OathViolation.InvalidEventOrder(
+                s"resolve() answer ${answer.decisionId} is not open at $at"))
+              case Some((index, _)) =>
+                val child = node.children(index)
+                walk(child, ctx, path :+ index.toString,
+                    Some(SimultaneousChildren.entry(child)), resume, hooks)
+                  .flatMap:
+                    case Done(next) =>
+                      answeredOne(node, next, path, resume, hooks)
+                    case Park(_, _) => Left(OathViolation.InvalidEventOrder(
+                      s"a child's tail parked inside $at"))
+                    case other => Right(other)
+
+  /** After an answer: done, a park at the node, or a search's next child. */
+  private def answeredOne(node: Simultaneous, next: WalkCtx,
+      path: Vector[String], resume: Resume, hooks: WalkerHooks)
+      : Either[OathViolation, Step] =
+    val open = SimultaneousChildren.open(node, next.answered).map(_._1)
+    if open.isEmpty then Right(Done(next))
+    else if !next.searching then Right(Park(path, next))
+    else open.foldLeft[Either[OathViolation, Step]](Right(Done(next))):
+      case (Right(Done(at)), index) => walk(node.children(index), at,
+        path :+ index.toString, None, resume, hooks)
+      case (stop, _) => stop
 
   /** Runs whole passes of `repeat.body` while its guard holds, plus, on a
     * resume, the remainder of the already-started pass first. A Repeat

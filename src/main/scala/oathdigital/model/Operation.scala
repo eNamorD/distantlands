@@ -163,6 +163,18 @@ final case class Branch(select: (ReadyGame, PendingTree) => Vector[Operation])
     extends Operation:
   override val children: Vector[Operation] = Vector.empty
 
+/** Opens one decision per child at once (simultaneous decisions design).
+  * Each child is a `Decide`, or a `Sequence` that starts with one; each
+  * decision has its own owner, no co-owners and no window, and all share
+  * one heading. The players answer in any order: a child's tail runs right
+  * after its answer and must not park. The node parks at its own path and
+  * completes once every child is answered.
+  *
+  * A child counts as answered when the walk's answers hold its decision id,
+  * so a node inside a `Repeat` needs fresh ids on each pass. */
+final case class Simultaneous(override val children: Vector[Operation])
+    extends Operation
+
 /** An automatic power's effect, judged where the walk reaches it (catalog
   * batch 8, slice 10; automatic power consent design): the walker runs
   * `effect` when no power-use restriction refuses `user` using `power`

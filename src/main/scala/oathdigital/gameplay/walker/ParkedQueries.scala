@@ -33,8 +33,7 @@ private[walker] object ParkedQueries:
     * none for a `Roll` or a position that does not resolve. Reports the nodes
     * themselves so the caller can dispatch on their stable `decisionId`
     * rather than on the park's structural path, which shifts if the tree is
-    * edited. A future `Simultaneous` node would return one per unanswered
-    * child, and nothing else here would change.
+    * edited. A `Simultaneous` park returns one per open child.
     *
     * `probing` (default on) runs the restriction look-ahead, narrowing the
     * options a caller offers or validates against. A caller that only reads
@@ -45,18 +44,22 @@ private[walker] object ParkedQueries:
       pending: PendingTree, powers: WalkerPowers,
       probing: Boolean = true): Vector[Decide] =
     val looked = if probing then powers else powers.quiet
-    WalkerPowerGather.leafAt(state, action, pending, looked).collect {
+    WalkerPowerGather.leavesAt(state, action, pending, looked).collect {
       case decide: Decide => decide
-    }.toVector
+    }
 
-  /** The single-decision view of [[openDecisions]]. `None` when the park is a
-    * Roll or the position does not resolve to a Decide. Symmetric to
-    * [[parkedRoll]]. See [[openDecisions]] for `probing`.
+  /** The one open decision, or `None` at a Roll park, at a position that
+    * does not resolve to a Decide, or when several decisions are open (a
+    * `Simultaneous` park): a caller that needs one of several looks it up by
+    * decision id or owner in [[openDecisions]]. Symmetric to [[parkedRoll]].
+    * See [[openDecisions]] for `probing`.
     */
   def parkedDecide(state: ReadyGame, action: Operation,
       pending: PendingTree, powers: WalkerPowers,
       probing: Boolean = true): Option[Decide] =
-    openDecisions(state, action, pending, powers, probing).headOption
+    openDecisions(state, action, pending, powers, probing) match
+      case Vector(one) => Some(one)
+      case _ => None
 
   /** Everyone who may answer the parked position: the owners and co-owners of
     * its open decisions, or the walk's actor for a parked `Roll`. Skips the
