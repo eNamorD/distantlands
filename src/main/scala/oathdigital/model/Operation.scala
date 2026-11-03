@@ -110,7 +110,7 @@ final case class Decide(decisionId: String, owner: PlayerId,
     "only a choose-one can be passed when empty")
 
   /** Everyone who may answer: `owner` first, then the co-owners, each once.
-    * `owner` stays the primary owner, the player `awaitedPlayer` names.
+    * `owner` stays the primary owner, the player a single-owner view names.
     */
   def owners: Vector[PlayerId] = (owner +: coOwners).distinct
 

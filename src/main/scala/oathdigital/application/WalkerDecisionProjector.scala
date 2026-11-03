@@ -68,8 +68,10 @@ private[application] final class WalkerDecisionProjector(
       // The modifiers picked in the walk join, so their warnings show.
       powers = WalkerPowers.selected(walkerPowerCatalog, Vector.empty)
         .withAnswers(pending.answered)
-      awaited <- ProcedureWalker.awaitedPlayer(context.ready, tree, pending,
-        powers)
+      awaited <- ProcedureWalker.parkedDecide(context.ready, tree, pending,
+          powers, probing = false).map(_.owner)
+        .orElse(ProcedureWalker.awaitedInSeatOrder(context.ready, tree,
+          pending, powers).headOption)
       owners = ProcedureWalker.awaitedPlayers(context.ready, tree, pending,
         powers)
     yield Parked(procedure, tree, pending, powers, awaited, owners)
@@ -755,7 +757,7 @@ private[application] object WalkerDecisionProjector:
 
   /** A parked position, fully resolved: the rebuilt+power-folded tree, and
     * `awaited` -- a parked `Decide`'s owner, or the active player for a
-    * `Roll` -- read off it by [[ProcedureWalker.awaitedPlayer]] (Task 5).
+    * `Roll` -- read off it by [[ProcedureWalker.awaitedInSeatOrder]] (Task 5).
     * `project` and `waiting` share this so the two projections never
     * recompute the owner differently.
     *

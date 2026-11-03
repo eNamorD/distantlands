@@ -312,8 +312,8 @@ class OathRulesWalkerPowerSuite extends munit.FunSuite:
     assertEquals(startedReady.game.current.walkerProcedure,
       Some(ActionRef.Recover))
     val pending = startedReady.game.current.walkerPending.get
-    assertEquals(ProcedureWalker.awaitedPlayer(startedReady, rollTree, pending,
-      WalkerPowers.empty), Some(p1))
+    assertEquals(ProcedureWalker.awaitedInSeatOrder(startedReady, rollTree,
+      pending, WalkerPowers.empty), Vector(p1))
     assertEquals(started.events, Vector[OathEvent](WalkerParked(
       ActionRef.Recover, Vector("0"), Vector.empty, Vector.empty)))
 

@@ -66,14 +66,12 @@ object ParkedNode:
                 s"could not rebuild $procedure's tree to read the park at " +
                   s"'$at': $violation")
               powers = WalkerPowers.selected(walkerPowers, Vector.empty)
-              awaiting = ProcedureWalker.awaitedPlayer(ready, tree, pending,
-                powers)
+              awaiting = ProcedureWalker.awaitedInSeatOrder(ready, tree, pending,
+                powers).headOption
               node <- ProcedureWalker.parkedDecide(ready, tree, pending,
                   powers) match
                 case Some(decide) =>
-                  awaiting.toRight(noneAwaited(at, procedure,
-                      decide.decisionId))
-                    .map(Decision(procedure, decide, _))
+                  Right(Decision(procedure, decide, decide.owner))
                 case None => ProcedureWalker.parkedRoll(ready, tree, pending,
                     powers) match
                   case Some((pool, count)) =>

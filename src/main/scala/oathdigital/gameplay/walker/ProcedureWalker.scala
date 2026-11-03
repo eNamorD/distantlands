@@ -162,83 +162,32 @@ object ProcedureWalker:
       : Vector[OathViolation] = WalkerPowerGather.restrictionViolations(tree,
     powers, state, actor, answered, procedure)
 
-  /** When `pending` parks on a `Roll` node of `action`, reports the node's
-    * `pool` and the face count that node requires (read from
-    * `state.rollPools`), so the app layer can pre-roll exactly that many
-    * faces for the next `roll` command (Task 6 consumes it). `None` when the
-    * park is a Decide or the position does not resolve to a Roll. `powers`
-    * (fix-round ruling J) must be the same vector the live walk that parked
-    * here used -- `leafAt` folds every window on the path exactly like the
-    * walk does, so a transform that inserts operations around a windowed
-    * node does not make this address the wrong leaf.
-    *
-    * Always resolves with the restriction look-ahead off: the look-ahead
-    * only narrows a `Decide`'s options, never a `Roll`'s, so probing here
-    * could only be wasted work on a position that turns out to be a
-    * `Decide` (discarded below either way).
-    */
-  def parkedRoll(state: ReadyGame, action: Operation,
-      pending: PendingTree, powers: WalkerPowers): Option[(PoolKey, Int)] =
-    WalkerPowerGather.leafAt(state, action, pending, powers.quiet)
-      .collect:
-        case roll: Roll if roll.mode == RollMode.Parked =>
-          (roll.pool, WalkerRolls.poolCount(state, roll.pool))
+  /** See [[ParkedQueries.parkedRoll]]. */
+  def parkedRoll(state: ReadyGame, action: Operation, pending: PendingTree,
+      powers: WalkerPowers): Option[(PoolKey, Int)] =
+    ParkedQueries.parkedRoll(state, action, pending, powers)
 
-  /** Every decision open at the park: one for a plain or co-owned `Decide`,
-    * none for a `Roll` or a position that does not resolve. Reports the nodes
-    * themselves so the caller can dispatch on their stable `decisionId`
-    * rather than on the park's structural path, which shifts if the tree is
-    * edited. A future `Simultaneous` node would return one per unanswered
-    * child, and nothing else here would change.
-    *
-    * `probing` (default on) runs the restriction look-ahead, narrowing the
-    * options a caller offers or validates against. A caller that only reads
-    * the decision's identity, owner or labels -- never which options are
-    * still legal -- passes `probing = false` to skip that work.
-    */
+  /** See [[ParkedQueries.openDecisions]]. */
   def openDecisions(state: ReadyGame, action: Operation,
       pending: PendingTree, powers: WalkerPowers,
       probing: Boolean = true): Vector[Decide] =
-    val looked = if probing then powers else powers.quiet
-    WalkerPowerGather.leafAt(state, action, pending, looked).collect {
-      case decide: Decide => decide
-    }.toVector
+    ParkedQueries.openDecisions(state, action, pending, powers, probing)
 
-  /** The single-decision view of [[openDecisions]]. `None` when the park is a
-    * Roll or the position does not resolve to a Decide. Symmetric to
-    * [[parkedRoll]]. See [[openDecisions]] for `probing`.
-    */
+  /** See [[ParkedQueries.parkedDecide]]. */
   def parkedDecide(state: ReadyGame, action: Operation,
       pending: PendingTree, powers: WalkerPowers,
       probing: Boolean = true): Option[Decide] =
-    openDecisions(state, action, pending, powers, probing).headOption
+    ParkedQueries.parkedDecide(state, action, pending, powers, probing)
 
-  /** Who a parked position waits on, as one player: a parked `Decide`'s
-    * primary owner, read off the rebuilt and transformed node, or the walk's
-    * actor for a parked `Roll`.
-    * Never stored -- a power that changes an owner changes this answer on the
-    * next command, and authorization and projection both read it (Task 5).
-    *
-    * Skips the restriction look-ahead: an owner never changes with which
-    * options the look-ahead would hide, so probing here is pure overhead.
-    */
-  def awaitedPlayer(state: ReadyGame, action: Operation, pending: PendingTree,
-      powers: WalkerPowers): Option[PlayerId] =
-    parkedDecide(state, action, pending, powers, probing = false).map(_.owner)
-      .orElse(parkedRoll(state, action, pending, powers).map(_ =>
-        state.game.current.walkActor))
-
-  /** Everyone who may answer the parked position: the owners and co-owners of
-    * its open decisions, or the walk's actor for a parked `Roll`. Skips the
-    * restriction look-ahead for the same reason [[awaitedPlayer]] does: an
-    * owner set never depends on which options are hidden.
-    */
+  /** See [[ParkedQueries.awaitedPlayers]]. */
   def awaitedPlayers(state: ReadyGame, action: Operation,
       pending: PendingTree, powers: WalkerPowers): Set[PlayerId] =
-    val open = openDecisions(state, action, pending, powers, probing = false)
-    if open.nonEmpty then open.flatMap(_.owners).toSet
-    else parkedRoll(state, action, pending, powers)
-      .map(_ => Set(state.game.current.walkActor)).getOrElse(Set.empty)
+    ParkedQueries.awaitedPlayers(state, action, pending, powers)
+
+  /** See [[ParkedQueries.awaitedInSeatOrder]]. */
+  def awaitedInSeatOrder(state: ReadyGame, action: Operation,
+      pending: PendingTree, powers: WalkerPowers): Vector[PlayerId] =
+    ParkedQueries.awaitedInSeatOrder(state, action, pending, powers)
 
   // --------------------------------------------------------------------------
   // Walking core
