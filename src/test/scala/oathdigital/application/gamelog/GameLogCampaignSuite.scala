@@ -47,9 +47,9 @@ class GameLogCampaignSuite extends munit.FunSuite:
       "the bandits"):
     val chosen = lines(defenderChoseAPlan)
     assert(chosen.exists(line =>
-      line == s"${playerLabel(p2)} activated Towering Rampart"), chosen)
+      line == s"${playerLabel(p2)} used Towering Rampart"), chosen)
     val bandits = lines(banditPlanApplied)
-    assert(bandits.contains("The bandits activated Towering Rampart"),
+    assert(bandits.contains("The bandits used Towering Rampart"),
       bandits)
 
   test("a total a plan rewrites is told once, after the plan's own line"):
@@ -81,13 +81,13 @@ class GameLogCampaignSuite extends munit.FunSuite:
       "attack"):
     val script = raidUnderCarefulPlans
     val all = lines(script)
-    val from = all.indexOf("Activated Careful Plans")
+    val from = all.indexOf("Used Careful Plans")
     assert(from >= 0, all)
     // Dice.raid rolls a sword on every attack die and a blank on every
     // defense die. The three warbands sacrificed are added to the attack
     // after it is rolled, as in the printed order.
     assertEquals(all.slice(from, from + 7), Vector(
-      "Activated Careful Plans",
+      "Used Careful Plans",
       "Rolled blank, blank for the defense",
       "Defense: 3",
       "Rolled sword, sword, sword for the attack",

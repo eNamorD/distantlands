@@ -342,20 +342,20 @@ class ProcedureNoteLinesSuite extends munit.FunSuite:
       NoteArg.Placements(Vector(1 -> brokenPeaks))),
       "Placed 1 warband on Broken Peaks")
     assertEquals(said(ActionRef.Campaign, CampaignNotes.activatedPlan,
-      NoteArg.Card(birdsong)), "Activated a Denizen")
+      NoteArg.Card(birdsong)), "Used a Denizen")
     assertEquals(said(ActionRef.Campaign,
       CampaignNotes.playerActivatedPlan, NoteArg.Player(PlayerId("p2")),
-      NoteArg.Card(birdsong)), "p2 activated a Denizen")
+      NoteArg.Card(birdsong)), "p2 used a Denizen")
     assertEquals(said(ActionRef.Campaign,
       CampaignNotes.banditsActivatedPlan, NoteArg.Card(birdsong)),
-      "The bandits activated a Denizen")
+      "The bandits used a Denizen")
     assertEquals(said(ActionRef.Campaign,
       CampaignNotes.activatedOathkeeperTitle,
       NoteArg.Player(PlayerId("p2"))),
-      "p2 activated the Oathkeeper title")
+      "p2 used the Oathkeeper title")
     assertEquals(said(ActionRef.Campaign,
       CampaignNotes.activatedUsurperTitle, NoteArg.Player(PlayerId("p2"))),
-      "p2 activated the Usurper title")
+      "p2 used the Usurper title")
 
   test("a Campaign that ended before its battle says why"):
     assertEquals(said(ActionRef.Campaign, CampaignNotes.skipped),

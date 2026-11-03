@@ -41,23 +41,23 @@ object CampaignNotes:
   val pools: NoteKey = notes.key("pools", Vector(
     NotePart.Text("Attack Pool: "), NotePart.Arg(0),
     NotePart.Text(", Defense Pool: "), NotePart.Arg(1)))
-  /** "Activated Careful Plans": the Campaign's own actor. */
+  /** "Used Careful Plans": the Campaign's own actor. */
   val activatedPlan: NoteKey = notes.key("activated-plan", Vector(
-    NotePart.Text("Activated "), NotePart.Arg(0)))
-  /** "{Blue} activated Careful Plans": a defender, or an off-turn user. */
+    NotePart.Text("Used "), NotePart.Arg(0)))
+  /** "{Blue} used Careful Plans": a defender, or an off-turn user. */
   val playerActivatedPlan: NoteKey = notes.key("player-activated-plan",
-    Vector(NotePart.Arg(0), NotePart.Text(" activated "), NotePart.Arg(1)))
+    Vector(NotePart.Arg(0), NotePart.Text(" used "), NotePart.Arg(1)))
   val banditsActivatedPlan: NoteKey = notes.key("bandits-activated-plan",
-    Vector(NotePart.Text("The bandits activated "), NotePart.Arg(0)))
-  /** "{Blue} activated the Oathkeeper title": the title's defense plan,
+    Vector(NotePart.Text("The bandits used "), NotePart.Arg(0)))
+  /** "{Blue} used the Oathkeeper title": the title's defense plan,
     * which no card prints. The rule read the label its offer authored,
     * which a typed argument cannot carry (wording ledger, slice 4). */
   val activatedOathkeeperTitle: NoteKey = notes.key(
     "activated-oathkeeper-title", Vector(NotePart.Arg(0),
-      NotePart.Text(" activated the Oathkeeper title")))
+      NotePart.Text(" used the Oathkeeper title")))
   val activatedUsurperTitle: NoteKey = notes.key("activated-usurper-title",
     Vector(NotePart.Arg(0),
-      NotePart.Text(" activated the Usurper title")))
+      NotePart.Text(" used the Usurper title")))
   /** "Sacrificed 3 warbands for an attack of 6". */
   val sacrificed: NoteKey = notes.key("sacrificed", Vector(
     NotePart.Text("Sacrificed "), NotePart.Arg(0), NotePart.Text(" "),

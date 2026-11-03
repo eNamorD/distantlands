@@ -5,7 +5,7 @@
 8.1 action 1 campaign@4 | Raid against [player:p2|p2]
 12.0 decision 1 campaign@4 | Targets: [player:p2|p2]'s pawn
 13.0 delta 1 campaign@4 | Attack Pool: 4, Defense Pool: 2
-18.0 decision 1 campaign@4 | Activated [card:grand-scepter|The Grand Scepter]
+18.0 decision 1 campaign@4 | Used [card:grand-scepter|The Grand Scepter]
 22.0 roll 1 campaign@4 | Rolled [dice:attack one-sword one-sword one-sword one-sword|sword, sword, sword, sword] for the attack
 24.0 roll 1 campaign@4 | Attack: 4
 28.0 decision 1 campaign@4 | Sacrificed 4 warbands for an attack of 8
