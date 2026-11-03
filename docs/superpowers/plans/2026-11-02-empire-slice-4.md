@@ -51,7 +51,7 @@ Decided with the user on 2026-11-02. Task 8 records them in
 - **R27, stored cards at the remaining sites.** A site filled from the atlas in a later game keeps its stored cards: its edifice on the ruined side, its denizens faceup, its relics facedown. Its empty relic slots, its relic slots less its stored relics and never fewer than 0, are filled from the relic deck. Sites always come from the Recent end; the Chancellor's Recent-or-Forgotten choice stays in the roadmap's "Simultaneous setup effects" item.
 - **R28, the Empire always holds a site.** Shape Empire gives a winner who rules no site the site of their pawn (the Throne's Shape Empire step, `docs/rules/chronicle.md`), so a Chronicle with a Chancellor and an empty `world` is malformed. Game start refuses it: "an Empire needs at least one site".
 - **R29, the Chancellor's Reliquary pick.** The pick is the first Setup step. The Chancellor alone identifies the Reliquary's relics during Setup, and keeps one facedown. An empty Reliquary skips the step. The line reads "p1 took a relic from the Reliquary".
-- **R30, a short purple supply at setup.** Purple warbands are unlimited, as at the Throne (Chronicle ruling 22): when the Imperial boards and sites need more than 24, the purple supply is raised to what they need.
+- **R30, a short purple supply at setup.** Purple warbands are limited to the 24 components, in setup and in play. Setup first gives each Imperial player their 3 board warbands, then places 1 Imperial warband on each Empire site, Cradlemost first, until the supply runs out. An Empire site left without one is set up as an Empire site in every other way: intact edifice, stored relics only, no relic slots filled. Once the Empire is set up, the empty-site check that the walker runs at each action boundary (`StateBasedEvaluation`'s bandit refill) fills every empty site with bandits up to its capacity. A capacity-0 site stays empty. Chronicle rulings 20 and 22 keep their unlimited supply, since the Chronicle phase is not play.
 - **Random Citizen.** When the Chancellor's lineage is not seated, the plan factory picks a random seated Citizen and records them as `firstPlayer`; they become the Chancellor and the absent lineage a Citizen in the box (R6).
 - **Foundation II.** Each bank gets 1 extra favor per denizen of its suit on the map once every site is filled, edifices included, plus the 5-player bonus.
 
@@ -409,9 +409,10 @@ Expected: FAIL, the Empire's sites hold bandits.
 In `FirstGameSetupMaterializer.materialize`, build each site from its `StoredSite` rather than from `homelandEdifices` when `plan.empire` is defined:
 
 ```scala
-private def empireSite(stored: StoredSite): SiteState =
+private def empireSite(stored: StoredSite, purple: Boolean): SiteState =
   val definition = catalog.site(stored.site).get
-  SiteState(SiteForces.Occupied(ForceKind.Imperial, 1),
+  SiteState(if purple then SiteForces.Occupied(ForceKind.Imperial, 1)
+    else SiteForces.Empty,
     denizens(stored, EdificeSide.Intact), storedRelics(stored),
     definition.startingResources)
 
@@ -423,6 +424,8 @@ private def atlasSite(stored: StoredSite, drawn: Vector[RelicId]): SiteState =
     storedRelics(stored) ++ drawn.map(RelicState(_, Orientation.FaceDown,
       Tokens.empty)), definition.startingResources)
 ```
+
+Purple is component-limited (R30). The boards take theirs first, so the sites share `MaterialBankState.ImperialWarbands - 3 * empire.imperial.size`: the first that many Empire sites, Cradlemost first, get `purple = true`, the rest `false`. A short site stays `SiteForces.Empty` here; Task 4 fills it with bandits.
 
 `denizens` maps a stored `EdificeId` to `EdificeState(id, side, Tokens.empty)` and a stored `DenizenId` to `DenizenState(id, Orientation.FaceUp, Tokens.empty)`; `storedRelics` maps each stored `RelicId` to a facedown `RelicState`. `assignRelics` deals each atlas site `max(0, relicSlots - stored relics)` from `relicOrder`, in Hinterward order, and Empire sites none. The first-game path stays as it is.
 
@@ -454,6 +457,7 @@ git commit -m "feat(setup): a later game restores the Empire's sites"
 - Create: `src/main/scala/oathdigital/gameplay/setup/LaterGameSetup.scala`
 - Modify: `src/main/scala/oathdigital/gameplay/setup/GameStartRules.scala`
 - Modify: `src/main/scala/oathdigital/gameplay/setup/FirstGameSetupMaterializer.scala` (`handFor`, discards)
+- Modify: `src/main/scala/oathdigital/gameplay/StateBasedEvaluation.scala` (extract `emptySites`)
 - Test: `src/test/scala/oathdigital/gameplay/setup/LaterGameSetupSuite.scala`
 
 **Interfaces:**
@@ -481,10 +485,30 @@ test("every player starts with 1 favor, 1 secret, 3 board warbands and " +
   assertEquals(PlayerFacts.banked(ready, ForceKind.Imperial),
     MaterialBankState.ImperialWarbands - 3 * 2 - record.world.size)
 
-test("a Chancellor with too few purple warbands for the table raises the " +
-    "supply (R30)"):
-  // Six Imperial players and 8 Empire sites need 26.
-  assertEquals(ready.banks.warbandSupply(ForceKind.Imperial), 26)
+test("with too few purple warbands, the Hintermost Empire sites take " +
+    "bandits up to their capacity (R30)"):
+  // Six Imperial players and 8 Empire sites: the boards take 18, so only
+  // the 6 Cradlemost Empire sites get a purple warband.
+  val ready = laterGame(citizens = Vector(l2, l3, l4, l5, l6),
+    world = eightEmpireSites)
+  val map = ready.game.current.map
+  val (purple, short) = eightEmpireSites.map(_.site).splitAt(6)
+  purple.foreach(site => assertEquals(map.sites(site).forces,
+    SiteForces.Occupied(ForceKind.Imperial, 1)))
+  short.foreach(site => assertEquals(map.sites(site).forces,
+    SiteForces.Occupied(ForceKind.Bandit, capacityOf(site))))
+  assertEquals(ready.banks.warbandSupply(ForceKind.Imperial),
+    MaterialBankState.ImperialWarbands)
+  assertEquals(PlayerFacts.banked(ready, ForceKind.Imperial), 0)
+
+test("a short Empire site is otherwise set up as an Empire site (R30)"):
+  // Same table; check one of the 2 Hintermost sites.
+  val site = ready.game.current.map.sites(eightEmpireSites.last.site)
+  assert(site.denizens.forall {
+    case EdificeState(_, side, _) => side == EdificeSide.Intact
+    case state: DenizenState => state.orientation == Orientation.FaceUp
+  })
+  assertEquals(site.relics.map(_.id), storedRelicsOf(eightEmpireSites.last))
 
 test("an absent Chancellor's seated Citizen becomes the Chancellor and the " +
     "absent lineage a Citizen in the box (R6)"):
@@ -512,6 +536,8 @@ test("the game validates and its card index holds each card once"):
   assert(ready.game.cardIndex.isRight)
 ```
 
+The R30 tests need `LaterGameFixture` to take `citizens` as a `Vector` and the Empire's stored sites as `world`. Define `eightEmpireSites` as 8 concrete `StoredSite`s with capacity above 0, and `capacityOf` and `storedRelicsOf` as one-line lookups in the suite. The existing `StateBasedEvaluation` tests prove `banditRefill` unchanged after the extraction.
+
 Check the banner field names (`banners.peoplesFavor`) and the `oathkeeper` field name in `CurrentGameState` before writing; use what the model has.
 
 - [ ] **Step 2: Run the tests to verify they fail**
@@ -526,7 +552,8 @@ Expected: FAIL, no Grand Scepter on the Chancellor.
 `LaterGameSetup.apply` for `plan.empire = Some(empire)`:
 - **Roles.** Each seated lineage's `LineageState` keeps its record. The Chancellor's lineage gets `Role.Chancellor`. `absentChancellor` goes into `campaign.boxRoles` as `Role.Citizen`.
 - **Advisers.** Each player's `advisers` become their lineage's `startingAdvisers`, facedown; the lineage's `startingAdvisers` become empty, so the card index holds each card once.
-- **Purple supply.** `banks.warbandSupply(ForceKind.Imperial)` is `max(MaterialBankState.ImperialWarbands, 3 * empire.imperial.size + empire.sites.size)` (R30).
+- **Purple supply.** `banks.warbandSupply(ForceKind.Imperial)` stays `MaterialBankState.ImperialWarbands` (R30). Task 3 already placed only what the supply allows on the sites.
+- **Bandits on short sites.** After the steps above, fill every empty site through the same check the walker runs. Extract the site list from `StateBasedEvaluation.banditRefill` into `StateBasedEvaluation.emptySites(catalog, ready): Vector[(SiteId, Int)]` (the in-play sites with `SiteForces.Empty` and capacity above 0, each with its capacity). `banditRefill` keeps its behaviour by calling it. `LaterGameSetup` sets each listed site's forces to `SiteForces.Occupied(ForceKind.Bandit, count)` directly, as `evolve` builds the whole game; no `BanditsRefilled` event is journaled.
 - **Grand Scepter.** Append `RelicState(TheGrandScepterCard.id, Orientation.FaceUp, Tokens.empty)` to the Chancellor's relics, as `ChronicleStateOperations.scepterFromBox` does. The state is built directly here, as `evolve` builds the whole game.
 - **Title.** `OathkeeperState(Some(chancellor), TitleSide.Oathkeeper)`. The legacy exceptions come with Legacies.
 - **Banners.** People's Favor holder is the Chancellor when the goal is `ThePeople`; Darkest Secret holder when it is `Devotion`.
