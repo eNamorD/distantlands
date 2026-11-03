@@ -255,8 +255,8 @@ Relic Hunter (126) is implemented in
 `gameplay/powers/campaign/RelicHunter.scala`, under the owner's rulings of
 2026-11-03 (Conquest only; facedown relics at the targeted sites, a defense
 die each; taken on victory; any may go to the bottom of the relic deck).
-What the card and the rulings left open was decided as follows, for the
-owner to confirm:
+What the card and the rulings left open was decided as follows; the owner
+confirmed every reading on 2026-11-03:
 
 - **When the relics are chosen.** As the Glamor ruling has it: the plan is
   used in the attacker's plan window like any plan, and its user then
@@ -292,7 +292,7 @@ Glamor (207) is implemented in `gameplay/powers/campaign/Glamor.scala`,
 under the owner's ruling of 2026-11-03 (chosen in the battle plan step
 like any plan; its user then chooses how many secrets to target, and those
 join the Campaign's targets). What the card and the ruling left open was
-decided as follows, for the owner to confirm:
+decided as follows; the owner confirmed every reading on 2026-11-03:
 
 - **Who and where.** An attacker's plan, in a Raid or a Conquest against a
   player defender. Bandits have no board, so it is never offered against
