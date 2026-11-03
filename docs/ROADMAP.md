@@ -248,14 +248,6 @@ one.
   target is empty, or a bank with no stock. The game should warn the player
   before they commit, without refusing the choice. Recorded while designing
   Catalog batch 2.
-- [ ] **Improve the Game Log lines the wording ledger collects.** The
-  procedures-journal-their-notes migration, done 2026-10-17, kept wording
-  fixed inside its commits, so a golden diff meant one thing. The lines it
-  passed over are listed in the
-  [wording ledger](superpowers/specs/2026-10-16-game-log-wording-ledger.md), each
-  with where it is built and why it is worth a second look. Recorded in the
-  [procedures journal their own notes design](superpowers/specs/2026-10-16-procedures-journal-their-notes-design.md).
-  Audited in the [wording audit](testing/audits/game-log-wording-audit.md).
 - [ ] **A card play's line before the lines its own batch causes.**
   `WalkerSteps.recordBatch` runs `AdviserArrivalPass.after` and an executed
   trigger's follow-up inside the play's own leaf, so a power whose effect
