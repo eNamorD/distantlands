@@ -1,11 +1,12 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.holding.{RelicHunterCard, SearchPartyCard}
+import oathdigital.catalog.holding.SearchPartyCard
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.WalkerDiceFixture.skullThenSwords
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
+import oathdigital.gameplay.powers.whenplayed.RoyalTaxCard
 import oathdigital.model._
 import oathdigital.testkit.Look
 
@@ -32,7 +33,8 @@ class KindredWarriorsSuite extends munit.FunSuite:
 
   test("an attacker ruling a Nomad and an Order card adds two dice, places " +
       "a secret and ignores every skull"):
-    val b = attacker(planless(SearchPartyCard, RelicHunterCard))
+    // Royal Tax is implemented, but its power offers no battle plan.
+    val b = attacker(planless(SearchPartyCard) :+ RoyalTaxCard.id)
     val run = commit(rules(skullThenSwords), b, 2)
     val picked = run.pick(b.actor, CampaignIds.attackerPlan, ref)
     assertEquals(attackDice(picked.since(run)), Vector(2))

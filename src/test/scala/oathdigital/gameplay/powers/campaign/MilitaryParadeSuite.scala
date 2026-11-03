@@ -1,9 +1,9 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.holding.{BrackenCard, CouncilSeatCard, GlamorCard,
-  RelicHunterCard}
+import oathdigital.catalog.holding.{BrackenCard, CouncilSeatCard, GlamorCard}
 import oathdigital.gameplay.MarriageCard
 import oathdigital.gameplay.CampaignFixture._
+import oathdigital.gameplay.powers.whenplayed.RoyalTaxCard
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
@@ -19,7 +19,8 @@ class MilitaryParadeSuite extends munit.FunSuite:
   private val honors = BattleHonorsCard.id
   private val honorsRef: DecisionOptionRef =
     DecisionOptionRef.Denizen(honors)
-  private val orders = planless(CouncilSeatCard, RelicHunterCard)
+  // Royal Tax is implemented, but its power offers no battle plan.
+  private val orders = planless(CouncilSeatCard) :+ RoyalTaxCard.id
   private val beast = planlessCard(BrackenCard)
   private val arcane = planlessCard(GlamorCard)
   /** Implemented, but its power offers no battle plan. */

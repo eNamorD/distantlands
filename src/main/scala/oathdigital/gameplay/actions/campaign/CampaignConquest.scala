@@ -5,18 +5,21 @@ import oathdigital.model._
 /** Step 9 for a Conquest victory: place surviving warbands on the conquered
   * targets. Unplaced survivors simply stay on the board. Survivors that
   * joined from a queued origin already stand there, so only the board's
-  * are placed.
+  * are placed. The placement window stands on every Conquest victory, even
+  * with no survivor to place, so a plan that acts on the victory (Relic
+  * Hunter's takes) always has its place.
   */
 private[campaign] object CampaignConquest:
   def steps(actor: PlayerId, result: CampaignResult): Vector[Operation] =
     val survivors = result.force - result.skullLosses - result.sacrificed -
       result.originForce.fold(0)(_.atSite)
-    if survivors <= 0 then Vector.empty
-    else Vector(Sequence(Vector[Operation](
-      Decide(CampaignIds.placement, actor, query(result, survivors)),
-      BuildOps((ready, pending) => placements(ready, actor, result, pending)),
-      CampaignNotes.leaf(CampaignNotes.placementNote)),
-      Some(PowerWindow.CampaignPlacement)))
+    val placement: Vector[Operation] =
+      if survivors <= 0 then Vector.empty
+      else Vector[Operation](
+        Decide(CampaignIds.placement, actor, query(result, survivors)),
+        BuildOps((ready, pending) => placements(ready, actor, result, pending)),
+        CampaignNotes.leaf(CampaignNotes.placementNote))
+    Vector(Sequence(placement, Some(PowerWindow.CampaignPlacement)))
 
   private def query(result: CampaignResult, survivors: Int): DecisionQuery =
     result.targetSites match

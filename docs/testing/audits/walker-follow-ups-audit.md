@@ -248,6 +248,43 @@ Two rules of the step itself deserve a check rather than a card:
 The bandit family is complete as far as the rules go: bandits use
 cost-free plans they rule (`CampaignPlanChoice.banditPlans`), and the one
 deterministic bandit plan the design named (Watchdog) is in `BattlePlans`.
+
+### Relic Hunter: rulings made while implementing
+
+Relic Hunter (126) is implemented in
+`gameplay/powers/campaign/RelicHunter.scala`, under the owner's rulings of
+2026-11-03 (Conquest only; facedown relics at the targeted sites, a defense
+die each; taken on victory; any may go to the bottom of the relic deck).
+What the card and the rulings left open was decided as follows, for the
+owner to confirm:
+
+- **When the relics are chosen.** As the Glamor ruling has it: the plan is
+  used in the attacker's plan window like any plan, and its user then
+  chooses which relics to target. The question is the plan's amount
+  (`PlanAmount`), a `ChooseMany` of `SiteRelicSlot`s, so no option
+  discloses a facedown relic. Zero is a legal answer, and adds nothing.
+- **Which relics.** Every facedown relic at a site the Conquest targets,
+  the origin included (FAQ: a relic is targeted only with its site). A
+  relic a restriction would not let the attacker take (Ancient Bloodline)
+  is shown unavailable with its reason. With no relic to target the plan
+  is shown unavailable: "No facedown relic at the targeted sites".
+- **Where the take happens.** In the Conquest's placement window, after
+  the survivors are placed. The window now stands on every Conquest
+  victory, even with no survivor (`CampaignConquest`), so the take always
+  has its place. It comes before every "At End" plan, so Salt the Earth
+  buries the site after the relics are gone.
+- **How the bottom choice is made.** The attacker peeks at the targeted
+  relics, then answers one `ChooseMany` for those to put on the bottom of
+  the relic deck, then every targeted relic is taken, facedown as it lay,
+  and the chosen ones are moved to the bottom. "Any relics you take" means
+  the relics this plan took; nothing else is taken in a Conquest.
+- **An untaken relic.** A defeated attacker takes nothing, and the targeted
+  relics stay at their sites.
+- **Lines.** "Targeted 2 facedown relics for 2 defense dice." when the
+  relics are chosen; "Took {relics}." and "Put {relics} on the bottom of
+  the relic deck." when they are taken. The peeks keep their generic
+  "Peeked at" lines. The other seats see the relics' backs (golden
+  `relic-hunter`).
 The roadmap's separate item "Record a bandit's applied battle plan as an
 event" covers how that use is journaled.
 
@@ -287,12 +324,12 @@ is bound to each (`grep -l PowerWindow.<name>` under `gameplay/powers`):
 | `CampaignAfterOutcome` | `VictoriousNow` (Peace Envoy, Hearts and Minds) | none |
 | `CampaignLosses` | Billowing Fog, Traveling Doctor (`SparedForce`), Sticky Fire, Shield Wall (`KillWholeForce`), Hospital, Cursed Cauldron, Peace Envoy | Obsidian Cage |
 | `CampaignSkullLosses`, `CampaignSacrificeLosses` | Hospital, Cursed Cauldron | none |
-| `CampaignPlacement` | Vow of Wandering | Relic Hunter's relic take (if modelled as part of the Conquest resolution) |
+| `CampaignPlacement` | Vow of Wandering, Relic Hunter (its take) | none |
 | `CampaignRaidTransfer` | the `BattlePlan` trait (no card) | Glamor's secrets |
 | `CampaignRaidConsequences` | Keep | none |
 | `CampaignRaidRelocation` | Keep | Spiral Castle |
 | `CampaignActionEligibility` (the root, "At End") | Battle Honors, Book Burning, Careful Plans, `DiscardedAtEnd` (Pledge of Defense, Rain Boots, Rival Khan, Great Crusade, Mounted Patrol, Lancers, Horse Archers, Storm Caller, Warning Signals), Field Promotion, Herald, Hospital, Mercenaries, Military Parade, Salt the Earth, Second Wind, Sneak Attack, Tribute Spoils, Vow of Peace, Wild Mounts, Diplomat, the fortress rules | Spiral Dungeons (attacker's pawn and Supply), Martial Culture, Grand Scepter |
-| `CampaignTargetSelection` | Circlet of Command, Forgotten Vault, Lost Tongue, the Pass | Hall of Debate and Tome Guardians (`HoldingEdifices.scala:8-16, 190-198`: the ruler's enemies cannot target the banner they hold), Glamor and Relic Hunter's new target kinds |
+| `CampaignTargetSelection` | Circlet of Command, Forgotten Vault, Lost Tongue, the Pass | Hall of Debate and Tome Guardians (`HoldingEdifices.scala:8-16, 190-198`: the ruler's enemies cannot target the banner they hold), Glamor's new target kind (Relic Hunter asks its relics as the plan's own question) |
 
 The Raid step order (takes, then consequences in their own window, then
 relocation; `CampaignRaid.scala:11-30`) matches the rules' four Raid

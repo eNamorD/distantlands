@@ -264,17 +264,13 @@ one.
   builders that still lack them, as playtests find options people wonder
   about. Left by the
   [board decisions design](superpowers/specs/2026-10-03-board-decisions-design.md).
-- [ ] **The last battle plans: Glamor, Relic Hunter, Obsidian Cage.** Every
+- [ ] **The last battle plans: Glamor, Obsidian Cage.** Every
   other New Foundations battle plan is implemented. Each is one slice, with
   the owner's rulings of 2026-11-03:
   - **Glamor:** used in the battle plan step like any plan; its user then
     chooses how many of the enemy's board secrets to target, all but the
     last, and those join the Campaign's targets, adding a defense die
     each. If victorious, the user takes them.
-  - **Relic Hunter:** Conquest only, since only a Conquest has targeted
-    sites. Facedown relics at the targeted sites may be targeted, a
-    defense die each, and relics taken may go to the bottom of the relic
-    deck.
   - **Obsidian Cage:** a victorious user moves the enemy's unkilled
     warbands onto the Cage, which needs a warband location on a card.
     Bandit warbands are always killed, so none reach the Cage.
