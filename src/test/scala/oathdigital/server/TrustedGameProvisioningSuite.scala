@@ -220,7 +220,8 @@ class TrustedGameProvisioningSuite extends munit.FunSuite:
       assertEquals(service.create(
         request.copy(chronicle = ChronicleRequest.Saved(evolved.json)),
         "http://127.0.0.1:8080"),
-        Left(TrustedGameFailure.Refused("a non-empty world requires the Empire")))
+        Left(TrustedGameFailure.Refused(
+          "an Empire-less later game requires Wide Horizons")))
       service.create(request.copy(chronicle = ChronicleRequest.Saved("{")),
         "http://127.0.0.1:8080") match
         case Left(TrustedGameFailure.Refused(reason)) =>

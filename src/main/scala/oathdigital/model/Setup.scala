@@ -58,8 +58,24 @@ final case class FirstGameSetupPlan(
     worldDeckOrder: Vector[WorldCardId],
     relicOrder: Vector[RelicId],
     homelandEdifices: Vector[(SiteId, EdificeId)],
-    oathkeeperGoal: OathkeeperGoal
+    oathkeeperGoal: OathkeeperGoal,
+    /** The Empire a later game starts with; a first game has none. */
+    empire: Option[EmpireSetup] = None,
+    /** The atlas sites that fill the slots the Empire leaves, with their
+      * stored cards, Recent end first. Empty for a first game, whose sites
+      * are all in `orderedSites`. */
+    atlasSites: Vector[StoredSite] = Vector.empty,
+    /** Each seated player's stored starting advisers (CR p. 11). */
+    startingAdvisers: Map[PlayerId, Vector[AdviserState]] = Map.empty
 )
+
+/** The Empire a later game starts with (CR pp. 8-9): its Chancellor, every
+  * seated Imperial player, and the Empire's stored sites Cradlemost first.
+  * `absentChancellor` is the Chancellor's lineage when it sits out; it
+  * becomes a Citizen in the box (Empire ruling R6). */
+final case class EmpireSetup(chancellor: PlayerId,
+    imperial: Set[PlayerId], sites: Vector[StoredSite],
+    absentChancellor: Option[LineageId])
 
 /** Pure CR pp. 6-7 table setup, shared by `GameStartRules`. */
 final case class FirstGameSetupMaterial(
