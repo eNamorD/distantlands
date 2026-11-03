@@ -17,7 +17,7 @@ reference/
 !docs/catalog/reference/
 
 .worktrees/
-node_modules/
+node_modules
 
 .superpowers/
 
