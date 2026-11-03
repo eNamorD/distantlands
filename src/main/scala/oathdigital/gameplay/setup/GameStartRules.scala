@@ -43,8 +43,14 @@ object GameStartRules:
       ).toMap
       foundations = FoundationNumber.all.map(number =>
         number -> FoundationState(FoundationFace.Normal, Set.empty)).toMap
-      atlas = AtlasState(chronicle.atlasBox.drop(8 - chronicle.world.size).map(stored =>
-        AtlasEntry.StoredSite(stored.site, Vector.empty, Vector.empty,
+      // The atlas past the sites in play keeps every stored card, the
+      // inverse of `ChronicleExtraction.extract`'s `carried`.
+      atlas = AtlasState(chronicle.atlasBox.drop(8 - chronicle.world.size)
+        .map(stored => AtlasEntry.StoredSite(stored.site,
+          stored.items.collect { case id: DenizenId =>
+            DenizenState(id, Orientation.FaceUp, Tokens.empty) },
+          stored.items.collect { case id: RelicId =>
+            RelicState(id, Orientation.FaceDown, Tokens.empty) },
           stored.items.collectFirst { case id: EdificeId => id })))
       game = OathGame(
         CampaignState(atlas, foundations, lineages, chronicle.reliquary,
