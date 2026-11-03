@@ -42,6 +42,9 @@ object ParkedNode:
     * SET while the park cannot be explained, and is a `Left` with the
     * reason: silently returning `None` there would let a broken rebuild
     * masquerade as "not parked".
+    *
+    * At a `Simultaneous` park it reports the first open decision in seat
+    * order, so a driver answers the children in seat order.
     */
   def of(state: OathState, catalog: ExecutableCatalog,
       walkerPowers: WalkerPowers = WalkerPowers.empty,
@@ -68,8 +71,11 @@ object ParkedNode:
               powers = WalkerPowers.selected(walkerPowers, Vector.empty)
               awaiting = ProcedureWalker.awaitedInSeatOrder(ready, tree, pending,
                 powers).headOption
-              node <- ProcedureWalker.parkedDecide(ready, tree, pending,
-                  powers) match
+              seats = current.players.map(_.player)
+              first = ProcedureWalker.openDecisions(ready, tree, pending,
+                  powers).sortBy(decide => seats.indexOf(decide.owner))
+                .headOption
+              node <- first match
                 case Some(decide) =>
                   Right(Decision(procedure, decide, decide.owner))
                 case None => ProcedureWalker.parkedRoll(ready, tree, pending,

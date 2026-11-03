@@ -85,8 +85,8 @@ private[application] final class ConsentProjector(
     val ref = request.target
     val option = ref match
       case button: DecisionOptionRef.Button => decisions
-        .parkedDecide(context.ready)
-        .filter(_.decisionId == request.decisionId).toVector
+        .openDecisions(context.ready)
+        .filter(_.decisionId == request.decisionId)
         .flatMap(offered).find(_.ref == button)
       case _ => DecisionOption.forRef(ref)
     option.flatMap(decisions.optionProjection(context.ready, context.viewer,

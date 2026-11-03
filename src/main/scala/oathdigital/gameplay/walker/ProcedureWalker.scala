@@ -158,29 +158,30 @@ object ProcedureWalker:
       : Vector[OathViolation] = WalkerPowerGather.restrictionViolations(tree,
     powers, state, actor, answered, procedure)
 
-  /** See [[ParkedQueries.parkedRoll]]. */
+  // The park queries: each forwards to its namesake in [[ParkedQueries]].
   def parkedRoll(state: ReadyGame, action: Operation, pending: PendingTree,
       powers: WalkerPowers): Option[(PoolKey, Int)] =
     ParkedQueries.parkedRoll(state, action, pending, powers)
 
-  /** See [[ParkedQueries.openDecisions]]. */
   def openDecisions(state: ReadyGame, action: Operation,
       pending: PendingTree, powers: WalkerPowers,
       probing: Boolean = true): Vector[Decide] =
     ParkedQueries.openDecisions(state, action, pending, powers, probing)
 
-  /** See [[ParkedQueries.parkedDecide]]. */
   def parkedDecide(state: ReadyGame, action: Operation,
       pending: PendingTree, powers: WalkerPowers,
       probing: Boolean = true): Option[Decide] =
     ParkedQueries.parkedDecide(state, action, pending, powers, probing)
 
-  /** See [[ParkedQueries.awaitedPlayers]]. */
+  def openDecision(state: ReadyGame, action: Operation, pending: PendingTree,
+      powers: WalkerPowers, decisionId: String,
+      probing: Boolean = true): Option[Decide] = ParkedQueries.openDecision(
+    state, action, pending, powers, decisionId, probing)
+
   def awaitedPlayers(state: ReadyGame, action: Operation,
       pending: PendingTree, powers: WalkerPowers): Set[PlayerId] =
     ParkedQueries.awaitedPlayers(state, action, pending, powers)
 
-  /** See [[ParkedQueries.awaitedInSeatOrder]]. */
   def awaitedInSeatOrder(state: ReadyGame, action: Operation,
       pending: PendingTree, powers: WalkerPowers): Vector[PlayerId] =
     ParkedQueries.awaitedInSeatOrder(state, action, pending, powers)

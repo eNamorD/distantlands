@@ -61,6 +61,13 @@ private[walker] object ParkedQueries:
       case Vector(one) => Some(one)
       case _ => None
 
+  /** The open decision `decisionId` names, at any park. */
+  def openDecision(state: ReadyGame, action: Operation, pending: PendingTree,
+      powers: WalkerPowers, decisionId: String,
+      probing: Boolean = true): Option[Decide] =
+    openDecisions(state, action, pending, powers, probing)
+      .find(_.decisionId == decisionId)
+
   /** Everyone who may answer the parked position: the owners and co-owners of
     * its open decisions, or the walk's actor for a parked `Roll`. Skips the
     * restriction look-ahead: an owner set never depends on which options are

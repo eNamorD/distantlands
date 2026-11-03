@@ -76,23 +76,22 @@ private[application] final class WalkerDecisionProjector(
         powers)
     yield Parked(procedure, tree, pending, powers, awaited, owners)
 
-  /** The `Decide` the walker is parked on in `ready`, after every power's
-    * transform: the declared query, for the game log to read a button's
-    * label off of. Skips the restriction look-ahead: `ChoiceWords` reads
+  /** Every `Decide` open at the walker's park in `ready`, after every
+    * power's transform: the declared queries, for the game log and consent
+    * prompts to read a button's label off of. Skips the restriction look-ahead: `ChoiceWords` reads
     * this only for an answer already recorded, and a legally recorded answer
     * was never among the options the look-ahead would have hidden.
     */
-  def parkedDecide(ready: ReadyGame): Option[Decide] =
+  def openDecisions(ready: ReadyGame): Vector[Decide] =
     val current = ready.game.current
-    for
+    (for
       pending <- current.walkerPending
       procedure <- current.walkerProcedure
       tree <- rebuild(ready, procedure, current.walkActor,
         current.walkerStartArgs).toOption
-      decide <- ProcedureWalker.parkedDecide(ready, tree, pending,
-        WalkerPowers.selected(walkerPowerCatalog, Vector.empty),
-        probing = false)
-    yield decide
+    yield ProcedureWalker.openDecisions(ready, tree, pending,
+      WalkerPowers.selected(walkerPowerCatalog, Vector.empty),
+      probing = false)).getOrElse(Vector.empty)
 
   /** The full owner-private projection, for every owner of the parked
     * decision: the awaited player and any co-owners.

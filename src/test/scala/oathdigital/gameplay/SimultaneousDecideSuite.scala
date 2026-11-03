@@ -146,3 +146,10 @@ class SimultaneousDecideSuite extends munit.FunSuite:
     malformed.foreach((label, operation) => assert(
       ProcedureWalker.advance(ready, operation, None, noPowers).isLeft,
       label))
+
+  test("openDecision finds a child by its decision id"):
+    val (pending, _) = fresh(both)
+    assertEquals(ProcedureWalker.openDecision(ready, both, pending, noPowers,
+      blueAsk.decisionId), Some(blueAsk))
+    assertEquals(ProcedureWalker.openDecision(ready, both, pending, noPowers,
+      "sim.after"), None)
