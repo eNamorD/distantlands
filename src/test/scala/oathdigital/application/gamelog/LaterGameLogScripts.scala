@@ -20,6 +20,9 @@ object LaterGameLogScripts:
     val service = new GameApplicationService(catalog, repository,
       campaignDicePort = Dice.steady)
     val situation = Situation.wake(Situation.journaled(service, catalog,
-      repository, "later-game"), chronicle,
+      repository, "later-game-setup"), chronicle,
       LaterGameFixture.orders(chronicle, p1))
-    Script("later-game", service, Look(situation.ready).active)
+    Script("later-game-setup", service, Look(situation.ready).active)
+
+  val named: Vector[(String, () => Script)] = Vector(
+    "later-game-setup" -> (() => laterGameWoken))

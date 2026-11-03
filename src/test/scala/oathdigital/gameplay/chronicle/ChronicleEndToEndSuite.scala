@@ -1,11 +1,11 @@
 package oathdigital.gameplay.chronicle
 
 import oathdigital.gameplay.setup.{ChronicleAccounting, FirstGameSetupFixture,
-  GameStartRules}
+  GameStartRules, LaterGameFixture}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerCompleted
 import oathdigital.model._
-import oathdigital.testkit.Outcomes
+import oathdigital.testkit.{Outcomes, Situation}
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
 
@@ -52,6 +52,23 @@ class ChronicleEndToEndSuite extends munit.FunSuite:
     assertEquals(accepted(events.foldLeft[Either[OathViolation, OathState]](
       Right(usurperWakes))((state, event) => state.flatMap(
         rules.evolve(_, event)))), done.state)
+
+  test("game 2 starts from the Chronicle game 1 journals, with the Empire, " +
+      "and Setup runs to the Chancellor's Wake"):
+    // p1 was crowned, and plays l1 again.
+    val orders = LaterGameFixture.orders(record, p1)
+    val ready = accepted(GameStartRules.evolve(catalog, record, orders))
+    assertEquals(Imperials.chancellor(ready), Some(p1))
+    assertEquals(ready.game.current.map.hinterward.take(record.world.size),
+      record.world.map(_.site))
+    // Every choice takes the first option offered: the Reliquary pick if
+    // the record has one, a legal pawn site, an adviser, no reveal.
+    val woken = Situation.wake(Situation.rules(catalog), record, orders)
+    assertEquals(woken.ready.game.current.turn.activePlayer, p1)
+    assertNotEquals(woken.ready.game.current.turn.phase, Phase.Setup)
+    assert(woken.ready.game.current.players.forall(_.pawnSite.nonEmpty))
+    assertEquals(woken.ready.game.campaign.reliquary.size,
+      math.max(0, record.reliquary.size - 1))
 
   test("game start refuses a crowned Chancellor whose Empire has no site"):
     val withoutEmpire = record.copy(atlasBox = record.world ++ record.atlasBox,
