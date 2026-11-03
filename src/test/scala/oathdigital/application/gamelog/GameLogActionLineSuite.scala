@@ -81,8 +81,9 @@ class GameLogActionLineSuite extends munit.FunSuite:
     val script = trade
     val mine = lines(script, None)
     assert(mine.exists(_.startsWith("Trade −")), mine)
-    assert(mine.exists(line => "^Traded with .+ for (no|\\d+) secrets?$".r
-      .matches(line)), mine)
+    assert(mine.exists(line =>
+      "^Traded with .+ (for \\d+ secrets?|and gained no secrets)$".r
+        .matches(line)), mine)
 
   test("Take Wealth: one line naming the site, and no tag"):
     val script = takeWealth

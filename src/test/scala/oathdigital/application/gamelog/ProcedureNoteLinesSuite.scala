@@ -229,7 +229,7 @@ class ProcedureNoteLinesSuite extends munit.FunSuite:
   // the wording ledger).
   test("a Trade for favor that gained none says no favor"):
     assertEquals(said(ActionRef.Trade, TradeProcedure.tradedForNoFavor,
-      NoteArg.Card(roar)), "Traded with a Denizen for no favor")
+      NoteArg.Card(roar)), "Traded with a Denizen and gained no favor")
 
   test("both Recover lines post at Action"):
     assertEquals(kindOf(ActionRef.Recover, RecoverProcedure.recovered),
