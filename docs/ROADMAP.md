@@ -257,18 +257,6 @@ one.
   `CoreOperation`. See the wording ledger, "A card play's line now follows
   the lines its own batch caused". Recorded in the procedures journal their
   own notes design of 2026-10-16.
-- [ ] **Check that a split delta's steps bracket their operation.**
-  `DetailLines.deltas` wraps each split part in
-  `OpStep(part, step.before, step.after)`, so every part carries the whole
-  step's before and after states rather than its own. A line that reads
-  visibility from those states may show or hide the wrong thing. Write a test
-  that splits a step with a hidden part before changing anything. Two
-  smaller leftovers sit beside it: `GameLogFormatter.format` re-applies the
-  whole journal once per standing undo marker on every request for every
-  seat, and `formatAppended` takes `stateBefore` and `lastStateAfter`
-  without checking them. Recorded as separate candidates in the
-  [log operation strictness decision](superpowers/specs/2026-10-19-log-operation-strictness-decision.md).
-  Audited in the [split delta audit](testing/audits/split-delta-bracketing-audit.md).
 
 ### Powers-related deferred items
 
