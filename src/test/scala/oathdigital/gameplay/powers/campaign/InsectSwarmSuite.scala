@@ -154,7 +154,7 @@ class InsectSwarmSuite extends munit.FunSuite:
 
   // ---- Lines ----
 
-  private val power = InsectSwarm.forCatalog(catalog)
+  private val power = InsectSwarm
   test("a taxed plan writes the Swarm's line, naming the plan's user"):
     val b = attackerHolds(1)
     val run = commit(rules(losingDice), b, 4)

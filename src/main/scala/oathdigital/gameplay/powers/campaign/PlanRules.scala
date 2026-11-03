@@ -1,6 +1,5 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.powerresolver.ContributingPower
 
 /** The battle plans that reach beyond the plan window, the rules that tax them,
@@ -30,15 +29,15 @@ import oathdigital.gameplay.powerresolver.ContributingPower
   * replaced). Each names its card, so all are always present.
   */
 object PlanRules:
-  def forCatalog(catalog: ExecutableCatalog): Vector[ContributingPower] =
-    Vector(StickyFire, WarningSignals, GleamingArmor.forCatalog(catalog), InsectSwarm.forCatalog(catalog),
-      HorseArchers, StormCaller, RivalKhan.forCatalog(catalog),
-      GreatCrusade.forCatalog(catalog), PledgeOfDefense.forCatalog(catalog),
+  val all: Vector[ContributingPower] =
+    Vector(StickyFire, WarningSignals, GleamingArmor, InsectSwarm,
+      HorseArchers, StormCaller, RivalKhan,
+      GreatCrusade, PledgeOfDefense,
       BagOfSiegeworks, RainBoots, GreatLevy, GarrisonArmory, Hospital,
       BookBurning, RustingRay, FaeBattalion, WarTortoise, Lancers,
-      WeepingBanner, FearsomeGeneral, KindredWarriors.forCatalog(catalog),
+      WeepingBanner, FearsomeGeneral, KindredWarriors,
       Rangers, MasterAtArms, UnstableSummon, ArcaneArmor,
       MountainGiant, MountedPatrol, ShieldWall,
       BillowingFog, TravelingDoctor, CursedCauldron,
-      SaltTheEarth.forCatalog(catalog), SealingWard, Herald, SneakAttack,
+      SaltTheEarth, SealingWard, Herald, SneakAttack,
       VowOfUnion, KeepRule)

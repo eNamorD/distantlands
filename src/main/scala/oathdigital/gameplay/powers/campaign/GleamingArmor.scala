@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
-  PrintedPower}
+import oathdigital.catalog.{AdviserOnly, Denizen, PrintedPower}
 import oathdigital.model._
 
 object GleamingArmorCard extends Denizen(DenizenId("66"), "Gleaming Armor", Suit.Arcane) with AdviserOnly:
@@ -20,12 +19,19 @@ object GleamingArmorCard extends Denizen(DenizenId("66"), "Gleaming Armor", Suit
   *
   * Each taxed plan writes "{Red}'s battle plans cost 1 extra secret."
   */
-final case class GleamingArmor private (catalog: ExecutableCatalog)
-    extends PlanSurcharge:
+case object GleamingArmor extends PlanSurcharge:
+  val id: PowerId = GleamingArmorCard.power.id
+  /** The added cost, in secrets. */
+  val Secret: Int = 1
+  /** "{Red}'s battle plans cost {1} extra secret." */
+  val notes: NoteSet = NoteSet(id)
+  val taxed: NoteKey = notes.key("taxed", Vector(NotePart.Arg(0),
+    NotePart.Text("'s battle plans cost "), NotePart.Arg(1),
+    NotePart.Plural(1, " extra secret.", " extra secrets.")))
+
   val cardId: DenizenId = GleamingArmorCard.id
-  def id: PowerId = GleamingArmor.id
+  protected def power: PrintedPower = GleamingArmorCard.power
   protected def cost: Cost = Cost(secret = GleamingArmor.Secret)
-  protected def taxed: NoteKey = GleamingArmor.taxed
   protected def surchargeNotes: NoteSet = GleamingArmor.notes
   protected def amount: Int = GleamingArmor.Secret
   protected def unpayable: OathViolation =
@@ -41,16 +47,3 @@ final case class GleamingArmor private (catalog: ExecutableCatalog)
       FlipSecrets(user, GleamingArmor.Secret, SecretSide.FaceUp,
         SecretSide.FaceDown)))
     else Left(OathViolation.InsufficientSecrets(GleamingArmor.Secret, faceUp))
-
-object GleamingArmor:
-  val id: PowerId = GleamingArmorCard.power.id
-  /** The added cost, in secrets. */
-  val Secret: Int = 1
-  /** "{Red}'s battle plans cost {1} extra secret." */
-  val notes: NoteSet = NoteSet(id)
-  val taxed: NoteKey = notes.key("taxed", Vector(NotePart.Arg(0),
-    NotePart.Text("'s battle plans cost "), NotePart.Arg(1),
-    NotePart.Plural(1, " extra secret.", " extra secrets.")))
-
-  def forCatalog(catalog: ExecutableCatalog): GleamingArmor =
-    new GleamingArmor(catalog)

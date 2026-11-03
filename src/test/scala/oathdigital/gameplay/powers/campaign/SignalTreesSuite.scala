@@ -17,7 +17,7 @@ import oathdigital.testkit.Look
 class SignalTreesSuite extends munit.FunSuite:
   private val card = SignalTreesCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
-  private val power = SignalTrees.forCatalog(catalog)
+  private val power = SignalTrees
   private val wolves = WolvesCard.id
   private val swarm = InsectSwarmCard.id
   private val songs = TavernSongsCard.id

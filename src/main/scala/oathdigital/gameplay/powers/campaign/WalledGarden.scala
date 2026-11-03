@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
+import oathdigital.catalog.{Denizen, PrintedPower, SiteOnly}
 import oathdigital.model._
 
 object WalledGardenCard extends Denizen(DenizenId("195"), "Walled Garden", Suit.Beast) with SiteOnly:
@@ -20,10 +20,10 @@ object WalledGardenCard extends Denizen(DenizenId("195"), "Walled Garden", Suit.
   * counts itself, so it adds at least one. A bandit defender applies it at a
   * site it rules.
   */
-final case class WalledGarden private (catalog: ExecutableCatalog)
-    extends BattlePlan:
+case object WalledGarden extends BattlePlan:
+  val id: PowerId = WalledGardenCard.power.id
+
   val cardId: DenizenId = WalledGardenCard.id
-  def id: PowerId = WalledGarden.id
   def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Defender)
 
@@ -41,13 +41,8 @@ final case class WalledGarden private (catalog: ExecutableCatalog)
     val map = context.ready.game.current.map
     map.inPlay.flatMap(map.sites.get).flatMap(_.denizens).count {
       case DenizenState(held, Orientation.FaceUp, _) =>
-        catalog.suitOf(held).contains(Suit.Beast)
-      case edifice: EdificeState => catalog.suitOf(edifice.id).contains(Suit.Beast)
+        context.catalog.suitOf(held).contains(Suit.Beast)
+      case edifice: EdificeState =>
+        context.catalog.suitOf(edifice.id).contains(Suit.Beast)
       case _ => false
     }
-
-object WalledGarden:
-  val id: PowerId = WalledGardenCard.power.id
-
-  def forCatalog(catalog: ExecutableCatalog): WalledGarden =
-    new WalledGarden(catalog)

@@ -6,6 +6,7 @@ import oathdigital.gameplay.powers.campaign.{BattlePlans, BrassArmy,
   BrassArmyCard, Outriders, OutridersCard, PlanContext, TitleDefensePlan,
   Watchdog, WatchdogCard}
 import oathdigital.gameplay.powers.search.AuguryCard
+import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.Unwrap.present
 
@@ -21,9 +22,9 @@ class CampaignPlansSuite extends munit.FunSuite:
     Vector.empty, force)
 
   private def context(b: Board, side: CampaignPlanSide): PlanContext =
-    PlanContext(b.ready, setupOf(b), side)
+    PlanContext(catalog, b.ready, setupOf(b), side)
 
-  private def defending(b: Board): PlanContext = PlanContext(b.ready,
+  private def defending(b: Board): PlanContext = PlanContext(catalog, b.ready,
     setupOf(b).copy(defender = CampaignDefender.Player(b.rival)),
     CampaignPlanSide.Defender)
 
@@ -121,7 +122,7 @@ class CampaignPlansSuite extends munit.FunSuite:
     assertEquals(offer.effects, Vector[CampaignPlanEffect](
       CampaignPlanEffect.AddDefenseDice(1)))
     // A Raid targets no site.
-    val raid = PlanContext(bandits.ready, setupOf(bandits).copy(
+    val raid = PlanContext(catalog, bandits.ready, setupOf(bandits).copy(
       kind = CampaignKind.Raid, targetSites = Vector.empty),
       CampaignPlanSide.Defender)
     assertEquals(watchdog.plan(raid), None)

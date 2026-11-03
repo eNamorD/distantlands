@@ -169,7 +169,7 @@ class WildMountsSuite extends munit.FunSuite:
     assertEquals(lines(done), Vector.empty)
 
   test("its rewrite folds Late, after every plan's own steps at the root"):
-    val phases = WildMounts.forCatalog(catalog).contributions(
+    val phases = WildMounts.contributions(
       PowerWindow.CampaignActionEligibility).collect {
         case transform: Transform => transform.phase }
     assertEquals(phases, Vector(FoldPhase.Late))

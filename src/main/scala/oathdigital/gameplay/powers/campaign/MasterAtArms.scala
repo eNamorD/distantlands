@@ -71,7 +71,8 @@ case object MasterAtArms extends BattlePlan:
     RerollChoice.throwOf(ctx).filter(rolled =>
       rolled.pool == CampaignIds.attackPool &&
         rolled.roller == ctx.actor &&
-        PlanUse.chosen(ctx.state, PendingTree(ctx.nodePath, ctx.answered),
+        PlanUse.chosen(ctx.catalog, ctx.state,
+          PendingTree(ctx.nodePath, ctx.answered),
           ctx.actor, cardRef, sides, afterOutcome = false).nonEmpty)
       .map(rolled => MasterAtArms.hollow(rolled) match
         case Vector() => RerollOffer(cardId, MasterAtArms.rerollLabel, None,

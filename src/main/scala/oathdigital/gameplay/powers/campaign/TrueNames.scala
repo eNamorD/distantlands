@@ -26,12 +26,17 @@ object TrueNamesCard extends Denizen(DenizenId("41"), "True Names", Suit.Beast) 
   * turned faceup during plan selection counts from the next pass, and a
   * plan chosen before that stays chosen.
   */
-final case class TrueNames private (catalog: ExecutableCatalog)
-    extends ContributingPower:
+case object TrueNames extends ContributingPower:
+  val id: PowerId = TrueNamesCard.power.id
+  /** "No battle plans matching {Blue}'s advisers." */
+  private val notes = NoteSet(id)
+  val named: NoteKey = notes.key("named", Vector(
+    NotePart.Text("No battle plans matching "), NotePart.Arg(0),
+    NotePart.Text("'s advisers.")))
+  override def noteKeys: Vector[NoteKey] = notes.declared
+
   val cardId: DenizenId = TrueNamesCard.id
-  def id: PowerId = TrueNames.id
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
-  override def noteKeys: Vector[NoteKey] = TrueNames.noteKeys
 
   private val naming: OptionRestriction = OptionRestriction(
     (ctx, ref) => matched(ctx, ref).map(_ =>
@@ -49,25 +54,14 @@ final case class TrueNames private (catalog: ExecutableCatalog)
   private def matched(ctx: PowerCtx, ref: DecisionOptionRef)
       : Option[PlayerId] =
     EnemyPlans.holderAgainst(ctx, cardId).filter(holder =>
-      EnemyPlans.suitOf(catalog, ctx.state, ref)
-        .exists(suits(ctx.state, holder)))
+      EnemyPlans.suitOf(ctx.catalog, ctx.state, ref)
+        .exists(suits(ctx.catalog, ctx.state, holder)))
 
   /** The suits of `holder`'s faceup advisers. */
-  private def suits(ready: ReadyGame, holder: PlayerId): Set[Suit] =
+  private def suits(catalog: ExecutableCatalog,
+      ready: ReadyGame, holder: PlayerId): Set[Suit] =
     ready.game.current.players.find(_.player == holder).toVector
       .flatMap(_.advisers.collect {
         case DenizenState(held, Orientation.FaceUp, _) =>
           EffectiveSuit.of(catalog, ready, held)
       }.flatten).toSet
-
-object TrueNames:
-  val id: PowerId = TrueNamesCard.power.id
-  /** "No battle plans matching {Blue}'s advisers." */
-  private val notes = NoteSet(id)
-  val named: NoteKey = notes.key("named", Vector(
-    NotePart.Text("No battle plans matching "), NotePart.Arg(0),
-    NotePart.Text("'s advisers.")))
-  def noteKeys: Vector[NoteKey] = notes.declared
-
-  def forCatalog(catalog: ExecutableCatalog): TrueNames =
-    new TrueNames(catalog)

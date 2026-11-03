@@ -17,8 +17,8 @@ import oathdigital.model._
   * user, or a card at a site the user rules. A bandit defender is the ruler of
   * the sites Bandits rule and holds nothing else.
   */
-final case class PlanContext(ready: ReadyGame, setup: CampaignSetup,
-    side: CampaignPlanSide):
+final case class PlanContext(catalog: ExecutableCatalog, ready: ReadyGame,
+    setup: CampaignSetup, side: CampaignPlanSide):
   /** The player who would use the plan; `None` for a bandit defender. */
   def user: Option[PlayerId] = CampaignPlans.userOf(setup, side)
 
@@ -96,7 +96,7 @@ final case class PlanContext(ready: ReadyGame, setup: CampaignSetup,
   /** Whether the enemy has a faceup adviser of `suit`, as the rules see it
     * (`EffectiveSuit`). Only a faceup card has a suit, and bandits hold no
     * advisers. */
-  def enemyHasAdviser(catalog: ExecutableCatalog, suit: Suit): Boolean =
+  def enemyHasAdviser(suit: Suit): Boolean =
     enemyPlayer.exists(_.advisers.exists {
       case DenizenState(held, Orientation.FaceUp, _) =>
         EffectiveSuit.of(catalog, ready, held).contains(suit)
@@ -115,7 +115,7 @@ final case class PlanContext(ready: ReadyGame, setup: CampaignSetup,
 
   /** The cards of `suit` that `who` rules (`RuledCards`): the plan's user
     * (`ruler`), the enemy or the Campaign's defender. */
-  def cardsRuled(catalog: ExecutableCatalog, who: CampaignDefender,
+  def cardsRuled(who: CampaignDefender,
       suit: Suit): Vector[CardId] =
     val asRuler: SiteRuler = who match
       case CampaignDefender.Player(player) => SiteRuler.Player(player)
@@ -133,15 +133,16 @@ object PlanContext:
       Some(CampaignPlanSide.Defender)
     case _ => None
   }).flatMap(side => CampaignSetup.setup(ctx.state, ctx.actor,
-    PendingTree(ctx.nodePath, ctx.answered)).map(PlanContext(ctx.state, _, side)))
+    PendingTree(ctx.nodePath, ctx.answered))
+    .map(PlanContext(ctx.catalog, ctx.state, _, side)))
 
 /** A plan that was used, as a later window sees it. `result` is the Campaign's
   * recorded result once the outcome is known (the windows from the losses on),
   * and is what a step after the losses must read, because the losses change the
   * board.
   */
-final case class PlanUse(side: CampaignPlanSide, actor: PlayerId,
-    result: Option[CampaignResult], ready: ReadyGame,
+final case class PlanUse(catalog: ExecutableCatalog, side: CampaignPlanSide,
+    actor: PlayerId, result: Option[CampaignResult], ready: ReadyGame,
     defender: Option[CampaignDefender] = None):
   /** The player who used the plan; `None` for a bandit defender. A defender
     * is read from the recorded result once the outcome is known, and from
@@ -157,21 +158,29 @@ final case class PlanUse(side: CampaignPlanSide, actor: PlayerId,
     side == CampaignPlanSide.Attacker))
 
 object PlanUse:
-  /** The plan named by `ref`, if it was used on one of `sides` in this
-    * Campaign: chosen by a player, or applied by a bandit defender, which the
-    * application recorded (`CampaignPlans.appliedMarker`). `afterOutcome` says
-    * whether `lastCampaignResult` is this Campaign's already.
-    */
-  def chosen(ready: ReadyGame, pending: PendingTree, actor: PlayerId,
-      ref: DecisionOptionRef, sides: Set[CampaignPlanSide],
-      afterOutcome: Boolean): Option[PlanUse] =
+  /** The side the plan named by `ref` was used on in this Campaign, if it
+    * was used on one of `sides`: chosen by a player, or applied by a bandit
+    * defender, which the application recorded
+    * (`CampaignPlans.appliedMarker`). */
+  def sideUsed(ready: ReadyGame, pending: PendingTree,
+      ref: DecisionOptionRef, sides: Set[CampaignPlanSide])
+      : Option[CampaignPlanSide] =
     val picked = sides.toVector.find(side => CampaignAnswers.picks(pending,
       CampaignIds.planDecision(side)).contains(ref))
     val banditApplied = Option.when(sides(CampaignPlanSide.Defender) &&
       ready.game.current.rollPools.contains(CampaignPlans.appliedMarker(ref)))(
       CampaignPlanSide.Defender)
-    picked.orElse(banditApplied).map(side => PlanUse(side, actor,
-      Option.when(afterOutcome)(ready.game.current.lastCampaignResult)
+    picked.orElse(banditApplied)
+
+  /** The plan named by `ref`, if it was used on one of `sides` in this
+    * Campaign ([[sideUsed]]), as a later window reads it. `afterOutcome` says
+    * whether `lastCampaignResult` is this Campaign's already.
+    */
+  def chosen(catalog: ExecutableCatalog, ready: ReadyGame,
+      pending: PendingTree, actor: PlayerId, ref: DecisionOptionRef,
+      sides: Set[CampaignPlanSide], afterOutcome: Boolean): Option[PlanUse] =
+    sideUsed(ready, pending, ref, sides).map(side => PlanUse(catalog, side,
+      actor, Option.when(afterOutcome)(ready.game.current.lastCampaignResult)
         .flatten.filter(_.attacker == actor), ready,
       CampaignSetup.setup(ready, actor, pending).map(_.defender)))
 

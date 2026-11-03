@@ -1,6 +1,5 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.powerresolver.ContributingPower
 
 /** The battle plans that change the dice, or pay after the Campaign, and need
@@ -15,15 +14,15 @@ import oathdigital.gameplay.powerresolver.ContributingPower
   * card, so all are always present.
   */
 object SimplePlans:
-  def forCatalog(catalog: ExecutableCatalog): Vector[ContributingPower] =
+  val all: Vector[ContributingPower] =
     Vector(Mercenaries, Wrestlers, FearsomeShield,
       ToweringRampart, CrackedRampart, SpiralCastle, SpiralDungeons,
       BattleHonors, Longbows, BlackSword,
-      FireTalkers, NatureWorship.forCatalog(catalog),
-      CrackedSage.forCatalog(catalog), VillageConstable, BannerBreakers,
-      CrackingGround, WalledGarden.forCatalog(catalog), BanditStandard,
-      ExtraProvisions, Encirclement, DisgracedCaptain.forCatalog(catalog),
-      BattleAxes.forCatalog(catalog), FieldPromotion,
-      TributeSpoils.forCatalog(catalog), MilitaryParade.forCatalog(catalog),
+      FireTalkers, NatureWorship,
+      CrackedSage, VillageConstable, BannerBreakers,
+      CrackingGround, WalledGarden, BanditStandard,
+      ExtraProvisions, Encirclement, DisgracedCaptain,
+      BattleAxes, FieldPromotion,
+      TributeSpoils, MilitaryParade,
       Scouts, SecondWind, Zealots, BearTraps,
-      SignalTrees.forCatalog(catalog))
+      SignalTrees)

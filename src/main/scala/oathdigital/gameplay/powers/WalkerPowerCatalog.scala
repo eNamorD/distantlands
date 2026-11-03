@@ -116,10 +116,10 @@ object WalkerPowerCatalog:
       Vector(PledgeToDiscord) ++
       Vector(Jinx) ++
       BattlePlans.all ++
-      PlanRules.forCatalog(catalog) ++
-      SimplePlans.forCatalog(catalog) ++
-      PlanRestrictions.forCatalog(catalog) ++
-      PlanRewrites.forCatalog(catalog) ++
+      PlanRules.all ++
+      SimplePlans.all ++
+      PlanRestrictions.all ++
+      PlanRewrites.all ++
       CardPlayTriggers.all ++
       BannerFacePowers.contributions ++
       Vector(Dazzle, GreatMarket,

@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
+import oathdigital.catalog.PrintedPower
 import oathdigital.gameplay.actions.campaign.{CampaignPlanApplication,
   CampaignPlans, CampaignSetup}
 import oathdigital.gameplay.operations.Costs
@@ -33,7 +33,8 @@ import oathdigital.model._
 trait PlanSurcharge extends ContributingPower:
   /** The card whose faceup holder taxes the enemy's plans. */
   def cardId: DenizenId
-  def catalog: ExecutableCatalog
+  /** The printed power, which sets how the rule activates. */
+  protected def power: PrintedPower
   /** The added cost of a plan with a source card. */
   protected def cost: Cost
   /** The line each taxed plan writes: its user, then `amount`. */
@@ -55,7 +56,7 @@ trait PlanSurcharge extends ContributingPower:
 
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
   override lazy val resolution: PowerResolution =
-    CatalogResolution.of(catalog, id)
+    CatalogResolution.of(power)
 
   override def noteKeys: Vector[NoteKey] = surchargeNotes.declared
 
@@ -86,7 +87,7 @@ trait PlanSurcharge extends ContributingPower:
     BuildOps((_, _) => Left(unpayable)))(user =>
     BuildOps((ready, _) => CampaignPlans.cardOf(application.source) match {
       case Some(card) => Right(Vector[CoreOperation](Costs.onCard(user, card,
-        cost, catalog, intoOccupied = true)))
+        cost, ctx.catalog, intoOccupied = true)))
       case None => onTitle(ready, user)
     }))
 

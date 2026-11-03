@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, PrintedPower}
 import oathdigital.model._
 
 object TributeSpoilsCard extends Denizen(DenizenId("239"), "Tribute Spoils", Suit.Nomad):
@@ -22,10 +22,19 @@ object TributeSpoilsCard extends Denizen(DenizenId("239"), "Tribute Spoils", Sui
   * pay nothing, so a bandit defender never applies it. The gains write the
   * generic gain lines, so it writes no line of its own.
   */
-final case class TributeSpoils private (catalog: ExecutableCatalog)
-    extends BattlePlan:
+case object TributeSpoils extends BattlePlan:
+  val id: PowerId = TributeSpoilsCard.power.id
+  /** The favor placed to choose it. */
+  val Favor: Int = 1
+
+  /** The faceup denizens and the edifices at `sites`. */
+  private def cardsAt(ready: ReadyGame, sites: Vector[SiteId]): Vector[CardId] =
+    sites.flatMap(ready.game.current.map.sites.get).flatMap(_.denizens).collect {
+      case DenizenState(held, Orientation.FaceUp, _) => held
+      case edifice: EdificeState => edifice.id
+    }
+
   val cardId: DenizenId = TributeSpoilsCard.id
-  def id: PowerId = TributeSpoils.id
   def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] =
     Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
@@ -41,20 +50,5 @@ final case class TributeSpoils private (catalog: ExecutableCatalog)
     PowerWindow.CampaignActionEligibility -> (use =>
       if !use.won.contains(true) then Vector.empty
       else use.result.toVector.flatMap(result => FavorBySuit.gains(use.user,
-        FavorBySuit.counts(catalog, use.ready,
+        FavorBySuit.counts(use.catalog, use.ready,
           TributeSpoils.cardsAt(use.ready, result.targetSites))))))
-
-object TributeSpoils:
-  val id: PowerId = TributeSpoilsCard.power.id
-  /** The favor placed to choose it. */
-  val Favor: Int = 1
-
-  /** The faceup denizens and the edifices at `sites`. */
-  private def cardsAt(ready: ReadyGame, sites: Vector[SiteId]): Vector[CardId] =
-    sites.flatMap(ready.game.current.map.sites.get).flatMap(_.denizens).collect {
-      case DenizenState(held, Orientation.FaceUp, _) => held
-      case edifice: EdificeState => edifice.id
-    }
-
-  def forCatalog(catalog: ExecutableCatalog): TributeSpoils =
-    new TributeSpoils(catalog)

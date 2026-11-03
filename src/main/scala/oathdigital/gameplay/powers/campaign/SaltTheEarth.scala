@@ -29,14 +29,27 @@ object SaltTheEarthCard extends Denizen(DenizenId("89"), "Salt the Earth", Suit.
   * Its line names the cards and the site, "Buried Tinker, the Great Clock and
   * a relic from Ancient City.", and covers the generic "Buried" lines.
   */
-final case class SaltTheEarth private (catalog: ExecutableCatalog)
-    extends BattlePlan:
+case object SaltTheEarth extends BattlePlan:
+  val id: PowerId = SaltTheEarthCard.power.id
+  /** Under the Campaign's prefix, so a parked question is a Campaign
+    * decision. */
+  val decisionId: String = CampaignProcedure.decisionPrefix + "salt-the-earth"
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "Buried {cards} from {site}." */
+  val buried: NoteKey = notes.key("buried", Vector(NotePart.Text("Buried "),
+    NotePart.Arg(0), NotePart.Text(" from "), NotePart.Arg(1),
+    NotePart.Text(".")))
+
+  /** The cards at `site`: its denizens and edifice, then its relics. */
+  private def cardsAt(ready: ReadyGame, site: SiteId): Vector[CardId] =
+    ready.game.current.map.sites.get(site).toVector.flatMap(state =>
+      state.denizens.map[CardId](_.id) ++ state.relics.map[CardId](_.id))
+
   val cardId: DenizenId = SaltTheEarthCard.id
-  def id: PowerId = SaltTheEarth.id
 
   def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Attacker)
-  override def noteKeys: Vector[NoteKey] = SaltTheEarth.noteKeys
 
   def plan(context: PlanContext): Option[CampaignPlanOffer] =
     context.denizen(cardId)
@@ -49,9 +62,11 @@ final case class SaltTheEarth private (catalog: ExecutableCatalog)
     PowerWindow.CampaignActionEligibility -> (use => (for
       result <- use.result
       if use.won.contains(true) && result.kind == CampaignKind.Conquest
-    yield salt(use.actor, result.targetSites)).getOrElse(Vector.empty)))
+    yield salt(use.catalog, use.actor, result.targetSites))
+      .getOrElse(Vector.empty)))
 
-  private def salt(actor: PlayerId, targets: Vector[SiteId])
+  private def salt(catalog: ExecutableCatalog,
+      actor: PlayerId, targets: Vector[SiteId])
       : Vector[Operation] =
     Option.when(targets.size >= 2)(Decide(SaltTheEarth.decisionId, actor,
       DecisionQuery.ChooseOne(targets.map(site =>
@@ -59,7 +74,7 @@ final case class SaltTheEarth private (catalog: ExecutableCatalog)
         heading = Some("Salt the Earth: bury every card at one site")))
     ).toVector ++ Vector[Operation](
       BuildOps((ready, pending) => saltedSite(targets, pending)
-        .flatMap(burials(ready, actor, _))),
+        .flatMap(burials(catalog, ready, actor, _))),
       Note(id, buriedNote(targets), covers = true))
 
   /** The site to salt: the only target, or the one chosen. */
@@ -71,7 +86,8 @@ final case class SaltTheEarth private (catalog: ExecutableCatalog)
     }.toRight(PowerAnswers.missing(SaltTheEarth.decisionId))
 
   /** Every card at `site`, buried with the standard returns. */
-  private def burials(ready: ReadyGame, actor: PlayerId, site: SiteId)
+  private def burials(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId, site: SiteId)
       : Either[OathViolation, Vector[CoreOperation]] =
     val from = PositionedLocation(Location.Site(site))
     val cards: Vector[(BuryableCard, Tokens)] =
@@ -104,23 +120,3 @@ final case class SaltTheEarth private (catalog: ExecutableCatalog)
     if gone.nonEmpty
   yield SaltTheEarth.buried(PowerSourceRef.Card(cardId), NoteArg.Cards(gone),
     NoteArg.Site(site))
-
-object SaltTheEarth:
-  val id: PowerId = SaltTheEarthCard.power.id
-  /** Under the Campaign's prefix, so a parked question is a Campaign
-    * decision. */
-  val decisionId: String = CampaignProcedure.decisionPrefix + "salt-the-earth"
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "Buried {cards} from {site}." */
-  val buried: NoteKey = notes.key("buried", Vector(NotePart.Text("Buried "),
-    NotePart.Arg(0), NotePart.Text(" from "), NotePart.Arg(1),
-    NotePart.Text(".")))
-
-  /** The cards at `site`: its denizens and edifice, then its relics. */
-  private def cardsAt(ready: ReadyGame, site: SiteId): Vector[CardId] =
-    ready.game.current.map.sites.get(site).toVector.flatMap(state =>
-      state.denizens.map[CardId](_.id) ++ state.relics.map[CardId](_.id))
-
-  def forCatalog(catalog: ExecutableCatalog): SaltTheEarth =
-    new SaltTheEarth(catalog)

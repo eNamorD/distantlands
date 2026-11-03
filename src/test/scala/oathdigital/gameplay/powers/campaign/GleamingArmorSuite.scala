@@ -4,7 +4,6 @@ import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.Look
 
@@ -155,7 +154,7 @@ class GleamingArmorSuite extends munit.FunSuite:
 
   // ---- Lines ----
 
-  private val power = GleamingArmor.forCatalog(catalog)
+  private val power = GleamingArmor
   test("a taxed plan writes the Armor's line, naming the plan's user"):
     val b = attackerHolds(1)
     val run = commit(rules(losingDice), b, 4)

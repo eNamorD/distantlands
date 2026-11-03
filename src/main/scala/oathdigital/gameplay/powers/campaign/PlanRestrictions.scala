@@ -1,6 +1,5 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.powerresolver.ContributingPower
 
 /** The battle plans and rules that restrict which plans a side of a
@@ -9,6 +8,6 @@ import oathdigital.gameplay.powerresolver.ContributingPower
   * Each names its card, so all are always present.
   */
 object PlanRestrictions:
-  def forCatalog(catalog: ExecutableCatalog): Vector[ContributingPower] =
+  val all: Vector[ContributingPower] =
     Vector(Specialist, CodeOfHonor, MarshSpirit,
-      BeastTamer.forCatalog(catalog), TrueNames.forCatalog(catalog))
+      BeastTamer, TrueNames)
