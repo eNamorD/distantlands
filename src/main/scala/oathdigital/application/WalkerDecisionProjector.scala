@@ -25,7 +25,7 @@ import oathdigital.protocol.projection.{CardDetailsProjection,
   * matching on [[ProcedureRef]] itself, so this projector needs no edit when
   * a second procedure registers.
   *
-  * Reuses [[ProcedureWalker.parkedDecide]] —
+  * Reuses [[ProcedureWalker.openDecisions]] —
   * the same reorder-safe, decisionId-keyed introspection `OathRules`
   * dispatches on to check that a live command's park is answerable — rather
   * than inspecting `PendingTree.at` directly, for the identical reason: a
@@ -68,13 +68,10 @@ private[application] final class WalkerDecisionProjector(
       // The modifiers picked in the walk join, so their warnings show.
       powers = WalkerPowers.selected(walkerPowerCatalog, Vector.empty)
         .withAnswers(pending.answered)
-      awaited <- ProcedureWalker.parkedDecide(context.ready, tree, pending,
-          powers, probing = false).map(_.owner)
-        .orElse(ProcedureWalker.awaitedInSeatOrder(context.ready, tree,
-          pending, powers).headOption)
-      owners = ProcedureWalker.awaitedPlayers(context.ready, tree, pending,
-        powers)
-    yield Parked(procedure, tree, pending, powers, awaited, owners)
+      awaited = ProcedureWalker.awaitedInSeatOrder(context.ready, tree,
+        pending, powers)
+      if awaited.nonEmpty
+    yield Parked(procedure, tree, pending, powers, awaited)
 
   /** Every `Decide` open at the walker's park in `ready`, after every
     * power's transform: the declared queries, for the game log and consent
@@ -93,24 +90,24 @@ private[application] final class WalkerDecisionProjector(
       WalkerPowers.selected(walkerPowerCatalog, Vector.empty),
       probing = false)).getOrElse(Vector.empty)
 
-  /** The full owner-private projection, for every owner of the parked
-    * decision: the awaited player and any co-owners.
+  /** The full owner-private projection, for every player who may answer:
+    * the viewer's own open decision, which a co-owner shares with its owner.
     */
   def project(context: ScopedProjectionContext)
       : Option[WalkerDecisionProjection] = for
     parked <- parkedPosition(context)
-    if context.viewer.exists(parked.owners.contains)
+    viewer <- context.viewer
+    if parked.awaited.contains(viewer)
     projection <- this.parked(parked.procedure, parked.tree, context.ready,
-      parked.pending, parked.powers, parked.awaited, context.viewer)
+      parked.pending, parked.powers, viewer, context.viewer)
   yield projection
 
-  /** The public "who is this waiting on" projection, for every viewer
-    * except the awaited player -- Task 5's counterpart to `project`. Built
-    * off the same [[WalkerDecisionProjector.Parked]] position, so a viewer
-    * who is not the awaited player always sees a projection naming exactly
-    * who is.
+  /** The public "who is this waiting on" projection, for every viewer who
+    * owes no answer -- Task 5's counterpart to `project`. Built off the same
+    * [[WalkerDecisionProjector.Parked]] position, so it names exactly the
+    * players who may answer, in seat order.
     *
-    * Gated on the awaited player's prompt, not this viewer's: a decision
+    * Gated on the first awaited player's prompt, not this viewer's: a decision
     * whose options this viewer may not identify (a pick among the actor's
     * facedown advisers) still tells the table whom it waits on, while a
     * decision suppressed even for its owner tells no one.
@@ -118,26 +115,25 @@ private[application] final class WalkerDecisionProjector(
   def waiting(context: ScopedProjectionContext)
       : Option[WalkerWaitingProjection] = for
     parked <- parkedPosition(context)
-    if !context.viewer.exists(parked.owners.contains)
+    if !context.viewer.exists(parked.awaited.contains)
+    first = parked.awaited.head
     _ <- this.parked(parked.procedure, parked.tree, context.ready,
-      parked.pending, parked.powers, parked.awaited, Some(parked.awaited),
-      previewed = false)
+      parked.pending, parked.powers, first, Some(first), previewed = false)
   yield
     // No look-ahead: the waiting line reads the heading, the deal and the
-    // id, which it never narrows. A choice whose every option it would
-    // hide shows the owner a Continue heading the waiting line lacks.
-    val decide = ProcedureWalker.parkedDecide(context.ready, parked.tree,
+    // ids, which it never narrows. A choice whose every option it would
+    // hide shows the owner a Continue heading the waiting line lacks. The
+    // open decisions of a `Simultaneous` park share one heading.
+    val open = ProcedureWalker.openDecisions(context.ready, parked.tree,
       parked.pending, parked.powers, probing = false)
-    WalkerWaitingProjection(parked.awaited.value,
-      decide.flatMap(_.query.heading),
-      parked.owners.filter(_ != parked.awaited).toVector.map(_.value).sorted,
-      decide.map(_.query).collect {
+    WalkerWaitingProjection(parked.awaited.map(_.value),
+      open.headOption.flatMap(_.query.heading),
+      open.headOption.map(_.query).collect {
         case negotiate: DecisionQuery.Negotiate =>
           deals.project(context.ready, context.viewer, negotiate)
       },
-      decide.fold(Vector.empty)(found =>
-        status(parked.procedure, context.ready, found.decisionId,
-          withRoll = true)))
+      open.flatMap(found => status(parked.procedure, context.ready,
+        found.decisionId, withRoll = true)).distinct)
 
   private def rebuild(ready: ReadyGame, procedure: ProcedureRef,
       actor: PlayerId, args: Vector[DecisionOptionRef]) =
@@ -156,11 +152,11 @@ private[application] final class WalkerDecisionProjector(
 
   private def parked(procedure: ProcedureRef, tree: Operation,
       ready: ReadyGame, pending: PendingTree, powers: WalkerPowers,
-      awaited: PlayerId, viewer: Option[PlayerId], previewed: Boolean = true)
+      owner: PlayerId, viewer: Option[PlayerId], previewed: Boolean = true)
       : Option[WalkerDecisionProjection] =
     // Task 4: no `decisionId` comparison and no candidate discovery.
     // Whatever the parked `Decide` declares -- after every power
-    // transform, since `parkedDecide` resolves the node through the same
+    // transform, since `openDecisions` resolves the node through the same
     // fold the walk applied -- is described verbatim. A procedure that
     // changes what it offers changes this projection in the same edit,
     // and an engine that grew a per-procedure branch here would be
@@ -171,8 +167,10 @@ private[application] final class WalkerDecisionProjector(
     // one (parked-roll retirement decision, 2026-10-23).
     //
     // `flatMap`, not `map`: an unpresentable option omits the whole
-    // projection (see [[queryProjection]]).
-    ProcedureWalker.parkedDecide(ready, tree, pending, powers)
+    // projection (see [[queryProjection]]). `owner` names whose decision
+    // is described: one of several at a `Simultaneous` park.
+    ProcedureWalker.openDecisions(ready, tree, pending, powers)
+        .find(_.owners.contains(owner))
         .flatMap { decide =>
           val (query, details) =
             if previewed then playable(procedure, ready, tree, pending, powers,
@@ -181,7 +179,7 @@ private[application] final class WalkerDecisionProjector(
           queryProjection(ready, viewer, query, details).map(projected =>
             WalkerDecisionProjection(procedure.key, decide.decisionId,
               query = Some(headed(ready, viewer, decide.decisionId, projected)),
-              rollOutcome = rollOutcome(procedure, ready, awaited,
+              rollOutcome = rollOutcome(procedure, ready, decide.owner,
                 decide.decisionId),
               answeredOptions = answeredOptions(ready, viewer, pending,
                 decide.decisionId),
@@ -755,10 +753,11 @@ private[application] object WalkerDecisionProjector:
     WalkerProcedureRegistry.rebuild(procedure, catalog, ready, actor, args)
 
   /** A parked position, fully resolved: the rebuilt+power-folded tree, and
-    * `awaited` -- a parked `Decide`'s owner, or the active player for a
-    * `Roll` -- read off it by [[ProcedureWalker.awaitedInSeatOrder]] (Task 5).
-    * `project` and `waiting` share this so the two projections never
-    * recompute the owner differently.
+    * `awaited` -- every player who may answer, in seat order, or the active
+    * player for a `Roll` -- read off it by
+    * [[ProcedureWalker.awaitedInSeatOrder]] (Task 5). `project` and
+    * `waiting` share this so the two projections never recompute the owners
+    * differently.
     *
     * Lives here, on the companion object, rather than nested in the class:
     * a case class nested in a class or trait carries a path-dependent outer
@@ -769,5 +768,4 @@ private[application] object WalkerDecisionProjector:
     * carries no such outer instance, so it triggers no warning.
     */
   private final case class Parked(procedure: ProcedureRef, tree: Operation,
-      pending: PendingTree, powers: WalkerPowers, awaited: PlayerId,
-      owners: Set[PlayerId])
+      pending: PendingTree, powers: WalkerPowers, awaited: Vector[PlayerId])

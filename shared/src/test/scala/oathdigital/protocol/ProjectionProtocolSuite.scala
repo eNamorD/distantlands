@@ -64,7 +64,7 @@ class ProjectionProtocolSuite extends munit.FunSuite:
         heading = Some("Forge a relic"))),
       rollOutcome = Some(WalkerRollOutcomeProjection("campaign.attack",
         Vector(DieFace.TwoSwordsSkull), 2, None, Vector("1 skull loss"))))),
-    walkerWaiting = Some(WalkerWaitingProjection("blue", Some("Choose the Oathkeeper"))),
+    walkerWaiting = Some(WalkerWaitingProjection(Vector("blue"), Some("Choose the Oathkeeper"))),
     supplyMaximum = 7)
 
 
@@ -269,8 +269,8 @@ class ProjectionProtocolSuite extends munit.FunSuite:
       Some(editing), Vector(NegotiationCitizenshipProjection("red", "blue")))
     val query = DecisionQueryProjection.Negotiate(deal,
       heading = Some("Negotiation"))
-    val waiting = WalkerWaitingProjection("red", Some("Negotiation"),
-      Vector("blue"), Some(deal.copy(editing = None)))
+    val waiting = WalkerWaitingProjection(Vector("red", "blue"),
+      Some("Negotiation"), Some(deal.copy(editing = None)))
     val carrying = projection.copy(
       walkerDecision = projection.walkerDecision.map(_.copy(query = Some(query))),
       walkerWaiting = Some(waiting))
@@ -424,12 +424,18 @@ class ProjectionProtocolSuite extends munit.FunSuite:
     */
   test("walkerWaiting round-trips with an absent heading, for a Roll park"):
     val rolling = projection.copy(walkerWaiting =
-      Some(WalkerWaitingProjection("blue", heading = None)))
+      Some(WalkerWaitingProjection(Vector("blue"), heading = None)))
     assertRoundTrips(rolling)
+
+  test("walkerWaiting round-trips every awaited player in order"):
+    val several = projection.copy(walkerWaiting = Some(
+      WalkerWaitingProjection(Vector("red", "blue"),
+        Some("The new Chancellor offers you Citizenship"))))
+    assertRoundTrips(several)
 
   test("walkerWaiting round-trips the facts shown beside the question"):
     val following = projection.copy(walkerWaiting = Some(
-      WalkerWaitingProjection("blue", Some("Sacrifice"),
+      WalkerWaitingProjection(Vector("blue"), Some("Sacrifice"),
         status = Vector(WalkerStatusProjection("Attack total", "3")))))
     assertRoundTrips(following)
 

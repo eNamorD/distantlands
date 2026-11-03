@@ -38,5 +38,5 @@ class FacedownAdviserPickServiceSuite extends munit.FunSuite:
     assertEquals(other.walkerDecision, None)
     // p2 cannot identify the facedown advisers, yet still learns whom the
     // table waits on and what p1 is asked.
-    assertEquals(other.walkerWaiting, Some(WalkerWaitingProjection(p1.value,
+    assertEquals(other.walkerWaiting, Some(WalkerWaitingProjection(Vector(p1.value),
       Some("Choose a facedown adviser to play"))))

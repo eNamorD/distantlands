@@ -104,7 +104,7 @@ class GameApplicationServiceStreamSuite extends munit.FunSuite:
       val winner = finished.game.current.result.map(_.winner)
       assertEquals(view.walkerDecision.map(_.decisionId),
         Option.when(winner.contains(player.player))("chronicle.begin"))
-      assertEquals(view.walkerWaiting.map(_.playerId),
+      assertEquals(view.walkerWaiting.flatMap(_.playerIds.headOption),
         winner.filterNot(_ == player.player).map(_.value))
       assertEquals(view.oathkeeper.flatMap(_.winnerPlayerId),
         finished.game.current.result.map(_.winner.value))
