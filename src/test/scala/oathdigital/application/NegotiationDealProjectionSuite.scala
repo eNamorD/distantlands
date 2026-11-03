@@ -80,8 +80,7 @@ class NegotiationDealProjectionSuite extends munit.FunSuite:
     val outsider = view(state, p3)
     assertEquals(outsider.walkerDecision, None)
     val waiting = outsider.walkerWaiting.getOrElse(fail("waiting"))
-    assertEquals(waiting.playerId, p1.value)
-    assertEquals(waiting.coOwnerPlayerIds, Vector(p2.value))
+    assertEquals(waiting.playerIds, Vector(p1.value, p2.value))
     assertEquals(deal(outsider).participantPlayerIds,
       Vector(p1.value, p2.value))
     assertEquals(deal(outsider).editing, None)

@@ -27,8 +27,8 @@ object PricedOptions:
       : Vector[DecisionOption] =
     val actor = decide.owner
     val walked = options(decide)
-    val declared = ProcedureWalker.parkedDecide(state, tree, pending, powers,
-      probing = false).map(options).getOrElse(walked)
+    val declared = ProcedureWalker.openDecision(state, tree, pending, powers,
+      decide.decisionId, probing = false).map(options).getOrElse(walked)
     val previewed = previews(state, tree, pending, powers, followUp = true)
     def refused(option: DecisionOption) = DecisionOption.Unavailable(option,
       OptionReason.Written(explain(option.ref).getOrElse(shortfall(state,

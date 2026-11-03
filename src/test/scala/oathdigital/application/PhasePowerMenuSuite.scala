@@ -147,7 +147,7 @@ class PhasePowerMenuSuite extends munit.FunSuite:
     val treatyWaiter = projector.project("project-league-treaty",
       LoadedGame(treatyPark.state, treatyPark.nextSequence), active)
     assertEquals(treatyWaiter.walkerDecision, None)
-    assertEquals(treatyWaiter.walkerWaiting.map(_.playerId), Some(ruler.value))
+    assertEquals(treatyWaiter.walkerWaiting.flatMap(_.playerIds.headOption), Some(ruler.value))
 
   test("a Silver Tongue park offers its owner two favor banks"):
     val ParkedServiceFixture.SilverTonguePark(tongueGame, tongueActor, _) =

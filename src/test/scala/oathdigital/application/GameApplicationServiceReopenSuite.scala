@@ -192,5 +192,5 @@ class GameApplicationServiceReopenSuite extends munit.FunSuite:
         card.cardId != wizardsConclave.value || card.hidden))
       // Only the Act menu waits now, on its player.
       assertEquals(projector.projectPublic(gameId, stored).walkerWaiting
-        .map(_.playerId), Some(p1.value))
+        .flatMap(_.playerIds.headOption), Some(p1.value))
     finally reopened.close()

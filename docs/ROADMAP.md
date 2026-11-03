@@ -165,18 +165,6 @@ Foundation mutation, Legacy activation and scoring, and era scoring.
   "Coming in a later release". Edits a saved Chronicle's fields in the
   browser.
 
-### Phase - Empire
-
-After the Chronicle steps phase, implement the Chancellor and Citizen roles,
-Imperial warbands and Campaign, the Stable Regime and Successor endings,
-Citizenship and exile, and the Empire part of later-game setup. Design:
-[Empire phase design](superpowers/specs/2026-10-29-empire-phase-design.md).
-Each slice gets its own plan, in this order.
-
-- [ ] **Simultaneous Throne answers.** Build the walker's Simultaneous node
-  (negotiation walker design, "Simultaneous decisions") so the Exiles
-  offered Citizenship at the Throne answer at once instead of in seat order.
-
 ### Phase - Settings Feature
 
 Settings players can change during a game.

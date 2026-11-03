@@ -83,7 +83,7 @@ class GameGatewaySuite extends munit.FunSuite:
       val public = accepted(gateway.load("bootstrap-game", GameAccess.Public))
       assertEquals(public.viewerPlayerId, None)
       assertEquals(public.walkerDecision, None)
-      assertEquals(public.walkerWaiting.map(_.playerId), Some(p2.value))
+      assertEquals(public.walkerWaiting.flatMap(_.playerIds.headOption), Some(p2.value))
       assert(!GameHttpWire.encodeProjection(public).contains("viewerPlayerId"))
     finally reopened.close()
 

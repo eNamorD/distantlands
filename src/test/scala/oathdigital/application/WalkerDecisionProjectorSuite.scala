@@ -430,7 +430,7 @@ class WalkerDecisionProjectorSuite extends munit.FunSuite:
       Some("test.off-turn"))
     assertEquals(projector.project(ctx(Some(active))), None)
     assertEquals(projector.waiting(ctx(Some(owner))), None)
-    val waiting = Some(WalkerWaitingProjection(owner.value, Some("Answer")))
+    val waiting = Some(WalkerWaitingProjection(Vector(owner.value), Some("Answer")))
     assertEquals(projector.waiting(ctx(Some(active))), waiting)
     assertEquals(projector.waiting(ctx(None)), waiting)
 
@@ -466,7 +466,7 @@ class WalkerDecisionProjectorSuite extends munit.FunSuite:
       Some(Vector("player", "player")))
     assertEquals(query.map(_.offeredOptions.map(_.id)), Some(leaders.map(_.value)))
     assertEquals(projector.project(ctx(Some(active))), None)
-    val waiting = Some(WalkerWaitingProjection(holder.value,
+    val waiting = Some(WalkerWaitingProjection(Vector(holder.value),
       Some("Choose the Oathkeeper")))
     assertEquals(projector.waiting(ctx(Some(active))), waiting)
     assertEquals(projector.waiting(ctx(None)), waiting)

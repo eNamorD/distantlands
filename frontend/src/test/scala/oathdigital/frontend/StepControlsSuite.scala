@@ -40,8 +40,8 @@ class StepControlsSuite extends munit.FunSuite:
     buttonsMatching(panel, ".redo-action")
 
   private val waitingOnBlue = ServerUiSupport.ViewerPresentation(
-    showGameplayControls = false, waitingForPlayerId = Some("blue"),
-    waitingForDisplayName = Some("Blue"), playerId = "red")
+    showGameplayControls = false, waitingForPlayerIds = Vector("blue"),
+    waitingForDisplayNames = Vector("Blue"), playerId = "red")
 
   test("an offered step shows one Undo button whose hover note names it"):
     val panel = panelFor(projectionOffering(Some(undoOffer)),

@@ -6,7 +6,8 @@ import oathdigital.model._
 
 /** Offer Citizenship, the Throne's first step (CR p. 37, Chronicle rulings
   * 5 and 20-22). The Throne holder offers Citizenship to any seated Exiles,
-  * none included; each offered Exile answers in seat order, Decline first.
+  * none included; the offered Exiles answer at once, in any order, Decline
+  * first, and each answer applies when it is given.
   * An Exile who accepts becomes a Citizen: their board warbands return to
   * their bank, and at each site they rule their warbands become one
   * Imperial warband. No other Citizenship step runs in the Chronicle. The
@@ -61,11 +62,13 @@ object OfferCitizenship:
   private def answers(state: ReadyGame, holder: PlayerId,
       offeredTo: Vector[PlayerId]): Vector[Operation] =
     // Seat order of the players offered, read from the seats alone: an Exile
-    // who accepts is no longer one, and the tree must keep its shape.
+    // who accepts is no longer one, and the tree must keep its shape. The
+    // answers are open at once; seat order is only the search's order.
     val ordered = ChronicleTasks.seated(state).filter(offeredTo.contains)
-    Option.when(ordered.nonEmpty)(Note(noteId, _ => Some(offered.sourceless(
-      NoteArg.Player(holder), NoteArg.Players(ordered))))).toVector ++
-      ordered.flatMap(answer)
+    if ordered.isEmpty then Vector.empty
+    else Vector(Note(noteId, _ => Some(offered.sourceless(
+        NoteArg.Player(holder), NoteArg.Players(ordered)))),
+      Simultaneous(ordered.map(exile => new Sequence(answer(exile)))))
 
   private def answer(exile: PlayerId): Vector[Operation] = Vector(
     Decide(answerDecisionId(exile), exile, DecisionQuery.ChooseOne(Vector(

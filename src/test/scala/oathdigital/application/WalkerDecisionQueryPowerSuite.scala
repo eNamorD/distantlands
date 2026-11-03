@@ -217,5 +217,5 @@ class WalkerDecisionQueryPowerSuite extends munit.FunSuite:
       ScopedProjectionContext(readyState, Some(p1))), None,
       "the former owner must no longer be projected the decision")
     assertEquals(projector(p1, powers).waiting(
-      ScopedProjectionContext(readyState, Some(p1))).map(_.playerId),
+      ScopedProjectionContext(readyState, Some(p1))).flatMap(_.playerIds.headOption),
       Some(p2.value))

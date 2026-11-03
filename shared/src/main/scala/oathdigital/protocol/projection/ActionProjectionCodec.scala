@@ -58,21 +58,19 @@ private[projection] object ActionProjectionCodec:
   yield WalkerStatusProjection(label, line)
 
   def encodeWalkerWaiting(value: WalkerWaitingProjection): ujson.Value = ujson.Obj(
-    "playerId" -> value.playerId, "heading" -> stringOption(value.heading),
-    "coOwnerPlayerIds" -> encoded(value.coOwnerPlayerIds)(ujson.Str(_)),
+    "playerIds" -> encoded(value.playerIds)(ujson.Str(_)),
+    "heading" -> stringOption(value.heading),
     "deal" -> option(value.deal)(encodeDeal),
     "status" -> encoded(value.status)(encodeStatusLine))
   def decodeWalkerWaiting(raw: ujson.Value, path: String): Result[WalkerWaitingProjection] = for
     value <- obj(raw, path)
-    _ <- exact(value, Set("playerId", "heading", "coOwnerPlayerIds", "deal",
-      "status"), path)
-    playerId <- string(value, "playerId", path)
+    _ <- exact(value, Set("playerIds", "heading", "deal", "status"), path)
+    playerIds <- strings(value, "playerIds", path)
     heading <- optionalString(value, "heading", path)
-    coOwners <- strings(value, "coOwnerPlayerIds", path)
     deal <- optionalAbsent(value, "deal", path)(decodeDeal)
     statusRaws <- array(value, "status", path)
     status <- traverse(statusRaws, s"$path.status")(decodeStatusLine)
-  yield WalkerWaitingProjection(playerId, heading, coOwners, deal, status)
+  yield WalkerWaitingProjection(playerIds, heading, deal, status)
 
   /** A projected decision query: the `form` discriminator and, per form,
     * exactly the fields that form declares. A payload carrying a field its
