@@ -82,7 +82,6 @@ relic.cracked-horn
 relic.grand-mask
 relic.imperial-seal
 relic.king-of-devotion
-relic.obsidian-cage.action
 relic.sigil-of-the-eye
 relic.sigil-of-the-heart
 relic.whispering-stone

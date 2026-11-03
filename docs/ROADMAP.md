@@ -264,14 +264,6 @@ one.
   builders that still lack them, as playtests find options people wonder
   about. Left by the
   [board decisions design](superpowers/specs/2026-10-03-board-decisions-design.md).
-- [ ] **Obsidian Cage's Action.** Every New Foundations battle plan is
-  implemented; the Cage's plan cages the enemy's surviving force, and the
-  warbands stand on the card (`CurrentGameState.warbandsOnCards`). Its
-  Action, "Move any number of warbands from Obsidian Cage to any board of
-  the same color", is not built, nor the FAQ's rule that a Cage returned to
-  the relic deck returns its warbands as the Action describes. See the
-  [walker follow-ups audit](testing/audits/walker-follow-ups-audit.md),
-  section 2.
 - [ ] **Mercenaries' player-chosen sign.** Mercenaries adds attack dice
   when its user attacks and removes defense dice from the attacker when it
   defends. The card lets the player choose the sign, and the plan fixes it by side.

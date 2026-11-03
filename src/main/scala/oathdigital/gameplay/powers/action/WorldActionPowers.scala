@@ -17,4 +17,4 @@ object WorldActionPowers:
       TamingCharm, GreatFeast,
       RovingTerror, GiantPython,
       SingingMask, WildAllies,
-      Captains)
+      Captains, ObsidianCageAction)

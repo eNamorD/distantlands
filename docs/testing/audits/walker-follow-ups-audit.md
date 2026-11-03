@@ -227,7 +227,7 @@ Against the card data (`cards/content/card-data/oath/en-US/*.yml`, tag
 | --- | --- | --- | --- |
 | Glamor (207) | `catalog/holding/HoldingArcaneDenizens.scala:17-23` | Raid may also target the enemy's secrets except their last; +1 defense die each; taken on victory | `CampaignTargetSelection` (new target kind), `CampaignGatherPools`, `CampaignRaidTransfer` |
 | Relic Hunter (126) | `HoldingOrderDenizens.scala:25-31` | Conquest may target facedown relics at targeted sites, +1 defense die each; taken relics may go to the relic deck's bottom | `CampaignTargetSelection`, `CampaignGatherPools`, `CampaignLosses`/`CampaignPlacement` (a Conquest has no transfer step today) |
-| Obsidian Cage (R18) | `gameplay/powers/campaign/ObsidianCage.scala` (plan built; Action not) | on victory, the enemy's unkilled force moves onto the card; an Action returns them | `CampaignLosses`; a new card location for warbands |
+| Obsidian Cage (R18) | `gameplay/powers/campaign/ObsidianCage.scala`, `gameplay/powers/action/ObsidianCageAction.scala` | on victory, the enemy's unkilled force moves onto the card; an Action returns them | `CampaignLosses`; a new card location for warbands |
 | Spiral Castle / Spiral Dungeons (E23) | `HoldingEdifices.scala:238-250` | Raid victory: defender's pawn placed at this site and loses 2 Supply; ruined: attacker's pawn, bandits use it | `CampaignRaidRelocation` (replace the decision), `CampaignActionEligibility` for the attacker's pawn |
 | Martial Culture (10) | `HoldingOrderDenizens.scala:10-16` | an Exile who defeats another Exile may become a Citizen | Empire: no Citizen can exist yet |
 | The Grand Scepter's plan | `gameplay/operations/GrandScepter.scala:11-14` | an Imperial victorious against a Citizen exiles them | Empire |
@@ -351,10 +351,22 @@ for the owner to confirm:
 - **Lines.** "Moved 2 of Blue's warbands onto Obsidian Cage.", or "Moved 2
   warbands onto Obsidian Cage." when they are the actor's (golden
   `obsidian-cage`).
-- **Not built.** The Action, and the FAQ's return when the Cage goes back
-  to the relic deck: see the roadmap item "Obsidian Cage's Action". A Cage
-  that reaches the Chronicle with warbands on it keeps them counted out of
-  their bank there.
+- **The Action.** Free, used by the Cage's holder
+  (`gameplay/powers/action/ObsidianCageAction.scala`). "Any board of the
+  same color" is every board whose warbands are of a caged force: an
+  Exile's lineage player's, the Chancellor's and Citizens' for Imperial
+  ones. One board asks how many, from one; several ask a distribution of at
+  least one. It is offered only while a caged force has a board. Lines:
+  "Returned 2 warbands from Obsidian Cage to Blue." and "Took back 1
+  warband from Obsidian Cage." for the user's own.
+- **The return (FAQ).** No in-game power returns a held relic to the relic
+  deck; the Chronicle's Throne does, so before the Reliquary is stocked
+  every warband on a card goes home as the Action would, with nothing
+  asked: an Exile's to that lineage's player, Imperial ones to the
+  Chancellor, a force with no board to its bank. An Exile who has become a
+  Citizen gets as many purple warbands as the Imperial bank holds, and the
+  Exile ones return to their bank (FAQ: they become purple); that path is
+  not pinned by a test.
 The roadmap's separate item "Record a bandit's applied battle plan as an
 event" covers how that use is journaled.
 
