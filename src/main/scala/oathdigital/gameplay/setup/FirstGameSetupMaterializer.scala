@@ -45,8 +45,7 @@ final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
       BannersState(
         PeoplesFavorState(PeoplesFavorFace.Mob, None, 1),
         DarkestSecretState(DarkestSecretFace.WanderingFlame, None, 1)),
-      // The first player begins round 1; a later game's Chancellor does
-      // too, as `LaterGameSetup` records.
+      // The first player begins round 1: in a later game, the Chancellor.
       GameTracks(1, 0, usurperLimited = true,
         roundStarter = plan.firstPlayer), favorBanks(plan, map),
       temporaryHands = plan.participants.map(p =>

@@ -121,10 +121,16 @@ class LaterGameSetupSuite extends munit.FunSuite:
     ready.game.current.players.find(_.player == id).get
 
   /** Six seats, l1 the Chancellor and l2 to l6 Citizens, and all 8 sites
-    * the Empire's. */
+    * the Empire's; the Hintermost keeps `shortSiteRelic`. */
+  private lazy val shortSiteRelic = record.relicDeck.head
+
   private lazy val sixImperialPlayersEightEmpireSites: ReadyGame =
-    val chronicle = LaterGameFixture.chronicle(l1,
+    val eight = LaterGameFixture.chronicle(l1,
       (2 to 6).map(n => LineageId(s"l$n")).toVector, world = 8)
+    val hintermost = eight.world.last
+    val chronicle = eight.copy(relicDeck = eight.relicDeck.tail,
+      world = eight.world.init :+ hintermost.copy(
+        items = hintermost.items :+ shortSiteRelic))
     accepted(GameStartRules.evolve(catalog, chronicle,
       LaterGameFixture.orders(chronicle, p1, LaterGameFixture.seats(6))))
 
@@ -175,7 +181,7 @@ class LaterGameSetupSuite extends munit.FunSuite:
       case EdificeState(_, side, _) => side == EdificeSide.Intact
       case DenizenState(_, orientation, _) => orientation == Orientation.FaceUp
     })
-    assertEquals(site.relics, Vector.empty)
+    assertEquals(site.relics, Vector(faceDown(shortSiteRelic)))
 
   test("an absent Chancellor's seated Citizen becomes the Chancellor and the " +
       "absent lineage a Citizen in the box (R6)"):
@@ -207,7 +213,16 @@ class LaterGameSetupSuite extends munit.FunSuite:
       Vector.empty)
     assert(ready.game.current.temporaryHands.getOrElse(p2, Vector.empty)
       .isEmpty)
-    assertEquals(ready.game.current.temporaryHands(p3).size, 3)
+    // p1 and p3 draw the two hands after the 6 seeded discards.
+    val dealt = Region.all.flatMap(ready.game.current.commonCards.discard).size
+    assertEquals(dealt, 6)
+    val order = LaterGameFixture.orders(record.copy(
+      worldDeck = record.worldDeck.init, lineages = record.lineages.map(
+        lineage => if lineage.id == l2 then
+          lineage.copy(startingAdvisers = Vector(adviser)) else lineage)),
+      p1).denizenOrder
+    assertEquals(ready.game.current.temporaryHands(p1), order.slice(6, 9))
+    assertEquals(ready.game.current.temporaryHands(p3), order.slice(9, 12))
 
   test("the People's Favor goes to the Chancellor when the goal is The " +
       "People, and the Darkest Secret when it is Devotion"):

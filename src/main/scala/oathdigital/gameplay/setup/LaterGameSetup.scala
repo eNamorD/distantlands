@@ -5,9 +5,11 @@ import oathdigital.gameplay.StateBasedEvaluation
 import oathdigital.gameplay.operations.TheGrandScepterCard
 import oathdigital.model._
 
-/** The Empire's table facts in a later game (CR pp. 8-11), applied to the
-  * table `FirstGameSetupMaterializer` built. The state is built directly,
-  * as game start builds the whole game; nothing here is journaled. */
+/** What a Chronicle's lineages bring to the table `FirstGameSetupMaterializer`
+  * built (CR pp. 8-11): every seated lineage's starting advisers, and, in a
+  * later game, the Empire's roles, purple warbands, Grand Scepter, title and
+  * banners. The state is built directly, as game start builds the whole
+  * game; nothing here is journaled. */
 object LaterGameSetup:
   /** Each seated lineage's starting advisers move to its player; with an
     * Empire, its table facts follow. */
@@ -59,8 +61,8 @@ object LaterGameSetup:
           darkestSecret = current.banners.darkestSecret.copy(holder =
             Option.when(goal == OathkeeperGoal.Devotion)(chancellor)
               .orElse(current.banners.darkestSecret.holder))),
-        tracks = current.tracks.copy(usurperLimited = false,
-          roundStarter = chancellor)))
+        // The Chancellor goes first, so they already begin the round.
+        tracks = current.tracks.copy(usurperLimited = false)))
 
   /** An Empire site the purple supply could not reach is empty; the check
     * the walker runs after each action fills it, and every other empty

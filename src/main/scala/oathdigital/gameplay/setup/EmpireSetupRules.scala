@@ -25,6 +25,8 @@ object EmpireSetupRules:
         for
           _ <- Either.cond(chronicle.world.nonEmpty, (),
             UnsupportedChronicle("an Empire needs at least one site"))
+          _ <- Either.cond(chronicle.world.size <= 8, (),
+            UnsupportedChronicle("an Empire cannot hold more than 8 sites"))
           chancellor <- seated.get(lineage) match
             case Some(player) => Either.cond(orders.firstPlayer == player,
               player, UnsupportedChronicle(

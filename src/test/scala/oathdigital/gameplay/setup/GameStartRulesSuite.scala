@@ -1,5 +1,6 @@
 package oathdigital.gameplay.setup
 
+import oathdigital.application.{ChronicleFirstGamePlan, FirstGameBootstrapConfig}
 import oathdigital.model._
 import oathdigital.testkit.CatalogNames
 import oathdigital.testkit.Unwrap.{accepted, as, rejected}
@@ -116,6 +117,29 @@ class GameStartRulesSuite extends munit.FunSuite:
         LaterGameFixture.orders(record, PlayerId("p1"))),
       Left(OathViolation.UnsupportedChronicle(
         "an Empire needs at least one site")))
+
+  test("game start refuses an Empire of more than 8 sites"):
+    val record = LaterGameFixture.chronicle(LineageId("l1"), world = 8)
+    val extra = record.copy(world = record.world :+
+      StoredSite(CatalogNames.site("Great Slum")))
+    assertEquals(GameStartRules.evolve(catalog, extra,
+        LaterGameFixture.orders(extra, PlayerId("p1"))),
+      Left(OathViolation.UnsupportedChronicle(
+        "an Empire cannot hold more than 8 sites")))
+
+  test("a later game's short deck is accepted mixed with the Visions, and " +
+      "refused when it is not the rest of the deal"):
+    // Every card but 15 dealt and 20 left leaves a deck under 25.
+    val record = LaterGameFixture.chronicle(LineageId("l1"))
+    val short = record.copy(worldDeck = record.worldDeck.take(6 + 9 + 20))
+    val mixed = ChronicleFirstGamePlan.dealOrder(
+      FirstGameBootstrapConfig(orders.participants, PlayerId("p1")), 3,
+      short.worldDeck, short.relicDeck, _.reverse)
+    accepted(GameStartRules.evolve(catalog, short, mixed))
+    assertEquals(GameStartRules.evolve(catalog, short, mixed.copy(
+        worldDeckOrder = mixed.worldDeckOrder.init)),
+      Left(OathViolation.UnsupportedChronicle(
+        "the world deck is not the rest of the deal")))
 
   test("a later game skips the Homeland edifice check (R26)"):
     val record = LaterGameFixture.chronicle(LineageId("l1"))

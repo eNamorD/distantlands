@@ -16,8 +16,9 @@ import oathdigital.model._
  * given.
  */
 object ChronicleFirstGamePlan:
-  /** A first game: every player draws, and the deck is long enough that
-    * nothing is mixed. */
+  /** A first game: every player draws. A generated first-game deck is long
+    * enough that nothing is mixed; a shorter one is mixed with `identity`,
+    * which keeps it in order with the Visions below it. */
   def dealOrder(config: FirstGameBootstrapConfig,
       denizenOrder: Vector[DenizenId], relicOrder: Vector[RelicId])
       : SetupOrders =
