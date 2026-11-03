@@ -37,8 +37,8 @@ All count only samples that ran project code:
   frame here, such as `java.lang.ClassValue.getFromBackup`, names a cost that
   project code pays through a library call.
 - **Watched frames** are the share of samples with one named frame anywhere
-  on the stack: the card index, the state invariant, `gather` and
-  `ClassValue`. The list is `WATCHED` in the script. Edit it to follow a
+  on the stack: the card index, the state invariant, domain validation,
+  `gather`, the walker's `breaches` and `ClassValue`. The list is `WATCHED` in the script. Edit it to follow a
   different hot spot.
 - **Inclusive frames** are the `oathdigital` frames anywhere on the stack. A
   frame at 26% was on the stack in a quarter of the samples, so removing its

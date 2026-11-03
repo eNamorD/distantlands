@@ -530,8 +530,9 @@ content wraps to the pane's width, a word breaking only where nothing else
 fits. Spacing runs 4, 6, 8, 12, 18px;
 `min-height: 44px` is the touch floor for every action button.
 
-The trusted-host page (game creation) is the one page-scrolling surface: a
-1280px container with 28px/20px/48px padding, forms in a 40rem grid.
+The start pages (the Chronicle page and game creation) are the only
+scrolling documents: they scroll inside `#app` with 28px/16px/48px padding,
+forms in a 40rem grid.
 
 ## Elevation & Depth
 

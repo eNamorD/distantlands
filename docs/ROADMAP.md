@@ -90,17 +90,16 @@ section describes each seam below in a paragraph.
 - **Unchanged from batch 8:** Search Party (recorded in the
   [catalog batch 4 rulings](superpowers/specs/2026-10-05-catalog-batch-4-rulings.md#moved-out-of-the-batch)),
   Bracken, Cracked Horn and Ring of Devotion (a discard destination),
-  Master of Disguise and Acting Troupe (acting as another card), Relic
-  Hunter and Glamor (new target kinds), Autumn Wind, Tracker, Obsidian
-  Cage and False Prophet (a player-aware off-turn card play).
+  Master of Disguise and Acting Troupe (acting as another card), Autumn
+  Wind, Tracker and False Prophet (a player-aware off-turn card play).
 
 ### Phase - All-Exile alpha readiness
 
-`0.1.0-alpha.2` and `0.1.0-alpha.3` shipped as GitHub prereleases through the
+`0.1.0-alpha.2`, `0.1.0-alpha.3` and `0.1.0-alpha.4` shipped as GitHub prereleases through the
 [alpha release workflow](operations/releases.md), each with bundled archives
 for macOS arm64, Windows x64 and Linux x64. The last manual acceptance run is
-[recorded](testing/alpha-acceptance-0.1.0-alpha.2.md); `0.1.0-alpha.3` shipped
-without one. Deferred findings and requested UI changes are in the
+[recorded](testing/alpha-acceptance-0.1.0-alpha.2.md); `0.1.0-alpha.3` and
+`0.1.0-alpha.4` shipped without one. Deferred findings and requested UI changes are in the
 [Phase 5 follow-ups](operations/phase-5-follow-ups.md).
 
 - [ ] **Unanswered off-turn decisions.** A parked decision blocks every
@@ -127,8 +126,8 @@ without one. Deferred findings and requested UI changes are in the
   the redirect avoids, and update the network guide and quick start.
 - [ ] **A lighter way to test separate-machine play.** The manual
   [acceptance record](operations/alpha-acceptance.md) takes two physical
-  machines and a lot of hand-recorded evidence, so `0.1.0-alpha.3` shipped
-  without one. Find a cheaper check for what it covers (LAN reachability,
+  machines and a lot of hand-recorded evidence, so `0.1.0-alpha.3` and
+  `0.1.0-alpha.4` shipped without one. Find a cheaper check for what it covers (LAN reachability,
   seat links opening on another machine, reconnect and restart, HTTPS proxy
   and origin behavior, and the bundled archives' first launch on each OS),
   ideally something a release run can execute or that takes minutes by hand.

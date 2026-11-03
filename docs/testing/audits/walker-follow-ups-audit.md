@@ -8,9 +8,15 @@
 > seats Imperials, and `GameStartRules` refuses the Chronicle shapes not
 > yet supported. Of section 2's seven cards, Spiral Castle and the Hall of
 > Debate and Tome Guardians restrictions landed in catalog batch 9 and
-> Martial Culture and the Scepter's plan with the Empire; Glamor, Relic
-> Hunter and Obsidian Cage have the owner's rulings of 2026-11-03, recorded
-> under the roadmap's "The last battle plans", and wait to be built.
+> Martial Culture and the Scepter's plan with the Empire, and Glamor, Relic
+> Hunter and Obsidian Cage as merge aacc259c (with 579b093b for the Cage's
+> Hospital and Throne rulings). Their rulings and readings, confirmed by the
+> owner on 2026-11-03, are in section 2. Only the Scepter Bearer legacy plan
+> is left; it waits for legacy powers. Every recommended slice is done or
+> overtaken, and the roadmap item was replaced by the per-card work.
+>
+> The summary and sections 2 and 3 describe the tree as audited. Section 4's
+> table is kept current.
 >
 > Written as a read-only audit, 2026-11-02, of the ROADMAP item "Walker
 > follow-ups" under Powers-related deferred items. The item was recorded by
@@ -221,7 +227,8 @@ are `BattlePlans`, `SimplePlans`, `PlanRules` and `PlanRewrites`
 
 Against the card data (`cards/content/card-data/oath/en-US/*.yml`, tag
 "Battle Plan": 85 cards, of which the New Foundations set excludes the
-"Base Game Only" ones), the New Foundations plans without a power are:
+"Base Game Only" ones), the New Foundations plans without a power at
+`0d1ae92` were these. All but Scepter Bearer have one now:
 
 | Card | Where it waits | Rule it needs | Window |
 | --- | --- | --- | --- |
@@ -367,6 +374,7 @@ the owner confirmed it on 2026-11-03, with the changes noted:
   deck; the Chronicle's Throne does, at the game's end, so before the
   Reliquary is stocked every warband on a card goes back to its supply,
   with nothing asked (owner's ruling: no board takes them).
+
 The roadmap's separate item "Record a bandit's applied battle plan as an
 event" covers how that use is journaled.
 
@@ -406,12 +414,12 @@ is bound to each (`grep -l PowerWindow.<name>` under `gameplay/powers`):
 | `CampaignAfterOutcome` | `VictoriousNow` (Peace Envoy, Hearts and Minds) | none |
 | `CampaignLosses` | Billowing Fog, Traveling Doctor (`SparedForce`), Sticky Fire, Shield Wall (`KillWholeForce`), Hospital, Cursed Cauldron, Peace Envoy, Obsidian Cage | none |
 | `CampaignSkullLosses`, `CampaignSacrificeLosses` | Hospital, Cursed Cauldron | none |
-| `CampaignPlacement` | Vow of Wandering, Relic Hunter (its take) | none |
+| `CampaignPlacement` | Vow of Wandering, Relic Hunter (its take), Glamor (its take in a Conquest) | none |
 | `CampaignRaidTransfer` | the `BattlePlan` trait, Glamor (its take) | none |
 | `CampaignRaidConsequences` | Keep | none |
-| `CampaignRaidRelocation` | Keep | Spiral Castle |
-| `CampaignActionEligibility` (the root, "At End") | Battle Honors, Book Burning, Careful Plans, `DiscardedAtEnd` (Pledge of Defense, Rain Boots, Rival Khan, Great Crusade, Mounted Patrol, Lancers, Horse Archers, Storm Caller, Warning Signals), Field Promotion, Herald, Hospital, Mercenaries, Military Parade, Salt the Earth, Second Wind, Sneak Attack, Tribute Spoils, Vow of Peace, Wild Mounts, Diplomat, the fortress rules | Spiral Dungeons (attacker's pawn and Supply), Martial Culture, Grand Scepter |
-| `CampaignTargetSelection` | Circlet of Command, Forgotten Vault, Lost Tongue, the Pass | Hall of Debate and Tome Guardians (`HoldingEdifices.scala:8-16, 190-198`: the ruler's enemies cannot target the banner they hold), none for Glamor or Relic Hunter, which ask their targets as the plan's own question |
+| `CampaignRaidRelocation` | Keep, Spiral Castle | none |
+| `CampaignActionEligibility` (the root, "At End") | Battle Honors, Book Burning, Careful Plans, `DiscardedAtEnd` (Pledge of Defense, Rain Boots, Rival Khan, Great Crusade, Mounted Patrol, Lancers, Horse Archers, Storm Caller, Warning Signals), Field Promotion, Herald, Hospital, Mercenaries, Military Parade, Salt the Earth, Second Wind, Sneak Attack, Tribute Spoils, Vow of Peace, Wild Mounts, Diplomat, the fortress rules, Spiral Castle / Spiral Dungeons, Martial Culture, the Grand Scepter's plan | none |
+| `CampaignTargetSelection` | Circlet of Command, Forgotten Vault, Lost Tongue, the Pass, Hall of Debate and Tome Guardians (`BannerGuardians`) | none; Glamor and Relic Hunter ask their targets as the plan's own question |
 
 The Raid step order (takes, then consequences in their own window, then
 relocation; `CampaignRaid.scala:11-30`) matches the rules' four Raid

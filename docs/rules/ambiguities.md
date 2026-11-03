@@ -101,6 +101,8 @@ R29. **The Chancellor's Reliquary pick.** The pick is the first Setup step. Duri
 
 R30. **A short purple supply at setup.** Purple warbands are limited to the 24 components, in setup and in play. Setup first gives each Imperial player their 3 board warbands, then places 1 Imperial warband on each Empire site, Cradlemost first, until the supply runs out. An Empire site left without one is otherwise set up as an Empire site: intact edifice, stored relics only, no relic slots filled. The empty-site check the walker runs after each action then fills every empty site with bandits up to its capacity; a capacity-0 site stays empty. Chronicle rulings 20 and 22 keep their unlimited supply, since the Chronicle phase is not play (Empire slice 4).
 
+R31. **Obsidian Cage.** Either side may use the Cage's battle plan. Bandit warbands are always killed, so none reach it. Warbands the enemy's Hospital saves still survive in the force, so they go onto the Cage, not to Hospital's site. The Cage's Action may return caged Imperial warbands to any Imperial board: the Chancellor's or a Citizen's (user, 2026-11-03; [walker follow-ups audit](../testing/audits/walker-follow-ups-audit.md#obsidian-cage-rulings-made-while-implementing)).
+
 ## Chronicle rulings
 
 Rulings given by the project owner for the Chronicle Phase ([chronicle.md](chronicle.md)). The rev1 task cards are slightly older than the CR; where they disagree, the CR governs.
@@ -130,6 +132,8 @@ Rulings given by the project owner for the Chronicle Phase ([chronicle.md](chron
 21. **Offer Citizenship.** The Throne holder offers Citizenship to any seated Exiles, none included; boxed lineages are never offered. The offered Exiles answer at once, in any order, Decline first; each answer is public and applies when it is given (user, 2026-11-02; [simultaneous decisions design](../superpowers/specs/2026-11-02-simultaneous-decisions-design.md)). An Exile who accepts becomes a Citizen, returns their board warbands, and keeps one Imperial warband at each site they rule. No other Citizenship step, and not the first-game option, applies in the Chronicle (CR p. 37; Empire slice 3b).
 
 22. **Unlimited purple at the Throne.** Offer Citizenship assumes an unlimited purple supply, since it marks sites as the Empire's; purple warbands the bank lacks are added to it (CR p. 37; Empire slice 3b).
+
+23. **Caged warbands at the Throne.** When the Throne returns the relics to the Reliquary, every warband on a card (Obsidian Cage) returns to its supply, since the game has ended; no board takes them (user, 2026-11-03).
 
 ## Source relationship cautions
 

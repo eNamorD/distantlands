@@ -285,20 +285,26 @@ database.
 
 1. Open the configured public base URL, such as
    `http://192.168.1.20:8080/`, on the host.
-2. The page starts with a red and a blue player. Use **Add a Player** to add
+2. The page offers **New Chronicle** and, once a saved Chronicle is loaded
+   from the list, **Continue Chronicle**. Saved Chronicles live in this
+   browser's storage, not in the database; export one to keep a copy. Choose
+   one to reach the player list.
+3. For a new Chronicle, optionally edit its name. The page starts with a red
+   and a blue player. Use **Add a Player** to add
    another color (`red`, `blue`, `yellow`, `white`, `black`, `pink`, or
    `brown`), up to six players, and **Remove** to drop one. A game needs at
    least two players. Each color is its own lineage.
-3. Optionally edit each player ID. IDs default to the capitalized color name,
+4. Optionally edit each player ID. IDs default to the capitalized color name,
    such as `Red`, and must be unique. An ID starts with a letter or digit, may
    then use letters, digits, `.`, `_`, `:` and `-`, and is at most 128
    characters long.
-4. Select **Create game**. The page generates the game ID. The seating order
+5. Select **Create game**. The page generates the game ID. The seating order
    and the first player are shuffled when the game starts, along with the sites
-   and decks.
-5. Copy and privately save every displayed seat link before leaving the page.
+   and decks. In a continued Chronicle with a Chancellor, the Chancellor goes
+   first, or a random Citizen when the Chancellor does not play.
+6. Copy and privately save every displayed seat link before leaving the page.
    The creation result is the only place that lists all raw links.
-6. Send each player only their assigned link. Do not post links in public chat,
+7. Send each player only their assigned link. Do not post links in public chat,
    issue trackers, screenshots, or access logs.
 
 Opening `/s/{seat-code}` stores a seat cookie and redirects to the canonical

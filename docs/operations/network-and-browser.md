@@ -10,7 +10,7 @@ Browser support remains provisional until each release is manually accepted.
 Automated HTTP smoke tests do not establish browser compatibility. A build's own
 [acceptance record](../testing/alpha-acceptance-0.1.0-alpha.2.md) holds the exact
 tested browser, version, and OS; this table only summarizes the latest tested
-build. `0.1.0-alpha.3` shipped without a manual run. The table is not a durable
+build. `0.1.0-alpha.3` and `0.1.0-alpha.4` shipped without a manual run. The table is not a durable
 compatibility promise for later builds.
 
 | Browser family | Status as of `0.1.0-alpha.2` (2026-09-23) |

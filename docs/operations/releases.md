@@ -93,7 +93,7 @@ starts the build.
    write`; verification jobs have only `contents: read`.
 2. Write the version's [release notes](#release-notes). The manual
    [LAN/TLS acceptance record](alpha-acceptance.md) is optional during alpha:
-   `0.1.0-alpha.3` shipped without one while a lighter way to test
+   `0.1.0-alpha.3` and `0.1.0-alpha.4` shipped without one while a lighter way to test
    separate-machine play is worked out. Create and push the chosen prerelease
    tag through your normal reviewed release process. This implementation does
    not create or push a tag.

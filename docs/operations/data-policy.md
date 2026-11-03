@@ -11,6 +11,11 @@ Digital, wait for the process or container to exit, and confirm the
 `Oath Digital database closed` log line first. A partial or live copy is not a
 supported backup.
 
+Saved Chronicles are not in the database. The start page keeps them in the
+host browser's local storage, so a database backup does not include them and
+clearing that browser's site data deletes them. Use the start page's export
+to keep a copy of each Chronicle you want to continue.
+
 ## Compatibility contract
 
 Every alpha release must state its data compatibility with the previous
