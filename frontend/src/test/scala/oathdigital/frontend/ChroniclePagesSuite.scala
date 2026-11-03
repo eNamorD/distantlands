@@ -2,7 +2,8 @@ package oathdigital.frontend
 
 import oathdigital.frontend.ChronicleFixtures.{entry, seatLinksResponse}
 import oathdigital.frontend.ServerModeFixtures.withEmptyLogPage
-import oathdigital.protocol.{ChronicleRequest, TrustedGameCreateRequestCodec}
+import oathdigital.protocol.{ChronicleRequest, ChronicleScore,
+  TrustedGameCreateRequestCodec}
 import oathdigital.testkit.Unwrap.{accepted, as, present}
 import org.scalajs.dom
 import scala.collection.mutable.ArrayBuffer
@@ -274,3 +275,36 @@ class ChroniclePagesSuite extends munit.FunSuite:
       browser.settle.map { _ =>
         assertEquals(browser.byClass("seat-link").size, 2)
       }
+
+  /** A storage holding "Iron Crown", loaded: red is its Chancellor and blue
+    * a Citizen. */
+  private def storageWithAnEmpire(): MemoryChronicleStorage =
+    val storage = new MemoryChronicleStorage()
+    val plain = entry("Iron Crown")
+    accepted(shelfOver(storage).put(plain.copy(summary = plain.summary.copy(
+      scores = Vector(ChronicleScore("red-lineage", 9, Some("chancellor")),
+        ChronicleScore("blue-lineage", 6, Some("citizen")))))))
+    storage
+
+  test("player selection labels each color's role from the loaded Chronicle"):
+    TestBrowser.useSynchronously(): browser =>
+      startPages(browser, "/", ChronicleFixtures.devices(
+        Some(storageWithAnEmpire())))
+      browser.click("continue-chronicle")
+      assertEquals(browser.byClass("host-player-color").map(_.textContent),
+        Vector("Red, Chancellor", "Blue, Citizen"))
+      assert(browser.nodes.exists(
+        _.getAttribute("aria-label") == "Red, Chancellor player ID"))
+      browser.click("add-player-toggle")
+      assertEquals(browser.byClass("add-player-option").head.textContent,
+        "Yellow")
+
+  test("player selection says the Chancellor goes first in an Empire game"):
+    TestBrowser.useSynchronously(): browser =>
+      startPages(browser, "/", ChronicleFixtures.devices(
+        Some(storageWithAnEmpire())))
+      browser.click("continue-chronicle")
+      assert(browser.nodes.exists(_.textContent.contains(
+        "The Chancellor goes first")))
+      assert(!browser.nodes.exists(_.textContent.contains(
+        "the first player are chosen at random")))

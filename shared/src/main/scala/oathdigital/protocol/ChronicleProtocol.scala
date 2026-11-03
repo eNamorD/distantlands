@@ -2,7 +2,14 @@ package oathdigital.protocol
 
 import oathdigital.protocol.projection.ProjectionCodecSupport._
 
-final case class ChronicleScore(lineage: String, score: Int)
+/** A lineage's era score, and its Imperial role: `"chancellor"` or
+  * `"citizen"`, absent for an Exile. An entry saved before roles were kept
+  * has none. */
+final case class ChronicleScore(lineage: String, score: Int,
+    role: Option[String] = None)
+
+object ChronicleScore:
+  val roles: Set[String] = Set("chancellor", "citizen")
 
 /** What a browser lists for a Chronicle without decoding it (Chronicle
   * browsing design, "Summary"). `game` is the next game's number; it is
@@ -22,8 +29,11 @@ object ChronicleEntryCodec:
   def encodeValue(entry: ChronicleEntry): ujson.Obj =
     val summary = ujson.Obj("name" -> entry.summary.name,
       "eraTarget" -> entry.summary.eraTarget,
-      "scores" -> encoded(entry.summary.scores)(score => ujson.Obj(
-        "lineage" -> score.lineage, "score" -> score.score)))
+      "scores" -> encoded(entry.summary.scores) { score =>
+        val row = ujson.Obj("lineage" -> score.lineage, "score" -> score.score)
+        score.role.foreach(role => row("role") = role)
+        row
+      })
     entry.summary.game.foreach(game => summary("game") = game)
     ujson.Obj("json" -> entry.json, "digest" -> entry.digest,
       "summary" -> summary)
@@ -51,10 +61,13 @@ object ChronicleEntryCodec:
       scores <- traverse(scoreRaws, s"$summaryPath.scores") { (raw, child) =>
         for
           row <- obj(raw, child)
-          _ <- exact(row, Set("lineage", "score"), child)
+          _ <- exact(row, Set("lineage", "score", "role"), child)
           lineage <- string(row, "lineage", child)
           score <- int(row, "score", child)
-        yield ChronicleScore(lineage, score)
+          role <- optionalAbsent(row, "role", child)((raw, at) =>
+            string(raw, at).filterOrElse(ChronicleScore.roles,
+              ProtocolDecodeFailure.InvalidValue(at, "unknown role")))
+        yield ChronicleScore(lineage, score, role)
       }
     yield ChronicleEntry(json, digest, ChronicleSummary(name, game, target,
       scores))

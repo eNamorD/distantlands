@@ -3,7 +3,6 @@ package oathdigital.application.chronicle
 import oathdigital.gameplay.chronicle.EvolvedChronicleFixture
 import oathdigital.gameplay.setup.FirstGameSetupFixture.chronicle
 import oathdigital.model._
-import oathdigital.protocol.ChronicleScore
 
 /** Digest and summary (Chronicle browsing design, "Digest" and "Summary"). */
 class ChronicleEntriesSuite extends munit.FunSuite:
@@ -30,11 +29,23 @@ class ChronicleEntriesSuite extends munit.FunSuite:
     val evolved = EvolvedChronicleFixture.record
     val summary = ChronicleEntries.summary(evolved)
     assertEquals(summary.game, Some(2))
-    assertEquals(summary.scores, evolved.lineages.map(lineage =>
-      ChronicleScore(lineage.id.value, evolved.era.score(lineage.id))))
+    assertEquals(summary.scores.map(score => score.lineage -> score.score),
+      evolved.lineages.map(lineage =>
+        lineage.id.value -> evolved.era.score(lineage.id)))
     assert(summary.scores.exists(_.score == 3), summary.scores)
 
   test("a Chronicle with lineages but no scorepad has no game number"):
     val imported = EvolvedChronicleFixture.record.copy(
       era = EraState(20, Vector.empty))
     assertEquals(ChronicleEntries.summary(imported).game, None)
+
+  test("a summary records each lineage's Imperial role, and none for an " +
+      "Exile"):
+    def lineage(id: String, role: Role) =
+      LineageState(LineageId(id), None, role, Vector.empty, Vector.empty)
+    val summary = ChronicleEntries.summary(chronicle.copy(lineages = Vector(
+      lineage("red-lineage", Role.Chancellor),
+      lineage("blue-lineage", Role.Citizen),
+      lineage("yellow-lineage", Role.Exile))))
+    assertEquals(summary.scores.map(_.role),
+      Vector(Some("chancellor"), Some("citizen"), None))

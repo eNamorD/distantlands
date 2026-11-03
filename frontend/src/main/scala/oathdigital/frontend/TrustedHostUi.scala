@@ -30,6 +30,24 @@ private[frontend] object TrustedHostUi:
     "Chronicle " + ChronicleText.localDate(new js.Date().toISOString())
   private def name(color: PlayerColor): String = color.key.capitalize
 
+  /** Each lineage's Imperial role in the loaded Chronicle, by color: the
+    * backend names a color's lineage `<color>-lineage`. */
+  private def roles(chronicle: HostChronicle): Map[PlayerColor, String] =
+    chronicle match
+      case HostChronicle.New => Map.empty
+      case HostChronicle.Continue(saved) =>
+        val byLineage = saved.entry.summary.scores
+          .flatMap(score => score.role.map(score.lineage -> _)).toMap
+        LineageColors.flatMap(color =>
+          byLineage.get(s"${color.key}-lineage").map(color -> _)).toMap
+
+  /** "First player" or the Empire's: who goes first in this game. */
+  private def firstPlayerSentence(roles: Map[PlayerColor, String]): String =
+    if roles.values.exists(_ == "chancellor") then
+      "Seating order is chosen at random. The Chancellor goes first, or a " +
+        "random Citizen when the Chancellor does not play. "
+    else "Seating order and the first player are chosen at random. "
+
   /** Mirrors the backend identifier rule in `TrustedGameCodecFields.identifier`. */
   def validPlayerId(value: String): Boolean =
     value.length <= 128 && value.matches("[A-Za-z0-9][A-Za-z0-9._:-]*")
@@ -51,13 +69,16 @@ private[frontend] object TrustedHostUi:
       if !backLink.disabled then back()
     mount.appendChild(backLink)
     mount.appendChild(text("h1", "", "Create an Oath Digital game"))
+    val imperial = roles(chronicle)
+    def label(color: PlayerColor): String =
+      name(color) + imperial.get(color).fold("")(role => s", ${role.capitalize}")
     mount.appendChild(text("p", "", openCreated match {
       case None => "Add one row per player, then send each player " +
         "their assigned link. Anyone with a seat link can control that seat. " +
-        "Seating order and the first player are chosen at random. " +
+        firstPlayerSentence(imperial) +
         "Save these links before leaving this page."
       case Some(_) => "Add one row per player. " +
-        "Seating order and the first player are chosen at random. " +
+        firstPlayerSentence(imperial) +
         "The new game opens as the first listed player; switch players from the toolbar."
     }))
     val form = element("form", "trusted-host-form")
@@ -114,7 +135,7 @@ private[frontend] object TrustedHostUi:
         option.setAttribute("type", "button")
         option.setAttribute("role", "option")
         option.appendChild(swatch(color))
-        option.appendChild(text("span", "", name(color)))
+        option.appendChild(text("span", "", label(color)))
         option.onclick = event => {
           event.preventDefault(); closeMenu(); addRow(color); toggle.focus()
         }
@@ -132,10 +153,10 @@ private[frontend] object TrustedHostUi:
     def addRow(color: PlayerColor): Unit =
       val node = element("li", s"host-player host-player-${color.key}")
       node.appendChild(swatch(color))
-      node.appendChild(text("span", "host-player-color", name(color)))
+      node.appendChild(text("span", "host-player-color", label(color)))
       val input = dom.document.createElement("input").asInstanceOf[dom.html.Input]
       input.className = "host-player-id"
-      input.setAttribute("aria-label", s"${name(color)} player ID")
+      input.setAttribute("aria-label", s"${label(color)} player ID")
       input.value = defaultPlayerId(color)
       input.required = true
       // An ID is kept as typed, so a phone must not capitalize or correct it.
