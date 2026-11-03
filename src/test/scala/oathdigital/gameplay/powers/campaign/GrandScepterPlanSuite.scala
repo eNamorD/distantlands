@@ -2,6 +2,7 @@ package oathdigital.gameplay.powers.campaign
 
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
+import oathdigital.gameplay.operations.TheGrandScepterCard
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
@@ -20,7 +21,7 @@ class GrandScepterPlanSuite extends munit.FunSuite:
   private def chancellorRaidsCitizen: Board =
     val base = withEnemyAtOrigin(board(warbands = 5, supply = 7))
     on(base)(_.imperial(base.actor, base.rival)
-      .relic(base.actor, "The Grand Scepter").favor(base.actor, 3)
+      .relic(base.actor, TheGrandScepterCard).favor(base.actor, 3)
       .boardWarbands(base.rival, 3))
 
   /** A Citizen, the actor, raids the Chancellor, who holds the Scepter
@@ -28,7 +29,7 @@ class GrandScepterPlanSuite extends munit.FunSuite:
   private def citizenRaidsChancellor: Board =
     val base = withEnemyAtOrigin(board(warbands = 4, supply = 7))
     on(base)(_.imperial(base.rival, base.actor)
-      .relic(base.rival, "The Grand Scepter").favor(base.rival, 3)
+      .relic(base.rival, TheGrandScepterCard).favor(base.rival, 3)
       .boardWarbands(base.rival, 3))
 
   /** Past any relocation, to the Scepter's question. */
@@ -84,12 +85,12 @@ class GrandScepterPlanSuite extends munit.FunSuite:
 
   test("against an Exile, or for an Exile, the plan is not offered"):
     val base = withEnemyAtOrigin(board(warbands = 5, supply = 7))
-    val exileHolder = on(base)(_.relic(base.actor, "The Grand Scepter")
+    val exileHolder = on(base)(_.relic(base.actor, TheGrandScepterCard)
       .favor(base.actor, 3))
     val asked = commit(rules(winningDice), exileHolder, 4, raid = true)
     assert(!asked.offered(exileHolder.actor).contains(ref))
     val againstExile = on(base)(_.imperial(base.actor)
-      .relic(base.actor, "The Grand Scepter").favor(base.actor, 3))
+      .relic(base.actor, TheGrandScepterCard).favor(base.actor, 3))
     val raided = commit(rules(winningDice), againstExile, 4, raid = true)
     assert(!raided.offered(againstExile.actor).contains(ref))
 

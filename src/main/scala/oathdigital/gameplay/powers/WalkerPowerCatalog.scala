@@ -23,11 +23,9 @@ import oathdigital.gameplay.powers.whenplayed._
 import oathdigital.gameplay.walker.WalkerPowers
 
 /** The real catalog of `ContributingPower`s wired onto the generic walker
-  * seam. Catalog-parameterized: a contribution that carries a
-  * catalog-specific card id must be resolved against the same catalog the
-  * caller is running. A site power whose site is absent from `catalog`
-  * (e.g. a synthetic test catalog) is simply omitted, not a construction
-  * failure. Every other card power names its card, so it is always present.
+  * seam. Every power names its card, so all are always present; `default`
+  * takes the catalog only to hand it to them through `WalkerPowers.catalog`
+  * and to gather its global operation restrictions.
   *
   * A power carrying no catalog id is simply always present: Take Wealth's
   * once-per-turn limit states a rulebook clause about whichever site the pawn
@@ -58,67 +56,69 @@ import oathdigital.gameplay.walker.WalkerPowers
   * restrictions.
   */
 object WalkerPowerCatalog:
-  def default(catalog: ExecutableCatalog): WalkerPowers =
-    val powers = contributing(catalog)
-    WalkerPowers(powers,
-      restrictionSet = OperationRestrictions.forCatalog(catalog),
-      declared = Some(DeclaredNotes.of(powers, catalog)))
-
-  /** The power-use restrictions the walker powers of `catalog` declare,
-    * for the phase powers (catalog batch 8, slice 10). Read from
-    * `contributing`, since `default` builds the phase powers' notes. */
-  def useRestrictions(catalog: ExecutableCatalog)
-      : Vector[PowerUseRestriction] =
-    contributing(catalog).flatMap(_.powerUseRestrictions)
-
   /** The powers themselves. `DeclaredNotes` reads them to build the union a
     * `WalkerPowers` carries, so it is taken separately from `default`: a
     * union built from `default` would build a union to build a union. */
-  private[powers] def contributing(catalog: ExecutableCatalog)
-      : Vector[ContributingPower] =
-    Vector(CatacombsContribution.forCatalog(catalog)) ++
+  private[powers] val contributing: Vector[ContributingPower] =
+    Vector(CatacombsContribution) ++
+      Vector(RelicPatrols, BanditPatrols) ++
       Vector(VowOfPeaceContribution) ++
       Vector(VowOfSilence, VowOfDivision) ++
       Vector(BrassArmyMoves) ++
       Vector(SecretTestament) ++
       Vector(YewStaff) ++
       Vector(SpellBreaker) ++
-      Vector(ForestCouncil.forCatalog(catalog)) ++
+      Vector(ForestCouncil) ++
       Vector(CityWall) ++
       Vector(GiantPythonRestriction) ++
+      Vector(HiddenPassages) ++
+      Vector(TempleOfAncestors) ++
       TravelSitePowers.all ++
-      TravelModifiers.forCatalog(catalog) ++
-      Vector(LeagueTreatyContribution.forCatalog(catalog)) ++
-      Vector(SilverTongue.forCatalog(catalog)) ++
+      Vector(BoilingLakeTravel, ForbiddenForest) ++
+      Vector(HallowedSpring) ++
+      TravelModifiers.all ++
+      Vector(LeagueTreatyContribution) ++
+      Vector(SilverTongue) ++
       Vector(Insomnia) ++
-      Vector(Assassin.forCatalog(catalog)) ++
+      Vector(Assassin) ++
       Vector(LostTapestry) ++
       Vector(PiedPiper) ++
-      Vector(FamilyWagon.forCatalog(catalog)) ++
-      Vector(VowOfUnionAdvisers.forCatalog(catalog)) ++
+      Vector(FamilyWagon) ++
+      Vector(VowOfUnionAdvisers) ++
       Vector(ASmallFavor) ++
       Vector(FaithfulFriend) ++
       Vector(Garrison) ++
       Vector(FamilyHeirloom) ++
       Vector(ShiftingFog) ++
-      Vector(TwinBrother.forCatalog(catalog)) ++
-      WhenPlayedPowers.forCatalog(catalog) ++
+      Vector(TwinBrother) ++
+      WhenPlayedPowers.all ++
       Vector(ChaosCult) ++
-      ActionModifiers.forCatalog(catalog) ++
-      TargetProtections.forCatalog(catalog) ++
-      Vector(KnightsErrant.forCatalog(catalog)) ++
+      ActionModifiers.all ++
+      TargetProtections.all ++
+      Vector(KnightsErrant) ++
       Vector(Marriage) ++
       Vector(PledgeToDiscord) ++
-      Vector(Jinx.forCatalog(catalog)) ++
-      BattlePlans.forCatalog(catalog) ++
-      PlanRules.forCatalog(catalog) ++
-      SimplePlans.forCatalog(catalog) ++
-      PlanRestrictions.forCatalog(catalog) ++
-      PlanRewrites.forCatalog(catalog) ++
-      CardPlayTriggers.forCatalog(catalog) ++
+      Vector(Jinx) ++
+      BattlePlans.all ++
+      PlanRules.all ++
+      SimplePlans.all ++
+      PlanRestrictions.all ++
+      PlanRewrites.all ++
+      CardPlayTriggers.all ++
       BannerFacePowers.contributions ++
-      Vector(Dazzle.forCatalog(catalog), GreatMarket.forCatalog(catalog),
-        BanditMarket.forCatalog(catalog), GreatForge.forCatalog(catalog),
-        BrokenForge.forCatalog(catalog), ProvingGrounds.forCatalog(catalog),
-        EmptyGrounds.forCatalog(catalog), TakeWealthLimit,
+      Vector(Dazzle, GreatMarket,
+        BanditMarket, GreatForge,
+        BrokenForge, ProvingGrounds,
+        EmptyGrounds, HallOfMockery, LostGuardians,
+        RuinedSchool, BrokenHorn, TakeWealthLimit,
         ConspiracyWhenPlayed)
+
+  /** The power-use restrictions the walker powers declare, for the phase
+    * powers (catalog batch 8, slice 10). */
+  val useRestrictions: Vector[PowerUseRestriction] =
+    contributing.flatMap(_.powerUseRestrictions)
+
+  def default(catalog: ExecutableCatalog): WalkerPowers =
+    WalkerPowers(contributing,
+      restrictionSet = OperationRestrictions.forCatalog(catalog),
+      declared = Some(DeclaredNotes.of(contributing)), catalog = catalog)

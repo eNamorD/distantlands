@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
 import oathdigital.model._
 
 object ScryerCard extends Denizen(DenizenId("19"), "Scryer", Suit.Discord):
@@ -43,7 +43,8 @@ case object Scryer extends PaidAction(ScryerCard.power):
   def ref(region: Region): DecisionOptionRef.Button =
     DecisionOptionRef.Button(region.key)
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     Decide(pileDecisionId, player, DecisionQuery.ChooseOne(piles.map(region =>
       DecisionOption.Button(ref(region), name(region).capitalize)),

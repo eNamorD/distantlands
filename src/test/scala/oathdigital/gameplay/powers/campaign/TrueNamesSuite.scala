@@ -5,28 +5,27 @@ import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignPlans}
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
-import oathdigital.testkit.CatalogNames
 
 /** True Names: its holder's enemy cannot use battle plans matching any of
   * the holder's faceup advisers. */
 class TrueNamesSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("True Names")
-  private val warTortoise = CatalogNames.denizen("War Tortoise")
+  private val card = TrueNamesCard.id
+  private val warTortoise = WarTortoiseCard.id
   private val warTortoiseRef: DecisionOptionRef =
     DecisionOptionRef.Denizen(warTortoise)
-  private val longbows = CatalogNames.denizen("Longbows")
+  private val longbows = LongbowsCard.id
   private val longbowsRef: DecisionOptionRef =
     DecisionOptionRef.Denizen(longbows)
-  private val outriders = CatalogNames.denizen("Outriders")
+  private val outriders = OutridersCard.id
   private val outridersRef: DecisionOptionRef =
     DecisionOptionRef.Denizen(outriders)
-  private val encirclement = CatalogNames.denizen("Encirclement")
+  private val encirclement = EncirclementCard.id
   private val encirclementRef: DecisionOptionRef =
     DecisionOptionRef.Denizen(encirclement)
-  private val horseArchers = CatalogNames.denizen("Horse Archers")
+  private val horseArchers = HorseArchersCard.id
   private val horseArchersRef: DecisionOptionRef =
     DecisionOptionRef.Denizen(horseArchers)
-  private val codeOfHonor = CatalogNames.denizen("Code of Honor")
+  private val codeOfHonor = CodeOfHonorCard.id
   private val codeOfHonorRef: DecisionOptionRef =
     DecisionOptionRef.Denizen(codeOfHonor)
   private val title: DecisionOptionRef = DecisionOptionRef.Button("title")

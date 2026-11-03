@@ -1,7 +1,11 @@
 package oathdigital.gameplay
 
+import oathdigital.catalog.holding.CrackedHornCard
 import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.operations.TheGrandScepterCard
+import oathdigital.gameplay.powers.action.DowsingSticksCard
+import oathdigital.gameplay.powers.banner.YewStaffCard
+import oathdigital.gameplay.powers.economy.CupOfPlentyCard
 import oathdigital.model._
 import oathdigital.model.OathEvent.WarExhaustionResolved
 import oathdigital.testkit.Table
@@ -85,11 +89,11 @@ class EmpireEndingsSuite extends munit.FunSuite:
     // R17: the Chancellor's Grand Scepter is one of their relics.
     val supremacy = empire(goal = OathkeeperGoal.Supremacy,
       citizens = Vector(p2, p3)).relic(p1, TheGrandScepterCard.id)
-    val tied = supremacy.relic(p2, "Yew Staff")
+    val tied = supremacy.relic(p2, YewStaffCard)
     assertEquals(EmpireEndings.successor(tied.ready), None)
-    val ahead = tied.relic(p2, "Dowsing Sticks")
+    val ahead = tied.relic(p2, DowsingSticksCard)
     assertEquals(EmpireEndings.successor(ahead.ready), Some(p2))
-    val matched = ahead.relic(p3, "Cracked Horn").relic(p3, "Cup of Plenty")
+    val matched = ahead.relic(p3, CrackedHornCard).relic(p3, CupOfPlentyCard)
     assertEquals(EmpireEndings.successor(matched.ready), None)
 
   test("War Exhaustion: an Imperial Oathkeeper gives the Chancellor the " +
@@ -135,8 +139,8 @@ class EmpireEndingsSuite extends munit.FunSuite:
   test("Supremacy has no Successor while the Chancellor holds the most " +
       "relics"):
     val ready = empire(goal = OathkeeperGoal.Supremacy)
-      .relic(p1, TheGrandScepterCard.id).relic(p1, "Yew Staff")
-      .relic(p2, "Dowsing Sticks").ready
+      .relic(p1, TheGrandScepterCard.id).relic(p1, YewStaffCard)
+      .relic(p2, DowsingSticksCard).ready
     assertEquals(EmpireEndings.successor(ready), None)
 
   test("War Exhaustion: a Citizen's Vision wins nothing"):

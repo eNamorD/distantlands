@@ -2,11 +2,12 @@ package oathdigital.gameplay
 
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.{CampaignPlans, CampaignSetup}
-import oathdigital.gameplay.powers.campaign.{BattlePlans, BrassArmy, Outriders,
-  PlanContext, TitleDefensePlan, Watchdog}
+import oathdigital.gameplay.powers.campaign.{BattlePlans, BrassArmy,
+  BrassArmyCard, Outriders, OutridersCard, PlanContext, TitleDefensePlan,
+  Watchdog, WatchdogCard}
+import oathdigital.gameplay.powers.search.AuguryCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.CatalogNames
 import oathdigital.testkit.Unwrap.present
 
 /** What the ported plans offer, asked directly: where a plan's card must stand,
@@ -21,18 +22,18 @@ class CampaignPlansSuite extends munit.FunSuite:
     Vector.empty, force)
 
   private def context(b: Board, side: CampaignPlanSide): PlanContext =
-    PlanContext(b.ready, setupOf(b), side)
+    PlanContext(catalog, b.ready, setupOf(b), side)
 
-  private def defending(b: Board): PlanContext = PlanContext(b.ready,
+  private def defending(b: Board): PlanContext = PlanContext(catalog, b.ready,
     setupOf(b).copy(defender = CampaignDefender.Player(b.rival)),
     CampaignPlanSide.Defender)
 
   private val outriders = Outriders
   private val brass = BrassArmy
   private val watchdog = Watchdog
-  private val outridersCard = CatalogNames.denizen("Outriders")
-  private val brassCard = CatalogNames.relic("Brass Army")
-  private val watchdogCard = CatalogNames.denizen("Watchdog")
+  private val outridersCard = OutridersCard.id
+  private val brassCard = BrassArmyCard.id
+  private val watchdogCard = WatchdogCard.id
 
   test("Outriders is an attacker's plan from any adviser of the attacker, in " +
       "either orientation"):
@@ -121,7 +122,7 @@ class CampaignPlansSuite extends munit.FunSuite:
     assertEquals(offer.effects, Vector[CampaignPlanEffect](
       CampaignPlanEffect.AddDefenseDice(1)))
     // A Raid targets no site.
-    val raid = PlanContext(bandits.ready, setupOf(bandits).copy(
+    val raid = PlanContext(catalog, bandits.ready, setupOf(bandits).copy(
       kind = CampaignKind.Raid, targetSites = Vector.empty),
       CampaignPlanSide.Defender)
     assertEquals(watchdog.plan(raid), None)
@@ -217,7 +218,7 @@ class CampaignPlansSuite extends munit.FunSuite:
 
   test("the four ported plans register through one object, and are automatic " +
       "whatever the catalog flag"):
-    val plans = BattlePlans.forCatalog(catalog)
+    val plans = BattlePlans.all
     assertEquals(plans.size, 4)
     plans.foreach(plan =>
       assertEquals(plan.resolution, PowerResolution.Automatic))
@@ -226,7 +227,7 @@ class CampaignPlansSuite extends munit.FunSuite:
 
   test("a bandit's applied-plan marker reads back to the plan's source"):
     Vector[DecisionOptionRef](
-      DecisionOptionRef.Denizen(CatalogNames.denizen("Augury")),
+      DecisionOptionRef.Denizen(AuguryCard.id),
       DecisionOptionRef.Edifice(EdificeId("edifice:homeland-arcane")),
       DecisionOptionRef.Relic(RelicId("relic:circlet")),
       DecisionOptionRef.Button("title")).foreach { ref =>

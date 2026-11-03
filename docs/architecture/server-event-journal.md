@@ -111,63 +111,46 @@ player IDs do not cross this boundary.
 `IdentityRepository` into one of three access contexts. Owners may bootstrap
 but have public-only projection scope and cannot submit player commands.
 Players receive private projection scope for their single membership-derived
-`PlayerId`; `AuthorizedPlayer` constructs commands with that actor. Explicit
+`PlayerId`, which the gateway binds as the actor of every `GameCommand.Issued`
+it submits. Explicit
 spectators receive public-only projections and cannot bootstrap or command.
 Non-members, global administrators, and public spectators are denied. Storage
 failure and nonmembership remain distinct internal outcomes.
 
-The optional `DevelopmentIdentityShim` is a separately named test/manual
-authenticator for the `X-Oath-Dev-User` header. Configuration returns no shim
-unless explicitly enabled, and enabling it revalidates that the already
-validated bind host is `127.0.0.1`, `localhost`, or `::1`. It is not an OIDC or
-production session path.
-
-The separately mountable authenticated game transport is:
-
-- `GET /api/authenticated/first-games/{gameId}`; and
-- `POST /api/authenticated/first-games/{gameId}/commands`; and
-- `POST /api/authenticated/first-games/{gameId}/bootstrap`.
-
-In development mode, `OathServer` mounts this transport only when both
-`--session-cookie-name` and `--authenticated-public-origin` are configured
-(or `OATH_SESSION_COOKIE_NAME` and `OATH_AUTHENTICATED_PUBLIC_ORIGIN`).
-Without both, only the existing development transport is mounted; partial
-configuration fails startup. Development mode is loopback-only even when
-authenticated routes are mounted. Trusted-alpha mode ignores both options and
-serves seat routes instead; hosting it is covered in
+No route is mounted on sessions yet: nothing issues one, so the
+authenticated transport was retired (one HTTP gateway design, 2026-11-02)
+down to the parts X6 mounts again: `SessionCookieAuthenticator`,
+`SameOriginCsrfProtection`, `MembershipAuthorizationService`,
+`SessionMembershipActor` (the `ActorResolution` that turns a session's
+membership into a seat or a public view) and `MembershipBootstrap` (the
+owner's bootstrap of a provisioned game). X6 adds a session issuer and
+mounts `GameApiRoutes(SessionMembershipActor, …)` plus a bootstrap route.
+The retired routes were `GET`, `POST commands` and `POST bootstrap` under
+`/api/authenticated/first-games/{gameId}`, mounted in development mode only
+when both `--session-cookie-name` and `--authenticated-public-origin` were
+set; both options are gone. Hosting is covered in
 [quick-start.md](../operations/quick-start.md) and
 [configuration.md](../operations/configuration.md).
 
-Every operation authenticates before membership lookup. The HTTP authenticator
-accepts only a 43-128 character base64url-shaped raw session cookie, hashes it
-with SHA-256 at the edge, and sends only the fixed digest to
-`IdentityRepository`. Resolution runs on `oathdigital.blocking-dispatcher`, not
-Akka's request dispatcher. Missing, malformed, unknown, expired, and revoked
-sessions share one stable `401` response. Raw session and CSRF tokens never
-enter repositories, logs, projections, or errors.
+The session authenticator accepts only a 43-128 character base64url-shaped
+raw session cookie, hashes it with SHA-256 at the edge, and sends only the
+fixed digest to `IdentityRepository`. Resolution runs on
+`oathdigital.blocking-dispatcher`, not Akka's request dispatcher. Missing,
+malformed, unknown, expired, and revoked sessions share one failure, which
+the API answers with one stable `401`. Raw session and CSRF tokens never
+enter repositories, logs, projections, or errors. `SameOriginCsrfProtection`
+compares exactly one `X-CSRF-Token` header against the session's stored
+digest in constant time, under exactly the configured `Origin`.
 
-GET/poll requires a session but is CSRF-exempt. Every authenticated POST
-requires exactly the configured `Origin` and one `X-CSRF-Token` header. The
-header is hashed and compared to the stored digest with a constant-time digest
-comparison before request-body or domain handling; failure is a stable `403`
-and performs no append. GET has no player selector. POST accepts
-`expectedNextSequence` plus an actor-free intent. Walker decisions use
-`resolveWalker` with a decision ID and a typed answer payload. Unknown fields,
-including `playerId`, are rejected. Membership constructs the domain actor, and
-mutations are attempted once without retry.
-Authenticated bootstrap requires the owner membership and a pre-provisioned
+`MembershipBootstrap` requires the owner membership and a pre-provisioned
 game resource. Its participant list must exactly match every provisioned
 `player` membership; owner and spectator memberships are never setup seats.
 The request selects only participant order, lineage, color, and first player.
-The server derives every hidden site, deck, denizen, and relic ordering from the
-executable catalog (built into the server) and creates the event stream once. The current membership
-model deliberately does not let the owner also occupy a player seat.
-
-The authenticated transport has no login, logout, session issuance,
-cookie-setting, OIDC redirect/callback, or refresh endpoint. Tests provision
-digests directly. Trusted-alpha seat cookies belong to the separate seat
-routes.
-Cookie flags and lifecycle belong to the later issuance boundary.
+The server derives every hidden site, deck, denizen, and relic ordering from
+the executable catalog (built into the server) and creates the event stream
+once. The current membership model deliberately does not let the owner also
+occupy a player seat. Trusted-alpha seat cookies belong to the seat routes;
+session cookie flags and lifecycle belong to the later issuance boundary.
 
 ## Run and shutdown
 
@@ -180,11 +163,6 @@ Start the server with a database path:
 The default bind address is `127.0.0.1:8080`; override it with `--host` and
 `--port` (or `OATH_HOST` and `OATH_PORT`). HSQLDB creates several files using
 the supplied path prefix. Use a durable local directory in production.
-
-For seeded-session testing, configure both
-`--session-cookie-name oath_session` and an exact origin such as
-`--authenticated-public-origin http://127.0.0.1:8080`. This does not issue a
-session or relax the loopback binding gate.
 
 Akka Coordinated Shutdown first unbinds HTTP and then closes the application
 runtime. `HsqldbDatabaseOwner` owns one Hikari datasource and Slick database,
@@ -204,6 +182,19 @@ a dedicated fixed thread pool defined in `application.conf`; they do not run on
 Akka's default dispatcher. Coordinated database shutdown also uses the blocking
 dispatcher. Logback supplies the SLF4J backend so
 startup, bind, and shutdown messages are not silently discarded.
+
+## One game API
+
+Every transport serves the same three endpoints through `GameApiRoutes`:
+`GET` the projection, `POST commands`, `GET log/{after}`, under its own
+prefix. The transport resolves the actor through an `ActorResolution`
+(`SeatCookieActor` for the `oath_seat` cookie, `QueryParameterActor` for the
+development `?playerId=`, `SessionMembershipActor` once X6 issues sessions)
+into a `GameAccess`: a `Seat(player)` or a `Public` view. `GameGateway` then
+does load, submit and log once over that access: a seat sees its own
+projection and log lines and may command; a public view sees the public
+projection, no private lines, and may not. `GameHttpWire` holds the one
+table of public errors, so every transport spells a failure the same way.
 
 ## Loopback development API
 

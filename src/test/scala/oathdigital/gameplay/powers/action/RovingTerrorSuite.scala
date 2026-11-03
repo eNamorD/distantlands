@@ -1,9 +1,13 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite, DeepWoodsSite}
 import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.setup.HallOfDebateCard
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
@@ -11,19 +15,19 @@ import oathdigital.testkit.Unwrap.accepted
 class RovingTerrorSuite extends munit.FunSuite:
   import PhasePowerHarness._
 
-  private val terror = CatalogNames.denizen("Roving Terror")
+  private val terror = RovingTerrorCard.id
   private val source = DecisionOptionRef.Denizen(terror)
-  private val power = RovingTerror.forCatalog(catalog)
+  private val power = RovingTerror
   /** p1's pawn site, and two other sites in play. */
-  private val home = CatalogNames.site("Ancient City")
-  private val peaks = CatalogNames.site("Broken Peaks")
-  private val giant = CatalogNames.site("Buried Giant")
+  private val home = AncientCitySite.id
+  private val peaks = BrokenPeaksSite.id
+  private val giant = BuriedGiantSite.id
   /** A plain Beast denizen. */
-  private val errandBoy = CatalogNames.denizen("Errand Boy")
+  private val errandBoy = ErrandBoyCard.id
   /** A plain Order denizen. */
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
+  private val wrestlers = WrestlersCard.id
   /** An edifice, locked while intact. */
-  private val debate = CatalogNames.edifice("Hall of Debate")
+  private val debate = HallOfDebateCard.id
 
   /** p1's Act at Ancient City beside Roving Terror, site-only, with the
     * start's 1 faceup secret. Errand Boy stands at Broken Peaks. */
@@ -99,7 +103,7 @@ class RovingTerrorSuite extends munit.FunSuite:
 
   test("it offers only cards to replace, never an empty slot"):
     val ready = staged.ready
-    val woods = CatalogNames.site("Deep Woods")
+    val woods = DeepWoodsSite.id
     val t = accepted(use(ready, power, source))
     assert(!offered(t, p1).toVector.flatten.exists((kind, id) =>
       kind == "site-slot" && id.startsWith(woods.value)))

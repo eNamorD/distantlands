@@ -1,17 +1,19 @@
 package oathdigital.gameplay.powers.campaign
 
+import oathdigital.catalog.holding.{AutumnWindCard, BrackenCard}
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
+import oathdigital.gameplay.cards.BrokenPeaksSite
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Nature Worship: a secret placed for one attack die, added or removed, per
   * faceup beast adviser its user has, itself included. */
 class NatureWorshipSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Nature Worship")
+  private val card = NatureWorshipCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
-  private val beasts = planless("Bracken", "Autumn Wind")
+  private val beasts = planless(BrackenCard, AutumnWindCard)
 
   private def advised(b: Board, who: PlayerId,
       cards: Vector[(DenizenId, Orientation)]): Board =
@@ -29,7 +31,7 @@ class NatureWorshipSuite extends munit.FunSuite:
 
   /** The site p1 comes to rule: Broken Peaks, the board's first site after
     * the origin. */
-  private val ruledSite = CatalogNames.site("Broken Peaks")
+  private val ruledSite = BrokenPeaksSite.id
 
   test("it counts itself and every other faceup beast adviser"):
     val b = attacker(Orientation.FaceUp, beasts.map(_ -> Orientation.FaceUp))

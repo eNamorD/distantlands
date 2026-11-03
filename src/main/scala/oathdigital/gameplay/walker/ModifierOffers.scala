@@ -11,28 +11,29 @@ import oathdigital.model.{OathViolation, PlayerId, PowerResolution,
   */
 object ModifierOffers:
 
-  /** The `PlayerSelected` powers in `catalog` that are applicable at
+  /** The `PlayerSelected` powers in `powers` that are applicable at
     * `procedure`'s modifier-selection window and whose own selection payment
     * `actor` can make. An entry declaring no window offers nothing; a
     * procedure absent from `registrations` is a `Left`.
     */
-  private[gameplay] def offerable(catalog: WalkerPowers, ready: ReadyGame,
+  private[gameplay] def offerable(powers: WalkerPowers, ready: ReadyGame,
       actor: PlayerId, procedure: ProcedureRef,
       registrations: Map[ProcedureRef, WalkerProcedureRegistry.Entry])
       : Either[OathViolation, Vector[ContributingPower]] =
     WalkerProcedureRegistry.modifierWindow(procedure, registrations).map:
       case None => Vector.empty
-      case Some(window) => catalog.powers.filter(power =>
+      case Some(window) => powers.powers.filter(power =>
         power.resolution == PowerResolution.PlayerSelected &&
-        power.applicable(PowerCtx(ready, actor, power.source, window,
+        power.applicable(PowerCtx(powers.catalog, ready, actor, power.source,
+          window,
           Vector.empty, Sequence(Vector.empty, Some(window)),
           Some(procedure))) &&
-        paying(catalog, ready, actor, Vector(power)).isRight)
+        paying(powers, ready, actor, Vector(power)).isRight)
 
   /** [[offerable]] against the production registry. */
-  def offerable(catalog: WalkerPowers, ready: ReadyGame, actor: PlayerId,
+  def offerable(powers: WalkerPowers, ready: ReadyGame, actor: PlayerId,
       procedure: ProcedureRef): Either[OathViolation, Vector[ContributingPower]] =
-    offerable(catalog, ready, actor, procedure, WalkerProcedureRegistry.entries)
+    offerable(powers, ready, actor, procedure, WalkerProcedureRegistry.entries)
 
   /** Dry-runs the selection payments of `powers` together against `ready`:
     * whether the player could pick them all. */

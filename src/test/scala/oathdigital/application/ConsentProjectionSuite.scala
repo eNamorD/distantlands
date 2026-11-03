@@ -1,13 +1,16 @@
 package oathdigital.application
 
-import oathdigital.gameplay.powers.poweruse.CityWall
-import oathdigital.gameplay.powers.travel.{NarrowPassSite, TravelFixture}
+import oathdigital.gameplay.cards.{AncientCitySite, NarrowPassSite}
+import oathdigital.gameplay.powers.cardplay.SecretPoliceCard
+import oathdigital.gameplay.powers.poweruse.{CityWall, CityWallCard}
+import oathdigital.gameplay.powers.travel.{TravelFixture, TyrantCard}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.protocol.projection._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, present}
+import oathdigital.testkit.Commands
 
 /** What each viewer is shown of consent (consent design, "Projection" and
   * "Testing", hidden information). */
@@ -24,8 +27,8 @@ class ConsentProjectionSuite extends munit.FunSuite:
     * the coast, which p2 rules with 2 warbands. */
   private val tyrantBesideAWalledCoast: ReadyGame =
     TravelFixture.on(TravelFixture.board(supply = 7))(_
-      .adviser(p1, "Tyrant")
-      .denizen(CatalogNames.denizen("City Wall"), at = TravelFixture.coast)
+      .adviser(p1, TyrantCard)
+      .denizen(CityWallCard.id, at = TravelFixture.coast)
       .warbandsAt(TravelFixture.coast, p2, 2))
 
   /** p1 travels to the walled coast at `sequence`; the pick's batch. */
@@ -47,7 +50,7 @@ class ConsentProjectionSuite extends munit.FunSuite:
   private def answering(service: GameApplicationService, at: GameAccepted,
       choice: ConsentChoice)(using munit.Location): GameAccepted =
     accepted(service.handle(gameId, at.nextSequence,
-      GameCommand.AnswerConsent(p2, choice)))
+      Commands.answerConsent(p2, choice)))
 
   test("a destination its ruler may be asked about is askable, with the " +
       "consent reason and whom to ask"):
@@ -128,8 +131,8 @@ class ConsentProjectionSuite extends munit.FunSuite:
 
   test("a card's waivable power carries the card's id; a site's carries " +
       "none"):
-    val police = CatalogNames.denizen("Secret Police")
-    val home = CatalogNames.site("Ancient City")
+    val police = SecretPoliceCard.id
+    val home = AncientCitySite.id
     val ready = Table.start.denizen(police, at = home)
       .warbandsAt(home, p2, 2).ready
     assertEquals(projector.project(gameId, LoadedGame(OathState.Ready(ready),
@@ -155,10 +158,10 @@ class ConsentProjectionSuite extends munit.FunSuite:
         tyrantBesideAWalledCoast)
       val manual = accepted(manualService.handle(gameId,
         travelledToTheWalledCoast(manualService, 0L).nextSequence,
-        GameCommand.AnswerConsent(p2, choice)))
+        Commands.answerConsent(p2, choice)))
       val (autoService, _) = ConsentFixture.service(tyrantBesideAWalledCoast)
       val set = accepted(autoService.handle(gameId, 0L,
-        GameCommand.SetConsentPreference(p2, CityWall.id, p1, setting)))
+        Commands.setConsentPreference(p2, CityWall.id, p1, setting)))
       val automatic = travelledToTheWalledCoast(autoService,
         set.nextSequence)
       assertEquals(view(automatic, p1).copy(nextSequence = 0L),

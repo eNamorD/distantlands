@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
 import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.powers.{PlayerFacts, RelicDraws}
 import oathdigital.model._
@@ -39,7 +39,8 @@ case object FaeMerchant extends PaidAction(FaeMerchantCard.power):
   override def noteKeys: Vector[NoteKey] = notes.declared
   override def narratedDecisions: Set[String] = Set(decisionId)
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     BuildOps((state, _) => Right(RelicDraws.takeTop(state, player))),
     Note(this.id, RelicDraws.drawNote(source, player)),

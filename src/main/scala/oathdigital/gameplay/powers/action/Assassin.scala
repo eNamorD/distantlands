@@ -34,14 +34,24 @@ object AssassinCard extends Denizen(DenizenId("80"), "Assassin", Suit.Discord) w
   * Continue when nothing can be chosen. With nothing to discard the cost
   * stays paid and one line says so. Its line covers the generic Discarded line.
   */
-final case class Assassin private (catalog: ExecutableCatalog)
-    extends PaidAction(AssassinCard.power) with ContributingPower:
-  import Assassin._
+case object Assassin extends PaidAction(AssassinCard.power)
+    with ContributingPower:
+  val decisionId: String = "power.assassin.adviser"
+  /** How many advisers the holder may have, in either orientation. */
+  val HolderLimit: Int = 2
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "Discarded {card} from {Blue}'s advisers." */
+  val discarded: NoteKey = notes.key(NoteKey.Used, Vector(
+    NotePart.Text("Discarded "), NotePart.Arg(0), NotePart.Text(" from "),
+    NotePart.Arg(1), NotePart.Text("'s advisers.")))
+  /** "No faceup adviser could be discarded." */
+  val nothing: NoteKey = notes.key("used.none", Vector(
+    NotePart.Text("No faceup adviser could be discarded.")))
 
   private val limit = HolderAdviserLimit(AssassinCard.id, HolderLimit)
 
   def source: RuleSourceRef = RuleSourceRef.GameRule(this.id.value)
-  override def noteKeys: Vector[NoteKey] = Assassin.noteKeys
   override def narratedDecisions: Set[String] = Set(decisionId)
 
   def contributions: Map[PowerWindow, Vector[Contribution]] =
@@ -52,10 +62,11 @@ final case class Assassin private (catalog: ExecutableCatalog)
   def limitFor(ready: ReadyGame, player: PlayerId): Option[Int] =
     limit.limitFor(ready, player)
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     Branch((live, _) => ask(live, player)),
-    BuildOps((live, pending) => discard(live, player, pending),
+    BuildOps((live, pending) => discard(catalog, live, player, pending),
       required = true),
     Note(this.id, discardedNote(_, source), covers = true))))
 
@@ -78,7 +89,8 @@ final case class Assassin private (catalog: ExecutableCatalog)
         "your site")), passWhenEmpty = true))
 
   /** No answer means nothing could be discarded. */
-  private def discard(ready: ReadyGame, actor: PlayerId, pending: PendingTree)
+  private def discard(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId, pending: PendingTree)
       : Either[OathViolation, Vector[CoreOperation]] =
     PowerAnswers.one(pending, decisionId) match
       case None => Right(Vector.empty)
@@ -108,21 +120,3 @@ final case class Assassin private (catalog: ExecutableCatalog)
       .find(_.advisers.exists(_.id == chosen))
   yield discarded(card, NoteArg.Card(chosen), NoteArg.Player(owner.player)))
     .getOrElse(nothing(card)))
-
-object Assassin:
-  val id: PowerId = AssassinCard.power.id
-  val decisionId: String = "power.assassin.adviser"
-  /** How many advisers the holder may have, in either orientation. */
-  val HolderLimit: Int = 2
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "Discarded {card} from {Blue}'s advisers." */
-  val discarded: NoteKey = notes.key(NoteKey.Used, Vector(
-    NotePart.Text("Discarded "), NotePart.Arg(0), NotePart.Text(" from "),
-    NotePart.Arg(1), NotePart.Text("'s advisers.")))
-  /** "No faceup adviser could be discarded." */
-  val nothing: NoteKey = notes.key("used.none", Vector(
-    NotePart.Text("No faceup adviser could be discarded.")))
-
-  def forCatalog(catalog: ExecutableCatalog): Assassin =
-    new Assassin(catalog)

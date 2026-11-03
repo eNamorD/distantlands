@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
 import oathdigital.gameplay.powers.PowerAnswers
 import oathdigital.model._
 
@@ -38,7 +38,8 @@ case object Levelers extends PaidAction(LevelersCard.power):
   override def narratedDecisions: Set[String] =
     Set(sourceDecisionId, destinationDecisionId)
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     Branch((live, _) => askSource(live, player, source)),
     Branch((live, pending) => askDestination(live, player, pending)),

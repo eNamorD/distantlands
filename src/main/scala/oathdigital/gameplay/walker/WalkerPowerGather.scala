@@ -63,13 +63,14 @@ private[walker] object WalkerPowerGather:
         val byId: Map[PowerId, ContributingPower] =
           powers.powers.map(power => power.id -> power).toMap
         def ctxFor(power: ContributingPower): PowerCtx =
-          PowerCtx(state, actor, power.source, w, path, operation,
+          PowerCtx(powers.catalog, state, actor, power.source, w, path,
+            operation,
             procedure, answered)
         /** Why `power` may not be used here, when a power-use restriction
           * refuses it (catalog batch 8, slice 10). */
         def refused(power: ContributingPower): Option[OptionReason] =
           power.use(ctxFor(power)).flatMap { use =>
-            val found = PowerUseRules.refusals(state, use,
+            val found = PowerUseRules.refusals(powers.catalog, state, use,
               powers.useRestrictions)
             Option.when(found.nonEmpty)(PowerUseRules.shown(state,
               use.user, found, use.consent))
@@ -205,8 +206,8 @@ private[walker] object WalkerPowerGather:
       ctx: PowerCtx): Boolean =
     powers.useRestrictions.nonEmpty &&
       power.resolution == PowerResolution.Automatic &&
-      power.use(ctx).exists(use => PowerUseRules.refusals(ctx.state, use,
-        powers.useRestrictions).nonEmpty)
+      power.use(ctx).exists(use => PowerUseRules.refusals(ctx.catalog,
+        ctx.state, use, powers.useRestrictions).nonEmpty)
 
   /** The asks of a parked choose-one's options that its own window's option
     * restrictions bar (consent slice 4). The fold cannot search, so it marks
@@ -224,7 +225,8 @@ private[walker] object WalkerPowerGather:
         val byId: Map[PowerId, ContributingPower] =
           powers.powers.map(power => power.id -> power).toMap
         def ctxFor(power: ContributingPower): PowerCtx =
-          PowerCtx(state, actor, power.source, window, path, decide,
+          PowerCtx(powers.catalog, state, actor, power.source, window, path,
+            decide,
             procedure, answered)
         val forbids = forbidding(decide, ContributionCollector.gather(window,
           powers.windowIndex, ctxFor, power =>
@@ -309,8 +311,8 @@ private[walker] object WalkerPowerGather:
       */
     def ctxFor(window: PowerWindow, path: Vector[String], operation: Operation)
         : ContributingPower => PowerCtx =
-      power => PowerCtx(state, actor, power.source, window, path,
-        operation, state.game.current.walkerProcedure, answered)
+      power => PowerCtx(powers.catalog, state, actor, power.source, window,
+        path, operation, state.game.current.walkerProcedure, answered)
     def windowsIn(node: Operation, path: Vector[String])
         : Vector[(PowerWindow, Vector[String], Operation)] =
       val own = node.window.map(w => Vector((w, path, node))).getOrElse(Vector.empty)
@@ -564,7 +566,7 @@ private[walker] object WalkerPowerGather:
     for
       index <- segment.toIntOption if index >= 0 && index < triggers.size
       tree <- triggers(index).onExecuted(ExecutedTriggers.batch(
-        state.game.current.walkActor, state))
+        powers.catalog, state.game.current.walkActor, state))
       found <- resolveAt(state, pending, powers, tree, rest,
         consumed :+ segment, Set.empty)
     yield found

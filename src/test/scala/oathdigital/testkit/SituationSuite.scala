@@ -158,7 +158,7 @@ class SituationSuite extends munit.FunSuite:
       .situation(Situation.productionRules(catalog, Dice.blanks))
       .parkedAfter(MenuPlay.start(p1, ActionRef.Recover))
     new ParkedDecisionAssertions(catalog, WalkerPowerCatalog.default(catalog),
-      PhasePowerCatalog.default(catalog)).assertParked(parked.state,
+      PhasePowerCatalog.default).assertParked(parked.state,
         ActionRef.Recover, RecoverProcedure.choiceDecisionId, p1)
 
   test("after with no steps answers the park a situation holds"):

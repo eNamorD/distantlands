@@ -25,12 +25,11 @@ class GameTrustBoundaryRoutesSuite extends munit.FunSuite:
           expected: ExpectedStream,
           records: Vector[String]
       ): Either[RepositoryFailure, RepositoryAppendResult] = Left(RepositoryFailure.StorageFailure(secret))
-    val gateway = new GameServerGateway(
-      new GameApplicationService(catalog, repository),
-      new GameProjector(catalog)
-    )
+    val service = new GameApplicationService(catalog, repository)
+    val gateway = new GameGateway(service, new GameProjector(catalog))
     val server = HttpTestServer.start("trust-boundary-route-test")(blocking =>
-      DevelopmentRoutes.route(gateway, blocking, serveFrontend = false))
+      DevelopmentRoutes.route(service, gateway, blocking,
+        serveFrontend = false))
 
     try
       Vector(

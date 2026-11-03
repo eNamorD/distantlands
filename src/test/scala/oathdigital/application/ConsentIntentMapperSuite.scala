@@ -3,30 +3,30 @@ package oathdigital.application
 import oathdigital.model._
 import oathdigital.protocol.{GameIntent, WalkerStartArgWire}
 
-/** The consent intents bind their sender as requester or granter. */
+/** The consent intents map to their model intents; the gateway binds the
+  * sender as the actor (TrustedSeatRoutesSuite). */
 class ConsentIntentMapperSuite extends munit.FunSuite:
-  private val red = PlayerId("red")
   private def failure(path: String, message: String) =
     Left(GameIntentMappingFailure(path, message))
 
-  test("a consent request binds its sender as the requester"):
-    assertEquals(GameIntentMapper.bind(red, GameIntent.RequestConsent(
+  test("a consent request maps to its model intent"):
+    assertEquals(GameIntentMapper.map(GameIntent.RequestConsent(
       "travel.destination", WalkerStartArgWire("site", "site:deep-woods"))),
-      Right(GameCommand.RequestConsent(red, "travel.destination",
+      Right(PlayerIntent.RequestConsent("travel.destination",
         DecisionOptionRef.Site(SiteId("site:deep-woods")))))
 
-  test("an answer binds its sender as the granter"):
-    assertEquals(GameIntentMapper.bind(red, GameIntent.AnswerConsent("never")),
-      Right(GameCommand.AnswerConsent(red, ConsentChoice.Never)))
-    assertEquals(GameIntentMapper.bind(red, GameIntent.AnswerConsent("maybe")),
+  test("an answer maps to its choice"):
+    assertEquals(GameIntentMapper.map(GameIntent.AnswerConsent("never")),
+      Right(PlayerIntent.AnswerConsent(ConsentChoice.Never)))
+    assertEquals(GameIntentMapper.map(GameIntent.AnswerConsent("maybe")),
       failure("$.intent.choice", "invalid consent choice 'maybe'"))
 
-  test("a preference binds its sender as the granter"):
-    assertEquals(GameIntentMapper.bind(red, GameIntent.SetConsentPreference(
+  test("a preference maps its power, requester and setting"):
+    assertEquals(GameIntentMapper.map(GameIntent.SetConsentPreference(
       "site.narrow-pass.pass", "blue", "case-by-case")),
-      Right(GameCommand.SetConsentPreference(red,
+      Right(PlayerIntent.SetConsentPreference(
         PowerId("site.narrow-pass.pass"), PlayerId("blue"),
         ConsentSetting.CaseByCase)))
-    assertEquals(GameIntentMapper.bind(red, GameIntent.SetConsentPreference(
+    assertEquals(GameIntentMapper.map(GameIntent.SetConsentPreference(
       "site.narrow-pass.pass", "blue", "sometimes")),
       failure("$.intent.setting", "invalid consent setting 'sometimes'"))

@@ -2,19 +2,20 @@ package oathdigital.application
 
 import oathdigital.gameplay.operations.PowerUseRules
 import oathdigital.gameplay.powerresolver.PowerUseStep
-import oathdigital.gameplay.powers.poweruse.CityWall
+import oathdigital.gameplay.powers.poweruse.{CityWall, CityWallCard}
 import oathdigital.gameplay.powers.travel.{TravelFixture, Tyrant, TyrantCard}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Outcomes}
+import oathdigital.testkit.{Look, Outcomes}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, present}
+import oathdigital.testkit.Commands
 
 /** City Wall's ruler decides whether an enemy's Tyrant works, through the
   * service (automatic power consent design, user story and rulings 2, 5
   * and 6). */
 class AutomaticUseConsentServiceSuite extends munit.FunSuite:
   import ConsentFixture.gameId
-  private val wall = CatalogNames.denizen("City Wall")
+  private val wall = CityWallCard.id
   private val coast = TravelFixture.coast
 
   /** The key Tyrant's use by p1 is remembered under, against City Wall. */
@@ -25,7 +26,7 @@ class AutomaticUseConsentServiceSuite extends munit.FunSuite:
     * the coast, which p2 rules with 2 warbands. */
   private val tyrantBesideAWalledCoast: ReadyGame =
     TravelFixture.on(TravelFixture.board(supply = 7))(_
-      .adviser(p1, "Tyrant").denizen(wall, at = coast)
+      .adviser(p1, TyrantCard).denizen(wall, at = coast)
       .warbandsAt(coast, p2, 2))
 
   /** p1 travels to `site` at `sequence`; returns the pick's batch. */
@@ -36,7 +37,7 @@ class AutomaticUseConsentServiceSuite extends munit.FunSuite:
   private def answering(service: GameApplicationService, at: GameAccepted,
       choice: ConsentChoice, granter: PlayerId = p2)(using munit.Location)
       : GameAccepted = accepted(service.handle(gameId, at.nextSequence,
-    GameCommand.AnswerConsent(granter, choice)))
+    Commands.answerConsent(granter, choice)))
 
   private def readyAfter(at: GameAccepted)(using munit.Location)
       : ReadyGame = Outcomes.ready(at.state)
@@ -93,7 +94,7 @@ class AutomaticUseConsentServiceSuite extends munit.FunSuite:
   test("a preference answers the request in the command that opens it"):
     val (service, _) = ConsentFixture.service(tyrantBesideAWalledCoast)
     val set = accepted(service.handle(gameId, 0L,
-      GameCommand.SetConsentPreference(p2, CityWall.id, p1,
+      Commands.setConsentPreference(p2, CityWall.id, p1,
         ConsentSetting.Never)))
     val travelled = travelling(service, set.nextSequence, coast)
     assertEquals(travelled.events.collect {
@@ -107,9 +108,9 @@ class AutomaticUseConsentServiceSuite extends munit.FunSuite:
     val (service, _) = ConsentFixture.service(tyrantBesideAWalledCoast)
     val waiting = travelling(service, 0L, coast)
     val withdrawn = accepted(service.handle(gameId, waiting.nextSequence,
-      GameCommand.Undo(p1)))
+      Commands.undo(p1)))
     assertEquals(service.handle(gameId, withdrawn.nextSequence,
-      GameCommand.ResolveWalker(p1, TreeDecision(
+      Commands.resolveWalker(p1, TreeDecision(
         PowerUseStep.decisionId(Tyrant.id), DecisionAnswer.ChooseOneAnswer(
           PowerUseStep.skip)))), Left(GameApplicationError.CommandRejected(
             OathViolation.ConsentUnavailable("the refusing cards' rulers " +
@@ -132,7 +133,7 @@ class AutomaticUseConsentServiceSuite extends munit.FunSuite:
     // which p3 rules.
     val dunes = TravelFixture.provincePlains
     val ready = TravelFixture.on(ConsentFixture.passRuledByP2)(_
-      .adviser(p1, "Tyrant").denizen(wall, at = dunes)
+      .adviser(p1, TyrantCard).denizen(wall, at = dunes)
       .warbandsAt(dunes, p3, 1))
     val (service, _) = ConsentFixture.service(ready)
     val started = ConsentFixture.startTravel(service)

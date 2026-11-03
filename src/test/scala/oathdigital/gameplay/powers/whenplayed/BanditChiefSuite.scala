@@ -1,10 +1,11 @@
 package oathdigital.gameplay.powers.whenplayed
 
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import oathdigital.gameplay.cards.{BrokenPeaksSite, BuriedGiantSite}
 import oathdigital.gameplay.powers.{NoteText, SearchFixture}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, Table}
+import oathdigital.testkit.{Look, Outcomes, Table}
 import oathdigital.testkit.Table.{p1, p2}
 
 class BanditChiefSuite extends munit.FunSuite:
@@ -13,8 +14,8 @@ class BanditChiefSuite extends munit.FunSuite:
   private val power = registered[BanditChief.type]
   private val chief = power.cardId
   private val atHome = hookAt(chief, homeSite)
-  private val peaks = CatalogNames.site("Broken Peaks")
-  private val giant = CatalogNames.site("Buried Giant")
+  private val peaks = BrokenPeaksSite.id
+  private val giant = BuriedGiantSite.id
 
   test("one warband dies at every site not ruled by bandits, p1's own " +
       "included, with one line per site in map order"):

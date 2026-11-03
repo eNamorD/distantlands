@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.wake
 
-import oathdigital.catalog.{Denizen, PrintedPower, SiteOnly}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower,
+  SiteOnly}
 import oathdigital.gameplay.{NoteSupport, PowerAccess}
 import oathdigital.gameplay.powerresolver.PhasePower
 import oathdigital.model._
@@ -29,15 +30,17 @@ case object Quartermaster extends PhasePower:
   val gained: NoteKey = NoteSupport.gainedKey(notes, NoteKey.Used)
   override def noteKeys: Vector[NoteKey] = notes.declared
 
-  def usable(ready: ReadyGame, player: PlayerId,
-      source: DecisionOptionRef): Boolean = source match
+  def usable(catalog: ExecutableCatalog, ready: ReadyGame,
+      player: PlayerId, source: DecisionOptionRef): Boolean =
+    source match
     case DecisionOptionRef.Denizen(card) =>
       PowerAccess.ruledSites(ready, player).exists(site =>
         ready.game.current.map.sites.get(site)
           .exists(_.denizens.exists(_.id == card)))
     case _ => false
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector(
     GainSupply(player, Supply),
     Note(id, NoteSupport.gainNote(gained, source, player, NoteUnit.Supply,

@@ -1,15 +1,23 @@
 package oathdigital.gameplay
 
+import oathdigital.catalog.holding.CrackedHornCard
 import oathdigital.gameplay.actions.{CardPlay, CardPlayRules, VisionRules}
 import oathdigital.gameplay.actions.cardplay.{CardPlayProcedure, CardSlots}
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.operations.{HallOfMinisters,
+import oathdigital.gameplay.cards.{AncientCitySite, DeepWoodsSite}
+import oathdigital.gameplay.operations.{HallOfMinisters, HallOfMinistersCard,
   OperationRestrictions}
+import oathdigital.gameplay.powers.action.{FaeMerchantCard, SecondChanceCard}
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.cardplay.BookBindersCard
+import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.whenplayed.{ASmallFavorCard,
+  FaithfulFriendCard, FamilyHeirloomCard, ThreateningRoarCard}
 import oathdigital.gameplay.walker.{ParkedDecisionAssertions, ProcedureWalker,
   WalkerOutcome, WalkerPowers}
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, Table}
+import oathdigital.testkit.{Look, Outcomes, Table}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.{accepted, as, present}
 
@@ -23,15 +31,15 @@ class CardPlayProcedureSuite extends munit.FunSuite:
     testPermission}
 
   private val actor = p1
-  private val home = CatalogNames.site("Ancient City")
+  private val home = AncientCitySite.id
   // An unrestricted denizen whose power these tests do not use.
-  private val card = CatalogNames.denizen("Errand Boy")
+  private val card = ErrandBoyCard.id
   // Three more unrestricted denizens, for full adviser areas and sites.
-  private val others = Vector("Threatening Roar", "Fae Merchant",
-    "Second Chance").map(CatalogNames.denizen(_))
+  private val others = Vector(ThreateningRoarCard.id, FaeMerchantCard.id,
+    SecondChanceCard.id)
   // Each is printed Locked and adviser-only.
-  private val locked = Vector("Faithful Friend", "A Small Favor",
-    "Family Heirloom").map(CatalogNames.denizen(_))
+  private val locked = Vector(FaithfulFriendCard.id, ASmallFavorCard.id,
+    FamilyHeirloomCard.id)
   private val noPowers = WalkerPowers.empty
   private val placeId = cardPlayDecisionId(card, "place")
   private val discardId = cardPlayDecisionId(card, "discard")
@@ -158,8 +166,8 @@ class CardPlayProcedureSuite extends munit.FunSuite:
       "the same time"):
     // Errand Boy is Beast, so Deep Woods' Homeland permits a discard, and
     // the stub a second one; p2 rules Deep Woods and its intact Hall.
-    val woods = CatalogNames.site("Deep Woods")
-    val hall = CatalogNames.edifice("Hall of Ministers")
+    val woods = DeepWoodsSite.id
+    val hall = HallOfMinistersCard.id
     val guarded = Table.start.pawn(actor, at = woods).hand(actor, card)
       .denizen(others(1), at = woods).denizen(others(2), at = woods)
       .edifice(hall, EdificeSide.Intact, at = woods)
@@ -188,7 +196,7 @@ class CardPlayProcedureSuite extends munit.FunSuite:
 
   test("a picked facedown adviser parks on the shared walker placement tree"):
     // p1 holds a facedown Wrestlers to play.
-    val adviser = CatalogNames.denizen("Wrestlers")
+    val adviser = WrestlersCard.id
     val ready = atHome.adviser(actor, adviser, facedown = true).ready
     val rules = new OathRules(catalog)
     val walkerParked = new ParkedDecisionAssertions(catalog)
@@ -220,7 +228,7 @@ class CardPlayProcedureSuite extends munit.FunSuite:
 
   test("placementDecisionId and placedCard round-trip a denizen, and the " +
       "follow-up's id is spelled the same way"):
-    val denizen = CatalogNames.denizen("Book Binders")
+    val denizen = BookBindersCard.id
     val denizenId = CardPlayProcedure.placementDecisionId(denizen)
     assertEquals(denizenId, "cardplay.place.denizen.140")
     assertEquals(CardPlayProcedure.placedCard(pendingFor(denizenId)),
@@ -248,7 +256,7 @@ class CardPlayProcedureSuite extends munit.FunSuite:
 
   test("a Replace at another site asks its follow-up over that site's " +
       "cards"):
-    val woods = CatalogNames.site("Deep Woods")
+    val woods = DeepWoodsSite.id
     val opensWoods = rulePower("test.opens-woods")(_
       .openSites(PlacementFixture.opening(woods))
       .permitSiteDiscard(testPermission).permitSiteDiscard(testPermission))
@@ -301,7 +309,7 @@ class CardPlayProcedureSuite extends munit.FunSuite:
 
   test("after Discard, the bury follow-up offers the other cards and the " +
       "relics, and buries one"):
-    val horn = CatalogNames.relic("Cracked Horn")
+    val horn = CrackedHornCard.id
     val ready = others.foldLeft(atHome.hand(actor, card))(
       _.denizen(_, at = home)).relicAt(horn, at = home).ready
     val parked = parkOnPlacement(ready, WalkerPowers(Vector(buryAndDiscard)))

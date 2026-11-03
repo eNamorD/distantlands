@@ -1,9 +1,11 @@
 package oathdigital.gameplay
 
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.operations._
+import oathdigital.gameplay.powers.search.ErrandBoyCard
 import oathdigital.model._
 import oathdigital.model.TestGameFixtures._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -143,10 +145,10 @@ class OperationResolutionSuite extends munit.FunSuite:
   test("Hall of Ministers blocks enemy site-card discard"):
     // p1 rules Ancient City and Broken Peaks, where the Hall stands; the
     // enemy p2 discards Errand Boy from Ancient City.
-    val hallSite = CatalogNames.site("Broken Peaks")
-    val cardSite = CatalogNames.site("Ancient City")
-    val card = CatalogNames.denizen("Errand Boy")
-    val changed = Table.start.edifice(CatalogNames.edifice("Hall of Ministers"),
+    val hallSite = BrokenPeaksSite.id
+    val cardSite = AncientCitySite.id
+    val card = ErrandBoyCard.id
+    val changed = Table.start.edifice(HallOfMinistersCard.id,
         EdificeSide.Intact, at = hallSite)
       .warbandsAt(hallSite, p1, 1).warbandsAt(cardSite, p1, 1)
       .denizen(card, at = cardSite).ready

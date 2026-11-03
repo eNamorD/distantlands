@@ -5,12 +5,12 @@ import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Storm Caller: a defender's free plan for two defense dice, and the card is
   * discarded after the Campaign whoever won. */
 class StormCallerSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Storm Caller")
+  private val card = StormCallerCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
 
   private def defending: Board =

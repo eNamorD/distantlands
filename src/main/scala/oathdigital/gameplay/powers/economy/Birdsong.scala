@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.economy
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
-  ModifierMark, PrintedPower}
+import oathdigital.catalog.{AdviserOnly, Denizen, ModifierMark, PrintedPower}
 import oathdigital.gameplay.actions.economy.TradeProcedure
 import oathdigital.gameplay.powerresolver.Contribution
 import oathdigital.gameplay.powers.SelectedModifier
@@ -20,19 +19,13 @@ object BirdsongCard extends Denizen(DenizenId("176"), "Birdsong", Suit.Beast) wi
   * whatever the card, as the Cup of Plenty may. The waiver is
   * [[SuitSupplyWaiver]].
   */
-final case class Birdsong private (catalog: ExecutableCatalog)
-    extends SelectedModifier:
-  val cardId: DenizenId = BirdsongCard.id
-  def id: PowerId = Birdsong.id
-  def actions: Set[MajorActionType] = Set(MajorActionType.Trade)
-
-  def effects: Map[PowerWindow, Vector[Contribution]] = SuitSupplyWaiver.effects(
-    PowerWindow.TradeCost, TradeProcedure.decisionId, catalog)(
-    (_, _, suit) => Birdsong.Suits(suit))
-
-object Birdsong:
+case object Birdsong extends SelectedModifier:
   val id: PowerId = BirdsongCard.power.id
   val Suits: Set[Suit] = Set(Suit.Beast, Suit.Nomad)
 
-  def forCatalog(catalog: ExecutableCatalog): Birdsong =
-    new Birdsong(catalog)
+  val card: Denizen = BirdsongCard
+  def actions: Set[MajorActionType] = Set(MajorActionType.Trade)
+
+  def effects: Map[PowerWindow, Vector[Contribution]] = SuitSupplyWaiver.effects(
+    PowerWindow.TradeCost, TradeProcedure.decisionId)(
+    (_, _, _, suit) => Birdsong.Suits(suit))

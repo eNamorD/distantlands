@@ -17,7 +17,7 @@ class GamePresentationProjectorImplementedSuite extends munit.FunSuite:
 
   private val walkerOrPhase: Set[PowerId] =
     WalkerPowerCatalog.default(catalog).powers.map(_.id).toSet ++
-      PhasePowerCatalog.default(catalog).powers.map(_.id).toSet
+      PhasePowerCatalog.default.powers.map(_.id).toSet
 
   /** The walker or phase catalog runs the power. */
   private def builtInWalkerOrPhase(id: PowerId): Boolean = walkerOrPhase(id)

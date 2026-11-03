@@ -1,6 +1,5 @@
 package oathdigital.application
 
-import oathdigital.gameplay.actions.SearchRules
 import oathdigital.gameplay.walker.WalkerDice
 import oathdigital.model._
 
@@ -40,14 +39,3 @@ object CampaignDicePort:
   private val shuffler = new scala.util.Random()
   private def uniform(count: Int): Vector[Int] =
     shuffler.shuffle((0 until count).toVector)
-
-trait SearchDrawPort:
-  def prepare(
-      ready: oathdigital.model.ReadyGame,
-      source: SearchSource
-  ): Either[OathViolation, Vector[WorldCardId]]
-
-object SearchDrawPort:
-  val authoritative: SearchDrawPort = new SearchDrawPort:
-    def prepare(ready: oathdigital.model.ReadyGame, source: SearchSource) =
-      Right(SearchRules.draw(ready, source))

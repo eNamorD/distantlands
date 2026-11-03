@@ -1,6 +1,5 @@
 package oathdigital.gameplay.powers.targeting
 
-import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.powerresolver.ContributingPower
 
 /** The persistent rules that keep a player, or what they hold, from being
@@ -8,10 +7,6 @@ import oathdigital.gameplay.powerresolver.ContributingPower
   * taken, registered together. Each names its card, so all are always present.
   */
 object TargetProtections:
-  def forCatalog(catalog: ExecutableCatalog): Vector[ContributingPower] =
-    Vector(CircletOfCommand.forCatalog(catalog)) ++
-      Vector(Diplomat.forCatalog(catalog)) ++
-      Vector(ForgottenVault.forCatalog(catalog)) ++
-      Vector(LostTongue.forCatalog(catalog)) ++
-      Vector(OakenFortress.forCatalog(catalog)) ++
-      Vector(RottingFortress.forCatalog(catalog))
+  val all: Vector[ContributingPower] =
+    Vector(CircletOfCommand, Diplomat, ForgottenVault, LostTongue,
+      OakenFortress, RottingFortress, HallOfDebate, TomeGuardians)

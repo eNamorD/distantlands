@@ -2,11 +2,15 @@ package oathdigital.gameplay.powers.search
 
 import oathdigital.gameplay.ModifierPlay
 import oathdigital.gameplay.actions.VisionRules
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powerresolver.ModifierPicks
 import oathdigital.gameplay.powers.SearchFixture
+import oathdigital.gameplay.powers.action.{FaeMerchantCard, SecondChanceCard}
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look, Table}
+import oathdigital.testkit.{Look, Table}
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
 
@@ -17,14 +21,14 @@ class WineOfWelcomeSuite extends munit.FunSuite:
 
   private val modifiers = Vector(WineOfWelcome.id)
   /** The world deck's bottom, last named at the very bottom. */
-  private val bottom = Vector("Threatening Roar", "Fae Merchant",
-    "Second Chance").map(CatalogNames.denizen(_))
+  private val bottom = Vector(ThreateningRoarCard.id, FaeMerchantCard.id,
+    SecondChanceCard.id)
 
   /** p1 at Ancient City holding Wine of Welcome faceup, with 5 Supply and
     * one card in the Cradle discard pile. */
-  private def holdingWine: Table = Table.start.pawn(p1, "Ancient City")
-    .relic(p1, "Wine of Welcome").supply(p1, 5)
-    .discarded(Region.Cradle, "Wrestlers")
+  private def holdingWine: Table = Table.start.pawn(p1, AncientCitySite)
+    .relic(p1, WineOfWelcomeCard).supply(p1, 5)
+    .discarded(Region.Cradle, WrestlersCard)
 
   private def searchedWorld(table: Table): ReadyGame =
     SearchFixture.after(accepted(SearchFixture.start(table.ready,
@@ -56,7 +60,7 @@ class WineOfWelcomeSuite extends munit.FunSuite:
       Some("available"))
 
   test("Wine of Welcome and Mushrooms warn each other"):
-    val ready = holdingWine.denizen("Mushrooms", at = "Ancient City").ready
+    val ready = holdingWine.denizen(MushroomsCard, at = AncientCitySite).ready
     val begun = accepted(rules.startWalker(Ready(ready), ActionRef.Search,
       p1))
     val decisionId =

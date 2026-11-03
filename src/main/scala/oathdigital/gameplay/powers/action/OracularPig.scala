@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.{PrintedPower, Relic}
+import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
 import oathdigital.model._
 
 object OracularPigCard extends Relic(RelicId("R14"), "Oracular Pig", value = 93, defense = 2):
@@ -27,7 +27,8 @@ case object OracularPig extends PaidAction(OracularPigCard.power):
     NotePart.Text(".")))
   override def noteKeys: Vector[NoteKey] = notes.declared
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     BuildOps((live, _) => Right(top(live).map(card =>
       Peek(player, card, Location.Deck(CardDeck.World))))),

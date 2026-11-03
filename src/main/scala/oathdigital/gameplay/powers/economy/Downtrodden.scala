@@ -27,27 +27,7 @@ object DowntroddenCard extends Denizen(DenizenId("81"), "Downtrodden", Suit.Disc
   * board, so it never changes a bank before the read. The gain is best-effort
   * like the base gain, and the generic gain lines tell it.
   */
-final case class Downtrodden private (catalog: ExecutableCatalog)
-    extends SelectedModifier:
-  val cardId: DenizenId = DowntroddenCard.id
-  def id: PowerId = Downtrodden.id
-  def actions: Set[MajorActionType] = Set(MajorActionType.Muster)
-
-  def effects: Map[PowerWindow, Vector[Contribution]] = Map(
-    PowerWindow.MusterGain -> Vector(Transform((ctx, operations) =>
-      operations :+ bonus(ctx.actor))))
-
-  private def bonus(actor: PlayerId): Operation = BuildOps((ready, pending) =>
-    if suitOf(ready, pending).exists(Downtrodden.least(ready, _)) then
-      PlayerFacts.forceKind(ready, actor).map(kind => Vector[CoreOperation](
-        Gain.Warbands(actor, kind, Downtrodden.Warbands)))
-    else Right(Vector.empty))
-
-  private def suitOf(ready: ReadyGame, pending: PendingTree): Option[Suit] =
-    PowerAnswers.one(pending, MusterProcedure.decisionId)
-      .flatMap(EffectiveSuit.traded(catalog, ready, pending.answered, _))
-
-object Downtrodden:
+case object Downtrodden extends SelectedModifier:
   val id: PowerId = DowntroddenCard.power.id
   val Warbands: Int = 2
 
@@ -56,5 +36,21 @@ object Downtrodden:
     val favor = (bank: Suit) => ready.banks.favor.getOrElse(bank, 0)
     Suit.all.filter(_ != suit).forall(other => favor(suit) < favor(other))
 
-  def forCatalog(catalog: ExecutableCatalog): Downtrodden =
-    new Downtrodden(catalog)
+  val card: Denizen = DowntroddenCard
+  def actions: Set[MajorActionType] = Set(MajorActionType.Muster)
+
+  def effects: Map[PowerWindow, Vector[Contribution]] = Map(
+    PowerWindow.MusterGain -> Vector(Transform((ctx, operations) =>
+      operations :+ bonus(ctx.catalog, ctx.actor))))
+
+  private def bonus(catalog: ExecutableCatalog,
+      actor: PlayerId): Operation = BuildOps((ready, pending) =>
+    if suitOf(catalog, ready, pending).exists(Downtrodden.least(ready, _)) then
+      PlayerFacts.forceKind(ready, actor).map(kind => Vector[CoreOperation](
+        Gain.Warbands(actor, kind, Downtrodden.Warbands)))
+    else Right(Vector.empty))
+
+  private def suitOf(catalog: ExecutableCatalog,
+      ready: ReadyGame, pending: PendingTree): Option[Suit] =
+    PowerAnswers.one(pending, MusterProcedure.decisionId)
+      .flatMap(EffectiveSuit.traded(catalog, ready, pending.answered, _))

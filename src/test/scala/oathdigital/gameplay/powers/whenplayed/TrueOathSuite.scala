@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.whenplayed
 
 import oathdigital.gameplay.powers.{NoteText, OathkeeperGoalChoice}
+import oathdigital.gameplay.powers.action.WolvesCard
 import oathdigital.model._
 import oathdigital.testkit.Table
 import oathdigital.testkit.Table.p1
@@ -10,7 +11,7 @@ import oathdigital.testkit.Table.p1
 class TrueOathSuite extends munit.FunSuite:
   import WhenPlayedHarness._
 
-  private val power = registered[TrueOath]
+  private val power = registered[TrueOath.type]
   private val oath = power.cardId
   private val played = hook(oath)
 
@@ -20,9 +21,9 @@ class TrueOathSuite extends munit.FunSuite:
     * nobody rules. */
   private def oathBesideBeasts(wolvesRuled: Boolean = true): ReadyGame =
     Table.start.pawn(p1, homeSite).adviser(p1, oath)
-      .adviser(p1, "Animal Host").adviser(p1, "Threatening Roar")
+      .adviser(p1, AnimalHostCard).adviser(p1, ThreateningRoarCard)
       .warbandsAt(homeSite, p1, 1)
-      .denizen("Wolves", at = if wolvesRuled then homeSite else nearSite)
+      .denizen(WolvesCard, at = if wolvesRuled then homeSite else nearSite)
       .oathkeeperGoal(OathkeeperGoal.Supremacy).ready
 
   private def goal(ready: ReadyGame): OathkeeperGoal =

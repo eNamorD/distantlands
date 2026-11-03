@@ -1,6 +1,11 @@
 package oathdigital.gameplay.powers.rest
 
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import oathdigital.gameplay.cards.AncientCitySite
+import oathdigital.gameplay.powers.action.FaeMerchantCard
+import oathdigital.gameplay.powers.campaign.RainBootsCard
+import oathdigital.gameplay.powers.economy.GolemLegionsCard
+import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.model.OathState.Ready
 import oathdigital.gameplay.phases.PhaseMenu
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
@@ -9,8 +14,8 @@ import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome,
 import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog}
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, PlacementPicks,
-  PowerRules, RecordedOps, Refusals, Table}
+import oathdigital.testkit.{Look, Outcomes, PlacementPicks, PowerRules,
+  RecordedOps, Refusals, Table}
 import oathdigital.testkit.Unwrap.{accepted, as, present}
 import oathdigital.testkit.PhasePowerHarness
 
@@ -29,7 +34,7 @@ class SilverTongueSuite extends munit.FunSuite:
       : Vector[DecisionOption] =
     val tree = accepted(CardPlayProcedure.build(catalog, ready, actor, played,
       CardPlayProcedure.Origin.TemporaryHand))
-    val powers = WalkerPowers(Vector(SilverTongue.forCatalog(catalog)))
+    val powers = WalkerPowers(Vector(SilverTongue))
     val parked = as[WalkerOutcome.Parked](accepted(
       ProcedureWalker.advance(ready, tree, None, powers))).tree
     as[DecisionQuery.ChooseOne](present(
@@ -44,7 +49,7 @@ class SilverTongueSuite extends munit.FunSuite:
 
   test("one matching bank with favor gives one favor without a decision, " +
       "once per turn, and runs the action boundary"):
-    val ready = silverTongueRest(Vector("Golem Legions", "Rain Boots"),
+    val ready = silverTongueRest(Vector(GolemLegionsCard, RainBootsCard),
       Set(Suit.Arcane))
     val used = accepted(
       rules.startWalker(Ready(ready), use, actor, Vector(source)))
@@ -56,7 +61,7 @@ class SilverTongueSuite extends munit.FunSuite:
     assertEquals(favor(used.state)(Suit.Arcane), 2)
     // The boundary refilled the quiet table's empty Ancient City to its
     // printed 3 bandits.
-    assertEquals(Look(used.state).forces("Ancient City"),
+    assertEquals(Look(used.state).forces(AncientCitySite),
       SiteForces.Occupied(ForceKind.Bandit, 3))
     val ref = PowerUseRef(PowerTiming.Rest, PowerSourceRef.Card(tongue),
       SilverTongue.id)
@@ -69,7 +74,7 @@ class SilverTongueSuite extends munit.FunSuite:
       .left.toOption, Some(OathViolation.PowerAlreadyUsed(ref)))
 
   test("several matching banks with favor ask the player to choose one of them"):
-    val ready = silverTongueRest(Vector("Golem Legions", "Rain Boots"),
+    val ready = silverTongueRest(Vector(GolemLegionsCard, RainBootsCard),
       Set(Suit.Arcane, Suit.Nomad, Suit.Order))
     val choice = SilverTongue.choiceDecisionId(ready, actor)
     val parked = accepted(
@@ -88,9 +93,9 @@ class SilverTongueSuite extends munit.FunSuite:
     walkerParked.assertMenuParked(taken.state, PhaseMenu.Menu.Wake, next)
 
   test("without matching favor Silver Tongue is not usable and Rest skips ahead"):
-    val ready = silverTongueRest(Vector("Golem Legions"), Set(Suit.Nomad))
+    val ready = silverTongueRest(Vector(GolemLegionsCard), Set(Suit.Nomad))
     assertEquals(PhasePowerHarness.menuPowers(catalog, ready, actor,
-        PhasePowerCatalog.default(catalog), WalkerPowers.empty), Vector.empty)
+        PhasePowerCatalog.default, WalkerPowers.empty), Vector.empty)
     val act = Table.from(ready).turn(actor, Phase.Act).ready
     val rested = accepted(
       rules.startWalker(Ready(act), PhaseTransitionRef.BeginRest, actor))
@@ -102,8 +107,8 @@ class SilverTongueSuite extends munit.FunSuite:
   test("Silver Tongue requires replacement when a third adviser is played"):
     // Two unrestricted denizens: the facedown second adviser and the card
     // played from hand.
-    val second = CatalogNames.denizen("Threatening Roar")
-    val played = CatalogNames.denizen("Fae Merchant")
+    val second = ThreateningRoarCard.id
+    val played = FaeMerchantCard.id
     val ready = Table.from(silverTongueRest(Vector.empty, Set.empty))
       .turn(actor, Phase.Act).adviser(actor, second, facedown = true)
       .hand(actor, played).ready
@@ -112,8 +117,7 @@ class SilverTongueSuite extends munit.FunSuite:
 
   test("playing Silver Tongue itself as a third adviser requires replacement"):
     // Two facedown advisers, and Silver Tongue in hand.
-    val others = Vector("Threatening Roar", "Fae Merchant")
-      .map(CatalogNames.denizen(_))
+    val others = Vector(ThreateningRoarCard.id, FaeMerchantCard.id)
     val resting = Table.from(silverTongueRest(Vector.empty, Set.empty))
       .turn(actor, Phase.Act).hand(actor, tongue)
     val ready = others.foldLeft(resting)(_.adviser(actor, _, facedown = true))
@@ -125,10 +129,10 @@ class SilverTongueSuite extends munit.FunSuite:
       DecisionOptionRef.AdviserPlay(actor, 2, faceup = false)))
 
   test("its take is written as its own line, covering the generic one"):
-    val ready = silverTongueRest(Vector("Golem Legions", "Rain Boots"),
+    val ready = silverTongueRest(Vector(GolemLegionsCard, RainBootsCard),
       Set(Suit.Arcane))
     val used = accepted(
       rules.startWalker(Ready(ready), use, actor, Vector(source)))
-    assertEquals(NoteText.said(SilverTongue.forCatalog(catalog), used.events),
+    assertEquals(NoteText.said(SilverTongue, used.events),
       Vector(NoteText.Said(NoteKey.Used,
         s"${actor.value} took 1 favor from the Arcane bank.", covers = true)))

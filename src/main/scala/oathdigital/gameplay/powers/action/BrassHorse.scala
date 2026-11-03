@@ -26,22 +26,28 @@ object BrassHorseCard extends Relic(RelicId("R03"), "Brass Horse", value = 76, d
   * The power holds the catalog because a card's suit is a catalog fact and
   * `PhasePower.build` receives no catalog.
   */
-final class BrassHorse(catalog: ExecutableCatalog)
-    extends PaidAction(BrassHorseCard.power):
-  import BrassHorse._
+case object BrassHorse extends PaidAction(BrassHorseCard.power):
+  val decisionId: String = "power.brass-horse.site"
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** Its own line: the reveal is its first effect, so the line sits there,
+    * in the command that starts it. The placement may follow a question in
+    * a later command, so it writes a line of its own. */
+  val revealed: NoteKey = notes.key(NoteKey.Used, Vector(NotePart.Arg(0),
+    NotePart.Text(" revealed "), NotePart.Arg(1), NotePart.Text(".")))
+  val placed: NoteKey = PawnMoves.placedKey(notes, "placed")
 
-  override def noteKeys: Vector[NoteKey] = BrassHorse.noteKeys
-
-  override def usable(ready: ReadyGame, player: PlayerId,
-      source: DecisionOptionRef): Boolean =
+  override def usable(catalog: ExecutableCatalog, ready: ReadyGame,
+      player: PlayerId, source: DecisionOptionRef): Boolean =
     region(ready, player).exists(top(ready, _).nonEmpty)
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     BuildOps((state, _) => reveal(state, player)),
     Note(this.id, revealNote(_, player, source), covers = true),
-    Branch((state, _) => ask(state, player)),
-    BuildOps((state, pending) => place(state, player, pending)),
+    Branch((state, _) => ask(catalog, state, player)),
+    BuildOps((state, pending) => place(catalog, state, player, pending)),
     Note(this.id, PawnMoves.placedNote(placed, source, player)))))
 
   /** The reveal leaves the pile as it was, so its top card is still the one
@@ -63,7 +69,8 @@ final class BrassHorse(catalog: ExecutableCatalog)
   private def top(ready: ReadyGame, region: Region): Option[WorldCardId] =
     ready.game.current.commonCards.discard(region).lastOption
 
-  private def holds(ready: ReadyGame, site: SiteId, suit: Suit): Boolean =
+  private def holds(catalog: ExecutableCatalog,
+      ready: ReadyGame, site: SiteId, suit: Suit): Boolean =
     ready.game.current.map.sites.get(site).exists(_.denizens.exists(card =>
       catalog.suitOf(card.id).contains(suit)))
 
@@ -71,14 +78,15 @@ final class BrassHorse(catalog: ExecutableCatalog)
     * revealed suit, or every other site when there is none. A Vision has no
     * suit.
     */
-  private def destinations(ready: ReadyGame, player: PlayerId)
+  private def destinations(catalog: ExecutableCatalog,
+      ready: ReadyGame, player: PlayerId)
       : Either[OathViolation, Vector[SiteId]] = for
     here <- PawnMoves.pawnSite(ready, player)
     found <- region(ready, player)
   yield
     val others = PawnMoves.sitesOtherThan(ready, here)
     val matching = top(ready, found).flatMap(catalog.suitOf).toVector
-      .flatMap(suit => others.filter(holds(ready, _, suit)))
+      .flatMap(suit => others.filter(holds(catalog, ready, _, suit)))
     if matching.nonEmpty then matching else others
 
   private def reveal(ready: ReadyGame, player: PlayerId)
@@ -87,29 +95,19 @@ final class BrassHorse(catalog: ExecutableCatalog)
       Reveal(card, Location.RegionalDiscard(found)): CoreOperation))
 
   /** An error surfaces later, from `place`, so it is not swallowed here. */
-  private def ask(ready: ReadyGame, player: PlayerId): Vector[Operation] =
-    destinations(ready, player) match
+  private def ask(catalog: ExecutableCatalog,
+      ready: ReadyGame, player: PlayerId): Vector[Operation] =
+    destinations(catalog, ready, player) match
       case Right(sites) if sites.size > 1 => Vector(PawnMoves.siteChoice(
         decisionId, player, sites,
         "Brass Horse: choose the site to place your pawn at"))
       case _ => Vector.empty
 
-  private def place(ready: ReadyGame, player: PlayerId, pending: PendingTree)
+  private def place(catalog: ExecutableCatalog,
+      ready: ReadyGame, player: PlayerId, pending: PendingTree)
       : Either[OathViolation, Vector[CoreOperation]] =
-    destinations(ready, player).flatMap:
+    destinations(catalog, ready, player).flatMap:
       case Vector() => Right(Vector.empty)
       case Vector(only) => PawnMoves.relocate(ready, player, only)
       case _ => PawnMoves.chosenSite(pending, decisionId)
         .flatMap(PawnMoves.relocate(ready, player, _))
-
-object BrassHorse:
-  val id: PowerId = BrassHorseCard.power.id
-  val decisionId: String = "power.brass-horse.site"
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** Its own line: the reveal is its first effect, so the line sits there,
-    * in the command that starts it. The placement may follow a question in
-    * a later command, so it writes a line of its own. */
-  val revealed: NoteKey = notes.key(NoteKey.Used, Vector(NotePart.Arg(0),
-    NotePart.Text(" revealed "), NotePart.Arg(1), NotePart.Text(".")))
-  val placed: NoteKey = PawnMoves.placedKey(notes, "placed")

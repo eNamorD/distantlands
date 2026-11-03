@@ -1,12 +1,13 @@
 package oathdigital.application
 
 import oathdigital.gameplay.ModifierPlay
-import oathdigital.gameplay.powers.travel.{Tents, TollRoads, TravelFixture}
+import oathdigital.gameplay.powers.travel.{Tents, TentsCard, TollRoads,
+  TollRoadsCard, TravelFixture, WayStationCard}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
 import oathdigital.protocol.projection.DecisionOptionProjection
-import oathdigital.testkit.{CatalogNames, Outcomes, Table}
+import oathdigital.testkit.{Outcomes, Table}
 import oathdigital.testkit.Unwrap.{accepted, present, rejected}
 
 /** What the parked destination decision shows each site as: its cost under
@@ -50,14 +51,14 @@ class TravelDestinationRowsSuite extends munit.FunSuite:
 
   test("a toll adds its favor to the badge"):
     val ready = Table.from(open(supply = 7))
-      .denizen(CatalogNames.denizen("Toll Roads"), at = provincePlains)
+      .denizen(TollRoadsCard.id, at = provincePlains)
       .favor(actor, 1).warbandsAt(provincePlains, Table.p2, 1)
       .warbandsAt(coast, Table.p2, 1).ready
     assertEquals(row(ready, coast).badge, Some("1 Supply · 1 [favor]"))
 
   test("a toll its ruler waived reads both ways on"):
     val tolled = Table.from(open(supply = 7))
-      .denizen(CatalogNames.denizen("Toll Roads"), at = provincePlains)
+      .denizen(TollRoadsCard.id, at = provincePlains)
       .favor(actor, 1).warbandsAt(provincePlains, Table.p2, 1)
       .warbandsAt(coast, Table.p2, 1).ready
     val granted = tolled.copy(consent = ConsentState().granting(Vector(
@@ -69,7 +70,7 @@ class TravelDestinationRowsSuite extends munit.FunSuite:
   test("a selected modifier that makes the Travel free reads 0 Supply, and " +
       "its own card payment is not in the badge"):
     val ready = Table.from(open(supply = 7))
-      .adviser(actor, CatalogNames.denizen("Tents")).favor(actor, 1).ready
+      .adviser(actor, TentsCard.id).favor(actor, 1).ready
     assertEquals(row(ready, coast, Vector(Tents.id)).badge, Some("0 Supply"))
 
   test("a destination the actor cannot afford says how much it needs"):
@@ -81,7 +82,7 @@ class TravelDestinationRowsSuite extends munit.FunSuite:
   test("a toll the actor cannot pay says how much favor it needs, under " +
       "bandits"):
     val ready = Table.from(open(supply = 7))
-      .denizen(CatalogNames.denizen("Toll Roads"), at = provincePlains)
+      .denizen(TollRoadsCard.id, at = provincePlains)
       .favor(actor, 0).bandits(provincePlains, 1).bandits(coast, 1).ready
     val shown = row(ready, coast)
     assertEquals(shown.state, "unavailable")
@@ -89,7 +90,7 @@ class TravelDestinationRowsSuite extends munit.FunSuite:
 
   test("a toll the actor cannot pay, under a player, reads its free way on"):
     val ready = Table.from(open(supply = 7))
-      .denizen(CatalogNames.denizen("Toll Roads"), at = provincePlains)
+      .denizen(TollRoadsCard.id, at = provincePlains)
       .favor(actor, 0).warbandsAt(provincePlains, Table.p2, 1)
       .warbandsAt(coast, Table.p2, 1).ready
     val shown = row(ready, coast)
@@ -98,7 +99,7 @@ class TravelDestinationRowsSuite extends munit.FunSuite:
 
   test("Way Station's site offers the favor beside the Supply"):
     val ready = Table.from(open(supply = 7))
-      .denizen(CatalogNames.denizen("Way Station"), at = coast)
+      .denizen(WayStationCard.id, at = coast)
       .warbandsAt(coast, Table.p2, 1).favor(actor, 1).ready
     assertEquals(row(ready, coast).badge, Some("1 Supply or 1 [favor]"))
     val broke = Table.from(ready).supply(actor, 0).ready
@@ -122,7 +123,7 @@ class TravelDestinationRowsSuite extends munit.FunSuite:
 
   test("Way Station's ruler travels there for 0 Supply"):
     val ready = Table.from(open(supply = 7))
-      .denizen(CatalogNames.denizen("Way Station"), at = coast)
+      .denizen(WayStationCard.id, at = coast)
       .warbandsAt(coast, actor, 1).ready
     assertEquals(row(ready, coast).badge, Some("0 Supply"))
 
@@ -131,8 +132,8 @@ class TravelDestinationRowsSuite extends munit.FunSuite:
   private def tolledWayStation(favor: Int, supply: Int)(
       using munit.Location): ReadyGame =
     Table.from(open(supply = supply))
-      .denizen(CatalogNames.denizen("Way Station"), at = coast)
-      .denizen(CatalogNames.denizen("Toll Roads"), at = provincePlains)
+      .denizen(WayStationCard.id, at = coast)
+      .denizen(TollRoadsCard.id, at = provincePlains)
       .warbandsAt(coast, Table.p2, 1).warbandsAt(provincePlains, Table.p2, 1)
       .favor(actor, favor).ready
 

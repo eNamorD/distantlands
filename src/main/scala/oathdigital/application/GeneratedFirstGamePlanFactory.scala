@@ -27,7 +27,7 @@ final class GeneratedFirstGamePlanFactory(
 ) extends FirstGamePlanFactory:
   override def build(config: FirstGameBootstrapConfig, choice: ChronicleChoice)
       : Either[BootstrapPlanFailure, FirstGamePlan] =
-    val implemented = PowerImplementationStatus.implemented(catalog)
+    val implemented = PowerImplementationStatus.implemented
     val chronicle = choice match
       case ChronicleChoice.New(name) =>
         FirstGameChronicleGenerator.generate(catalog, name, implemented,

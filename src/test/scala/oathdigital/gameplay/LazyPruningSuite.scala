@@ -1,11 +1,12 @@
 package oathdigital.gameplay
 
 import oathdigital.gameplay.powers.WalkerPowerCatalog
+import oathdigital.gameplay.powers.campaign.SealingWardCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome,
   WalkerSimulation}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Outcomes.parked
 import oathdigital.testkit.DecisionOptions.button
@@ -17,7 +18,7 @@ import oathdigital.testkit.DecisionOptions.button
   */
 class LazyPruningSuite extends munit.FunSuite:
   private val powers = WalkerPowerCatalog.default(catalog)
-  private val lockedCard = CatalogNames.denizen("Sealing Ward")
+  private val lockedCard = SealingWardCard.id
   private val ready = Table.start.adviser(p1, lockedCard).ready
   private val ask = "test.ask"
   private val next = "test.next"

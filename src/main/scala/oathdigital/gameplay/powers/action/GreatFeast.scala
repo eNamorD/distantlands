@@ -22,24 +22,39 @@ object GreatFeastCard extends Denizen(DenizenId("257"), "Great Feast", Suit.Orde
   * narrated: the line names the card, and covers the Discarded line. With
   * nothing to discard, the cost stays paid and the line names the site.
   */
-final case class GreatFeast private (catalog: ExecutableCatalog)
-    extends PaidAction(GreatFeastCard.power):
-  import GreatFeast._
+case object GreatFeast extends PaidAction(GreatFeastCard.power):
+  val decisionId: String = "power.great-feast.card"
+  val Gained: Int = 3
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "{Red} discarded {card} and gained {n} Supply." */
+  val feasted: NoteKey = notes.key(NoteKey.Used, Vector(NotePart.Arg(0),
+    NotePart.Text(" discarded "), NotePart.Arg(1),
+    NotePart.Text(" and gained "), NotePart.Arg(2), NotePart.Text(".")))
+  /** "{site} held no Beast card." */
+  val bare: NoteKey = notes.key("used.none", Vector(NotePart.Arg(0),
+    NotePart.Text(" held no Beast card.")))
+  /** "No Beast card at {site} could be discarded." */
+  val kept: NoteKey = notes.key("used.kept", Vector(
+    NotePart.Text("No Beast card at "), NotePart.Arg(0),
+    NotePart.Text(" could be discarded.")))
 
-  private val cards = new SiteCards(catalog, Set(Suit.Beast))
-  override def noteKeys: Vector[NoteKey] = GreatFeast.noteKeys
+  private val cards = new SiteCards(Set(Suit.Beast))
   override def narratedDecisions: Set[String] = Set(decisionId)
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
-    Branch((live, _) => cards.ask(live, player, decisionId,
+    Branch((live, _) => cards.ask(catalog, live, player, decisionId,
       "Great Feast: discard a Beast card at your site")),
-    BuildOps((live, pending) => feast(live, player, pending), required = true),
-    Note(this.id, feastNote(_, player, source), covers = true))))
+    BuildOps((live, pending) => feast(catalog, live, player, pending),
+      required = true),
+    Note(this.id, feastNote(catalog, _, player, source), covers = true))))
 
-  private def feast(ready: ReadyGame, player: PlayerId, pending: PendingTree)
+  private def feast(catalog: ExecutableCatalog,
+      ready: ReadyGame, player: PlayerId, pending: PendingTree)
       : Either[OathViolation, Vector[CoreOperation]] =
-    cards.chosen(ready, player, pending, decisionId) match
+    cards.chosen(catalog, ready, player, pending, decisionId) match
       case None => Right(Vector.empty)
       case Some((site, card, suit)) => meal(ready, player, site, card, suit)
 
@@ -54,7 +69,8 @@ final case class GreatFeast private (catalog: ExecutableCatalog)
     Vector[CoreOperation](discard) ++
       Option.when(room > 0)(GainSupply(player, room))
 
-  private def feastNote(states: NoteStates, player: PlayerId,
+  private def feastNote(catalog: ExecutableCatalog,
+      states: NoteStates, player: PlayerId,
       source: DecisionOptionRef): Option[LogNote] =
     PowerSourceRef.of(source).flatMap(card =>
       NoteSupport.answer(states, decisionId).flatMap(cards.cardOf) match
@@ -64,27 +80,6 @@ final case class GreatFeast private (catalog: ExecutableCatalog)
             NoteUnit.Supply)))
         case None => PowerAccess.pawnSite(states.now, player).map(site =>
           // A card was there, but a refusal kept it: it was not discarded.
-          if cards.at(states.now, site).nonEmpty then
+          if cards.at(catalog, states.now, site).nonEmpty then
             kept(card, NoteArg.Site(site))
           else bare(card, NoteArg.Site(site))))
-
-object GreatFeast:
-  val id: PowerId = GreatFeastCard.power.id
-  val decisionId: String = "power.great-feast.card"
-  val Gained: Int = 3
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "{Red} discarded {card} and gained {n} Supply." */
-  val feasted: NoteKey = notes.key(NoteKey.Used, Vector(NotePart.Arg(0),
-    NotePart.Text(" discarded "), NotePart.Arg(1),
-    NotePart.Text(" and gained "), NotePart.Arg(2), NotePart.Text(".")))
-  /** "{site} held no Beast card." */
-  val bare: NoteKey = notes.key("used.none", Vector(NotePart.Arg(0),
-    NotePart.Text(" held no Beast card.")))
-  /** "No Beast card at {site} could be discarded." */
-  val kept: NoteKey = notes.key("used.kept", Vector(
-    NotePart.Text("No Beast card at "), NotePart.Arg(0),
-    NotePart.Text(" could be discarded.")))
-
-  def forCatalog(catalog: ExecutableCatalog): GreatFeast =
-    new GreatFeast(catalog)

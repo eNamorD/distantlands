@@ -25,29 +25,47 @@ object SecondChanceCard extends Denizen(DenizenId("181"), "Second Chance", Suit.
   * to the bank the gain takes from. The gain is best effort, so an empty
   * supply gives nothing.
   */
-final case class SecondChance private (catalog: ExecutableCatalog)
-    extends PaidAction(SecondChanceCard.power):
-  import SecondChance._
+case object SecondChance extends PaidAction(SecondChanceCard.power):
+  val decisionId: String = "power.second-chance.target"
+  val Killed: Int = 1
+  val Gained: Int = 1
+  private val Suits: Set[Suit] = Set(Suit.Order, Suit.Discord)
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "Killed {n} {Blue} warband, and {Red} gained {1 warband}." */
+  val gained: NoteKey = notes.key(NoteKey.Used, Vector(NotePart.Text("Killed "),
+    NotePart.Arg(0), NotePart.Text(" "), NotePart.Arg(1),
+    NotePart.Plural(0, " warband, and ", " warbands, and "), NotePart.Arg(2),
+    NotePart.Text(" gained "), NotePart.Arg(3), NotePart.Text(".")))
+  /** "Killed {n} {Blue} warband." */
+  val killedOnly: NoteKey = NoteSupport.killedKey(notes, "used.killed")
+  /** "{Blue} had no warband to kill." */
+  val spared: NoteKey = notes.key("used.spared", Vector(NotePart.Arg(0),
+    NotePart.Text(" had no warband to kill.")))
+  /** "No player had a faceup Order or Discord adviser." */
+  val nobody: NoteKey = notes.key("used.none", Vector(NotePart.Text(
+    "No player had a faceup Order or Discord adviser.")))
 
-  override def noteKeys: Vector[NoteKey] = SecondChance.noteKeys
   override def narratedDecisions: Set[String] = Set(decisionId)
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
-    Branch((live, _) => ask(live, player, source)),
+    Branch((live, _) => ask(catalog, live, player, source)),
     Branch((live, pending) => strike(live, player, source, pending)))))
 
   /** The players with a faceup Order or Discord adviser, in seat order. */
-  private def candidates(ready: ReadyGame): Vector[PlayerId] =
+  private def candidates(catalog: ExecutableCatalog,
+      ready: ReadyGame): Vector[PlayerId] =
     ready.game.current.players.filter(_.advisers.exists {
       case DenizenState(card, Orientation.FaceUp, _) =>
         EffectiveSuit.of(catalog, ready, card).exists(Suits.contains)
       case _ => false
     }).map(_.player)
 
-  private def ask(ready: ReadyGame, actor: PlayerId,
+  private def ask(catalog: ExecutableCatalog, ready: ReadyGame, actor: PlayerId,
       source: DecisionOptionRef): Vector[Operation] =
-    candidates(ready) match
+    candidates(catalog, ready) match
       case Vector() =>
         Vector(Note(this.id, _ => PowerSourceRef.of(source).map(nobody(_))))
       case found => Vector(Decide(decisionId, actor, DecisionQuery.ChooseOne(
@@ -86,28 +104,3 @@ final case class SecondChance private (catalog: ExecutableCatalog)
         NoteArg.Amount(got, NoteUnit.Warband))
       else killedOnly(card, NoteArg.Number(Killed), NoteArg.Player(target))
     }
-
-object SecondChance:
-  val id: PowerId = SecondChanceCard.power.id
-  val decisionId: String = "power.second-chance.target"
-  val Killed: Int = 1
-  val Gained: Int = 1
-  private val Suits: Set[Suit] = Set(Suit.Order, Suit.Discord)
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "Killed {n} {Blue} warband, and {Red} gained {1 warband}." */
-  val gained: NoteKey = notes.key(NoteKey.Used, Vector(NotePart.Text("Killed "),
-    NotePart.Arg(0), NotePart.Text(" "), NotePart.Arg(1),
-    NotePart.Plural(0, " warband, and ", " warbands, and "), NotePart.Arg(2),
-    NotePart.Text(" gained "), NotePart.Arg(3), NotePart.Text(".")))
-  /** "Killed {n} {Blue} warband." */
-  val killedOnly: NoteKey = NoteSupport.killedKey(notes, "used.killed")
-  /** "{Blue} had no warband to kill." */
-  val spared: NoteKey = notes.key("used.spared", Vector(NotePart.Arg(0),
-    NotePart.Text(" had no warband to kill.")))
-  /** "No player had a faceup Order or Discord adviser." */
-  val nobody: NoteKey = notes.key("used.none", Vector(NotePart.Text(
-    "No player had a faceup Order or Discord adviser.")))
-
-  def forCatalog(catalog: ExecutableCatalog): SecondChance =
-    new SecondChance(catalog)

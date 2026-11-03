@@ -3,6 +3,9 @@ package oathdigital.testkit
 import oathdigital.gameplay.FacedownAdviserPlay
 import oathdigital.gameplay.OathRules
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import oathdigital.gameplay.cards.AncientCitySite
+import oathdigital.gameplay.powers.action.AncientBindingCard
+import oathdigital.gameplay.powers.campaign.RainBootsCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._
@@ -12,8 +15,8 @@ import oathdigital.testkit.Unwrap.accepted
 /** `PlacementPicks`: choosing a card play's placement answer by how it plays
   * the card, and reading what a placement option replaces. */
 class PlacementPicksSuite extends munit.FunSuite:
-  private val home = CatalogNames.site("Ancient City")
-  private val rainBoots = CatalogNames.denizen("Rain Boots")
+  private val home = AncientCitySite.id
+  private val rainBoots = RainBootsCard.id
 
   private val pileRef = DecisionOptionRef.DiscardPile(Region.Provinces)
   private val slotRef = DecisionOptionRef.SiteSlot(home, 0)
@@ -83,7 +86,7 @@ class PlacementPicksSuite extends munit.FunSuite:
 
   test("findReplacing finds the option that plays the card that way in the " +
       "place of one card, whether or not it may be chosen"):
-    val binding = CatalogNames.denizen("Ancient Binding")
+    val binding = AncientBindingCard.id
     val options = Vector(
       DecisionOption.Replacing(DecisionOption.SiteSlot(
         DecisionOptionRef.SiteSlot(home, 0)), rainBoots),
@@ -111,7 +114,7 @@ class PlacementPicksSuite extends munit.FunSuite:
     // Parks the real facedown-adviser play on its placement: the options a
     // parked state shows are the subject.
     val rules = new OathRules(catalog)
-    val table = Table.start.turn(p1, Phase.Act).pawn(p1, "Ancient City")
+    val table = Table.start.turn(p1, Phase.Act).pawn(p1, AncientCitySite)
       .adviser(p1, rainBoots, facedown = true)
     val parked = accepted(FacedownAdviserPlay.parkedOnPlacement(rules,
       table.state, p1, rainBoots))

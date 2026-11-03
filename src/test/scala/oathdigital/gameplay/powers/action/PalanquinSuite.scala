@@ -3,12 +3,14 @@ package oathdigital.gameplay.powers.action
 import oathdigital.gameplay.phases.PhaseMenu
 import oathdigital.gameplay.powerresolver.{ModifierPicks, QueuedStarts}
 import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.travel.{BrassArmyMoves, TravelFixture}
+import oathdigital.gameplay.powers.campaign.BrassArmyCard
+import oathdigital.gameplay.powers.travel.{BrassArmyMoves, HospitalityCard,
+  SpecialEnvoyCard, TravelFixture, TyrantCard}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{ProcedureDequeued, WalkerPowers}
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, MenuPlay,
-  Outcomes, ParkedNode, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, MenuPlay, Outcomes,
+  ParkedNode, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
@@ -43,7 +45,7 @@ class PalanquinSuite extends munit.FunSuite:
 
   private def parkedDecide(state: OathState): Decide =
     ParkedNode.of(state, catalog, WalkerPowerCatalog.default(catalog),
-      PhasePowerCatalog.default(catalog)) match
+      PhasePowerCatalog.default) match
       case Right(Some(ParkedNode.Decision(_, decide, _))) => decide
       case other => fail(s"expected a parked decision, got $other")
 
@@ -55,7 +57,7 @@ class PalanquinSuite extends munit.FunSuite:
   /** Why the Act menu shows Palanquin unavailable, if it does. */
   private def menuReason(ready: ReadyGame): Option[OptionReason] =
     PhaseMenu.offers(PhaseMenu.Menu.Act, catalog, ready, p1,
-      PhasePowerCatalog.default(catalog), WalkerPowers.empty)
+      PhasePowerCatalog.default, WalkerPowers.empty)
       .map(offer => MenuPlay.withoutBand(offer.option)).collectFirst {
         case DecisionOption.Unavailable(shown, reason)
             if shown.ref == source => reason
@@ -117,7 +119,7 @@ class PalanquinSuite extends munit.FunSuite:
   test("Brass Army asks the user right after the placement, before the " +
       "target travels"):
     val ready = palanquinWithP2Beside(_.relic(p1,
-      CatalogNames.relic("Brass Army")).secrets(p1, faceUp = 1))
+      BrassArmyCard.id).secrets(p1, faceUp = 1))
     val used = accepted(ActPowerHarness.use(rules, ready, Palanquin.id,
       source))
     val aimed = accepted(ActPowerHarness.answer(rules, used.state,
@@ -134,30 +136,30 @@ class PalanquinSuite extends munit.FunSuite:
 
   test("Brass Army asks the target after their own move"):
     val ready = palanquinWithP2Beside(_.relic(p2,
-      CatalogNames.relic("Brass Army")).secrets(p2, faceUp = 1))
+      BrassArmyCard.id).secrets(p2, faceUp = 1))
     val decide = parkedDecide(sent(ready, p2, coast).state)
     assertEquals(decide.decisionId, BrassArmyMoves.decisionId)
     assertEquals(decide.owner, p2)
 
   test("Hospitality pays the target"):
     val ready = palanquinWithP2Beside(_
-      .adviser(p2, CatalogNames.denizen("Hospitality"))
-      .adviser(p2, CatalogNames.denizen("Messenger"))
-      .denizen(CatalogNames.denizen("Siege Engines"), coast)
+      .adviser(p2, HospitalityCard.id)
+      .adviser(p2, MessengerCard.id)
+      .denizen(SiegeEnginesCard.id, coast)
       .banksHoldingOnly(Suit.Order -> 2))
     val after = Look(Outcomes.ready(sent(ready, p2, coast).state))
     assertEquals(after.favor(p2), Look(ready).favor(p2) + 1)
 
   test("Tyrant acts for the target off turn"):
     val ready = palanquinWithP2Beside(_
-      .adviser(p2, CatalogNames.denizen("Tyrant")).bandits(coast, 2))
+      .adviser(p2, TyrantCard.id).bandits(coast, 2))
     assertEquals(Look(Outcomes.ready(sent(ready, p2, coast).state))
       .forces(coast), SiteForces.Occupied(ForceKind.Bandit, 1))
 
   test("the target picks their own Travel modifiers, and the resumed walk " +
       "still goes to the named site"):
     val ready = palanquinWithP2Beside(_
-      .adviser(p2, CatalogNames.denizen("Special Envoy")))
+      .adviser(p2, SpecialEnvoyCard.id))
     val parked = sent(ready, p2, coast).state
     val decide = parkedDecide(parked)
     assertEquals(decide.decisionId, TravelFixture.modifierDecisionId)

@@ -5,13 +5,13 @@ import oathdigital.gameplay.actions.campaign.{CampaignIds, PlanAmounts}
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Mountain Giant: a plan for either side costing a secret, then one or
   * three attack dice, added or removed. It is discarded after the
   * Campaign only when three was chosen. */
 class MountainGiantSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Mountain Giant")
+  private val card = MountainGiantCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
   private val one = PlanAmounts.button(1)
   private val three = PlanAmounts.button(MountainGiant.Three)

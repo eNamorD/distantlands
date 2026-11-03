@@ -1,13 +1,13 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.gameplay.actions.travel.TravelProcedure
+import oathdigital.gameplay.cards.NarrowPassSite
 import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.travel.{NarrowPassSite, TollRoads,
+import oathdigital.gameplay.powers.travel.{TollRoads, TollRoadsCard,
   TravelFixture}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes,
-  ParkedNode, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, Outcomes, ParkedNode, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -19,7 +19,7 @@ class PalanquinConsentSuite extends munit.FunSuite:
 
   private val rules = ActPowerHarness.rulesWithPrintedRestrictions()
   private val source = DecisionOptionRef.Denizen(PalanquinCard.id)
-  private val toll = CatalogNames.denizen("Toll Roads")
+  private val toll = TollRoadsCard.id
   private val coastRef = DecisionOptionRef.Site(coast)
 
   /** p1 holds Palanquin and 1 favor at the Cradle's plains, with p3 beside
@@ -47,7 +47,7 @@ class PalanquinConsentSuite extends munit.FunSuite:
 
   private def parkedDecide(state: OathState): Decide =
     ParkedNode.of(state, catalog, WalkerPowerCatalog.default(catalog),
-      PhasePowerCatalog.default(catalog)) match
+      PhasePowerCatalog.default) match
       case Right(Some(ParkedNode.Decision(_, decide, _))) => decide
       case other => fail(s"expected a parked decision, got $other")
 

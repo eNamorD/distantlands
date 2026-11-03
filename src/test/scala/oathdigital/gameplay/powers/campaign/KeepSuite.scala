@@ -8,13 +8,13 @@ import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look}
+import oathdigital.testkit.{ActPowerHarness, Look}
 
 /** Keep: a defender who rules Keep's site and loses a Raid gives up only
   * what was targeted, and their pawn goes to Keep's site. */
 class KeepSuite extends munit.FunSuite:
-  private val keep = CatalogNames.denizen("Keep")
-  private val bookBurning = CatalogNames.denizen("Book Burning")
+  private val keep = KeepCard.id
+  private val bookBurning = BookBurningCard.id
 
   /** An in-play site that is neither the Raid's origin nor where the
     * bystander stands, so a pawn sent there has moved. */

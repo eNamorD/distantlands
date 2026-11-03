@@ -15,16 +15,16 @@ import oathdigital.protocol.projection._
 final class GameProjector(catalog: ExecutableCatalog, phasePowers: PhasePowers,
     entries: ChronicleEntries = ChronicleEntries()):
   def this(catalog: ExecutableCatalog) =
-    this(catalog, PhasePowerCatalog.default(catalog))
+    this(catalog, PhasePowerCatalog.default)
 
   private val presentation = new GamePresentationProjector(catalog)
   private val walkerDecisions = new WalkerDecisionProjector(catalog,
     presentation, WalkerPowerCatalog.default(catalog),
     WalkerDecisionProjector.declaredTree, phasePowers)
-  private val pendingProjector = new PendingProjector(catalog,
-    presentation, walkerDecisions)
+  private val pendingProjector =
+    new PendingProjector(presentation, walkerDecisions)
   private val consent = new ConsentProjector(presentation, walkerDecisions,
-    ConsentPowers.default(catalog))
+    ConsentPowers.default)
   private val aid = new PlanAidProjector(new OathRules(catalog,
     walkerPowerCatalog = WalkerPowerCatalog.default(catalog),
     phasePowerCatalog = phasePowers), walkerDecisions)
@@ -33,8 +33,10 @@ final class GameProjector(catalog: ExecutableCatalog, phasePowers: PhasePowers,
 
   /** The log page after `after` for `viewer`; `None` when `after` is past
     * the journal's end. */
+  /** The log from `after` as `viewer` reads it; no viewer reads the public
+    * lines alone. */
   def logPage(gameId: String, history: GameHistory, after: Long,
-      viewer: PlayerId): Option[LogPage] =
+      viewer: Option[PlayerId]): Option[LogPage] =
     logs.page(gameId, history, after, viewer)
 
   def project(gameId: String, loaded: LoadedGame,

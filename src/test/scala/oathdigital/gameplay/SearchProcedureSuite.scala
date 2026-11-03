@@ -1,5 +1,10 @@
 package oathdigital.gameplay
 
+import oathdigital.gameplay.cards.AncientCitySite
+import oathdigital.gameplay.powers.action.{AncientBindingCard, FaeMerchantCard,
+  SecondChanceCard}
+import oathdigital.gameplay.powers.campaign.{RainBootsCard, WrestlersCard}
+import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.testkit.MenuPlay
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import oathdigital.gameplay.actions.search.SearchProcedure
@@ -9,7 +14,7 @@ import oathdigital.gameplay.powers.WalkerPowerCatalog
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.gameplay.walker.{ParkedDecisionAssertions, WalkerPowers}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, PlacementPicks, PowerStubs, Table}
+import oathdigital.testkit.{Look, Outcomes, PlacementPicks, PowerStubs, Table}
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.{accepted, rejected}
 
@@ -21,11 +26,11 @@ class SearchProcedureSuite extends munit.FunSuite:
   // p1 stands at Ancient City, in the Cradle.
   private val region = Region.Cradle
   // Three denizens whose powers these tests do not use.
-  private val topCards = Vector("Threatening Roar", "Fae Merchant",
-    "Second Chance").map(CatalogNames.denizen(_))
+  private val topCards = Vector(ThreateningRoarCard.id, FaeMerchantCard.id,
+    SecondChanceCard.id)
 
   /** p1's Act on the quiet table, at Ancient City. */
-  private def atAncientCity: Table = Table.start.pawn(actor, "Ancient City")
+  private def atAncientCity: Table = Table.start.pawn(actor, AncientCitySite)
 
   private def searched(under: OathRules, ready: ReadyGame,
       pile: SearchSource = SearchSource.WorldDeck)
@@ -172,9 +177,9 @@ class SearchProcedureSuite extends munit.FunSuite:
       "resolves on resume, which settles from the answers"):
     // Three denizens top the deck; the kept one replaces a card of a full
     // Ancient City, and two permissions let a second card go too.
-    val fillers = Vector("Rain Boots", "Ancient Binding", "Wrestlers")
-      .map(CatalogNames.denizen(_))
-    val home = CatalogNames.site("Ancient City")
+    val fillers = Vector(RainBootsCard.id, AncientBindingCard.id,
+      WrestlersCard.id)
+    val home = AncientCitySite.id
     val initial = fillers.foldLeft(atAncientCity.worldDeckTop(topCards*))(
       _.denizen(_, at = home)).ready
     val twoPermissions = PlacementFixture.rulePower("test.two-discards")(

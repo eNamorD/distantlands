@@ -1,9 +1,10 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
+import oathdigital.gameplay.powers.search.{ErrandBoyCard, LandWardenCard}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
@@ -13,13 +14,13 @@ class SingingMaskSuite extends munit.FunSuite:
   import SingingMask.{amountDecisionId, cardDecisionId, directionDecisionId,
     toBanner}
 
-  private val power = SingingMask.forCatalog(catalog)
-  private val mask = CatalogNames.relic("Singing Mask")
+  private val power = SingingMask
+  private val mask = SingingMaskCard.id
   private val source = DecisionOptionRef.Relic(mask)
-  private val home = CatalogNames.site("Ancient City")
+  private val home = AncientCitySite.id
   /** A plain Beast denizen and a plain Hearth one. */
-  private val errandBoy = CatalogNames.denizen("Errand Boy")
-  private val landWarden = CatalogNames.denizen("Land Warden")
+  private val errandBoy = ErrandBoyCard.id
+  private val landWarden = LandWardenCard.id
   private val chooseErrandBoy: (String, DecisionAnswer) =
     cardDecisionId -> pick(DecisionOptionRef.Denizen(errandBoy))
 

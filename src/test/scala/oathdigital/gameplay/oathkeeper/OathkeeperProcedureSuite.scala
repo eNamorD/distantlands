@@ -1,6 +1,8 @@
 package oathdigital.gameplay.oathkeeper
 
 import oathdigital.gameplay.{OathRules, StateBasedEvaluation, TravelPlay}
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite, DesolateShoreSite, DunesSite, FairIsleSite}
 import oathdigital.model.OathEvent.BanditsRefilled
 import oathdigital.model.OathState.Ready
 import oathdigital.gameplay.phases.PhaseMenu
@@ -10,8 +12,7 @@ import oathdigital.gameplay.walker.{ChoicePayload, DeltaPayload,
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
 import oathdigital.testkit.MenuPlay
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Outcomes,
-  TakeWealthFixture, Table}
+import oathdigital.testkit.{ActPowerHarness, Outcomes, Table, TakeWealthFixture}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -24,7 +25,7 @@ class OathkeeperProcedureSuite extends munit.FunSuite:
     */
   private def travel(ready: ReadyGame) =
     TravelPlay.travelled(rules, Ready(ready), p1,
-      CatalogNames.site("Broken Peaks"))
+      BrokenPeaksSite.id)
 
   private def replays(start: ReadyGame, events: Vector[OathEvent],
       expected: OathState): Unit =
@@ -35,17 +36,17 @@ class OathkeeperProcedureSuite extends munit.FunSuite:
     * tie p2 must break off turn. It is p1's Act. p1 stands at Ancient City,
     * p2 at Broken Peaks and p3 at Buried Giant. */
   private def tied: Table = Table.start
-    .pawn(p1, at = "Ancient City").pawn(p2, at = "Broken Peaks")
-    .pawn(p3, at = "Buried Giant")
+    .pawn(p1, at = AncientCitySite).pawn(p2, at = BrokenPeaksSite)
+    .pawn(p3, at = BuriedGiantSite)
     .oathkeeper(Some(p2))
-    .warbandsAt("Dunes", p1, 1).warbandsAt("Fair Isle", p3, 1)
+    .warbandsAt(DunesSite, p1, 1).warbandsAt(FairIsleSite, p3, 1)
   private val active = p1
   private val holder = p2
 
   test("a single new leader takes the title inside the action's own command"):
     val leader = p3
-    val ready = Table.start.pawn(p1, at = "Ancient City")
-      .warbandsAt("Dunes", p3, 1).ready
+    val ready = Table.start.pawn(p1, at = AncientCitySite)
+      .warbandsAt(DunesSite, p3, 1).ready
     val traveled = accepted(travel(ready))
     assert(traveled.events.exists {
       case WalkerStepRecorded(_, DeltaPayload(ops), _) => ops == Vector(SetOathkeeper(Some(leader)))
@@ -96,7 +97,7 @@ class OathkeeperProcedureSuite extends munit.FunSuite:
     // Emptying Desolate Shore again makes a boundary observable: if one ran
     // on the resolving command, it would refill bandits there.
     val emptied = Table.from(Outcomes.ready(parked.state))
-      .bandits("Desolate Shore", 0).ready
+      .bandits(DesolateShoreSite, 0).ready
     assert(StateBasedEvaluation.banditRefill(catalog, Ready(emptied))
       .toOption.flatten.nonEmpty, "precondition: a boundary would refill here")
     val chosen = accepted(rules.resolveWalker(Ready(emptied), holder,
@@ -108,7 +109,7 @@ class OathkeeperProcedureSuite extends munit.FunSuite:
   test("a tie found after Take Wealth parks in Wake and returns the player to Wake"):
     // p1 wakes at Ancient City, which holds a favor and a secret to take.
     val ready = tied.turn(p1, Phase.Wake)
-      .siteTokens("Ancient City", favor = 1, secrets = 1).ready
+      .siteTokens(AncientCitySite, favor = 1, secrets = 1).ready
     val parked = accepted(TakeWealthFixture.take(rules, ready))
     walkerParked.assertParked(parked.state, TriggeredProcedureRef.Oathkeeper,
       OathkeeperProcedure.recipientDecisionId, holder)
@@ -133,7 +134,7 @@ class OathkeeperProcedureSuite extends munit.FunSuite:
       Vector.empty),
       Left(OathViolation.InvalidEventOrder("no Oathkeeper change to perform")))
     assertEquals(OathkeeperProcedure.build(catalog,
-      Table.start.warbandsAt("Dunes", p3, 1).ready, p1,
-      Vector(DecisionOptionRef.Site(CatalogNames.site("Ancient City")))),
+      Table.start.warbandsAt(DunesSite, p3, 1).ready, p1,
+      Vector(DecisionOptionRef.Site(AncientCitySite.id))),
       Left(OathViolation.InvalidEventOrder("the Oathkeeper procedure selects " +
         "nothing, got site/site:ancient-city")))

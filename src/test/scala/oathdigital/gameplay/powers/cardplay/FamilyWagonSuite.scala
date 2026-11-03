@@ -3,12 +3,17 @@ package oathdigital.gameplay.powers.cardplay
 import oathdigital.gameplay.PlacementFixture
 import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.whenplayed.{ASmallFavor, FaithfulFriend}
+import oathdigital.gameplay.powers.action.EldersCard
+import oathdigital.gameplay.powers.campaign.{LancersCard, RainBootsCard,
+  WrestlersCard}
+import oathdigital.gameplay.powers.whenplayed.{ASmallFavor, ASmallFavorCard,
+  FaithfulFriend, FaithfulFriendCard}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{WalkerOutcome, WalkerPowers}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Table}
+import oathdigital.testkit.{Look, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Unwrap
 
@@ -20,18 +25,18 @@ class FamilyWagonSuite extends munit.FunSuite:
   import PlacementFixture.{answer, build, park, placementOptions}
 
   private val actor = Table.p1
-  private val wagon = CatalogNames.denizen("Family Wagon")
-  private val power = FamilyWagon.forCatalog(catalog)
+  private val wagon = FamilyWagonCard.id
+  private val power = FamilyWagon
   // Nomads.
-  private val elders = CatalogNames.denizen("Elders")
-  private val rainBoots = CatalogNames.denizen("Rain Boots")
-  private val lancers = CatalogNames.denizen("Lancers")
+  private val elders = EldersCard.id
+  private val rainBoots = RainBootsCard.id
+  private val lancers = LancersCard.id
   /** Nomad, locked, adviser-only. WHEN PLAYED: gain 4 Supply. */
-  private val friend = CatalogNames.denizen("Faithful Friend")
+  private val friend = FaithfulFriendCard.id
   /** Discord, locked, adviser-only. WHEN PLAYED: gain four warbands. */
-  private val smallFavor = CatalogNames.denizen("A Small Favor")
+  private val smallFavor = ASmallFavorCard.id
   /** A plain Order denizen. */
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
+  private val wrestlers = WrestlersCard.id
   private val faith = VisionRules.Faith
   private val powers =
     WalkerPowers(Vector(power, ASmallFavor, FaithfulFriend))
@@ -40,7 +45,7 @@ class FamilyWagonSuite extends munit.FunSuite:
   /** p1's Act at Ancient City with 2 Supply and 3 warbands on the board,
     * `card` in hand, and the advisers `held` adds. */
   private def actWith(card: DenizenId)(held: Table => Table): ReadyGame =
-    held(Table.start.turn(actor, Phase.Act).pawn(actor, "Ancient City")
+    held(Table.start.turn(actor, Phase.Act).pawn(actor, AncientCitySite)
       .supply(actor, 2).boardWarbands(actor, 3).hand(actor, card)).ready
 
   /** `card` played from hand to p1's adviser slot `index`, under
@@ -114,7 +119,7 @@ class FamilyWagonSuite extends munit.FunSuite:
 
   test("a facedown Family Wagon played faceup buries the advisers beside " +
       "it"):
-    val ready = Table.start.turn(actor, Phase.Act).pawn(actor, "Ancient City")
+    val ready = Table.start.turn(actor, Phase.Act).pawn(actor, AncientCitySite)
       .adviser(actor, wagon, facedown = true).adviser(actor, wrestlers)
       .adviser(actor, elders).ready
     val tree = Unwrap.accepted(CardPlayProcedure.buildFacedown(catalog, ready,

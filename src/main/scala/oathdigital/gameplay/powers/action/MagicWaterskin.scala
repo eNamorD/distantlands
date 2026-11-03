@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.{PrintedPower, Relic}
+import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
 import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.powers.PlayerFacts
 import oathdigital.model._
@@ -24,7 +24,8 @@ case object MagicWaterskin extends PaidAction(MagicWaterskinCard.power):
   val gained: NoteKey = NoteSupport.gainedKey(notes, NoteKey.Used)
   override def noteKeys: Vector[NoteKey] = notes.declared
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = source match
     case DecisionOptionRef.Relic(id) =>
       for

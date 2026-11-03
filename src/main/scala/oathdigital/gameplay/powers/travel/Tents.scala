@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.travel
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
-  PrintedPower}
+import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
 import oathdigital.gameplay.operations.SupplyStrip
 import oathdigital.gameplay.powerresolver.{Contribution, PowerCtx, Transform}
 import oathdigital.gameplay.powers.SelectedModifier
@@ -24,10 +23,11 @@ object TentsCard extends Denizen(DenizenId("29"), "Tents", Suit.Nomad):
   * pawn's region, and the Supply payment (terrain adds included) is removed
   * only when it is.
   */
-final case class Tents private (catalog: ExecutableCatalog)
-    extends SelectedModifier:
-  val cardId: DenizenId = TentsCard.id
-  def id: PowerId = Tents.id
+case object Tents extends SelectedModifier:
+  val id: PowerId = TentsCard.power.id
+  val Favor: Int = 1
+
+  val card: Denizen = TentsCard
   def actions: Set[MajorActionType] = Set(MajorActionType.Travel)
   override def cost: Cost = Cost(favor = Tents.Favor)
 
@@ -46,10 +46,3 @@ final case class Tents private (catalog: ExecutableCatalog)
       source.nonEmpty &&
         source == TravelPayments.region(ctx.state, route.destination)
     }
-
-object Tents:
-  val id: PowerId = TentsCard.power.id
-  val Favor: Int = 1
-
-  def forCatalog(catalog: ExecutableCatalog): Tents =
-    new Tents(catalog)

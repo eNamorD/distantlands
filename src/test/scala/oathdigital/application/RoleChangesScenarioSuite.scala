@@ -2,12 +2,14 @@ package oathdigital.application
 
 import oathdigital.application.gamelog.LogScripts.{formatter, texts}
 import oathdigital.gameplay.actions.negotiation.NegotiationDeal
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite}
 import oathdigital.gameplay.operations.TheGrandScepterCard
 import oathdigital.gameplay.powers.action.GrandScepterAction
 import oathdigital.gameplay.roles.Citizenship
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{MenuPlay, Outcomes, Table}
+import oathdigital.testkit.{Commands, MenuPlay, Outcomes, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, present}
 
@@ -22,8 +24,8 @@ class RoleChangesScenarioSuite extends munit.FunSuite:
   /** p2 is the Chancellor. p1, an Exile in their Act at Broken Peaks, holds
     * the Scepter, 2 board warbands and 5 favor. */
   private val table: Table = Table.start.imperial(p2).roundStarter(p1)
-    .turn(p1, Phase.Act).pawn(p1, at = "Broken Peaks")
-    .relic(p1, "The Grand Scepter").boardWarbands(p1, 2).favor(p1, 5)
+    .turn(p1, Phase.Act).pawn(p1, at = BrokenPeaksSite)
+    .relic(p1, TheGrandScepterCard).boardWarbands(p1, 2).favor(p1, 5)
     .allowingCitizenshipPowers
 
   private def lines(service: GameApplicationService)(using munit.Location) =
@@ -69,13 +71,13 @@ class RoleChangesScenarioSuite extends munit.FunSuite:
     // p1, the Chancellor, holds the Scepter at Ancient City beside p2, an
     // Exile.
     val start = Table.start.imperial(p1).turn(p1, Phase.Act)
-      .pawn(p1, at = "Ancient City").pawn(p2, at = "Ancient City")
-      .pawn(p3, at = "Buried Giant").relic(p1, "The Grand Scepter")
+      .pawn(p1, at = AncientCitySite).pawn(p2, at = AncientCitySite)
+      .pawn(p3, at = BuriedGiantSite).relic(p1, TheGrandScepterCard)
       .favor(p1, 3).boardWarbands(p1, 4).boardWarbands(p2, 2)
       .allowingCitizenshipPowers
     val (service, _) = start.service()
     def deal(by: PlayerId, answer: DecisionAnswer, version: Long) =
-      accepted(service.handle(gameId, version, GameCommand.ResolveWalker(by,
+      accepted(service.handle(gameId, version, Commands.resolveWalker(by,
         TreeDecision(NegotiationDeal.dealDecisionId, answer))))
     val opened = accepted(service.handle(gameId, 0L,
       MenuPlay.starting(p1, ActionRef.Negotiation)))

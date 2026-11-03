@@ -3,7 +3,6 @@ package oathdigital.application
 import oathdigital.catalog.ExecutableCatalog
 import oathdigital.engine.{RecordedEvent, ReplayStep}
 import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.actions.search.SearchProcedure
 import oathdigital.gameplay.powerresolver.PowerUseStep
 import oathdigital.gameplay.powers.{ConsentPowers, PhasePowerCatalog,
   WalkerPowerCatalog}
@@ -87,7 +86,6 @@ object GameApplicationError:
 final class GameApplicationService(
     catalog: ExecutableCatalog,
     repository: EventStreamRepository,
-    searchDrawPort: SearchDrawPort = SearchDrawPort.authoritative,
     campaignDicePort: CampaignDicePort = CampaignDicePort.random,
     roundEndRandomPort: RoundEndRandomPort =
       RoundEndRandomPort.random,
@@ -99,16 +97,17 @@ final class GameApplicationService(
     val genesis: OathState = OathState.NoGame
 ):
   import GameApplicationError._
+  import GameCommand.Issued
   import RepositoryAppendResult._
 
   private val rules = new OathRules(catalog,
     roundEndRandomPort = roundEndRandomPort,
     walkerPowerCatalog = WalkerPowerCatalog.default(catalog),
-    phasePowerCatalog = PhasePowerCatalog.default(catalog),
+    phasePowerCatalog = PhasePowerCatalog.default,
     walkerDice = CampaignDicePort.walkerDice(campaignDicePort))
   private val presentation = new GamePresentationProjector(catalog)
   private val journalFold = new JournalFold(rules.evolve)
-  private val consent = new ConsentDesk(rules, ConsentPowers.default(catalog))
+  private val consent = new ConsentDesk(rules, ConsentPowers.default)
   private val aid = new PlanAidDesk(rules)
   private val coupling = new UndoCoupling(state =>
     rules.powerUseStep(state).nonEmpty)
@@ -202,28 +201,28 @@ final class GameApplicationService(
       // The issuer's Undo withdraws an automatic power's request and takes
       // back the batch that walked to its step (automatic power consent
       // design, ruling 9).
-      case GameCommand.Undo(actor) => consent.pending(journal.state) match
+      case Issued(actor, PlayerIntent.Undo) => consent.pending(journal.state) match
         case Some(request) if request.use.nonEmpty =>
           withdrawUse(gameId, journal, request, actor, expected, nextSequence)
         case Some(_) => consentBatch(gameId, journal,
           consent.withdraw(journal.state, actor), expected, nextSequence)
         case None => takeBack(gameId, journal, actor, expected, nextSequence)
-      case GameCommand.Redo(actor) =>
+      case Issued(actor, PlayerIntent.Redo) =>
         if consent.pending(journal.state).nonEmpty then
           Left(CommandRejected(OathViolation.ConsentPending))
         else restore(gameId, journal, actor, expected, nextSequence)
-      case GameCommand.RequestConsent(requester, decisionId, target,
-          granters) =>
+      case Issued(requester, PlayerIntent.RequestConsent(decisionId, target,
+          granters)) =>
         consentBatch(gameId, journal, consent.request(journal.state,
           requester, decisionId, target, granters), expected, nextSequence)
-      case GameCommand.AnswerConsent(granter, choice) =>
+      case Issued(granter, PlayerIntent.AnswerConsent(choice)) =>
         consentBatch(gameId, journal, consent.answer(journal.state, granter,
           choice), expected, nextSequence)
-      case GameCommand.SetConsentPreference(granter, power, requester,
-          setting) =>
+      case Issued(granter, PlayerIntent.SetConsentPreference(power, requester,
+          setting)) =>
         consentBatch(gameId, journal, consent.setPreference(journal.state,
           granter, power, requester, setting), expected, nextSequence)
-      case GameCommand.SavePlanAid(ally, offer) =>
+      case Issued(ally, PlayerIntent.SavePlanAid(offer)) =>
         consentBatch(gameId, journal, aid.save(journal.state, ally, offer),
           expected, nextSequence)
       case _ => handleAgainst(gameId, journal, command, expected, nextSequence)
@@ -470,7 +469,7 @@ final class GameApplicationService(
 
   private def answersPowerUseStep(command: GameCommand): Boolean =
     command match
-      case GameCommand.ResolveWalker(_, decision) =>
+      case Issued(_, PlayerIntent.ResolveWalker(decision)) =>
         PowerUseStep.isDecision(decision.decisionId)
       case _ => false
 
@@ -482,41 +481,22 @@ final class GameApplicationService(
     command match
       case GameCommand.Begin(chronicle, orders) =>
         rules.beginGame(state, chronicle, orders)
-      // The source answer is where a Search draws, so the prepared draw is
-      // checked there, against the pile the answer names.
-      case GameCommand.ResolveWalker(actor,
-          TreeDecision(SearchProcedure.sourceDecisionId, answer)) =>
-        state match
-          case OathState.Ready(ready)
-              if ready.game.current.walkerProcedure.contains(ActionRef.Search) =>
-            for
-              source <- SearchProcedure.sourceOf(answer)
-              prepared <- searchDrawPort.prepare(ready, source)
-              authoritative = oathdigital.gameplay.actions.SearchRules.draw(
-                ready, source)
-              _ <- Either.cond(prepared == authoritative, (),
-                OathViolation.SearchDrawMismatch(
-                  "prepared draw does not match authoritative source order"))
-              result <- rules.resolveWalker(state, actor,
-                SearchProcedure.sourceDecisionId, answer)
-            yield result
-          case _ => rules.resolveWalker(state, actor,
-            SearchProcedure.sourceDecisionId, answer)
-      case GameCommand.ResolveWalker(actor, treeDecision) =>
+      case Issued(actor, PlayerIntent.ResolveWalker(treeDecision)) =>
         rules.resolveWalker(state, actor, treeDecision.decisionId,
           treeDecision.answer)
       // `routed` sends Undo and Redo to the fold on every stream; these arms
       // only keep the match exhaustive.
-      case GameCommand.Undo(_) => Left(OathViolation.NothingToUndo)
-      case GameCommand.Redo(_) => Left(OathViolation.NothingToRedo)
+      case Issued(_, PlayerIntent.Undo) => Left(OathViolation.NothingToUndo)
+      case Issued(_, PlayerIntent.Redo) => Left(OathViolation.NothingToRedo)
       // `routed` sends these to the consent desk; none reaches the rules.
-      case _: GameCommand.ConsentCommand => Left(OathViolation.InvalidEventOrder(
-        "a consent command never reaches the rules"))
-      case _: GameCommand.SavePlanAid => Left(OathViolation.InvalidEventOrder(
-        "an aid offer goes to the aid desk"))
+      case Issued(_, _: PlayerIntent.Consent) => Left(
+        OathViolation.InvalidEventOrder(
+          "a consent command never reaches the rules"))
+      case Issued(_, _: PlayerIntent.SavePlanAid) => Left(
+        OathViolation.InvalidEventOrder("an aid offer goes to the aid desk"))
 
   private def isWalkerResume(command: GameCommand): Boolean = command match
-    case _: GameCommand.ResolveWalker => true
+    case Issued(_, _: PlayerIntent.ResolveWalker) => true
     case _ => false
 
   private def encode(

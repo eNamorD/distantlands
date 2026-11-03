@@ -1,22 +1,26 @@
 package oathdigital.gameplay.powers.economy
 
 import oathdigital.gameplay.PowerAccess
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powerresolver.ModifierPicks
+import oathdigital.gameplay.powers.action.AlchemistCard
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.search.ErrandBoyCard
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look, MenuPlay, PhasePowerHarness,
-  PowerRules, Table}
+import oathdigital.testkit.{Look, MenuPlay, PhasePowerHarness, PowerRules,
+  Table}
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
 
 class FriendlyFamiliarSuite extends munit.FunSuite:
-  private val familiar = CatalogNames.denizen("Friendly Familiar")
-  private val friends = CatalogNames.denizen("Small Friends")
-  private val merchants = CatalogNames.denizen("Skilled Merchants")
-  private val library = CatalogNames.denizen("Map Library")
+  private val familiar = FriendlyFamiliarCard.id
+  private val friends = SmallFriendsCard.id
+  private val merchants = SkilledMerchantsCard.id
+  private val library = MapLibraryCard.id
   /** p1's pawn site. */
-  private val home = CatalogNames.site("Ancient City")
+  private val home = AncientCitySite.id
   /** Another site in play in the pawn's region. */
   private val homeNeighbour = Table.otherSiteInRegionOf(home)
   /** A site in play in another region. */
@@ -24,11 +28,11 @@ class FriendlyFamiliarSuite extends munit.FunSuite:
   /** Another site in play in `away`'s region. */
   private val awayNeighbour = Table.otherSiteInRegionOf(away)
   /** A plain Beast denizen. */
-  private val errandBoy = CatalogNames.denizen("Errand Boy")
+  private val errandBoy = ErrandBoyCard.id
   /** A plain Order denizen. */
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
+  private val wrestlers = WrestlersCard.id
   /** A plain Arcane denizen. */
-  private val alchemist = CatalogNames.denizen("Alchemist")
+  private val alchemist = AlchemistCard.id
   private val modifiers =
     ModifierPicks.decisionId(PowerWindow.TradeModifierSelection)
   private val rules = PowerRules.withWalkerPowers

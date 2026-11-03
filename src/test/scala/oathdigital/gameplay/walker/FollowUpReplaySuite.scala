@@ -1,7 +1,8 @@
 package oathdigital.gameplay.walker
 
+import oathdigital.gameplay.powers.economy.KnightsErrantCard
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Table.p1
 
 /** The queue's replay (walker-driven game loop design, "The queue"):
@@ -9,7 +10,7 @@ import oathdigital.testkit.Table.p1
   * until the walk completes, and a skip changes nothing. */
 class FollowUpReplaySuite extends munit.FunSuite:
   private val knights =
-    PowerSourceRef.Card(CatalogNames.denizen("Knights Errant"))
+    PowerSourceRef.Card(KnightsErrantCard.id)
   private val campaign = QueuedProcedure(p1, ActionRef.Campaign, Vector.empty,
       Some(knights), QueueKind.Offer)
   private val travel = QueuedProcedure(p1, ActionRef.Travel, Vector.empty,

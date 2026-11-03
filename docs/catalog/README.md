@@ -3,7 +3,9 @@
 The component catalog is Scala. Card types live in
 `src/main/scala/oathdigital/catalog/Cards.scala`. Cards that are not yet
 implemented live in `src/main/scala/oathdigital/catalog/holding/`; an
-implemented card sits beside its power. The full list of components and the
+implemented card sits beside its power, except the 24 sites, which all live in
+`src/main/scala/oathdigital/gameplay/cards/` (`HomelandsAndPlains.scala` and
+`PoweredSites.scala`). The full list of components and the
 production `ExecutableCatalog` are in
 `src/main/scala/oathdigital/gameplay/cards/NewFoundations.scala`. That code is
 authoritative for inventory, printed identities, text, restrictions, and
@@ -69,5 +71,6 @@ List a new card in `NewFoundations`. `CardCatalogSuite`
 component counts, so a forgotten card fails a test. It also checks the printed
 ID ranges, globally unique card identities, power-ID and site-handler
 uniqueness, non-blank text, the symbol vocabulary, non-negative printed numbers,
-the Forge requirements of three-slot sites, and that every registered card power
-is printed in the catalog.
+the Forge requirements of three-slot sites, that every registered card power
+is printed in the catalog, and that a card sits in `catalog/holding/` exactly
+while `PowerImplementationStatus` reports none of its powers implemented.

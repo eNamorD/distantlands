@@ -1,5 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
+import oathdigital.catalog.holding.{SearchPartyCard, VowOfKinshipCard}
 import oathdigital.gameplay.CampaignFixture.{Board, board, on, rules}
 import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignPlanChoice,
   PlanAid}
@@ -120,7 +121,7 @@ class ImperialTacticsSuite extends munit.FunSuite:
   test("Great Crusade counts only the user's own nomads (R16)"):
     // p2 rules two nomad advisers and offers them and Great Crusade's
     // requirements; the plan still removes one die, for itself.
-    val nomads = planless("Search Party", "Vow of Kinship")
+    val nomads = planless(SearchPartyCard, VowOfKinshipCard)
     val b = raidOnP3(p3)
     val run = raided(on(b)(_.adviser(p3, GreatCrusadeCard.id)
       .adviser(p2, nomads(0)).adviser(p2, nomads(1))

@@ -37,8 +37,13 @@ object Costs:
     */
   def onCard(actor: PlayerId, card: CardId, cost: Cost,
       catalog: ExecutableCatalog, intoOccupied: Boolean = false): PayCost =
-    PayCost(actor, Location.OnCard(card), cost, intoOccupied,
-      catalog.suitOf(card))
+    onCard(actor, card, cost, catalog.suitOf(card), intoOccupied)
+
+  /** The same placement for a power that knows its card's suit from the
+    * card object, so it needs no catalog. */
+  def onCard(actor: PlayerId, card: CardId, cost: Cost, suit: Option[Suit],
+      intoOccupied: Boolean): PayCost =
+    PayCost(actor, Location.OnCard(card), cost, intoOccupied, suit)
 
   private def validatePlaced(ready: ReadyGame, placedAt: Location,
       cost: Cost, intoOccupied: Boolean): Either[OathViolation, Unit] =

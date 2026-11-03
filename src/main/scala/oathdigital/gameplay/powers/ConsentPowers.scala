@@ -1,6 +1,5 @@
 package oathdigital.gameplay.powers
 
-import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.operations.{OperationRestrictions, WaivableRule}
 import oathdigital.gameplay.powerresolver.{ContributingPower,
   OptionRestriction, Restriction, Waiver}
@@ -47,8 +46,8 @@ final class ConsentPowers(powers: Vector[ContributingPower],
       .filter(granter(ready, _).contains(player))
 
 object ConsentPowers:
-  def default(catalog: ExecutableCatalog): ConsentPowers =
-    new ConsentPowers(WalkerPowerCatalog.default(catalog).powers,
+  val default: ConsentPowers =
+    new ConsentPowers(WalkerPowerCatalog.contributing,
       OperationRestrictions.printedRules.collect { case rule: WaivableRule =>
         rule.id -> Waiver(rule.granter, rule.source,
           (_, _) => rule.consentNote(rule.source)) },

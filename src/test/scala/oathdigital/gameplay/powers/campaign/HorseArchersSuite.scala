@@ -5,12 +5,12 @@ import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Horse Archers: a free plan for three attack dice, added or removed, and the
   * card is discarded after the Campaign whoever won. */
 class HorseArchersSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Horse Archers")
+  private val card = HorseArchersCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
   private val line = NoteText.Said("discarded", "Discarded after the Campaign.",
     covers = false)

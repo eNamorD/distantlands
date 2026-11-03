@@ -1,8 +1,10 @@
 package oathdigital.gameplay.chronicle
 
+import oathdigital.gameplay.cards.AncientCitySite
+import oathdigital.gameplay.powers.action.{BrassHorseCard, FaeMerchantCard}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2, p3}
 
 /** What the journaled Chronicle carries from the campaign: the live roles,
@@ -59,8 +61,8 @@ class ChronicleRecordSuite extends munit.FunSuite:
         Vector.empty))
 
   test("every other field is the baseline's"):
-    val ready = Table.start.denizen("Fae Merchant", at = "Ancient City")
-      .relic(p1, CatalogNames.relic("Brass Horse")).ready
+    val ready = Table.start.denizen(FaeMerchantCard, at = AncientCitySite)
+      .relic(p1, BrassHorseCard.id).ready
     val baseline = ready.game.campaign.baseline
     val record = ChronicleRecord.campaignFields(ready)
     assertEquals(record.copy(era = baseline.era,

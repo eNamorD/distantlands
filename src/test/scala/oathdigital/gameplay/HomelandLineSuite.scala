@@ -1,10 +1,15 @@
 package oathdigital.gameplay
 
 import oathdigital.gameplay.actions.{CardPlayRules, RuleNotes}
+import oathdigital.gameplay.cards.DeepWoodsSite
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.action.AncientBindingCard
+import oathdigital.gameplay.powers.campaign.{BattleHonorsCard, RainBootsCard,
+  WrestlersCard}
+import oathdigital.gameplay.powers.search.ErrandBoyCard
 import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, Table}
+import oathdigital.testkit.{Look, Outcomes, Table}
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.as
 
@@ -18,15 +23,15 @@ class HomelandLineSuite extends munit.FunSuite:
   private val noPowers = WalkerPowers.empty
   private val actor = p1
   /** The Beast Homeland, with room for three cards. */
-  private val homeSite = CatalogNames.site("Deep Woods")
+  private val homeSite = DeepWoodsSite.id
   // A Beast card, matching the Homeland, and a Nomad card, which does not.
-  private val matching = CatalogNames.denizen("Errand Boy")
-  private val otherSuit = CatalogNames.denizen("Rain Boots")
+  private val matching = ErrandBoyCard.id
+  private val otherSuit = RainBootsCard.id
 
   /** p1 stands at Deep Woods, which p1 rules, with `card` in hand. Deep Woods
     * holds three other-suit cards if `full`, else one. */
   private def atHomeland(card: DenizenId, full: Boolean = true): ReadyGame =
-    val fillers = Vector("Ancient Binding", "Wrestlers", "Battle Honors")
+    val fillers = Vector(AncientBindingCard, WrestlersCard, BattleHonorsCard)
       .take(if full then 3 else 1)
     fillers.foldLeft(Table.start
       .pawn(actor, at = homeSite).warbandsAt(homeSite, actor, 1)

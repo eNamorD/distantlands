@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.PrintedPower
+import oathdigital.catalog.{ExecutableCatalog, PrintedPower}
 import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.actions.campaign.CampaignProcedure
 import oathdigital.gameplay.powerresolver.QueuedStarts
@@ -21,7 +21,8 @@ import oathdigital.model._
 abstract class CampaignFromSite(power: PrintedPower, card: DenizenId)
     extends PaidAction(power):
   /** The sites the card lets its user campaign from, in map order. */
-  protected def sites(ready: ReadyGame, player: PlayerId): Vector[SiteId]
+  protected def sites(catalog: ExecutableCatalog, ready: ReadyGame,
+      player: PlayerId): Vector[SiteId]
   /** The menu's reason when no site's Campaign would start. */
   protected def noSite: String
   /** The card's name, for the question's heading. */
@@ -33,15 +34,16 @@ abstract class CampaignFromSite(power: PrintedPower, card: DenizenId)
 
   override def narratedDecisions: Set[String] = Set(siteDecisionId)
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] =
-    build(ready, player, source, QueuedStarts.unchecked)
+    build(catalog, ready, player, source, QueuedStarts.unchecked)
 
-  override def build(ready: ReadyGame, player: PlayerId,
-      source: DecisionOptionRef, starts: QueuedStarts)
+  override def build(catalog: ExecutableCatalog, ready: ReadyGame,
+      player: PlayerId, source: DecisionOptionRef, starts: QueuedStarts)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     Branch((live, _) => Vector(Decide(siteDecisionId, player,
-      DecisionQuery.ChooseOne(options(live, player, starts),
+      DecisionQuery.ChooseOne(options(catalog, live, player, starts),
         heading = Some(s"$name: choose the site to campaign at"),
         confirmVerb = Some("Campaign at")),
       passWhenEmpty = true))),
@@ -52,9 +54,10 @@ abstract class CampaignFromSite(power: PrintedPower, card: DenizenId)
       case DecisionOptionRef.Site(site) =>
         campaignAt(PowerSourceRef.Card(card), NoteArg.Site(site)) }))))
 
-  override def refusal(ready: ReadyGame, player: PlayerId,
-      source: DecisionOptionRef, starts: QueuedStarts): Option[String] =
-    Option.unless(sites(ready, player).exists(site =>
+  override def refusal(catalog: ExecutableCatalog, ready: ReadyGame,
+      player: PlayerId, source: DecisionOptionRef, starts: QueuedStarts)
+      : Option[String] =
+    Option.unless(sites(catalog, ready, player).exists(site =>
       starts.refusal(ready, entry(player, site)).isEmpty))(noSite)
 
   /** The queued Campaign from `site`. */
@@ -63,9 +66,9 @@ abstract class CampaignFromSite(power: PrintedPower, card: DenizenId)
       Vector(DecisionOptionRef.Site(site)), Some(PowerSourceRef.Card(card)),
       QueueKind.Run)
 
-  private def options(ready: ReadyGame, player: PlayerId,
-      starts: QueuedStarts): Vector[DecisionOption] =
-    sites(ready, player).map { site =>
+  private def options(catalog: ExecutableCatalog, ready: ReadyGame,
+      player: PlayerId, starts: QueuedStarts): Vector[DecisionOption] =
+    sites(catalog, ready, player).map { site =>
       val shown = DecisionOption.Site(DecisionOptionRef.Site(site))
       starts.refusal(ready, entry(player, site)).fold[DecisionOption](shown)(
         violation => DecisionOption.Unavailable(shown,

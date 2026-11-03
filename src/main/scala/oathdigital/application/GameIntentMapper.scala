@@ -6,44 +6,46 @@ import oathdigital.protocol.{GameIntent => Intent, _}
 
 final case class GameIntentMappingFailure(path: String, message: String)
 
-/** Sole conversion and actor-binding boundary for transport-safe commands. */
+/** The one conversion from a wire intent to a model-typed `PlayerIntent`.
+  * It never sees the actor: the transport that resolved one wraps the mapped
+  * intent in `GameCommand.Issued`. */
 object GameIntentMapper:
   private type Result[A] = Either[GameIntentMappingFailure, A]
 
-  def bind(actorId: PlayerId, intent: Intent): Result[GameCommand] =
-    val actor = AuthorizedPlayer.forPlayer(actorId)
-    intent match
-      case Intent.Undo => Right(actor.undo)
-      case Intent.Redo => Right(actor.redo)
-      case Intent.ResolveWalker(id, value) => decisionAnswer(value).map(p =>
-        actor.resolveWalker(TreeDecision(id, p)))
-      case Intent.RequestConsent(id, target, granters) =>
-        optionRef(target.optionKind, target.optionId, "$.intent.target")
-          .map(actor.requestConsent(id, _, granters.map(PlayerId(_))))
-      case Intent.AnswerConsent(value) => ConsentChoice.fromKey(value)
-        .toRight(GameIntentMappingFailure("$.intent.choice",
-          s"invalid consent choice '$value'")).map(actor.answerConsent)
-      case Intent.SetConsentPreference(value, requester, setting) =>
-        for
-          power <- PowerId.fromValue(value).toRight(GameIntentMappingFailure(
-            "$.intent.powerId", s"invalid power id '$value'"))
-          chosen <- ConsentSetting.fromKey(setting).toRight(
-            GameIntentMappingFailure("$.intent.setting",
-              s"invalid consent setting '$setting'"))
-        yield actor.setConsentPreference(power, PlayerId(requester), chosen)
-      case Intent.SavePlanAid(plans, requirements, favor, secrets, burnt,
-          secretsBurnt) =>
-        def refs(wires: Vector[WalkerStartArgWire], path: String) =
-          traverse(wires.zipWithIndex)((wire, index) => optionRef(
-            wire.optionKind, wire.optionId, s"$path[$index]"))
-        for
-          lent <- refs(plans, "$.intent.plans")
-          met <- refs(requirements, "$.intent.requirements")
-          amounts <- Either.cond(Vector(favor, secrets, burnt,
-            secretsBurnt).forall(_ >= 0), AidAmounts(favor, secrets, burnt,
-            secretsBurnt), GameIntentMappingFailure("$.intent",
-            "aid amounts are never negative"))
-        yield actor.savePlanAid(AidOffer(lent, met, amounts))
+  def map(intent: Intent): Result[PlayerIntent] = intent match
+    case Intent.Undo => Right(PlayerIntent.Undo)
+    case Intent.Redo => Right(PlayerIntent.Redo)
+    case Intent.ResolveWalker(id, value) => decisionAnswer(value).map(answer =>
+      PlayerIntent.ResolveWalker(TreeDecision(id, answer)))
+    case Intent.RequestConsent(id, target, granters) =>
+      optionRef(target.optionKind, target.optionId, "$.intent.target")
+        .map(PlayerIntent.RequestConsent(id, _, granters.map(PlayerId(_))))
+    case Intent.AnswerConsent(value) => ConsentChoice.fromKey(value)
+      .toRight(GameIntentMappingFailure("$.intent.choice",
+        s"invalid consent choice '$value'"))
+      .map(PlayerIntent.AnswerConsent.apply)
+    case Intent.SetConsentPreference(value, requester, setting) =>
+      for
+        power <- PowerId.fromValue(value).toRight(GameIntentMappingFailure(
+          "$.intent.powerId", s"invalid power id '$value'"))
+        chosen <- ConsentSetting.fromKey(setting).toRight(
+          GameIntentMappingFailure("$.intent.setting",
+            s"invalid consent setting '$setting'"))
+      yield PlayerIntent.SetConsentPreference(power, PlayerId(requester),
+        chosen)
+    case Intent.SavePlanAid(plans, requirements, favor, secrets, burnt,
+        secretsBurnt) =>
+      def refs(wires: Vector[WalkerStartArgWire], path: String) =
+        traverse(wires.zipWithIndex)((wire, index) => optionRef(
+          wire.optionKind, wire.optionId, s"$path[$index]"))
+      for
+        lent <- refs(plans, "$.intent.plans")
+        met <- refs(requirements, "$.intent.requirements")
+        amounts <- Either.cond(Vector(favor, secrets, burnt,
+          secretsBurnt).forall(_ >= 0), AidAmounts(favor, secrets, burnt,
+          secretsBurnt), GameIntentMappingFailure("$.intent",
+          "aid amounts are never negative"))
+      yield PlayerIntent.SavePlanAid(AidOffer(lent, met, amounts))
 
   private def invalid(path: String, value: String, kind: String) = Left(GameIntentMappingFailure(path, s"unknown $kind '$value'"))
   private def world(value: WorldCard, path: String): Result[WorldCardId] = value.kind match { case "denizen" => Right(DenizenId(value.id)); case "vision" => Right(VisionId(value.id)); case v => invalid(s"$path.kind", v, "world card kind") }

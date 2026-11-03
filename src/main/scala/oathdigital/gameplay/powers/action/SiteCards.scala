@@ -18,10 +18,10 @@ import oathdigital.model._
   * Either returns its favor to its suit's bank and its secrets to the
   * acting player facedown.
   */
-private[powers] final class SiteCards(catalog: ExecutableCatalog,
-    suits: Set[Suit]):
+private[powers] final class SiteCards(suits: Set[Suit]):
 
-  def at(ready: ReadyGame, site: SiteId): Vector[(SiteDenizenState, Suit)] =
+  def at(catalog: ExecutableCatalog,
+      ready: ReadyGame, site: SiteId): Vector[(SiteDenizenState, Suit)] =
     ready.game.current.map.sites.get(site).toVector.flatMap(_.denizens)
       .flatMap(card => discardable(card).flatMap(catalog.suitOf)
         .filter(suits).map(card -> _))
@@ -65,7 +65,8 @@ private[powers] final class SiteCards(catalog: ExecutableCatalog,
     * it from `site` (consent design, slice 3). It is kept as it is when
     * nothing refuses, askable when only waivable refusals stop it, shown
     * unavailable with a protection's reason, or left out. */
-  def judged(ready: ReadyGame, actor: PlayerId, site: SiteId,
+  def judged(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId, site: SiteId,
       card: SiteDenizenState, suit: Suit): Option[DecisionOption] =
     CardSlots.judge(catalog, ready, actor, option(card),
       discard(ready, site, card, suit, actor, required = true).map(Vector(_)))
@@ -74,19 +75,22 @@ private[powers] final class SiteCards(catalog: ExecutableCatalog,
     * player's discard. With none that may be chosen it is the Continue
     * screen, where an askable card still asks (catalog batch 8, slice 10,
     * part 2b). */
-  def ask(ready: ReadyGame, player: PlayerId, decisionId: String,
+  def ask(catalog: ExecutableCatalog,
+      ready: ReadyGame, player: PlayerId, decisionId: String,
       heading: String): Vector[Operation] =
     val found = PowerAccess.pawnSite(ready, player).toVector.flatMap(site =>
-      at(ready, site).flatMap((card, suit) =>
-        judged(ready, player, site, card, suit)))
+      at(catalog, ready, site).flatMap((card, suit) =>
+        judged(catalog, ready, player, site, card, suit)))
     Vector(Decide(decisionId, player, DecisionQuery.ChooseOne(found,
       heading = Some(heading)), passWhenEmpty = true))
 
   /** The answered card, with its site and suit, while it is still at the
     * player's site. Nothing when the question was not asked, or passed. */
-  def chosen(ready: ReadyGame, player: PlayerId, pending: PendingTree,
+  def chosen(catalog: ExecutableCatalog,
+      ready: ReadyGame, player: PlayerId, pending: PendingTree,
       decisionId: String): Option[(SiteId, SiteDenizenState, Suit)] = for
     answer <- PowerAnswers.one(pending, decisionId)
     site <- PowerAccess.pawnSite(ready, player)
-    (card, suit) <- at(ready, site).find((card, _) => refOf(card) == answer)
+    (card, suit) <- at(catalog, ready, site)
+      .find((card, _) => refOf(card) == answer)
   yield (site, card, suit)

@@ -48,7 +48,7 @@ private[application] final class GameLogFormatter(catalog: ExecutableCatalog,
   private val events = new EventLines(words)
   private val takenBack = new TakenBackGroups(words)
   private val consent = new ConsentLines(words, choices,
-    ConsentPowers.default(catalog))
+    ConsentPowers.default)
   private val planAid = new PlanAidLines(words)
 
   /** Taken-back moves (undo design, "Game Log"). The live entries are the

@@ -1,8 +1,10 @@
 package oathdigital.gameplay
 
+import oathdigital.gameplay.cards.AncientCitySite
+import oathdigital.gameplay.powers.campaign.{StickyFireCard, WrestlersCard}
 import oathdigital.gameplay.setup.FirstGameSetupFixture
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -11,8 +13,8 @@ class PlayerSecretSummarySuite extends munit.FunSuite:
   private val actor = p1
   private val inactive = p2
   // A card whose power these tests do not use, on p1's site or p2's board.
-  private val card = CatalogNames.denizen("Wrestlers")
-  private val relic = CatalogNames.relic("Sticky Fire")
+  private val card = WrestlersCard.id
+  private val relic = StickyFireCard.id
 
   /** p1 at Ancient City with `available` faceup and `facedown` facedown
     * secrets and no adviser or relic. Ancient City holds Wrestlers with
@@ -22,7 +24,7 @@ class PlayerSecretSummarySuite extends munit.FunSuite:
     val table = Table.start.secrets(actor, faceUp = available,
       faceDown = facedown)
     if siteCommitted == 0 then table
-    else table.denizen(card, at = "Ancient City")
+    else table.denizen(card, at = AncientCitySite)
       .tokens(card, secrets = siteCommitted)
 
   test("derived secret accounting reports available facedown committed and total"):
@@ -39,7 +41,7 @@ class PlayerSecretSummarySuite extends munit.FunSuite:
   test("valid inactive player has zero commitments and ignores ruled-site tokens"):
     // p2 rules Ancient City, where Wrestlers carries p1's committed secret.
     val ruledByInactive = withState(0, 0, 1)
-      .warbandsAt("Ancient City", inactive, 1).ready
+      .warbandsAt(AncientCitySite, inactive, 1).ready
     assertEquals(accepted(PlayerSecretSummary.derive(ruledByInactive,
       inactive)).committed, 0)
     assertEquals(accepted(PlayerSecretSummary.derive(ruledByInactive,

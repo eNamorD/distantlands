@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.whenplayed
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, PrintedPower}
 import oathdigital.gameplay.powerresolver.PowerCtx
 import oathdigital.model._
 
@@ -20,23 +20,17 @@ object DazzleCard extends Denizen(DenizenId("35"), "Dazzle", Suit.Arcane):
   * discarded, "Discarded {cards}.", and covers the generic discard lines.
   * With nothing discarded it says "Nothing was discarded."
   */
-final case class Dazzle private (catalog: ExecutableCatalog)
-    extends WhenPlayedPower:
+case object Dazzle extends WhenPlayedPower:
+  val id: PowerId = DazzleCard.power.id
+  private val suits: Set[Suit] = Set(Suit.Hearth, Suit.Order)
+
   val cardId: DenizenId = DazzleCard.id
-  def id: PowerId = Dazzle.id
 
   private val notes = NoteSet(id)
   notes.include(RegionDiscard.notes)
   override def noteKeys: Vector[NoteKey] = notes.declared
 
-  private val region = new RegionDiscard(catalog, Dazzle.suits)
+  private val region = new RegionDiscard(Dazzle.suits)
 
   def effect(ctx: PowerCtx): Vector[Operation] =
-    region.effect(id, cardId, ctx.actor)
-
-object Dazzle:
-  val id: PowerId = DazzleCard.power.id
-  private val suits: Set[Suit] = Set(Suit.Hearth, Suit.Order)
-
-  def forCatalog(catalog: ExecutableCatalog): Dazzle =
-    new Dazzle(catalog)
+    region.effect(ctx.catalog, id, cardId, ctx.actor)

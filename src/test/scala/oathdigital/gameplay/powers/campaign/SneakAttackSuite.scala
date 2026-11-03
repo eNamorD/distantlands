@@ -3,13 +3,14 @@ package oathdigital.gameplay.powers.campaign
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.{FollowUpPlay, OathRules}
 import oathdigital.gameplay.actions.campaign.CampaignIds
+import oathdigital.gameplay.cards.BrokenPeaksSite
 import oathdigital.gameplay.powers.WalkerPowerCatalog
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.FollowUpOffer
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.DistributeAnswer
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, ParkedNode}
+import oathdigital.testkit.{ActPowerHarness, Look, ParkedNode}
 import oathdigital.testkit.Unwrap.accepted
 
 /** Sneak Attack (card 98): after another player's Campaign, its holder may
@@ -19,7 +20,7 @@ import oathdigital.testkit.Unwrap.accepted
 class SneakAttackSuite extends munit.FunSuite:
   private val sneak = SneakAttackCard.id
   private val source = PowerSourceRef.Card(sneak)
-  private val secondWind = CatalogNames.denizen("Second Wind")
+  private val secondWind = SecondWindCard.id
 
   /** p1 at the bandit-ruled origin with the rival, who holds Sneak Attack
     * faceup. */
@@ -129,7 +130,7 @@ class SneakAttackSuite extends munit.FunSuite:
       "reason"):
     val base = rivalHoldsSneakAttackAtTheOrigin
     val b = withAdviserFor(base, base.rival,
-      CatalogNames.denizen("Vow of Peace"), Orientation.FaceUp)
+      VowOfPeaceCard.id, Orientation.FaceUp)
     val done = commit(rules(winningDice), b, 4).finishPlanWindows
     assertEquals(FollowUpPlay.offered(done.state),
       Some(sneakOffer(b.rival, b.actor)))
@@ -173,13 +174,13 @@ class SneakAttackSuite extends munit.FunSuite:
     // warbands to their board, and p1 then skips the Campaign. The walk
     // ends before the root's trailing Branch, so nothing is offered, even
     // though an earlier Campaign of p1's left its result behind.
-    val brokenPeaks = CatalogNames.site("Broken Peaks")
+    val brokenPeaks = BrokenPeaksSite.id
     val base = rivalHoldsSneakAttackAtTheOrigin
     val game = rules(winningDice)
     val earlier = commit(game, base, 4).finishPlanWindows.result
     assertEquals(earlier.attacker, base.actor)
     val b = on(withAdviserFor(base, base.bystander,
-        CatalogNames.denizen("Vow of Union"), Orientation.FaceUp))(
+        VowOfUnionCard.id, Orientation.FaceUp))(
       _.warbandsAt(brokenPeaks, base.bystander, 2).update(_.updateCurrent(
         _.copy(lastCampaignResult = Some(earlier)))))
     val started = game.startWalker(OathState.Ready(b.ready),

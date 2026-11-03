@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.PrintedPower
+import oathdigital.catalog.{ExecutableCatalog, PrintedPower}
 import oathdigital.gameplay.powers.banner.WanderingFlameMove
 import oathdigital.model._
 
@@ -14,7 +14,8 @@ class PaidActionSuite extends munit.FunSuite:
   /** Stub of PaidAction (an abstract class): build returns an empty
     * Sequence; only id and cost are read. */
   private object Example extends PaidAction(printed):
-    def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+    def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+        source: DecisionOptionRef)
         : Either[OathViolation, Operation] = Right(Sequence(Vector.empty))
 
   test("a card's paid action takes its id and cost from the printed power"):

@@ -1,9 +1,11 @@
 package oathdigital.gameplay
 
+import oathdigital.catalog.ExecutableCatalog
+import oathdigital.catalog.holding.MagiciansCodeCard
 import oathdigital.gameplay.powerresolver.PhasePower
 import oathdigital.gameplay.setup.FirstGameSetupFixture
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Table.p1
 
 /** A synthetic phase power on p1's faceup adviser, shared by the engine suite
@@ -15,13 +17,15 @@ object PhasePowerFixture:
       tree: PlayerId => Operation = _ => BuildOps((_, _) => Right(Vector.empty)),
       override val cost: Cost = Cost.free)
       extends PhasePower:
-    def usable(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef) = true
-    def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef): Either[OathViolation, Operation] =
+    def usable(catalog: ExecutableCatalog, ready: ReadyGame,
+        player: PlayerId, source: DecisionOptionRef) = true
+    def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+        source: DecisionOptionRef): Either[OathViolation, Operation] =
       Right(tree(player))
 
   /** The card whose printed power the test powers stand in for, and that
     * power's id. */
-  val card: DenizenId = CatalogNames.denizen("Magician's Code")
+  val card: DenizenId = MagiciansCodeCard.id
   val powerId: PowerId = FirstGameSetupFixture.catalog.denizen(card)
     .flatMap(_.powers.headOption).map(_.id)
     .getOrElse(throw AssertionError("Magician's Code prints no power"))

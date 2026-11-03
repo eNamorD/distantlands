@@ -1,9 +1,12 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.gameplay.cards.AncientCitySite
+import oathdigital.gameplay.powers.economy.HallowedSpringCard
 import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
+import oathdigital.gameplay.powers.campaign.{CodeOfHonorCard, WildMountsCard}
+import oathdigital.gameplay.powers.search.ErrandBoyCard
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
@@ -11,16 +14,16 @@ import oathdigital.testkit.Unwrap.accepted
 class TamingCharmSuite extends munit.FunSuite:
   import PhasePowerHarness._
 
-  private val charm = CatalogNames.denizen("Taming Charm")
+  private val charm = TamingCharmCard.id
   private val source = DecisionOptionRef.Denizen(charm)
-  private val power = TamingCharm.forCatalog(catalog)
-  private val home = CatalogNames.site("Ancient City")
+  private val power = TamingCharm
+  private val home = AncientCitySite.id
   // Denizens whose powers these tests do not use, and a Beast edifice.
-  private val errandBoy = CatalogNames.denizen("Errand Boy")
-  private val faeMerchant = CatalogNames.denizen("Fae Merchant")
-  private val wildMounts = CatalogNames.denizen("Wild Mounts")
-  private val codeOfHonor = CatalogNames.denizen("Code of Honor")
-  private val ruinedBeast = CatalogNames.edifice("Hiding Place")
+  private val errandBoy = ErrandBoyCard.id
+  private val faeMerchant = FaeMerchantCard.id
+  private val wildMounts = WildMountsCard.id
+  private val codeOfHonor = CodeOfHonorCard.id
+  private val ruinedBeast = HallowedSpringCard.id
 
   /** p1's Act at Ancient City holding Taming Charm, the Beast and Nomad
     * banks holding `beasts` and `nomads`. */

@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, PrintedPower, SiteOnly}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower,
+  SiteOnly}
 import oathdigital.gameplay.powers.RelicDraws
 import oathdigital.model._
 
@@ -19,6 +20,7 @@ case object TinkersFair extends PaidAction(TinkersFairCard.power):
   notes.include(RelicDraws.notes)
   override def noteKeys: Vector[NoteKey] = notes.declared
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] =
     Right(Sequence(RelicDraws.drawSteps(id, player, source)))

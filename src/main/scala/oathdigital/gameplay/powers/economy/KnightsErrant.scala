@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.economy
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
-  PrintedPower}
+import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
 import oathdigital.gameplay.powerresolver.{Contribution, Transform}
 import oathdigital.gameplay.powers.SelectedModifier
 import oathdigital.model._
@@ -21,10 +20,10 @@ object KnightsErrantCard extends Denizen(DenizenId("120"), "Knights Errant", Sui
   * start. The queue is unconditional, so a restriction such as Vow of Peace
   * shows on the queued Campaign's button, not here.
   */
-final case class KnightsErrant private (catalog: ExecutableCatalog)
-    extends SelectedModifier:
-  val cardId: DenizenId = KnightsErrantCard.id
-  def id: PowerId = KnightsErrant.id
+case object KnightsErrant extends SelectedModifier:
+  val id: PowerId = KnightsErrantCard.power.id
+
+  val card: Denizen = KnightsErrantCard
   def actions: Set[MajorActionType] = Set(MajorActionType.Muster)
 
   def effects: Map[PowerWindow, Vector[Contribution]] = Map(
@@ -32,9 +31,3 @@ final case class KnightsErrant private (catalog: ExecutableCatalog)
       children :+ QueueProcedure(QueuedProcedure(ctx.actor,
         ActionRef.Campaign, Vector.empty, Some(PowerSourceRef.Card(cardId)),
         QueueKind.Offer)))))
-
-object KnightsErrant:
-  val id: PowerId = KnightsErrantCard.power.id
-
-  def forCatalog(catalog: ExecutableCatalog): KnightsErrant =
-    new KnightsErrant(catalog)

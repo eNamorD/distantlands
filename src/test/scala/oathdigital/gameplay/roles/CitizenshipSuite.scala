@@ -1,19 +1,20 @@
 package oathdigital.gameplay.roles
 
+import oathdigital.gameplay.cards.BrokenPeaksSite
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p3}
 
 /** The question a short purple bank asks (ruling R18) and the first-game
   * option (ambiguity F8). */
 class CitizenshipSuite extends munit.FunSuite:
-  private val peaks = CatalogNames.site("Broken Peaks")
+  private val peaks = BrokenPeaksSite.id
 
   /** p1 is the Chancellor; p3 an Exile with 2 board warbands and 3 at
     * Broken Peaks. `purple` is what the purple bank holds. */
   private def exileWith(purple: Int): ReadyGame = Table.start.imperial(p1)
-    .turn(p3, Phase.Act).pawn(p3, at = "Broken Peaks")
-    .boardWarbands(p3, 2).warbandsAt("Broken Peaks", p3, 3)
+    .turn(p3, Phase.Act).pawn(p3, at = BrokenPeaksSite)
+    .boardWarbands(p3, 2).warbandsAt(BrokenPeaksSite, p3, 3)
     .boardWarbands(p1, MaterialBankState.ImperialWarbands - purple).ready
 
   test("a bank with room for every warband asks nothing"):

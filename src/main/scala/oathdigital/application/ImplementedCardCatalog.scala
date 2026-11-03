@@ -7,7 +7,7 @@ import oathdigital.model.{DenizenId, EdificeId, PowerId, RelicId, Suit}
 /**
  * Which catalog cards have every printed power implemented (2026-09-21
  * Chronicle design, "Randomness"). `implemented` is the per-power answer;
- * production passes `PowerImplementationStatus.implemented(catalog)`, the
+ * production passes `PowerImplementationStatus.implemented`, the
  * same source the UI's unimplemented-card marker reads.
  */
 object ImplementedCardCatalog:

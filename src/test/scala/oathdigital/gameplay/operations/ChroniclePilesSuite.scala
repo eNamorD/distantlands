@@ -1,8 +1,9 @@
 package oathdigital.gameplay.operations
 
 import oathdigital.gameplay.actions.VisionRules
+import oathdigital.gameplay.setup.FirstGameSetupFixture
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -49,7 +50,7 @@ class ChroniclePilesSuite extends munit.FunSuite:
     val card = topDenizenOfWorldDeck(quiet)
     val start = applied(quiet,
       moved(card, Location.Deck(CardDeck.World), Location.Dispossessed))
-    val suit = CatalogNames.suitOf(card)
+    val suit = FirstGameSetupFixture.catalog.suitOf(card).get
     val reserved = applied(start,
       moved(card, Location.Dispossessed, Location.SuitedReserve(suit)))
     assertEquals(reserved.game.campaign.suitedReserves.get(suit),

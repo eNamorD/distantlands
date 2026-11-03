@@ -1,16 +1,18 @@
 package oathdigital.gameplay.powers.whenplayed
 
+import oathdigital.catalog.holding.GlamorCard
+import oathdigital.gameplay.cards.BuriedGiantSite
 import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.targeting.LostTongue
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
+import oathdigital.gameplay.powers.search.DisciplesCard
+import oathdigital.gameplay.powers.targeting.{LostTongue, LostTongueCard}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, Table}
+import oathdigital.testkit.{Look, Outcomes, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 
 class WizardsConclaveSuite extends munit.FunSuite:
   import WhenPlayedHarness._
 
-  private val power = registered[WizardsConclave]
+  private val power = registered[WizardsConclave.type]
   private val conclave = power.cardId
   private val played = hook(conclave)
 
@@ -27,8 +29,8 @@ class WizardsConclaveSuite extends munit.FunSuite:
   test("the player ruling the most Arcane cards takes the Darkest Secret, " +
       "its secrets with it"):
     // p1 rules Wizard's Conclave; p2 rules Disciples and Glamor.
-    val ready = Table.start.adviser(p1, conclave).adviser(p2, "Disciples")
-      .adviser(p2, "Glamor").darkestSecret(Some(p3), 2).ready
+    val ready = Table.start.adviser(p1, conclave).adviser(p2, DisciplesCard)
+      .adviser(p2, GlamorCard).darkestSecret(Some(p3), 2).ready
     val done = Outcomes.finished(play(ready, power, conclave))
     assertEquals(Look(done.treeless).darkestSecretHolder, Some(p2))
     assertEquals(Look(done.treeless).secretsOnDarkestSecret, 2)
@@ -37,7 +39,7 @@ class WizardsConclaveSuite extends munit.FunSuite:
 
   test("p1 decides a tie among the tied players, themselves included"):
     // The quiet table's Darkest Secret is unheld.
-    val ready = Table.start.adviser(p1, conclave).adviser(p2, "Glamor").ready
+    val ready = Table.start.adviser(p1, conclave).adviser(p2, GlamorCard).ready
     val first = Outcomes.parked(play(ready, power, conclave))
     val asked = question(ready, power, played, first.tree)
     assertEquals(asked.owner, p1)
@@ -49,7 +51,7 @@ class WizardsConclaveSuite extends munit.FunSuite:
 
   test("when nobody rules an Arcane card, every player ties"):
     // Wizard's Conclave stands at Buried Giant, which nobody rules.
-    val giant = CatalogNames.site("Buried Giant")
+    val giant = BuriedGiantSite.id
     val atGiant = hookAt(conclave, giant)
     val ready = Table.start.denizen(conclave, at = giant).ready
     val first = Outcomes.parked(fire(ready, power, atGiant))
@@ -60,8 +62,8 @@ class WizardsConclaveSuite extends munit.FunSuite:
     assertEquals(Look(done.treeless).darkestSecretHolder, Some(p3))
 
   test("a winner who already holds the Darkest Secret keeps it"):
-    val ready = Table.start.adviser(p1, conclave).adviser(p2, "Disciples")
-      .adviser(p2, "Glamor").darkestSecret(Some(p2), 1).ready
+    val ready = Table.start.adviser(p1, conclave).adviser(p2, DisciplesCard)
+      .adviser(p2, GlamorCard).darkestSecret(Some(p2), 1).ready
     val done = Outcomes.finished(play(ready, power, conclave))
     assertEquals(ops(done.events), Vector.empty)
     assertEquals(said(power, done.events), Vector(NoteText.Said("kept",
@@ -70,10 +72,10 @@ class WizardsConclaveSuite extends munit.FunSuite:
   test("when Lost Tongue refuses the take, the Darkest Secret does not move"):
     // p2 holds the Darkest Secret and Lost Tongue faceup; p1, the winner,
     // rules no Nomad card.
-    val ready = Table.start.adviser(p1, conclave).adviser(p2, "Lost Tongue")
+    val ready = Table.start.adviser(p1, conclave).adviser(p2, LostTongueCard)
       .darkestSecret(Some(p2), 1).ready
     val done = Outcomes.finished(playBeside(ready, power, conclave,
-      LostTongue.forCatalog(catalog)))
+      LostTongue))
     assertEquals(Look(done.treeless).darkestSecretHolder, Some(p2))
     assertEquals(said(power, done.events), Vector(NoteText.Said("none",
       "The Darkest Secret did not move.", covers = false)))

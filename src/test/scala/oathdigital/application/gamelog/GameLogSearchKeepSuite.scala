@@ -1,12 +1,19 @@
 package oathdigital.application.gamelog
 
+import oathdigital.gameplay.cards.AncientCitySite
+import oathdigital.gameplay.powers.action.{FaeMerchantCard, HomesteadersCard,
+  SecondChanceCard}
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.economy.DefameCard
+import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.testkit.MenuPlay
 import oathdigital.gameplay.ModifierPlay
 import oathdigital.gameplay.actions.search.SearchProcedure
-import oathdigital.gameplay.powers.search.{LandWarden, SpinningBee}
+import oathdigital.gameplay.powers.search.{LandWarden, LandWardenCard,
+  SpinningBee, SpinningBeeCard}
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.{ChooseOneAnswer, PartitionAnswer}
-import oathdigital.testkit.{Answers, CatalogNames, Table}
+import oathdigital.testkit.{Answers, Table}
 import oathdigital.testkit.Table.p1
 import LogScripts._
 
@@ -33,9 +40,9 @@ class GameLogSearchKeepSuite extends munit.FunSuite:
   /** p1 at Ancient City holding Spinning Bee faceup. The Cradle pile holds
     * Homesteaders (Hearth) under Wrestlers (Order) under Defame
     * (Discord). */
-  private val besideBee: Table = Table.start.pawn(p1, "Ancient City")
-    .adviser(p1, "Spinning Bee")
-    .discarded(Region.Cradle, "Homesteaders", "Wrestlers", "Defame")
+  private val besideBee: Table = Table.start.pawn(p1, AncientCitySite)
+    .adviser(p1, SpinningBeeCard)
+    .discarded(Region.Cradle, HomesteadersCard, WrestlersCard, DefameCard)
 
   test("Spinning Bee: its line names the pile and the suit, before the " +
       "Search line"):
@@ -63,8 +70,8 @@ class GameLogSearchKeepSuite extends munit.FunSuite:
     assert(!lines.exists(_.startsWith("Kept ")), lines)
 
   test("Land Warden: kept two, then a line for each play"):
-    val drawn = Vector("Threatening Roar", "Fae Merchant", "Second Chance")
-      .map(CatalogNames.denizen(_))
+    val drawn = Vector(ThreateningRoarCard.id, FaeMerchantCard.id,
+      SecondChanceCard.id)
     def placed(card: DenizenId, key: String) =
       DecisionPlacement(DecisionOptionRef.Denizen(card), key)
     val keepFirstTwo: Answers = {
@@ -74,7 +81,7 @@ class GameLogSearchKeepSuite extends munit.FunSuite:
           placed(drawn(2), SearchProcedure.discardKey)))
     }
     val lines = searchLines("land-warden", Table.start
-      .pawn(p1, "Ancient City").adviser(p1, "Land Warden")
+      .pawn(p1, AncientCitySite).adviser(p1, LandWardenCard)
       .worldDeckTop(drawn*), Vector(LandWarden.id), keepFirstTwo)
     assert(lineStarting(lines, "Drew ").endsWith(" from the World Deck"),
       lines)

@@ -7,12 +7,12 @@ import oathdigital.gameplay.powers.campaign.PlanDriver.{Run, awaits, commit,
   parked, winningDice}
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Vow of Wandering after a Conquest victory: the placement question is not
   * asked, and the survivors stay on the board. */
 class VowOfWanderingConquestSuite extends munit.FunSuite:
-  private val vow = CatalogNames.denizen("Vow of Wandering")
+  private val vow = VowOfWanderingCard.id
   private val game = CampaignFixture.rules(winningDice)
 
   /** `run` with every plan window finished and nothing sacrificed, until the

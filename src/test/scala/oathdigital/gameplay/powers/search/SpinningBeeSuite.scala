@@ -2,13 +2,17 @@ package oathdigital.gameplay.powers.search
 
 import oathdigital.gameplay.{ModifierPlay, PlacementFixture}
 import oathdigital.gameplay.actions.search.SearchProcedure
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powerresolver.ModifierPicks
 import oathdigital.gameplay.powers.{SearchFixture, WalkerPowerCatalog}
+import oathdigital.gameplay.powers.action.HomesteadersCard
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.economy.DefameCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerCompleted
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look, ParkedNode, Table}
+import oathdigital.testkit.{Look, ParkedNode, Table}
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
 
@@ -18,21 +22,21 @@ import oathdigital.testkit.Unwrap.accepted
 class SpinningBeeSuite extends munit.FunSuite:
   import SearchFixture.rules
 
-  private val spinningBee = CatalogNames.denizen("Spinning Bee")
-  private val augury = CatalogNames.denizen("Augury")
+  private val spinningBee = SpinningBeeCard.id
+  private val augury = AuguryCard.id
   private val modifiers = Vector(SpinningBee.id)
   private val modifierDecision =
     ModifierPicks.decisionId(PowerWindow.SearchModifierSelection)
   // The Cradle discard pile, bottom first: Hearth, Order, Discord.
-  private val homesteaders = CatalogNames.denizen("Homesteaders")
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
-  private val defame = CatalogNames.denizen("Defame")
+  private val homesteaders = HomesteadersCard.id
+  private val wrestlers = WrestlersCard.id
+  private val defame = DefameCard.id
 
   /** p1 at Ancient City (Cradle) holding Spinning Bee faceup, with 5
     * Supply. The Cradle discard pile holds Homesteaders under Wrestlers
     * under Defame unless `emptyPile`. */
   private def holdingBee(emptyPile: Boolean = false): Table =
-    val table = Table.start.pawn(p1, "Ancient City").adviser(p1, spinningBee)
+    val table = Table.start.pawn(p1, AncientCitySite).adviser(p1, spinningBee)
       .supply(p1, 5)
     if emptyPile then table
     else table.discarded(Region.Cradle, homesteaders, wrestlers, defame)

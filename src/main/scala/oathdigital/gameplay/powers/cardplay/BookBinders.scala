@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.cardplay
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
-  ModifierMark, PrintedPower}
+import oathdigital.catalog.{AdviserOnly, Denizen, ModifierMark, PrintedPower}
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution, PowerCtx, Transform}
 import oathdigital.gameplay.powers.CatalogResolution
 import oathdigital.gameplay.{NoteSupport, PowerAccess}
@@ -30,13 +29,22 @@ object BookBindersCard extends Denizen(DenizenId("140"), "Book Binders", Suit.He
   * inside the `Branch`, so the window's node count still does not depend on
   * live state.
   */
-final case class BookBinders private (catalog: ExecutableCatalog)
-    extends ContributingPower:
+case object BookBinders extends ContributingPower:
+  val id: PowerId = BookBindersCard.power.id
+  val Favor: Int = 2
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  val gained: NoteKey = NoteSupport.gainedFromKey(notes, "gained")
+
+  /** A Vision is played faceup at most once a round. */
+  def decisionId(ready: ReadyGame, holder: PlayerId, vision: VisionId): String =
+    s"book-binders-${ready.game.current.tracks.round}-${holder.value}-" +
+      vision.value
+
   val cardId: DenizenId = BookBindersCard.id
-  def id: PowerId = BookBinders.id
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
   override lazy val resolution: PowerResolution =
-    CatalogResolution.of(catalog, id)
+    CatalogResolution.of(BookBindersCard.power)
 
   def contributions: Map[PowerWindow, Vector[Contribution]] = Map(
     PowerWindow.ActionCardPlayedFaceup -> Vector(Transform((ctx, children) =>
@@ -44,7 +52,6 @@ final case class BookBinders private (catalog: ExecutableCatalog)
 
   override def applicable(ctx: PowerCtx): Boolean = reward(ctx).nonEmpty
 
-  override def noteKeys: Vector[NoteKey] = BookBinders.noteKeys
 
   /** The `Branch` that takes the holder's reward, whenever another player
     * plays a Vision faceup and this card's holder is a different player.
@@ -76,18 +83,3 @@ final case class BookBinders private (catalog: ExecutableCatalog)
 
   private def holderOf(ready: ReadyGame): Option[PlayerId] =
     PowerAccess.faceupAdviserHolder(ready, cardId)
-
-object BookBinders:
-  val id: PowerId = BookBindersCard.power.id
-  val Favor: Int = 2
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  val gained: NoteKey = NoteSupport.gainedFromKey(notes, "gained")
-
-  def forCatalog(catalog: ExecutableCatalog): BookBinders =
-    new BookBinders(catalog)
-
-  /** A Vision is played faceup at most once a round. */
-  def decisionId(ready: ReadyGame, holder: PlayerId, vision: VisionId): String =
-    s"book-binders-${ready.game.current.tracks.round}-${holder.value}-" +
-      vision.value

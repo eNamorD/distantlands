@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.recover
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower,
+  SiteOnly}
 import oathdigital.gameplay.PowerAccess
 import oathdigital.gameplay.powers.{CatalogResolution, SelectedModifier}
 import oathdigital.gameplay.operations.Costs
@@ -25,22 +26,24 @@ object CatacombsCard extends Denizen(DenizenId("201"), "Catacombs", Suit.Arcane)
   * A site with no empty relic slot, or an empty relic deck, shows the pick
   * unavailable, so the secret is never paid for a relic that cannot be
   * placed. */
-final case class CatacombsContribution private (catalog: ExecutableCatalog)
-    extends ContributingPower:
+case object CatacombsContribution extends ContributingPower:
+  val id: PowerId = CatacombsCard.power.id
+  /** Why it cannot be picked at a site whose relic slots are full. */
+  val noEmptySlot: String = "This site has no empty relic slot"
+  /** Why it cannot be picked with no relic left to draw. */
+  val emptyRelicDeck: String = "The relic deck is empty"
+
   val cardId: DenizenId = CatacombsCard.id
-  def id: PowerId = CatacombsContribution.id
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
   override lazy val resolution: PowerResolution =
-    CatalogResolution.of(catalog, id)
+    CatalogResolution.of(CatacombsCard.power)
   override def selectionCard: Option[CardId] = Some(cardId)
   /** Its use at its selection window: its pick pays one secret onto its
     * card (catalog batch 8, slice 10). */
   override def use(ctx: PowerCtx): Option[PowerUse] =
-    for
-      _ <- SelectedModifier.selectionAction(ctx.window)
-      printed <- catalog.printedPower(id)
-    yield PowerUse.of(ctx.actor, printed, cardId, secret = true,
-      places = true)
+    SelectedModifier.selectionAction(ctx.window).map(_ =>
+      PowerUse.of(ctx.actor, CatacombsCard.power, cardId, secret = true,
+        places = true))
   override def selectionWindows: Set[PowerWindow] =
     Set(PowerWindow.RecoverModifierSelection)
   // Stable across the action: card presence, never the relic/secrets spent.
@@ -50,20 +53,21 @@ final case class CatacombsContribution private (catalog: ExecutableCatalog)
       _ == MajorActionType.Recover) &&
       PowerAccess.locate(ctx.state, ctx.actor, cardId).isDefined
   override def offerReason(ctx: PowerCtx): Option[OfferReason] =
-    placement(ctx.state, ctx.actor).left.toOption.collect {
+    placement(ctx.catalog, ctx.state, ctx.actor).left.toOption.collect {
       case OathViolation.RecoverUnavailable(reason) =>
         OfferReason.Unavailable(reason)
     }
   override def selectionPayments(ready: ReadyGame, actor: PlayerId)
       : Vector[CoreOperation] =
-    Vector(Costs.onCard(actor, cardId, Cost(secret = 1), catalog))
+    Vector(Costs.onCard(actor, cardId, Cost(secret = 1),
+      Some(CatacombsCard.suit), intoOccupied = false))
   def contributions: Map[PowerWindow, Vector[Contribution]] =
     Map(PowerWindow.RecoverActionEligibility -> Vector(
-      Transform((ctx, ops) => place(ctx.actor) +: ops)))
+      Transform((ctx, ops) => place(ctx.catalog, ctx.actor) +: ops)))
 
-  private def place(actor: PlayerId): Operation = BuildOps((ready, _) =>
-    placement(ready, actor).map((siteId, relic) => Vector[CoreOperation](
-      Move(Piece.Card(relic),
+  private def place(catalog: ExecutableCatalog, actor: PlayerId): Operation =
+    BuildOps((ready, _) => placement(catalog, ready, actor).map(
+      (siteId, relic) => Vector[CoreOperation](Move(Piece.Card(relic),
         PositionedLocation(Location.Deck(CardDeck.Relic), StackPosition.Top),
         PositionedLocation(Location.Site(siteId)),
         resultingOrientation = Some(Orientation.FaceDown)))))
@@ -71,7 +75,8 @@ final case class CatacombsContribution private (catalog: ExecutableCatalog)
   /** Where the relic goes and which relic, or why it cannot be placed. No
     * generic execution path enforces a site's `relicSlots` for a card Move,
     * so the placement checks the capacity itself. */
-  private def placement(ready: ReadyGame, actor: PlayerId)
+  private def placement(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId)
       : Either[OathViolation, (SiteId, RelicId)] = for
     siteId <- PowerAccess.siteOf(ready, actor, cardId)
       .toRight(OathViolation.PawnSiteMissing(actor))
@@ -82,12 +87,3 @@ final case class CatacombsContribution private (catalog: ExecutableCatalog)
     relic <- ready.game.current.commonCards.relicDeck.headOption.toRight(
       OathViolation.RecoverUnavailable(CatacombsContribution.emptyRelicDeck))
   yield (siteId, relic)
-
-object CatacombsContribution:
-  val id: PowerId = CatacombsCard.power.id
-  /** Why it cannot be picked at a site whose relic slots are full. */
-  val noEmptySlot: String = "This site has no empty relic slot"
-  /** Why it cannot be picked with no relic left to draw. */
-  val emptyRelicDeck: String = "The relic deck is empty"
-  def forCatalog(catalog: ExecutableCatalog): CatacombsContribution =
-    new CatacombsContribution(catalog)

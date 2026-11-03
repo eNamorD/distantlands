@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.recover
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
-  PrintedPower}
+import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
 import oathdigital.gameplay.powerresolver.{Contribution, Transform}
 import oathdigital.gameplay.powers.SelectedModifier
 import oathdigital.model._
@@ -24,21 +23,15 @@ object RelicWorshipCard extends Denizen(DenizenId("173"), "Relic Worship", Suit.
   * faceup secret, the decision lists the other modifiers unavailable with the
   * shortfall.
   */
-final case class RelicWorship private (catalog: ExecutableCatalog)
-    extends SelectedModifier:
-  val cardId: DenizenId = RelicWorshipCard.id
-  def id: PowerId = RelicWorship.id
+case object RelicWorship extends SelectedModifier:
+  val id: PowerId = RelicWorshipCard.power.id
+  val Secrets: Int = 1
+  val Supply: Int = 2
+
+  val card: Denizen = RelicWorshipCard
   def actions: Set[MajorActionType] = Set(MajorActionType.Recover)
   override def cost: Cost = Cost(secret = RelicWorship.Secrets)
 
   def effects: Map[PowerWindow, Vector[Contribution]] = Map(
     PowerWindow.RecoverAfterRelic -> Vector(Transform((ctx, operations) =>
       operations :+ GainSupply(ctx.actor, RelicWorship.Supply))))
-
-object RelicWorship:
-  val id: PowerId = RelicWorshipCard.power.id
-  val Secrets: Int = 1
-  val Supply: Int = 2
-
-  def forCatalog(catalog: ExecutableCatalog): RelicWorship =
-    new RelicWorship(catalog)

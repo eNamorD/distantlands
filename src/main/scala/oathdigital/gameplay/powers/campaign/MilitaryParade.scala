@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
-  PrintedPower}
+import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
 import oathdigital.gameplay.EffectiveSuit
 import oathdigital.model._
 
@@ -28,29 +27,7 @@ object MilitaryParadeCard extends Denizen(DenizenId("109"), "Military Parade", S
   * the favor moves from the banks to the shared bank. The gains write the
   * generic gain lines, so it writes no line of its own.
   */
-final case class MilitaryParade private (catalog: ExecutableCatalog)
-    extends BattlePlan:
-  val cardId: DenizenId = MilitaryParadeCard.id
-  def id: PowerId = MilitaryParade.id
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
-  def sides: Set[CampaignPlanSide] =
-    Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
-
-  def plan(context: PlanContext): Option[CampaignPlanOffer] =
-    context.denizen(cardId)
-      .filter(_ => context.enemy != CampaignDefender.Bandits)
-      .map(source => CampaignPlanOffer(source,
-        "Military Parade: gain favor for the enemy's advisers if victorious",
-        Vector.empty, Vector.empty))
-
-  override def later: Map[PowerWindow, PlanUse => Vector[Operation]] = Map(
-    PowerWindow.CampaignActionEligibility -> (use =>
-      if !use.won.contains(true) then Vector.empty
-      else MilitaryParade.enemy(use).toVector.flatMap(enemy =>
-        FavorBySuit.gains(use.user, FavorBySuit.counts(catalog, use.ready,
-          MilitaryParade.advisers(use.ready, enemy))))))
-
-object MilitaryParade:
+case object MilitaryParade extends BattlePlan:
   val id: PowerId = MilitaryParadeCard.power.id
 
   /** The enemy of the plan's user: the attacker for a defender, and the
@@ -68,5 +45,21 @@ object MilitaryParade:
         case DenizenState(held, Orientation.FaceUp, _) => held })
       .flatMap(held => Vector.fill(EffectiveSuit.weight(held))(held))
 
-  def forCatalog(catalog: ExecutableCatalog): MilitaryParade =
-    new MilitaryParade(catalog)
+  val cardId: DenizenId = MilitaryParadeCard.id
+  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
+  def sides: Set[CampaignPlanSide] =
+    Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
+
+  def plan(context: PlanContext): Option[CampaignPlanOffer] =
+    context.denizen(cardId)
+      .filter(_ => context.enemy != CampaignDefender.Bandits)
+      .map(source => CampaignPlanOffer(source,
+        "Military Parade: gain favor for the enemy's advisers if victorious",
+        Vector.empty, Vector.empty))
+
+  override def later: Map[PowerWindow, PlanUse => Vector[Operation]] = Map(
+    PowerWindow.CampaignActionEligibility -> (use =>
+      if !use.won.contains(true) then Vector.empty
+      else MilitaryParade.enemy(use).toVector.flatMap(enemy =>
+        FavorBySuit.gains(use.user, FavorBySuit.counts(use.catalog, use.ready,
+          MilitaryParade.advisers(use.ready, enemy))))))

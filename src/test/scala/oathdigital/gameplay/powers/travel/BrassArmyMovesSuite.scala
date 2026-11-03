@@ -4,19 +4,19 @@ import oathdigital.gameplay.CampaignFixture.{on, raidBoard, rules}
 import oathdigital.gameplay.TravelPlay
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.campaign.BrassArmyCard
 import oathdigital.gameplay.powers.campaign.PlanDriver.{awaits, commit,
   winningDice}
 import oathdigital.gameplay.powers.targeting.TargetingFixture
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes,
-  RecordedOps, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, Outcomes, RecordedOps, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
 
 class BrassArmyMovesSuite extends munit.FunSuite:
-  private val brass = CatalogNames.relic("Brass Army")
+  private val brass = BrassArmyCard.id
   private val game = ActPowerHarness.rulesWithPrintedRestrictions()
   private val destination: SiteId = Table.quietPawnSite(p2)
 

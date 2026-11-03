@@ -4,12 +4,11 @@ import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
-import oathdigital.testkit.CatalogNames
 
 /** Longbows: a free plan for one more attack die, or one fewer when its user
   * defends. */
 class LongbowsSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Longbows")
+  private val card = LongbowsCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
 
   test("an attacker adds one attack die, for nothing"):

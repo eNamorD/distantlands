@@ -1,22 +1,25 @@
 package oathdigital.gameplay.powers.campaign
 
+import oathdigital.catalog.holding.{CouncilSeatCard, SearchPartyCard,
+  TheGatheringCard, VowOfKinshipCard}
+import oathdigital.gameplay.PledgeToDiscordCard
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
+import oathdigital.gameplay.cards.BrokenPeaksSite
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
 import oathdigital.testkit.Look
-import oathdigital.testkit.CatalogNames
 
 /** Great Crusade: a free plan for one attack die per nomad card its user
   * rules, counting itself, added or removed, and the card is discarded after
   * the Campaign. */
 class GreatCrusadeSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Great Crusade")
+  private val card = GreatCrusadeCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
-  private val nomads = planless("Search Party", "Vow of Kinship",
-    "The Gathering")
-  private val order = planlessCard("Council Seat")
+  private val nomads = planless(SearchPartyCard, VowOfKinshipCard,
+    TheGatheringCard)
+  private val order = planlessCard(CouncilSeatCard)
   private val line = NoteText.Said("discarded", "Discarded after the Campaign.",
     covers = false)
 
@@ -27,7 +30,7 @@ class GreatCrusadeSuite extends munit.FunSuite:
       "itself, for nothing"):
     val base = board(warbands = 5, supply = 7)
     // p1 rules Broken Peaks too.
-    val site = CatalogNames.site("Broken Peaks")
+    val site = BrokenPeaksSite.id
     // A facedown nomad adviser and an order card at a ruled site count nothing.
     val advisers = withAdviserFor(withAdviser(withAdviser(base, card,
       Orientation.FaceUp), nomads(0), Orientation.FaceUp), base.actor,
@@ -50,8 +53,8 @@ class GreatCrusadeSuite extends munit.FunSuite:
 
   test("from the advisers of a Pledge to Discord holder it is Discord, " +
       "so it counts only the nomad cards at the sites they rule"):
-    val pledge = CatalogNames.denizen("Pledge to Discord")
-    val site = CatalogNames.site("Broken Peaks")
+    val pledge = PledgeToDiscordCard.id
+    val site = BrokenPeaksSite.id
     val advisers = withAdviser(withAdviser(board(warbands = 5, supply = 7),
       card, Orientation.FaceUp), pledge, Orientation.FaceUp)
     val b = withSiteCard(actorRules(advisers, site), site, nomads(2))
@@ -91,7 +94,7 @@ class GreatCrusadeSuite extends munit.FunSuite:
 
   test("a facedown nomad plan the defender chose first is revealed and " +
       "counts, and one chosen after does not"):
-    val pledge = CatalogNames.denizen("Pledge of Defense")
+    val pledge = PledgeOfDefenseCard.id
     val pledgeRef: DecisionOptionRef = DecisionOptionRef.Denizen(pledge)
     val base = rivalRulesOriginAndHoldsOathkeeper(
       board(warbands = 5, supply = 7))

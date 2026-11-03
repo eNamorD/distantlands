@@ -4,11 +4,11 @@ import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignPlans}
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Extra Provisions: a defender's plan, a favor placed for one defense die. */
 class ExtraProvisionsSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Extra Provisions")
+  private val card = ExtraProvisionsCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
 
   /** The other player defends the origin, holding Extra Provisions and

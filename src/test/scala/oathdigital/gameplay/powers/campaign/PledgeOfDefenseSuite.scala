@@ -1,19 +1,20 @@
 package oathdigital.gameplay.powers.campaign
 
+import oathdigital.catalog.holding.{SearchPartyCard, VowOfKinshipCard}
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignPlans}
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Pledge of Defense: a free defender's plan for one defense die per nomad
   * card its user rules, counting itself, and the card is discarded after the
   * Campaign. */
 class PledgeOfDefenseSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Pledge of Defense")
+  private val card = PledgeOfDefenseCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
-  private val nomads = planless("Search Party", "Vow of Kinship")
+  private val nomads = planless(SearchPartyCard, VowOfKinshipCard)
   private val line = NoteText.Said("discarded", "Discarded after the Campaign.",
     covers = false)
 
@@ -56,7 +57,7 @@ class PledgeOfDefenseSuite extends munit.FunSuite:
 
   test("a facedown nomad plan the defender chose first is revealed and " +
       "counts, and one chosen after does not"):
-    val crusade = CatalogNames.denizen("Great Crusade")
+    val crusade = GreatCrusadeCard.id
     val crusadeRef: DecisionOptionRef = DecisionOptionRef.Denizen(crusade)
     val base = rivalRulesOriginAndHoldsOathkeeper(
       board(warbands = 5, supply = 7))

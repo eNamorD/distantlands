@@ -1,5 +1,10 @@
 package oathdigital.gameplay
 
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import oathdigital.gameplay.powers.campaign.RainBootsCard
+import oathdigital.gameplay.powers.economy.GolemLegionsCard
+import oathdigital.gameplay.powers.search.DisciplesCard
+import oathdigital.gameplay.powers.whenplayed.BanditChiefCard
 import oathdigital.model.OathState.Ready
 import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
 import oathdigital.gameplay.powers.rest.{LeagueTreatyContribution,
@@ -18,9 +23,9 @@ import oathdigital.testkit.Unwrap.accepted
 class PendingWalkerRulesSuite extends munit.FunSuite:
   private val rules = new OathRules(catalog,
     walkerPowerCatalog = WalkerPowerCatalog.default(catalog),
-    phasePowerCatalog = PhasePowerCatalog.default(catalog))
+    phasePowerCatalog = PhasePowerCatalog.default)
   private val walkerParked = new ParkedDecisionAssertions(catalog,
-    WalkerPowerCatalog.default(catalog), PhasePowerCatalog.default(catalog))
+    WalkerPowerCatalog.default(catalog), PhasePowerCatalog.default)
   private val pending = OathViolation.InvalidEventOrder(
     "a walker procedure is already pending")
 
@@ -29,8 +34,8 @@ class PendingWalkerRulesSuite extends munit.FunSuite:
     // card in the Cradle hold 2 favor each.
     val ruler = Table.p2
     val ready = leagueTreatyAct(Some(ruler))
-      .withFavoredCard("Disciples", at = "Ancient City", favor = 2)
-      .withFavoredCard("Bandit Chief", at = "Broken Peaks", favor = 2).ready
+      .withFavoredCard(DisciplesCard, at = AncientCitySite, favor = 2)
+      .withFavoredCard(BanditChiefCard, at = BrokenPeaksSite, favor = 2).ready
     val site = LeagueTreatyFixture.treatySite
     val actor = ready.game.current.turn.activePlayer
     val parked = accepted(
@@ -43,7 +48,7 @@ class PendingWalkerRulesSuite extends munit.FunSuite:
 
   private def silverTonguePark: OathState =
     val ready = SilverTongueFixture.silverTongueRest(
-      Vector("Golem Legions", "Rain Boots"), Set(Suit.Arcane, Suit.Nomad))
+      Vector(GolemLegionsCard, RainBootsCard), Set(Suit.Arcane, Suit.Nomad))
     val actor = Table.p1
     val parked = accepted(rules.startWalker(Ready(ready),
       ActionRef.UsePower(SilverTongue.id), actor, Vector(DecisionOptionRef.Denizen(SilverTongueFixture.tongue))))

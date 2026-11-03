@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.whenplayed
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, PrintedPower}
 import oathdigital.gameplay.powerresolver.PowerCtx
 import oathdigital.model._
 
@@ -18,23 +18,17 @@ object ThreateningRoarCard extends Denizen(DenizenId("179"), "Threatening Roar",
   * kept. Played to a site, it is a Beast card at a site in the region, so it
   * discards itself.
   */
-final case class ThreateningRoar private (catalog: ExecutableCatalog)
-    extends WhenPlayedPower:
+case object ThreateningRoar extends WhenPlayedPower:
+  val id: PowerId = ThreateningRoarCard.power.id
+  private val suits: Set[Suit] = Set(Suit.Nomad, Suit.Beast)
+
   val cardId: DenizenId = ThreateningRoarCard.id
-  def id: PowerId = ThreateningRoar.id
 
   private val notes = NoteSet(id)
   notes.include(RegionDiscard.notes)
   override def noteKeys: Vector[NoteKey] = notes.declared
 
-  private val region = new RegionDiscard(catalog, ThreateningRoar.suits)
+  private val region = new RegionDiscard(ThreateningRoar.suits)
 
   def effect(ctx: PowerCtx): Vector[Operation] =
-    region.effect(id, cardId, ctx.actor)
-
-object ThreateningRoar:
-  val id: PowerId = ThreateningRoarCard.power.id
-  private val suits: Set[Suit] = Set(Suit.Nomad, Suit.Beast)
-
-  def forCatalog(catalog: ExecutableCatalog): ThreateningRoar =
-    new ThreateningRoar(catalog)
+    region.effect(ctx.catalog, id, cardId, ctx.actor)

@@ -2,14 +2,19 @@ package oathdigital.application
 
 import oathdigital.gameplay.{ModifierPlay, OathRules}
 import oathdigital.gameplay.actions.VisionRules
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.search.{Disciples, NewsFromAfar}
+import oathdigital.gameplay.powers.action.{FaeMerchantCard, SecondChanceCard}
+import oathdigital.gameplay.powers.campaign.{MercenariesCard, WrestlersCard}
+import oathdigital.gameplay.powers.search.{Disciples, DisciplesCard,
+  ErrandBoyCard, ForcedLaborCard, NewsFromAfar, NewsFromAfarCard}
+import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
 import oathdigital.protocol.projection.DecisionOptionProjection
-import oathdigital.testkit.{CatalogNames, Outcomes, PowerStubs, Table}
+import oathdigital.testkit.{Outcomes, PowerStubs, Table}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.{accepted, present}
 
@@ -18,7 +23,7 @@ import oathdigital.testkit.Unwrap.{accepted, present}
   * rulings 3 and 4). p1 stands at Ancient City, in the Cradle. */
 class SearchSourceRowsSuite extends munit.FunSuite:
   private val presentation = new GamePresentationProjector(catalog)
-  private val home = CatalogNames.site("Ancient City")
+  private val home = AncientCitySite.id
 
   /** The source rows p1 is shown, by pile id ("world", "cradle"), once a
     * Search that picks `modifiers` starts at `ready` under `powers`. */
@@ -37,10 +42,10 @@ class SearchSourceRowsSuite extends munit.FunSuite:
   /** Both piles hold cards, p1 stands at Ancient City, in the Cradle, and has
     * `supply` Supply. */
   private def stocked(supply: Int): Table = Table.start
-    .pawn(p1, "Ancient City")
-    .worldDeckTop("Wrestlers", "Errand Boy", "Mercenaries")
-    .discarded(Region.Cradle, "Threatening Roar", "Fae Merchant",
-      "Second Chance")
+    .pawn(p1, AncientCitySite)
+    .worldDeckTop(WrestlersCard, ErrandBoyCard, MercenariesCard)
+    .discarded(Region.Cradle, ThreateningRoarCard, FaeMerchantCard,
+      SecondChanceCard)
     .supply(p1, supply)
 
   test("each pile is badged with the Supply its Search spends, under its " +
@@ -54,22 +59,22 @@ class SearchSourceRowsSuite extends munit.FunSuite:
   test("News from Afar makes both piles read 0 Supply, and its own favor is " +
       "not in the badge"):
     val ready = stocked(supply = 5)
-      .adviser(p1, CatalogNames.denizen("News from Afar")).favor(p1, 2).ready
+      .adviser(p1, NewsFromAfarCard.id).favor(p1, 2).ready
     val shown = rows(ready, Vector(NewsFromAfar.id))
     assertEquals(shown("world").badge, Some("0 Supply"))
     assertEquals(shown("cradle").badge, Some("0 Supply"))
 
   test("Disciples lowers a world Search costing 3 to 2"):
-    val ready = stocked(supply = 5).adviser(p1, CatalogNames.denizen("Disciples"))
+    val ready = stocked(supply = 5).adviser(p1, DisciplesCard.id)
       .darkestSecret(Some(p1), 1).visionsDrawn(1).ready
     assertEquals(rows(ready, Vector(Disciples.id))("world").badge,
       Some("2 Supply"))
     assertEquals(rows(ready)("world").badge, Some("3 Supply"))
 
   test("Forced Labor's toll joins the badge of both piles"):
-    val peaks = CatalogNames.site("Broken Peaks")
+    val peaks = BrokenPeaksSite.id
     val ready = stocked(supply = 5)
-      .denizen(CatalogNames.denizen("Forced Labor"), at = peaks)
+      .denizen(ForcedLaborCard.id, at = peaks)
       .warbandsAt(peaks, p2, 1).warbandsAt(home, p2, 1).ready
     val shown = rows(ready)
     assertEquals(shown("world").badge, Some("2 Supply · 1 [favor]"))
@@ -84,8 +89,8 @@ class SearchSourceRowsSuite extends munit.FunSuite:
 
   test("an empty pile says it is empty rather than what it would cost"):
     // The Cradle discard is empty on the quiet table.
-    val ready = Table.start.pawn(p1, "Ancient City")
-      .worldDeckTop("Wrestlers").supply(p1, 5).ready
+    val ready = Table.start.pawn(p1, AncientCitySite)
+      .worldDeckTop(WrestlersCard).supply(p1, 5).ready
     val shown = rows(ready)
     assertEquals(shown("cradle").state, "unavailable")
     assertEquals(shown("cradle").reason,
@@ -94,8 +99,8 @@ class SearchSourceRowsSuite extends munit.FunSuite:
   test("an empty world deck says it is empty"):
     // The whole world deck goes to the Provinces discard, which p1 cannot
     // search; one card in the Cradle discard lets the Search start.
-    val stocked = Table.start.pawn(p1, "Ancient City")
-      .discarded(Region.Cradle, "Wrestlers").supply(p1, 5)
+    val stocked = Table.start.pawn(p1, AncientCitySite)
+      .discarded(Region.Cradle, WrestlersCard).supply(p1, 5)
     val deck = stocked.ready.game.current.commonCards.worldDeck
     val shown = rows(stocked.discarded(Region.Provinces, deck*).ready)
     assertEquals(shown("world").state, "unavailable")

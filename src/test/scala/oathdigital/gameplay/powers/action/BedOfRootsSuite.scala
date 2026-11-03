@@ -1,9 +1,11 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
+import oathdigital.gameplay.powers.rest.InsomniaCard
+import oathdigital.gameplay.powers.search.LandWardenCard
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
@@ -11,20 +13,20 @@ import oathdigital.testkit.Unwrap.accepted
 class BedOfRootsSuite extends munit.FunSuite:
   import PhasePowerHarness._
 
-  private val bed = CatalogNames.denizen("Bed of Roots")
+  private val bed = BedOfRootsCard.id
   private val source = DecisionOptionRef.Denizen(bed)
-  private val power = BedOfRoots.forCatalog(catalog)
+  private val power = BedOfRoots
   // Two Hearth denizens whose powers these tests do not use.
-  private val homesteaders = CatalogNames.denizen("Homesteaders")
-  private val landWarden = CatalogNames.denizen("Land Warden")
-  private val insomnia = CatalogNames.denizen("Insomnia")
+  private val homesteaders = HomesteadersCard.id
+  private val landWarden = LandWardenCard.id
+  private val insomnia = InsomniaCard.id
   private val vision = VisionId("vision:vision-of-faith")
 
   /** p1's Act at Ancient City beside a site Bed of Roots, with `favor`
     * favor. Bed of Roots is site-only. */
   private def staged(favor: Int = 3): Table =
-    Table.start.turn(p1, Phase.Act).pawn(p1, "Ancient City")
-      .denizen(bed, at = "Ancient City").favor(p1, favor)
+    Table.start.turn(p1, Phase.Act).pawn(p1, AncientCitySite)
+      .denizen(bed, at = AncientCitySite).favor(p1, favor)
 
   private def secretsOf(ready: ReadyGame): Int =
     Look(ready).faceUpSecrets(p1) + Look(ready).faceDownSecrets(p1)

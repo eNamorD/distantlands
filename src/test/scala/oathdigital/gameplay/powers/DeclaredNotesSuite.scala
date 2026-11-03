@@ -1,11 +1,10 @@
 package oathdigital.gameplay.powers
 
 import oathdigital.gameplay.actions.RuleNotes
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model.PowerId
 
 class DeclaredNotesSuite extends munit.FunSuite:
-  private val declared = DeclaredNotes.of(catalog)
+  private val declared = DeclaredNotes.default
 
   test("it declares a walker power's key"):
     assert(declared.declares(PowerId("denizen.warning-signals"), "redistributed"))

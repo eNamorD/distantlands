@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
 import oathdigital.gameplay.powers.banner.CardPowerBanners
 import oathdigital.gameplay.powers.OathkeeperGoalChoice
 import oathdigital.model._
@@ -37,11 +37,12 @@ case object TheRedSeer extends PaidAction(TheRedSeerCard.power):
   override def noteKeys: Vector[NoteKey] = notes.declared
   override def narratedDecisions: Set[String] = Set(decisionId)
 
-  override def usable(ready: ReadyGame, player: PlayerId,
-      source: DecisionOptionRef): Boolean =
+  override def usable(catalog: ExecutableCatalog, ready: ReadyGame,
+      player: PlayerId, source: DecisionOptionRef): Boolean =
     CardPowerBanners.holdsDarkestSecret(ready, player)
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     Branch((live, _) => Vector(Decide(decisionId, player,
       DecisionQuery.ChooseOne(OathkeeperGoalChoice.options(live, barred),

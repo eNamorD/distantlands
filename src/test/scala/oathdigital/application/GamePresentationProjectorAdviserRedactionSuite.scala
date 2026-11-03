@@ -1,5 +1,6 @@
 package oathdigital.application
 
+import oathdigital.catalog.holding.MagiciansCodeCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.model._
 import oathdigital.testkit.Table
@@ -32,7 +33,7 @@ class GamePresentationProjectorAdviserRedactionSuite extends munit.FunSuite:
 
   test("playerBoards tells an unidentifying viewer the adviser's kind, not its identity"):
     val ready = Table.start
-      .adviser(p1, "Magician's Code", facedown = true)
+      .adviser(p1, MagiciansCodeCard, facedown = true)
       .adviser(p1, visionId, facedown = true)
       .ready
     val board = boardOf(projector.playerBoards(ready, Some(p2)), p1)
@@ -40,7 +41,7 @@ class GamePresentationProjectorAdviserRedactionSuite extends munit.FunSuite:
 
   test("setupPlayerBoards tells every viewer the adviser's kind, not its identity"):
     val ready = Table.start
-      .adviser(p1, "Magician's Code", facedown = true)
+      .adviser(p1, MagiciansCodeCard, facedown = true)
       .adviser(p1, visionId, facedown = true)
       .ready
     val material = FirstGameSetupMaterial(ready.game.current.players,
@@ -51,8 +52,8 @@ class GamePresentationProjectorAdviserRedactionSuite extends munit.FunSuite:
     assertRedacted(board.advisers)
 
   test("playerBoards shows the tokens resting on the owner's faceup adviser"):
-    val ready = Table.start.adviser(p1, "Magician's Code")
-      .tokens("Magician's Code", favor = 1, secrets = 2).ready
+    val ready = Table.start.adviser(p1, MagiciansCodeCard)
+      .tokens(MagiciansCodeCard, favor = 1, secrets = 2).ready
     val board = boardOf(projector.playerBoards(ready, Some(p1)), p1)
     assertEquals(board.advisers.map(card => (card.favor, card.secrets)),
       Vector((1, 2)))

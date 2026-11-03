@@ -2,6 +2,7 @@ package oathdigital.gameplay.walker
 
 import oathdigital.gameplay.{OathRules, WalkerDiceFixture}
 import oathdigital.gameplay.actions.recover.RecoverProcedure
+import oathdigital.gameplay.cards.FairIsleSite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.Table
@@ -25,7 +26,7 @@ class ParkedDecisionAssertionsSuite extends munit.FunSuite:
     * declared Recover difficulty, which p1's Ancient City lacks.
     */
   private val recoverable: ReadyGame =
-    Table.start.pawn(p1, at = "Fair Isle").ready
+    Table.start.pawn(p1, at = FairIsleSite).ready
 
   test("a Decide park reports its procedure, decision id and owner"):
     val rules = new OathRules(catalog, walkerDice = WalkerDiceFixture.blanks)

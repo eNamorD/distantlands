@@ -3,9 +3,10 @@ package oathdigital.gameplay.powers.cardplay
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import oathdigital.gameplay.actions.VisionRules
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.powers.{NoteText, PowerFixture, SearchFixture}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Refusals, Table}
+import oathdigital.testkit.{Refusals, Table}
 
 /** E08 never appears in a generated game (the Nomad Homeland takes E06), so
   * each test places it by hand.
@@ -17,8 +18,8 @@ class SacredGroundSuite extends munit.FunSuite:
   private val e08: EdificeId = SacredGroundCard.id
   // `SearchFixture.staged` stands p1 at Ancient City; Broken Peaks is
   // elsewhere.
-  private val home = CatalogNames.site("Ancient City")
-  private val elsewhere = CatalogNames.site("Broken Peaks")
+  private val home = AncientCitySite.id
+  private val elsewhere = BrokenPeaksSite.id
 
   private def withE08(ready: ReadyGame, site: SiteId,
       side: EdificeSide = EdificeSide.Intact)(using munit.Location): ReadyGame =

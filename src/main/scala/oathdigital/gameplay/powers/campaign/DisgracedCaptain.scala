@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
-  PrintedPower}
+import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
 import oathdigital.model._
 
 object DisgracedCaptainCard extends Denizen(DenizenId("20"), "Disgraced Captain", Suit.Discord):
@@ -24,27 +23,21 @@ object DisgracedCaptainCard extends Denizen(DenizenId("20"), "Disgraced Captain"
   * site bandits rule. Bandits pay nothing, so a bandit defender never applies
   * it.
   */
-final case class DisgracedCaptain private (catalog: ExecutableCatalog)
-    extends BattlePlan:
+case object DisgracedCaptain extends BattlePlan:
+  val id: PowerId = DisgracedCaptainCard.power.id
+  val Dice: Int = 4
+
   val cardId: DenizenId = DisgracedCaptainCard.id
-  def id: PowerId = DisgracedCaptain.id
   def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] =
     Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
 
   def plan(context: PlanContext): Option[CampaignPlanOffer] =
     context.denizen(cardId)
-      .filter(_ => context.cardsRuled(catalog, context.setup.defender,
+      .filter(_ => context.cardsRuled(context.setup.defender,
         Suit.Order).nonEmpty)
       .map(source => CampaignPlanOffer(source,
         PlanDice.label("Disgraced Captain", context.side,
           DisgracedCaptain.Dice),
         Vector(CampaignPlanCost.Favor(1), CampaignPlanCost.FavorBurnt(1)),
         Vector(PlanDice.effect(context.side, DisgracedCaptain.Dice))))
-
-object DisgracedCaptain:
-  val id: PowerId = DisgracedCaptainCard.power.id
-  val Dice: Int = 4
-
-  def forCatalog(catalog: ExecutableCatalog): DisgracedCaptain =
-    new DisgracedCaptain(catalog)

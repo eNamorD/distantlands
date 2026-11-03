@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.search
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
-  PrintedPower}
+import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
 import oathdigital.gameplay.PowerAccess
 import oathdigital.gameplay.actions.{CardPlayRules, DiscardPermission,
   PlaySites}
@@ -31,10 +30,15 @@ object BaronCard extends Denizen(DenizenId("250"), "Baron", Suit.Order):
   * Its line, "May discard a card at {site} first.", travels in the
   * permission, and card play writes it for the discard it allowed.
   */
-final case class Baron private (catalog: ExecutableCatalog)
-    extends SelectedModifier:
-  val cardId: DenizenId = BaronCard.id
-  def id: PowerId = Baron.id
+case object Baron extends SelectedModifier:
+  val id: PowerId = BaronCard.power.id
+
+  /** Whether `actor` rules the site, on the board the play is planned
+    * on. */
+  def ruledBy(actor: PlayerId): (ReadyGame, SiteId) => Boolean =
+    (ready, site) => PowerAccess.ruledSites(ready, actor).contains(site)
+
+  val card: Denizen = BaronCard
   def actions: Set[MajorActionType] = Set(MajorActionType.Search)
   private val notes = NoteSet(id)
   notes.include(CardPlayRules.notes)
@@ -49,13 +53,3 @@ final case class Baron private (catalog: ExecutableCatalog)
             .permitSiteDiscard(DiscardPermission.lined(id,
               PowerSourceRef.Card(cardId), appliesAt = ruled)))
         case _ => children)))
-
-object Baron:
-  val id: PowerId = BaronCard.power.id
-
-  /** Whether `actor` rules the site, on the board the play is planned
-    * on. */
-  def ruledBy(actor: PlayerId): (ReadyGame, SiteId) => Boolean =
-    (ready, site) => PowerAccess.ruledSites(ready, actor).contains(site)
-
-  def forCatalog(catalog: ExecutableCatalog): Baron = new Baron(catalog)

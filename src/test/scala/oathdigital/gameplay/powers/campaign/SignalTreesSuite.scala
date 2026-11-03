@@ -4,23 +4,25 @@ import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.CardPlay
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.action.{HomesteadersCard, OracleCard,
+  TavernSongsCard, WildAlliesCard, WolvesCard}
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Signal Trees: a secret placed; the top three cards of the user's
   * region's discard pile are revealed and discarded, for two attack dice
   * per Beast. */
 class SignalTreesSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Signal Trees")
+  private val card = SignalTreesCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
-  private val power = SignalTrees.forCatalog(catalog)
-  private val wolves = CatalogNames.denizen("Wolves")
-  private val swarm = CatalogNames.denizen("Insect Swarm")
-  private val songs = CatalogNames.denizen("Tavern Songs")
-  private val oracle = CatalogNames.denizen("Oracle")
-  private val homesteaders = CatalogNames.denizen("Homesteaders")
+  private val power = SignalTrees
+  private val wolves = WolvesCard.id
+  private val swarm = InsectSwarmCard.id
+  private val songs = TavernSongsCard.id
+  private val oracle = OracleCard.id
+  private val homesteaders = HomesteadersCard.id
   // The origin, Ancient City, is in the Cradle.
   private val next = CardPlay.nextRegion(Region.Cradle)
 
@@ -68,7 +70,7 @@ class SignalTreesSuite extends munit.FunSuite:
       .discarded(originRegion, oracle, swarm, songs, wolves))
     val game = rules(winningDice)
     val run = committed(game, campaignQueuedFrom(game, b, away,
-      PowerSourceRef.Card(CatalogNames.denizen("Wild Allies"))), b,
+      PowerSourceRef.Card(WildAlliesCard.id)), b,
       force = 2, raid = true)
     val picked = run.pick(b.actor, CampaignIds.attackerPlan, ref)
     assert(picked.since(run).contains(

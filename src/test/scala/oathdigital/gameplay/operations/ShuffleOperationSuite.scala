@@ -1,7 +1,10 @@
 package oathdigital.gameplay.operations
 
+import oathdigital.gameplay.powers.action.{FaeMerchantCard, SecondChanceCard}
+import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
+import oathdigital.gameplay.setup.FirstGameSetupFixture
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Unwrap.accepted
 
 class ShuffleOperationSuite extends munit.FunSuite:
@@ -10,7 +13,7 @@ class ShuffleOperationSuite extends munit.FunSuite:
 
   /** The Cradle discard pile holds three cards from the world deck. */
   private val discarded = Table.start.discarded(Region.Cradle,
-    "Threatening Roar", "Fae Merchant", "Second Chance").ready
+    ThreateningRoarCard, FaeMerchantCard, SecondChanceCard).ready
   private def zones(ready: ReadyGame): CardZones = ready.game.current.commonCards
   private val pile = zones(discarded).discard(Region.Cradle)
   private val deck = zones(discarded).worldDeck
@@ -90,8 +93,8 @@ class ShuffleOperationSuite extends munit.FunSuite:
 
   test("a shuffle writes a suited reserve's new order"):
     val denizens = zones(discarded).worldDeck.collect { case id: DenizenId => id }
-    val suit = CatalogNames.suitOf(denizens.head)
-    val three = denizens.filter(CatalogNames.suitOf(_) == suit).take(3)
+    val suit = FirstGameSetupFixture.catalog.suitOf(denizens.head).get
+    val three = denizens.filter(FirstGameSetupFixture.catalog.suitOf(_).get == suit).take(3)
     assertEquals(three.size, 3)
     val reserved = discarded.updateCurrent(current => current.copy(
       commonCards = current.commonCards.copy(

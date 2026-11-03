@@ -1,9 +1,9 @@
 package oathdigital.gameplay.powers.campaign
 
+import oathdigital.catalog.{Denizen, Relic}
 import oathdigital.gameplay.actions.campaign.CampaignBattle
 import oathdigital.model.{AttackDieFace, CampaignPlanSide, DecisionOptionRef}
 import oathdigital.model.AttackDieFace.{HollowSword, OneSword, TwoSwordsSkull}
-import oathdigital.testkit.CatalogNames
 
 /** The attack scorer's steps (catalog batch 4 rulings, "The attack score"):
   * face values, Lancers' doubling, the skull cap, War Tortoise, the total.
@@ -11,16 +11,12 @@ import oathdigital.testkit.CatalogNames
   * reads, so a card mapped to the wrong rules or the wrong side fails here. */
 class AttackScoreSuite extends munit.FunSuite:
   private final case class Plan(side: CampaignPlanSide, ref: DecisionOptionRef)
-  private def attacker(name: String)(using munit.Location): Plan =
-    Plan(CampaignPlanSide.Attacker,
-      DecisionOptionRef.Denizen(CatalogNames.denizen(name)))
-  private def defender(name: String)(using munit.Location): Plan =
-    Plan(CampaignPlanSide.Defender,
-      DecisionOptionRef.Denizen(CatalogNames.denizen(name)))
-
-  private def relicDefender(name: String)(using munit.Location): Plan =
-    Plan(CampaignPlanSide.Defender,
-      DecisionOptionRef.Relic(CatalogNames.relic(name)))
+  private def attacker(card: Denizen): Plan =
+    Plan(CampaignPlanSide.Attacker, DecisionOptionRef.Denizen(card.id))
+  private def defender(card: Denizen): Plan =
+    Plan(CampaignPlanSide.Defender, DecisionOptionRef.Denizen(card.id))
+  private def relicDefender(relic: Relic): Plan =
+    Plan(CampaignPlanSide.Defender, DecisionOptionRef.Relic(relic.id))
 
   /** The rules once `plans` are chosen, folded from `AttackScore.changes` as
     * a Campaign folds them; fails if the scorer does not know a plan. */
@@ -47,59 +43,59 @@ class AttackScoreSuite extends munit.FunSuite:
       "nothing with the defender's Rusting Ray"):
     val faces = Vector.fill(3)(HollowSword)
     assertScores(faces, 3, chosen())(score = 1, lost = 0)
-    assertScores(faces, 3, chosen(attacker("Fae Battalion")))(score = 3,
+    assertScores(faces, 3, chosen(attacker(FaeBattalionCard)))(score = 3,
       lost = 0)
-    assertScores(faces, 3, chosen(defender("Rusting Ray")))(score = 0,
+    assertScores(faces, 3, chosen(defender(RustingRayCard)))(score = 0,
       lost = 0)
 
   test("Lancers doubles every face, skulls included, before the skull cap"):
     // Two hollow swords make one sword, two swords, and two payable skulls
     // of two swords each.
     assertScores(Vector(HollowSword, OneSword, TwoSwordsSkull), 5,
-      chosen(attacker("Lancers")))(score = 1 + 2 + 4, lost = 2)
+      chosen(attacker(LancersCard)))(score = 1 + 2 + 4, lost = 2)
 
   test("the rulings' example: Lancers and Fearsome General with a force of 3"):
     // Doubled: four skulls and two swords. Three skulls are payable and score
     // 12, the fourth scores 0, the swords add 2.
     assertScores(Vector(TwoSwordsSkull, TwoSwordsSkull, OneSword), 3,
-      chosen(attacker("Lancers"), attacker("Fearsome General")))(score = 14,
+      chosen(attacker(LancersCard), attacker(FearsomeGeneralCard)))(score = 14,
       lost = 3)
 
   test("an unpayable skull scores nothing, with Fearsome General too"):
     val faces = Vector(TwoSwordsSkull, TwoSwordsSkull)
     assertScores(faces, 1, chosen())(score = 2, lost = 1)
-    assertScores(faces, 1, chosen(attacker("Fearsome General")))(score = 4,
+    assertScores(faces, 1, chosen(attacker(FearsomeGeneralCard)))(score = 4,
       lost = 1)
 
   test("with Outriders, The Great Levy, Kindred Warriors or Rangers a skull " +
       "scores its swords and kills nothing, four with Fearsome General"):
     val faces = Vector(TwoSwordsSkull, TwoSwordsSkull)
-    for name <- Vector("Outriders", "The Great Levy", "Kindred Warriors",
-        "Rangers") do
-      assertScores(faces, 1, chosen(attacker(name)))(score = 4, lost = 0)
+    for card <- Vector(OutridersCard, TheGreatLevyCard, KindredWarriorsCard,
+        RangersCard) do
+      assertScores(faces, 1, chosen(attacker(card)))(score = 4, lost = 0)
     assertScores(faces, 1,
-      chosen(attacker("Outriders"), attacker("Fearsome General")))(score = 8,
+      chosen(attacker(OutridersCard), attacker(FearsomeGeneralCard)))(score = 8,
       lost = 0)
 
   test("the defender's War Tortoise scores every skull face as nothing, " +
       "Fearsome General's included, and payable skulls still kill"):
     assertScores(Vector(TwoSwordsSkull, TwoSwordsSkull, OneSword), 1,
-      chosen(defender("War Tortoise"), attacker("Fearsome General")))(
+      chosen(defender(WarTortoiseCard), attacker(FearsomeGeneralCard)))(
       score = 1, lost = 1)
     assertScores(Vector(TwoSwordsSkull, OneSword), 2,
-      chosen(defender("War Tortoise"), attacker("Outriders")))(score = 1,
+      chosen(defender(WarTortoiseCard), attacker(OutridersCard)))(score = 1,
       lost = 0)
 
   test("with the defender's Weeping Banner each skull kills two, capped by " +
       "the force, and scores only when both are paid"):
     val faces = Vector(TwoSwordsSkull, TwoSwordsSkull, OneSword)
-    val banner = relicDefender("Weeping Banner")
+    val banner = relicDefender(WeepingBannerCard)
     assertScores(faces, 4, chosen(banner))(score = 1 + 4, lost = 4)
     // An odd force: the last warband dies and its skull scores nothing.
     assertScores(faces, 3, chosen(banner))(score = 1 + 2, lost = 3)
-    assertScores(faces, 3, chosen(banner, attacker("Fearsome General")))(
+    assertScores(faces, 3, chosen(banner, attacker(FearsomeGeneralCard)))(
       score = 1 + 4, lost = 3)
-    assertScores(faces, 3, chosen(banner, attacker("Outriders")))(
+    assertScores(faces, 3, chosen(banner, attacker(OutridersCard)))(
       score = 1 + 4, lost = 0)
 
   test("the skull faces count each skull rolled, twice when doubled"):

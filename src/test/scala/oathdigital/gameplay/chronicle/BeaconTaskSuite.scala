@@ -6,7 +6,7 @@ import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{CatalogNames, Outcomes, Table}
+import oathdigital.testkit.{Outcomes, Table}
 import oathdigital.testkit.Table.p3
 import oathdigital.testkit.Unwrap.accepted
 
@@ -51,8 +51,8 @@ class BeaconTaskSuite extends munit.FunSuite:
       ChronicleBeaconProcedure.noteKeys, transition.events)
       .filter(_.key == IntroduceNewcomers.returned.name).map(_.text)
 
-  private def suitOf(card: WorldCardId)(using munit.Location): Suit =
-    CatalogNames.suitOf(card.asInstanceOf[DenizenId])
+  private def suitOf(card: WorldCardId): Suit =
+    catalog.suitOf(card.asInstanceOf[DenizenId]).get
 
   /** Denizens of `suit` that `ready` has nowhere in play. */
   private def boxed(ready: ReadyGame, suit: Suit): Vector[DenizenId] =

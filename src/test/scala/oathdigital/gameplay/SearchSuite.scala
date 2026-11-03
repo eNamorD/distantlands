@@ -1,8 +1,13 @@
 package oathdigital.gameplay
 
 import oathdigital.gameplay.actions.{SearchRules, VisionRules}
+import oathdigital.gameplay.powers.action.{FaeMerchantCard, ScryerCard,
+  SecondChanceCard}
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.economy.DefameCard
+import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 
 class SearchSuite extends munit.FunSuite:
 
@@ -23,17 +28,17 @@ class SearchSuite extends munit.FunSuite:
       SearchRules.cost(ready, SearchSource.RegionalDiscard(region)), 2))
 
   test("world Search draw stops at first Vision"):
-    val first = CatalogNames.denizen("Threatening Roar")
+    val first = ThreateningRoarCard.id
     val vision = VisionRules.Faith
-    val state = Table.start.worldDeckTop(first, vision, "Fae Merchant",
-      "Second Chance").ready
+    val state = Table.start.worldDeckTop(first, vision, FaeMerchantCard,
+      SecondChanceCard).ready
     assertEquals(SearchRules.draw(state, SearchSource.WorldDeck),
       Vector(first, vision))
 
   test("a draw from the bottom of a discard pile takes its bottom cards, " +
       "bottom first"):
-    val pile = Vector("Threatening Roar", "Fae Merchant", "Second Chance",
-      "Wrestlers").map(CatalogNames.denizen(_))
+    val pile = Vector(ThreateningRoarCard.id, FaeMerchantCard.id,
+      SecondChanceCard.id, WrestlersCard.id)
     val state = Table.start.discarded(Region.Provinces, pile*).ready
     assertEquals(SearchRules.draw(state,
       SearchSource.RegionalDiscard(Region.Provinces),
@@ -41,8 +46,8 @@ class SearchSuite extends munit.FunSuite:
 
   test("a draw from the bottom of the world deck stops at the first " +
       "Vision"):
-    val above = CatalogNames.denizen("Threatening Roar")
-    val bottom = CatalogNames.denizen("Fae Merchant")
+    val above = ThreateningRoarCard.id
+    val bottom = FaeMerchantCard.id
     val state = Table.start.worldDeckBottom(above, VisionRules.Faith,
       bottom).ready
     assertEquals(SearchRules.draw(state, SearchSource.WorldDeck,
@@ -50,11 +55,10 @@ class SearchSuite extends munit.FunSuite:
 
   test("a pile lists its cards top first"):
     val state = Table.start
-      .worldDeckTop("Threatening Roar", "Fae Merchant")
-      .discarded(Region.Hinterland, "Defame", "Scryer").ready
+      .worldDeckTop(ThreateningRoarCard, FaeMerchantCard)
+      .discarded(Region.Hinterland, DefameCard, ScryerCard).ready
     assertEquals(SearchRules.pile(state, SearchSource.WorldDeck).take(2),
-      Vector("Threatening Roar", "Fae Merchant")
-        .map(CatalogNames.denizen(_)))
+      Vector(ThreateningRoarCard.id, FaeMerchantCard.id))
     assertEquals(SearchRules.pile(state,
       SearchSource.RegionalDiscard(Region.Hinterland)).take(2),
-      Vector("Scryer", "Defame").map(CatalogNames.denizen(_)))
+      Vector(ScryerCard.id, DefameCard.id))

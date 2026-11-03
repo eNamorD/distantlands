@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.whenplayed
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, PrintedPower}
 import oathdigital.gameplay.powerresolver.PowerCtx
 import oathdigital.model._
 
@@ -23,21 +23,40 @@ object RiotsCard extends Denizen(DenizenId("91"), "Riots", Suit.Discord):
   * as far as it holds favor. With nothing discarded nothing is burned, and
   * only the `none` line is written.
   */
-final case class Riots private (catalog: ExecutableCatalog)
-    extends WhenPlayedPower:
+case object Riots extends WhenPlayedPower:
+  val id: PowerId = RiotsCard.power.id
+  private val notes = NoteSet(id)
+  notes.include(RegionDiscard.notes)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "Burned {n favor} from the {People's Favor}." */
+  val burned: NoteKey = notes.key("burned", Vector(NotePart.Text("Burned "),
+    NotePart.Arg(0), NotePart.Text(" from the "), NotePart.Arg(1),
+    NotePart.Text(".")))
+  /** "The {People's Favor} had no favor to burn." */
+  val unburned: NoteKey = notes.key("unburned", Vector(NotePart.Text("The "),
+    NotePart.Arg(0), NotePart.Text(" had no favor to burn.")))
+
+  private def favorOn(ready: ReadyGame): Int =
+    ready.game.current.banners.peoplesFavor.favor
+
+  /** One favor for each of `found` that no site holds now. */
+  private def burn(ready: ReadyGame, found: Vector[CardId], actor: PlayerId)
+      : Vector[CoreOperation] =
+    val count = RegionDiscard.gone(found, ready).size
+    if count == 0 then Vector.empty
+    else Vector(Burn.favor(count,
+      PositionedLocation(Location.OnBanner(Banner.PeoplesFavor)),
+      Some(actor)))
+
   val cardId: DenizenId = RiotsCard.id
-  import Riots._
-  def id: PowerId = Riots.id
 
-  override def noteKeys: Vector[NoteKey] = Riots.noteKeys
-
-  private val region = new RegionDiscard(catalog, _ => true)
+  private val region = new RegionDiscard(_ => true)
 
   def effect(ctx: PowerCtx): Vector[Operation] =
     Vector(Branch((live, _) =>
-      val found = region.targets(live, ctx.actor)
+      val found = region.targets(ctx.catalog, live, ctx.actor)
       Vector(
-        BuildOps((ready, _) => region.discards(ready, ctx.actor)),
+        BuildOps((ready, _) => region.discards(ctx.catalog, ready, ctx.actor)),
         Note(id, RegionDiscard.said(cardId, found), covers = true),
         BuildOps((ready, _) => Right(burn(ready, found, ctx.actor))),
         Note(id, burnedNote(_, found)))))
@@ -54,31 +73,3 @@ final case class Riots private (catalog: ExecutableCatalog)
       if burnt > 0 then burned(source, NoteArg.Amount(burnt, NoteUnit.Favor),
         banner)
       else unburned(source, banner))
-
-object Riots:
-  val id: PowerId = RiotsCard.power.id
-  private val notes = NoteSet(id)
-  notes.include(RegionDiscard.notes)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "Burned {n favor} from the {People's Favor}." */
-  val burned: NoteKey = notes.key("burned", Vector(NotePart.Text("Burned "),
-    NotePart.Arg(0), NotePart.Text(" from the "), NotePart.Arg(1),
-    NotePart.Text(".")))
-  /** "The {People's Favor} had no favor to burn." */
-  val unburned: NoteKey = notes.key("unburned", Vector(NotePart.Text("The "),
-    NotePart.Arg(0), NotePart.Text(" had no favor to burn.")))
-
-  def forCatalog(catalog: ExecutableCatalog): Riots =
-    new Riots(catalog)
-
-  private def favorOn(ready: ReadyGame): Int =
-    ready.game.current.banners.peoplesFavor.favor
-
-  /** One favor for each of `found` that no site holds now. */
-  private def burn(ready: ReadyGame, found: Vector[CardId], actor: PlayerId)
-      : Vector[CoreOperation] =
-    val count = RegionDiscard.gone(found, ready).size
-    if count == 0 then Vector.empty
-    else Vector(Burn.favor(count,
-      PositionedLocation(Location.OnBanner(Banner.PeoplesFavor)),
-      Some(actor)))

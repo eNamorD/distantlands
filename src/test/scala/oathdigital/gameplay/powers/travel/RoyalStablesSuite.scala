@@ -3,7 +3,7 @@ package oathdigital.gameplay.powers.travel
 import oathdigital.gameplay.actions.travel.TravelProcedure
 import oathdigital.gameplay.powers.PowerFixture
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes}
+import oathdigital.testkit.{ActPowerHarness, Look, Outcomes}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Unwrap.accepted
 
@@ -11,7 +11,7 @@ class RoyalStablesSuite extends munit.FunSuite:
   import PowerFixture._
   import TravelFixture._
 
-  private val stables = CatalogNames.denizen("Royal Stables")
+  private val stables = RoyalStablesCard.id
   private val modifiers = Vector(RoyalStables.id)
   /** Royal Stables at the actor's site, Buried Giant, the Cradle's plains. */
   private def stablesAtHome: ReadyGame = on(board(supply = 7))(_
@@ -53,7 +53,7 @@ class RoyalStablesSuite extends munit.FunSuite:
     assertEquals(candidates(ready, modifiers).get(mountain), Some(1))
 
   test("with Tents the Travel is free: Tents removes the payment"):
-    val tents = CatalogNames.denizen("Tents")
+    val tents = TentsCard.id
     val ready = on(stablesAtHome)(_.adviser(actor, tents).favor(actor, 1)
       )
     val both = Vector(Tents.id, RoyalStables.id)

@@ -2,22 +2,26 @@ package oathdigital.application.gamelog
 
 import oathdigital.application.CampaignDicePort
 import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.campaign.StickyFire
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite}
+import oathdigital.gameplay.powers.campaign.{OutridersCard, StickyFire,
+  StickyFireCard, ToweringRampartCard}
+import oathdigital.gameplay.powers.economy.BirdsongCard
+import oathdigital.gameplay.powers.search.WineOfWelcomeCard
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer,
   ChooseManyAnswer, ChooseOneAnswer}
-import oathdigital.testkit.{Answers, CatalogNames, Dice, MenuPlay, Park,
-  Table}
+import oathdigital.testkit.{Answers, Dice, MenuPlay, Park, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import LogScripts.{atTable, raidAnswers}
 
 /** The Campaign branches the older goldens never play: a won Raid's
   * spoils, and a Conquest victory's placement with the bandits' loss.
-  * Kept beside `LogScripts`, which is at its size limit (procedures
-  * journal their own notes design, slice 4).
+  * Kept beside `LogScripts` (procedures journal their own notes design,
+  * slice 4).
   */
 object CampaignLogScripts:
-  private val relic = CatalogNames.relic("Wine of Welcome")
+  private val relic = WineOfWelcomeCard.id
 
   /** p1 Raids p2, who shares Ancient City, holds Wine of Welcome faceup,
     * holds the People's Favor, has a facedown adviser and two favor. p1
@@ -27,12 +31,12 @@ object CampaignLogScripts:
     */
   def raidTakingRelicAndBanner(using munit.Location): Script =
     val (service, act) = atTable("raid-spoils", Table.start
-      .pawn(p1, "Ancient City").pawn(p2, "Ancient City")
-      .pawn(p3, "Buried Giant")
+      .pawn(p1, AncientCitySite).pawn(p2, AncientCitySite)
+      .pawn(p3, BuriedGiantSite)
       .boardWarbands(p1, 3).boardWarbands(p2, 3)
       .relic(p2, relic)
       .peoplesFavor(Some(p2), favor = 2)
-      .adviser(p2, "Birdsong", facedown = true)
+      .adviser(p2, BirdsongCard, facedown = true)
       .favor(p2, 2)
       .banditsRefilled, Dice.raid)
     raidAnswers(act, {
@@ -49,8 +53,8 @@ object CampaignLogScripts:
     */
   def conquestPlacingWarbands(using munit.Location): Script =
     val (service, act) = atTable("conquest-placed", Table.start
-      .pawn(p1, "Ancient City").pawn(p2, "Broken Peaks")
-      .pawn(p3, "Buried Giant")
+      .pawn(p1, AncientCitySite).pawn(p2, BrokenPeaksSite)
+      .pawn(p3, BuriedGiantSite)
       .boardWarbands(p1, 4)
       .banditsRefilled, Dice.raid)
     val answers: Answers = {
@@ -68,8 +72,8 @@ object CampaignLogScripts:
     act.withAnswers(answers).after(MenuPlay.start(p1, ActionRef.Campaign))
     Script("conquest-placed", service, p1)
 
-  private val rampart = CatalogNames.edifice("Towering Rampart")
-  private val outriders = CatalogNames.denizen("Outriders")
+  private val rampart = ToweringRampartCard.id
+  private val outriders = OutridersCard.id
 
   /** Whether the parked decision still lists `ref`. A plan already chosen
     * is filtered out of the next pass, so this answers a free plan exactly
@@ -92,10 +96,10 @@ object CampaignLogScripts:
     * bandit defender applies without being asked. */
   def banditPlanApplied(using munit.Location): Script =
     val (service, act) = atTable("bandit-plan", Table.start
-      .pawn(p1, "Ancient City").pawn(p2, "Broken Peaks")
-      .pawn(p3, "Buried Giant")
+      .pawn(p1, AncientCitySite).pawn(p2, BrokenPeaksSite)
+      .pawn(p3, BuriedGiantSite)
       .boardWarbands(p1, 4)
-      .edifice("Towering Rampart", EdificeSide.Intact, "Ancient City")
+      .edifice(ToweringRampartCard, EdificeSide.Intact, AncientCitySite)
       .banditsRefilled, Dice.raid)
     val answers: Answers = {
       case Park(Decide(CampaignIds.force, _,
@@ -116,12 +120,12 @@ object CampaignLogScripts:
     * p2, the defender, is offered it and chooses it. */
   def defenderChoseAPlan(using munit.Location): Script =
     val (service, act) = atTable("defender-plan", Table.start
-      .pawn(p1, "Ancient City").pawn(p2, "Ancient City")
-      .pawn(p3, "Buried Giant")
+      .pawn(p1, AncientCitySite).pawn(p2, AncientCitySite)
+      .pawn(p3, BuriedGiantSite)
       .boardWarbands(p1, 3).boardWarbands(p2, 3)
-      .warbandsAt("Ancient City", p2, 2)
-      .edifice("Towering Rampart", EdificeSide.Intact, "Ancient City")
-      .adviser(p2, "Birdsong", facedown = true)
+      .warbandsAt(AncientCitySite, p2, 2)
+      .edifice(ToweringRampartCard, EdificeSide.Intact, AncientCitySite)
+      .adviser(p2, BirdsongCard, facedown = true)
       .banditsRefilled, Dice.raid)
     raidAnswers(act, {
       case park if park.decisionId == CampaignIds.defenderPlan &&
@@ -135,11 +139,11 @@ object CampaignLogScripts:
     * total is told, after the plan's own line. */
   def raidUnderOutriders(using munit.Location): Script =
     val (service, act) = atTable("outriders", Table.start
-      .pawn(p1, "Ancient City").pawn(p2, "Ancient City")
-      .pawn(p3, "Buried Giant")
+      .pawn(p1, AncientCitySite).pawn(p2, AncientCitySite)
+      .pawn(p3, BuriedGiantSite)
       .boardWarbands(p1, 3).boardWarbands(p2, 1)
       .adviser(p1, outriders)
-      .adviser(p2, "Birdsong", facedown = true)
+      .adviser(p2, BirdsongCard, facedown = true)
       .banditsRefilled, skulls)
     raidAnswers(act, {
       case park if park.decisionId == CampaignIds.attackerPlan &&
@@ -148,7 +152,7 @@ object CampaignLogScripts:
     }).after(MenuPlay.start(p1, ActionRef.Campaign))
     Script("outriders", service, p1)
 
-  private val stickyFire = CatalogNames.relic("Sticky Fire")
+  private val stickyFire = StickyFireCard.id
 
   /** p1 Raids p2, holding Sticky Fire faceup, and burns what the Raid's
     * own half left. p2's five board warbands lose two to the Raid and
@@ -157,8 +161,8 @@ object CampaignLogScripts:
     */
   def raidBurningWhatIsLeft(using munit.Location): Script =
     val (service, act) = atTable("sticky-fire", Table.start
-      .pawn(p1, "Ancient City").pawn(p2, "Ancient City")
-      .pawn(p3, "Buried Giant")
+      .pawn(p1, AncientCitySite).pawn(p2, AncientCitySite)
+      .pawn(p3, BuriedGiantSite)
       .boardWarbands(p1, 3).boardWarbands(p2, 5)
       .relic(p1, stickyFire)
       .favor(p1, 1)

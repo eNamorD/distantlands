@@ -1,10 +1,11 @@
 package oathdigital.model
 
+import oathdigital.gameplay.cards.DunesSite
 import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2, p3}
 
 class SiteRulingPlayerSuite extends munit.FunSuite:
-  private val dunes = "Dunes"
+  private val dunes = DunesSite
 
   /** p1 is the Chancellor and p2 a Citizen; the Empire holds the Dunes. */
   private def empireAtDunes: Table =
@@ -13,12 +14,12 @@ class SiteRulingPlayerSuite extends munit.FunSuite:
   private def rulerOfDunes(table: Table): Option[SiteRuler] =
     val ready = table.ready
     SiteRule.rulingPlayer(ready,
-      oathdigital.testkit.CatalogNames.site(dunes))
+      dunes.id)
 
   test("the Empire's sites keep the Empire as their raw ruler"):
     val ready = empireAtDunes.ready
     val site = ready.game.current.map.sites(
-      oathdigital.testkit.CatalogNames.site(dunes))
+      dunes.id)
     assertEquals(SiteRule.ruler(site.forces, ready.game.current.players),
       Right(SiteRuler.Empire))
 

@@ -1,5 +1,6 @@
 package oathdigital.application
 
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.phases.PhaseMenu
 import oathdigital.gameplay.powers.banner.{WanderingFlameMove,
   WanderingFlamePlace}
@@ -39,9 +40,9 @@ class BannerFaceProjectionSuite extends munit.FunSuite:
   test("the holder is offered both Wandering Flame powers, each by name"):
     // p1 stands at Ancient City and holds the Wandering Flame and a faceup
     // secret; Broken Peaks holds a secret.
-    val holding = Table.start.pawn(p1, "Ancient City")
+    val holding = Table.start.pawn(p1, AncientCitySite)
       .darkestSecret(Some(p1), 1, face = DarkestSecretFace.WanderingFlame)
-      .siteTokens("Broken Peaks", secrets = 1).secrets(p1, faceUp = 1).ready
+      .siteTokens(BrokenPeaksSite, secrets = 1).secrets(p1, faceUp = 1).ready
     assertEquals(powerButtons(holding), Vector[(DecisionOptionRef, String)](
       PhaseMenu.powerButton(move) -> "Wandering Flame: move",
       PhaseMenu.powerButton(place) ->
@@ -58,16 +59,16 @@ class BannerFaceProjectionSuite extends munit.FunSuite:
         Vector(banner)))
     // p1 stands at Ancient City throughout. The quiet table has no site
     // secrets, so Move has no target.
-    val noSite = Table.start.pawn(p1, "Ancient City")
+    val noSite = Table.start.pawn(p1, AncientCitySite)
       .darkestSecret(Some(p1), 1, face = DarkestSecretFace.WanderingFlame)
       .secrets(p1, faceUp = 1).ready
     assertEquals(availability(noSite), Vector(false, true))
-    val noSecret = Table.start.pawn(p1, "Ancient City")
+    val noSecret = Table.start.pawn(p1, AncientCitySite)
       .darkestSecret(Some(p1), 1, face = DarkestSecretFace.WanderingFlame)
-      .siteTokens("Broken Peaks", secrets = 1)
+      .siteTokens(BrokenPeaksSite, secrets = 1)
       .secrets(p1, faceUp = 0, faceDown = 2).ready
     assertEquals(availability(noSecret), Vector(true, false))
-    val neither = Table.start.pawn(p1, "Ancient City")
+    val neither = Table.start.pawn(p1, AncientCitySite)
       .darkestSecret(Some(p1), 1, face = DarkestSecretFace.WanderingFlame)
       .secrets(p1, faceUp = 0, faceDown = 2).ready
     assertEquals(availability(neither), Vector(false, false))
@@ -75,7 +76,7 @@ class BannerFaceProjectionSuite extends munit.FunSuite:
   test("the Festival face is offered no power"):
     val festival = Table.start
       .darkestSecret(Some(p1), 1, face = DarkestSecretFace.Festival)
-      .siteTokens("Broken Peaks", secrets = 1).ready
+      .siteTokens(BrokenPeaksSite, secrets = 1).ready
     assertEquals(powerButtons(festival), Vector.empty)
     assert(!MenuPlay.options(Table.from(festival).phaseMenuParked.state,
       catalog).exists(_.ref == banner))

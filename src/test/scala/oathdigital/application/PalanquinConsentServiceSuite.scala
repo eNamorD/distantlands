@@ -2,13 +2,14 @@ package oathdigital.application
 
 import oathdigital.application.gamelog.LogScripts.{formatter, texts}
 import oathdigital.gameplay.powers.action.{Palanquin, PalanquinCard}
-import oathdigital.gameplay.powers.travel.TravelFixture
+import oathdigital.gameplay.powers.travel.{TollRoadsCard, TravelFixture}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.protocol.projection._
-import oathdigital.testkit.{CatalogNames, Look, MenuPlay, Outcomes}
+import oathdigital.testkit.{Look, MenuPlay, Outcomes}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, present}
+import oathdigital.testkit.Commands
 
 /** Palanquin's toll asked of the target or the ruler, through the service
   * (catalog batch 8, slice 15, rulings 8, 13, 14 and 17). */
@@ -33,20 +34,20 @@ class PalanquinConsentServiceSuite extends munit.FunSuite:
       ActionRef.UsePower(Palanquin.id),
       Vector(DecisionOptionRef.Denizen(PalanquinCard.id)))))
     accepted(service.handle(gameId, used.nextSequence,
-      GameCommand.ResolveWalker(p1, TreeDecision(Palanquin.targetDecisionId,
+      Commands.resolveWalker(p1, TreeDecision(Palanquin.targetDecisionId,
         DecisionAnswer.ChooseOneAnswer(DecisionOptionRef.Player(p3))))))
 
   private def asking(service: GameApplicationService,
       granters: Vector[PlayerId])(using munit.Location): GameAccepted =
     accepted(service.handle(gameId, atTheDestination(service).nextSequence,
-      GameCommand.RequestConsent(p1, Palanquin.destinationDecisionId,
+      Commands.requestConsent(p1, Palanquin.destinationDecisionId,
         coastRef, granters)))
 
   private def answering(service: GameApplicationService, at: GameAccepted,
       granter: PlayerId, choice: ConsentChoice)(using munit.Location)
       : GameAccepted =
     accepted(service.handle(gameId, at.nextSequence,
-      GameCommand.AnswerConsent(granter, choice)))
+      Commands.answerConsent(granter, choice)))
 
   private def coastRow(at: GameAccepted)(using munit.Location)
       : DecisionOptionProjection =
@@ -69,7 +70,7 @@ class PalanquinConsentServiceSuite extends munit.FunSuite:
     val bandits = TravelFixture.on(TravelFixture.board())(_
       .adviser(p1, PalanquinCard.id).favor(p1, 1)
       .pawn(p3, TravelFixture.cradlePlains).favor(p3, 1)
-      .denizen(CatalogNames.denizen("Toll Roads"),
+      .denizen(TollRoadsCard.id,
         at = TravelFixture.provincePlains)
       .bandits(TravelFixture.provincePlains, 1).bandits(coast, 1))
     val (service, _) = ConsentFixture.service(bandits)

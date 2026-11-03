@@ -1,6 +1,5 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.powerresolver.ContributingPower
 
 /** The battle plans that change the dice, or pay after the Campaign, and need
@@ -15,34 +14,15 @@ import oathdigital.gameplay.powerresolver.ContributingPower
   * registered together. Each names its card, so all are always present.
   */
 object SimplePlans:
-  def forCatalog(catalog: ExecutableCatalog): Vector[ContributingPower] =
-    Vector(Mercenaries.forCatalog(catalog)) ++
-      Vector(Wrestlers) ++
-      Vector(FearsomeShield) ++
-      Vector(ToweringRampart) ++
-      Vector(CrackedRampart) ++
-      Vector(BattleHonors) ++
-      Vector(Longbows) ++
-      Vector(BlackSword) ++
-      Vector(FireTalkers) ++
-      Vector(NatureWorship.forCatalog(catalog)) ++
-      Vector(CrackedSage.forCatalog(catalog)) ++
-      Vector(VillageConstable) ++
-      Vector(BannerBreakers) ++
-      Vector(CrackingGround) ++
-      Vector(WalledGarden.forCatalog(catalog)) ++
-      Vector(BanditStandard) ++
-      Vector(ExtraProvisions) ++
-      Vector(Encirclement) ++
-      Vector(DisgracedCaptain.forCatalog(catalog)) ++
-      Vector(BattleAxes.forCatalog(catalog)) ++
-      Vector(FieldPromotion) ++
-      Vector(TributeSpoils.forCatalog(catalog)) ++
-      Vector(MilitaryParade.forCatalog(catalog)) ++
-      Vector(Scouts) ++
-      Vector(SecondWind) ++
-      Vector(Zealots) ++
-      Vector(BearTraps) ++
-      Vector(SignalTrees.forCatalog(catalog)) ++
-      Vector(GrandScepterPlan) ++
-      Vector(MartialCulture)
+  val all: Vector[ContributingPower] =
+    Vector(Mercenaries, Wrestlers, FearsomeShield,
+      ToweringRampart, CrackedRampart, SpiralCastle, SpiralDungeons,
+      BattleHonors, Longbows, BlackSword,
+      FireTalkers, NatureWorship,
+      CrackedSage, VillageConstable, BannerBreakers,
+      CrackingGround, WalledGarden, BanditStandard,
+      ExtraProvisions, Encirclement, DisgracedCaptain,
+      BattleAxes, FieldPromotion,
+      TributeSpoils, MilitaryParade,
+      Scouts, SecondWind, Zealots, BearTraps,
+      SignalTrees, GrandScepterPlan, MartialCulture)

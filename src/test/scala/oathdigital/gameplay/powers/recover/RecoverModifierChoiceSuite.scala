@@ -1,12 +1,13 @@
 package oathdigital.gameplay.powers.recover
 
 import oathdigital.gameplay.{OathRules, WalkerDiceFixture}
+import oathdigital.gameplay.cards.FairIsleSite
 import oathdigital.gameplay.powers.WalkerPowerCatalog
+import oathdigital.gameplay.powers.action.DowsingSticksCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatacombsGame, CatalogNames, Look, Outcomes,
-  Table}
+import oathdigital.testkit.{CatacombsGame, Look, Outcomes, Table}
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
 
@@ -17,15 +18,15 @@ class RecoverModifierChoiceSuite extends munit.FunSuite:
     walkerPowerCatalog = WalkerPowerCatalog.default(catalog),
     walkerDice = WalkerDiceFixture.shields)
 
-  private val worship = CatalogNames.denizen("Relic Worship")
+  private val worship = RelicWorshipCard.id
 
   /** p1 at Fair Isle, where Dowsing Sticks lies facedown, with `supply`
     * Supply, one faceup secret and Relic Worship as a faceup adviser; with
     * no Relic Worship unless `withWorship`. */
   private def atFairIsle(supply: Int = 4, withWorship: Boolean = true)
       : ReadyGame =
-    val table = Table.start.pawn(p1, "Fair Isle")
-      .relicAt("Dowsing Sticks", "Fair Isle").secrets(p1, faceUp = 1)
+    val table = Table.start.pawn(p1, FairIsleSite)
+      .relicAt(DowsingSticksCard, FairIsleSite).secrets(p1, faceUp = 1)
       .supply(p1, supply)
     (if withWorship then table.adviser(p1, worship) else table).ready
 

@@ -1,19 +1,23 @@
 package oathdigital.gameplay.powers
 
+import oathdigital.catalog.holding.VowOfKinshipCard
 import oathdigital.gameplay.CampaignFixture._
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import oathdigital.gameplay.powers.action.ConvoysCard
+import oathdigital.gameplay.powers.campaign.MartialCultureCard
+import oathdigital.gameplay.powers.setup.GreatForgeCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.CatalogNames
 
 /** The cards a ruler rules (catalog batch 3 rulings, "Cards a player
   * rules"). */
 class RuledCardsSuite extends munit.FunSuite:
   // Two Nomad denizens, an Order one, and a Nomad edifice (Great Forge, on
   // its ruined face).
-  private val convoys = CatalogNames.denizen("Convoys")
-  private val vowOfKinship = CatalogNames.denizen("Vow of Kinship")
-  private val order = CatalogNames.denizen("Martial Culture")
-  private val nomadEdifice = CatalogNames.edifice("Great Forge")
+  private val convoys = ConvoysCard.id
+  private val vowOfKinship = VowOfKinshipCard.id
+  private val order = MartialCultureCard.id
+  private val nomadEdifice = GreatForgeCard.id
 
   private def nomadsOf(b: Board, ruler: SiteRuler): Set[CardId] =
     RuledCards.of(catalog, b.ready, ruler, Suit.Nomad).toSet
@@ -27,7 +31,7 @@ class RuledCardsSuite extends munit.FunSuite:
   test("a player rules the faceup denizens and the edifices, on either " +
       "face, at the sites they rule"):
     val base = board(warbands = 5, supply = 7)
-    val site = CatalogNames.site("Broken Peaks")
+    val site = BrokenPeaksSite.id
     // A facedown denizen has no suit, and an order card is not a nomad card.
     val b = on(actorRules(base, site))(_
       .denizen(convoys, at = site)
@@ -42,8 +46,8 @@ class RuledCardsSuite extends munit.FunSuite:
     // Two Bandits rule Ancient City, p1's site, and Broken Peaks; p1 rules
     // nothing.
     val base = board(extras = 1, warbands = 5, supply = 7)
-    val b = on(base)(_.denizen(convoys, at = "Ancient City")
-      .denizen(vowOfKinship, at = "Broken Peaks"))
+    val b = on(base)(_.denizen(convoys, at = AncientCitySite)
+      .denizen(vowOfKinship, at = BrokenPeaksSite))
     assertEquals(nomadsOf(b, SiteRuler.Bandits),
       Set[CardId](convoys, vowOfKinship))
     assertEquals(nomadsOf(b, SiteRuler.Player(b.actor)), Set.empty[CardId])

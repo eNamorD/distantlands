@@ -1,11 +1,14 @@
 package oathdigital.gameplay.chronicle
 
+import oathdigital.catalog.Site
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.gameplay.{OathRules, WalkerDiceFixture}
 import oathdigital.gameplay.actions.ProcedureNotes
 import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Outcomes, RecordedOps, Table}
+import oathdigital.testkit.{Outcomes, RecordedOps, Table}
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
 
@@ -19,10 +22,10 @@ class StarsTaskSuite extends munit.FunSuite:
     walkerPowerCatalog = WalkerPowerCatalog.default(catalog),
     walkerDice = WalkerDiceFixture.reversingShuffle)
 
-  private val ancientCity = CatalogNames.site("Ancient City")
-  private val brokenPeaks = CatalogNames.site("Broken Peaks")
+  private val ancientCity = AncientCitySite.id
+  private val brokenPeaks = BrokenPeaksSite.id
 
-  private def empireAt(sites: String*): Table =
+  private def empireAt(sites: Site*): Table =
     sites.foldLeft(ChronicleWalk.throneHeldByChancellorP1)((table, site) =>
       table.warbandsAt(site, p1, 1))
 
@@ -47,7 +50,7 @@ class StarsTaskSuite extends munit.FunSuite:
 
   test("rival sites are archived Cradlemost first, above the stored atlas, " +
       "and the Empire keeps its sites"):
-    val done = chronicleFinished(empireAt("Broken Peaks"))
+    val done = chronicleFinished(empireAt(BrokenPeaksSite))
     val ready = Outcomes.ready(done.state)
     val record = recordOf(done)
     val stored = ready.game.campaign.atlas.entries.collect {
@@ -59,9 +62,9 @@ class StarsTaskSuite extends munit.FunSuite:
 
   test("every site keeps every card left on it, including an Enduring " +
       "rival site's denizen"):
-    val roar = CatalogNames.denizen("Threatening Roar")
-    val done = chronicleFinished(empireAt("Broken Peaks")
-      .denizen("Threatening Roar", at = "Ancient City"))
+    val roar = ThreateningRoarCard.id
+    val done = chronicleFinished(empireAt(BrokenPeaksSite)
+      .denizen(ThreateningRoarCard, at = AncientCitySite))
     val ready = Outcomes.ready(done.state)
     val record = recordOf(done)
     assert(record.atlasBox.find(_.site == ancientCity).get.items
@@ -72,7 +75,7 @@ class StarsTaskSuite extends munit.FunSuite:
 
   test("the record takes the decks, the Reliquary, both Dispossessed piles " +
       "and the kept starting advisers from the table"):
-    val done = chronicleFinished(empireAt("Broken Peaks"))
+    val done = chronicleFinished(empireAt(BrokenPeaksSite))
     val ready = Outcomes.ready(done.state)
     val record = recordOf(done)
     val current = ready.game.current
@@ -90,7 +93,7 @@ class StarsTaskSuite extends munit.FunSuite:
         Some(campaign.lineages(player.lineage).startingAdvisers)))
 
   test("each archived and kept site writes its line"):
-    val done = chronicleFinished(empireAt("Broken Peaks"))
+    val done = chronicleFinished(empireAt(BrokenPeaksSite))
     val inPlay = Outcomes.ready(done.state).game.current.map.hinterward
     val said = NoteText.said(
       ProcedureNotes.id(TriggeredProcedureRef.ChronicleStars),

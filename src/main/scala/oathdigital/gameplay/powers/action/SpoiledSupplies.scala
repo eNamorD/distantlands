@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
 import oathdigital.gameplay.{NoteSupport, PowerAccess}
 import oathdigital.model._
 
@@ -29,7 +29,8 @@ case object SpoiledSupplies extends PaidAction(SpoiledSuppliesCard.power):
     NotePart.Text("No enemy lost Supply.")))
   override def noteKeys: Vector[NoteKey] = notes.declared
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Branch((live, _) => {
     val hit = enemies(live, player).filter(_.board.supply.supply > 0)
     if hit.isEmpty then

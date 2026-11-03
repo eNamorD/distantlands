@@ -1,23 +1,25 @@
 package oathdigital.gameplay.powers
 
+import oathdigital.gameplay.cards.{AncientCitySite, DeepWoodsSite, MinesSite,
+  NarrowPassSite}
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   OptionRestriction, Waiver}
-import oathdigital.gameplay.operations.{GrandScepter, HallOfMinisters}
-import oathdigital.gameplay.powers.cardplay.SecretPolice
+import oathdigital.gameplay.operations.{GrandScepter, HallOfMinisters,
+  HallOfMinistersCard}
+import oathdigital.gameplay.powers.cardplay.{SecretPolice, SecretPoliceCard}
 import oathdigital.gameplay.powers.economy.Curfew
 import oathdigital.gameplay.powers.search.ForcedLabor
-import oathdigital.gameplay.powers.travel.{GraspingVines, MinesSite,
-  NarrowPassSite, NarrowPassSitePower, TollRoads, TravelFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
+import oathdigital.gameplay.powers.travel.{GraspingVines, NarrowPassSitePower,
+  TollRoads, TollRoadsCard, TravelFixture}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2}
 
 /** Which powers can be waived, and who may waive them (consent design,
   * rulings 1, 4 and 16). */
 class ConsentPowersSuite extends munit.FunSuite:
   import TravelFixture.{board, on, pass}
-  private val powers = ConsentPowers.default(catalog)
+  private val powers = ConsentPowers.default
   private val ruled = on(board())(_.warbandsAt(pass, p2, 1))
 
   test("the Narrow Pass is waivable, named for its site"):
@@ -54,8 +56,8 @@ class ConsentPowersSuite extends munit.FunSuite:
 
   test("Secret Police is waivable, its granter the player who rules its " +
       "site, and nobody under bandits"):
-    val police = CatalogNames.denizen("Secret Police")
-    val home = CatalogNames.site("Ancient City")
+    val police = SecretPoliceCard.id
+    val home = AncientCitySite.id
     val policed = Table.start.denizen(police, at = home)
     assertEquals(powers.source(SecretPolice.id),
       Some(PowerSourceRef.Card(police)))
@@ -66,8 +68,8 @@ class ConsentPowersSuite extends munit.FunSuite:
 
   test("the Hall of Ministers is waivable, its granter the player who rules " +
       "its site"):
-    val hall = CatalogNames.edifice("Hall of Ministers")
-    val woods = CatalogNames.site("Deep Woods")
+    val hall = HallOfMinistersCard.id
+    val woods = DeepWoodsSite.id
     val ready = Table.start.edifice(hall, EdificeSide.Intact, at = woods)
       .warbandsAt(woods, p2, 1).ready
     assertEquals(powers.source(HallOfMinisters.id),
@@ -88,7 +90,7 @@ class ConsentPowersSuite extends munit.FunSuite:
 
   test("Toll Roads' granter is the player who rules it, and nobody under " +
       "bandits"):
-    val toll = CatalogNames.denizen("Toll Roads")
+    val toll = TollRoadsCard.id
     val ruledByP2 = on(board())(_.denizen(toll,
       at = TravelFixture.provincePlains)
       .warbandsAt(TravelFixture.provincePlains, p2, 1))

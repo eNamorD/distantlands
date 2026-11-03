@@ -2,16 +2,17 @@ package oathdigital.gameplay.powers.campaign
 
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
+import oathdigital.gameplay.cards.BrokenPeaksSite
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseAmountAnswer
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Cursed Cauldron: a victorious user gains a warband per enemy warband that
   * died in the Campaign, net of those that came back. */
 class CursedCauldronSuite extends munit.FunSuite:
-  private val relic = CatalogNames.relic("Cursed Cauldron")
+  private val relic = CursedCauldronCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Relic(relic)
 
   private def gained(who: PlayerId, amount: Int): NoteText.Said =
@@ -85,9 +86,9 @@ class CursedCauldronSuite extends munit.FunSuite:
     assertEquals(said(CursedCauldron, done.events), Vector.empty)
 
   test("a warband the enemy's Hospital places on its site did not die"):
-    val hospital = CatalogNames.denizen("Hospital")
+    val hospital = HospitalCard.id
     // Broken Peaks, the first site after the origin, which nobody else rules.
-    val site = CatalogNames.site("Broken Peaks")
+    val site = BrokenPeaksSite.id
     val base = rivalRulesOriginAndHoldsOathkeeper(
       board(warbands = 5, supply = 7))
     val b = withRelic(withSiteCard(

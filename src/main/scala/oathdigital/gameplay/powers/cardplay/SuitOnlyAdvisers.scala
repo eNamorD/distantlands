@@ -40,7 +40,6 @@ import oathdigital.model._
   * line, and each bury posts its "Buried" line.
   */
 trait SuitOnlyAdvisers extends ExecutedTrigger:
-  def catalog: ExecutableCatalog
   /** The card that sets the rule, held as an adviser. */
   def cardId: DenizenId
   /** The suit of the advisers its holder keeps. */
@@ -68,7 +67,8 @@ trait SuitOnlyAdvisers extends ExecutedTrigger:
             if tree.card == cardId || holds(ctx.state, ctx.actor) =>
           tree.adjust(children)(rules => playRules(rules).noteAdviserPlay(
             AdviserPlayNote(OptionReason.Written(buryWarning),
-              (after, played) => after.contains(faceUp) && !kept(played))))
+              (after, played) =>
+                after.contains(faceUp) && !kept(ctx.catalog, played))))
         case _ => children
       })))
 
@@ -76,10 +76,11 @@ trait SuitOnlyAdvisers extends ExecutedTrigger:
     for
       holder <- holderOf(arrived.after)
       if arrived.arrivals.exists(_.player == holder)
-      buriedHere = automatic(arrived.after, holder)
+      buriedHere = automatic(arrived.catalog, arrived.after, holder)
       if buriedHere.nonEmpty
     yield ArrivalFollowUp(
-      buriedHere.flatMap(bury(arrived.after, _, holder, arrived.actor)),
+      buriedHere.flatMap(bury(arrived.catalog, arrived.after, _, holder,
+        arrived.actor)),
       Note(id, _ => Some(line(holder, arrived.actor, buriedHere.map(_.id))),
         covers = true))
 
@@ -92,7 +93,7 @@ trait SuitOnlyAdvisers extends ExecutedTrigger:
     * next batch instead. */
   def onExecuted(batch: ExecutedBatch): Option[Operation] = for
     holder <- holderOf(batch.now)
-    waiting = ordered(batch.now, holder)
+    waiting = ordered(batch.catalog, batch.now, holder)
     if waiting.nonEmpty
   yield Sequence(Vector[Operation](
     Decide(pledgeDecisionId, batch.actor, DecisionQuery.Partition(
@@ -106,14 +107,15 @@ trait SuitOnlyAdvisers extends ExecutedTrigger:
         holder == batch.actor)),
       confirmLabel = Some("Bury"))),
     BuildOps((ready, pending) => Right(
-      buriedFirst(ordered(ready, holder), pending.answered)
-        .flatMap(bury(ready, _, holder, batch.actor)) ++
+      buriedFirst(ordered(batch.catalog, ready, holder), pending.answered)
+        .flatMap(bury(batch.catalog, ready, _, holder, batch.actor)) ++
       pledgeOf(ready, holder).toVector
-        .flatMap(bury(ready, _, holder, batch.actor)))),
+        .flatMap(bury(batch.catalog, ready, _, holder, batch.actor)))),
     // The bury has run when the note is built, so the advisers are read
     // from the state before it.
     Note(id, states => states.previous.map((before, _) => line(holder,
-      batch.actor, buriedFirst(ordered(before, holder), states.answered)
+      batch.actor, buriedFirst(ordered(batch.catalog, before, holder),
+        states.answered)
         .map(adviser => adviser.id: CardId) :+ PledgeToDiscordCard.id)),
       covers = true)))
 
@@ -122,25 +124,25 @@ trait SuitOnlyAdvisers extends ExecutedTrigger:
     * advisers that keep it by their printed suit ([[ordered]]), Pledge and
     * those advisers wait for the trigger's question; the order of their
     * burials decides which stay. */
-  private def automatic(ready: ReadyGame, holder: PlayerId)
-      : Vector[AdviserState] =
+  private def automatic(catalog: ExecutableCatalog, ready: ReadyGame,
+      holder: PlayerId): Vector[AdviserState] =
     val others = SuitOnlyAdvisers.advisers(ready, holder)
       .filterNot(_.id == cardId)
-    if ordered(ready, holder).isEmpty then
-      others.filterNot(keeps(ready, _))
+    if ordered(catalog, ready, holder).isEmpty then
+      others.filterNot(keeps(catalog, ready, _))
     else others.filterNot(adviser => adviser.id == PledgeToDiscordCard.id ||
-      printedKeeps(adviser))
+      printedKeeps(catalog, adviser))
 
   /** With Pledge to Discord faceup among `holder`'s advisers, the faceup
     * advisers other than this card that keep the rule by their printed
     * suit, in held order: Pledge makes them Discord until it goes. */
-  private def ordered(ready: ReadyGame, holder: PlayerId)
-      : Vector[DenizenState] =
+  private def ordered(catalog: ExecutableCatalog, ready: ReadyGame,
+      holder: PlayerId): Vector[DenizenState] =
     if !SuitOnlyAdvisers.hasFaceUp(ready, holder, PledgeToDiscordCard.id)
     then Vector.empty
     else SuitOnlyAdvisers.advisers(ready, holder).collect {
       case adviser: DenizenState
-          if adviser.id != cardId && printedKeeps(adviser) => adviser
+          if adviser.id != cardId && printedKeeps(catalog, adviser) => adviser
     }
 
   /** The advisers among `waiting` the answer places to bury before
@@ -163,20 +165,22 @@ trait SuitOnlyAdvisers extends ExecutedTrigger:
 
   /** Whether `adviser` stays under the rule now: a faceup card whose
     * effective suit is `suit`. */
-  private def keeps(ready: ReadyGame, adviser: AdviserState): Boolean =
+  private def keeps(catalog: ExecutableCatalog, ready: ReadyGame,
+      adviser: AdviserState): Boolean =
     adviser match
       case DenizenState(card, Orientation.FaceUp, _) =>
         EffectiveSuit.of(catalog, ready, card).contains(suit)
       case _ => false
 
   /** Whether `adviser` keeps the rule by its printed suit. */
-  private def printedKeeps(adviser: AdviserState): Boolean =
-    kept(AdviserFace.of(adviser))
+  private def printedKeeps(catalog: ExecutableCatalog,
+      adviser: AdviserState): Boolean =
+    kept(catalog, AdviserFace.of(adviser))
 
   /** Whether `face` stays under the rule by its printed suit: a faceup card
     * of `suit`. The card-play warning reads it: a holder of the rule never
     * keeps Pledge to Discord, so the played card's printed suit decides. */
-  private def kept(face: AdviserFace): Boolean =
+  private def kept(catalog: ExecutableCatalog, face: AdviserFace): Boolean =
     face.orientation == Orientation.FaceUp &&
       catalog.suitOf(face.card).contains(suit)
 
@@ -184,8 +188,9 @@ trait SuitOnlyAdvisers extends ExecutedTrigger:
     * its suit bank as the rules see it (an adviser buried while Pledge to
     * Discord stands returns to Discord) and its secrets to `actor`,
     * facedown. */
-  private def bury(ready: ReadyGame, adviser: AdviserState, holder: PlayerId,
-      actor: PlayerId): Vector[CoreOperation] =
+  private def bury(catalog: ExecutableCatalog, ready: ReadyGame,
+      adviser: AdviserState, holder: PlayerId, actor: PlayerId)
+      : Vector[CoreOperation] =
     val from = PositionedLocation(Location.PlayArea(holder))
     adviser match
       case DenizenState(card, _, tokens) => Bury.standard(

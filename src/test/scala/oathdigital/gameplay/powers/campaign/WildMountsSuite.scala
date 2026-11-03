@@ -1,30 +1,32 @@
 package oathdigital.gameplay.powers.campaign
 
+import oathdigital.catalog.holding.{AutumnWindCard, BrackenCard}
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.OathRules
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powerresolver.{FoldPhase, Transform}
 import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
+import oathdigital.gameplay.powers.action.WildAlliesCard
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Wild Mounts: a free plan that lets its user discard one Beast card they
   * rule instead of their Nomad battle plans at the end of the Campaign. */
 class WildMountsSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Wild Mounts")
+  private val card = WildMountsCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
-  private val horseArchers = CatalogNames.denizen("Horse Archers")
-  private val lancers = CatalogNames.denizen("Lancers")
-  private val stormCaller = CatalogNames.denizen("Storm Caller")
-  private val mountedPatrol = CatalogNames.denizen("Mounted Patrol")
-  private val warningSignals = CatalogNames.denizen("Warning Signals")
-  private val bracken = planlessCard("Bracken")
+  private val horseArchers = HorseArchersCard.id
+  private val lancers = LancersCard.id
+  private val stormCaller = StormCallerCard.id
+  private val mountedPatrol = MountedPatrolCard.id
+  private val warningSignals = WarningSignalsCard.id
+  private val bracken = planlessCard(BrackenCard)
   /** A Beast card whose one power is an ACTION, so it offers no battle
     * plan. */
-  private val wildAllies = CatalogNames.denizen("Wild Allies")
-  private val autumnWind = planlessCard("Autumn Wind")
+  private val wildAllies = WildAlliesCard.id
+  private val autumnWind = planlessCard(AutumnWindCard)
 
   private def lines(run: Run): Vector[NoteText.Said] = NoteText.said(
     WildMounts.id, Vector(WildMounts.swapped, WildMounts.swappedOffTurn),
@@ -167,7 +169,7 @@ class WildMountsSuite extends munit.FunSuite:
     assertEquals(lines(done), Vector.empty)
 
   test("its rewrite folds Late, after every plan's own steps at the root"):
-    val phases = WildMounts.forCatalog(catalog).contributions(
+    val phases = WildMounts.contributions(
       PowerWindow.CampaignActionEligibility).collect {
         case transform: Transform => transform.phase }
     assertEquals(phases, Vector(FoldPhase.Late))

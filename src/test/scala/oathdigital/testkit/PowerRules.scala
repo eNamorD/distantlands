@@ -14,7 +14,7 @@ object PowerRules:
   /** The note keys every production power declares, built once since it
     * walks both power catalogs: rules built with it fail a power that
     * writes a note it never declared. */
-  val declared: Option[DeclaredNotes] = Some(DeclaredNotes.of(catalog))
+  val declared: Option[DeclaredNotes] = Some(DeclaredNotes.default)
 
   /** Rules with every production walker power: the modifiers and triggers
     * of Search, Travel, Trade, Muster and the like, and the printed
@@ -26,7 +26,7 @@ object PowerRules:
     * power. */
   val withWalkerAndPhasePowers: OathRules = new OathRules(catalog,
     walkerPowerCatalog = WalkerPowerCatalog.default(catalog),
-    phasePowerCatalog = PhasePowerCatalog.default(catalog))
+    phasePowerCatalog = PhasePowerCatalog.default)
 
   /** The parked decision of a walk under [[withWalkerPowers]]. */
   val parkedUnderWalkerPowers: ParkedDecisionAssertions =
@@ -35,4 +35,4 @@ object PowerRules:
   /** The parked decision of a walk under [[withWalkerAndPhasePowers]]. */
   val parkedUnderWalkerAndPhasePowers: ParkedDecisionAssertions =
     new ParkedDecisionAssertions(catalog, WalkerPowerCatalog.default(catalog),
-      PhasePowerCatalog.default(catalog))
+      PhasePowerCatalog.default)

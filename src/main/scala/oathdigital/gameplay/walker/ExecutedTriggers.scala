@@ -1,5 +1,6 @@
 package oathdigital.gameplay.walker
 
+import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.operations.{OperationPipeline, OperationPolicy,
   OperationRun}
 import oathdigital.gameplay.powerresolver.{ContributingPower, Deferred,
@@ -23,11 +24,13 @@ private[walker] object ExecutedTriggers:
       .sortBy(ContributingPower.sortKey)
 
   /** What a trigger reads now: the held operations and the walk's state. */
-  def batch(ctx: WalkCtx): ExecutedBatch = batch(ctx.actor, ctx.state)
+  def batch(ctx: WalkCtx): ExecutedBatch =
+    batch(ctx.powers.catalog, ctx.actor, ctx.state)
 
   /** The same, for a lookup that has no walk, only the parked state. */
-  def batch(actor: PlayerId, ready: ReadyGame): ExecutedBatch =
-    ExecutedBatch(actor, Deferred.held(ready, key), ready)
+  def batch(catalog: ExecutableCatalog, actor: PlayerId, ready: ReadyGame)
+      : ExecutedBatch =
+    ExecutedBatch(catalog, actor, Deferred.held(ready, key), ready)
 
   /** Whether a batch's operations are held for its follow-ups. */
   def holds(ready: ReadyGame): Boolean = Deferred.held(ready, key).nonEmpty
@@ -37,7 +40,8 @@ private[walker] object ExecutedTriggers:
     * for an empty batch. */
   def held(ctx: WalkCtx, run: OperationRun)
       : Either[OathViolation, OperationRun] =
-    val batch = ExecutedBatch(ctx.actor, run.executed, run.state)
+    val batch = ExecutedBatch(ctx.powers.catalog, ctx.actor, run.executed,
+      run.state)
     if ctx.following || run.executed.isEmpty ||
         !of(ctx.powers).exists(_.onExecuted(batch).nonEmpty) then Right(run)
     else OperationPipeline.run(run.state, Vector(Defer(key, run.executed)),

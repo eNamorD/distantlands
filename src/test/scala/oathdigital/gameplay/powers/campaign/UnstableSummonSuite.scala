@@ -3,16 +3,17 @@ package oathdigital.gameplay.powers.campaign
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.banner.YewStaffCard
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseAmountAnswer
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Unstable Summon: a free attacker's plan that burns X secrets from the
   * Darkest Secret its user holds for X attack dice. It is the first plan
   * that asks an amount (catalog batch 7, slice 3). */
 class UnstableSummonSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Unstable Summon")
+  private val card = UnstableSummonCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
   private val onBanner =
     PositionedLocation(Location.OnBanner(Banner.DarkestSecret))
@@ -72,7 +73,7 @@ class UnstableSummonSuite extends munit.FunSuite:
     // Longbows keeps the attacker's plan decision asked.
     for b <- Vector(attackerWithSummon(3, attackerHoldsBanner = false),
         attackerWithSummon(0)) do
-      val asked = withAdviser(b, "Longbows", Orientation.FaceUp)
+      val asked = withAdviser(b, LongbowsCard, Orientation.FaceUp)
       assertEquals(commit(rules(winningDice), asked, 2).withheld(b.actor,
         ref), Some(OptionReason.Written(UnstableSummon.noBanner)))
 
@@ -82,7 +83,7 @@ class UnstableSummonSuite extends munit.FunSuite:
       attackerHoldsBanner = false)
     for holder <- Vector(Some(base.rival), None) do
       val b = on(base)(_.darkestSecret(holder, 3)
-        .relic(base.actor, "Yew Staff"))
+        .relic(base.actor, YewStaffCard))
       val done = commit(rules(winningDice), b, 2)
         .pick(b.actor, CampaignIds.attackerPlan, ref)
         .answer(b.actor, UnstableSummon.decisionId, ChooseAmountAnswer(2))

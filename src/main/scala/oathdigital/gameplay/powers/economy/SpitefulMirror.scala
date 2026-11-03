@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.economy
 
-import oathdigital.catalog.ExecutableCatalog
+import oathdigital.catalog.{Relic}
 import oathdigital.gameplay.{NoteSupport, PowerAccess, SpitefulMirrorCard}
 import oathdigital.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
 import oathdigital.gameplay.powerresolver.{Contribution, Transform}
@@ -23,16 +23,24 @@ import oathdigital.model._
   * Its line comes once the source is chosen, before the cost: "Acting as if
   * {card} is a Discord card."
   */
-final case class SpitefulMirror private (catalog: ExecutableCatalog)
-    extends SelectedModifier:
+case object SpitefulMirror extends SelectedModifier:
+  val id: PowerId = SpitefulMirrorCard.power.id
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** The record of this turn's payment. */
+  val useRef: PowerUseRef = PowerUseRef(PowerTiming.Act,
+    PowerSourceRef.Card(SpitefulMirrorCard.id), id)
+  /** "Acting as if {card} is a Discord card." */
+  val acting: NoteKey = notes.key("acting", Vector(
+    NotePart.Text("Acting as if "), NotePart.Arg(0),
+    NotePart.Text(" is a Discord card.")))
+
   import SpitefulMirror._
 
-  val cardId: RelicId = SpitefulMirrorCard.id
-  def id: PowerId = SpitefulMirror.id
+  val card: Relic = SpitefulMirrorCard
   def actions: Set[MajorActionType] =
     Set(MajorActionType.Trade, MajorActionType.Muster)
   override def cost: Cost = SpitefulMirrorCard.power.cost
-  override def noteKeys: Vector[NoteKey] = SpitefulMirror.noteKeys
 
   def effects: Map[PowerWindow, Vector[Contribution]] = Map(
     PowerWindow.TradeCost -> Vector(Transform((_, children) =>
@@ -59,18 +67,3 @@ final case class SpitefulMirror private (catalog: ExecutableCatalog)
       case DecisionOptionRef.Denizen(card) => card: CardId
       case DecisionOptionRef.Edifice(card) => card: CardId
     }.map(card => acting(PowerSourceRef.Card(cardId), NoteArg.Card(card))))
-
-object SpitefulMirror:
-  val id: PowerId = SpitefulMirrorCard.power.id
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** The record of this turn's payment. */
-  val useRef: PowerUseRef = PowerUseRef(PowerTiming.Act,
-    PowerSourceRef.Card(SpitefulMirrorCard.id), id)
-  /** "Acting as if {card} is a Discord card." */
-  val acting: NoteKey = notes.key("acting", Vector(
-    NotePart.Text("Acting as if "), NotePart.Arg(0),
-    NotePart.Text(" is a Discord card.")))
-
-  def forCatalog(catalog: ExecutableCatalog): SpitefulMirror =
-    new SpitefulMirror(catalog)

@@ -1,10 +1,14 @@
 package oathdigital.gameplay.walker
 
+import oathdigital.catalog.Denizen
+import oathdigital.gameplay.powers.action.{AlchemistCard, EldersCard,
+  MessengerCard, WolvesCard}
+import oathdigital.gameplay.powers.campaign.{HorseArchersCard, WrestlersCard}
+import oathdigital.gameplay.powers.search.ErrandBoyCard
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer, ChooseManyAnswer,
   ChooseOneAnswer}
 import oathdigital.testkit.Table.p1
-import oathdigital.testkit.CatalogNames
 import oathdigital.testkit.DecisionOptions.button
 
 /** The search's answers and narrowing, apart from the walk (global operation
@@ -13,7 +17,7 @@ import oathdigital.testkit.DecisionOptions.button
   */
 class WalkerSearchSuite extends munit.FunSuite:
   private val refused = OathViolation.InvalidEventOrder("refused")
-  private val card = CatalogNames.denizen("Horse Archers")
+  private val card = HorseArchersCard.id
   private def ref(key: String): DecisionOptionRef = DecisionOptionRef.Button(key)
   private def decide(query: DecisionQuery) = Decide("test.ask", p1, query)
   private def only(allowed: DecisionAnswer => Boolean)
@@ -121,16 +125,16 @@ class WalkerSearchSuite extends munit.FunSuite:
 
   /** A partition of `cards` into one favor and the rest secrets, as a
     * Forge splits its printed cost. */
-  private def splitting(cards: Vector[String]): Decide =
+  private def splitting(cards: Vector[Denizen]): Decide =
     decide(DecisionQuery.Partition(Vector(
       DecisionSection("favor", "Favor", 1, Some(1)),
       DecisionSection("secret", "Secret", cards.size - 1,
         Some(cards.size - 1))),
-      cards.map(name => DecisionOption.Denizen(DecisionOptionRef.Denizen(
-        CatalogNames.denizen(name))))))
+      cards.map(card => DecisionOption.Denizen(DecisionOptionRef.Denizen(
+        card.id)))))
 
-  private val threeCards = splitting(Vector("Horse Archers", "Wrestlers",
-    "Errand Boy"))
+  private val threeCards = splitting(Vector(HorseArchersCard, WrestlersCard,
+    ErrandBoyCard))
 
   test("a small partition with no surviving split is refused, by the " +
       "walk and by a search"):
@@ -149,8 +153,8 @@ class WalkerSearchSuite extends munit.FunSuite:
 
   test("a partition with more than 64 ways to place is not tried"):
     // Seven cards in two sections: 128 ways.
-    val sevenCards = splitting(Vector("Horse Archers", "Wrestlers",
-      "Errand Boy", "Alchemist", "Messenger", "Wolves", "Elders"))
+    val sevenCards = splitting(Vector(HorseArchersCard, WrestlersCard,
+      ErrandBoyCard, AlchemistCard, MessengerCard, WolvesCard, EldersCard))
     assertEquals(WalkerSearch.narrow(sevenCards, only(_ => false)),
       Right(Some(sevenCards)))
     assertEquals(WalkerSearch.reach(sevenCards, only(_ => false)),

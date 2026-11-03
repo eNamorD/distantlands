@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.poweruse
 
-import oathdigital.catalog.{Denizen, PrintedPower, SiteOnly}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower,
+  SiteOnly}
 import oathdigital.gameplay.{PowerAccess, SiteRulers}
 import oathdigital.gameplay.actions.campaign.CampaignSetup
 import oathdigital.gameplay.operations.PowerUseRules
@@ -57,7 +58,8 @@ case object CityWall extends ContributingPower with PowerUseRestriction:
 
   override def powerUseRestrictions: Vector[PowerUseRestriction] =
     Vector(this)
-  override def operationRestrictions: Vector[OperationRestriction] =
+  override def operationRestrictions(catalog: ExecutableCatalog)
+      : Vector[OperationRestriction] =
     Vector(placing)
   override val waiver: Option[Waiver] =
     Some(RulerBans.waiver(CityWallCard.id, useAsked))
@@ -82,7 +84,8 @@ case object CityWall extends ContributingPower with PowerUseRestriction:
     if !use.persistent then Some(usePlain -> useAsked)
     else Placements.byUse(ready, use).map(_ => placingPlain -> placingAsked)
 
-  def refusal(ready: ReadyGame, use: PowerUse): Option[PowerUseRefusal] =
+  def refusal(catalog: ExecutableCatalog, ready: ReadyGame, use: PowerUse)
+      : Option[PowerUseRefusal] =
     for
       ruler <- walledIn(ready, use.user)
       keys <- reasons(ready, use)

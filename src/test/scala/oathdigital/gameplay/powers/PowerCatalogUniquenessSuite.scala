@@ -19,5 +19,5 @@ class PowerCatalogUniquenessSuite extends munit.FunSuite:
       Vector.empty)
 
   test("no power id is registered twice in the phase catalog"):
-    assertEquals(repeated(PhasePowerCatalog.default(catalog).powers.map(_.id)),
+    assertEquals(repeated(PhasePowerCatalog.default.powers.map(_.id)),
       Vector.empty)

@@ -1,14 +1,16 @@
 package oathdigital.gameplay.powers.cardplay
 
+import oathdigital.gameplay.cards.{AncientCitySite, BuriedGiantSite}
 import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.action.{Enchantress, PiedPiper}
-import oathdigital.gameplay.powers.wake.HornedMask
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
+import oathdigital.gameplay.powers.action.{EldersCard, Enchantress,
+  EnchantressCard, PiedPiper, PiedPiperCard, WaysideInnCard}
+import oathdigital.gameplay.powers.campaign.{LancersCard, RainBootsCard}
+import oathdigital.gameplay.powers.wake.{HornedMask, HornedMaskCard}
 import oathdigital.gameplay.walker.LogNoted
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, PowerRules, Table}
+import oathdigital.testkit.{Look, Outcomes, PowerRules, Table}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -18,17 +20,17 @@ import oathdigital.testkit.Unwrap.accepted
   */
 class FamilyWagonArrivalsSuite extends munit.FunSuite:
   private val rules = PowerRules.withWalkerAndPhasePowers
-  private val power = FamilyWagon.forCatalog(catalog)
-  private val wagon = CatalogNames.denizen("Family Wagon")
+  private val power = FamilyWagon
+  private val wagon = FamilyWagonCard.id
   // Nomads.
-  private val elders = CatalogNames.denizen("Elders")
-  private val rainBoots = CatalogNames.denizen("Rain Boots")
-  private val lancers = CatalogNames.denizen("Lancers")
+  private val elders = EldersCard.id
+  private val rainBoots = RainBootsCard.id
+  private val lancers = LancersCard.id
   /** Site-only: Horned Mask takes it as a facedown adviser. */
-  private val inn = CatalogNames.denizen("Wayside Inn")
-  private val mask = CatalogNames.relic("Horned Mask")
-  private val enchantress = CatalogNames.denizen("Enchantress")
-  private val piper = CatalogNames.denizen("Pied Piper")
+  private val inn = WaysideInnCard.id
+  private val mask = HornedMaskCard.id
+  private val enchantress = EnchantressCard.id
+  private val piper = PiedPiperCard.id
 
   /** p1 starts the power `id` from `source`. */
   private def started(ready: ReadyGame, id: PowerId,
@@ -51,10 +53,10 @@ class FamilyWagonArrivalsSuite extends munit.FunSuite:
   test("Horned Mask: the holder has no limit, so the Mask takes the " +
       "denizen without a discard, and Family Wagon buries it, since it " +
       "arrives facedown"):
-    val ready = Table.start.turn(p1, Phase.Wake).pawn(p1, "Ancient City")
+    val ready = Table.start.turn(p1, Phase.Wake).pawn(p1, AncientCitySite)
       .relic(p1, mask).adviser(p1, wagon).adviser(p1, elders)
       .adviser(p1, rainBoots).adviser(p1, lancers)
-      .denizen(inn, at = "Ancient City").ready
+      .denizen(inn, at = AncientCitySite).ready
     val asked = started(ready, HornedMask.id, DecisionOptionRef.Relic(mask))
     val done = answered(asked, HornedMask.denizenDecisionId,
       DecisionOptionRef.Denizen(inn))
@@ -85,9 +87,9 @@ class FamilyWagonArrivalsSuite extends munit.FunSuite:
   test("Pied Piper moved to a Family Wagon holder is buried; the favor is " +
       "still taken, its secret goes to the active player, and Family " +
       "Wagon's line comes first"):
-    val ready = Table.start.turn(p1, Phase.Act).pawn(p1, "Ancient City")
+    val ready = Table.start.turn(p1, Phase.Act).pawn(p1, AncientCitySite)
       .adviser(p1, piper).secrets(p1, 1)
-      .pawn(p2, "Buried Giant").adviser(p2, wagon).favor(p2, 3).ready
+      .pawn(p2, BuriedGiantSite).adviser(p2, wagon).favor(p2, 3).ready
     val asked = started(ready, PiedPiper.id, DecisionOptionRef.Denizen(piper))
     val done = answered(asked, PiedPiper.decisionId,
       DecisionOptionRef.Player(p2))

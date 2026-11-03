@@ -1,6 +1,5 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.powerresolver.ContributingPower
 
 /** The battle plans that rewrite the Campaign around them (catalog batch
@@ -11,6 +10,6 @@ import oathdigital.gameplay.powerresolver.ContributingPower
   * present.
   */
 object PlanRewrites:
-  def forCatalog(catalog: ExecutableCatalog): Vector[ContributingPower] =
-    Vector(PeaceEnvoy, WildMounts.forCatalog(catalog), CarefulPlans,
-      HeartsAndMinds.forCatalog(catalog))
+  val all: Vector[ContributingPower] =
+    Vector(PeaceEnvoy, WildMounts, CarefulPlans,
+      HeartsAndMinds)

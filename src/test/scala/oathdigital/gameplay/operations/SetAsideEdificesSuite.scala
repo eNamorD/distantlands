@@ -1,7 +1,9 @@
 package oathdigital.gameplay.operations
 
+import oathdigital.gameplay.cards.AncientCitySite
+import oathdigital.gameplay.powers.setup.GreatMarketCard
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
 
@@ -9,12 +11,12 @@ import oathdigital.testkit.Unwrap.accepted
   * in discard order, and not the edifice deck. */
 class SetAsideEdificesSuite extends munit.FunSuite:
   private val executor = new OperationExecutor()
-  private val market = CatalogNames.edifice("Bandit Market")
-  private val site = CatalogNames.site("Ancient City")
+  private val market = GreatMarketCard.id
+  private val site = AncientCitySite.id
 
   /** The quiet table with Bandit Market, ruined, at Ancient City. */
   private val ruinedMarketAtAncientCity: ReadyGame = Table.start
-    .edifice("Bandit Market", EdificeSide.Ruined, at = "Ancient City").ready
+    .edifice(GreatMarketCard, EdificeSide.Ruined, at = AncientCitySite).ready
 
   private def discardMarket(ready: ReadyGame) = executor.execute(ready,
     Discard.RuinedEdifice(market, PositionedLocation(Location.Site(site)),

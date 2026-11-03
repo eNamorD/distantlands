@@ -2,8 +2,11 @@ package oathdigital.gameplay.powers.wake
 
 import oathdigital.application.{GameCommand, ParkedServiceFixture}
 import oathdigital.gameplay.OathRules
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite}
 import oathdigital.gameplay.phases.PhaseMenu
 import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture}
+import oathdigital.gameplay.powers.campaign.{RainBootsCard, WrestlersCard}
 import oathdigital.gameplay.setup.{FirstGameSetupFixture, SetupProcedure}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{ParkedDecisionAssertions, WalkerCompleted,
@@ -18,11 +21,11 @@ import oathdigital.testkit.Unwrap.accepted
 class HungerSuite extends munit.FunSuite:
   import PowerFixture.actor
 
-  private val phasePowers = PhasePowerCatalog.default(catalog)
+  private val phasePowers = PhasePowerCatalog.default
   private val rules = new OathRules(catalog, phasePowerCatalog = phasePowers)
   private val parked = new ParkedDecisionAssertions(catalog,
     phasePowerCatalog = phasePowers)
-  private val hunger = Hunger.forCatalog(catalog)
+  private val hunger = Hunger
   private val card = hunger.cardId
   /** p2 wakes after p1's Rest; p3 is the third player. */
   private val (next, third) = (p2, p3)
@@ -32,15 +35,15 @@ class HungerSuite extends munit.FunSuite:
   private def staged(orientation: Orientation = Orientation.FaceUp): ReadyGame =
     Table.start
       .adviser(p2, card, facedown = orientation == Orientation.FaceDown)
-      .adviser(p2, "Wrestlers")
-      .adviser(p3, "Rain Boots")
-      .pawn(p2, at = "Broken Peaks").pawn(p3, at = "Broken Peaks")
+      .adviser(p2, WrestlersCard)
+      .adviser(p3, RainBootsCard)
+      .pawn(p2, at = BrokenPeaksSite).pawn(p3, at = BrokenPeaksSite)
       .ready
 
   /** p3's Rain Boots with 1 favor and 2 secrets on it. Set on the
     * parked state, since the actor's Rest returns every card's tokens. */
   private def stocked(ready: ReadyGame)(using munit.Location): ReadyGame =
-    Table.from(ready).tokens("Rain Boots", favor = 1, secrets = 2).ready
+    Table.from(ready).tokens(RainBootsCard, favor = 1, secrets = 2).ready
 
   private def rested(ready: ReadyGame) = accepted(
     rules.startWalker(Ready(ready), PhaseTransitionRef.BeginRest, actor))
@@ -114,9 +117,9 @@ class HungerSuite extends munit.FunSuite:
     // p2 wakes alone at Broken Peaks, holding only Hunger. The site's two
     // secrets give p2 a Wake option, so the Wake goes on once Hunger is done.
     val alone = Table.start
-      .pawn(Table.p1, at = "Ancient City").pawn(p2, at = "Broken Peaks")
-      .pawn(p3, at = "Buried Giant").adviser(p2, card)
-      .siteTokens("Broken Peaks", secrets = 2)
+      .pawn(Table.p1, at = AncientCitySite).pawn(p2, at = BrokenPeaksSite)
+      .pawn(p3, at = BuriedGiantSite).adviser(p2, card)
+      .siteTokens(BrokenPeaksSite, secrets = 2)
       .ready
     val t = rested(alone)
     parked.assertMenuParked(t.state, PhaseMenu.Menu.Wake, next)

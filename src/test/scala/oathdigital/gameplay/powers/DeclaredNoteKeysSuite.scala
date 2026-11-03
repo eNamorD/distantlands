@@ -20,19 +20,19 @@ class DeclaredNoteKeysSuite extends munit.FunSuite:
   private val file: Path = Paths.get("src/test/resources/notes/declared-keys.txt")
   private val writing = sys.env.get("NOTE_KEYS_SNAPSHOT").contains("write")
 
-  /** One entry per catalog listing. Six powers are both a contributing
+  /** One entry per catalog listing. Eight powers are both a contributing
     * power and a phase power, so they are listed twice. */
   private val listings: Vector[(PowerId, Vector[NoteKey])] =
     WalkerPowerCatalog.default(catalog).powers.map(power =>
       power.id -> power.noteKeys) ++
-    PhasePowerCatalog.default(catalog).powers.map(power =>
+    PhasePowerCatalog.default.powers.map(power =>
       power.id -> power.noteKeys) ++ RuleNotes.all
 
   /** One entry per power, from the union the Game Log and the walker read,
     * so this fixture records what they see and not a second derivation of
     * it. A power listed in both catalogs has one declared set there. */
   private val declared: Vector[(PowerId, Vector[NoteKey])] =
-    DeclaredNotes.of(catalog).keys.toVector
+    DeclaredNotes.default.keys.toVector
 
   /** A key's sentence, as the parts that render it: text as itself, an
     * argument as `{index}`, a plural as `{index?one|many}`. A key's name
@@ -68,7 +68,7 @@ class DeclaredNoteKeysSuite extends munit.FunSuite:
     assertEquals(twice.keys.toVector.map(_.value).sorted, Vector(
       "denizen.assassin", "denizen.insomnia", "denizen.pied-piper",
       "denizen.silver-tongue", "denizen.vow-of-obedience",
-      "denizen.vow-of-poverty"))
+      "denizen.vow-of-poverty", "edifice.e10.intact", "edifice.e25.intact"))
     twice.foreach: (id, entries) =>
       val each = entries.map(_._2.map(key =>
         s"${key.name} = ${wording(key.template)}").sorted).distinct
@@ -83,7 +83,7 @@ class DeclaredNoteKeysSuite extends munit.FunSuite:
       "the registry knows an id it built itself")
     assert(!ProcedureNotes.writes(PowerId("denizen.wolves")),
       "a power is not a procedure")
-    val union = DeclaredNotes.of(catalog)
+    val union = DeclaredNotes.default
     ProcedureRef.all.foreach: procedure =>
       assert(union.knows(ProcedureNotes.id(procedure)),
         s"the union covers ${procedure.key}")

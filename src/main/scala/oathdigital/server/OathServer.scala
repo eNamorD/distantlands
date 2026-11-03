@@ -56,14 +56,6 @@ object OathServer:
       Boolean.box(config.publicBaseUrl.nonEmpty),
       config.databasePath.toAbsolutePath.normalize.toString
     )
-    if config.mode == ServerMode.TrustedAlpha &&
-        config.authenticatedRouteMount.isDefined then
-      system.log.warn(
-        "Authenticated route options are ignored in trusted-alpha mode; " +
-          "session cookie name and authenticated public origin apply to " +
-          "development mode only"
-      )
-
     ServerRuntime.open(config.databasePath) match
       case Left(error) =>
         system.log.error("Server startup failed: {}", error)

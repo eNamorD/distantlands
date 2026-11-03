@@ -2,26 +2,27 @@ package oathdigital.gameplay.powers.economy
 
 import oathdigital.gameplay.ModifierPlay
 import oathdigital.gameplay.actions.economy.TradeProcedure
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
+import oathdigital.gameplay.powers.campaign.{MercenariesCard, WrestlersCard}
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, EconomyActions,
-  Look, Outcomes, PhasePowerHarness, PowerRules, Table}
+import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look, Outcomes,
+  PhasePowerHarness, PowerRules, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.accepted
 
 class DefameSuite extends munit.FunSuite:
-  private val defame = CatalogNames.denizen("Defame")
-  private val power = Defame.forCatalog(catalog)
+  private val defame = DefameCard.id
+  private val power = Defame
   private val modifiers = Vector(Defame.id)
-  private val home = CatalogNames.site("Ancient City")
+  private val home = AncientCitySite.id
   /** A plain Discord denizen to Trade with. */
-  private val mercenaries = CatalogNames.denizen("Mercenaries")
+  private val mercenaries = MercenariesCard.id
   /** A plain Order denizen to Trade with instead. */
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
+  private val wrestlers = WrestlersCard.id
   private val rules = PowerRules.withWalkerPowers
   private val parked = PowerRules.parkedUnderWalkerPowers
 

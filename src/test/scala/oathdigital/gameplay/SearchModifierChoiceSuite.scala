@@ -2,15 +2,16 @@ package oathdigital.gameplay
 
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
 import oathdigital.gameplay.actions.search.SearchProcedure
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powerresolver.ModifierPicks
 import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.cardplay.WildCry
-import oathdigital.gameplay.powers.search.NewsFromAfar
+import oathdigital.gameplay.powers.cardplay.{WildCry, WildCryCard}
+import oathdigital.gameplay.powers.search.{ErrandBoyCard, NewsFromAfar,
+  NewsFromAfarCard}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Outcomes, ParkedNode, PowerRules,
-  Table}
+import oathdigital.testkit.{Outcomes, ParkedNode, PowerRules, Table}
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
 
@@ -21,12 +22,12 @@ class SearchModifierChoiceSuite extends munit.FunSuite:
   private val walkerPowers = WalkerPowerCatalog.default(catalog)
   private val search = ModifierPicks.decisionId(
     PowerWindow.SearchModifierSelection)
-  private val news = CatalogNames.denizen("News from Afar")
+  private val news = NewsFromAfarCard.id
 
   /** p1 at Ancient City with `supply` Supply and `favor` favor, News from
     * Afar faceup. */
   private def withNews(supply: Int, favor: Int): ReadyGame =
-    Table.start.pawn(p1, "Ancient City").supply(p1, supply).favor(p1, favor)
+    Table.start.pawn(p1, AncientCitySite).supply(p1, supply).favor(p1, favor)
       .adviser(p1, news).ready
 
   private def started(ready: ReadyGame): OathTransition =
@@ -55,7 +56,7 @@ class SearchModifierChoiceSuite extends munit.FunSuite:
       DecisionOption.Priced(newsOption, OptionPrice(favor = 2))))
 
   test("with no modifier to pick, a Search starts on its source"):
-    val begun = started(Table.start.pawn(p1, "Ancient City").ready)
+    val begun = started(Table.start.pawn(p1, AncientCitySite).ready)
     assertEquals(parked(begun.state).decisionId,
       SearchProcedure.sourceDecisionId)
 
@@ -80,10 +81,10 @@ class SearchModifierChoiceSuite extends munit.FunSuite:
       .find(_.player == p1).map(_.board.favor), Some(1))
 
   test("a facedown-adviser play offers the Search modifiers first"):
-    val wildCry = CatalogNames.denizen("Wild Cry")
-    val ready = Table.start.pawn(p1, "Ancient City")
-      .denizen(wildCry, at = "Ancient City")
-      .adviser(p1, "Errand Boy", facedown = true).ready
+    val wildCry = WildCryCard.id
+    val ready = Table.start.pawn(p1, AncientCitySite)
+      .denizen(wildCry, at = AncientCitySite)
+      .adviser(p1, ErrandBoyCard, facedown = true).ready
     val begun = accepted(rules.startWalker(Ready(ready),
       ActionRef.PlayFacedownAdviser, p1))
     assertEquals(parked(begun.state).decisionId, search)

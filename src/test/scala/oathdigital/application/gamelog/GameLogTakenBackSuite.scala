@@ -1,8 +1,10 @@
 package oathdigital.application.gamelog
 
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite}
 import oathdigital.testkit.MenuPlay
 import oathdigital.application.{GameAccepted, GameApplicationService,
-  GameCommand, ParkedServiceFixture, TreeDecision}
+  ParkedServiceFixture, TreeDecision}
 import oathdigital.gameplay.actions.negotiation.NegotiationDeal
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.{AcceptDeal, DeclineDeal,
@@ -12,6 +14,7 @@ import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, present}
 import LogScripts.formatter
+import oathdigital.testkit.Commands
 
 /** What a reader sees of taken-back moves (undo design, "Game Log"). */
 class GameLogTakenBackSuite extends munit.FunSuite:
@@ -30,7 +33,7 @@ class GameLogTakenBackSuite extends munit.FunSuite:
     val moved = ParkedServiceFixture.travelToPawnOf(service, "g", 0L, p1, p3)
       .picked
     val before = log(service, "g", p2)
-    accepted(service.handle("g", moved.nextSequence, GameCommand.Undo(p1)))
+    accepted(service.handle("g", moved.nextSequence, Commands.undo(p1)))
     val after = log(service, "g", p2)
     val voided = after.filter(_.sequence < moved.nextSequence)
       .filter(_.takenBack.nonEmpty)
@@ -47,10 +50,10 @@ class GameLogTakenBackSuite extends munit.FunSuite:
     val second = ParkedServiceFixture.travelToPawnOf(service, "g",
       first.picked.nextSequence, p1, p2)
     val once = accepted(service.handle("g", second.picked.nextSequence,
-      GameCommand.Undo(p1)))
+      Commands.undo(p1)))
     val twice = accepted(service.handle("g", once.nextSequence,
-      GameCommand.Undo(p1)))
-    accepted(service.handle("g", twice.nextSequence, GameCommand.Undo(p1)))
+      Commands.undo(p1)))
+    accepted(service.handle("g", twice.nextSequence, Commands.undo(p1)))
     val groups = log(service, "g", p1).flatMap(_.takenBack).map(_.group)
       .distinct
     assertEquals(groups.size, 1)
@@ -62,9 +65,9 @@ class GameLogTakenBackSuite extends munit.FunSuite:
       game.accepted.nextSequence,
       ParkedServiceFixture.holderPicksLeader(park, park.secondLeader)))
     val holderUndone = accepted(game.service.handle("tie",
-      answered.nextSequence, GameCommand.Undo(park.holder)))
+      answered.nextSequence, Commands.undo(park.holder)))
     accepted(game.service.handle("tie", holderUndone.nextSequence,
-      GameCommand.Undo(park.mover)))
+      Commands.undo(park.mover)))
     val headers = log(game.service, "tie", park.mover).flatMap(header).distinct
     assertEquals(headers, Vector(
       s"${park.mover.value} and ${park.holder.value} took back the " +
@@ -81,7 +84,7 @@ class GameLogTakenBackSuite extends munit.FunSuite:
       game.accepted.nextSequence,
       ParkedServiceFixture.holderPicksLeader(park, park.secondLeader)))
     val undone = accepted(game.service.handle("tie", first.nextSequence,
-      GameCommand.Undo(park.holder)))
+      Commands.undo(park.holder)))
     accepted(game.service.handle("tie", undone.nextSequence,
       ParkedServiceFixture.holderPicksLeader(park, park.mover)))
     def reading(entries: Vector[LogEntry], from: Long) = entries
@@ -95,9 +98,9 @@ class GameLogTakenBackSuite extends munit.FunSuite:
   test("a deal declined, taken back and then agreed reads as agreed at once"):
     // p1 and p2 share Ancient City and p3 stands apart at Buried Giant, so p1
     // negotiates with p2 alone; p1 proposes that p2 receives 1 favor.
-    val table = Table.start.pawn(p1, "Ancient City").pawn(p2, "Ancient City")
-      .pawn(p3, "Buried Giant").banditsRefilled
-    def deal(by: PlayerId, answer: DecisionAnswer) = GameCommand.ResolveWalker(
+    val table = Table.start.pawn(p1, AncientCitySite).pawn(p2, AncientCitySite)
+      .pawn(p3, BuriedGiantSite).banditsRefilled
+    def deal(by: PlayerId, answer: DecisionAnswer) = Commands.resolveWalker(
       by, TreeDecision(NegotiationDeal.dealDecisionId, answer))
     def agreedAfter(service: GameApplicationService, gameId: String,
         at: Long): GameAccepted =
@@ -117,7 +120,7 @@ class GameLogTakenBackSuite extends munit.FunSuite:
     val declined = accepted(service.handle("g", proposal.nextSequence,
       deal(p2, DeclineDeal)))
     val undone = accepted(service.handle("g", declined.nextSequence,
-      GameCommand.Undo(p2)))
+      Commands.undo(p2)))
     agreedAfter(service, "g", undone.nextSequence)
     def reading(entries: Vector[LogEntry], from: Long) = entries
       .filter(entry => entry.sequence >= from && entry.takenBack.isEmpty)
@@ -128,13 +131,13 @@ class GameLogTakenBackSuite extends munit.FunSuite:
   test("a Wake whose only step was taken back still reads as quiet"):
     // No other pawn stands at Broken Peaks, which would block the take.
     val table = Table.start.turn(p2, Phase.Wake)
-      .pawn(p1, "Ancient City").pawn(p2, "Broken Peaks")
-      .pawn(p3, "Buried Giant").siteTokens("Broken Peaks", secrets = 2)
+      .pawn(p1, AncientCitySite).pawn(p2, BrokenPeaksSite)
+      .pawn(p3, BuriedGiantSite).siteTokens(BrokenPeaksSite, secrets = 2)
       .banditsRefilled
     val (service, _) = table.service()
     val taken = accepted(service.handle("g", 0L, MenuPlay.starting(p2, ActionRef.TakeWealth, Vector(DecisionOptionRef.Button("secret")))))
     val undone = accepted(service.handle("g", taken.nextSequence,
-      GameCommand.Undo(p2)))
+      Commands.undo(p2)))
     accepted(service.handle("g", undone.nextSequence,
       MenuPlay.starting(p2, PhaseTransitionRef.EndWake)))
     val live = log(service, "g", p2).filter(_.sequence >= undone.nextSequence)
@@ -147,7 +150,7 @@ class GameLogTakenBackSuite extends munit.FunSuite:
     val first = accepted(game.service.handle("tie", game.accepted.nextSequence,
       ParkedServiceFixture.holderPicksLeader(park, park.secondLeader)))
     val undone = accepted(game.service.handle("tie", first.nextSequence,
-      GameCommand.Undo(park.holder)))
+      Commands.undo(park.holder)))
     accepted(game.service.handle("tie", undone.nextSequence,
       ParkedServiceFixture.holderPicksLeader(park, park.secondLeader)))
     val entries = log(game.service, "tie", park.holder)

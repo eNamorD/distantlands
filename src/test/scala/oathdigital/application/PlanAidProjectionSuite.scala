@@ -1,12 +1,13 @@
 package oathdigital.application
 
 import oathdigital.gameplay.actions.campaign.CampaignIds
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.campaign.ShieldWall
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
 import oathdigital.protocol.projection._
-import oathdigital.testkit.{Dice, MenuPlay, Table}
+import oathdigital.testkit.{Commands, Dice, MenuPlay, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -20,7 +21,7 @@ class PlanAidProjectionSuite extends munit.FunSuite:
   private val shieldWall: DecisionOptionRef =
     DecisionOptionRef.Denizen(ShieldWall.cardId)
   private val table: Table = Table.start.imperial(p2, p3)
-    .turn(p1, Phase.Act).pawn(p3, at = "Ancient City")
+    .turn(p1, Phase.Act).pawn(p3, at = AncientCitySite)
     .boardWarbands(p1, 5).boardWarbands(p3, 2).favor(p2, 2)
     .adviser(p2, ShieldWall.cardId).darkestSecret(Some(p2), 1)
     .oathkeeper(Some(p3))
@@ -38,7 +39,7 @@ class PlanAidProjectionSuite extends munit.FunSuite:
     val started = accepted(service.handle(gameId, 0L,
       MenuPlay.starting(p1, ActionRef.Campaign)))
     (service, accepted(service.handle(gameId, started.nextSequence,
-      GameCommand.ResolveWalker(p1, TreeDecision(CampaignIds.force,
+      Commands.resolveWalker(p1, TreeDecision(CampaignIds.force,
         ChooseAmountAnswer(4))))))
 
   test("an ally sees what they may offer and what they hold"):
@@ -58,9 +59,9 @@ class PlanAidProjectionSuite extends munit.FunSuite:
     val offer = AidOffer(plans = Vector(shieldWall),
       amounts = AidAmounts(favor = 1))
     val saved = accepted(service.handle(gameId, at.nextSequence,
-      GameCommand.SavePlanAid(p2, offer)))
+      Commands.savePlanAid(p2, offer)))
     val picked = accepted(service.handle(gameId, saved.nextSequence,
-      GameCommand.ResolveWalker(p3, TreeDecision(CampaignIds.defenderPlan,
+      Commands.resolveWalker(p3, TreeDecision(CampaignIds.defenderPlan,
         ChooseOneAnswer(shieldWall)))))
     val prompt = view(picked, p2).planAidPrompt.get
     val key = s"denizen:${ShieldWall.cardId.value}"

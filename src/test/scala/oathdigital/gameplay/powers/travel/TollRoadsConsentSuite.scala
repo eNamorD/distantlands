@@ -1,10 +1,8 @@
 package oathdigital.gameplay.powers.travel
 
 import oathdigital.gameplay.powers.{NoteText, PayOrAsk, PowerFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, PlacementPicks,
-  Table}
+import oathdigital.testkit.{Look, Outcomes, PlacementPicks, Table}
 import oathdigital.testkit.Unwrap.{accepted, present}
 
 /** Toll Roads' pay-or-ask step (consent design, "Toll and penalty steps",
@@ -14,7 +12,7 @@ class TollRoadsConsentSuite extends munit.FunSuite:
   import TravelFixture._
 
   private val rival = Table.p2
-  private val power = TollRoads.forCatalog(catalog)
+  private val power = TollRoads
   private val card = PowerSourceRef.Card(TollRoadsCard.id)
   private val free = TollRoads.free(coast)
   private val key = ConsentKey(TollRoads.id, actor, TollRoads.decisionId, free)
@@ -24,7 +22,7 @@ class TollRoadsConsentSuite extends munit.FunSuite:
   /** Toll Roads at the Provinces' plains; `rival` rules it and the coast.
     * The actor, at the Cradle's plains with 1 favor, travels to the coast. */
   private val rivalRules: ReadyGame =
-    on(board(supply = 7))(_.denizen(CatalogNames.denizen("Toll Roads"),
+    on(board(supply = 7))(_.denizen(TollRoadsCard.id,
       at = provincePlains).favor(actor, 1)
       .warbandsAt(provincePlains, rival, 1).warbandsAt(coast, rival, 1))
 

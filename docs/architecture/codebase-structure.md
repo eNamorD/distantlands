@@ -77,9 +77,10 @@ python3 scripts/check-architecture.py
 ## Shared protocol and adapter ports
 
 Shared protocol types are wire DTOs, not domain authority. The server derives
-the actor from a development selector, an authenticated membership or a
-trusted-alpha seat cookie, maps the actorless intent to
-`application.GameCommand`, and invokes gameplay. Projection
+the actor through an `ActorResolution` (a development selector, a trusted-alpha
+seat cookie, or a session's membership once X6 issues sessions), maps the
+actorless intent to a `PlayerIntent`, binds it as `GameCommand.Issued(actor,
+intent)`, and invokes gameplay through the one `GameGateway`. Projection
 DTOs are assembled by application collaborators and decoded by the frontend.
 
 Application-owned interfaces include `EventStreamRepository`,
@@ -126,11 +127,23 @@ gameplay.
 1. Verify the catalog handler ID and its `RuleSourceIndex` source.
 2. Move the card object out of `catalog/holding/` into the power's file. Keep
    its `PrintedPower`, and keep the card listed in
-   `gameplay/cards/NewFoundations.scala`.
-3. Write the power. A `ContributingPower` declares `contributions` by
-   `PowerWindow`: `Transform`, `Restriction`, `OptionRestriction`, `Offer` or
-   `OfferReroll`. A `PhasePower` is a WAKE, ACTION or REST power used as an
-   action.
+   `gameplay/cards/NewFoundations.scala`. The 24 site objects are the
+   exception: all of them live in `gameplay/cards` (`HomelandsAndPlains.scala`
+   and `PoweredSites.scala`), and a site power imports its site from there.
+3. Write the power as a `case object` that names its card object: a
+   `SelectedModifier` states `card`, a plan discarded at the end states
+   `card`, a `PaidAction` takes the printed power. A `ContributingPower`
+   declares `contributions` by `PowerWindow`: `Transform`, `Restriction`,
+   `OptionRestriction`, `Offer` or `OfferReroll`. A `PhasePower` is a WAKE,
+   ACTION or REST power used as an action. A power that looks other cards
+   up (another card's suit through `EffectiveSuit`, a site's capacity, a
+   relic's defense) reads the catalog the walker hands it: `ctx.catalog` in
+   a contribution, the `catalog` of `build` and `usable` in a phase power,
+   or the one its hook carries (`operationRestrictions`,
+   `PowerUseRestriction.refusal`, `AdviserArrivals`, `ExecutedBatch`,
+   `PlanContext`). It never holds one: `scripts/check-architecture.py`
+   refuses a `catalog: ExecutableCatalog` constructor parameter and a
+   `forCatalog` constructor under `gameplay/powers`.
 4. Register it in `WalkerPowerCatalog` or `PhasePowerCatalog`, or both.
    Registration marks the handler implemented (`PowerImplementationStatus`).
 5. Declare its Game Log keys as `noteKeys`. `DeclaredNotes` refuses a note

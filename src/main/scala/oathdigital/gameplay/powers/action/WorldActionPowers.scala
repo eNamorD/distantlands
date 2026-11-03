@@ -1,6 +1,5 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.powerresolver.PhasePower
 
 /** The phase powers of catalog batch 3's slice 3c and catalog batch 4's
@@ -10,17 +9,12 @@ import oathdigital.gameplay.powerresolver.PhasePower
   * always present.
   */
 object WorldActionPowers:
-  def forCatalog(catalog: ExecutableCatalog): Vector[PhasePower] =
+  val all: Vector[PhasePower] =
     Vector[PhasePower](Storyteller, Firebrand, Levelers, MemoryOfHome,
       PlagueEngines, BanditPaymaster, TerrorSpells, AncientBinding, Convoys,
-      TheRedSeer) ++
-      Vector(MemoryOfNature.forCatalog(catalog)) ++
-      Vector(BallotBox.forCatalog(catalog)) ++
-      Vector(DarkEnforcer.forCatalog(catalog)) ++
-      Vector(TamingCharm.forCatalog(catalog)) ++
-      Vector(GreatFeast.forCatalog(catalog)) ++
-      Vector(RovingTerror.forCatalog(catalog)) ++
-      Vector(GiantPython.forCatalog(catalog)) ++
-      Vector(SingingMask.forCatalog(catalog)) ++
-      Vector(WildAllies.forCatalog(catalog)) ++
-      Vector(Captains.forCatalog(catalog))
+      TheRedSeer, MemoryOfNature,
+      BallotBox, DarkEnforcer,
+      TamingCharm, GreatFeast,
+      RovingTerror, GiantPython,
+      SingingMask, WildAllies,
+      Captains)

@@ -1,15 +1,18 @@
 package oathdigital.application
 
+import oathdigital.gameplay.cards.{AncientCitySite, FairIsleSite}
 import oathdigital.testkit.MenuPlay
 import oathdigital.gameplay.ModifierPlay
-import oathdigital.gameplay.powers.economy.GolemLegions
-import oathdigital.gameplay.powers.recover.RelicWorship
-import oathdigital.gameplay.powers.travel.Tents
+import oathdigital.gameplay.powers.economy.{GolemLegions, GolemLegionsCard}
+import oathdigital.gameplay.powers.recover.{CatacombsCard, RelicWorship,
+  RelicWorshipCard}
+import oathdigital.gameplay.powers.travel.{Tents, TentsCard}
 import oathdigital.model._
 import oathdigital.model.OathEvent.StepTakenBack
 import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.accepted
+import oathdigital.testkit.Commands
 
 /** Taking back command batches through the service (undo design,
   * "Rulings"). */
@@ -37,7 +40,7 @@ class UndoServiceSuite extends munit.FunSuite:
     val travel = ParkedServiceFixture.travelToPawnOf(service, "g", 0L, p1, p3)
     val moved = travel.picked
     val undone = accepted(service.handle("g", moved.nextSequence,
-      GameCommand.Undo(p1)))
+      Commands.undo(p1)))
     assertEquals(undone.state, travel.started.state)
     assertEquals(undone.events, Vector(StepTakenBack(
       travel.started.nextSequence, moved.nextSequence, p1)))
@@ -55,24 +58,24 @@ class UndoServiceSuite extends munit.FunSuite:
     val second = ParkedServiceFixture.travelToPawnOf(service, "g",
       first.picked.nextSequence, p1, p2)
     val once = accepted(service.handle("g", second.picked.nextSequence,
-      GameCommand.Undo(p1)))
+      Commands.undo(p1)))
     assertEquals(once.state, second.started.state)
     val twice = accepted(service.handle("g", once.nextSequence,
-      GameCommand.Undo(p1)))
+      Commands.undo(p1)))
     assertEquals(twice.state, first.picked.state)
 
   test("only the batch's issuer may take it back"):
     val (service, repository) = table.service()
     val moved = ParkedServiceFixture.travelToPawnOf(service, "g", 0L, p1, p3)
       .picked
-    assertEquals(service.handle("g", moved.nextSequence, GameCommand.Undo(p2)),
+    assertEquals(service.handle("g", moved.nextSequence, Commands.undo(p2)),
       rejected(OathViolation.UndoNotIssuer(p2, p1)))
     assertEquals(repository.load("g").map(_.map(_.nextSequence)),
       Right(Some(moved.nextSequence)))
 
   test("with nothing taken, there is nothing to undo"):
     val (service, repository) = table.service()
-    assertEquals(service.handle("g", 0L, GameCommand.Undo(p1)),
+    assertEquals(service.handle("g", 0L, Commands.undo(p1)),
       rejected(OathViolation.NothingToUndo))
     assertEquals(repository.load("g"), Right(None))
 
@@ -80,7 +83,7 @@ class UndoServiceSuite extends munit.FunSuite:
     val park = ParkedServiceFixture.oathkeeperTiePark("tie")
     val game = park.game
     val undone = accepted(game.service.handle("tie",
-      game.accepted.nextSequence, GameCommand.Undo(park.mover)))
+      game.accepted.nextSequence, Commands.undo(park.mover)))
     assertAtTravelDestination(undone.state)
 
   test("an off-turn issuer takes back their answer, then the actor theirs"):
@@ -90,13 +93,13 @@ class UndoServiceSuite extends munit.FunSuite:
       game.accepted.nextSequence,
       ParkedServiceFixture.holderPicksLeader(park, park.secondLeader)))
     assertEquals(game.service.handle("tie", answered.nextSequence,
-      GameCommand.Undo(park.mover)),
+      Commands.undo(park.mover)),
       rejected(OathViolation.UndoNotIssuer(park.mover, park.holder)))
     val holderUndone = accepted(game.service.handle("tie",
-      answered.nextSequence, GameCommand.Undo(park.holder)))
+      answered.nextSequence, Commands.undo(park.holder)))
     assertEquals(holderUndone.state, game.accepted.state)
     val moverUndone = accepted(game.service.handle("tie",
-      holderUndone.nextSequence, GameCommand.Undo(park.mover)))
+      holderUndone.nextSequence, Commands.undo(park.mover)))
     assertAtTravelDestination(moverUndone.state)
 
   test("a marker that does not name the latest live batch fails replay"):
@@ -113,51 +116,51 @@ class UndoServiceSuite extends munit.FunSuite:
       moved.nextSequence)
 
   test("Undo takes back a Travel modifier pick, and then the start"):
-    val withTents = table.pawn(p1, "Ancient City").adviser(p1, "Tents")
+    val withTents = table.pawn(p1, AncientCitySite).adviser(p1, TentsCard)
       .favor(p1, 1)
     val (service, _) = withTents.service()
     val started = accepted(service.handle("g", 0L,
       ParkedServiceFixture.startTravel(p1)))
     val picked = accepted(service.handle("g", started.nextSequence,
-      GameCommand.ResolveWalker(p1, TreeDecision("travel.modifiers",
+      Commands.resolveWalker(p1, TreeDecision("travel.modifiers",
         ModifierPlay.pick(Tents.id)))))
     val unpicked = accepted(service.handle("g", picked.nextSequence,
-      GameCommand.Undo(p1)))
+      Commands.undo(p1)))
     assertEquals(unpicked.state, started.state)
     val undone = accepted(service.handle("g", unpicked.nextSequence,
-      GameCommand.Undo(p1)))
+      Commands.undo(p1)))
     assertEquals(undone.state, withTents.phaseMenuParked.state)
 
   test("Undo takes back a Muster modifier pick, and then the start"):
     // No card stands at p1's site, so Start waits for Golem Legions.
-    val withGolem = table.adviser(p1, "Golem Legions")
+    val withGolem = table.adviser(p1, GolemLegionsCard)
     val (service, _) = withGolem.service()
     val started = accepted(service.handle("g", 0L,
       MenuPlay.starting(p1, ActionRef.Muster)))
     val picked = accepted(service.handle("g", started.nextSequence,
-      GameCommand.ResolveWalker(p1, TreeDecision("muster.modifiers",
+      Commands.resolveWalker(p1, TreeDecision("muster.modifiers",
         ModifierPlay.pick(GolemLegions.id)))))
     val unpicked = accepted(service.handle("g", picked.nextSequence,
-      GameCommand.Undo(p1)))
+      Commands.undo(p1)))
     assertEquals(unpicked.state, started.state)
     val undone = accepted(service.handle("g", unpicked.nextSequence,
-      GameCommand.Undo(p1)))
+      Commands.undo(p1)))
     assertEquals(undone.state, withGolem.phaseMenuParked.state)
 
   test("Undo takes back a Recover modifier pick, and then the start"):
     // Catacombs and Relic Worship can both be picked, so picking one asks
     // again instead of rolling.
-    val withBoth = table.pawn(p1, "Fair Isle").secrets(p1, faceUp = 2)
-      .denizen("Catacombs", at = "Fair Isle").adviser(p1, "Relic Worship")
+    val withBoth = table.pawn(p1, FairIsleSite).secrets(p1, faceUp = 2)
+      .denizen(CatacombsCard, at = FairIsleSite).adviser(p1, RelicWorshipCard)
     val (service, _) = withBoth.service()
     val started = accepted(service.handle("g", 0L,
       MenuPlay.starting(p1, ActionRef.Recover)))
     val picked = accepted(service.handle("g", started.nextSequence,
-      GameCommand.ResolveWalker(p1, TreeDecision("recover.modifiers",
+      Commands.resolveWalker(p1, TreeDecision("recover.modifiers",
         ModifierPlay.pick(RelicWorship.id)))))
     val unpicked = accepted(service.handle("g", picked.nextSequence,
-      GameCommand.Undo(p1)))
+      Commands.undo(p1)))
     assertEquals(unpicked.state, started.state)
     val undone = accepted(service.handle("g", unpicked.nextSequence,
-      GameCommand.Undo(p1)))
+      Commands.undo(p1)))
     assertEquals(undone.state, withBoth.phaseMenuParked.state)

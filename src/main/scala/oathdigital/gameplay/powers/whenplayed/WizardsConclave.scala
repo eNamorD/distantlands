@@ -29,13 +29,23 @@ object WizardsConclaveCard extends Denizen(DenizenId("208"), "Wizard's Conclave"
   * The line names the winner, so the tie question is narrated. No generic
   * line exists for a banner's take.
   */
-final case class WizardsConclave private (catalog: ExecutableCatalog)
-    extends WhenPlayedPower:
-  val cardId: DenizenId = WizardsConclaveCard.id
-  import WizardsConclave._
-  def id: PowerId = WizardsConclave.id
+case object WizardsConclave extends WhenPlayedPower:
+  val id: PowerId = WizardsConclaveCard.power.id
+  val decisionId: String = "cardplay.wizards-conclave.winner"
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "{Blue} took the {Darkest Secret}." */
+  val took: NoteKey = notes.key("took", Vector(NotePart.Arg(0),
+    NotePart.Text(" took the "), NotePart.Arg(1), NotePart.Text(".")))
+  /** "{Blue} kept the {Darkest Secret}." */
+  val kept: NoteKey = notes.key("kept", Vector(NotePart.Arg(0),
+    NotePart.Text(" kept the "), NotePart.Arg(1), NotePart.Text(".")))
+  /** "The {Darkest Secret} did not move." */
+  val none: NoteKey = notes.key("none", Vector(NotePart.Text("The "),
+    NotePart.Arg(0), NotePart.Text(" did not move.")))
 
-  override def noteKeys: Vector[NoteKey] = WizardsConclave.noteKeys
+  val cardId: DenizenId = WizardsConclaveCard.id
+
   override def narratedDecisions: Set[String] = Set(decisionId)
 
   private def cardSource: PowerSourceRef = PowerSourceRef.Card(cardId)
@@ -43,20 +53,22 @@ final case class WizardsConclave private (catalog: ExecutableCatalog)
 
   def effect(ctx: PowerCtx): Vector[Operation] =
     Vector(
-      Branch((live, _) => ask(live, ctx.actor)),
-      Branch((live, pending) => award(live, pending)))
+      Branch((live, _) => ask(ctx.catalog, live, ctx.actor)),
+      Branch((live, pending) => award(ctx.catalog, live, pending)))
 
   /** The players ruling the most Arcane cards, in seat order: every player
     * when nobody rules one. */
-  private def leaders(ready: ReadyGame): Vector[PlayerId] =
+  private def leaders(catalog: ExecutableCatalog,
+      ready: ReadyGame): Vector[PlayerId] =
     val counts = ready.game.current.players.map(seat => seat.player ->
       RuledCards.count(catalog, ready, SiteRuler.Player(seat.player),
         Suit.Arcane))
     val most = counts.map(_._2).maxOption.getOrElse(0)
     counts.collect { case (player, count) if count == most => player }
 
-  private def ask(ready: ReadyGame, actor: PlayerId): Vector[Operation] =
-    leaders(ready) match
+  private def ask(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId): Vector[Operation] =
+    leaders(catalog, ready) match
       case found if found.size > 1 => Vector(Decide(decisionId, actor,
         DecisionQuery.ChooseOne(found.map(player =>
           DecisionOption.Player(DecisionOptionRef.Player(player))),
@@ -65,16 +77,19 @@ final case class WizardsConclave private (catalog: ExecutableCatalog)
       case _ => Vector.empty
 
   /** The one leader, or the leader the actor chose. */
-  private def winner(ready: ReadyGame, pending: PendingTree)
-      : Option[PlayerId] = leaders(ready) match
+  private def winner(catalog: ExecutableCatalog,
+      ready: ReadyGame, pending: PendingTree)
+      : Option[PlayerId] = leaders(catalog, ready) match
     case Vector(only) => Some(only)
     case found => PowerAnswers.one(pending, decisionId).collect {
       case DecisionOptionRef.Player(player) if found.contains(player) =>
         player }
 
   /** The take and its line, or the line that the winner kept it. */
-  private def award(ready: ReadyGame, pending: PendingTree)
-      : Vector[Operation] = winner(ready, pending).toVector.flatMap { taker =>
+  private def award(catalog: ExecutableCatalog,
+      ready: ReadyGame, pending: PendingTree)
+      : Vector[Operation] =
+    winner(catalog, ready, pending).toVector.flatMap { taker =>
     val holder = BannerRules.holder(ready.game.current, Banner.DarkestSecret)
     if holder.contains(taker) then Vector(Note(id, _ =>
       Some(kept(cardSource, NoteArg.Player(taker), banner))))
@@ -92,21 +107,3 @@ final case class WizardsConclave private (catalog: ExecutableCatalog)
         .contains(taker)
     then took(cardSource, NoteArg.Player(taker), banner)
     else none(cardSource, banner))
-
-object WizardsConclave:
-  val id: PowerId = WizardsConclaveCard.power.id
-  val decisionId: String = "cardplay.wizards-conclave.winner"
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "{Blue} took the {Darkest Secret}." */
-  val took: NoteKey = notes.key("took", Vector(NotePart.Arg(0),
-    NotePart.Text(" took the "), NotePart.Arg(1), NotePart.Text(".")))
-  /** "{Blue} kept the {Darkest Secret}." */
-  val kept: NoteKey = notes.key("kept", Vector(NotePart.Arg(0),
-    NotePart.Text(" kept the "), NotePart.Arg(1), NotePart.Text(".")))
-  /** "The {Darkest Secret} did not move." */
-  val none: NoteKey = notes.key("none", Vector(NotePart.Text("The "),
-    NotePart.Arg(0), NotePart.Text(" did not move.")))
-
-  def forCatalog(catalog: ExecutableCatalog): WizardsConclave =
-    new WizardsConclave(catalog)

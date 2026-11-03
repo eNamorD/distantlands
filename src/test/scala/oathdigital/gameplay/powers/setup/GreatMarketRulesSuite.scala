@@ -1,19 +1,20 @@
 package oathdigital.gameplay.powers.setup
 
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import oathdigital.gameplay.setup.{FirstGameSetupFixture, SetupProcedure, SetupWalkDriver}
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Unwrap.accepted
 
 class GreatMarketRulesSuite extends munit.FunSuite:
   private val catalog = FirstGameSetupFixture.catalog
-  private val edifice = CatalogNames.edifice("Great Market")
+  private val edifice = GreatMarketCard.id
   private val powers = WalkerPowers.selected(WalkerPowerCatalog.default(catalog),
     Vector.empty)
-  private val site = CatalogNames.site("Ancient City")
-  private val banditSite = CatalogNames.site("Broken Peaks")
+  private val site = AncientCitySite.id
+  private val banditSite = BrokenPeaksSite.id
 
   // The Setup walk is the subject (the edifice's effect runs when the walk
   // reaches it), so these tests start from the fresh Setup, not a Table.
@@ -40,9 +41,9 @@ class GreatMarketRulesSuite extends munit.FunSuite:
     SetupWalkDriver.driveWithEvents(ready, tree, TriggeredProcedureRef.Setup,
       powers).events
 
-  private val great = GreatMarket.forCatalog(catalog)
+  private val great = GreatMarket
 
-  private val bandit = BanditMarket.forCatalog(catalog)
+  private val bandit = BanditMarket
 
   test("Great Market places one favor per denizen in its region, itself included"):
     val staged = stagedAt(EdificeSide.Intact)

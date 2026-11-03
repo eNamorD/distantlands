@@ -1,23 +1,25 @@
 package oathdigital.gameplay.powers.whenplayed
 
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.action.{CharmingFriendCard, EldersCard}
+import oathdigital.gameplay.powers.campaign.{HorseArchersCard, WrestlersCard}
 import oathdigital.gameplay.walker.WalkerOutcome
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, Table}
+import oathdigital.testkit.{Look, Outcomes, Table}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.{as, rejected}
 
 class TwinBrotherSuite extends munit.FunSuite:
   import WhenPlayedHarness._
 
-  private val power = registered[TwinBrother]
+  private val power = registered[TwinBrother.type]
   private val card = power.cardId
   private val played = hook(card)
   // Horse Archers and Faithful Friend are Nomad, Faithful Friend locked;
   // Charming Friend is Hearth.
-  private val archers = CatalogNames.denizen("Horse Archers")
-  private val faithful = CatalogNames.denizen("Faithful Friend")
-  private val charming = CatalogNames.denizen("Charming Friend")
+  private val archers = HorseArchersCard.id
+  private val faithful = FaithfulFriendCard.id
+  private val charming = CharmingFriendCard.id
 
   /** Twin Brother is p1's faceup adviser; p2 holds Horse Archers faceup with
     * 1 favor and 2 secrets on it. */
@@ -43,7 +45,7 @@ class TwinBrotherSuite extends munit.FunSuite:
     // Faithful Friend is locked, Charming Friend is Hearth and Wrestlers is
     // Order. Elders is a Nomad adviser, but p1's own.
     val ready = staged.adviser(p2, faithful).adviser(p2, charming)
-      .adviser(p2, "Wrestlers").adviser(p1, "Elders").ready
+      .adviser(p2, WrestlersCard).adviser(p1, EldersCard).ready
     assertEquals(choice(ready), Vector(DecisionOptionRef.Denizen(archers),
       TwinBrother.keep))
 

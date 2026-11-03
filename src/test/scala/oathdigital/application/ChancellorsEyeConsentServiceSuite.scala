@@ -2,12 +2,12 @@ package oathdigital.application
 
 import oathdigital.gameplay.actions.ImperialLaws
 import oathdigital.gameplay.actions.minor.MinorActionProcedures
+import oathdigital.gameplay.cards.BrokenPeaksSite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.OathEvent.{ConsentAnswered, ConsentRequested}
 import oathdigital.protocol.projection._
-import oathdigital.testkit.{CatalogNames, MenuPlay, Outcomes, ParkedNode,
-  Table}
+import oathdigital.testkit.{Commands, MenuPlay, Outcomes, ParkedNode, Table}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.{accepted, present}
 
@@ -17,7 +17,7 @@ import oathdigital.testkit.Unwrap.{accepted, present}
 class ChancellorsEyeConsentServiceSuite extends munit.FunSuite:
   import ConsentFixture.gameId
   private val projector = new GameProjector(catalog)
-  private val peaks = CatalogNames.site("Broken Peaks")
+  private val peaks = BrokenPeaksSite.id
   private val direction = MinorActionProcedures.directionDecisionId
   private val board = MinorActionProcedures.toBoard
 
@@ -38,7 +38,7 @@ class ChancellorsEyeConsentServiceSuite extends munit.FunSuite:
     val started = accepted(service.handle(gameId, 0L,
       MenuPlay.starting(p2, ActionRef.MoveWarbands)))
     accepted(service.handle(gameId, started.nextSequence,
-      GameCommand.RequestConsent(p2, direction, board)))
+      Commands.requestConsent(p2, direction, board)))
 
   private def boardRow(at: GameAccepted)(using munit.Location)
       : DecisionOptionProjection =
@@ -57,7 +57,7 @@ class ChancellorsEyeConsentServiceSuite extends munit.FunSuite:
     val (service, _) = citizenAtImperialSite.service()
     val asked = asking(service)
     val yes = accepted(service.handle(gameId, asked.nextSequence,
-      GameCommand.AnswerConsent(p1, ConsentChoice.Yes)))
+      Commands.answerConsent(p1, ConsentChoice.Yes)))
     assertEquals(yes.events.head, ConsentAnswered(p1, granted = true))
     ParkedNode.of(yes.state, catalog) match
       case Right(Some(node)) =>
@@ -68,7 +68,7 @@ class ChancellorsEyeConsentServiceSuite extends munit.FunSuite:
     val (service, _) = citizenAtImperialSite.service()
     val asked = asking(service)
     val no = accepted(service.handle(gameId, asked.nextSequence,
-      GameCommand.AnswerConsent(p1, ConsentChoice.No)))
+      Commands.answerConsent(p1, ConsentChoice.No)))
     assertEquals(no.events, Vector(ConsentAnswered(p1, granted = false)))
     val row = boardRow(no)
     assertEquals(row.state, "unavailable")

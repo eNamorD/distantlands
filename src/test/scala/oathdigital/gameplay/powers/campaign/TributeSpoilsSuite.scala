@@ -1,29 +1,30 @@
 package oathdigital.gameplay.powers.campaign
 
+import oathdigital.gameplay.powers.economy.HallowedSpringCard
+import oathdigital.catalog.holding.{CouncilSeatCard, RelicHunterCard}
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
-import oathdigital.testkit.CatalogNames
 import oathdigital.testkit.Look
 
 /** Tribute Spoils: a plan for either side, a favor placed, offered only in a
   * Conquest. If its user wins, they gain a favor for each denizen and edifice
   * at the targets, from that card's suit bank. */
 class TributeSpoilsSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Tribute Spoils")
+  private val card = TributeSpoilsCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
-  private val honors = CatalogNames.denizen("Battle Honors")
+  private val honors = BattleHonorsCard.id
   private val honorsRef: DecisionOptionRef =
     DecisionOptionRef.Denizen(honors)
   // Martial Culture's plan needs an Exile user who rules its site; it
   // stands at the bandits' origin here, so it offers none.
-  private val orders = planless("Relic Hunter", "Council Seat") :+
-    CatalogNames.denizen("Martial Culture")
+  private val orders = planless(RelicHunterCard, CouncilSeatCard) :+
+    MartialCultureCard.id
   // Beast, on either face: Hallowed Spring intact, Hiding Place ruined.
-  private val beastEdifice = CatalogNames.edifice("Hallowed Spring")
+  private val beastEdifice = HallowedSpringCard.id
   // A relic at the site, which Tribute Spoils does not count.
-  private val relic = "Sticky Fire"
+  private val relic = StickyFireCard.id
 
   /** The attacker holds Tribute Spoils and a favor. The origin, which two
     * bandits rule, holds two faceup order denizens, a facedown order denizen

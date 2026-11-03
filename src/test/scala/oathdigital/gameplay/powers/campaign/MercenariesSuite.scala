@@ -2,17 +2,19 @@ package oathdigital.gameplay.powers.campaign
 
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
+import oathdigital.gameplay.cards.BuriedGiantSite
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.action.WildAlliesCard
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 import oathdigital.testkit.Unwrap.present
 
 /** Mercenaries: a favor placed for three more attack dice, or three fewer for
   * the attacker when it defends, and gone when its user is defeated. */
 class MercenariesSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Mercenaries")
+  private val card = MercenariesCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
   /** Mercenaries' suit: the bank its placed favor comes from and returns
     * to. */
@@ -70,7 +72,7 @@ class MercenariesSuite extends munit.FunSuite:
     val b = funded(withAdviser(base, card, Orientation.FaceUp), base.actor, 2)
     val game = rules(losingDice)
     val done = committed(game, campaignQueuedFrom(game, b, away,
-        PowerSourceRef.Card(CatalogNames.denizen("Wild Allies"))), b,
+        PowerSourceRef.Card(WildAlliesCard.id)), b,
         force = 0, raid = true)
       .pick(b.actor, CampaignIds.attackerPlan, ref).finishPlanWindows
     assertEquals(done.winner, Some(false))
@@ -82,7 +84,7 @@ class MercenariesSuite extends munit.FunSuite:
     val base = board(warbands = 5, supply = 7)
     val current = base.ready.game.current
     // Buried Giant, in the Provinces, away from p1's Cradle site.
-    val ruled = CatalogNames.site("Buried Giant")
+    val ruled = BuriedGiantSite.id
     assert(!current.map.regionOf(ruled).contains(
       current.map.regionOf(base.origin).get))
     val b = funded(withSiteCard(actorRules(base, ruled), ruled, card),
@@ -144,7 +146,7 @@ class MercenariesSuite extends munit.FunSuite:
 
   // ---- Lines ----
 
-  private val power = Mercenaries.forCatalog(catalog)
+  private val power = Mercenaries
   test("a defeated user's discard is written as the Mercenaries' line"):
     val b = attackerBoard
     val done = commit(rules(losingDice), b, 0)

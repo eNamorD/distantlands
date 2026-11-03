@@ -1,10 +1,13 @@
 package oathdigital.application.gamelog
 
+import oathdigital.gameplay.cards.AncientCitySite
+import oathdigital.gameplay.powers.action.{FaeMerchantCard, SecondChanceCard}
+import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.testkit.MenuPlay
 import oathdigital.gameplay.ModifierPlay
 import oathdigital.gameplay.actions.search.SearchProcedure
-import oathdigital.gameplay.powers.search.{Mushrooms, PaintedTrumpet,
-  WineOfWelcome}
+import oathdigital.gameplay.powers.search.{Mushrooms, MushroomsCard,
+  PaintedTrumpet, PaintedTrumpetCard, WineOfWelcome, WineOfWelcomeCard}
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
 import oathdigital.testkit.{Answers, Table}
@@ -44,8 +47,8 @@ class GameLogSearchDrawSuite extends munit.FunSuite:
 
   test("Wine of Welcome: its line says the draw came from the bottom"):
     val lines = searchLines("wine-of-welcome", Table.start
-      .relic(p1, "Wine of Welcome")
-      .worldDeckBottom("Threatening Roar", "Fae Merchant", "Second Chance"),
+      .relic(p1, WineOfWelcomeCard)
+      .worldDeckBottom(ThreateningRoarCard, FaeMerchantCard, SecondChanceCard),
       Vector(WineOfWelcome.id), SearchSource.WorldDeck)
     val drew = before(lines,
       "Wine of Welcome: Drawing from the bottom of the World Deck")
@@ -56,8 +59,8 @@ class GameLogSearchDrawSuite extends munit.FunSuite:
 
   test("Mushrooms: its line says the card came from the bottom"):
     val lines = searchLines("mushrooms", Table.start
-      .denizen("Mushrooms", "Ancient City")
-      .discarded(Region.Cradle, "Threatening Roar", "Fae Merchant"),
+      .denizen(MushroomsCard, AncientCitySite)
+      .discarded(Region.Cradle, ThreateningRoarCard, FaeMerchantCard),
       Vector(Mushrooms.id), SearchSource.RegionalDiscard(Region.Cradle))
     val drew = before(lines, "Mushrooms: Drawing one card from the bottom " +
       "of the Cradle discard")
@@ -65,9 +68,9 @@ class GameLogSearchDrawSuite extends munit.FunSuite:
 
   test("Painted Trumpet: its line says the cards came from every pile"):
     val lines = searchLines("painted-trumpet", Table.start
-      .relic(p1, "Painted Trumpet")
-      .discarded(Region.Cradle, "Threatening Roar")
-      .discarded(Region.Provinces, "Fae Merchant"),
+      .relic(p1, PaintedTrumpetCard)
+      .discarded(Region.Cradle, ThreateningRoarCard)
+      .discarded(Region.Provinces, FaeMerchantCard),
       Vector(PaintedTrumpet.id), SearchSource.RegionalDiscard(Region.Cradle))
     val drew = before(lines,
       "Painted Trumpet: Drawing the top card of each discard pile instead")
@@ -82,8 +85,8 @@ class GameLogSearchDrawSuite extends munit.FunSuite:
   // warned (`WineOfWelcomeSuite`), so this is reachable every time.
   test("Wine of Welcome: no line when the Search took a discard pile"):
     val lines = searchLines("wine-of-welcome-discard", Table.start
-      .relic(p1, "Wine of Welcome")
-      .discarded(Region.Cradle, "Threatening Roar", "Fae Merchant"),
+      .relic(p1, WineOfWelcomeCard)
+      .discarded(Region.Cradle, ThreateningRoarCard, FaeMerchantCard),
       Vector(WineOfWelcome.id), SearchSource.RegionalDiscard(Region.Cradle))
     assert(!lines.exists(_.contains("Drawing from the bottom")), lines)
     assert(lineStarting(lines, "Drew ").endsWith(" from the Cradle discard"),

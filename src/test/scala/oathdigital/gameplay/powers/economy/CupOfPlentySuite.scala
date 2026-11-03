@@ -1,9 +1,12 @@
 package oathdigital.gameplay.powers.economy
 
+import oathdigital.catalog.holding.MagiciansCodeCard
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.SearchFixture
+import oathdigital.gameplay.powers.action.AlchemistCard
+import oathdigital.gameplay.powers.campaign.WrestlersCard
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, EconomyActions,
-  Look, Table}
+import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
@@ -11,8 +14,8 @@ import oathdigital.testkit.Unwrap.accepted
 class CupOfPlentySuite extends munit.FunSuite:
   import SearchFixture.rules
 
-  private val cup = CatalogNames.relic("Cup of Plenty")
-  private val alchemist = CatalogNames.denizen("Alchemist")
+  private val cup = CupOfPlentyCard.id
+  private val alchemist = AlchemistCard.id
   private val modifiers = Vector(CupOfPlenty.id)
 
   /** p1 holds the Cup faceup and stands at Ancient City, which holds the
@@ -20,7 +23,7 @@ class CupOfPlentySuite extends munit.FunSuite:
     * Supply. */
   private def held: Table = Table.start
     .relic(p1, cup)
-    .pawn(p1, at = "Ancient City").denizen(alchemist, at = "Ancient City")
+    .pawn(p1, at = AncientCitySite).denizen(alchemist, at = AncientCitySite)
     .favor(p1, 4).secrets(p1, faceUp = 2).supply(p1, 7)
 
   /** Trades for favor with Alchemist. */
@@ -47,16 +50,17 @@ class CupOfPlentySuite extends munit.FunSuite:
 
   test("a faceup adviser of another suit does not stop the free trade"):
     // Wrestlers is Order; the traded Alchemist is Arcane.
-    assertEquals(supplyAfter(held.adviser(p1, "Wrestlers").ready, modifiers), 7)
+    assertEquals(supplyAfter(held.adviser(p1, WrestlersCard).ready, modifiers),
+      7)
 
   test("a faceup adviser of the traded card's suit makes the trade cost " +
       "Supply"):
     // Magician's Code is Arcane, like Alchemist.
-    assertEquals(supplyAfter(held.adviser(p1, "Magician's Code").ready,
+    assertEquals(supplyAfter(held.adviser(p1, MagiciansCodeCard).ready,
       modifiers), 7 - 1)
 
   test("a facedown adviser of the traded card's suit does not count"):
-    assertEquals(supplyAfter(held.adviser(p1, "Magician's Code",
+    assertEquals(supplyAfter(held.adviser(p1, MagiciansCodeCard,
       facedown = true).ready, modifiers), 7)
 
   test("it is a Trade modifier only"):

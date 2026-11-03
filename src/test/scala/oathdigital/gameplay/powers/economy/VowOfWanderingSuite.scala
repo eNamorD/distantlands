@@ -1,20 +1,22 @@
 package oathdigital.gameplay.powers.economy
 
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.search.ErrandBoyCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, EconomyActions,
-  Look, PowerRules, Table}
+import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look, PowerRules,
+  Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.AppendedAutomaticUses
 
 class VowOfWanderingSuite extends munit.FunSuite:
-  private val vow = CatalogNames.denizen("Vow of Wandering")
-  private val beastkin = CatalogNames.denizen("Vow of Beastkin")
-  private val home = CatalogNames.site("Ancient City")
+  private val vow = VowOfWanderingCard.id
+  private val beastkin = VowOfBeastkinCard.id
+  private val home = AncientCitySite.id
   /** A plain Beast denizen to Muster on. It matches no Nomad adviser. */
-  private val errandBoy = CatalogNames.denizen("Errand Boy")
+  private val errandBoy = ErrandBoyCard.id
   private val rules = PowerRules.withWalkerPowers
 
   /** p1 at Ancient City beside Errand Boy, with 1 favor and 7 Supply to pay
@@ -53,7 +55,7 @@ class VowOfWanderingSuite extends munit.FunSuite:
       Look(ready).boardWarbands(p1) + 5)
     assertEquals(wanderingSaid(done.journal.events), Vector(gainedLine(2)))
     assertEquals(NoteText.said(VowOfBeastkin.id,
-      VowOfBeastkin.forCatalog(catalog).noteKeys, done.journal.events),
+      VowOfBeastkin.noteKeys, done.journal.events),
       Vector(gainedLine(1)))
 
   test("a short bank gives what it holds, and the line says what came"):
@@ -74,8 +76,8 @@ class VowOfWanderingSuite extends munit.FunSuite:
     }
 
   // ---- the restriction ----------------------------------------------------
-  private val near = CatalogNames.site("Broken Peaks")
-  private val placing = VowOfWandering.operationRestrictions.head
+  private val near = BrokenPeaksSite.id
+  private val placing = VowOfWandering.operationRestrictions(catalog).head
   private val refusal = Some(OperationReason("vow-of-wandering",
     "Vow of Wandering forbids placing warbands on sites",
     OperationReasonKind.Impossible))

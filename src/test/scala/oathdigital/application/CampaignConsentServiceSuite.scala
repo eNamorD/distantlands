@@ -1,11 +1,11 @@
 package oathdigital.application
 
+import oathdigital.gameplay.cards.NarrowPassSite
 import oathdigital.testkit.MenuPlay
 import oathdigital.gameplay.CampaignConsentFixture
 import oathdigital.gameplay.CampaignConsentFixture.{deepWoodsRef,
   onlyWoodsExtra, passRuledByP2}
 import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.travel.NarrowPassSite
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.OathEvent.{ConsentAnswered, ConsentPreferenceSet,
@@ -14,6 +14,7 @@ import oathdigital.protocol.projection.ConsentAskProjection
 import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, present}
+import oathdigital.testkit.Commands
 
 /** Asking for consent at a Campaign's targets through the service (consent
   * design, slice 2): a grant opens the target, and the campaigner goes on
@@ -24,7 +25,7 @@ class CampaignConsentServiceSuite extends munit.FunSuite:
   private val request = ConsentRequest(p1, CampaignIds.targets, deepWoodsRef,
     Vector(ConsentAsk(p2, Vector(pass))))
   private val startCampaign = MenuPlay.starting(p1, ActionRef.Campaign)
-  private val requestWoods = GameCommand.RequestConsent(p1,
+  private val requestWoods = Commands.requestConsent(p1,
     CampaignIds.targets, deepWoodsRef)
   private val projector = new GameProjector(catalog)
 
@@ -41,7 +42,7 @@ class CampaignConsentServiceSuite extends munit.FunSuite:
   private def answering(service: GameApplicationService, at: GameAccepted,
       choice: ConsentChoice)(using munit.Location): GameAccepted =
     accepted(service.handle(gameId, at.nextSequence,
-      GameCommand.AnswerConsent(p2, choice)))
+      Commands.answerConsent(p2, choice)))
 
   private def woods(at: GameAccepted)(using munit.Location): DecisionOption =
     present(CampaignConsentFixture.targetOptions(at.state)
@@ -63,7 +64,7 @@ class CampaignConsentServiceSuite extends munit.FunSuite:
     assertEquals(yes.undo.map(step => (step.issuer, step.from)),
       begun.undo.map(step => (step.issuer, step.from)))
     val chosen = accepted(service.handle(gameId, yes.nextSequence,
-      GameCommand.ResolveWalker(p1, TreeDecision(CampaignIds.targets,
+      Commands.resolveWalker(p1, TreeDecision(CampaignIds.targets,
         DecisionAnswer.ChooseManyAnswer(Vector(deepWoodsRef))))))
     assertEquals(CampaignConsentFixture.parkedAt(chosen.state),
       Some(CampaignIds.force))
@@ -92,7 +93,7 @@ class CampaignConsentServiceSuite extends munit.FunSuite:
     val (service, _) = Table.from(passRuledByP2).service()
     val yes = answering(service, asking(service), ConsentChoice.Yes)
     val undone = accepted(service.handle(gameId, yes.nextSequence,
-      GameCommand.Undo(p1)))
+      Commands.undo(p1)))
     assertEquals(CampaignConsentFixture.parkedAt(undone.state), None)
     assert(woods(started(service, undone.nextSequence)).available)
 
@@ -113,7 +114,7 @@ class CampaignConsentServiceSuite extends munit.FunSuite:
       "on choosing"):
     val (service, _) = Table.from(passRuledByP2).service()
     val set = accepted(service.handle(gameId, 0L,
-      GameCommand.SetConsentPreference(p2, pass, p1, ConsentSetting.Always)))
+      Commands.setConsentPreference(p2, pass, p1, ConsentSetting.Always)))
     val begun = started(service, set.nextSequence)
     val asked = accepted(service.handle(gameId, begun.nextSequence,
       requestWoods))
@@ -130,10 +131,10 @@ class CampaignConsentServiceSuite extends munit.FunSuite:
     val asked = accepted(service.handle(gameId, begun.nextSequence,
       requestWoods))
     val yes = accepted(service.handle(gameId, asked.nextSequence,
-      GameCommand.AnswerConsent(p3, ConsentChoice.Yes)))
+      Commands.answerConsent(p3, ConsentChoice.Yes)))
     assert(woods(yes).available)
     val chosen = accepted(service.handle(gameId, yes.nextSequence,
-      GameCommand.ResolveWalker(p1, TreeDecision(CampaignIds.targets,
+      Commands.resolveWalker(p1, TreeDecision(CampaignIds.targets,
         DecisionAnswer.ChooseManyAnswer(Vector(deepWoodsRef))))))
     assertEquals(CampaignConsentFixture.parkedAt(chosen.state),
       Some(CampaignIds.force))

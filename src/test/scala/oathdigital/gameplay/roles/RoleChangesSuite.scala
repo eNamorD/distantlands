@@ -1,10 +1,11 @@
 package oathdigital.gameplay.roles
 
 import oathdigital.gameplay.actions.VisionRules
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.operations.{OperationExecutor, TheGrandScepterCard}
 import oathdigital.gameplay.powers.PlayerFacts
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Table}
+import oathdigital.testkit.{Look, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, present}
 
@@ -12,7 +13,7 @@ import oathdigital.testkit.Unwrap.{accepted, present}
   * design, "Slice 3"). */
 class RoleChangesSuite extends munit.FunSuite:
   private val executor = new OperationExecutor()
-  private val peaks = CatalogNames.site("Broken Peaks")
+  private val peaks = BrokenPeaksSite.id
 
   private def applied(ready: ReadyGame,
       ops: Either[OathViolation, Vector[CoreOperation]])(
@@ -26,8 +27,8 @@ class RoleChangesSuite extends munit.FunSuite:
   /** p1 is the Chancellor and p3 an Exile in their Act, with 2 warbands
     * on their board and 3 at Broken Peaks, a revealed Vision and Supply 2. */
   private def exileInAct: Table = Table.start.imperial(p1)
-    .turn(p3, Phase.Act).pawn(p3, at = "Broken Peaks")
-    .boardWarbands(p3, 2).warbandsAt("Broken Peaks", p3, 3)
+    .turn(p3, Phase.Act).pawn(p3, at = BrokenPeaksSite)
+    .boardWarbands(p3, 2).warbandsAt(BrokenPeaksSite, p3, 3)
     .revealedVision(p3, VisionRules.Conquest).supply(p3, 2)
 
   test("becoming a Citizen turns every warband purple and ends the Act"):
@@ -75,7 +76,7 @@ class RoleChangesSuite extends munit.FunSuite:
     def refused(kept: RoleChanges.Kept) =
       RoleChanges.becomeImperial(ready, p3, kept).isLeft
     assert(refused(RoleChanges.Kept(2, Map(peaks -> 3,
-      CatalogNames.site("Ancient City") -> 0))))
+      AncientCitySite.id -> 0))))
     assert(refused(RoleChanges.Kept(-1, Map(peaks -> 3))))
     assert(refused(RoleChanges.Kept(2, Map(peaks -> 4))))
     // The bank has room for all 5, so all 5 must turn.
@@ -107,8 +108,8 @@ class RoleChangesSuite extends munit.FunSuite:
   /** No Empire: p3, an Exile in their Act, with 2 warbands on their board.
     * p2 holds the Grand Scepter. */
   private def noEmpire: Table = Table.start.turn(p3, Phase.Act)
-    .pawn(p3, at = "Broken Peaks").boardWarbands(p3, 2)
-    .relic(p2, "The Grand Scepter")
+    .pawn(p3, at = BrokenPeaksSite).boardWarbands(p3, 2)
+    .relic(p2, TheGrandScepterCard)
 
   test("with no Empire the player becomes the Chancellor"):
     val ready = noEmpire.ready
@@ -135,7 +136,7 @@ class RoleChangesSuite extends munit.FunSuite:
 
   test("a new Chancellor takes the Scepter from the site it lies at"):
     val ready = Table.start.turn(p3, Phase.Act)
-      .pawn(p3, at = "Broken Peaks").relicAt("The Grand Scepter", peaks, facedown = false).ready
+      .pawn(p3, at = BrokenPeaksSite).relicAt(TheGrandScepterCard, peaks, facedown = false).ready
     val after = applied(ready, RoleChanges.becomeImperial(ready, p3,
       everyPlaceKept(ready, p3)))
     assert(Look(after).player(p3).relics.exists(
@@ -151,7 +152,7 @@ class RoleChangesSuite extends munit.FunSuite:
 
   test("with no one holding the Scepter it comes from the box"):
     val ready = Table.start.turn(p3, Phase.Act)
-      .pawn(p3, at = "Broken Peaks").ready
+      .pawn(p3, at = BrokenPeaksSite).ready
     val after = applied(ready, RoleChanges.becomeImperial(ready, p3,
       everyPlaceKept(ready, p3)))
     assert(Look(after).player(p3).relics.exists(
@@ -165,8 +166,8 @@ class RoleChangesSuite extends munit.FunSuite:
   /** p1 is the Chancellor and p3 a Citizen in their Act, with 4 purple
     * warbands on their board and 2 at Broken Peaks, and Supply 1. */
   private def citizenInAct: Table = Table.start.imperial(p1, p3)
-    .turn(p3, Phase.Act).pawn(p3, at = "Broken Peaks")
-    .boardWarbands(p3, 4).warbandsAt("Broken Peaks", p3, 2).supply(p3, 1)
+    .turn(p3, Phase.Act).pawn(p3, at = BrokenPeaksSite)
+    .boardWarbands(p3, 4).warbandsAt(BrokenPeaksSite, p3, 2).supply(p3, 1)
 
   test("exile swaps the board's purple warbands and leaves the map's"):
     val ready = citizenInAct.ready

@@ -1,5 +1,7 @@
 package oathdigital.application
 
+import oathdigital.gameplay.cards.BrokenPeaksSite
+import oathdigital.gameplay.powers.campaign.{CursedCauldronCard, StickyFireCard}
 import oathdigital.testkit.MenuPlay
 import oathdigital.model._
 import oathdigital.gameplay.{ModifierPlay, OathRules, WalkerDiceFixture}
@@ -15,11 +17,12 @@ import oathdigital.protocol.projection.{DecisionOptionProjection,
   DecisionQueryProjection, DecisionSectionProjection, DieFace => RolledFace,
   GameProjectionCodec, WalkerDecisionProjection,
   WalkerRollOutcomeProjection}
-import oathdigital.testkit.{CatalogNames, Dice}
+import oathdigital.testkit.Dice
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.{accepted, present}
 import oathdigital.application.ParkedServiceFixture.loaded
 import oathdigital.testkit.Outcomes
+import oathdigital.testkit.Commands
 
 /** Task 7 (Recover slice, controller ruling (b)) established the
   * application-projector surface: [[WalkerDecisionProjector]] plus the
@@ -117,7 +120,7 @@ class WalkerDecisionProjectionSuite extends munit.FunSuite:
         .started.state)
     val owner = ScopedProjectionContext(ready, Some(p1))
     val viewer = ScopedProjectionContext(ready, Some(p2))
-    val pendingProjector = new PendingProjector(catalog, presentation,
+    val pendingProjector = new PendingProjector(presentation,
       walkerDecisions)
     assertEquals(pendingProjector.project(owner).phase, "recover-walker-decision")
     assertEquals(pendingProjector.project(viewer).phase, "recover-walker-waiting")
@@ -142,7 +145,7 @@ class WalkerDecisionProjectionSuite extends munit.FunSuite:
     // The projected labels are the query's own declarative copy, and they
     // never affect legality: the engine accepts the button KEY.
     val stopped = rolled.service.handle(gameId, rolled.started.nextSequence,
-      GameCommand.ResolveWalker(p1, TreeDecision(
+      Commands.resolveWalker(p1, TreeDecision(
         RecoverProcedure.choiceDecisionId, DecisionAnswer.ChooseOneAnswer(
           DecisionOptionRef.Button(choiceQuery.options.last.id)))))
     // The engine accepts a projected button option.
@@ -166,7 +169,7 @@ class WalkerDecisionProjectionSuite extends munit.FunSuite:
     * marker instead of reading live site state would yield a one-element
     * vector and fail the equality check. */
   private val relicQuery = DecisionQueryProjection.ChooseOne(
-    Vector("Sticky Fire", "Cursed Cauldron").map(CatalogNames.relic)
+    Vector(StickyFireCard.id, CursedCauldronCard.id)
       .map(relic => DecisionOptionProjection("relic", relic.value,
         presentation.relicLabel(relic),
         Some(presentation.cardDetails(relic, Some(Orientation.FaceDown),
@@ -197,7 +200,7 @@ class WalkerDecisionProjectionSuite extends munit.FunSuite:
     // would fail if the projector ever fell back to echoing a closure
     // instead of describing the query rebuilt against live site state.
     val facedownRelics = ready.game.current.map
-      .sites(CatalogNames.site("Broken Peaks")).relics
+      .sites(BrokenPeaksSite.id).relics
       .filter(_.orientation == Orientation.FaceDown)
     assert(ownerDecision.flatMap(_.query)
       .exists(_.offeredOptions.map(_.id).toSet ==
@@ -215,7 +218,7 @@ class WalkerDecisionProjectionSuite extends munit.FunSuite:
         .started.state)
     val owner = ScopedProjectionContext(ready, Some(p1))
     val viewer = ScopedProjectionContext(ready, Some(p2))
-    val pendingProjector = new PendingProjector(catalog, presentation,
+    val pendingProjector = new PendingProjector(presentation,
       walkerDecisions)
     assertEquals(pendingProjector.project(owner).phase, "recover-walker-decision")
     assertEquals(pendingProjector.project(viewer).phase, "recover-walker-waiting")
@@ -245,7 +248,7 @@ class WalkerDecisionProjectionSuite extends munit.FunSuite:
     // diverging from the option set the declared query accepts.
     val chosen = RelicId(relicQuery.options.head.id)
     val resolved = rolled.service.handle(gameId, rolled.started.nextSequence,
-      GameCommand.ResolveWalker(p1, TreeDecision(
+      Commands.resolveWalker(p1, TreeDecision(
         RecoverProcedure.relicDecisionId,
         DecisionAnswer.ChooseOneAnswer(DecisionOptionRef.Relic(chosen)))))
     accepted(resolved)

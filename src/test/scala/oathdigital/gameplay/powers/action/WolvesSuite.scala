@@ -1,24 +1,24 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Refusals,
-  Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Refusals, Table}
 import oathdigital.testkit.Unwrap.accepted
 
 class WolvesSuite extends munit.FunSuite:
   import PowerFixture._
   import PhasePowerHarness._
 
-  private val wolves = CatalogNames.denizen("Wolves")
+  private val wolves = WolvesCard.id
   private val source = DecisionOptionRef.Denizen(wolves)
   private val victim = Table.p2
 
   /** p1's Act at Ancient City with Wolves at the site and `secrets` faceup
     * secrets. */
   private def staged(secrets: Int = 1) =
-    Table.start.turn(actor, Phase.Act).pawn(actor, "Ancient City")
-      .denizen(wolves, at = "Ancient City").secrets(actor, secrets).ready
+    Table.start.turn(actor, Phase.Act).pawn(actor, AncientCitySite)
+      .denizen(wolves, at = AncientCitySite).secrets(actor, secrets).ready
   private def bankOf(ready: ReadyGame, id: PlayerId) =
     warbandBank(ready, Look(ready).forceKind(id))
   private def choose(id: PlayerId) = pick(DecisionOptionRef.Player(id))

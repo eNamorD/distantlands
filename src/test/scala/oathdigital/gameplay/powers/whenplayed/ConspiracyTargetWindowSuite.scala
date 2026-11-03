@@ -1,12 +1,14 @@
 package oathdigital.gameplay.powers.whenplayed
 
+import oathdigital.catalog.holding.{BanditCrownCard, CrackedHornCard}
 import oathdigital.gameplay.actions.VisionRules
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,
   Transform}
 import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome,
   WalkerPowers}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, Table}
+import oathdigital.testkit.{Look, Outcomes, Table}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.{accepted, as, present}
 
@@ -15,15 +17,15 @@ import oathdigital.testkit.Unwrap.{accepted, as, present}
   */
 class ConspiracyTargetWindowSuite extends munit.FunSuite:
   private val conspiracy = VisionRules.Conspiracy
-  private val relics = Vector(CatalogNames.relic("Cracked Horn"),
-    CatalogNames.relic("Bandit Crown"))
+  private val relics = Vector(CrackedHornCard.id,
+    BanditCrownCard.id)
 
   /** p1 holds Conspiracy in a temporary hand. p1 and p2 stand at Ancient
     * City, and p2 holds Cracked Horn and Bandit Crown faceup.
     */
   private val staged: ReadyGame = Table.start
-    .pawn(p1, "Ancient City").pawn(p2, "Ancient City")
-    .relic(p2, "Cracked Horn").relic(p2, "Bandit Crown")
+    .pawn(p1, AncientCitySite).pawn(p2, AncientCitySite)
+    .relic(p2, CrackedHornCard).relic(p2, BanditCrownCard)
     .hand(p1, conspiracy).ready
 
   /** Stub of ContributingPower: at the Conspiracy target window it keeps only

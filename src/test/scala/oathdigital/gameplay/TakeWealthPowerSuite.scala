@@ -1,9 +1,11 @@
 package oathdigital.gameplay
 
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.powerresolver._
 import oathdigital.gameplay.powers.wake.TakeWealthLimit
+import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 
 /** Take Wealth's once-per-turn-per-site limit, proved against contribution
   * collection before Wake owns a walker tree (batch-1 Task 6). The rule is
@@ -25,8 +27,8 @@ class TakeWealthPowerSuite extends munit.FunSuite:
   private val powers: Vector[ContributingPower] = Vector(TakeWealthLimit)
 
   // p1's site on the quiet table, and another in-play site.
-  private val site = CatalogNames.site("Ancient City")
-  private val otherSite = CatalogNames.site("Broken Peaks")
+  private val site = AncientCitySite.id
+  private val otherSite = BrokenPeaksSite.id
 
   /** The pawn stands at `pawn`, or nowhere, and this turn has already used
     * `used`. */
@@ -54,7 +56,7 @@ class TakeWealthPowerSuite extends munit.FunSuite:
 
   private def ctx(state: ReadyGame, window: PowerWindow, node: Operation,
       power: ContributingPower): PowerCtx =
-    PowerCtx(state, actor, power.source, window, Vector.empty, node)
+    PowerCtx(catalog, state, actor, power.source, window, Vector.empty, node)
 
   private def violation(state: ReadyGame, node: Operation,
       window: PowerWindow = PowerWindow.WakeTakeWealth): Option[OathViolation] =

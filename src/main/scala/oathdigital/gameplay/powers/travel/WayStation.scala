@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.travel
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
-  PrintedPower, SiteOnly}
+import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
 import oathdigital.gameplay.SiteRulers
 import oathdigital.gameplay.operations.SupplyStrip
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
@@ -38,13 +37,28 @@ object WayStationCard extends Denizen(DenizenId("169"), "Way Station", Suit.Noma
   * The favor writes the toll lines Curfew and Forced Labor write: "Gave
   * {1 favor} to {Blue}." or "Burned {1 favor}."
   */
-final case class WayStation private (catalog: ExecutableCatalog)
-    extends ContributingPower:
+case object WayStation extends ContributingPower:
+  /** The favor `operations` already take from `traveller` (a toll), which
+    * the favor answer must leave. A Travel modifier's payment is not among
+    * them: it was paid at the pick, before this node. Toll Roads' step
+    * counts as owed, though its ruler may waive it. */
+  private[travel] def favorOwed(operations: Vector[Operation],
+      traveller: PlayerId): Int = operations.collect {
+    case step: Decide if step.decisionId == TollRoads.decisionId &&
+        step.owner == traveller => TollRoads.Favor
+  }.sum + RulerToll.favorTaken(operations, traveller)
+
+  val id: PowerId = WayStationCard.power.id
+  val Favor: Int = 1
+  /** Under the `travel.` prefix, so the Game Log narrates it. */
+  val decisionId: String = "travel.way-station"
+  val supplyOption: DecisionOptionRef.Button = DecisionOptionRef.Button("supply")
+  val favorOption: DecisionOptionRef.Button = DecisionOptionRef.Button("favor")
+
   val cardId: DenizenId = WayStationCard.id
-  def id: PowerId = WayStation.id
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
   override lazy val resolution: PowerResolution =
-    CatalogResolution.of(catalog, id)
+    CatalogResolution.of(WayStationCard.power)
   private val notes = NoteSet(id)
   notes.include(RulerToll.notes)
   override def noteKeys: Vector[NoteKey] = notes.declared
@@ -96,24 +110,3 @@ final case class WayStation private (catalog: ExecutableCatalog)
                 Note(id, RulerToll.note(cardId, traveller, ruler)))
               case Some(_) => payment
               case None => Vector.empty)))
-
-object WayStation:
-  /** The favor `operations` already take from `traveller` (a toll), which
-    * the favor answer must leave. A Travel modifier's payment is not among
-    * them: it was paid at the pick, before this node. Toll Roads' step
-    * counts as owed, though its ruler may waive it. */
-  private[travel] def favorOwed(operations: Vector[Operation],
-      traveller: PlayerId): Int = operations.collect {
-    case step: Decide if step.decisionId == TollRoads.decisionId &&
-        step.owner == traveller => TollRoads.Favor
-  }.sum + RulerToll.favorTaken(operations, traveller)
-
-  val id: PowerId = WayStationCard.power.id
-  val Favor: Int = 1
-  /** Under the `travel.` prefix, so the Game Log narrates it. */
-  val decisionId: String = "travel.way-station"
-  val supplyOption: DecisionOptionRef.Button = DecisionOptionRef.Button("supply")
-  val favorOption: DecisionOptionRef.Button = DecisionOptionRef.Button("favor")
-
-  def forCatalog(catalog: ExecutableCatalog): WayStation =
-    new WayStation(catalog)

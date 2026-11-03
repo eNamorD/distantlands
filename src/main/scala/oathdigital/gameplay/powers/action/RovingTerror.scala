@@ -29,60 +29,11 @@ object RovingTerrorCard extends Denizen(DenizenId("46"), "Roving Terror", Suit.B
   *
   * The line covers the generic discard line.
   */
-final case class RovingTerror private (catalog: ExecutableCatalog)
-    extends PaidAction(RovingTerrorCard.power):
-  import RovingTerror._
-
-  private val slots = new SiteSlotMoves(catalog, RovingTerrorCard.id,
-    empty = false)
-  override def noteKeys: Vector[NoteKey] = RovingTerror.noteKeys
-  override def narratedDecisions: Set[String] = Set(decisionId)
-
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
-      : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
-    Branch((live, _) => ask(live, player)),
-    BuildOps((live, pending) => replace(live, player, pending),
-      required = true),
-    Note(this.id, replacedNote(_, source), covers = true))))
-
-  /** The question over the slots, each judged for the actor's discard.
-    * With none that may be chosen it is the Continue screen, where an
-    * askable slot still asks (catalog batch 8, slice 10, part 2b). */
-  private def ask(ready: ReadyGame, actor: PlayerId): Vector[Operation] =
-    Vector(Decide(decisionId, actor, DecisionQuery.ChooseOne(
-      slots.options(ready, actor), heading = Some(heading)),
-      passWhenEmpty = true))
-
-  /** No answer means no card could be replaced. */
-  private def replace(ready: ReadyGame, actor: PlayerId,
-      pending: PendingTree): Either[OathViolation, Vector[CoreOperation]] =
-    PowerAnswers.one(pending, decisionId) match
-      case None => Right(Vector.empty)
-      case Some(ref) => slots.chosen(ready, ref).toRight(
-          OathViolation.InvalidEventOrder(
-            s"${ref.wireId} is not a slot Roving Terror can move to"))
-        .flatMap(slots.operations(ready, actor, _))
-
-  /** The chosen slot, read before the step, once Roving Terror stands at its
-    * site. */
-  private def replacedNote(states: NoteStates, source: DecisionOptionRef)
-      : Option[LogNote] =
-    PowerSourceRef.of(source).map(card => (for
-      ref <- NoteSupport.answer(states, decisionId)
-      (before, _) <- states.previous
-      move <- slots.chosen(before, ref)
-      replacedCard <- move.replaced
-      if SiteRulers.siteOf(states.now, RovingTerrorCard.id)
-        .contains(move.site)
-    yield replaced(card, NoteArg.Card(replacedCard._1.id),
-      NoteArg.Site(move.site))).getOrElse(nothing(card)))
-
-object RovingTerror:
-  val id: PowerId = RovingTerrorCard.power.id
+case object RovingTerror extends PaidAction(RovingTerrorCard.power):
   val decisionId: String = "power.roving-terror.card"
   val heading: String = "Roving Terror: move to which slot?"
   private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
+  override def noteKeys: Vector[NoteKey] = notes.declared
   /** "Replaced {card} at {site}." */
   val replaced: NoteKey = notes.key(NoteKey.Used, Vector(
     NotePart.Text("Replaced "), NotePart.Arg(0), NotePart.Text(" at "),
@@ -91,5 +42,49 @@ object RovingTerror:
   val nothing: NoteKey = notes.key("used.none", Vector(
     NotePart.Text("No card could be replaced.")))
 
-  def forCatalog(catalog: ExecutableCatalog): RovingTerror =
-    new RovingTerror(catalog)
+  private val slots = new SiteSlotMoves(RovingTerrorCard.id,
+    empty = false)
+  override def narratedDecisions: Set[String] = Set(decisionId)
+
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
+      : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
+    Branch((live, _) => ask(catalog, live, player)),
+    BuildOps((live, pending) => replace(catalog, live, player, pending),
+      required = true),
+    Note(this.id, replacedNote(catalog, _, source), covers = true))))
+
+  /** The question over the slots, each judged for the actor's discard.
+    * With none that may be chosen it is the Continue screen, where an
+    * askable slot still asks (catalog batch 8, slice 10, part 2b). */
+  private def ask(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId): Vector[Operation] =
+    Vector(Decide(decisionId, actor, DecisionQuery.ChooseOne(
+      slots.options(catalog, ready, actor), heading = Some(heading)),
+      passWhenEmpty = true))
+
+  /** No answer means no card could be replaced. */
+  private def replace(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId,
+      pending: PendingTree): Either[OathViolation, Vector[CoreOperation]] =
+    PowerAnswers.one(pending, decisionId) match
+      case None => Right(Vector.empty)
+      case Some(ref) => slots.chosen(catalog, ready, ref).toRight(
+          OathViolation.InvalidEventOrder(
+            s"${ref.wireId} is not a slot Roving Terror can move to"))
+        .flatMap(slots.operations(ready, actor, _))
+
+  /** The chosen slot, read before the step, once Roving Terror stands at its
+    * site. */
+  private def replacedNote(catalog: ExecutableCatalog,
+      states: NoteStates, source: DecisionOptionRef)
+      : Option[LogNote] =
+    PowerSourceRef.of(source).map(card => (for
+      ref <- NoteSupport.answer(states, decisionId)
+      (before, _) <- states.previous
+      move <- slots.chosen(catalog, before, ref)
+      replacedCard <- move.replaced
+      if SiteRulers.siteOf(states.now, RovingTerrorCard.id)
+        .contains(move.site)
+    yield replaced(card, NoteArg.Card(replacedCard._1.id),
+      NoteArg.Site(move.site))).getOrElse(nothing(card)))

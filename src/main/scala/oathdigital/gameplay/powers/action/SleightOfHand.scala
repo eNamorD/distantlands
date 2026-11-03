@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.{AdviserOnly, Denizen, PrintedPower}
+import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
+  PrintedPower}
 import oathdigital.gameplay.{NoteSupport, PowerAccess}
 import oathdigital.gameplay.powers.PowerAnswers
 import oathdigital.model._
@@ -33,7 +34,8 @@ case object SleightOfHand extends PaidAction(SleightOfHandCard.power):
   override def noteKeys: Vector[NoteKey] = notes.declared
   override def narratedDecisions: Set[String] = Set(decisionId)
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     Branch((live, _) => ask(live, player)),
     BuildOps((live, pending) => steal(live, player, pending)),

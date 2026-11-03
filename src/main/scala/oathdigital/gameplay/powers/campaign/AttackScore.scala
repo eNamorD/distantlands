@@ -100,8 +100,8 @@ object AttackScore:
   /** The rules of the plans chosen in `actor`'s Campaign. */
   def rules(ready: ReadyGame, pending: PendingTree, actor: PlayerId)
       : AttackRules =
-    changes.filter(change => PlanUse.chosen(ready, pending, actor, change.ref,
-      Set(change.side), afterOutcome = false).nonEmpty)
+    changes.filter(change => PlanUse.sideUsed(ready, pending, change.ref,
+      Set(change.side)).nonEmpty)
       .foldLeft(AttackRules())((rules, change) => change.change(rules))
 
   /** What one plan added to the attack: the score with every chosen plan,

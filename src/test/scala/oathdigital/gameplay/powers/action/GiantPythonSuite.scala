@@ -1,9 +1,13 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  DeepWoodsSite}
+import oathdigital.gameplay.operations.AncientBloodlineCard
 import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
+import oathdigital.gameplay.powers.banner.YewStaffCard
+import oathdigital.gameplay.powers.search.ErrandBoyCard
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
@@ -14,16 +18,16 @@ import oathdigital.testkit.Unwrap.accepted
 class GiantPythonSuite extends munit.FunSuite:
   import PhasePowerHarness._
 
-  private val python = CatalogNames.denizen("Giant Python")
+  private val python = GiantPythonCard.id
   private val source = DecisionOptionRef.Denizen(python)
-  private val power = GiantPython.forCatalog(catalog)
-  private val home = CatalogNames.site("Ancient City")
+  private val power = GiantPython
+  private val home = AncientCitySite.id
   /** Capacity 1. */
-  private val peaks = CatalogNames.site("Broken Peaks")
+  private val peaks = BrokenPeaksSite.id
   /** Capacity 3. */
-  private val woods = CatalogNames.site("Deep Woods")
+  private val woods = DeepWoodsSite.id
   /** A plain Beast denizen. */
-  private val errandBoy = CatalogNames.denizen("Errand Boy")
+  private val errandBoy = ErrandBoyCard.id
 
   /** p1's Act at Ancient City beside Giant Python, holding the Darkest
     * Secret and the start's faceup secret. Errand Boy fills Broken Peaks. */
@@ -41,7 +45,7 @@ class GiantPythonSuite extends munit.FunSuite:
 
   test("Yew Staff's holder may use it as if they held the Darkest Secret"):
     val ready = pythonBesideDarkestSecretHolder.darkestSecret(None, 1)
-      .relic(p1, "Yew Staff").ready
+      .relic(p1, YewStaffCard).ready
     assert(usableNow(ready).exists(_.power.id == power.id))
 
   test("it asks one slot question: an empty slot where there is room, a " +
@@ -92,7 +96,7 @@ class GiantPythonSuite extends munit.FunSuite:
     // Bloodline faceup.
     val ready = pythonBesideDarkestSecretHolder
       .warbandsAt(peaks, Table.p2, 1)
-      .adviser(Table.p2, CatalogNames.denizen("Ancient Bloodline")).ready
+      .adviser(Table.p2, AncientBloodlineCard.id).ready
     val t = accepted(use(ready, power, source))
     assert(awaits(t, GiantPython.decisionId))
     val row = queryOf(t, p1).toVector.flatMap(_.offeredOptions)

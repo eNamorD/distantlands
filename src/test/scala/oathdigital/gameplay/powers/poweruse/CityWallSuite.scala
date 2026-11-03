@@ -6,22 +6,30 @@ import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.actions.dice.RerollChoice
 import oathdigital.gameplay.actions.economy.MusterProcedure
 import oathdigital.gameplay.actions.recover.RecoverProcedure
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite, DeepWoodsSite, FairIsleSite}
 import oathdigital.gameplay.operations.{OperationPipeline, OperationPolicy}
 import oathdigital.gameplay.phases.wake.ForcedWakeProcedure
 import oathdigital.gameplay.powerresolver.{ModifierPicks, PowerUse,
   PowerUseStep}
 import oathdigital.gameplay.powers.{PhasePowerCatalog, PowerFixture,
   WalkerPowerCatalog}
-import oathdigital.gameplay.powers.action.RovingTerror
-import oathdigital.gameplay.powers.campaign.PlanDriver
-import oathdigital.gameplay.powers.travel.{TravelFixture, Tyrant}
+import oathdigital.gameplay.powers.action.{DowsingSticksCard, RovingTerror,
+  RovingTerrorCard, WildAlliesCard}
+import oathdigital.gameplay.powers.campaign.{BattleHonorsCard, FireTalkersCard,
+  PlanDriver, WrestlersCard}
+import oathdigital.gameplay.powers.dice.JinxCard
+import oathdigital.gameplay.powers.economy.{MapLibraryCard, SmallFriendsCard}
+import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.travel.{TravelFixture, Tyrant, TyrantCard}
+import oathdigital.gameplay.powers.wake.HungerCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{ProcedureWalker, WalkerPowers}
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, MenuPlay,
-  Outcomes, ParkedNode, PhasePowerHarness, PowerRules, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, MenuPlay, Outcomes,
+  ParkedNode, PhasePowerHarness, PowerRules, Table}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.{accepted, present}
 
@@ -29,10 +37,10 @@ import oathdigital.testkit.Unwrap.{accepted, present}
   * cannot place [favor] / [secret] on cards or use non-persistent powers."
   * (catalog batch 8, slice 10, part 2). */
 class CityWallSuite extends munit.FunSuite:
-  private val wall = CatalogNames.denizen("City Wall")
-  private val home = CatalogNames.site("Ancient City")
-  private val woods = CatalogNames.site("Deep Woods")
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
+  private val wall = CityWallCard.id
+  private val home = AncientCitySite.id
+  private val woods = DeepWoodsSite.id
+  private val wrestlers = WrestlersCard.id
   private val source = PowerSourceRef.Card(wall)
 
   /** p1's Act with City Wall at Ancient City, which `ruled` gives its
@@ -48,19 +56,20 @@ class CityWallSuite extends munit.FunSuite:
 
   test("it refuses an enemy at its site any non-persistent power, waivable " +
       "by the ruler"):
-    val refusal = CityWall.refusal(wallAtAncientCity(), nonPersistentUse)
+    val refusal = CityWall.refusal(catalog, wallAtAncientCity(),
+      nonPersistentUse)
     assertEquals(refusal.map(_.note), Some(CityWall.usePlain(source)))
     assertEquals(refusal.flatMap(_.reason.waiver).flatMap(_.granter),
       Some(p2))
 
   test("away from its site, or as its ruler, nothing is refused"):
-    assertEquals(CityWall.refusal(wallAtAncientCity(pawnAt = woods),
+    assertEquals(CityWall.refusal(catalog, wallAtAncientCity(pawnAt = woods),
       nonPersistentUse), None)
-    assertEquals(CityWall.refusal(wallAtAncientCity(ruled =
+    assertEquals(CityWall.refusal(catalog, wallAtAncientCity(ruled =
       _.warbandsAt(home, p1, 1)), nonPersistentUse), None)
 
   test("it refuses an enemy at its site a payment onto any card"):
-    val ban = CityWall.operationRestrictions.head
+    val ban = CityWall.operationRestrictions(catalog).head
     val pay = PayCost(p1, Location.OnCard(wrestlers), Cost(favor = 1))
     assertEquals(ban.reason(wallAtAncientCity(), pay).flatMap(_.waiver)
       .map(_.covers), Some(ConsentKey(CityWall.id, p1, "power.use",
@@ -71,7 +80,7 @@ class CityWallSuite extends munit.FunSuite:
     // A Muster's sources stand at the musterer's site, every one of which
     // City Wall refuses, so no question shows this reason beside a card
     // that may be chosen: the refusal itself is pinned.
-    val ban = CityWall.operationRestrictions.head
+    val ban = CityWall.operationRestrictions(catalog).head
     val pay = PayCost(p1, Location.OnCard(wrestlers), Cost(favor = 1))
     val waiver = ban.reason(wallAtAncientCity(ruled = _.bandits(home, 2)),
       pay).flatMap(_.waiver)
@@ -80,10 +89,10 @@ class CityWallSuite extends munit.FunSuite:
 
   // ---- the paths ---------------------------------------------------------
 
-  private val terror = CatalogNames.denizen("Roving Terror")
+  private val terror = RovingTerrorCard.id
   private val terrorRef = DecisionOptionRef.Denizen(terror)
 
-  private val rovingTerror = RovingTerror.forCatalog(catalog)
+  private val rovingTerror = RovingTerror
 
   /** p1's Act at Ancient City beside Roving Terror and City Wall, which p2
     * rules, with Wrestlers at Broken Peaks to replace, as
@@ -91,7 +100,7 @@ class CityWallSuite extends munit.FunSuite:
   private def terrorInsideWall: ReadyGame =
     Table.start.turn(p1, Phase.Act).pawn(p1, at = home)
       .denizen(terror, at = home).denizen(wall, at = home)
-      .denizen(wrestlers, at = CatalogNames.site("Broken Peaks"))
+      .denizen(wrestlers, at = BrokenPeaksSite.id)
       .warbandsAt(home, p2, 1).ready
 
   private def terrorOption(ready: ReadyGame)(using munit.Location)
@@ -141,11 +150,11 @@ class CityWallSuite extends munit.FunSuite:
     // p1's Recover at Fair Isle with Jinx faceup, as `JinxSuite` sets it
     // up, City Wall at Fair Isle ruled by p2, parked on the first reroll
     // choice.
-    val isle = CatalogNames.site("Fair Isle")
-    val jinx = CatalogNames.denizen("Jinx")
+    val isle = FairIsleSite.id
+    val jinx = JinxCard.id
     import DefenseDieFace.{Blank, TwoShields}
     val start = Table.start.turn(p1, Phase.Act).pawn(p1, at = isle)
-      .relicAt(CatalogNames.relic("Dowsing Sticks"), at = isle)
+      .relicAt(DowsingSticksCard.id, at = isle)
       .adviser(p1, jinx).secrets(p1, faceUp = 2)
       .denizen(wall, at = isle).warbandsAt(isle, p2, 1).ready
     val game = new OathRules(catalog,
@@ -172,7 +181,7 @@ class CityWallSuite extends munit.FunSuite:
   private def attackOnRivalsCity(walled: Boolean): CampaignFixture.Board =
     import CampaignFixture.{board, on, withAdviser, withSecrets}
     val talkers = withSecrets(withAdviser(withAdviser(board(warbands = 5,
-      supply = 7), "Fire Talkers", Orientation.FaceUp), "Battle Honors",
+      supply = 7), FireTalkersCard, Orientation.FaceUp), BattleHonorsCard,
       Orientation.FaceUp), 1)
     val b = on(talkers)(_.darkestSecret(Some(talkers.actor), secrets = 1)
       .warbandsAt(talkers.origin, talkers.rival, 2))
@@ -192,7 +201,7 @@ class CityWallSuite extends munit.FunSuite:
     val run = attackerPlanAsked(b)
     assert(PlanDriver.awaits(run, b.actor, CampaignIds.attackerPlan))
     assert(run.offered(b.actor).contains(DecisionOptionRef.Denizen(
-      CatalogNames.denizen("Fire Talkers"))))
+      FireTalkersCard.id)))
 
   /** p1 holds Fire Talkers faceup, a faceup secret and the Darkest Secret,
     * with the pawn at Ancient City; the rival rules Buried Giant with 2
@@ -201,9 +210,9 @@ class CityWallSuite extends munit.FunSuite:
   private def firesAgainstTheRivalAtBuriedGiant(wallAt: SiteId)
       : (CampaignFixture.Board, SiteId) =
     import CampaignFixture.{board, on, withAdviser, withSecrets}
-    val giant = CatalogNames.site("Buried Giant")
+    val giant = BuriedGiantSite.id
     val talkers = withSecrets(withAdviser(board(warbands = 5, supply = 7),
-      "Fire Talkers", Orientation.FaceUp), 1)
+      FireTalkersCard, Orientation.FaceUp), 1)
     val b = on(talkers)(_.darkestSecret(Some(talkers.actor), secrets = 1)
       .pawn(talkers.rival, at = giant).warbandsAt(giant, talkers.rival, 2)
       .denizen(wall, at = wallAt).warbandsAt(wallAt, talkers.rival, 2))
@@ -214,11 +223,11 @@ class CityWallSuite extends munit.FunSuite:
       : PlanDriver.Run =
     val game = CampaignFixture.rules(PlanDriver.winningDice)
     PlanDriver.committed(game, CampaignFixture.campaignQueuedFrom(game, b,
-      origin, PowerSourceRef.Card(CatalogNames.denizen("Wild Allies"))), b,
+      origin, PowerSourceRef.Card(WildAlliesCard.id)), b,
       force = 2)
 
   test("an attacker campaigning from City Wall's site is walled in there"):
-    val giant = CatalogNames.site("Buried Giant")
+    val giant = BuriedGiantSite.id
     val (b, origin) = firesAgainstTheRivalAtBuriedGiant(wallAt = giant)
     assert(!PlanDriver.awaits(conquestQueuedFrom(b, origin), b.actor,
       CampaignIds.attackerPlan))
@@ -229,14 +238,14 @@ class CityWallSuite extends munit.FunSuite:
     val run = conquestQueuedFrom(b, origin)
     assert(PlanDriver.awaits(run, b.actor, CampaignIds.attackerPlan))
     assert(run.offered(b.actor).contains(DecisionOptionRef.Denizen(
-      CatalogNames.denizen("Fire Talkers"))))
+      FireTalkersCard.id)))
 
   // ---- an as-if Trade site (item 13c) ------------------------------------
 
-  private val friends = CatalogNames.denizen("Small Friends")
-  private val library = CatalogNames.denizen("Map Library")
+  private val friends = SmallFriendsCard.id
+  private val library = MapLibraryCard.id
   /** A plain Beast denizen, so Small Friends may act as if at its site. */
-  private val errandBoy = CatalogNames.denizen("Errand Boy")
+  private val errandBoy = ErrandBoyCard.id
   private val tradeRules = PowerRules.withWalkerPowers
   private val tradeModifiers =
     ModifierPicks.decisionId(PowerWindow.TradeModifierSelection)
@@ -307,7 +316,7 @@ class CityWallSuite extends munit.FunSuite:
       "card"):
     // Every selected modifier is non-persistent, so a pick shows the use
     // reason first; the placing ban is pinned on the payment itself.
-    val ban = CityWall.operationRestrictions.head
+    val ban = CityWall.operationRestrictions(catalog).head
     val pay = PayCost(p1, Location.OnCard(wrestlers), Cost(favor = 1))
     val away = wallAtAncientCity(pawnAt = woods)
     assertEquals(ban.reason(away, pay), None)
@@ -315,11 +324,12 @@ class CityWallSuite extends munit.FunSuite:
 
   test("once the walk ends, the enemy acts from their pawn again"):
     val away = wallAtAncientCity(pawnAt = woods)
-    assert(CityWall.refusal(afterActingAsIfAt(away, home),
+    assert(CityWall.refusal(catalog, afterActingAsIfAt(away, home),
       nonPersistentUse).nonEmpty)
     val done = Outcomes.finished(ProcedureWalker.advance(away,
       ActAsIf(home), None, everyPower))
-    assertEquals(CityWall.refusal(done.treeless, nonPersistentUse), None)
+    assertEquals(CityWall.refusal(catalog, done.treeless, nonPersistentUse),
+      None)
 
   test("an enemy at its site who trades as if elsewhere is not walled in " +
       "for the rest of that Trade"):
@@ -336,8 +346,9 @@ class CityWallSuite extends munit.FunSuite:
     val ready = afterActingAsIfAt(Table.start.turn(p1, Phase.Act)
       .pawn(p1, at = woods).pawn(p2, at = woods).denizen(wall, at = home)
       .bandits(home, 2).ready, home)
-    assert(CityWall.refusal(ready, nonPersistentUse).nonEmpty)
-    assertEquals(CityWall.refusal(ready, nonPersistentUse.copy(user = p2)),
+    assert(CityWall.refusal(catalog, ready, nonPersistentUse).nonEmpty)
+    assertEquals(CityWall.refusal(catalog, ready,
+      nonPersistentUse.copy(user = p2)),
       None)
 
   test("a game parked after the site answer and rebuilt from its events " +
@@ -346,12 +357,12 @@ class CityWallSuite extends munit.FunSuite:
     val acting = tradingAsIfAt(ready, home)
     val rebuilt = ActPowerHarness.replayed(tradeRules, ready, acting.events)
     assertEquals(rebuilt.game.current.walkerAsIfSite, Some(home))
-    assert(CityWall.refusal(rebuilt, nonPersistentUse).nonEmpty)
+    assert(CityWall.refusal(catalog, rebuilt, nonPersistentUse).nonEmpty)
 
   /** The actor holding Tyrant at Buried Giant, laid out by `steps`. */
   private def holdingTyrant(steps: Table => Table): ReadyGame =
     TravelFixture.on(TravelFixture.board(supply = 7))(table =>
-      steps(table.adviser(PowerFixture.actor, "Tyrant")))
+      steps(table.adviser(PowerFixture.actor, TyrantCard)))
 
   test("Tyrant arriving at its site under bandits kills nothing"):
     import TravelFixture.coast
@@ -382,11 +393,11 @@ class CityWallSuite extends munit.FunSuite:
       "ruler to decide, and not under bandits"):
     // p2 holds Hunger faceup and Wrestlers at Broken Peaks, as
     // `HungerSuite` stages it; City Wall stands there.
-    val peaks = CatalogNames.site("Broken Peaks")
+    val peaks = BrokenPeaksSite.id
     def holding(steps: Table => Table): ReadyGame =
-      steps(Table.start.adviser(p2, "Hunger").adviser(p2, "Wrestlers")
+      steps(Table.start.adviser(p2, HungerCard).adviser(p2, WrestlersCard)
         .pawn(p2, at = peaks).denizen(wall, at = peaks)).ready
-    val phasePowers = PhasePowerCatalog.default(catalog)
+    val phasePowers = PhasePowerCatalog.default
     def forced(ready: ReadyGame) =
       ForcedWakeProcedure.due(catalog, ready, p2, phasePowers)
     assert(forced(holding(_.warbandsAt(peaks, p1, 1))).nonEmpty)

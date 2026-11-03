@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.whenplayed
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower,
+  SiteOnly}
 import oathdigital.gameplay.{NoteSupport, SiteRulers}
 import oathdigital.gameplay.powerresolver.PowerCtx
 import oathdigital.gameplay.powers.PowerAnswers
@@ -25,83 +26,12 @@ object GreatHerdCard extends Denizen(DenizenId("30"), "Great Herd", Suit.Nomad) 
   * WHEN PLAYED. The effect is one `Branch`, so the node count this power
   * adds to the card-played window never depends on live state.
   */
-final case class GreatHerd private (catalog: ExecutableCatalog)
-    extends WhenPlayedPower:
-  val cardId: DenizenId = GreatHerdCard.id
-  import GreatHerd._
-  def id: PowerId = GreatHerd.id
-
-  override def noteKeys: Vector[NoteKey] = GreatHerd.noteKeys
-  override def narratedDecisions: Set[String] = Set(decisionId)
-
-  def effect(ctx: PowerCtx): Vector[Operation] =
-    Vector(Branch((live, _) =>
-      val found = candidates(live)
-      if found.isEmpty then Vector(Note(id, _ =>
-        Some(none(PowerSourceRef.Card(cardId)))))
-      else Vector(
-        Decide(decisionId, ctx.actor, DecisionQuery.ChooseOne(
-          found.map(_.option) :+ DecisionOption.Button(keep, "Keep Great Herd"),
-          heading = Some("Great Herd: swap it with a Nomad card at another " +
-            "site?"))),
-        BuildOps((ready, pending) => swap(ready, ctx.actor, pending),
-          required = true),
-        Note(id, swappedNote(_, ctx.actor)))))
-
-  /** The faceup Nomad denizens and ruined Nomad edifices at every other
-    * site in play, in map order. */
-  private def candidates(ready: ReadyGame): Vector[Candidate] =
-    val map = ready.game.current.map
-    SiteRulers.siteOf(ready, cardId).toVector.flatMap(here => map.inPlay
-      .filter(_ != here).flatMap(site => map.sites.get(site).toVector
-        .flatMap(_.denizens.collect {
-          case DenizenState(card, Orientation.FaceUp, _) if nomad(card) =>
-            Candidate(site, card, DecisionOption.Denizen(
-              DecisionOptionRef.Denizen(card)))
-          case EdificeState(card, EdificeSide.Ruined, _) if nomad(card) =>
-            Candidate(site, card, DecisionOption.Edifice(
-              DecisionOptionRef.Edifice(card)))
-        })))
-
-  private def nomad(card: CardId): Boolean =
-    catalog.suitOf(card).contains(Suit.Nomad)
-
-  private def swap(ready: ReadyGame, actor: PlayerId, pending: PendingTree)
-      : Either[OathViolation, Vector[CoreOperation]] =
-    PowerAnswers.one(pending, decisionId) match
-      case Some(`keep`) => Right(Vector.empty)
-      case Some(ref) => swapWith(ready, actor, ref).toRight(OathViolation
-        .InvalidEventOrder(s"${ref.wireId} is not a Nomad card Great Herd " +
-          "can swap with"))
-      case None => Left(PowerAnswers.missing(decisionId))
-
-  private def swapWith(ready: ReadyGame, actor: PlayerId,
-      ref: DecisionOptionRef)
-      : Option[Vector[CoreOperation]] = for
-    here <- SiteRulers.siteOf(ready, cardId)
-    chosen <- candidates(ready).find(_.option.ref == ref)
-  yield Vector(Swap(cardId, PositionedLocation(Location.Site(here)),
-    chosen.card, PositionedLocation(Location.Site(chosen.site)),
-    by = Some(actor)))
-
-  /** Written only when the chosen card now stands where Great Herd stood. */
-  private def swappedNote(states: NoteStates, actor: PlayerId)
-      : Option[LogNote] = for
-    ref <- NoteSupport.answer(states, decisionId)
-    (before, after) <- states.previous
-    here <- SiteRulers.siteOf(before, cardId)
-    chosen <- candidates(before).find(_.option.ref == ref)
-    if after.game.current.map.sites.get(here)
-      .exists(_.denizens.exists(_.id == chosen.card))
-  yield swapped(PowerSourceRef.Card(cardId), NoteArg.Player(actor),
-    NoteArg.Card(chosen.card), NoteArg.Site(chosen.site))
-
-object GreatHerd:
+case object GreatHerd extends WhenPlayedPower:
   val id: PowerId = GreatHerdCard.power.id
   val decisionId: String = "cardplay.great-herd.swap"
   val keep: DecisionOptionRef.Button = DecisionOptionRef.Button("keep")
   private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
+  override def noteKeys: Vector[NoteKey] = notes.declared
   /** "{Red} swapped it with {card} at {site}." */
   val swapped: NoteKey = notes.key("swapped", Vector(NotePart.Arg(0),
     NotePart.Text(" swapped it with "), NotePart.Arg(1), NotePart.Text(" at "),
@@ -113,5 +43,76 @@ object GreatHerd:
   private final case class Candidate(site: SiteId, card: CardId,
       option: DecisionOption)
 
-  def forCatalog(catalog: ExecutableCatalog): GreatHerd =
-    new GreatHerd(catalog)
+  val cardId: DenizenId = GreatHerdCard.id
+
+  override def narratedDecisions: Set[String] = Set(decisionId)
+
+  def effect(ctx: PowerCtx): Vector[Operation] =
+    Vector(Branch((live, _) =>
+      val found = candidates(ctx.catalog, live)
+      if found.isEmpty then Vector(Note(id, _ =>
+        Some(none(PowerSourceRef.Card(cardId)))))
+      else Vector(
+        Decide(decisionId, ctx.actor, DecisionQuery.ChooseOne(
+          found.map(_.option) :+ DecisionOption.Button(keep, "Keep Great Herd"),
+          heading = Some("Great Herd: swap it with a Nomad card at another " +
+            "site?"))),
+        BuildOps((ready, pending) =>
+          swap(ctx.catalog, ready, ctx.actor, pending),
+          required = true),
+        Note(id, swappedNote(ctx.catalog, _, ctx.actor)))))
+
+  /** The faceup Nomad denizens and ruined Nomad edifices at every other
+    * site in play, in map order. */
+  private def candidates(catalog: ExecutableCatalog,
+      ready: ReadyGame): Vector[Candidate] =
+    val map = ready.game.current.map
+    SiteRulers.siteOf(ready, cardId).toVector.flatMap(here => map.inPlay
+      .filter(_ != here).flatMap(site => map.sites.get(site).toVector
+        .flatMap(_.denizens.collect {
+          case DenizenState(card, Orientation.FaceUp, _)
+              if nomad(catalog, card) =>
+            Candidate(site, card, DecisionOption.Denizen(
+              DecisionOptionRef.Denizen(card)))
+          case EdificeState(card, EdificeSide.Ruined, _)
+              if nomad(catalog, card) =>
+            Candidate(site, card, DecisionOption.Edifice(
+              DecisionOptionRef.Edifice(card)))
+        })))
+
+  private def nomad(catalog: ExecutableCatalog, card: CardId): Boolean =
+    catalog.suitOf(card).contains(Suit.Nomad)
+
+  private def swap(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId, pending: PendingTree)
+      : Either[OathViolation, Vector[CoreOperation]] =
+    PowerAnswers.one(pending, decisionId) match
+      case Some(`keep`) => Right(Vector.empty)
+      case Some(ref) => swapWith(catalog, ready, actor, ref)
+        .toRight(OathViolation
+        .InvalidEventOrder(s"${ref.wireId} is not a Nomad card Great Herd " +
+          "can swap with"))
+      case None => Left(PowerAnswers.missing(decisionId))
+
+  private def swapWith(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId,
+      ref: DecisionOptionRef)
+      : Option[Vector[CoreOperation]] = for
+    here <- SiteRulers.siteOf(ready, cardId)
+    chosen <- candidates(catalog, ready).find(_.option.ref == ref)
+  yield Vector(Swap(cardId, PositionedLocation(Location.Site(here)),
+    chosen.card, PositionedLocation(Location.Site(chosen.site)),
+    by = Some(actor)))
+
+  /** Written only when the chosen card now stands where Great Herd stood. */
+  private def swappedNote(catalog: ExecutableCatalog,
+      states: NoteStates, actor: PlayerId)
+      : Option[LogNote] = for
+    ref <- NoteSupport.answer(states, decisionId)
+    (before, after) <- states.previous
+    here <- SiteRulers.siteOf(before, cardId)
+    chosen <- candidates(catalog, before).find(_.option.ref == ref)
+    if after.game.current.map.sites.get(here)
+      .exists(_.denizens.exists(_.id == chosen.card))
+  yield swapped(PowerSourceRef.Card(cardId), NoteArg.Player(actor),
+    NoteArg.Card(chosen.card), NoteArg.Site(chosen.site))

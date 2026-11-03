@@ -1,28 +1,30 @@
 package oathdigital.gameplay.powers.economy
 
+import oathdigital.gameplay.SpitefulMirrorCard
 import oathdigital.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powerresolver.ModifierPicks
 import oathdigital.gameplay.powers.{NoteText, SearchFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
+import oathdigital.gameplay.powers.campaign.WrestlersCard
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, MenuPlay,
-  Outcomes, PhasePowerHarness, PowerRules, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, MenuPlay, Outcomes,
+  PhasePowerHarness, PowerRules, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
 
 class SpitefulMirrorSuite extends munit.FunSuite:
-  private val mirror = CatalogNames.relic("Spiteful Mirror")
-  private val power = SpitefulMirror.forCatalog(catalog)
-  private val home = CatalogNames.site("Ancient City")
+  private val mirror = SpitefulMirrorCard.id
+  private val power = SpitefulMirror
+  private val home = AncientCitySite.id
   /** A plain Order denizen. */
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
+  private val wrestlers = WrestlersCard.id
   /** A plain Discord denizen. */
   private val plainDiscord = SearchFixture.anyPlainDenizensOf(Suit.Discord)
     .head
-  private val defame = CatalogNames.denizen("Defame")
+  private val defame = DefameCard.id
   private val rules = PowerRules.withWalkerPowers
   private def modifiers(action: PowerWindow): String =
     ModifierPicks.decisionId(action)
@@ -107,7 +109,7 @@ class SpitefulMirrorSuite extends munit.FunSuite:
   test("unpaid, with no secret, it is unavailable with the shortfall"):
     // Downtrodden, free, makes the Muster ask for its modifiers.
     val asked = begun(mirrorAtWrestlers(secrets = 0)
-      .adviser(p1, CatalogNames.denizen("Downtrodden")).ready,
+      .adviser(p1, DowntroddenCard.id).ready,
       ActionRef.Muster, Vector.empty)
     assert(optionStates(asked).exists(_.contains((mirror.value,
       "unavailable", Some("Needs 1 secret; you have 0")))),
@@ -144,7 +146,7 @@ class SpitefulMirrorSuite extends munit.FunSuite:
 
   test("The Old Oak, traded as Discord, gives its secret for a Discord " +
       "adviser"):
-    val oak = CatalogNames.denizen("The Old Oak")
+    val oak = TheOldOakCard.id
     val ready = mirrorAtWrestlers(secrets = 1).denizen(oak, at = home)
       .favor(p1, 2).ready
     val bothPicked = answeredWith(mirrorPicked(begun(ready, ActionRef.Trade,

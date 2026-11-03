@@ -1,7 +1,8 @@
 package oathdigital.gameplay
 
 import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.VowOfPeaceContribution
+import oathdigital.gameplay.powers.campaign.{VowOfPeaceCard,
+  VowOfPeaceContribution}
 import oathdigital.gameplay.powers.travel.{NarrowPassSitePower,
   TravelSitePowers}
 import oathdigital.gameplay.walker.{ProcedureWalker, WalkerPowers}
@@ -21,7 +22,7 @@ class CampaignPowersSuite extends munit.FunSuite:
     WalkerPowers(Vector(VowOfPeaceContribution))
 
   private def holding(orientation: Orientation, holder: PlayerId): ReadyGame =
-    Table.start.adviser(holder, "Vow of Peace",
+    Table.start.adviser(holder, VowOfPeaceCard,
       facedown = orientation == Orientation.FaceDown).ready
 
   private def vowViolations(ready: ReadyGame) =

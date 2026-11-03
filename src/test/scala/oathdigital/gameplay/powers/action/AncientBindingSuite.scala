@@ -1,9 +1,11 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.gameplay.PlayerSecretSummary
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.search.{ErrandBoyCard, LandWardenCard}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.accepted
@@ -11,15 +13,15 @@ import oathdigital.testkit.Unwrap.accepted
 class AncientBindingSuite extends munit.FunSuite:
   import PhasePowerHarness._
 
-  private val binding = CatalogNames.denizen("Ancient Binding")
+  private val binding = AncientBindingCard.id
   private val source = DecisionOptionRef.Denizen(binding)
-  private val home = CatalogNames.site("Ancient City")
+  private val home = AncientCitySite.id
   /** Cards that each carry a secret on the staged table: p1's adviser and
     * relic, a denizen at p1's site, and p2's adviser. */
-  private val elders = CatalogNames.denizen("Elders")
-  private val whistle = CatalogNames.relic("Whistle")
-  private val errandBoy = CatalogNames.denizen("Errand Boy")
-  private val landWarden = CatalogNames.denizen("Land Warden")
+  private val elders = EldersCard.id
+  private val whistle = WhistleCard.id
+  private val errandBoy = ErrandBoyCard.id
+  private val landWarden = LandWardenCard.id
 
   /** p1's Act at Ancient City holding Ancient Binding, with 2 faceup and 2
     * facedown secrets. Elders, Whistle, Errand Boy at Ancient City and p2's

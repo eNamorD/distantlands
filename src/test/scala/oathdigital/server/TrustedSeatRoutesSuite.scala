@@ -1,6 +1,7 @@
 package oathdigital.server
 
-import oathdigital.model.PlayerColor
+import oathdigital.gameplay.cards.AncientCitySite
+import oathdigital.model.{PlayerColor, PlayerId}
 
 import java.net.{CookieManager, CookiePolicy, URI}
 import java.net.http.{HttpClient, HttpRequest, HttpResponse => JavaResponse}
@@ -13,7 +14,7 @@ import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.gameplay.setup.FirstGameSetupFixture.chronicle
 import oathdigital.gameplay.setup.SetupProcedure
 import oathdigital.protocol._
-import oathdigital.testkit.{CatalogNames, HttpTestServer}
+import oathdigital.testkit.HttpTestServer
 import oathdigital.testkit.ChronicleShuffles.reversing
 import oathdigital.testkit.Table.p2
 import oathdigital.testkit.Unwrap.{accepted, present}
@@ -30,11 +31,11 @@ class TrustedSeatRoutesSuite extends munit.FunSuite:
   private val oneYearSeconds = 365 * 24 * 3600
 
   /** "trusted", begun with p2 first and parked on p2's Setup pawn
-    * placement, behind a trusted gateway; `afterBegin` is the sequence after
-    * Begin. It starts from the real Begin command, since the trusted routes
-    * serving a game from GameStarted onward are the subject. */
+    * placement, behind the gateway; `afterBegin` is the sequence after
+    * Begin. It starts from the real Begin command, since the routes serving
+    * a game from GameStarted onward are the subject. */
   private final case class TrustedGatewayGame(service: GameApplicationService,
-      gateway: TrustedGameGateway, afterBegin: Long)
+      gateway: GameGateway, afterBegin: Long)
 
   private def begunTrustedGame(): TrustedGatewayGame =
     val service = new GameApplicationService(catalog,
@@ -42,41 +43,38 @@ class TrustedSeatRoutesSuite extends munit.FunSuite:
     val begun = accepted(service.handle("trusted", 0L,
       GameCommand.Begin(chronicle, orders.copy(firstPlayer = p2))))
     TrustedGatewayGame(service,
-      new TrustedGameGateway(service, new GameProjector(catalog)),
+      new GameGateway(service, new GameProjector(catalog)),
       begun.nextSequence)
 
-  private val trustedP2Seat = TrustedSeat("trusted", "p2")
-  private val trustedP3Seat = TrustedSeat("trusted", "p3")
+  private val p2Seat = GameAccess.Seat(p2)
+  private val p3Seat = GameAccess.Seat(PlayerId("p3"))
 
   /** p2's answer to its pawn placement: Ancient City. */
   private def placeP2Pawn(afterBegin: Long): ActorlessCommandRequest =
     val pawnDecision = SetupProcedure.pawnDecisionId(p2)
-    val ancientCity = CatalogNames.site("Ancient City").value
+    val ancientCity = AncientCitySite.id.value
     accepted(GameHttpWire.decodeCommand(
       s"""{"expectedNextSequence":$afterBegin,""" +
         s""""intent":{"type":"resolveWalker",""" +
         s""""decisionId":"$pawnDecision","payload":{"kind":"choose-one",""" +
         s""""optionKind":"site","optionId":"$ancientCity"}}}"""))
 
-  test("the trusted gateway projects only the seat's own view"):
+  test("the gateway projects only the seat's own view, and names it"):
     val TrustedGatewayGame(service, gateway, _) = begunTrustedGame()
     assertEquals(
-      accepted(gateway.load("trusted", trustedP3Seat)).viewerPlayerId,
-      Some("p3"))
-    val development = new GameProjector(catalog).project("trusted",
+      accepted(gateway.load("trusted", p3Seat)).viewerPlayerId, Some("p3"))
+    val bare = new GameProjector(catalog).project("trusted",
       present(accepted(service.load("trusted")), "the trusted game"), p2)
-    assertEquals(development.viewerPlayerId, None)
-    assert(!oathdigital.protocol.projection.GameProjectionCodec.encode(development)
+    assertEquals(bare.viewerPlayerId, None)
+    assert(!oathdigital.protocol.projection.GameProjectionCodec.encode(bare)
       .contains("viewerPlayerId"))
-    assert(accepted(gateway.load("trusted", trustedP2Seat)).walkerDecision
-      .nonEmpty)
-    assert(accepted(gateway.load("trusted", trustedP3Seat)).walkerDecision
-      .isEmpty)
+    assert(accepted(gateway.load("trusted", p2Seat)).walkerDecision.nonEmpty)
+    assert(accepted(gateway.load("trusted", p3Seat)).walkerDecision.isEmpty)
 
-  test("the trusted gateway binds the command actor to the seat"):
+  test("the gateway binds the command actor to the seat"):
     val TrustedGatewayGame(service, gateway, afterBegin) = begunTrustedGame()
     val placed = accepted(
-      gateway.submit("trusted", trustedP2Seat, placeP2Pawn(afterBegin)))
+      gateway.submit("trusted", p2Seat, placeP2Pawn(afterBegin)))
     assertEquals(placed.viewerPlayerId, Some("p2"))
     assertEquals(placed.walkerDecision.map(_.decisionId),
       Some("setup.adviser-choice.p2"))
@@ -85,26 +83,39 @@ class TrustedSeatRoutesSuite extends munit.FunSuite:
         .nextSequence,
       placed.nextSequence)
     // A fresh load after the answer shows p2's next decision to p2 only.
-    assertEquals(accepted(gateway.load("trusted", trustedP2Seat))
+    assertEquals(accepted(gateway.load("trusted", p2Seat))
       .walkerDecision.map(_.decisionId), Some("setup.adviser-choice.p2"))
-    assertEquals(accepted(gateway.load("trusted", trustedP3Seat)).walkerDecision,
+    assertEquals(accepted(gateway.load("trusted", p3Seat)).walkerDecision,
       None)
     assertEquals(GameHttpWire.decodeCommand("""{"expectedNextSequence":2,"intent":{"type":"resolveWalker","playerId":"p3","decisionId":"setup.pawn-placement.p3","payload":{"kind":"choose-one","optionKind":"site","optionId":"S1"}}}"""),
       Left(HttpInputError("$.intent.playerId",
         "actor identity is bound by the server")))
 
-  test("the trusted gateway refuses another game and a stale position"):
+  test("the seat cookie resolves its own game only, and a stale position " +
+      "is refused"):
     val TrustedGatewayGame(_, gateway, afterBegin) = begunTrustedGame()
+    val code = SeatCode.generate(new java.security.SecureRandom())
+    // Stub of IdentityRepository: the one seat is p2's in "trusted".
+    val identities = new oathdigital.testkit.IdentityRepositoryStub:
+      override def resolveTrustedSeat(digest: SeatCodeDigest) =
+        Either.cond(digest == code.digest, TrustedSeat("trusted", "p2"),
+          IdentityFailure.TrustedSeatNotFound)
+    val seats = new SeatCookieActor(identities,
+      scala.concurrent.ExecutionContext.global)
+    def resolved(cookie: String, gameId: String) = scala.concurrent.Await
+      .result(seats.resolve(akka.http.scaladsl.model.HttpRequest(headers =
+        List(akka.http.scaladsl.model.headers.Cookie("oath_seat", cookie))),
+        gameId), scala.concurrent.duration.Duration(5, "s"))
+    assertEquals(resolved(code.raw, "trusted"), Right(p2Seat))
+    assertEquals(resolved(code.raw, "other"), Left(AccessRefusal.Forbidden))
+    assertEquals(resolved("not-a-code", "trusted"),
+      Left(AccessRefusal.Forbidden))
+    assertEquals(resolved(SeatCode.generate(new java.security.SecureRandom())
+      .raw, "trusted"), Left(AccessRefusal.Forbidden))
     val command = placeP2Pawn(afterBegin)
-    assertEquals(gateway.load("other", trustedP2Seat),
-      Left(TrustedSeatFailure.Forbidden))
-    assertEquals(gateway.submit("other", trustedP2Seat, command),
-      Left(TrustedSeatFailure.Forbidden))
-    assertEquals(gateway.log("other", trustedP2Seat, 0L),
-      Left(TrustedSeatFailure.Forbidden))
-    val placed = accepted(gateway.submit("trusted", trustedP2Seat, command))
-    assertEquals(gateway.submit("trusted", trustedP2Seat, command),
-      Left(TrustedSeatFailure.Application(GameApplicationError.StaleClientPosition(
+    val placed = accepted(gateway.submit("trusted", p2Seat, command))
+    assertEquals(gateway.submit("trusted", p2Seat, command),
+      Left(GatewayFailure.Application(GameApplicationError.StaleClientPosition(
         afterBegin, placed.nextSequence))))
 
   private val conversionEntries = ChronicleEntries()
@@ -467,7 +478,8 @@ class TrustedSeatRoutesSuite extends munit.FunSuite:
   test("storage failures never expose seat credentials in responses or log events"):
     withServer() { (server, runtime) =>
       val code = codeOf(create(server, "failure"), "p1")
-      val logger = org.slf4j.LoggerFactory.getLogger("oathdigital.server.TrustedSeatRoutes")
+      // The seat routes and the shared API routes log under this package.
+      val logger = org.slf4j.LoggerFactory.getLogger("oathdigital.server")
         .asInstanceOf[ch.qos.logback.classic.Logger]
       val captured = new ch.qos.logback.core.read.ListAppender[ch.qos.logback.classic.spi.ILoggingEvent]
       captured.start(); logger.addAppender(captured)
@@ -548,7 +560,7 @@ class TrustedSeatRoutesSuite extends munit.FunSuite:
     // player; reversing the two requested seats makes p2 first.
     val runtime = accepted(ServerRuntime.open(database, reversing, gameIds))
     val config = ServerConfig("127.0.0.1", 8080, publicOrigin.map(URI.create),
-      database, ServerMode.TrustedAlpha, None, "test")
+      database, ServerMode.TrustedAlpha, "test")
     try
       TrustedServer(HttpTestServer.start("trusted-seat-route-test")(blocking =>
         ServerRoutes.route(runtime, blocking, config,

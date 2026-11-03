@@ -6,15 +6,15 @@ import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Rain Boots: a free attacker's plan that scores every single-shield defense
   * die as nothing, as Bag of Siegeworks does, and the card is discarded after
   * the Campaign. */
 class RainBootsSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Rain Boots")
+  private val card = RainBootsCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
-  private val bag = CatalogNames.relic("Bag of Siegeworks")
+  private val bag = BagOfSiegeworksCard.id
   private val bagRef: DecisionOptionRef = DecisionOptionRef.Relic(bag)
   private val ignored = NoteText.Said("ignored", "Single shields ignored.",
     covers = false)

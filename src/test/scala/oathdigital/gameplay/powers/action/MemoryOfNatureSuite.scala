@@ -1,9 +1,11 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import oathdigital.gameplay.powers.economy.HallowedSpringCard
 import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
+import oathdigital.gameplay.powers.search.ErrandBoyCard
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
@@ -11,17 +13,17 @@ import oathdigital.testkit.Unwrap.accepted
 class MemoryOfNatureSuite extends munit.FunSuite:
   import PhasePowerHarness._
 
-  private val nature = CatalogNames.denizen("Memory of Nature")
+  private val nature = MemoryOfNatureCard.id
   private val source = DecisionOptionRef.Denizen(nature)
-  private val power = MemoryOfNature.forCatalog(catalog)
+  private val power = MemoryOfNature
   // Three Beast denizens, and a Beast edifice on its intact face.
-  private val errandBoy = CatalogNames.denizen("Errand Boy")
-  private val faeMerchant = CatalogNames.denizen("Fae Merchant")
-  private val secondChance = CatalogNames.denizen("Second Chance")
-  private val beastEdifice = CatalogNames.edifice("Hallowed Spring")
+  private val errandBoy = ErrandBoyCard.id
+  private val faeMerchant = FaeMerchantCard.id
+  private val secondChance = SecondChanceCard.id
+  private val beastEdifice = HallowedSpringCard.id
   /** p1's Act, p1 at Ancient City and p2 at Broken Peaks. */
   private val acting = Table.start.turn(p1, Phase.Act)
-    .pawn(p1, "Ancient City").pawn(p2, "Broken Peaks")
+    .pawn(p1, AncientCitySite).pawn(p2, BrokenPeaksSite)
 
   /** `table` with the banks holding exactly `favor`. */
   private def withBanks(table: Table, favor: (Suit, Int)*): Table =
@@ -37,8 +39,8 @@ class MemoryOfNatureSuite extends munit.FunSuite:
   test("it places a secret and moves one favor per Beast card, an " +
       "edifice on either face included"):
     val ready = withBanks(acting.adviser(p1, nature)
-      .denizen(errandBoy, at = "Ancient City")
-      .edifice(beastEdifice, EdificeSide.Intact, at = "Broken Peaks"),
+      .denizen(errandBoy, at = AncientCitySite)
+      .edifice(beastEdifice, EdificeSide.Intact, at = BrokenPeaksSite),
       Suit.Arcane -> 5).ready
     val t = accepted(use(ready, power, source))
     parked.assertResumed(t.state, Phase.Act, p1)
@@ -49,8 +51,8 @@ class MemoryOfNatureSuite extends munit.FunSuite:
       NoteKey.Used, "Moved 2 favor to the Beast bank.", covers = false)))
 
   test("it counts itself at a site, and a facedown card not at all"):
-    val ready = withBanks(acting.denizen(nature, at = "Ancient City")
-      .denizen(errandBoy, at = "Broken Peaks", facedown = true),
+    val ready = withBanks(acting.denizen(nature, at = AncientCitySite)
+      .denizen(errandBoy, at = BrokenPeaksSite, facedown = true),
       Suit.Arcane -> 5).ready
     val t = accepted(use(ready, power, source))
     assertEquals(bank(after(t), Suit.Beast), 1)
@@ -58,8 +60,8 @@ class MemoryOfNatureSuite extends munit.FunSuite:
   test("two banks holding 4 favor in all ask for the split of 2, one per " +
       "Beast card"):
     val ready = withBanks(acting.adviser(p1, nature)
-      .denizen(errandBoy, at = "Ancient City")
-      .denizen(faeMerchant, at = "Broken Peaks"),
+      .denizen(errandBoy, at = AncientCitySite)
+      .denizen(faeMerchant, at = BrokenPeaksSite),
       Suit.Arcane -> 2, Suit.Order -> 2).ready
     val t = accepted(use(ready, power, source))
     assert(awaits(t, MemoryOfNature.decisionId),
@@ -75,9 +77,9 @@ class MemoryOfNatureSuite extends munit.FunSuite:
   test("two banks holding 2 favor in all give all they hold, unasked, when " +
       "3 Beast cards ask for 3, and the Beast bank's own favor stays"):
     val ready = withBanks(acting.adviser(p1, nature)
-      .denizen(errandBoy, at = "Ancient City")
-      .denizen(faeMerchant, at = "Ancient City")
-      .denizen(secondChance, at = "Broken Peaks"),
+      .denizen(errandBoy, at = AncientCitySite)
+      .denizen(faeMerchant, at = AncientCitySite)
+      .denizen(secondChance, at = BrokenPeaksSite),
       Suit.Arcane -> 1, Suit.Order -> 1, Suit.Beast -> 4).ready
     val t = accepted(use(ready, power, source))
     parked.assertResumed(t.state, Phase.Act, p1)
@@ -93,7 +95,7 @@ class MemoryOfNatureSuite extends munit.FunSuite:
 
   test("a ruined Beast edifice counts as well as an intact one"):
     val ready = withBanks(acting.adviser(p1, nature)
-      .edifice(beastEdifice, EdificeSide.Ruined, at = "Broken Peaks"),
+      .edifice(beastEdifice, EdificeSide.Ruined, at = BrokenPeaksSite),
       Suit.Arcane -> 5).ready
     val t = accepted(use(ready, power, source))
     assertEquals(bank(after(t), Suit.Beast), 1)

@@ -1,5 +1,6 @@
 package oathdigital.gameplay.chronicle
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.{OathRules, WalkerDiceFixture}
 import oathdigital.gameplay.actions.{ProcedureNotes, VisionRules}
 import oathdigital.gameplay.powers.{NoteText, OathkeeperGoalChoice,
@@ -17,7 +18,7 @@ class SwearOathSuite extends munit.FunSuite:
     walkerDice = WalkerDiceFixture.reversingShuffle)
 
   private val empire: Table =
-    ChronicleWalk.throneHeldByChancellorP1.warbandsAt("Ancient City", p1, 1)
+    ChronicleWalk.throneHeldByChancellorP1.warbandsAt(AncientCitySite, p1, 1)
 
   /** `empire` won by p1's Vision of Conquest, with `goal` current. */
   private def wonByConquest(goal: OathkeeperGoal): Table = empire

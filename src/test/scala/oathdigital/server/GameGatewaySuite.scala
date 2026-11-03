@@ -1,26 +1,27 @@
-package oathdigital.application
+package oathdigital.server
 
 import java.nio.file.{Files, Path}
 
+import oathdigital.application._
 import oathdigital.gameplay.operations.TheGrandScepterCard
 import oathdigital.gameplay.setup.SetupProcedure
+import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.model.OathState
 import oathdigital.persistence.OwnedHsqldbEventStreamRepository
-import oathdigital.server.{GameHttpWire, GameServerGateway}
+import oathdigital.protocol.{ActorlessCommandRequest, DecisionAnswerWire,
+  GameIntent}
 import oathdigital.protocol.projection.{DecisionQueryProjection, GameProjection,
   SiteForcesProjection}
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.testkit.ChronicleShuffles.unshuffled
-import oathdigital.testkit.Table.p2
+import oathdigital.testkit.Table.{p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, as, present}
 import ParkedServiceFixture.loaded
 
-/** `GameServerGateway.submit` with `GameCommand.Begin` is what the
-  * development and trusted bootstrap paths both reduce to once a Chronicle
-  * has been derived; this exercises persistence and redaction independent
-  * of how that Chronicle was derived. This suite asserts the exact
-  * requested first player, so seating must not shuffle. */
-class GameServerGatewaySubmitBeginSuite extends munit.FunSuite:
+/** The gateway every transport reaches once it has resolved an access: a
+  * seat's own view, the public view with nothing private in it, and what a
+  * game begun through the service looks like through either. This suite
+  * asserts the exact requested first player, so seating must not shuffle. */
+class GameGatewaySuite extends munit.FunSuite:
   // GeneratedFirstGamePlanFactory always makes the head of the (possibly
   // shuffled) seating the first player, ignoring the requested
   // `firstPlayer` -- so with an identity shuffle, "p2" must already be
@@ -28,10 +29,10 @@ class GameServerGatewaySubmitBeginSuite extends munit.FunSuite:
   private val config = FirstGameBootstrapConfig(
     participants.sortBy(p => if p.playerId == p2 then 0 else 1), p2)
 
-  /** A game begun through the gateway, journaled in HSQL at `path`: the plan
-    * it was dealt from and the projection returned to p2. */
+  /** A game begun through the service and journaled in HSQL at `path`: the
+    * plan it was dealt from, the gateway over it and p2's seat view. */
   private final case class BegunGame(path: Path, plan: FirstGamePlan,
-      projection: GameProjection)
+      gateway: GameGateway, projection: GameProjection)
 
   private def begun(using munit.Location): BegunGame =
     val plan = accepted(new GeneratedFirstGamePlanFactory(catalog, unshuffled)
@@ -41,12 +42,14 @@ class GameServerGatewaySubmitBeginSuite extends munit.FunSuite:
       .resolve("journal")
     val repository = accepted(OwnedHsqldbEventStreamRepository.open(path))
     val service = new GameApplicationService(catalog, repository)
-    val gateway = new GameServerGateway(service, new GameProjector(catalog))
+    val gateway = new GameGateway(service, new GameProjector(catalog))
     val projection =
-      try accepted(gateway.submit("bootstrap-game", p2, 0L,
-        GameCommand.Begin(plan.chronicle, dealt)))
+      try
+        accepted(service.handle("bootstrap-game", 0L,
+          GameCommand.Begin(plan.chronicle, dealt)))
+        accepted(gateway.load("bootstrap-game", GameAccess.Seat(p2)))
       finally repository.close()
-    BegunGame(path, plan, projection)
+    BegunGame(path, plan, gateway, projection)
 
   test("beginning a game persists history and reloads it"):
     val game = begun
@@ -60,17 +63,52 @@ class GameServerGatewaySubmitBeginSuite extends munit.FunSuite:
         .load("bootstrap-game"))
       assertEquals(stored.nextSequence, 2L)
       as[OathState.Ready](stored.state)
-      val publicProjection = new GameProjector(catalog).projectPublic(
-        "bootstrap-game", stored)
+    finally reopened.close()
+
+  test("a seat load names its viewer; a public load names none and hides " +
+      "the parked decision"):
+    val game = begun
+    val reopened = accepted(OwnedHsqldbEventStreamRepository.open(game.path))
+    try
+      val gateway = new GameGateway(
+        new GameApplicationService(catalog, reopened), new GameProjector(catalog))
+      assertEquals(game.projection.viewerPlayerId, Some(p2.value))
+      assert(game.projection.walkerDecision.nonEmpty)
+      val other = accepted(gateway.load("bootstrap-game", GameAccess.Seat(p3)))
+      assertEquals(other.viewerPlayerId, Some(p3.value))
+      assertEquals(other.walkerDecision, None)
       // Nobody but the awaited player sees the parked decision's owner-private
       // projection (WalkerDecisionProjector.project); the public view instead
-      // sees who it is waiting on.
-      assertEquals(publicProjection.walkerDecision, None)
-      assertEquals(publicProjection.walkerWaiting.map(_.playerId), Some("p2"))
+      // sees who it is waiting on, and names no viewer.
+      val public = accepted(gateway.load("bootstrap-game", GameAccess.Public))
+      assertEquals(public.viewerPlayerId, None)
+      assertEquals(public.walkerDecision, None)
+      assertEquals(public.walkerWaiting.map(_.playerId), Some(p2.value))
+      assert(!GameHttpWire.encodeProjection(public).contains("viewerPlayerId"))
+    finally reopened.close()
+
+  test("a public view issues no command and reads the log without private " +
+      "lines"):
+    val game = begun
+    val reopened = accepted(OwnedHsqldbEventStreamRepository.open(game.path))
+    try
+      val gateway = new GameGateway(
+        new GameApplicationService(catalog, reopened), new GameProjector(catalog))
+      val pawn = ActorlessCommandRequest(game.projection.nextSequence,
+        GameIntent.ResolveWalker(SetupProcedure.pawnDecisionId(p2),
+          DecisionAnswerWire.ChooseOneWire("site", "site:any")))
+      assertEquals(gateway.submit("bootstrap-game", GameAccess.Public, pawn),
+        Left(GatewayFailure.Access(AccessRefusal.Forbidden)))
+      assertEquals(loaded(reopened.load("bootstrap-game")).nextSequence, 2L)
+      val page = accepted(gateway.log("bootstrap-game", GameAccess.Public, 0L))
+      assertEquals(page.nextSequence, 2L)
+      assert(page.entries.nonEmpty)
+      assertEquals(gateway.log("bootstrap-game", GameAccess.Public, 3L),
+        Left(GatewayFailure.Malformed))
     finally reopened.close()
 
   test("a begun game projects its dealt world and tracks"):
-    val BegunGame(_, plan, projection) = begun
+    val BegunGame(_, plan, _, projection) = begun
     assertEquals(projection.phase, "setup-walker-decision")
     assertEquals(projection.playerBoards.size, config.participants.size)
     assert(projection.world.flatMap(_.sites).exists(_.looseFavor > 0))

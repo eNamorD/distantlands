@@ -38,21 +38,29 @@ object HornedMaskCard extends Relic(RelicId("R06"), "Horned Mask", value = 48, d
   * limit (`AdviserLimit.towardLimit`), and an adviser that does not count is
   * shown unavailable for the discard.
   */
-final case class HornedMask(catalog: ExecutableCatalog) extends PhasePower:
-  import HornedMask._
+case object HornedMask extends PhasePower:
+  val id: PowerId = HornedMaskCard.power.id
+  val denizenDecisionId: String = "power.horned-mask.denizen"
+  val discardDecisionId: String = "power.horned-mask.discard"
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  val took: NoteKey = notes.key(NoteKey.Used, Vector(NotePart.Arg(0),
+    NotePart.Text(" took "), NotePart.Arg(1),
+    NotePart.Text(" as a facedown adviser.")))
+  val taken: NoteKey = notes.key("taken", took.template)
 
-  def id: PowerId = HornedMask.id
   def timing: PowerTiming = PowerTiming.Wake
-  override def noteKeys: Vector[NoteKey] = HornedMask.noteKeys
   override def narratedDecisions: Set[String] = Set(denizenDecisionId)
-  def usable(ready: ReadyGame, player: PlayerId,
-      source: DecisionOptionRef): Boolean = true
+  def usable(catalog: ExecutableCatalog, ready: ReadyGame,
+      player: PlayerId, source: DecisionOptionRef): Boolean =
+    true
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     Branch((live, _) => askDenizen(live, player)),
-    Branch((live, pending) => askDiscard(live, player, pending)),
-    BuildOps((live, pending) => take(live, player, pending),
+    Branch((live, pending) => askDiscard(catalog, live, player, pending)),
+    BuildOps((live, pending) => take(catalog, live, player, pending),
       required = true),
     Note(this.id, takeNote(_, player, source)))))
 
@@ -78,7 +86,8 @@ final case class HornedMask(catalog: ExecutableCatalog) extends PhasePower:
   private def advisers(ready: ReadyGame, actor: PlayerId): Vector[AdviserState] =
     PlayerFacts.player(ready, actor).map(_.advisers).getOrElse(Vector.empty)
 
-  private def full(ready: ReadyGame, actor: PlayerId): Boolean =
+  private def full(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId): Boolean =
     AdviserLimit.towardLimit(ready, actor) >=
       AdviserLimit.of(catalog, ready, actor)
 
@@ -97,9 +106,10 @@ final case class HornedMask(catalog: ExecutableCatalog) extends PhasePower:
       found.map(d => DecisionOption.Denizen(DecisionOptionRef.Denizen(d.id))),
       heading = Some("Horned Mask: take a denizen as a facedown adviser"))))
 
-  private def askDiscard(ready: ReadyGame, actor: PlayerId,
+  private def askDiscard(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId,
       pending: PendingTree): Vector[Operation] =
-    if !full(ready, actor) ||
+    if !full(catalog, ready, actor) ||
         PowerAnswers.one(pending, denizenDecisionId).isEmpty then Vector.empty
     else Vector(Decide(discardDecisionId, actor, DecisionQuery.ChooseOne(
       discardable(ready, actor),
@@ -117,7 +127,8 @@ final case class HornedMask(catalog: ExecutableCatalog) extends PhasePower:
           option, OptionReason.Written(CardPlayRules.notCounted))
         else option))
 
-  private def take(ready: ReadyGame, actor: PlayerId, pending: PendingTree)
+  private def take(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId, pending: PendingTree)
       : Either[OathViolation, Vector[CoreOperation]] =
     val found = takeable(ready, actor)
     if found.isEmpty then Right(Vector.empty)
@@ -130,9 +141,10 @@ final case class HornedMask(catalog: ExecutableCatalog) extends PhasePower:
       siteId <- site(ready, actor).map(_._1)
         .toRight(OathViolation.PawnSiteMissing(actor))
       discards <-
-        if full(ready, actor) then discard(ready, actor, pending)
+        if full(catalog, ready, actor) then
+          discard(catalog, ready, actor, pending)
         else Right(Vector.empty[CoreOperation])
-      returns <- returnsOf(card, siteId, actor)
+      returns <- returnsOf(catalog, card, siteId, actor)
     yield discards ++ returns :+ Move(Piece.Card(card.id),
       PositionedLocation(Location.Site(siteId)),
       PositionedLocation(Location.PlayArea(actor)),
@@ -142,7 +154,8 @@ final case class HornedMask(catalog: ExecutableCatalog) extends PhasePower:
     * them: favor to the card's suit bank, secrets to the actor facedown. It is
     * the returns half of `Bury.standard`.
     */
-  private def returnsOf(card: DenizenState, site: SiteId, actor: PlayerId)
+  private def returnsOf(catalog: ExecutableCatalog,
+      card: DenizenState, site: SiteId, actor: PlayerId)
       : Either[OathViolation, Vector[CoreOperation]] =
     val suit = catalog.suitOf(card.id)
     if card.tokens.favor > 0 && suit.isEmpty then Left(OathViolation
@@ -151,7 +164,8 @@ final case class HornedMask(catalog: ExecutableCatalog) extends PhasePower:
       PositionedLocation(Location.Site(site)), suit, card.tokens.favor,
       card.tokens.secrets, actor).filterNot(_.isInstanceOf[Bury]))
 
-  private def discard(ready: ReadyGame, actor: PlayerId, pending: PendingTree)
+  private def discard(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId, pending: PendingTree)
       : Either[OathViolation, Vector[CoreOperation]] = for
     answered <- PowerAnswers.one(pending, discardDecisionId)
       .toRight(PowerAnswers.missing(discardDecisionId))
@@ -170,14 +184,3 @@ final case class HornedMask(catalog: ExecutableCatalog) extends PhasePower:
       case v: VisionState =>
         Right(Discard.Vision(v.id, from, region, required = true))
   yield Vector[CoreOperation](operation)
-
-object HornedMask:
-  val id: PowerId = HornedMaskCard.power.id
-  val denizenDecisionId: String = "power.horned-mask.denizen"
-  val discardDecisionId: String = "power.horned-mask.discard"
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  val took: NoteKey = notes.key(NoteKey.Used, Vector(NotePart.Arg(0),
-    NotePart.Text(" took "), NotePart.Arg(1),
-    NotePart.Text(" as a facedown adviser.")))
-  val taken: NoteKey = notes.key("taken", took.template)

@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, PrintedPower, SiteOnly}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower,
+  SiteOnly}
 import oathdigital.gameplay.NoteSupport
 import oathdigital.model._
 
@@ -27,7 +28,8 @@ case object Alchemist extends PaidAction(AlchemistCard.power):
 
   private val banks = new FavorSplit(decisionId, Suit.all, "Take favor")
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     Branch((live, _) => banks.ask(live, player, Favor,
       "Alchemist: take 4 favor from any banks")),

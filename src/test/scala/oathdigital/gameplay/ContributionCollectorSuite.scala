@@ -1,6 +1,7 @@
 package oathdigital.gameplay
 
 import oathdigital.gameplay.powerresolver._
+import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model.PowerId
 import oathdigital.model.{PowerWindow, RuleSourceRef, Sequence}
 import oathdigital.testkit.Table
@@ -14,6 +15,7 @@ class ContributionCollectorSuite extends munit.FunSuite:
 
   private def ctxFor(power: ContributingPower, window: PowerWindow): PowerCtx =
     PowerCtx(
+      catalog = catalog,
       state = ready,
       actor = ready.game.current.turn.activePlayer,
       source = power.source,

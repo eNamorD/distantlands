@@ -1,8 +1,11 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite}
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.banner.YewStaffCard
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.accepted
@@ -10,13 +13,13 @@ import oathdigital.testkit.Unwrap.accepted
 class TerrorSpellsSuite extends munit.FunSuite:
   import PhasePowerHarness._
 
-  private val spells = CatalogNames.denizen("Terror Spells")
+  private val spells = TerrorSpellsCard.id
   private val source = DecisionOptionRef.Denizen(spells)
   /** p1's pawn site and Broken Peaks, p2's, lie in the Cradle; Buried
     * Giant, p3's, lies in the Provinces. */
-  private val home = CatalogNames.site("Ancient City")
-  private val peaks = CatalogNames.site("Broken Peaks")
-  private val giant = CatalogNames.site("Buried Giant")
+  private val home = AncientCitySite.id
+  private val peaks = BrokenPeaksSite.id
+  private val giant = BuriedGiantSite.id
 
   /** p1's Act at Ancient City beside Terror Spells, holding the Darkest
     * Secret and the faceup secret that pays for it. p2 stands at Broken
@@ -89,7 +92,7 @@ class TerrorSpellsSuite extends munit.FunSuite:
         covers = false)))
 
   test("with Yew Staff and no Darkest Secret it kills two"):
-    val ready = staged.darkestSecret(Some(p2), 1).relic(p1, "Yew Staff")
+    val ready = staged.darkestSecret(Some(p2), 1).relic(p1, YewStaffCard)
       .boardWarbands(p2, 0).ready
     val done = accepted(use(ready, TerrorSpells, source))
     assert(backToActing(done))

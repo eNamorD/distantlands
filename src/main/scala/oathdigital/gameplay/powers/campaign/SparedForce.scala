@@ -56,7 +56,8 @@ private[campaign] object SparedForce:
   def ignores(ctx: PowerCtx, plan: BattlePlan, other: ContributingPower)
       : Boolean =
     ctx.window == PowerWindow.CampaignLosses && killAll(other.id) &&
-      PlanUse.chosen(ctx.state, PendingTree(ctx.nodePath, ctx.answered),
+      PlanUse.chosen(ctx.catalog, ctx.state,
+        PendingTree(ctx.nodePath, ctx.answered),
         ctx.actor, plan.cardRef, plan.sides, afterOutcome = true)
         .flatMap(defeated).nonEmpty
 

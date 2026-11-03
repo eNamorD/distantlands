@@ -1,5 +1,11 @@
 package oathdigital.application
 
+import oathdigital.gameplay.powers.economy.HallowedSpringCard
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  DeepWoodsSite}
+import oathdigital.gameplay.powers.action.{FaeMerchantCard, SecondChanceCard}
+import oathdigital.gameplay.powers.whenplayed.{ThreateningRoarCard,
+  WizardsConclaveCard}
 import oathdigital.testkit.MenuPlay
 import oathdigital.gameplay.powers.WalkerPowerCatalog
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
@@ -10,11 +16,12 @@ import oathdigital.gameplay.oathkeeper.OathkeeperProcedure
 import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.model.OathViolation.WrongPlayer
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, PlacementPicks, Table}
+import oathdigital.testkit.{Look, Outcomes, PlacementPicks, Table}
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
 import ParkedServiceFixture.{loaded, parkedAssertions,
   pickFacedownAdviser, playFacedownAdviser, replayingSecond}
+import oathdigital.testkit.Commands
 
 /** The application service persists and reloads the walker actions and
   * parks besides Recover and Forge: League Treaty, previews, minor actions,
@@ -35,7 +42,7 @@ class GameApplicationServiceActionsSuite extends munit.FunSuite:
       ParkedServiceFixture.leagueTreatyPark("game-league-treaty-answer")
     val parked = game.accepted
     val decision = parkedAssertions.parkedDecision(parked.state).get.decision
-    val decline = GameCommand.ResolveWalker(_: PlayerId, TreeDecision(
+    val decline = Commands.resolveWalker(_: PlayerId, TreeDecision(
       decision, ChooseOneAnswer(DecisionOptionRef.Button("decline"))))
     assert(game.service.handle("game-league-treaty-answer",
       parked.nextSequence, decline(active)).isLeft)
@@ -46,10 +53,10 @@ class GameApplicationServiceActionsSuite extends munit.FunSuite:
     assertNotEquals(after.game.current.turn.activePlayer, active)
 
   test("minor adviser action persists and reloads through authoritative replay"):
-    val table = Table.start.adviser(p1, "Wizard's Conclave", facedown = true)
+    val table = Table.start.adviser(p1, WizardsConclaveCard, facedown = true)
     val (service, repository) = table.service()
     val actor = p1
-    val adviser = CatalogNames.denizen("Wizard's Conclave")
+    val adviser = WizardsConclaveCard.id
     val started = accepted(service.handle("game-minor-replay", 0L,
       playFacedownAdviser(actor)))
     // The parked walk reloads to the same state before it is answered.
@@ -58,7 +65,7 @@ class GameApplicationServiceActionsSuite extends munit.FunSuite:
     val picked = accepted(service.handle("game-minor-replay",
       started.nextSequence, pickFacedownAdviser(actor, adviser)))
     val discarded = accepted(service.handle("game-minor-replay",
-      picked.nextSequence, GameCommand.ResolveWalker(actor, TreeDecision(
+      picked.nextSequence, Commands.resolveWalker(actor, TreeDecision(
         s"cardplay.place.${adviser.kind}.${adviser.value}",
         PlacementPicks.parkedAnswer(picked.state, PlayedAs.Discarded,
           WalkerPowerCatalog.default(catalog))))))
@@ -80,7 +87,7 @@ class GameApplicationServiceActionsSuite extends munit.FunSuite:
     var position = accepted(service.handle(gameId, 0L,
       MenuPlay.starting(actor, ActionRef.Challenge)))
     position = accepted(service.handle(gameId, position.nextSequence,
-      GameCommand.ResolveWalker(actor, TreeDecision("challenge.banner",
+      Commands.resolveWalker(actor, TreeDecision("challenge.banner",
         ChooseOneAnswer(DecisionOptionRef.Banner(Banner.PeoplesFavor))))))
     val reloaded = loaded(replayingSecond(service, repository).load(gameId))
     assertEquals(reloaded.state, position.state)
@@ -94,7 +101,7 @@ class GameApplicationServiceActionsSuite extends munit.FunSuite:
     assertEquals(projector.project(gameId, reloaded, other).walkerDecision,
       None)
     val completed = accepted(replayingSecond(service, repository).handle(gameId,
-      reloaded.nextSequence, GameCommand.ResolveWalker(actor, TreeDecision(
+      reloaded.nextSequence, Commands.resolveWalker(actor, TreeDecision(
         "challenge.amount", ChooseAmountAnswer(2)))))
     val after = Outcomes.ready(completed.state)
     assertEquals(after.game.current.banners.peoplesFavor.holder, Some(actor))
@@ -109,13 +116,13 @@ class GameApplicationServiceActionsSuite extends munit.FunSuite:
   test("Travel parks on its destination, completes on the pick and reloads pawn Supply and Act"):
     // Bandits at every empty site, so the Travel's own events are the only
     // ones journaled: no refill follows it.
-    val table = Table.start.pawn(p1, "Ancient City").banditsRefilled
+    val table = Table.start.pawn(p1, AncientCitySite).banditsRefilled
     val (service, repository) = table.service()
     val active = p1
     val inAct = Outcomes.ready(table.state)
     val before = Look(inAct).player(active)
     // p1 stands at Ancient City and travels to the other Cradle site.
-    val destination = CatalogNames.site("Broken Peaks")
+    val destination = BrokenPeaksSite.id
     val parked = accepted(service.handle("game-travel", 0L,
       ParkedServiceFixture.startTravel(active)))
     val traveled = accepted(service.handle("game-travel", parked.nextSequence,
@@ -181,14 +188,14 @@ class GameApplicationServiceActionsSuite extends munit.FunSuite:
     // holder may resolve the recipient decision.
     assertEquals(
       game.service.handle(gameId, parked.nextSequence,
-        GameCommand.ResolveWalker(active, TreeDecision(
+        Commands.resolveWalker(active, TreeDecision(
           OathkeeperProcedure.recipientDecisionId,
           ChooseOneAnswer(DecisionOptionRef.Player(leaderB))))),
       Left(GameApplicationError.CommandRejected(
         WrongPlayer(holder, active))))
 
     val resolved = accepted(game.service.handle(gameId, parked.nextSequence,
-      GameCommand.ResolveWalker(holder, TreeDecision(
+      Commands.resolveWalker(holder, TreeDecision(
         OathkeeperProcedure.recipientDecisionId,
         ChooseOneAnswer(DecisionOptionRef.Player(leaderB))))))
     assert(resolved.events.exists {
@@ -205,17 +212,17 @@ class GameApplicationServiceActionsSuite extends munit.FunSuite:
     assertEquals(reloadedResolved.nextSequence, resolved.nextSequence)
 
   test("a walker Muster on an edifice persists, reloads and replays with its kind"):
-    val siteId = CatalogNames.site("Deep Woods")
-    val edificeId = CatalogNames.edifice("Hiding Place")
+    val siteId = DeepWoodsSite.id
+    val edificeId = HallowedSpringCard.id
     val (service, repository) = Table.start.pawn(p1, siteId)
-      .edifice("Hiding Place", EdificeSide.Ruined, siteId).service()
+      .edifice(HallowedSpringCard, EdificeSide.Ruined, siteId).service()
     val active = p1
     val started = accepted(service.handle("game-walker-economy", 0L,
       MenuPlay.starting(active, ActionRef.Muster)))
     parkedAssertions.assertParked(started.state, ActionRef.Muster,
       MusterProcedure.decisionId, active)
     val mustered = accepted(service.handle("game-walker-economy",
-      started.nextSequence, GameCommand.ResolveWalker(active,
+      started.nextSequence, Commands.resolveWalker(active,
         TreeDecision(MusterProcedure.decisionId,
         ChooseOneAnswer(DecisionOptionRef.Edifice(edificeId))))))
     val stored = loaded(replayingSecond(service, repository)
@@ -231,32 +238,10 @@ class GameApplicationServiceActionsSuite extends munit.FunSuite:
       record.contains(edificeId.value)),
       "the journalled answer must spell the edifice kind and id")
 
-  test("Search draw port cannot inject card identities inconsistent with state"):
-    /** Stub of SearchDrawPort: always draws DenizenId("denizen:tampered"). */
-    val port = new SearchDrawPort:
-      def prepare(ready: ReadyGame, source: SearchSource)
-          : Either[OathViolation, Vector[WorldCardId]] =
-        Right(Vector(DenizenId("denizen:tampered")))
-    // Built by hand: `Table#service` takes no draw port.
-    val repository = new InMemoryEventStreamRepository
-    val table = Table.start
-    val service = new GameApplicationService(catalog, repository, port,
-      genesis = table.phaseMenuParked.state)
-    val active = p1
-    val started = accepted(service.handle("game-search-tamper", 0L,
-      ParkedServiceFixture.startSearch(active)))
-    assertEquals(service.handle("game-search-tamper", started.nextSequence,
-      ParkedServiceFixture.pickSearchSource(active, SearchSource.WorldDeck))
-      .left.toOption, Some(GameApplicationError.CommandRejected(
-        OathViolation.SearchDrawMismatch(
-          "prepared draw does not match authoritative source order"))))
-    assertEquals(loaded(service.load("game-search-tamper")).nextSequence,
-      started.nextSequence)
-
   test("walker Search persists its card choice and completes after reload"):
     // Three denizens on top of the world deck, so the Search offers a choice.
     val (service, repository) = Table.start
-      .worldDeckTop("Threatening Roar", "Fae Merchant", "Second Chance")
+      .worldDeckTop(ThreateningRoarCard, FaeMerchantCard, SecondChanceCard)
       .service()
     val gameId = "game-walker-search"
     val actor = p1
@@ -268,9 +253,9 @@ class GameApplicationServiceActionsSuite extends munit.FunSuite:
     assertEquals(reloaded.state, started.state)
     val afterDraw = Outcomes.ready(reloaded.state)
     val drawn = afterDraw.game.current.temporaryHands(actor)
-    val roar = CatalogNames.denizen("Threatening Roar")
-    val merchant = CatalogNames.denizen("Fae Merchant")
-    val secondChance = CatalogNames.denizen("Second Chance")
+    val roar = ThreateningRoarCard.id
+    val merchant = FaeMerchantCard.id
+    val secondChance = SecondChanceCard.id
     assertEquals(drawn, Vector[WorldCardId](roar, merchant, secondChance))
     // Keep Threatening Roar and discard the other two.
     val assignments = Vector(
@@ -278,10 +263,10 @@ class GameApplicationServiceActionsSuite extends munit.FunSuite:
       DecisionPlacement(PlacementPicks.optionNaming(merchant), "discard"),
       DecisionPlacement(PlacementPicks.optionNaming(secondChance), "discard"))
     val chosen = accepted(service.handle(gameId, reloaded.nextSequence,
-      GameCommand.ResolveWalker(actor, TreeDecision("search.cards",
+      Commands.resolveWalker(actor, TreeDecision("search.cards",
         DecisionAnswer.PartitionAnswer(assignments)))))
     val completed = accepted(service.handle(gameId, chosen.nextSequence,
-      GameCommand.ResolveWalker(actor, TreeDecision(
+      Commands.resolveWalker(actor, TreeDecision(
         s"cardplay.place.${roar.kind}.${roar.value}",
         PlacementPicks.parkedAnswer(chosen.state, PlayedAs.Discarded,
           WalkerPowerCatalog.default(catalog))))))

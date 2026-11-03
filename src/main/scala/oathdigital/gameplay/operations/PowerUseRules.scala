@@ -1,5 +1,6 @@
 package oathdigital.gameplay.operations
 
+import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.powerresolver.{PowerUse, PowerUseRefusal,
   PowerUseRestriction}
 import oathdigital.model._
@@ -36,15 +37,15 @@ object PowerUseRules:
     * what an automatic use is shaped by, so a grant or a refusal never
     * changes its shape (automatic power consent design, "The
     * `AutomaticUse` node"). */
-  def raised(ready: ReadyGame, use: PowerUse,
+  def raised(catalog: ExecutableCatalog, ready: ReadyGame, use: PowerUse,
       restrictions: Vector[PowerUseRestriction]): Vector[PowerUseRefusal] =
-    restrictions.flatMap(_.refusal(ready, use))
+    restrictions.flatMap(_.refusal(catalog, ready, use))
 
   /** Every refusal `restrictions` give `use`, less those a grant
     * remembered this turn lifts. */
-  def refusals(ready: ReadyGame, use: PowerUse,
+  def refusals(catalog: ExecutableCatalog, ready: ReadyGame, use: PowerUse,
       restrictions: Vector[PowerUseRestriction]): Vector[PowerUseRefusal] =
-    raised(ready, use, restrictions).filterNot(refusal =>
+    raised(catalog, ready, use, restrictions).filterNot(refusal =>
       refusal.reason.waiver.exists(waiver => ready.consent.answer(
         waiver.covers, waiver.granter, ConsentTurn.of(ready))
         .contains(ConsentAnswer.Granted)))

@@ -6,19 +6,18 @@ import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
 import oathdigital.model.AttackDieFace.TwoSwordsSkull
-import oathdigital.testkit.CatalogNames
 
 /** Fearsome General: a free attacker's plan; each skull face is worth four
   * swords under every rule the face follows. The score math (the cap, the
   * ignored skulls, War Tortoise) is `AttackScoreSuite`'s; these tests prove
   * the card's rescoring and its notes are wired into a Campaign. */
 class FearsomeGeneralSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Fearsome General")
+  private val card = FearsomeGeneralCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
   private val longbows: DecisionOptionRef =
-    DecisionOptionRef.Denizen(CatalogNames.denizen("Longbows"))
+    DecisionOptionRef.Denizen(LongbowsCard.id)
   private val outriders: DecisionOptionRef =
-    DecisionOptionRef.Denizen(CatalogNames.denizen("Outriders"))
+    DecisionOptionRef.Denizen(OutridersCard.id)
 
   private def added(n: Int): NoteText.Said = NoteText.Said("added",
     s"Skulls added $n more swords.", covers = false)
@@ -28,8 +27,8 @@ class FearsomeGeneralSuite extends munit.FunSuite:
     * chosen are Fearsome General, Longbows and the `extra` ones. */
   private def twoSkullsForOneWarband(extra: Vector[DecisionOptionRef]): Run =
     val b = withAdviser(withAdviser(withAdviser(board(warbands = 5,
-      supply = 7), card, Orientation.FaceUp), "Longbows", Orientation.FaceUp),
-      "Outriders", Orientation.FaceUp)
+      supply = 7), card, Orientation.FaceUp), LongbowsCard, Orientation.FaceUp),
+      OutridersCard, Orientation.FaceUp)
     val roll = dice(attack = Vector.fill(2)(TwoSwordsSkull),
       defense = Vector.fill(2)(DefenseDieFace.Blank))
     (Vector(ref, longbows) ++ extra).foldLeft(commit(rules(roll), b, 1))(

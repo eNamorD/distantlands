@@ -1,12 +1,14 @@
 package oathdigital.gameplay.powers.travel
 
+import oathdigital.gameplay.cards.{AncientCitySite, DeepWoodsSite}
 import oathdigital.gameplay.powers.PowerFixture
+import oathdigital.gameplay.powers.action.{BloodPactCard, EldersCard,
+  FaeMerchantCard, MessengerCard, SiegeEnginesCard, WolvesCard}
+import oathdigital.gameplay.powers.setup.GreatForgeCard
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes,
-  PhasePowerHarness}
+import oathdigital.testkit.{ActPowerHarness, Look, Outcomes, PhasePowerHarness}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Unwrap.accepted
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.testkit.{AppendedAutomaticUses, Table}
 
 /** Hospitality: after its holder travels, 1 favor from a bank matching both
@@ -15,19 +17,19 @@ class HospitalitySuite extends munit.FunSuite:
   import PowerFixture._
   import TravelFixture._
 
-  private val hospitality = CatalogNames.denizen("Hospitality")
+  private val hospitality = HospitalityCard.id
   /** Order. */
-  private val messenger = CatalogNames.denizen("Messenger")
+  private val messenger = MessengerCard.id
   /** Beast. */
-  private val wolves = CatalogNames.denizen("Wolves")
+  private val wolves = WolvesCard.id
   /** Nomad. */
-  private val elders = CatalogNames.denizen("Elders")
+  private val elders = EldersCard.id
   /** Order. */
-  private val siegeEngines = CatalogNames.denizen("Siege Engines")
+  private val siegeEngines = SiegeEnginesCard.id
   /** Beast. */
-  private val faeMerchant = CatalogNames.denizen("Fae Merchant")
+  private val faeMerchant = FaeMerchantCard.id
   /** Arcane. */
-  private val bloodPact = CatalogNames.denizen("Blood Pact")
+  private val bloodPact = BloodPactCard.id
 
   /** The actor at Buried Giant holds Hospitality (Nomad), Messenger (Order)
     * and Wolves (Beast) faceup, or Hospitality facedown when
@@ -108,7 +110,7 @@ class HospitalitySuite extends munit.FunSuite:
 
   test("an edifice at the site matches as a denizen does"):
     // Great Forge is a Nomad edifice; Hospitality itself is the Nomad adviser.
-    val greatForge = CatalogNames.edifice("Great Forge")
+    val greatForge = GreatForgeCard.id
     val ready = on(holdingHospitalityAndCoastHolding(Vector.empty,
       Suit.Nomad -> 2)())(_.edifice(greatForge, EdificeSide.Intact, coast))
     val done = accepted(travel(ready, coast))
@@ -127,11 +129,11 @@ class HospitalitySuite extends munit.FunSuite:
     * node, folded with p1 acting. */
   private val p2Travels: Operation = Sequence(Vector[Operation](Move(
     Piece.Pawn(Table.p2), PositionedLocation(Location.Site(
-      CatalogNames.site("Ancient City"))), PositionedLocation(Location.Site(
-      CatalogNames.site("Deep Woods"))))), Some(PowerWindow.TravelCost))
+      AncientCitySite.id)), PositionedLocation(Location.Site(
+      DeepWoodsSite.id)))), Some(PowerWindow.TravelCost))
 
   test("its gain is an automatic use of the traveller's, judged where it " +
       "runs"):
-    assertEquals(AppendedAutomaticUses.at(Hospitality.forCatalog(catalog),
+    assertEquals(AppendedAutomaticUses.at(Hospitality,
       PowerWindow.TravelCost, p2Travels), Vector(AppendedAutomaticUses.Named(
       Table.p2, Hospitality.id, HospitalityCard.id)))

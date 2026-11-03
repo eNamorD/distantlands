@@ -24,7 +24,7 @@ object ActPowerHarness:
       // so a power that writes a note it never declared fails here.
       walkerPowerCatalog = WalkerPowers(Vector.empty,
         declared = PowerRules.declared),
-      phasePowerCatalog = PhasePowerCatalog.default(catalog),
+      phasePowerCatalog = PhasePowerCatalog.default,
       walkerDice = dice)
 
   /** `rules` with the production walker powers too, so the printed operation
@@ -34,7 +34,7 @@ object ActPowerHarness:
       : OathRules =
     new OathRules(catalog,
       walkerPowerCatalog = WalkerPowerCatalog.default(catalog),
-      phasePowerCatalog = PhasePowerCatalog.default(catalog),
+      phasePowerCatalog = PhasePowerCatalog.default,
       walkerDice = dice)
 
   /** The parked decision, rebuilt with the powers
@@ -69,7 +69,7 @@ object ActPowerHarness:
     * `PhasePowerHarness.usableNow` applies them. */
   def usableIds(ready: ReadyGame): Vector[PowerId] =
     PhasePowerHarness.menuPowers(catalog, ready, actor,
-      PhasePowerCatalog.default(catalog), WalkerPowers.empty).map(_.power.id)
+      PhasePowerCatalog.default, WalkerPowers.empty).map(_.power.id)
 
   /** The state a journal replay of `events` reaches from `from`; fails with
     * the violation that stopped it. */

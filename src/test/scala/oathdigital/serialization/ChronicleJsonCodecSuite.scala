@@ -1,10 +1,10 @@
 package oathdigital.serialization
 
 import oathdigital.application.chronicle.ChronicleJson
+import oathdigital.catalog.holding.{ArbiterCard, LightFingersCard}
 import oathdigital.gameplay.chronicle.EvolvedChronicleFixture
 import oathdigital.gameplay.setup.FirstGameSetupFixture.chronicle
 import oathdigital.model._
-import oathdigital.testkit.CatalogNames
 
 /** Canonical Chronicle JSON (Chronicle browsing design, "ChronicleJsonCodec"). */
 class ChronicleJsonCodecSuite extends munit.FunSuite:
@@ -22,7 +22,7 @@ class ChronicleJsonCodecSuite extends munit.FunSuite:
     assert(!text.contains(" \"") && !text.contains("\n"), text)
 
   test("encoding does not depend on map or set insertion order"):
-    val sources = Vector("Arbiter", "Light Fingers").map(CatalogNames.legacy)
+    val sources = Vector(ArbiterCard.id, LightFingersCard.id)
     val altered = FoundationState(FoundationFace.Altered, sources.toSet)
     val reordered = FoundationState(FoundationFace.Altered,
       sources.reverse.toSet)

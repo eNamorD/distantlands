@@ -1,10 +1,16 @@
 package oathdigital.gameplay.powers.search
 
 import oathdigital.gameplay.{ModifierPlay, SearchPlay}
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.SearchFixture
+import oathdigital.gameplay.powers.action.{HomesteadersCard, ScryerCard}
+import oathdigital.gameplay.powers.campaign.{MercenariesCard, WrestlersCard}
+import oathdigital.gameplay.powers.economy.DefameCard
+import oathdigital.gameplay.powers.whenplayed.{BlackmailCard,
+  ThreateningRoarCard}
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look, Table}
+import oathdigital.testkit.{Look, Table}
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
 
@@ -14,12 +20,12 @@ import oathdigital.testkit.Unwrap.accepted
 class ErrandBoySuite extends munit.FunSuite:
   import SearchFixture.rules
 
-  private val errandBoy = CatalogNames.denizen("Errand Boy")
+  private val errandBoy = ErrandBoyCard.id
   private val modifiers = Vector(ErrandBoy.id)
-  private val provinces = Vector("Wrestlers", "Mercenaries", "Homesteaders")
-    .map(CatalogNames.denizen(_))
-  private val hinterland = Vector("Defame", "Scryer", "Blackmail")
-    .map(CatalogNames.denizen(_))
+  private val provinces = Vector(WrestlersCard.id, MercenariesCard.id,
+    HomesteadersCard.id)
+  private val hinterland = Vector(DefameCard.id, ScryerCard.id,
+    BlackmailCard.id)
   private val everySource: Vector[DecisionOptionRef] =
     (SearchSource.WorldDeck +: Region.all.map(SearchSource.RegionalDiscard(_)))
       .map(SearchSource.ref)
@@ -28,8 +34,8 @@ class ErrandBoySuite extends munit.FunSuite:
     * start's 1 favor, 5 Supply, and three cards in the Provinces and
     * Hinterland discard piles. The Cradle pile holds one. */
   private def holdingErrandBoy: Table = Table.start
-    .pawn(p1, "Ancient City").adviser(p1, errandBoy).supply(p1, 5)
-    .discarded(Region.Cradle, "Threatening Roar")
+    .pawn(p1, AncientCitySite).adviser(p1, errandBoy).supply(p1, 5)
+    .discarded(Region.Cradle, ThreateningRoarCard)
     .discarded(Region.Provinces, provinces*)
     .discarded(Region.Hinterland, hinterland*)
 
@@ -66,7 +72,7 @@ class ErrandBoySuite extends munit.FunSuite:
     assertEquals(Look(after).supply(p1), 5 - 2)
 
   test("with Observatory, each pile is offered once"):
-    val ready = holdingErrandBoy.denizen("Observatory", at = "Ancient City")
+    val ready = holdingErrandBoy.denizen(ObservatoryCard, at = AncientCitySite)
       .ready
     val shown = ShownOptions.sourcesAfterPicking(ready,
       Vector(Observatory.id, ErrandBoy.id))

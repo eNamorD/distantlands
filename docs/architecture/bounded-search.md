@@ -97,11 +97,11 @@ contributions.
 
 ## Draw and hidden information
 
-The application checks the draw where it happens, at the `search.source`
-answer. `GameApplicationService` asks the `SearchDrawPort` to prepare the
-draw for the named pile and refuses the command with `SearchDrawMismatch`
-unless it equals `SearchRules.draw`. The walker records the `Draw`
-operation in a `WalkerStepRecorded` event. Replay applies the recorded
+The walker draws where it happens, at the `search.source` answer:
+`SearchRules.draw` takes the cards from the named pile, and the walker
+records the `Draw` operation in a `WalkerStepRecorded` event. A Search
+refuses to start with `SearchDrawMismatch` while a temporary hand still
+holds an earlier draw (`SearchProcedure`). Replay applies the recorded
 operations and never draws again.
 
 The source decision is the commit point. The walker's look-ahead stops at a

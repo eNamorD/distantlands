@@ -15,7 +15,7 @@ import oathdigital.model.OathState.Ready
 object MenuPlay:
   /** The command that picks `option` from the parked menu as `player`. */
   def picking(player: PlayerId, option: DecisionOptionRef): GameCommand =
-    GameCommand.ResolveWalker(player, TreeDecision(PhaseMenu.decisionId,
+    Commands.resolveWalker(player, TreeDecision(PhaseMenu.decisionId,
       DecisionAnswer.ChooseOneAnswer(option)))
 
   /** Picks `option` through the rules directly. */
@@ -110,7 +110,7 @@ object MenuPlay:
     * the band it is read in, with the production power catalogs. */
   def bandedOptions(state: OathState, catalog: ExecutableCatalog)
       : Vector[DecisionOption] = bandedOptions(state, catalog,
-    WalkerPowerCatalog.default(catalog), PhasePowerCatalog.default(catalog))
+    WalkerPowerCatalog.default(catalog), PhasePowerCatalog.default)
 
   /** The parked menu's options with the band peeled off, which is what an
     * assertion about what one option shows wants. Use `bandedOptions` to
@@ -123,7 +123,7 @@ object MenuPlay:
   /** The parked menu's options with the production power catalogs. */
   def options(state: OathState, catalog: ExecutableCatalog)
       : Vector[DecisionOption] = options(state, catalog,
-    WalkerPowerCatalog.default(catalog), PhasePowerCatalog.default(catalog))
+    WalkerPowerCatalog.default(catalog), PhasePowerCatalog.default)
 
   /** `option` without the band `PhaseMenu` wrapped it in. */
   def withoutBand(option: DecisionOption): DecisionOption = option match

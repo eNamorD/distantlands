@@ -34,61 +34,11 @@ object GiantPythonCard extends Denizen(DenizenId("186"), "Giant Python", Suit.Be
   * Its line covers the generic discard and move lines: "Moved {card} to
   * {site}." or "Replaced {card} at {site}."
   */
-final case class GiantPython private (catalog: ExecutableCatalog)
-    extends PaidAction(GiantPythonCard.action):
-  import GiantPython._
-
-  private val slots = new SiteSlotMoves(catalog, GiantPythonCard.id,
-    empty = true)
-  override def noteKeys: Vector[NoteKey] = GiantPython.noteKeys
-  override def narratedDecisions: Set[String] = Set(decisionId)
-
-  override def usable(ready: ReadyGame, player: PlayerId,
-      source: DecisionOptionRef): Boolean =
-    CardPowerBanners.holdsDarkestSecret(ready, player) &&
-      slots.options(ready, player).exists(_.available)
-
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
-      : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
-    Branch((live, _) => Vector(Decide(decisionId, player,
-      DecisionQuery.ChooseOne(slots.options(live, player),
-        heading = Some(heading)), passWhenEmpty = true))),
-    BuildOps((live, pending) => move(live, player, pending),
-      required = true),
-    Note(this.id, movedNote(_, source), covers = true))))
-
-  /** No answer means Continue was pressed, and Giant Python stays. */
-  private def move(ready: ReadyGame, actor: PlayerId,
-      pending: PendingTree): Either[OathViolation, Vector[CoreOperation]] =
-    PowerAnswers.one(pending, decisionId) match
-      case None => Right(Vector.empty)
-      case Some(ref) => slots.chosen(ready, ref).toRight(
-          OathViolation.InvalidEventOrder(
-            s"${ref.wireId} is not a slot Giant Python can move to"))
-        .flatMap(slots.operations(ready, actor, _))
-
-  /** The chosen slot, read before the step, once Giant Python stands at
-    * its site. */
-  private def movedNote(states: NoteStates, source: DecisionOptionRef)
-      : Option[LogNote] =
-    for
-      card <- PowerSourceRef.of(source)
-      ref <- NoteSupport.answer(states, decisionId)
-      (before, _) <- states.previous
-      chosen <- slots.chosen(before, ref)
-      if SiteRulers.siteOf(states.now, GiantPythonCard.id)
-        .contains(chosen.site)
-    yield chosen.replaced.fold(moved(card,
-      NoteArg.Card(GiantPythonCard.id), NoteArg.Site(chosen.site)))(
-      gone => replaced(card, NoteArg.Card(gone._1.id),
-        NoteArg.Site(chosen.site)))
-
-object GiantPython:
-  val id: PowerId = GiantPythonCard.action.id
+case object GiantPython extends PaidAction(GiantPythonCard.action):
   val decisionId: String = "power.giant-python.slot"
   val heading: String = "Giant Python: move to which slot?"
   private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
+  override def noteKeys: Vector[NoteKey] = notes.declared
   /** "Moved {card} to {site}." */
   val moved: NoteKey = notes.key(NoteKey.Used, Vector(NotePart.Text("Moved "),
     NotePart.Arg(0), NotePart.Text(" to "), NotePart.Arg(1),
@@ -98,5 +48,49 @@ object GiantPython:
     NotePart.Text("Replaced "), NotePart.Arg(0), NotePart.Text(" at "),
     NotePart.Arg(1), NotePart.Text(".")))
 
-  def forCatalog(catalog: ExecutableCatalog): GiantPython =
-    new GiantPython(catalog)
+  private val slots = new SiteSlotMoves(GiantPythonCard.id,
+    empty = true)
+  override def narratedDecisions: Set[String] = Set(decisionId)
+
+  override def usable(catalog: ExecutableCatalog, ready: ReadyGame,
+      player: PlayerId, source: DecisionOptionRef): Boolean =
+    CardPowerBanners.holdsDarkestSecret(ready, player) &&
+      slots.options(catalog, ready, player).exists(_.available)
+
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
+      : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
+    Branch((live, _) => Vector(Decide(decisionId, player,
+      DecisionQuery.ChooseOne(slots.options(catalog, live, player),
+        heading = Some(heading)), passWhenEmpty = true))),
+    BuildOps((live, pending) => move(catalog, live, player, pending),
+      required = true),
+    Note(this.id, movedNote(catalog, _, source), covers = true))))
+
+  /** No answer means Continue was pressed, and Giant Python stays. */
+  private def move(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId,
+      pending: PendingTree): Either[OathViolation, Vector[CoreOperation]] =
+    PowerAnswers.one(pending, decisionId) match
+      case None => Right(Vector.empty)
+      case Some(ref) => slots.chosen(catalog, ready, ref).toRight(
+          OathViolation.InvalidEventOrder(
+            s"${ref.wireId} is not a slot Giant Python can move to"))
+        .flatMap(slots.operations(ready, actor, _))
+
+  /** The chosen slot, read before the step, once Giant Python stands at
+    * its site. */
+  private def movedNote(catalog: ExecutableCatalog,
+      states: NoteStates, source: DecisionOptionRef)
+      : Option[LogNote] =
+    for
+      card <- PowerSourceRef.of(source)
+      ref <- NoteSupport.answer(states, decisionId)
+      (before, _) <- states.previous
+      chosen <- slots.chosen(catalog, before, ref)
+      if SiteRulers.siteOf(states.now, GiantPythonCard.id)
+        .contains(chosen.site)
+    yield chosen.replaced.fold(moved(card,
+      NoteArg.Card(GiantPythonCard.id), NoteArg.Site(chosen.site)))(
+      gone => replaced(card, NoteArg.Card(gone._1.id),
+        NoteArg.Site(chosen.site)))

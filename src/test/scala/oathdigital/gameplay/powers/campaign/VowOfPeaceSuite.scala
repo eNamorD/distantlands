@@ -5,14 +5,13 @@ import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.gameplay.walker.LogNoted
 import oathdigital.model._
-import oathdigital.testkit.CatalogNames
 
 /** Vow of Peace's second sentence: attackers cannot sacrifice warbands to
   * increase their attack against a faceup holder.
   */
 class VowOfPeaceSuite extends munit.FunSuite:
-  private val vow = CatalogNames.denizen("Vow of Peace")
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
+  private val vow = VowOfPeaceCard.id
+  private val wrestlers = WrestlersCard.id
 
   private def defendedBy(b: Board, orientation: Orientation): Board =
     withAdviserFor(b, b.rival, vow, orientation)

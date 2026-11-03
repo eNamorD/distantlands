@@ -7,12 +7,12 @@ import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.gameplay.walker.WalkerDice
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Bag of Siegeworks: a secret placed, in a Conquest, so that every
   * single-shield defense die scores nothing. */
 class BagOfSiegeworksSuite extends munit.FunSuite:
-  private val relic = CatalogNames.relic("Bag of Siegeworks")
+  private val relic = BagOfSiegeworksCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Relic(relic)
   private val line = NoteText.Said("ignored", "Single shields ignored.",
     covers = false)

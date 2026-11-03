@@ -1,5 +1,10 @@
 package oathdigital.application
 
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite, MinesSite}
+import oathdigital.gameplay.powers.campaign.NatureWorshipCard
+import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.whenplayed.WizardsConclaveCard
 import scala.concurrent.duration.{Duration, DurationInt}
 
 import oathdigital.testkit.MenuPlay
@@ -10,8 +15,8 @@ import oathdigital.serialization.GameEventWire
 import oathdigital.gameplay.chronicle.ChronicleBeginProcedure
 import oathdigital.gameplay.setup.SetupProcedure
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, PlacementPicks, Table,
-  RoundEndChoices}
+import oathdigital.testkit.{Commands, Look, Outcomes, PlacementPicks,
+  RoundEndChoices, Table}
 import oathdigital.gameplay.powers.WalkerPowerCatalog
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, as, present, rejected}
@@ -71,7 +76,7 @@ class GameApplicationServiceStreamSuite extends munit.FunSuite:
         position = accepted(service.handle("powered-playability",
           position.nextSequence, pickFacedownAdviser(actor, adviser)))
         position = accepted(service.handle("powered-playability",
-          position.nextSequence, GameCommand.ResolveWalker(actor, TreeDecision(
+          position.nextSequence, Commands.resolveWalker(actor, TreeDecision(
             s"cardplay.place.${adviser.kind}.${adviser.value}",
             PlacementPicks.parkedAnswer(position.state, PlayedAs.Faceup,
               WalkerPowerCatalog.default(catalog))))))
@@ -109,7 +114,7 @@ class GameApplicationServiceStreamSuite extends munit.FunSuite:
     // The winner starts the Chronicle once; the stream reloads into the
     // Chronicle phase, parked on a Chronicle task's choice.
     val winner = present(finished.game.current.result, "the result").winner
-    val start = GameCommand.ResolveWalker(winner, TreeDecision(
+    val start = Commands.resolveWalker(winner, TreeDecision(
       ChronicleBeginProcedure.decisionId,
       ChooseOneAnswer(ChronicleBeginProcedure.start)))
     val chronicled = accepted(service.handle("powered-playability",
@@ -164,12 +169,12 @@ class GameApplicationServiceStreamSuite extends munit.FunSuite:
     // p2 wakes at Broken Peaks, whose 2 secrets are its only Wake option. No
     // enemy pawn stands there: p1 is at Ancient City, p3 at Buried Giant.
     val (service, repository) = Table.start.turn(p2, Phase.Wake)
-      .pawn(p1, "Ancient City").pawn(p2, "Broken Peaks")
-      .pawn(p3, "Buried Giant").siteTokens("Broken Peaks", secrets = 2)
+      .pawn(p1, AncientCitySite).pawn(p2, BrokenPeaksSite)
+      .pawn(p3, BuriedGiantSite).siteTokens(BrokenPeaksSite, secrets = 2)
       // Bandits at every empty site keep the refill out of the command's events.
       .banditsRefilled.service()
     val active = p2
-    val siteId = CatalogNames.site("Broken Peaks")
+    val siteId = BrokenPeaksSite.id
 
     val wealth = accepted(service.handle("game-wake", 0L,
       MenuPlay.starting(active, ActionRef.TakeWealth, Vector(DecisionOptionRef.Button("secret")))))
@@ -218,27 +223,27 @@ class GameApplicationServiceStreamSuite extends munit.FunSuite:
     service.handle(
       "game-stale-v2",
       1L,
-      GameCommand.ResolveWalker(firstPlayer, TreeDecision(
+      Commands.resolveWalker(firstPlayer, TreeDecision(
         SetupProcedure.pawnDecisionId(firstPlayer),
         ChooseOneAnswer(DecisionOptionRef.Site(
-          CatalogNames.site("Ancient City"))))))
+          AncientCitySite.id)))))
 
     assertEquals(
       service.handle(
         "game-stale-v2",
         1L,
-        GameCommand.ResolveWalker(firstPlayer, TreeDecision(
+        Commands.resolveWalker(firstPlayer, TreeDecision(
           SetupProcedure.adviserDecisionId(firstPlayer),
           // p2 keeps Wizard's Conclave from its dealt hand.
           PartitionAnswer(Vector(
             DecisionPlacement(DecisionOptionRef.Denizen(
-              CatalogNames.denizen("Wizard's Conclave")),
+              WizardsConclaveCard.id),
               SetupProcedure.adviserKeepKey),
             DecisionPlacement(DecisionOptionRef.Denizen(
-              CatalogNames.denizen("Errand Boy")),
+              ErrandBoyCard.id),
               SetupProcedure.adviserDiscardKey),
             DecisionPlacement(DecisionOptionRef.Denizen(
-              CatalogNames.denizen("Nature Worship")),
+              NatureWorshipCard.id),
               SetupProcedure.adviserDiscardKey)))))
       ),
       Left(GameApplicationError.StaleClientPosition(1L, 2L)))
@@ -343,3 +348,22 @@ class GameApplicationServiceStreamSuite extends munit.FunSuite:
       Left(GameApplicationError.CodecFailure(
         EventCodecFailure("invalid-sequence", "$[0].sequence",
           "expected 0 but found 1"))))
+
+  /** The undo design rests on exactly one intent opening a batch: only a
+    * walker answer is recorded with a `CommandAccepted`, so only it can be
+    * taken back. Undo, Redo and the consent intents append alone. */
+  test("ResolveWalker is the one intent that opens a batch"):
+    val intents = Vector[PlayerIntent](
+      PlayerIntent.Undo, PlayerIntent.Redo,
+      PlayerIntent.ResolveWalker(TreeDecision("any",
+        ChooseOneAnswer(DecisionOptionRef.Button("go")))),
+      PlayerIntent.SetConsentPreference(MinesSite.mountain,
+        p2, ConsentSetting.Always),
+      PlayerIntent.RequestConsent("any", DecisionOptionRef.Button("go")),
+      PlayerIntent.AnswerConsent(ConsentChoice.Yes))
+    assertEquals(intents.filter(_.opensBatch).map(_.productPrefix),
+      Vector("ResolveWalker"))
+    assertEquals(GameCommand.issuer(GameCommand.Issued(p1, intents(2))),
+      Some(p1))
+    assertEquals(intents.filterNot(_ == intents(2)).flatMap(intent =>
+      GameCommand.issuer(GameCommand.Issued(p1, intent))), Vector.empty)

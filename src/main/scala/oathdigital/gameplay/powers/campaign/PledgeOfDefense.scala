@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
-  PrintedPower}
+import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
 import oathdigital.model._
 
 object PledgeOfDefenseCard extends Denizen(DenizenId("243"), "Pledge of Defense", Suit.Nomad):
@@ -21,23 +20,17 @@ object PledgeOfDefenseCard extends Denizen(DenizenId("243"), "Pledge of Defense"
   * discarded through the standard discard once the Campaign has resolved,
   * whoever won, as Horse Archers is.
   */
-final case class PledgeOfDefense private (catalog: ExecutableCatalog)
-    extends BattlePlan with DiscardedAtEnd:
-  val cardId: DenizenId = PledgeOfDefenseCard.id
-  def id: PowerId = PledgeOfDefense.id
+case object PledgeOfDefense extends BattlePlan with DiscardedAtEnd:
+  val id: PowerId = PledgeOfDefenseCard.power.id
+
+  val card: Denizen = PledgeOfDefenseCard
   def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Defender)
 
   def plan(context: PlanContext): Option[CampaignPlanOffer] =
     context.denizen(cardId).map { source =>
-      val dice = GreatCrusade.nomads(catalog, context, cardId)
+      val dice = GreatCrusade.nomads(context, cardId)
       val noun = if dice == 1 then "defense die" else "defense dice"
       CampaignPlanOffer(source, s"Pledge of Defense: add $dice $noun",
         Vector.empty, Vector(CampaignPlanEffect.AddDefenseDice(dice)))
     }
-
-object PledgeOfDefense:
-  val id: PowerId = PledgeOfDefenseCard.power.id
-
-  def forCatalog(catalog: ExecutableCatalog): PledgeOfDefense =
-    new PledgeOfDefense(catalog)

@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
 import oathdigital.gameplay.{NoteSupport, PowerAccess}
 import oathdigital.gameplay.actions.{CardPlay, VisionRules}
 import oathdigital.gameplay.powers.PowerAnswers
@@ -67,7 +67,8 @@ case object Inquisitor extends PaidAction(InquisitorCard.power):
   override def narratedDecisions: Set[String] =
     Set(visionDecisionId, guessDecisionId)
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     Branch((live, _) => askVision(live, player)),
     Branch((_, pending) => askGuess(player, pending)),

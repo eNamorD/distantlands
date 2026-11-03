@@ -1,6 +1,9 @@
 package oathdigital.gameplay.powers.whenplayed
 
+import oathdigital.gameplay.MarriageCard
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.action.HomesteadersCard
+import oathdigital.gameplay.powers.search.LandWardenCard
 import oathdigital.model._
 import oathdigital.testkit.{Look, Outcomes, Table}
 import oathdigital.testkit.Table.p1
@@ -8,7 +11,7 @@ import oathdigital.testkit.Table.p1
 class TownMeetingSuite extends munit.FunSuite:
   import WhenPlayedHarness._
 
-  private val power = registered[TownMeeting]
+  private val power = registered[TownMeeting.type]
   private val meeting = power.cardId
   private val played = hook(meeting)
 
@@ -16,7 +19,7 @@ class TownMeetingSuite extends munit.FunSuite:
     * and Land Warden. p1 holds 1 favor.
     */
   private val ruling: Table = Table.start.adviser(p1, meeting)
-    .adviser(p1, "Homesteaders").adviser(p1, "Land Warden").favor(p1, 1)
+    .adviser(p1, HomesteadersCard).adviser(p1, LandWardenCard).favor(p1, 1)
 
   private def gained(n: Int): NoteText.Said = NoteText.Said("gained",
     s"${p1.value} gained $n favor.", covers = false)
@@ -61,7 +64,7 @@ class TownMeetingSuite extends munit.FunSuite:
   test("a faceup Marriage counts as two Hearth cards"):
     // Town Meeting and Marriage make X = 3: the 3 favor across two banks
     // is taken unasked. Counted once, X = 2 would ask for the split.
-    val ready = Table.start.adviser(p1, meeting).adviser(p1, "Marriage")
+    val ready = Table.start.adviser(p1, meeting).adviser(p1, MarriageCard)
       .favor(p1, 1).banksHoldingOnly(Suit.Order -> 1, Suit.Hearth -> 2).ready
     val done = Outcomes.finished(play(ready, power, meeting))
     assertEquals(Look(done.treeless).favor(p1), 1 + 3)

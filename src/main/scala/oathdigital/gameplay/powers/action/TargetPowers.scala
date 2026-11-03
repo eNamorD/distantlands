@@ -1,6 +1,5 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.powerresolver.PhasePower
 import oathdigital.gameplay.powers.wake.HornedMask
 
@@ -10,6 +9,6 @@ import oathdigital.gameplay.powers.wake.HornedMask
   * editing the same lines.
   */
 object TargetPowers:
-  def forCatalog(catalog: ExecutableCatalog): Vector[PhasePower] =
+  val all: Vector[PhasePower] =
     Vector[PhasePower](Wolves, Alchemist, SleightOfHand, WardOfSilence,
-      CrystalVial(catalog), IvoryEye, HornedMask(catalog))
+      CrystalVial, IvoryEye, HornedMask)

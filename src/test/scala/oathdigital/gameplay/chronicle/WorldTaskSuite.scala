@@ -7,7 +7,7 @@ import oathdigital.catalog.Locked
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.{ChooseOneAnswer, PartitionAnswer}
-import oathdigital.testkit.{CatalogNames, Outcomes, Table}
+import oathdigital.testkit.{Outcomes, Table}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -121,7 +121,7 @@ class WorldTaskSuite extends munit.FunSuite:
     val card = worldDenizens.head
     val table = tasksAssigned.adviser(p1, card).tokens(card, favor = 2,
       secrets = 1)
-    val suit = CatalogNames.suitOf(card)
+    val suit = catalog.suitOf(card).get
     val before = table.ready
     val after = Outcomes.ready(parkedOnProtect(table).state)
     assertEquals(after.banks.favor.getOrElse(suit, 0),

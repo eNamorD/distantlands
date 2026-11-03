@@ -2,9 +2,10 @@ package oathdigital.gameplay.powers.whenplayed
 
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.WalkerRecordedOpsReducer
+import oathdigital.gameplay.powers.action.DowsingSticksCard
 import oathdigital.gameplay.walker.WalkerOutcome
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, Table}
+import oathdigital.testkit.{Look, Outcomes, Table}
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.{as, rejected}
 
@@ -15,7 +16,7 @@ class FamilyHeirloomSuite extends munit.FunSuite
   private val power = FamilyHeirloom
   private val card = power.cardId
   private val played = hook(card)
-  private val top = CatalogNames.relic("Dowsing Sticks")
+  private val top = DowsingSticksCard.id
 
   /** p1 holds Family Heirloom faceup, and Dowsing Sticks tops the relic
     * deck. */

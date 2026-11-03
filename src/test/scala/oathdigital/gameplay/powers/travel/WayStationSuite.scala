@@ -7,8 +7,7 @@ import oathdigital.gameplay.powers.{NoteText, PayOrAsk, PhasePowerCatalog,
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{ParkedDecisionAssertions, QueuedStart}
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes,
-  Refusals, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, Outcomes, Refusals, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Unwrap.accepted
 
@@ -16,7 +15,7 @@ class WayStationSuite extends munit.FunSuite:
   import PowerFixture._
   import TravelFixture._
 
-  private val wayStation = CatalogNames.denizen("Way Station")
+  private val wayStation = WayStationCard.id
   private val rival = Table.p2
 
   /** Way Station stands at the coast, which `rival` rules. The actor, at the
@@ -41,7 +40,7 @@ class WayStationSuite extends munit.FunSuite:
   /** The coast also carries Toll Roads' toll of 1 favor on top of the Travel. */
   private def tolled(favor: Int): ReadyGame =
     on(rivalRules(favor = favor))(_
-      .denizen(CatalogNames.denizen("Toll Roads"), at = provincePlains)
+      .denizen(TollRoadsCard.id, at = provincePlains)
       .warbandsAt(provincePlains, rival, 1))
 
   // The Act menu's Travel badge names both ways to pay rather than the
@@ -50,7 +49,7 @@ class WayStationSuite extends munit.FunSuite:
     val travelling = QueuedProcedure(actor, ActionRef.Travel, Vector.empty,
       None, QueueKind.Run)
     assertEquals(QueuedStart.priced(catalog, rivalRules(), travelling,
-      powers(Vector.empty), PhasePowerCatalog.default(catalog))
+      powers(Vector.empty), PhasePowerCatalog.default)
       .map(_.words), Right(Some("1+ Supply or 1 [favor]")))
 
   test("its ruler travels there free, unasked"):
@@ -94,7 +93,7 @@ class WayStationSuite extends munit.FunSuite:
 
   test("a Travel a selected modifier already made free is not asked"):
     val ready = on(rivalRules(favor = 2))(_
-      .adviser(actor, CatalogNames.denizen("Tents")))
+      .adviser(actor, TentsCard.id))
     val done = accepted(travel(ready, coast, Vector(Tents.id)))
     val result = Outcomes.ready(done.state)
     assertEquals(Look(result).pawn(actor), coast)
@@ -146,7 +145,7 @@ class WayStationSuite extends munit.FunSuite:
     assertEquals(Look(result).favor(actor), 0)
 
   test("it folds Late, after every other Travel power, at no priority"):
-    val power = WayStation.forCatalog(catalog)
+    val power = WayStation
     assertEquals(power.contributions(PowerWindow.TravelCost).collect {
       case transform: Transform => transform.phase }, Vector(FoldPhase.Late))
     assertEquals(power.priority, 0)

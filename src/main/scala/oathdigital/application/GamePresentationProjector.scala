@@ -15,7 +15,7 @@ private[application] final class GamePresentationProjector(
   // (see PowerImplementationStatus); a card with no declared power has
   // nothing to fall back on, so it reads as not yet implemented rather than
   // trivially done.
-  private val powerImplemented = PowerImplementationStatus.implemented(catalog)
+  private val powerImplemented = PowerImplementationStatus.implemented
 
   private def cardImplemented(definition: PrintsPowers): Boolean =
     definition.powers.nonEmpty && definition.powers.forall(power =>

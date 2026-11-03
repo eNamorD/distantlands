@@ -1,11 +1,12 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, Table}
 import oathdigital.testkit.Outcomes.ready
 import oathdigital.testkit.Unwrap.accepted
 import oathdigital.testkit.PhasePowerHarness
@@ -13,14 +14,14 @@ import oathdigital.testkit.PhasePowerHarness
 class WaysideInnSuite extends munit.FunSuite:
   import PowerFixture._
 
-  private val inn = CatalogNames.denizen("Wayside Inn")
+  private val inn = WaysideInnCard.id
   private val source = DecisionOptionRef.Denizen(inn)
   private val rules = ActPowerHarness.rules()
   /** p1's Act at Ancient City with Wayside Inn at the site, `favor` favor
     * and `supply` Supply. */
   private def staged(favor: Int, supply: Int) =
-    Table.start.turn(actor, Phase.Act).pawn(actor, "Ancient City")
-      .denizen(inn, at = "Ancient City").favor(actor, favor)
+    Table.start.turn(actor, Phase.Act).pawn(actor, AncientCitySite)
+      .denizen(inn, at = AncientCitySite).favor(actor, favor)
       .supply(actor, supply).ready
   private def use(ready: ReadyGame) = rules.startWalker(Ready(ready),
     ActionRef.UsePower(WaysideInn.id), actor, Vector(source))
@@ -39,14 +40,14 @@ class WaysideInnSuite extends munit.FunSuite:
   test("it is unusable without favor to place"):
     val broke = staged(favor = 0, supply = 2)
     assertEquals(PhasePowerHarness.menuPowers(catalog, broke, actor,
-        PhasePowerCatalog.default(catalog), WalkerPowers.empty), Vector.empty)
+        PhasePowerCatalog.default, WalkerPowers.empty), Vector.empty)
     assertEquals(use(broke).left.toOption,
       Some(OathViolation.InsufficientFavor(1, 0)))
 
   test("it is usable in the Act phase only"):
     val wake = inPhase(staged(favor = 3, supply = 2), Phase.Wake)
     assertEquals(PhasePowerHarness.menuPowers(catalog, wake, actor,
-        PhasePowerCatalog.default(catalog), WalkerPowers.empty), Vector.empty)
+        PhasePowerCatalog.default, WalkerPowers.empty), Vector.empty)
 
   test("it writes the Supply it gained as its own line"):
     val done = accepted(use(staged(favor = 3, supply = 2)))

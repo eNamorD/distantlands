@@ -6,7 +6,7 @@ import oathdigital.gameplay.powerresolver.ModifierPicks
 import oathdigital.gameplay.powers.PowerFixture
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look, Outcomes}
+import oathdigital.testkit.{Look, Outcomes}
 import oathdigital.testkit.Unwrap.accepted
 
 /** Travel asks for its modifiers inside the walk (modifier walker design,
@@ -15,7 +15,7 @@ class TravelModifierChoiceSuite extends munit.FunSuite:
   import PowerFixture._
   import TravelFixture._
 
-  private val tents = CatalogNames.denizen("Tents")
+  private val tents = TentsCard.id
 
   /** The actor at the Cradle's plains with `supply` Supply and `favor`
     * favor, Tents a faceup adviser. */

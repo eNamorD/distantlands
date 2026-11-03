@@ -2,12 +2,15 @@ package oathdigital.gameplay.powers.action
 
 import oathdigital.gameplay.WalkerDiceFixture.scripted
 import oathdigital.gameplay.actions.dice.RerollChoice
+import oathdigital.gameplay.cards.{AncientCitySite, BuriedGiantSite}
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.dice.JinxCard
+import oathdigital.gameplay.powers.search.TruthfulHarpCard
+import oathdigital.gameplay.powers.targeting.LostTongueCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerDice
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look,
-  PhasePowerHarness, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.{assertWireRoundTrips, ready}
 import oathdigital.testkit.PhasePowerHarness.{offered, UsedAndAnswered}
 import oathdigital.testkit.Table.{p1, p2, p3}
@@ -17,19 +20,19 @@ class RelicThiefSuite extends munit.FunSuite:
   import ActPowerHarness._
 
   private val walkerParked = PhasePowerHarness.parked
-  private val power = RelicThief.forCatalog(catalog)
-  private val thief = CatalogNames.denizen("Relic Thief")
+  private val power = RelicThief
+  private val thief = RelicThiefCard.id
   private val source = DecisionOptionRef.Denizen(thief)
-  private val home = CatalogNames.site("Ancient City")
+  private val home = AncientCitySite.id
   /** Defense 1. */
-  private val whistle = CatalogNames.relic("Whistle")
+  private val whistle = WhistleCard.id
   /** Defense 2. */
-  private val ivoryEye = CatalogNames.relic("Ivory Eye")
+  private val ivoryEye = IvoryEyeCard.id
   /** Defense 0. */
-  private val harp = CatalogNames.relic("Truthful Harp")
+  private val harp = TruthfulHarpCard.id
   /** Defense 2. */
-  private val clayRattle = CatalogNames.relic("Clay Rattle")
-  private val lostTongue = CatalogNames.denizen("Lost Tongue")
+  private val clayRattle = ClayRattleCard.id
+  private val lostTongue = LostTongueCard.id
 
   /** p1's Act at Ancient City holding Relic Thief, with 1 favor and 1 faceup
     * secret to pay it. p2 stands there too, holding Whistle faceup; p3 stands
@@ -37,7 +40,7 @@ class RelicThiefSuite extends munit.FunSuite:
   private def staged: Table = Table.start.turn(p1, Phase.Act)
     .pawn(p1, at = home).adviser(p1, thief).favor(p1, 1)
     .secrets(p1, faceUp = 1).pawn(p2, at = home).relic(p2, whistle)
-    .pawn(p3, at = "Buried Giant")
+    .pawn(p3, at = BuriedGiantSite)
 
   /** The walk Relic Thief started on `before` and the walk after `relic` was
     * chosen, the dice showing `dice`. */
@@ -105,7 +108,7 @@ class RelicThiefSuite extends munit.FunSuite:
       "used.none", "No faceup relic could be taken.", covers = false)))
 
   test("Jinx rerolls the Relic Thief's roll"):
-    val jinx = CatalogNames.denizen("Jinx")
+    val jinx = JinxCard.id
     val dice = catalog.relic(whistle).get.defense
     val before = staged.adviser(p1, jinx).secrets(p1, faceUp = 2).ready
     val rules0 = rulesWithPrintedRestrictions(scripted(

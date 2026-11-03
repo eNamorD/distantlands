@@ -2,11 +2,10 @@ package oathdigital.gameplay.cards
 
 import oathdigital.catalog.{AdviserOnly, ExecutableCatalog, Locked,
   ModifierMark, PrintedPower, PrintsPowers, SiteOnly}
-import oathdigital.gameplay.powers.{PhasePowerCatalog, SelectedModifier,
-  WalkerPowerCatalog}
+import oathdigital.gameplay.powers.{PhasePowerCatalog,
+  PowerImplementationStatus, SelectedModifier, WalkerPowerCatalog}
 import oathdigital.gameplay.powers.campaign.BattlePlan
-import oathdigital.model.{CardId, MajorActionType, PowerId}
-import oathdigital.testkit.CatalogNames
+import oathdigital.model.{MajorActionType, PowerId}
 
 /** The printed-corpus checks `validate-component-catalog.py` ran on the JSON,
   * now run on the Scala catalog. Suits, edifice faces and the single Grand
@@ -155,38 +154,41 @@ class CardCatalogSuite extends munit.FunSuite:
     // Take Wealth is a standing Wake rule of the game, not a printed power.
     val gameRules = Set(PowerId("site.take-wealth"))
     val registered = (WalkerPowerCatalog.default(catalog).powers.map(_.id) ++
-      PhasePowerCatalog.default(catalog).powers.map(_.id))
+      PhasePowerCatalog.default.powers.map(_.id))
       .filter(id => cardPrefixes.exists(id.value.startsWith))
       .filterNot(gameRules)
     assertEquals(registered.filterNot(printed).distinct, Vector.empty)
 
-  test("a card leaves the holding files once it is implemented"):
-    val registered = (WalkerPowerCatalog.default(catalog).powers.map(_.id) ++
-      PhasePowerCatalog.default(catalog).powers.map(_.id)).toSet
-    // The Grand Scepter and the Hall of Ministers are implemented as
-    // operation restrictions, not as registered powers.
-    val restrictions = Set[CardId](CatalogNames.relic("The Grand Scepter"),
-      CatalogNames.edifice("Hall of Ministers"))
+  test("a card leaves the holding files once a power of it is implemented, " +
+      "and sits there until then"):
+    // A card with no implemented power shares the holding files; one with
+    // any implemented power sits beside that power. The status is the one
+    // judge, so a card implemented as an operation restriction or a site
+    // handler a game rule runs leaves holding too.
+    val implemented = PowerImplementationStatus.implemented
     def held(card: AnyRef): Boolean =
       card.getClass.getPackageName == "oathdigital.catalog.holding"
-    def implemented(id: CardId, printed: Vector[PrintedPower]): Boolean =
-      restrictions(id) || printed.exists(power => registered(power.id))
-    val misplaced =
-      catalog.denizens.collect { case card
-          if held(card) == implemented(card.id, card.powers) => card.name } ++
-        catalog.relics.collect { case card
-          if held(card) == implemented(card.id, card.powers) => card.name } ++
-        catalog.edifices.collect { case card if held(card) ==
-            implemented(card.id, card.intact.powers ++ card.ruined.powers) =>
-          card.intact.name } ++
-        catalog.sites.collect { case site
-          if held(site) == site.handlers.exists(registered) => site.name }
-    assertEquals(misplaced, Vector.empty)
+    def misplaced(card: AnyRef, name: String, powers: Vector[PowerId])
+        : Option[String] =
+      Option.when(held(card) == powers.exists(implemented))(
+        if held(card) then s"$name is implemented but held"
+        else s"$name is unimplemented but not held")
+    val findings =
+      catalog.denizens.flatMap(card =>
+        misplaced(card, card.name, card.powers.map(_.id))) ++
+      catalog.relics.flatMap(card =>
+        misplaced(card, card.name, card.powers.map(_.id))) ++
+      catalog.legacies.flatMap(card =>
+        misplaced(card, card.name, card.powers.map(_.id))) ++
+      catalog.edifices.flatMap(card => misplaced(card, card.intact.name,
+        (card.intact.powers ++ card.ruined.powers).map(_.id))) ++
+      catalog.sites.flatMap(site => misplaced(site, site.name, site.handlers))
+    assertEquals(findings, Vector.empty)
 
   test("card powers are registered whichever cards a catalog lists"):
     def cardPowers(listed: ExecutableCatalog): Set[PowerId] =
       (WalkerPowerCatalog.default(listed).powers.map(_.id) ++
-        PhasePowerCatalog.default(listed).powers.map(_.id))
+        PhasePowerCatalog.default.powers.map(_.id))
         .filter(id => Vector("denizen.", "relic.", "edifice.", "site.")
           .exists(id.value.startsWith)).toSet
     assertEquals(cardPowers(catalog.copy(denizens = Vector.empty,

@@ -14,8 +14,8 @@ private[application] final class GameLogProjector(catalog: ExecutableCatalog,
   private val formatter = new GameLogFormatter(catalog, presentation)
 
   def page(gameId: String, history: GameHistory, after: Long,
-      viewer: PlayerId): Option[LogPage] =
+      viewer: Option[PlayerId]): Option[LogPage] =
     Option.when(after >= 0 && after <= history.nextSequence)(LogPage(
       gameId, after, history.nextSequence,
-      formatter.format(history.steps, Some(viewer))
+      formatter.format(history.steps, viewer)
         .filter(_.sequence >= after)))

@@ -1,5 +1,6 @@
 package oathdigital.gameplay.chronicle
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.{OathRules, WalkerDiceFixture}
 import oathdigital.gameplay.operations.TheGrandScepterCard
 import oathdigital.gameplay.powers.WalkerPowerCatalog
@@ -17,7 +18,7 @@ class ReliquaryAndRelicsSuite extends munit.FunSuite:
     walkerDice = WalkerDiceFixture.reversingShuffle)
 
   private val empire: Table =
-    ChronicleWalk.throneHeldByChancellorP1.warbandsAt("Ancient City", p1, 1)
+    ChronicleWalk.throneHeldByChancellorP1.warbandsAt(AncientCitySite, p1, 1)
 
   /** The relics in the quiet table's relic deck, in deck order. */
   private val deckRelics: Vector[RelicId] =

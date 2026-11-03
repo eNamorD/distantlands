@@ -1,9 +1,10 @@
 package oathdigital.gameplay.setup
 
+import oathdigital.gameplay.cards.GreatSlumSite
 import oathdigital.gameplay.operations.TheGrandScepterCard
+import oathdigital.gameplay.powers.setup.HallOfDebateCard
 import oathdigital.gameplay.powers.PlayerFacts
 import oathdigital.model._
-import oathdigital.testkit.CatalogNames
 import oathdigital.testkit.Unwrap.accepted
 
 /** A later game's table, built by `GameStartRules` from a Chronicle with an
@@ -105,8 +106,8 @@ class LaterGameSetupSuite extends munit.FunSuite:
   test("the atlas keeps the unused sites with their stored cards"):
     // Great Slum is not one of the Chronicle's sites, and Hall of Debate is
     // stored at none of them.
-    val unused = CatalogNames.site("Great Slum")
-    val edifice = CatalogNames.edifice("Hall of Debate")
+    val unused = GreatSlumSite.id
+    val edifice = HallOfDebateCard.id
     val denizen = record.worldDeck.head
     val relic = record.relicDeck.head
     val chronicle = withoutDeckCards(relic, Some(denizen)).copy(

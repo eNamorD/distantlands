@@ -2,14 +2,16 @@ package oathdigital.gameplay.powers.travel
 
 import oathdigital.gameplay.{ModifierPlay, OathRules}
 import oathdigital.gameplay.actions.travel.TravelProcedure
+import oathdigital.gameplay.cards.NarrowPassSite
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   Restriction}
 import oathdigital.gameplay.powers.{PowerFixture, WalkerPowerCatalog}
+import oathdigital.gameplay.powers.search.ErrandBoyCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, PlacementPicks}
+import oathdigital.testkit.{Look, Outcomes, PlacementPicks}
 import oathdigital.testkit.Table.p2
 import oathdigital.testkit.Unwrap.{accepted, present, rejected}
 
@@ -88,8 +90,8 @@ class NarrowPassConsentSuite extends munit.FunSuite:
     assert(dunesOffered(on(board())(_.warbandsAt(pass, actor, 1))).available)
 
   test("Forest Paths drops the Pass before anyone is asked"):
-    val ready = on(ruled)(_.adviser(actor, CatalogNames.denizen("Forest Paths"))
-      .favor(actor, 1).denizen(CatalogNames.denizen("Errand Boy"),
+    val ready = on(ruled)(_.adviser(actor, ForestPathsCard.id)
+      .favor(actor, 1).denizen(ErrandBoyCard.id,
         at = provincePlains))
     assert(dunesOffered(ready, Vector(ForestPaths.id)).available)
 

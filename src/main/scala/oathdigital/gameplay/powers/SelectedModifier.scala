@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers
 
-import oathdigital.catalog.ExecutableCatalog
+import oathdigital.catalog.{Denizen, PrintedPower, Relic}
 import oathdigital.gameplay.PowerAccess
 import oathdigital.gameplay.operations.Costs
 import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,
@@ -32,12 +32,12 @@ import oathdigital.model._
   * offered for a Search, whichever window a later power hooks.
   *
   * A power states what it does inside the walk as `effects`, by window. Its
-  * resolution is read from the catalog (`persistent: false` is selected).
+  * resolution is read from its card's printed power (`persistent: false` is
+  * selected).
   */
 trait SelectedModifier extends ContributingPower:
-  def catalog: ExecutableCatalog
   /** The card the power is printed on. */
-  def cardId: CardId
+  def card: Denizen | Relic
   /** The major actions the power may be selected for. */
   def actions: Set[MajorActionType]
   /** What selecting the power costs, placed onto its card. */
@@ -45,9 +45,20 @@ trait SelectedModifier extends ContributingPower:
   /** What the power does inside the walk, by window. */
   def effects: Map[PowerWindow, Vector[Contribution]]
 
+  final def cardId: CardId = card match
+    case denizen: Denizen => denizen.id
+    case relic: Relic => relic.id
+  /** The card's suit, the bank a favor placed on it settles into off turn.
+    * A relic has none. */
+  private def cardSuit: Option[Suit] = card match
+    case denizen: Denizen => Some(denizen.suit)
+    case _: Relic => None
+  /** The power as the card prints it. */
+  private def printed: Option[PrintedPower] = card.powers.find(_.id == id)
+
   final def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
   final override lazy val resolution: PowerResolution =
-    CatalogResolution.of(catalog, id)
+    printed.fold(PowerResolution.PlayerSelected)(CatalogResolution.of)
 
   final override lazy val contributions
       : Map[PowerWindow, Vector[Contribution]] = effects
@@ -63,7 +74,7 @@ trait SelectedModifier extends ContributingPower:
   override def use(ctx: PowerCtx): Option[PowerUse] =
     for
       _ <- SelectedModifier.selectionAction(ctx.window)
-      printed <- catalog.printedPower(id)
+      printed <- printed
     yield PowerUse.of(ctx.actor, printed, cardId,
       secret = cost.secret > 0 || cost.secretBurnt > 0,
       consent = ctx.window != PowerWindow.CampaignModifierSelection,
@@ -96,7 +107,7 @@ trait SelectedModifier extends ContributingPower:
 
   /** The payment, required, placed onto the card as `PayCost` places it. */
   protected final def payment(actor: PlayerId): CoreOperation =
-    Costs.onCard(actor, cardId, cost, catalog)
+    Costs.onCard(actor, cardId, cost, cardSuit, intoOccupied = false)
 
 object SelectedModifier:
   private val selection: Map[PowerWindow, MajorActionType] = Map(

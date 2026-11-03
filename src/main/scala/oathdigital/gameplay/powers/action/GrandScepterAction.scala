@@ -1,5 +1,6 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.operations.TheGrandScepterCard
 import oathdigital.gameplay.powerresolver.QueuedStarts
 import oathdigital.gameplay.roles.{Citizenship, RoleNotes}
@@ -19,15 +20,15 @@ case object GrandScepterAction extends PaidAction(TheGrandScepterCard.action):
   override def listed(ready: ReadyGame, player: PlayerId): Boolean =
     !Imperials.isImperial(ready, player)
 
-  override def usable(ready: ReadyGame, player: PlayerId,
-      source: DecisionOptionRef): Boolean = listed(ready, player)
+  override def usable(catalog: ExecutableCatalog, ready: ReadyGame,
+      player: PlayerId, source: DecisionOptionRef): Boolean = listed(ready, player)
 
-  override def refusal(ready: ReadyGame, player: PlayerId,
-      source: DecisionOptionRef, starts: QueuedStarts): Option[String] =
+  override def refusal(catalog: ExecutableCatalog, ready: ReadyGame,
+      player: PlayerId, source: DecisionOptionRef, starts: QueuedStarts): Option[String] =
     Option.when(Citizenship.ignored(ready))(Citizenship.ignoredReason)
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
-      : Either[OathViolation, Operation] = source match
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef): Either[OathViolation, Operation] = source match
     case DecisionOptionRef.Relic(TheGrandScepterCard.id) =>
       Right(Sequence(Vector(Citizenship.become(player),
         Note(id, states => PowerSourceRef.of(source).flatMap(

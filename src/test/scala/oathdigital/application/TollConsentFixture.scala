@@ -1,10 +1,11 @@
 package oathdigital.application
 
-import oathdigital.gameplay.powers.travel.{TollRoads, TravelFixture}
+import oathdigital.gameplay.powers.travel.{TollRoads, TollRoadsCard,
+  TravelFixture}
 import oathdigital.model._
-import oathdigital.testkit.CatalogNames
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
+import oathdigital.testkit.Commands
 
 /** A game for a toll's consent through the service: TravelFixture's board
   * with Toll Roads at the Provinces' plains, and p2 ruling it and the coast.
@@ -13,7 +14,7 @@ object TollConsentFixture:
   import TravelFixture.{board, coast, on, provincePlains}
 
   val tolled: ReadyGame = on(board(supply = 7))(_
-    .denizen(CatalogNames.denizen("Toll Roads"), at = provincePlains)
+    .denizen(TollRoadsCard.id, at = provincePlains)
     .favor(p1, 1).warbandsAt(provincePlains, p2, 1).warbandsAt(coast, p2, 1))
 
   /** `tolled` with p1 holding no favor. */
@@ -28,5 +29,5 @@ object TollConsentFixture:
       ParkedServiceFixture.pickTravelDestination(p1, coast)))
 
   /** p1 asks to travel to the coast without paying. */
-  val requestFree: GameCommand = GameCommand.RequestConsent(p1,
+  val requestFree: GameCommand = Commands.requestConsent(p1,
     TollRoads.decisionId, TollRoads.free(coast))

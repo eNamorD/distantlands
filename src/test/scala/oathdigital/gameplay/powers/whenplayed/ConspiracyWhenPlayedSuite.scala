@@ -1,7 +1,10 @@
 package oathdigital.gameplay.powers.whenplayed
 
+import oathdigital.catalog.ExecutableCatalog
+import oathdigital.catalog.holding.{BanditCrownCard, CrackedHornCard}
 import oathdigital.gameplay.PlacementFixture.cardPlayDecisionId
 import oathdigital.gameplay.actions.VisionRules
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerUse, PowerUseRefusal, PowerUseRestriction}
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
@@ -11,8 +14,8 @@ import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome,
   WalkerPowers}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, PhasePowerHarness,
-  PlacementPicks, Table}
+import oathdigital.testkit.{Look, Outcomes, PhasePowerHarness, PlacementPicks,
+  Table}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.{accepted, as, present, rejected}
 import oathdigital.testkit.AppendedAutomaticUses
@@ -23,8 +26,8 @@ class ConspiracyWhenPlayedSuite extends munit.FunSuite:
   private val powers = WalkerPowers(Vector(ConspiracyWhenPlayed))
   private val conspiracy = VisionRules.Conspiracy
   private val placeId = cardPlayDecisionId(conspiracy, "place")
-  private val crackedHorn = CatalogNames.relic("Cracked Horn")
-  private val banditCrown = CatalogNames.relic("Bandit Crown")
+  private val crackedHorn = CrackedHornCard.id
+  private val banditCrown = BanditCrownCard.id
 
   /** The game, and where p1 plays Conspiracy from. */
   private final case class Staged(ready: ReadyGame,
@@ -41,12 +44,12 @@ class ConspiracyWhenPlayedSuite extends munit.FunSuite:
       CardPlayProcedure.Origin.FacedownAdviser)
 
   /** p1 and p2 both stand at Ancient City. */
-  private val p2AtAncientCity = Table.start.pawn(p1, "Ancient City")
-    .pawn(p2, "Ancient City")
+  private val p2AtAncientCity = Table.start.pawn(p1, AncientCitySite)
+    .pawn(p2, AncientCitySite)
 
   /** p1 at Ancient City, p2 at Broken Peaks: no pawn shares p1's site. */
-  private val p2Away = Table.start.pawn(p1, "Ancient City")
-    .pawn(p2, "Broken Peaks")
+  private val p2Away = Table.start.pawn(p1, AncientCitySite)
+    .pawn(p2, BrokenPeaksSite)
 
   private def treeFor(f: Staged): Operation = accepted(f.origin match {
     case CardPlayProcedure.Origin.TemporaryHand =>
@@ -270,7 +273,8 @@ class ConspiracyWhenPlayedSuite extends munit.FunSuite:
     def contributions: Map[PowerWindow, Vector[Contribution]] = Map.empty
     override def powerUseRestrictions: Vector[PowerUseRestriction] =
       Vector(this)
-    def refusal(ready: ReadyGame, use: PowerUse): Option[PowerUseRefusal] =
+    def refusal(catalog: ExecutableCatalog, ready: ReadyGame, use: PowerUse)
+      : Option[PowerUseRefusal] =
       Option.when(use.power == ConspiracyWhenPlayed.id)(PowerUseRefusal(id,
         LogNote(Some(PowerSourceRef.Card(conspiracy)), "refused",
           Vector.empty),

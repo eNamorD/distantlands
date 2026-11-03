@@ -1,14 +1,14 @@
 package oathdigital.gameplay.walker
 
+import oathdigital.gameplay.powers.campaign.HorseArchersCard
 import oathdigital.model._
-import oathdigital.testkit.CatalogNames
 import oathdigital.testkit.Table.p1
 
 /** Which operations show a player something the chooser cannot see, and how
   * far each of the two questions looks (hidden outcome depth decision).
   */
 class HiddenOutcomesSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Horse Archers")
+  private val card = HorseArchersCard.id
   private val peek = Peek(p1, card, Location.PlayArea(p1))
 
   test("peeks, reveals, rolls, rerolls and cards turned faceup hide the " +
