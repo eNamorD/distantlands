@@ -63,7 +63,7 @@ private[gamelog] final class ChoiceWords(words: LogWords,
   /** The label the parked decision gave `ref`. */
   private def shown(before: ReadyGame, ref: DecisionOptionRef)
       : Option[String] =
-    decisions.parkedDecide(before).toVector.flatMap(_.query match
+    decisions.openDecisions(before).flatMap(_.query match
       case one: DecisionQuery.ChooseOne => one.options
       case many: DecisionQuery.ChooseMany => many.options
       case _ => Vector.empty).flatMap(labelled(ref)).headOption

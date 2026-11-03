@@ -3,7 +3,7 @@ package oathdigital.gameplay.walker
 import oathdigital.gameplay.operations.PowerUseRules
 import oathdigital.gameplay.powerresolver.{ContributingPower, ContributionCollector, OfferHost, OptionRestriction, PowerCtx, RerollHost, Restriction, Waiver}
 import oathdigital.model.PowerResolution
-import oathdigital.model.{Answered, AutomaticUse, Branch, ConsentAnswer, ConsentAsk, ConsentKey, ConsentTurn, Decide, DecisionAnswer, DecisionOption, DecisionOptionRef, DecisionQuery, OathViolation, OfferedPlan, OfferedReroll, Operation, OptionReason, PendingTree, PlayerId, PowerId, LogNote, PowerWindow, LeafOperation, ProcedureRef, ReadyGame}
+import oathdigital.model.{Answered, AutomaticUse, Branch, ConsentAnswer, ConsentAsk, ConsentKey, ConsentTurn, Decide, DecisionAnswer, DecisionOption, DecisionOptionRef, DecisionQuery, OathViolation, OfferedPlan, OfferedReroll, Operation, OptionReason, PendingTree, PlayerId, PowerId, LogNote, PowerWindow, LeafOperation, ProcedureRef, ReadyGame, Simultaneous}
 
 /** Task 3's power-gather/fold mechanics for [[ProcedureWalker]], split into
   * their own file to keep `ProcedureWalker.scala` under the project's
@@ -522,15 +522,36 @@ private[walker] object WalkerPowerGather:
     * before parking. A position the walk would not have parked at, whose
     * search empties the decision, is returned as declared, and the
     * answer-time check refuses it.
+    *
+    * A `Simultaneous` park resolves to the node itself; [[leavesAt]] opens
+    * its children.
     */
   def leafAt(state: ReadyGame, action: Operation, pending: PendingTree,
       powers: WalkerPowers): Option[Operation] =
     val picked = powers.withAnswers(pending.answered)
     resolveAt(state, pending, picked, action, pending.at, Vector.empty,
-      Set.empty).map:
-        case decide: Decide => ProcedureWalker.narrowParked(state, action,
-          pending, picked, decide)
-        case other => other
+      Set.empty).map(narrowedAt(state, action, pending, picked))
+
+  /** Every leaf open at the park: the open children's decisions of a
+    * [[Simultaneous]] node parked at its own path, or else the one leaf
+    * [[leafAt]] returns. Each `Decide` is narrowed as [[leafAt]] narrows. */
+  def leavesAt(state: ReadyGame, action: Operation, pending: PendingTree,
+      powers: WalkerPowers): Vector[Operation] =
+    val picked = powers.withAnswers(pending.answered)
+    resolveAt(state, pending, picked, action, pending.at, Vector.empty,
+        Set.empty) match
+      case Some(node: Simultaneous) =>
+        SimultaneousChildren.open(node, pending.answered).map((_, decide) =>
+          narrowedAt(state, action, pending, picked)(decide))
+      case found => found.map(narrowedAt(state, action, pending, picked))
+        .toVector
+
+  private def narrowedAt(state: ReadyGame, action: Operation,
+      pending: PendingTree, picked: WalkerPowers)(node: Operation): Operation =
+    node match
+      case decide: Decide => ProcedureWalker.narrowParked(state, action,
+        pending, picked, decide)
+      case other => other
 
   /** The node `pending.at` addresses itself, unnarrowed: what a caller
     * reads when it needs the composite around a parked leaf. */

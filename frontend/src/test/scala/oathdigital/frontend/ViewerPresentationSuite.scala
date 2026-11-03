@@ -31,17 +31,28 @@ class ViewerPresentationSuite extends FunSuite:
 
   test("after the game, other players wait on the winner's Start Chronicle"):
     val value = wonByBlue.copy(walkerWaiting =
-      Some(WalkerWaitingState("blue-exile", Some("Start Chronicle"))))
+      Some(WalkerWaitingState(Vector("blue-exile"), Some("Start Chronicle"))))
     val presentation = ServerUiSupport.viewerPresentation(value, "red-exile")
     assert(!presentation.showGameplayControls)
-    assertEquals(presentation.waitingForPlayerId, Some("blue-exile"))
+    assertEquals(presentation.waitingForPlayerIds, Vector("blue-exile"))
     assertEquals(ActionDecisionRenderer.status(value, presentation).textContent,
       "Waiting for Blue Exile: Start Chronicle")
+
+  test("the waiting line names every awaited player"):
+    val value = wonByBlue.copy(walkerWaiting = Some(WalkerWaitingState(
+      Vector("blue-exile", "red-exile"), Some("Start Chronicle"))))
+    val presentation = ServerUiSupport.viewerPresentation(value, "spectator")
+    assertEquals(presentation.waitingForPlayerIds,
+      Vector("blue-exile", "red-exile"))
+    assertEquals(presentation.waitingForDisplayNames,
+      Vector("Blue Exile", "Red Exile"))
+    assertEquals(ActionDecisionRenderer.status(value, presentation).textContent,
+      "Waiting for Blue Exile, Red Exile: Start Chronicle")
 
   test("a finished game with nothing parked hides every control"):
     val presentation = ServerUiSupport.viewerPresentation(wonByBlue, "red-exile")
     assert(!presentation.showGameplayControls)
-    assertEquals(presentation.waitingForPlayerId, None)
+    assertEquals(presentation.waitingForPlayerIds, Vector.empty)
 
   test("inactive Wake viewer waits and receives no gameplay controls"):
     val value = twoSeatProjection(
@@ -51,8 +62,8 @@ class ViewerPresentationSuite extends FunSuite:
     val presentation = ServerUiSupport.viewerPresentation(value, "blue-exile")
 
     assert(!presentation.showGameplayControls)
-    assertEquals(presentation.waitingForPlayerId, Some("red-exile"))
-    assertEquals(presentation.waitingForDisplayName, Some("Red Exile"))
+    assertEquals(presentation.waitingForPlayerIds, Vector("red-exile"))
+    assertEquals(presentation.waitingForDisplayNames, Vector("Red Exile"))
 
   /** Fix round 1: a parked walker `Decide`'s owner is not always the active
     * participant (Task 5). `walkerDecision` is projected to the owner alone
@@ -66,17 +77,17 @@ class ViewerPresentationSuite extends FunSuite:
       .copy(walkerDecision = Some(ForgeFixture.parked))
     val owner = ServerUiSupport.viewerPresentation(value, "blue-exile")
     assert(owner.showGameplayControls)
-    assertEquals(owner.waitingForPlayerId, None)
-    assertEquals(owner.waitingForDisplayName, None)
+    assertEquals(owner.waitingForPlayerIds, Vector.empty)
+    assertEquals(owner.waitingForDisplayNames, Vector.empty)
 
   test("the active participant waits for the walker decision's off-turn owner"):
     val value = twoSeatProjection(activeParticipantId = "red-exile")
-      .copy(walkerWaiting = Some(WalkerWaitingState("blue-exile",
+      .copy(walkerWaiting = Some(WalkerWaitingState(Vector("blue-exile"),
         Some("Choose the Oathkeeper"))))
     val active = ServerUiSupport.viewerPresentation(value, "red-exile")
     assert(!active.showGameplayControls)
-    assertEquals(active.waitingForPlayerId, Some("blue-exile"))
-    assertEquals(active.waitingForDisplayName, Some("Blue Exile"))
+    assertEquals(active.waitingForPlayerIds, Vector("blue-exile"))
+    assertEquals(active.waitingForDisplayNames, Vector("Blue Exile"))
 
   /** The player waited on is named once: the status line carries the
     * question their parked decision asks, so the pane draws no second
@@ -84,7 +95,7 @@ class ViewerPresentationSuite extends FunSuite:
     */
   test("the status line names who is waited on and their decision's question"):
     val value = twoSeatProjection(activeParticipantId = "red-exile")
-      .copy(walkerWaiting = Some(WalkerWaitingState("blue-exile",
+      .copy(walkerWaiting = Some(WalkerWaitingState(Vector("blue-exile"),
         Some("Choose your starting site"))))
     val status = ActionDecisionRenderer.status(value,
       ServerUiSupport.viewerPresentation(value, "red-exile"))
@@ -94,7 +105,7 @@ class ViewerPresentationSuite extends FunSuite:
 
   test("a viewer who waits sees the facts the awaited player sees"):
     val value = twoSeatProjection(activeParticipantId = "red-exile")
-      .copy(walkerWaiting = Some(WalkerWaitingState("blue-exile",
+      .copy(walkerWaiting = Some(WalkerWaitingState(Vector("blue-exile"),
         Some("Sacrifice up to 2 warbands for one attack each"),
         status = Vector(WalkerStatusProjection("Attack total", "3"),
           WalkerStatusProjection("Defense dice", "2")))))
@@ -107,7 +118,7 @@ class ViewerPresentationSuite extends FunSuite:
 
   test("a parked Roll's wait names only the player, having no question"):
     val value = twoSeatProjection(activeParticipantId = "red-exile")
-      .copy(walkerWaiting = Some(WalkerWaitingState("blue-exile")))
+      .copy(walkerWaiting = Some(WalkerWaitingState(Vector("blue-exile"))))
     val status = ActionDecisionRenderer.status(value,
       ServerUiSupport.viewerPresentation(value, "red-exile"))
     assertEquals(status.textContent, "Waiting for Blue Exile")
@@ -117,11 +128,11 @@ class ViewerPresentationSuite extends FunSuite:
     val inactive = ServerUiSupport.viewerPresentation(value, "blue-exile")
     val active = ServerUiSupport.viewerPresentation(value, "red-exile")
 
-    assertEquals(inactive.waitingForPlayerId, Some("red-exile"))
-    assertEquals(active.waitingForPlayerId, None)
+    assertEquals(inactive.waitingForPlayerIds, Vector("red-exile"))
+    assertEquals(active.waitingForPlayerIds, Vector.empty)
 
   /** Regression: the owner of a parked walker decision has
-    * `waitingForPlayerId = None` (Task 5, tested above), but the status line
+    * `waitingForPlayerIds = Vector.empty` (Task 5, tested above), but the status line
     * matched on that field alone, so this viewer fell through every named
     * phase case straight to the `activeParticipantId` debug fallback --
     * showing "setup-walker-decision; active participant: <someone else>"

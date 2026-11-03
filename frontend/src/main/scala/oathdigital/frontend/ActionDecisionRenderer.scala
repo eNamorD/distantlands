@@ -4,31 +4,34 @@ import ServerUiSupport._
 private[frontend] object ActionDecisionRenderer:
  def status(value: GameProjection, presentation: ViewerPresentation): dom.Element =
    val node = element("div", "status")
-   presentation.waitingForPlayerId match
-     case Some(playerId) =>
+   val waitingFor = presentation.waitingForPlayerIds
+   waitingFor match
+     case _ if waitingFor.nonEmpty =>
        node.appendChild(dom.document.createTextNode("Waiting for "))
-       node.appendChild(playerReference(value, playerId))
+       waitingFor.zipWithIndex.foreach((playerId, index) =>
+         if index > 0 then node.appendChild(dom.document.createTextNode(", "))
+         node.appendChild(playerReference(value, playerId)))
        // The question a parked decision asks rides on the same line, so the
-       // pane names the player waited on once.
-       value.walkerWaiting.filter(_.playerId == playerId).flatMap(_.heading)
+       // pane names the players waited on once.
+       value.walkerWaiting.filter(_.playerIds == waitingFor).flatMap(_.heading)
          .foreach(heading =>
            node.appendChild(dom.document.createTextNode(s": $heading")))
-     case None if value.walkerDecision.nonEmpty =>
+     case _ if value.walkerDecision.nonEmpty =>
        // A parked walker Decide belonging to this viewer projects
-       // waitingForPlayerId = None (see the ServerUiSupport.viewerPresentation
+       // no waitingForPlayerIds (see the ServerUiSupport.viewerPresentation
        // comment), so this is genuinely this viewer's own turn. Falling
        // through to the generic phase text or the activeParticipantId
        // fallback below would show the wrong or no turn indicator at all.
        node.textContent = value.walkerDecision.flatMap(_.query).flatMap(_.heading)
          .getOrElse("Your decision.")
-     case None if value.phase == "game-over" =>
+     case _ if value.phase == "game-over" =>
        node.textContent = value.oathkeeper.flatMap(_.winnerPlayerId)
          .fold("Game over.") { winner =>
            val victory = VictoryWords.of(
              value.oathkeeper.flatMap(_.winnerVictoryKind))
            s"Game over — $winner wins ($victory)."
          }
-     case None =>
+     case _ =>
        node.appendChild(dom.document.createTextNode(
          s"${value.phase}; active participant: "
        ))
@@ -46,8 +49,8 @@ private[frontend] object ActionDecisionRenderer:
    panel.appendChild(status(value, presentation))
    // What the awaited player sees beside the question, so the table can
    // follow along: a Campaign's forces, dice and totals.
-   value.walkerWaiting.filter(waiting =>
-       presentation.waitingForPlayerId.contains(waiting.playerId))
+   value.walkerWaiting.filter(
+       _.playerIds == presentation.waitingForPlayerIds)
      .foreach(waiting => WalkerPanelSupport.statusFacts(waiting.status, panel))
    // Before the winner banner and every phase's controls: the steps to take
    // back or restore belong to whatever the pane shows below them.

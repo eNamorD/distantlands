@@ -14,7 +14,7 @@ class ConsentPromptPanelSuite extends munit.FunSuite:
   private val table = TestProjections.actingProjection(
     players = Vector(red, blue), activePlayer = Some("blue"))
   private val prompted = table.copy(
-    walkerWaiting = Some(WalkerWaitingProjection("blue",
+    walkerWaiting = Some(WalkerWaitingProjection(Vector("blue"),
       Some("Choose a Travel destination"))),
     consentPrompt = Some(ConsentPromptState("blue", Vector("Narrow Pass"),
       "Deep Woods")))
@@ -22,7 +22,7 @@ class ConsentPromptPanelSuite extends munit.FunSuite:
     consentWaiting = Some(ConsentWaitingState(Vector("red"))))
   /** Red rules City Wall, and decides on Blue's Tyrant. */
   private val deactivating = table.copy(
-    walkerWaiting = Some(WalkerWaitingProjection("blue", None)),
+    walkerWaiting = Some(WalkerWaitingProjection(Vector("blue"), None)),
     consentPrompt = Some(ConsentPromptState("blue", Vector("City Wall"),
       "Let it work", use = Some("Tyrant"))))
   /** Blue waits on Red's decision on Tyrant. */

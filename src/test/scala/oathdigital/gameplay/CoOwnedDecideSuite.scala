@@ -51,8 +51,9 @@ class CoOwnedDecideSuite extends munit.FunSuite:
       Vector(shared))
     assertEquals(ProcedureWalker.awaitedPlayers(ready, loop, pending, noPowers),
       Set(owner, guest))
-    assertEquals(ProcedureWalker.awaitedPlayer(ready, loop, pending, noPowers),
-      Some(owner))
+    assertEquals(ProcedureWalker.awaitedInSeatOrder(ready, loop, pending,
+      noPowers), ready.game.current.players.map(_.player)
+      .filter(Set(owner, guest)))
     assertEquals(ProcedureWalker.parkedDecide(ready, loop, pending, noPowers),
       Some(shared))
 

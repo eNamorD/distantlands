@@ -76,7 +76,9 @@ Sequence(
 - **Answers already carry attribution.** `Answered.by` records who answered, each answer is a `WalkerStepRecorded(ChoicePayload)`, and `WalkerParked` records the answered list, so the journal needs no Negotiation-specific event.
 - **Continuations.** `OathContinue.AwaitingNegotiation(playerId, decision)` addresses the primary owner, the actor, and covers both decisions. It is registered through `WalkerProcedureRegistry.continuationFor` for both ids.
 
-### Simultaneous decisions (not built, kept possible)
+### Simultaneous decisions
+
+Built: see the [simultaneous decisions design](2026-11-02-simultaneous-decisions-design.md).
 
 Lineage setup will need players to decide at the same time. That is a different shape from a co-owned decision. A co-owned decision is one decision that any owner may answer once. A simultaneous step is N decisions, one per player, all open at once, answered in any order, and the walker continues when all are answered.
 
@@ -154,7 +156,7 @@ Kept: the terms model types, and the HSQL reopen test, migrated to reopen a park
 
 - The term-kind registry (permitted kinds, validation and settlement per kind). The eight catalog powers all need it, and the first slice that adds a term kind introduces it. Until then `NegotiationTerms` stays a closed type.
 - Eligibility powers, term-kind powers, and the two starters (The Gathering, Whispering Stone). The Gathering runs a pawn-placement phase for any players and then a Negotiation among those at the site. Whispering Stone starts a private remote Negotiation for a secret. Both would embed the same Negotiation tree with their own participant set.
-- The `Simultaneous` node for Lineage setup.
+- Lineage setup's simultaneous choices. The `Simultaneous` node they need exists since 2026-11-03.
 - The first-game gate on the other minor actions and on Campaign.
 - A per-participant record of ignored Negotiation rules.
 
@@ -163,7 +165,7 @@ Kept: the terms model types, and the HSQL reopen test, migrated to reopen a park
 Where the implementation differs from the text above:
 
 1. `DecisionQuery.Negotiate` also carries the deal: its fields are `participants`, `terms`, `accepted`, `bounds`, `acceptors` and `heading`. Carrying the current terms and acceptances lets the generic projector render the deal from the query alone, without folding `answered` itself.
-2. `ProcedureWalker.parkedDecide` and `awaitedPlayer` stay as single-decision conveniences (the first open decision, and the primary owner). About 17 test call sites use `parkedDecide`, and only a `Simultaneous` node needs them gone. `openDecisions` and `awaitedPlayers` are the set-returning API.
+2. `ProcedureWalker.parkedDecide` and `awaitedPlayer` stay as single-decision conveniences (the first open decision, and the primary owner). About 17 test call sites use `parkedDecide`, and only a `Simultaneous` node needs them gone. `openDecisions` and `awaitedPlayers` are the set-returning API. Superseded 2026-11-03 by the [simultaneous decisions design](2026-11-02-simultaneous-decisions-design.md): `awaitedPlayer` is gone, and `parkedDecide` returns `None` when several decisions are open.
 3. The eligibility rule is `NegotiationDeal.eligible`, in `gameplay/actions/negotiation/`. The legacy `Negotiation.legalParticipants` was deleted with the legacy path.
-4. `WalkerWaitingProjection` gains `coOwnerPlayerIds` and `deal`; `playerId` stays the primary owner.
+4. `WalkerWaitingProjection` gains `coOwnerPlayerIds` and `deal`; `playerId` stays the primary owner. Superseded 2026-11-03: both ids became `playerIds`, every owner in seat order.
 5. `DecisionQueryProjection.count` is removed. A `ChooseMany` projects `minimum` and `maximum`, the fields `ChooseAmount` already used.

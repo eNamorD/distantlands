@@ -288,15 +288,14 @@ final case class WalkerRollOutcomeProjection(
     target: Option[Int] = None,
     detail: Vector[String] = Vector.empty
 )
-/** Public: who a parked walker position waits on, and the question's heading
-  * when it has one (`None` for a roll). Every viewer except the awaited
-  * player receives this; the awaited player receives `WalkerDecisionProjection`.
-  * `status` is the facts the awaited player sees beside the question, so
-  * the table can follow along.
+/** Public: who a parked walker position waits on, every player who may
+  * answer in seat order, and the question's heading when it has one (`None`
+  * for a roll). Every viewer who owes no answer receives this; a viewer who
+  * owes one receives `WalkerDecisionProjection`. `status` is the facts the
+  * awaited players see beside the question, so the table can follow along.
   */
-final case class WalkerWaitingProjection(playerId: String,
+final case class WalkerWaitingProjection(playerIds: Vector[String],
     heading: Option[String] = None,
-    coOwnerPlayerIds: Vector[String] = Vector.empty,
     deal: Option[NegotiationDealProjection] = None,
     status: Vector[WalkerStatusProjection] = Vector.empty)
 final case class BannerProjection(key: String, face: String,

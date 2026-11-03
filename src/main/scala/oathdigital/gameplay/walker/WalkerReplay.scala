@@ -69,10 +69,12 @@ private[walker] object WalkerReplay:
       pending <- ready.game.current.walkerPending.toRight(
         OathViolation.InvalidEventOrder(
           "walker step requires a durable pending position"))
-      _ <- Either.cond(pending.at.mkString(".") == step.nodeId, (),
-        OathViolation.InvalidEventOrder(
-          s"walker step ${step.nodeId} does not match pending position " +
-            pending.at.mkString(".")))
+      at = pending.at.mkString(".")
+      // A `Simultaneous` node parks at its own path, and the answer step
+      // records the path of the child decision it answered.
+      _ <- Either.cond(step.nodeId == at || step.nodeId.startsWith(s"$at."),
+        (), OathViolation.InvalidEventOrder(
+          s"walker step ${step.nodeId} does not match pending position $at"))
     yield pending
 
     event match

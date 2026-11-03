@@ -13,8 +13,11 @@ specs.
 
 ## Next
 
-Work toward a playable all-Exile alpha before expanding into the Chronicle,
-campaign-continuity and Empire rules.
+Work toward a playable all-Exile alpha, then finish the Chronicle and
+campaign-continuity rules. The Empire rules are in place
+([Empire phase design](superpowers/specs/2026-10-29-empire-phase-design.md));
+their remaining cards and edge cases are listed with the phases and deferred
+items below.
 
 ### Phase - Cleanup tasks
 
@@ -101,7 +104,8 @@ without one. Deferred findings and requested UI changes are in the
 [Phase 5 follow-ups](operations/phase-5-follow-ups.md).
 
 - [ ] **Unanswered off-turn decisions.** A parked decision blocks every
-  command until its owner answers. There are no timeouts, forfeits or host
+  command until its owner answers; a `Simultaneous` park waits on every
+  player who still owes an answer. There are no timeouts, forfeits or host
   resolution. Recorded in the
   [walker ownership and phases design](superpowers/specs/2026-09-12-walker-ownership-and-phases-design.md).
 - [ ] **Reconnection UX.** After a client loses its connection it should
@@ -136,7 +140,7 @@ A Negotiation deal holds favor and relic transfers and disclosures only. Add
 promises about future actions, transfers of secrets, advisers, sites and
 banners, remote and private Negotiation, a registry of term kinds, and
 eligibility powers. Record ignored Negotiation rules per participant rather
-than for the actor only. Citizenship offers belong to the Empire phase.
+than for the actor only.
 
 - [ ] **Negotiation cards.** The Gathering and Whispering Stone need a nested
   Negotiation with its own participants. Council Arbiter, Deed Writer and
@@ -165,24 +169,42 @@ Foundation mutation, Legacy activation and scoring, and era scoring.
   "Coming in a later release". Edits a saved Chronicle's fields in the
   browser.
 
-### Phase - Empire
+### Phase - Empire cards
 
-After the Chronicle steps phase, implement the Chancellor and Citizen roles,
-Imperial warbands and Campaign, the Stable Regime and Successor endings,
-Citizenship and exile, and the Empire part of later-game setup. Design:
-[Empire phase design](superpowers/specs/2026-10-29-empire-phase-design.md).
-Each slice gets its own plan, in this order.
+The Empire phase built the roles, the Imperial Campaign, the Empire endings,
+Citizenship and later-game setup, but left these cards to the catalog
+([Empire phase design](superpowers/specs/2026-10-29-empire-phase-design.md),
+"Out of scope"). Catalog batch 9 marked each "phase: Empire" because the roles
+did not exist yet; they do now
+([batch 9 card table](superpowers/specs/2026-11-02-catalog-batch-9-design.md)).
 
-- [ ] **Simultaneous Throne answers.** Build the walker's Simultaneous node
-  (negotiation walker design, "Simultaneous decisions") so the Exiles
-  offered Citizenship at the Throne answer at once instead of in seat order.
+- [ ] **Council Seat (123).** A Citizen who rules it cannot be exiled, even
+  by themselves: the Grand Scepter's battle plan, self-exile and every other
+  exile path must refuse them.
+- [ ] **Naysayers (21).** Rest: if any Exile is the Oathkeeper or the
+  Usurper, take one favor from the Chancellor.
+- [ ] **Grand Mask (R05).** An Exile who holds it rules the denizens at
+  Imperial sites during their turn, except battle plans, and the Imperials do
+  not.
+- [ ] **Imperial Seal (R26).** Action: if no Imperial pawn is at your site,
+  move any number of Imperial warbands from your site to any Imperial site or
+  Imperial player board.
+- [ ] **Bandit Forest (E29, ruined).** Imperials cannot place favor or
+  secrets on denizens ruled by bandits, or use those denizens' non-persistent
+  powers.
+
+False Prophet stays under **Phase - Catalog batch - engine-blocked** (a
+player-aware off-turn card play), and the Empire legacies stay with
+**Legacies**.
 
 ### Phase - Settings Feature
 
 Settings players can change during a game.
 
 - [ ] **Ignore Citizenship powers.** Toggle the first-game option that
-  ignores "become a Citizen" powers (Empire phase, slice 3).
+  ignores "become a Citizen" powers. Game start sets it, and nothing changes
+  it during a game ([Empire phase design](superpowers/specs/2026-10-29-empire-phase-design.md),
+  slice 3).
 - [ ] **Hover warnings.** Show warnings on hover, turn them off, or disable
   the options that carry a warning.
 - [ ] **Hide disabled options.** Hide options instead of showing them

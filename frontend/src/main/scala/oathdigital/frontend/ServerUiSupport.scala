@@ -271,8 +271,8 @@ private[frontend] object ServerUiSupport:
 
   private[frontend] final case class ViewerPresentation(
       showGameplayControls: Boolean,
-      waitingForPlayerId: Option[String],
-      waitingForDisplayName: Option[String],
+      waitingForPlayerIds: Vector[String],
+      waitingForDisplayNames: Vector[String],
       playerId: String
   )
 
@@ -285,38 +285,38 @@ private[frontend] object ServerUiSupport:
     if value.oathkeeper.exists(_.winnerPlayerId.nonEmpty) &&
         value.walkerDecision.isEmpty && value.walkerWaiting.isEmpty then
       return ViewerPresentation(showGameplayControls = false,
-        waitingForPlayerId = None, waitingForDisplayName = None,
+        waitingForPlayerIds = Vector.empty, waitingForDisplayNames = Vector.empty,
         playerId = playerId)
     // Task 5 fix: a parked walker `Decide`'s owner is projected `walkerDecision`
     // regardless of whose turn it is, and everyone else is projected
-    // `walkerWaiting` naming that owner (see WalkerDecisionProjector.project/
-    // waiting). Reading `activeParticipantId` below instead of these two
+    // `walkerWaiting` naming every player who may answer (see
+    // WalkerDecisionProjector.project/waiting). Reading `activeParticipantId` below instead of these two
     // fields would leave an off-turn owner with no panel -- and the active
     // player waiting on them right back -- since neither side is the other's
     // active participant.
     if value.walkerDecision.nonEmpty then
       return ViewerPresentation(showGameplayControls = true,
-        waitingForPlayerId = None, waitingForDisplayName = None,
+        waitingForPlayerIds = Vector.empty, waitingForDisplayNames = Vector.empty,
         playerId = playerId)
     if value.walkerWaiting.nonEmpty then
       return ViewerPresentation(showGameplayControls = false,
-        waitingForPlayerId = value.walkerWaiting.map(_.playerId),
-        waitingForDisplayName = value.walkerWaiting.map(w =>
-          playerDisplayName(value, w.playerId)),
+        waitingForPlayerIds = value.walkerWaiting.fold(Vector.empty)(_.playerIds),
+        waitingForDisplayNames = value.walkerWaiting.fold(Vector.empty)(
+          _.playerIds.map(playerDisplayName(value, _))),
         playerId = playerId)
     val controllingPlayer = value.activeParticipantId
     controllingPlayer match
       case Some(activePlayerId) if activePlayerId != playerId =>
         ViewerPresentation(
           showGameplayControls = false,
-          waitingForPlayerId = Some(activePlayerId),
-          waitingForDisplayName = Some(playerDisplayName(value, activePlayerId)),
+          waitingForPlayerIds = Vector(activePlayerId),
+          waitingForDisplayNames = Vector(playerDisplayName(value, activePlayerId)),
           playerId = playerId
         )
       case _ => ViewerPresentation(
         showGameplayControls = true,
-        waitingForPlayerId = None,
-        waitingForDisplayName = None,
+        waitingForPlayerIds = Vector.empty,
+        waitingForDisplayNames = Vector.empty,
         playerId = playerId
       )
 

@@ -384,7 +384,7 @@ class GameApplicationServiceProjectionSuite extends munit.FunSuite:
     // names the card.
     val waiting = projector.projectPublic("game-next-seat",
       LoadedGame(chosen.state, chosen.nextSequence))
-    assertEquals(waiting.walkerWaiting.map(_.playerId),
+    assertEquals(waiting.walkerWaiting.flatMap(_.playerIds.headOption),
       Some(firstPlayer.value))
     assert(!GameHttpWire.encodeProjection(waiting)
       .contains(wizardsConclave.value))
@@ -397,7 +397,7 @@ class GameApplicationServiceProjectionSuite extends munit.FunSuite:
     val continued = projector.project("game-next-seat",
       LoadedGame(revealing.state, revealing.nextSequence),
       PlayerId(present(continuedPublic.walkerWaiting, "a waiting seat")
-        .playerId))
+        .playerIds.head))
     assertEquals(continued.phase, "setup-walker-decision")
     // 6 seeded discards plus the 2 p2 discarded.
     assertEquals(continued.world.map(_.discardCount).sum, 8)

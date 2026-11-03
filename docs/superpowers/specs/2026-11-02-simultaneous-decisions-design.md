@@ -1,6 +1,6 @@
 # Simultaneous decisions
 
-Status: designed, 2026-11-02.
+Status: designed, 2026-11-02. Implemented, 2026-11-03.
 
 The walker gains a `Simultaneous` node: several decisions open at once, one per
 player, answered in any order. Its first use is the Throne's Offer Citizenship
@@ -29,6 +29,28 @@ The [negotiation walker design](2026-09-19-negotiation-walker-design.md),
   already answered and the Throne holder. The waiting line names every
   player who still owes an answer, in seat order, with no primary player.
 
+### Plan rulings (2026-11-02)
+
+The implementation plan changed this design where it met the code. The
+sections below already read as built.
+
+- **P1.** `parkedDecide` keeps its name and returns `None` when several
+  decisions are open. A rename would touch about 80 test call sites.
+- **P2.** A child's `Decide` carries no window. A fold may insert operations
+  before the `Decide`, and the answer cursor into the child would miss it.
+- **P3.** An answer step records the answered child's own path. Replay
+  accepts a step whose path equals the parked path or lies under it.
+- **P4.** The search key needs no decision id: child decisions have distinct
+  paths, and `SearchMemo.Base` already holds the id.
+- **P5.** A fresh live walk parks without narrowing the children. Each is
+  narrowed when it is projected or answered, as any parked `Decide` is.
+- **P6.** No new golden log. Test drivers answer the first open decision in
+  seat order, so `OfferCitizenshipSuite` checks the out-of-order lines.
+- **P7.** `WalkerSimulation`, `ModifierChoice` and the Campaign plan lookup
+  keep the sole decision. None of them serves a `Simultaneous` child.
+- **P8.** A node inside a `Repeat` needs fresh decision ids on each pass,
+  since answered children are found by id.
+
 ## The node
 
 ```scala
@@ -43,7 +65,7 @@ is an `OathViolation.InvalidEventOrder` naming the node's path:
 
 - every child is a `Decide`, or a `Sequence` whose first child is a `Decide`;
 - the children's `Decide`s have distinct decision ids and distinct owners;
-- no child's `Decide` has co-owners;
+- no child's `Decide` has co-owners or a window;
 - every child's `Decide` has the same heading;
 - the node has at least one child.
 
@@ -68,19 +90,17 @@ position, so the arrival order is free.
 - *Tails.* A tail that parks (a `Decide` or a parked `Roll`) is rejected with
   `InvalidEventOrder`. The tail's operations record under their own child
   paths.
-- *Steps.* An answer step records `nodeId` = the node's path. Replay's
-  `validateParkedStep` checks that `pending.at` equals the step's `nodeId`,
-  so it passes with no change.
+- *Steps.* An answer step records the answered child decision's own path.
+  Replay's `validateParkedStep` accepts a step whose `nodeId` equals the
+  parked path or lies under it.
 
 **Search.** With `ctx.searching`, the node walks its children in child order,
 as a `Sequence` would. The answers are independent, so one order is enough to
-find a legal path. The search's `visited` key and its `verdict` resume carry
-the decision id beside the path, so children that share the node's path never
-collide.
+find a legal path. Child decisions have distinct paths, so the search's
+`visited` key never collides. Narrowing a parked child resumes at the node's
+path, where the node answers that child and searches the others.
 
-**Power windows.** Each child's `Decide` folds its own window, as anywhere
-else. A window on the node itself is not supported, so the node has no
-`window` parameter.
+**Power windows.** Neither the node nor a child's `Decide` carries a window.
 
 **Inside other nodes.** A `Simultaneous` may sit in a `Sequence`, a `Branch`
 or a `Repeat`. The Repeat guard counts `answered`, so it sees one answer per
@@ -88,8 +108,8 @@ pass.
 
 ## Resolving open decisions
 
-`WalkerPowerGather` gains a `Simultaneous` arm in `resolveAt` and
-`foldedChildrenAt`. A new `leavesAt` returns every leaf open at a park. For a
+`WalkerPowerGather` gains `leavesAt`, which returns every leaf open at a
+park. For a
 `Simultaneous` park these are the unanswered children's `Decide`s, each folded
 and narrowed. For any other park it is the one leaf `leafAt` returns today.
 
@@ -102,14 +122,17 @@ Every reader of the single parked `Decide` moves to one of three forms:
 
 | Form | Callers |
 | --- | --- |
-| The open `Decide` with decision id *Y* | `OathRulesWalker` consent asks, grants and plan decisions (around lines 191, 215, 267); `PricedOptions.priced`; `ConsentProjector`; `ChoiceWords` |
-| Any open decision | `OathRulesWalker.checkAnswerable`; `WalkerSimulation.waitsOnStep` |
-| Every open decision | `WalkerSimulation.reached` and `previewParked`; `ModifierChoice.explained` |
+| The open `Decide` with decision id *Y* (`ProcedureWalker.openDecision`) | `OathRulesWalker` consent asks and grants; `PricedOptions.priced`; `ConsentProjector` |
+| Any open decision | `OathRulesWalker.checkAnswerable` |
+| Every open decision | `ChoiceWords`; the projector's waiting line |
+| The sole decision (`parkedDecide`) | `WalkerSimulation`, `ModifierChoice`, `OathRulesWalker.parkedPlanDecision` |
 
-- `ProcedureWalker.parkedDecide` is renamed `soleDecide`. It returns `None`
-  when more than one `Decide` is open, so no caller picks a child by accident.
-  `WalkerDecisionProjector.parkedDecide(ready)` gets the same rename and rule,
-  plus a `decideById(ready, id)` for `ConsentProjector` and `ChoiceWords`.
+- `ProcedureWalker.parkedDecide` keeps its name. It returns `None` when more
+  than one `Decide` is open, so no caller picks a child by accident.
+  `WalkerDecisionProjector.parkedDecide(ready)` becomes `openDecisions(ready)`
+  for `ConsentProjector` and `ChoiceWords`.
+- The park queries move to `ParkedQueries`, and `ProcedureWalker` forwards
+  to them, to keep `ProcedureWalker.scala` under 800 lines.
 - Tests that call `openDecisions(...).head` stay as they are. Their trees
   hold no `Simultaneous`.
 - `ProcedureWalker.awaitedPlayer` (singular) is deleted.
@@ -126,7 +149,7 @@ Every reader of the single parked `Decide` moves to one of three forms:
 - **Everyone else.** Every other viewer, including the public view, gets
   `walkerWaiting`. A viewer gets one of the two, never both, as today.
 - **`WalkerWaitingProjection`.** `playerId` and `coOwnerPlayerIds` are
-  replaced by `awaitedPlayerIds: Vector[String]`, in seat order, with no
+  replaced by `playerIds: Vector[String]`, in seat order, with no
   primary player. A co-owned `Decide` lists its owners the same way. The
   heading, the deal and the status come from the open decisions. For a
   `Simultaneous` these are the shared heading, no deal, and the status lines
@@ -179,7 +202,6 @@ correctly.
   - The holder and the public view see the waiting line with every open name.
 - **Frontend.** The waiting line names several players.
 - **Golden logs.** Throne scripts that answer in seat order keep their lines.
-  A new script answers out of order.
 
 ## Docs
 

@@ -42,6 +42,9 @@ object ParkedNode:
     * SET while the park cannot be explained, and is a `Left` with the
     * reason: silently returning `None` there would let a broken rebuild
     * masquerade as "not parked".
+    *
+    * At a `Simultaneous` park it reports the first open decision in seat
+    * order, so a driver answers the children in seat order.
     */
   def of(state: OathState, catalog: ExecutableCatalog,
       walkerPowers: WalkerPowers = WalkerPowers.empty,
@@ -66,14 +69,15 @@ object ParkedNode:
                 s"could not rebuild $procedure's tree to read the park at " +
                   s"'$at': $violation")
               powers = WalkerPowers.selected(walkerPowers, Vector.empty)
-              awaiting = ProcedureWalker.awaitedPlayer(ready, tree, pending,
-                powers)
-              node <- ProcedureWalker.parkedDecide(ready, tree, pending,
-                  powers) match
+              awaiting = ProcedureWalker.awaitedInSeatOrder(ready, tree, pending,
+                powers).headOption
+              seats = current.players.map(_.player)
+              first = ProcedureWalker.openDecisions(ready, tree, pending,
+                  powers).sortBy(decide => seats.indexOf(decide.owner))
+                .headOption
+              node <- first match
                 case Some(decide) =>
-                  awaiting.toRight(noneAwaited(at, procedure,
-                      decide.decisionId))
-                    .map(Decision(procedure, decide, _))
+                  Right(Decision(procedure, decide, decide.owner))
                 case None => ProcedureWalker.parkedRoll(ready, tree, pending,
                     powers) match
                   case Some((pool, count)) =>
@@ -90,6 +94,25 @@ object ParkedNode:
                       "resolves to neither a Decide nor a Roll")
             yield Some(node)
       case _ => Right(None)
+
+  /** Every open decision at the park, in their owners' seat order. */
+  def openDecisions(state: OathState, catalog: ExecutableCatalog,
+      walkerPowers: WalkerPowers = WalkerPowers.empty): Vector[Decide] =
+    state match
+      case Ready(ready) =>
+        val current = ready.game.current
+        val seats = current.players.map(_.player)
+        val powers = WalkerPowers.selected(walkerPowers, Vector.empty)
+        (for
+          pending <- current.walkerPending
+          procedure <- current.walkerProcedure
+          tree <- WalkerProcedureRegistry.rebuild(procedure, catalog, ready,
+            current.walkActor, current.walkerStartArgs, PhasePowers.empty,
+            walkerPowers = powers).toOption
+        yield ProcedureWalker.openDecisions(ready, tree, pending, powers)
+          .sortBy(decide => seats.indexOf(decide.owner)))
+          .getOrElse(Vector.empty)
+      case _ => Vector.empty
 
   private def noneAwaited(at: String, procedure: ProcedureRef,
       decision: String): String =

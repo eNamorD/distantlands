@@ -191,10 +191,9 @@ private[gameplay] trait OathRulesWalker:
       : Either[OathViolation, OptionReason.Askable] =
     walkerResumeContext(state).flatMap:
       case (ready, _, tree, pending, powers, _) =>
-        walkerCall(Right(ProcedureWalker.parkedDecide(ready, tree, pending,
-          powers))).flatMap(decide => decide
-          .filter(found => found.decisionId == decisionId &&
-            found.owner == requester)
+        walkerCall(Right(ProcedureWalker.openDecision(ready, tree, pending,
+          powers, decisionId))).flatMap(decide => decide
+          .filter(_.owner == requester)
           .flatMap(found => offered(found).collectFirst {
             case DecisionOption.Unavailable(option,
                 ask: OptionReason.Askable) if option.ref == target => ask
@@ -215,11 +214,10 @@ private[gameplay] trait OathRulesWalker:
       : Boolean =
     val parked = walkerResumeContext(state).flatMap {
       case (ready, _, tree, pending, powers, _) =>
-        walkerCall(Right(ProcedureWalker.parkedDecide(ready, tree, pending,
-          powers)))
+        walkerCall(Right(ProcedureWalker.openDecision(ready, tree, pending,
+          powers, decisionId)))
     }
-    parked.toOption.flatten.exists(decide =>
-      decide.decisionId == decisionId && decide.owner == requester &&
+    parked.toOption.flatten.exists(decide => decide.owner == requester &&
         decide.query.isInstanceOf[DecisionQuery.ChooseOne])
 
   /** The plan window aid reaches now: an Imperial user's parked battle-plan
@@ -484,8 +482,8 @@ private[gameplay] trait OathRulesWalker:
     ProcedureWalker.parkedRoll(ready, tree, pending, powers) match
       case Some(_) =>
         WalkerProcedureRegistry.rollDecisionId(procedure).map(_ => ())
-      case None => ProcedureWalker.parkedDecide(ready, tree, pending,
-          powers) match
-        case Some(_) => Right(())
-        case None => Left(InvalidEventOrder(
+      case None =>
+        if ProcedureWalker.openDecisions(ready, tree, pending, powers).nonEmpty
+        then Right(())
+        else Left(InvalidEventOrder(
           "parked walker position is neither a Roll nor a Decide"))

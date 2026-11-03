@@ -31,8 +31,10 @@ _Avoid_: start argument (that is the player's selection), pinned value
 
 **Parked decision**:
 A question the procedure walker has stopped on and is waiting for its owner
-to answer, or, for a Negotiation deal, any of its co-owners. At most one is
-parked per game at a time.
+to answer, or, for a Negotiation deal, any of its co-owners. One walk is
+parked per game at a time. That park usually holds one decision; a
+`Simultaneous` node holds one per player, answered in any order, as the
+Throne's Citizenship offer does.
 _Avoid_: pending decision, walker decision, park
 
 **Phase menu**:

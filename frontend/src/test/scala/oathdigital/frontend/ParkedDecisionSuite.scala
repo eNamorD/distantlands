@@ -13,7 +13,7 @@ class ParkedDecisionSuite extends munit.FunSuite:
   private val red = GamePlayer("red", "Red", "Exile", PlayerColor.Red)
   private val blue = GamePlayer("blue", "Blue", "Exile", PlayerColor.Blue)
   private val controls = ServerUiSupport.ViewerPresentation(
-    showGameplayControls = true, None, None, playerId = "red")
+    showGameplayControls = true, Vector.empty, Vector.empty, playerId = "red")
   private val observer = controls.copy(showGameplayControls = false)
 
   private def projection(decision: Option[WalkerDecisionState] = None,
@@ -155,8 +155,8 @@ class ParkedDecisionSuite extends munit.FunSuite:
       Some(Surface.BoardDecision(modifiers, one)))
 
   test("an observer of a parked deal sees its summary"):
-    val waiting = WalkerWaitingState("blue", Some("Negotiation"),
-      Vector("red"), Some(deal))
+    val waiting = WalkerWaitingState(Vector("blue", "red"), Some("Negotiation"),
+      Some(deal))
     assertEquals(ParkedDecision.route(projection(waiting = Some(waiting)),
       observer), Routed(Some(Surface.Negotiate(deal, None)), None))
 
@@ -166,6 +166,6 @@ class ParkedDecisionSuite extends munit.FunSuite:
   test("a walker wait leaves the waiting line to the status"):
     def notice(waiting: WalkerWaitingState): Option[String] =
       ParkedDecision.route(projection(waiting = Some(waiting)), observer).notice
-    assertEquals(notice(WalkerWaitingState("blue", Some("Choose the Oathkeeper"))),
+    assertEquals(notice(WalkerWaitingState(Vector("blue"), Some("Choose the Oathkeeper"))),
       None)
-    assertEquals(notice(WalkerWaitingState("blue")), None)
+    assertEquals(notice(WalkerWaitingState(Vector("blue"))), None)

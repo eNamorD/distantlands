@@ -9,7 +9,7 @@ private[frontend] object ActionPanels:
     */
   def actingViewer(playerId: String): ServerUiSupport.ViewerPresentation =
     ServerUiSupport.ViewerPresentation(showGameplayControls = true,
-      waitingForPlayerId = None, waitingForDisplayName = None,
+      waitingForPlayerIds = Vector.empty, waitingForDisplayNames = Vector.empty,
       playerId = playerId)
 
   /** The action panel of `projection` as red, the acting viewer, who may
