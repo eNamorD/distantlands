@@ -39,8 +39,8 @@ class GameLogCampaignSuite extends munit.FunSuite:
     // The loss sentence is three sentences now, one per node that applies
     // its clauses (slice 4). Half of a one-warband board is none, so
     // "lost" may be absent; the relocation never is, and it is last.
-    assert(all.last.startsWith(s"${playerLabel(defender)} ") &&
-      all.last.contains(" was sent to "), all)
+    assert(all.last.startsWith(s"Sent ${playerLabel(defender)}'s pawn to "),
+      all)
     assert(!all.last.contains(" lost "), all.last)
 
   test("a plan a defender chose names the defender, and a bandit's names " +

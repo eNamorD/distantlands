@@ -13,5 +13,5 @@
 32.0 roll 1 campaign@4 | Defense: 2
 34.0 action 1 campaign@4 | [player:p1|p1] wins!
 36.0 delta 1 campaign@4 | [player:p2|p2] lost 1 warband
-41.0 delta 1 campaign@4 | [player:p2|p2] was sent to [site:site:broken-peaks|Broken Peaks]
+41.0 delta 1 campaign@4 | Sent [player:p2|p2]'s pawn to [site:site:broken-peaks|Broken Peaks]
 46.0 trigger 1 campaign@4 | [card:grand-scepter|The Grand Scepter]: Exiled [player:p2|p2].

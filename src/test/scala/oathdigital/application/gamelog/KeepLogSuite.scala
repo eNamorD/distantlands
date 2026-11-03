@@ -35,7 +35,7 @@ class KeepLogSuite extends munit.FunSuite:
     val log = raidOnKeepsRuler(brokenPeaks)
     assert(log.contains(s"Keep: Ended the Raid with ${playerLabel(p2)}'s " +
       "pawn at Broken Peaks."), log.mkString("\n"))
-    assert(!log.exists(_.contains(" was sent to ")), log.mkString("\n"))
+    assert(!log.exists(_.contains("'s pawn to ")), log.mkString("\n"))
     assert(!log.exists(_.contains("discarded")), log.mkString("\n"))
 
   test("with Keep at the Raid's own site, its line says the pawn is " +
@@ -43,4 +43,4 @@ class KeepLogSuite extends munit.FunSuite:
     val log = raidOnKeepsRuler(ancientCity)
     assert(log.contains(s"Keep: Ended the Raid with ${playerLabel(p2)}'s " +
       "pawn at Ancient City."), log.mkString("\n"))
-    assert(!log.exists(_.contains(" was sent to ")), log.mkString("\n"))
+    assert(!log.exists(_.contains("'s pawn to ")), log.mkString("\n"))

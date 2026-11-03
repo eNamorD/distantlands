@@ -109,13 +109,13 @@ object CampaignNotes:
     * the rule's joined sentence named them. */
   val defenderLost: NoteKey = notes.key("defender-lost", Vector(
     NotePart.Arg(0), NotePart.Text(" "), NotePart.Arg(1)))
-  /** "{Blue} was sent to the Mine". */
-  val sentTo: NoteKey = notes.key("sent-to", Vector(NotePart.Arg(0),
-    NotePart.Text(" was sent to "), NotePart.Arg(1)))
+  /** "Sent {Blue}'s pawn to the Mine". */
+  val sentTo: NoteKey = notes.key("sent-to", Vector(NotePart.Text("Sent "),
+    NotePart.Arg(0), NotePart.Text("'s pawn to "), NotePart.Arg(1)))
   val skipped: NoteKey = notes.key("skipped", Vector(
-    NotePart.Text("Skipped the Campaign.")))
+    NotePart.Text("Skipped the Campaign")))
   val nothingToAttack: NoteKey = notes.key("nothing-to-attack", Vector(
-    NotePart.Text("Nothing left to attack: the Campaign ended.")))
+    NotePart.Text("Ended the Campaign with nothing left to attack")))
 
   /** The Campaign's setup, from the answers so far. */
   private def setupOf(states: NoteStates, actor: PlayerId)

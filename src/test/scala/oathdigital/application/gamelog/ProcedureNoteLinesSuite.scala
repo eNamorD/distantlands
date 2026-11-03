@@ -324,7 +324,7 @@ class ProcedureNoteLinesSuite extends munit.FunSuite:
       "p2 burned 1 favor, discarded a Denizen and set aside a Relic")
     assertEquals(said(ActionRef.Campaign, CampaignNotes.sentTo,
       NoteArg.Player(PlayerId("p2")), NoteArg.Site(brokenPeaks)),
-      "p2 was sent to Broken Peaks")
+      "Sent p2's pawn to Broken Peaks")
 
   test("Campaign's winner, spoils, placement and plan lines"):
     assertEquals(said(ActionRef.Campaign, CampaignNotes.playerWins,
@@ -359,6 +359,6 @@ class ProcedureNoteLinesSuite extends munit.FunSuite:
 
   test("a Campaign that ended before its battle says why"):
     assertEquals(said(ActionRef.Campaign, CampaignNotes.skipped),
-      "Skipped the Campaign.")
+      "Skipped the Campaign")
     assertEquals(said(ActionRef.Campaign, CampaignNotes.nothingToAttack),
-      "Nothing left to attack: the Campaign ended.")
+      "Ended the Campaign with nothing left to attack")

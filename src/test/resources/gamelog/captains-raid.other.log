@@ -13,6 +13,6 @@
 29.0 roll 1 campaign@12 | Defense: 3
 31.0 action 1 campaign@12 | [player:p1|p1] wins!
 33.0 delta 1 campaign@12 | [player:p2|p2] lost 1 warband
-38.0 delta 1 campaign@12 | [player:p2|p2] was sent to [site:site:ancient-city|Ancient City]
+38.0 delta 1 campaign@12 | Sent [player:p2|p2]'s pawn to [site:site:ancient-city|Ancient City]
 41.0 trigger 1 | Bandits returned to [site:site:deep-woods|Deep Woods]
 43.0 trigger 1 | Oathkeeper passed to [player:p1|p1]
