@@ -55,7 +55,8 @@ private[application] final class GameLogFormatter(catalog: ExecutableCatalog,
     * live journal formatted alone, so no line reads a voided event or a
     * marker. Each voided batch reads as it did before its undo: its entries
     * come from the live journal as it stood at its marker. That costs one
-    * more formatting per standing marker. A restored batch is live again,
+    * more formatting per standing marker, though every formatting shares
+    * one application of each step's operations. A restored batch is live again,
     * so its lines read as if it had never been taken back (undo design,
     * "Redo"). */
   def format(steps: Vector[ReplayStep[OathState, OathEvent]],
@@ -81,12 +82,13 @@ private[application] final class GameLogFormatter(catalog: ExecutableCatalog,
         !isVoidMarker(step.event.event) && !voids.exists(marker =>
           sequence >= marker.from && sequence < marker.until)
       }
+    val applied = LogJournal.sharedOpSteps()
     val stood = standing(steps.size)
     val voided = stood.flatMap((at, marker) =>
-      formatLive(live(at), viewer).filter(entry =>
+      formatLive(live(at), viewer, applied).filter(entry =>
         entry.sequence >= marker.from && entry.sequence < marker.until))
     withdrawn(steps, takenBack.mark(stood.map(_._2),
-      (formatLive(live(steps.size), viewer) ++ voided)
+      (formatLive(live(steps.size), viewer, applied) ++ voided)
         .sortBy(entry => (entry.sequence, entry.ordinal))))
 
   /** A withdrawn request's line, struck through under no header (consent
@@ -112,8 +114,10 @@ private[application] final class GameLogFormatter(catalog: ExecutableCatalog,
     case _ => false
 
   private def formatLive(steps: Vector[ReplayStep[OathState, OathEvent]],
-      viewer: Option[PlayerId]): Vector[LogEntry] =
-    val journal = new LogJournal(steps)
+      viewer: Option[PlayerId],
+      applied: ReplayStep[OathState, OathEvent] => Vector[OpStep])
+      : Vector[LogEntry] =
+    val journal = new LogJournal(steps, applied)
     (0 until journal.size).foldLeft(
         (Option.empty[Run], Vector.empty[LogEntry])) {
       case ((run, entries), at) =>
