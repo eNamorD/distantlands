@@ -1,5 +1,6 @@
 package oathdigital.application.gamelog
 
+import oathdigital.engine.{RecordedEvent, ReplayStep}
 import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.campaign.StickyFireCard
 import oathdigital.gameplay.walker.{DeltaPayload, WalkerCompleted,
@@ -25,10 +26,16 @@ class GameLogStrictnessSuite extends munit.FunSuite:
     // City for this peek to find.
     val peekWhereNoRelicLies = Peek(p2, StickyFireCard.id,
       Location.Site(AncientCitySite.id))
-    val failure = intercept[IllegalStateException](formatAppended(script,
-      Vector[OathEvent](
-        WalkerStepRecorded("batch",
-          DeltaPayload(Vector(peekWhereNoRelicLies)), Vector.empty),
-        WalkerCompleted(ActionRef.Travel))))
+    // Built by hand, as no helper would: `formatAppended` folds its batch
+    // and refuses one that does not apply before the formatter sees it.
+    val steps = script.history.steps
+    val last = steps.last.after
+    val unapplied = Vector[OathEvent](
+      WalkerStepRecorded("batch",
+        DeltaPayload(Vector(peekWhereNoRelicLies)), Vector.empty),
+      WalkerCompleted(ActionRef.Travel)).zipWithIndex.map((event, index) =>
+      ReplayStep(RecordedEvent(steps.size.toLong + index, event), last, last))
+    val failure = intercept[IllegalStateException](
+      formatter.format(steps ++ unapplied, None))
     assert(failure.getMessage.contains("does not apply"), failure.getMessage)
     assert(failure.getMessage.contains("missing-piece"), failure.getMessage)

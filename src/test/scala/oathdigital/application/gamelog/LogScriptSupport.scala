@@ -6,7 +6,8 @@ import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
 import oathdigital.gameplay.phases.rest.FinishRestProcedure
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{LogNoted, WalkerCompleted}
+import oathdigital.gameplay.walker.{DeltaPayload, LogNoted, ProcedureWalker,
+  WalkerCompleted, WalkerStepRecorded}
 import oathdigital.model._
 import oathdigital.protocol.projection.{LogEntry, LogSpan}
 import oathdigital.testkit.{Dice, Look, MenuPlay, Situation, Step, Table}
@@ -82,12 +83,14 @@ object LogScriptSupport:
     }
 
   /** `script`'s log for `viewer` with `events` journaled after its last
-    * step. Each appended step starts from `stateBefore` of the script's last
-    * state and ends in `lastStateAfter` of it: both unchanged unless a test
-    * gives the state an event needs or the change it stands for. */
+    * step. The first appended step starts from `stateBefore` of the
+    * script's last state (unchanged unless a test gives the state an event
+    * needs), and each step after it from where the one before ended. A
+    * recorded batch ends where its operations take it, and any other event
+    * changes no state, so every bracket a line reads is one the events
+    * reach (log operation strictness decision). */
   def formatAppended(script: Script, events: Vector[OathEvent],
       viewer: Option[PlayerId] = None,
-      lastStateAfter: OathState => OathState = identity,
       stateBefore: OathState => OathState = identity)(
       using munit.Location): Vector[LogEntry] =
     val steps = script.history.steps
@@ -96,10 +99,26 @@ object LogScriptSupport:
     val last = MenuPlay.withoutMenu(steps.last.after)
     val picked: Vector[OathEvent] = MenuPlay.parked(steps.last.after)
       .map(menu => WalkerCompleted(menu.procedure)).toVector
-    formatter.format(steps ++ (picked ++ events).zipWithIndex.map { case (event, index) =>
-      ReplayStep(RecordedEvent(steps.size.toLong + index, event),
-        stateBefore(last), lastStateAfter(last))
-    }, viewer)
+    val appended = (picked ++ events).zipWithIndex.foldLeft(
+        (stateBefore(last), Vector.empty[ReplayStep[OathState, OathEvent]])) {
+      case ((before, done), (event, index)) =>
+        val after = reached(before, event)
+        (after, done :+ ReplayStep(
+          RecordedEvent(steps.size.toLong + index, event), before, after))
+    }._2
+    formatter.format(steps ++ appended, viewer)
+
+  /** The state `event` leaves from `before`: a recorded batch's operations
+    * applied, through the fold replay uses; anything else changes none. */
+  private def reached(before: OathState, event: OathEvent)(
+      using munit.Location): OathState = (before, event) match
+    case (OathState.Ready(start),
+        WalkerStepRecorded(_, DeltaPayload(ops), _)) =>
+      ProcedureWalker.applyRecordedBatch(start, ops).fold(
+        violation => munit.Assertions.fail(
+          s"the appended batch does not apply: $violation"),
+        states => states.lastOption.fold(before)(OathState.Ready(_)))
+    case _ => before
 
   /** `format` over `withoutNotes`: the log of the script as a power that
     * writes no note would leave it. */
