@@ -1,5 +1,7 @@
 package oathdigital.gameplay.setup
 
+import oathdigital.gameplay.operations.TheGrandScepterCard
+import oathdigital.gameplay.powers.PlayerFacts
 import oathdigital.model._
 import oathdigital.testkit.CatalogNames
 import oathdigital.testkit.Unwrap.accepted
@@ -9,8 +11,11 @@ import oathdigital.testkit.Unwrap.accepted
 class LaterGameSetupSuite extends munit.FunSuite:
   private val catalog = FirstGameSetupFixture.catalog
   private val p1 = PlayerId("p1")
+  private val p2 = PlayerId("p2")
+  private val p3 = PlayerId("p3")
   private val l1 = LineageId("l1")
-  private val record = LaterGameFixture.chronicle(l1)
+  private val l2 = LineageId("l2")
+  private val record = LaterGameFixture.chronicle(l1, l2)
 
   private def started(chronicle: Chronicle): ReadyGame =
     accepted(GameStartRules.evolve(catalog, chronicle,
@@ -111,3 +116,110 @@ class LaterGameSetupSuite extends munit.FunSuite:
       AtlasEntry.StoredSite(unused,
         Vector(DenizenState(denizen, Orientation.FaceUp, Tokens.empty)),
         Vector(faceDown(relic)), Some(edifice))))
+
+  private def player(ready: ReadyGame, id: PlayerId): PlayerState =
+    ready.game.current.players.find(_.player == id).get
+
+  /** Six seats, l1 the Chancellor and l2 to l6 Citizens, and all 8 sites
+    * the Empire's. */
+  private lazy val sixImperialPlayersEightEmpireSites: ReadyGame =
+    val chronicle = LaterGameFixture.chronicle(l1,
+      (2 to 6).map(n => LineageId(s"l$n")).toVector, world = 8)
+    accepted(GameStartRules.evolve(catalog, chronicle,
+      LaterGameFixture.orders(chronicle, p1, LaterGameFixture.seats(6))))
+
+  test("the Chancellor takes the Grand Scepter faceup and the Oathkeeper " +
+      "title, and begins the round"):
+    val ready = started(record)
+    assert(player(ready, p1).relics.contains(RelicState(
+      TheGrandScepterCard.id, Orientation.FaceUp, Tokens.empty)))
+    assertEquals(ready.game.current.title,
+      OathkeeperState(Some(p1), TitleSide.Oathkeeper))
+    assertEquals(ready.game.current.turn.activePlayer, p1)
+    assertEquals(ready.game.current.tracks.roundStarter, p1)
+    assert(!ready.game.current.tracks.usurperLimited)
+
+  test("every player starts with 1 favor, 1 secret, 3 board warbands and " +
+      "Supply 7; Imperial boards hold purple"):
+    val ready = started(record)
+    ready.game.current.players.foreach(state => assertEquals(state.board,
+      PlayerBoardState(1, 1, 0, 3, SupplyTrack.full)))
+    assertEquals(Imperials.players(ready).toSet, Set(p1, p2))
+    assertEquals(PlayerFacts.banked(ready, ForceKind.Imperial),
+      MaterialBankState.ImperialWarbands - 3 * 2 - record.world.size)
+
+  test("with too few purple warbands, the Hintermost Empire sites take " +
+      "bandits up to their capacity (R30)"):
+    // The boards take 18 of the 24, so only the 6 Cradlemost Empire sites
+    // get a purple warband.
+    val ready = sixImperialPlayersEightEmpireSites
+    val map = ready.game.current.map
+    val (purple, short) = map.hinterward.splitAt(6)
+    purple.foreach(site => assertEquals(map.sites(site).forces,
+      SiteForces.Occupied(ForceKind.Imperial, 1)))
+    short.foreach { site =>
+      val capacity = catalog.site(site).get.capacity
+      assertEquals(map.sites(site).forces,
+        if capacity == 0 then SiteForces.Empty
+        else SiteForces.Occupied(ForceKind.Bandit, capacity))
+    }
+    assertEquals(ready.banks.warbandSupply(ForceKind.Imperial),
+      MaterialBankState.ImperialWarbands)
+    assertEquals(PlayerFacts.banked(ready, ForceKind.Imperial), 0)
+
+  test("a short Empire site is otherwise set up as an Empire site (R30)"):
+    val site = sixImperialPlayersEightEmpireSites.game.current.map.sites(
+      sixImperialPlayersEightEmpireSites.game.current.map.hinterward.last)
+    assert(site.denizens.nonEmpty)
+    assert(site.denizens.forall {
+      case EdificeState(_, side, _) => side == EdificeSide.Intact
+      case DenizenState(_, orientation, _) => orientation == Orientation.FaceUp
+    })
+    assertEquals(site.relics, Vector.empty)
+
+  test("an absent Chancellor's seated Citizen becomes the Chancellor and the " +
+      "absent lineage a Citizen in the box (R6)"):
+    val l9 = LineageId("l9")
+    val chronicle = LaterGameFixture.chronicle(l9, l2)
+    val ready = accepted(GameStartRules.evolve(catalog, chronicle,
+      LaterGameFixture.orders(chronicle, p2)))
+    assertEquals(Imperials.chancellor(ready), Some(p2))
+    assertEquals(ready.game.campaign.lineages(l2).role, Role.Chancellor)
+    assertEquals(ready.game.campaign.boxRoles(l9), Role.Citizen)
+
+  private lazy val adviser = DenizenState(record.worldDeck.last,
+    Orientation.FaceUp, Tokens.empty)
+
+  /** `record` with l2 keeping `adviser`, taken from the world deck. */
+  private lazy val l2KeepsAnAdviser: ReadyGame = started(record.copy(
+    worldDeck = record.worldDeck.init,
+    lineages = record.lineages.map(lineage =>
+      if lineage.id == l2 then
+        lineage.copy(startingAdvisers = Vector(adviser))
+      else lineage)))
+
+  test("a seated lineage takes its starting advisers facedown and draws no " +
+      "hand"):
+    val ready = l2KeepsAnAdviser
+    assertEquals(player(ready, p2).advisers,
+      Vector(adviser.copy(orientation = Orientation.FaceDown)))
+    assertEquals(ready.game.campaign.lineages(l2).startingAdvisers,
+      Vector.empty)
+    assert(ready.game.current.temporaryHands.getOrElse(p2, Vector.empty)
+      .isEmpty)
+    assertEquals(ready.game.current.temporaryHands(p3).size, 3)
+
+  test("the People's Favor goes to the Chancellor when the goal is The " +
+      "People, and the Darkest Secret when it is Devotion"):
+    def banners(goal: OathkeeperGoal) =
+      started(record.copy(oathkeeperGoal = goal)).game.current.banners
+    assertEquals(banners(OathkeeperGoal.ThePeople).peoplesFavor.holder,
+      Some(p1))
+    assertEquals(banners(OathkeeperGoal.ThePeople).darkestSecret.holder, None)
+    assertEquals(banners(OathkeeperGoal.Devotion).darkestSecret.holder,
+      Some(p1))
+    assertEquals(banners(OathkeeperGoal.Supremacy).peoplesFavor.holder, None)
+
+  test("the card index holds each card once"):
+    assert(l2KeepsAnAdviser.game.cardIndex.isRight)
+    assert(sixImperialPlayersEightEmpireSites.game.cardIndex.isRight)

@@ -26,10 +26,18 @@ object LaterGameFixture:
       lineages = lineage(chancellor, Role.Chancellor) +:
         citizens.map(lineage(_, Role.Citizen)))
 
-  /** The fixture's seats with `firstPlayer` first to act, dealt from the
+  /** Seats p1 to p`count` on lineages l1 to l`count`, in that order. */
+  def seats(count: Int): Vector[FirstGameParticipant] =
+    Vector(PlayerColor.Red, PlayerColor.Blue, PlayerColor.Yellow,
+      PlayerColor.White, PlayerColor.Black, PlayerColor.Pink).take(count)
+      .zipWithIndex.map((color, index) => FirstGameParticipant(
+        PlayerId(s"p${index + 1}"), LineageId(s"l${index + 1}"), color))
+
+  /** `participants` with `firstPlayer` first to act, dealt from the
     * Chronicle's decks in their own order. */
-  def orders(chronicle: Chronicle, firstPlayer: PlayerId): SetupOrders =
-    val participants = FirstGameSetupFixture.participants
+  def orders(chronicle: Chronicle, firstPlayer: PlayerId,
+      participants: Vector[FirstGameParticipant] =
+        FirstGameSetupFixture.participants): SetupOrders =
     ChronicleFirstGamePlan.dealOrder(
       FirstGameBootstrapConfig(participants, firstPlayer),
       SetupDeal.drawers(chronicle, participants), chronicle.worldDeck,

@@ -45,16 +45,21 @@ final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
       BannersState(
         PeoplesFavorState(PeoplesFavorFace.Mob, None, 1),
         DarkestSecretState(DarkestSecretFace.WanderingFlame, None, 1)),
-      // While game start refuses Imperial roles the first player begins
-      // round 1; a seated Chancellor would (Empire slice 4).
+      // The first player begins round 1; a later game's Chancellor does
+      // too, as `LaterGameSetup` records.
       GameTracks(1, 0, usurperLimited = true,
         roundStarter = plan.firstPlayer), favorBanks(plan, map),
       temporaryHands = plan.participants.map(p =>
         p.playerId -> handFor(plan, p.playerId)).toMap)
 
+  /** A player's 3 cards in Foundation IV, dealt in seat order to the
+    * players with no starting advisers; none for a player with them. */
   def handFor(plan: FirstGameSetupPlan, playerId: PlayerId): Vector[DenizenId] =
-    val index = plan.participants.indexWhere(_.playerId == playerId)
-    plan.denizenOrder.slice(6 + index * 3, 9 + index * 3)
+    val index = plan.participants
+      .filterNot(p => plan.startingAdvisers.contains(p.playerId))
+      .indexWhere(_.playerId == playerId)
+    if index < 0 then Vector.empty
+    else plan.denizenOrder.slice(6 + index * 3, 9 + index * 3)
 
   /** A first game deals every relic slot; a later game deals only the
     * slots an atlas site's stored relics leave open, and none at the

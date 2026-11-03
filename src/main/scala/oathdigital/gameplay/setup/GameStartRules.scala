@@ -61,11 +61,12 @@ object GameStartRules:
           material.banners, OathkeeperState(None, TitleSide.Oathkeeper),
           TurnState(orders.firstPlayer, Phase.Setup, Set.empty),
           material.tracks, None, material.temporaryHands))
-      problems = DomainValidation.validate(game)
+      ready = LaterGameSetup(catalog, ReadyGame.start(game,
+        plan.participants.map(p => p.playerId -> p.color).toMap,
+        orders.firstPlayer, material.favorBanks), plan)
+      problems = DomainValidation.validate(ready.game)
       _ <- Either.cond(problems.isEmpty, (), InvalidAggregate(problems))
-    yield ReadyGame.start(game,
-      plan.participants.map(p => p.playerId -> p.color).toMap,
-      orders.firstPlayer, material.favorBanks)
+    yield ready
 
   private def buildPlan(catalog: ExecutableCatalog, chronicle: Chronicle,
       orders: SetupOrders): Either[OathViolation, FirstGameSetupPlan] =
