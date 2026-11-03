@@ -18,20 +18,15 @@ object FriendlyFamiliarCard extends Denizen(DenizenId("224"), "Friendly Familiar
   * in play, other than the pawn site, that hold a card a Trade can draw on
   * ([[ActingSite]]).
   */
-final case class FriendlyFamiliar private (catalog: ExecutableCatalog)
-    extends ActingSite:
-  val cardId: DenizenId = FriendlyFamiliarCard.id
-  def id: PowerId = FriendlyFamiliar.id
+case object FriendlyFamiliar extends ActingSite:
+  val id: PowerId = FriendlyFamiliarCard.power.id
+
+  val card: Denizen = FriendlyFamiliarCard
   override def cost: Cost = FriendlyFamiliarCard.power.cost
   val noSite: String = "No other site has a card to trade with"
   val heading: String = "Friendly Familiar: act as if at which site?"
 
-  def sites(ready: ReadyGame, actor: PlayerId): Vector[SiteId] =
+  def sites(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId): Vector[SiteId] =
     ActingSite.otherSites(ready, actor)(card =>
       catalog.suitOf(card.id).nonEmpty)
-
-object FriendlyFamiliar:
-  val id: PowerId = FriendlyFamiliarCard.power.id
-
-  def forCatalog(catalog: ExecutableCatalog): FriendlyFamiliar =
-    new FriendlyFamiliar(catalog)

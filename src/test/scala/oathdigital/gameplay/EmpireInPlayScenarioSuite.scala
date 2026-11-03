@@ -2,12 +2,13 @@ package oathdigital.gameplay
 
 import oathdigital.application._
 import oathdigital.gameplay.actions.minor.MinorActionProcedures
+import oathdigital.gameplay.cards.{BrokenPeaksSite, BuriedGiantSite}
 import oathdigital.gameplay.powers.PayOrAsk
-import oathdigital.gameplay.powers.travel.TollRoads
+import oathdigital.gameplay.powers.travel.{TollRoads, TollRoadsCard}
 import oathdigital.gameplay.actions.travel.TravelProcedure
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
-import oathdigital.testkit.{CatalogNames, Look, MenuPlay, Outcomes, Table}
+import oathdigital.testkit.{Commands, Look, MenuPlay, Outcomes, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -17,8 +18,8 @@ import oathdigital.testkit.Unwrap.accepted
   * Chancellor a toll, and the next round starts with the Chancellor. */
 class EmpireInPlayScenarioSuite extends munit.FunSuite:
   private val gameId = "empire-in-play"
-  private val toll = CatalogNames.denizen("Toll Roads")
-  private val peaks = CatalogNames.site("Broken Peaks")
+  private val toll = TollRoadsCard.id
+  private val peaks = BrokenPeaksSite.id
   private val otherEmpireSite = Table.otherSiteInRegionOf(peaks)
 
   /** p2 is the Chancellor and p3 a Citizen, who is active in Act at Broken
@@ -28,7 +29,7 @@ class EmpireInPlayScenarioSuite extends munit.FunSuite:
     * unspent. */
   private val empireTable: Table = Table.start.imperial(p2, p3)
     .turn(p3, Phase.Act).pawn(p3, at = peaks)
-    .pawn(p1, at = "Buried Giant")
+    .pawn(p1, at = BuriedGiantSite)
     .boardWarbands(p3, 3).warbandsAt(peaks, p3, 2)
     .warbandsAt(otherEmpireSite, p2, 2).denizen(toll, at = otherEmpireSite)
     .supply(p2, 5).supply(p3, 3).favor(p2, 0).favor(p1, 1).supply(p1, 7)
@@ -46,11 +47,11 @@ class EmpireInPlayScenarioSuite extends munit.FunSuite:
     val start = accepted(service.handle(gameId, 0L,
       MenuPlay.starting(p3, ActionRef.MoveWarbands)))
     val direction = accepted(service.handle(gameId, start.nextSequence,
-      GameCommand.ResolveWalker(p3, TreeDecision(
+      Commands.resolveWalker(p3, TreeDecision(
         MinorActionProcedures.directionDecisionId,
         ChooseOneAnswer(MinorActionProcedures.toSite)))))
     val moved = accepted(service.handle(gameId, direction.nextSequence,
-      GameCommand.ResolveWalker(p3, TreeDecision(
+      Commands.resolveWalker(p3, TreeDecision(
         MinorActionProcedures.amountDecisionId, ChooseAmountAnswer(1)))))
     // One warband went from p3's board to the Empire site at their pawn.
     assertEquals(look(moved).boardWarbands(p3), 2)
@@ -67,11 +68,11 @@ class EmpireInPlayScenarioSuite extends munit.FunSuite:
     val started = accepted(service.handle(gameId, rested.nextSequence,
       MenuPlay.starting(p1, ActionRef.Travel)))
     val parked = accepted(service.handle(gameId, started.nextSequence,
-      GameCommand.ResolveWalker(p1, TreeDecision(
+      Commands.resolveWalker(p1, TreeDecision(
         TravelProcedure.destinationDecisionId,
         TravelPlay.destination(otherEmpireSite)))))
     val paid = accepted(service.handle(gameId, parked.nextSequence,
-      GameCommand.ResolveWalker(p1, TreeDecision(TollRoads.decisionId,
+      Commands.resolveWalker(p1, TreeDecision(TollRoads.decisionId,
         ChooseOneAnswer(PayOrAsk.pay)))))
     assertEquals(look(paid).pawn(p1), otherEmpireSite)
     assertEquals(look(paid).favor(p1), 0)

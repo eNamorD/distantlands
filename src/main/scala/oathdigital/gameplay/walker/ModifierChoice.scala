@@ -64,7 +64,8 @@ final class ModifierChoice(val actor: PlayerId, modifierWindow: PowerWindow,
     ref <- ModifierPicks.cardRef(card)
     shown <- DecisionOption.forRef(ref)
   yield
-    val ctx = PowerCtx(pass.state, actor, power.source, modifierWindow,
+    val ctx = PowerCtx(pass.powers.catalog, pass.state, actor, power.source,
+      modifierWindow,
       Vector.empty, this, None, pass.answered)
     val refusal = refusedUse(pass, power, ctx)
     // A refused pick is priced as its grant would leave it.
@@ -93,8 +94,8 @@ final class ModifierChoice(val actor: PlayerId, modifierWindow: PowerWindow,
   private def refusedUse(pass: ModifierChoice.Pass, power: ContributingPower,
       ctx: PowerCtx): Option[(Set[PowerId], OptionReason)] =
     power.use(ctx).flatMap { use =>
-      val refused = PowerUseRules.refusals(pass.state, use,
-        pass.powers.useRestrictions)
+      val refused = PowerUseRules.refusals(pass.powers.catalog, pass.state,
+        use, pass.powers.useRestrictions)
       Option.when(refused.nonEmpty)(refused.map(_.power).toSet ->
         PowerUseRules.shown(pass.state, actor, refused, use.consent))
     }
@@ -114,7 +115,8 @@ final class ModifierChoice(val actor: PlayerId, modifierWindow: PowerWindow,
     }.flatMap(ref => ModifierPicks.powerFor(powers.pool, modifierWindow, ref)
       .map(ref -> _)).toVector.flatMap((ref, power) =>
         (OpenPick(decisionId, ref) +: paying(power) +:
-          power.selectionQuestions(ready, actor)) :+ ClosePick()))
+          power.selectionQuestions(powers.catalog, ready, actor)) :+
+          ClosePick()))
 
   private def price(shown: DecisionOption, operations: Vector[CoreOperation])
       : DecisionOption =

@@ -2,14 +2,16 @@ package oathdigital.gameplay.powers.recover
 
 import oathdigital.gameplay.{ModifierPlay, OathRules, WalkerDiceFixture}
 import oathdigital.gameplay.actions.recover.RecoverProcedure
+import oathdigital.gameplay.cards.FairIsleSite
 import oathdigital.gameplay.powers.WalkerPowerCatalog
+import oathdigital.gameplay.powers.action.DowsingSticksCard
 import oathdigital.gameplay.walker.{DeltaPayload, WalkerDice,
   WalkerStepRecorded}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatacombsGame, CatalogNames, Look,
-  Outcomes, Table}
+import oathdigital.testkit.{ActPowerHarness, CatacombsGame, Look, Outcomes,
+  Table}
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Unwrap.accepted
@@ -25,7 +27,7 @@ class RelicWorshipSuite extends munit.FunSuite:
   private val rules = rulesRolling(WalkerDiceFixture.shields)
   private val failing = rulesRolling(WalkerDiceFixture.blanks)
 
-  private val worship = CatalogNames.denizen("Relic Worship")
+  private val worship = RelicWorshipCard.id
   private val modifiers = Vector(RelicWorship.id)
   /** p1's Act at Fair Isle, the easiest in-play Recover site with a relic
     * slot, beside a faceup Catacombs, holding Relic Worship as a faceup
@@ -33,10 +35,10 @@ class RelicWorshipSuite extends munit.FunSuite:
     * facedown at Fair Isle unless `relicAtSite` is false. */
   private def relicWorshipAtFairIsleTable(secrets: Int = 2,
       relicAtSite: Boolean = true): Table =
-    val atFairIsle = Table.start.pawn(p1, "Fair Isle").secrets(p1, secrets)
-      .denizen("Catacombs", at = "Fair Isle")
+    val atFairIsle = Table.start.pawn(p1, FairIsleSite).secrets(p1, secrets)
+      .denizen(CatacombsCard, at = FairIsleSite)
     val withRelic =
-      if relicAtSite then atFairIsle.relicAt("Dowsing Sticks", "Fair Isle")
+      if relicAtSite then atFairIsle.relicAt(DowsingSticksCard, FairIsleSite)
       else atFairIsle
     withRelic.adviser(p1, worship).supply(p1, 4)
   private def relicWorshipAtFairIsle(secrets: Int = 2): ReadyGame =

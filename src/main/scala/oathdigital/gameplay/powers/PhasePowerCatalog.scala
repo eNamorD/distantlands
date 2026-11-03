@@ -1,36 +1,35 @@
 package oathdigital.gameplay.powers
 
-import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.powerresolver.{PhasePower, PhasePowers}
-import oathdigital.gameplay.powers.action.{DiceAndRelicDrawPowers, Elders, GrandScepterAction, MagicWaterskin, MovementPowers, OtherActionPowers, SelfActionPowers, TargetPowers, WaysideInn,
-  WorldActionPowers}
+import oathdigital.gameplay.powers.action.{DiceAndRelicDrawPowers, Elders,
+  GrandScepterAction, MagicWaterskin, MovementPowers, OtherActionPowers,
+  SelfActionPowers, StonePortal, TargetPowers, WaysideInn, WorldActionPowers}
 import oathdigital.gameplay.powers.banner.BannerFacePowers
 import oathdigital.gameplay.powers.cardplay.VowOfObedience
 import oathdigital.gameplay.powers.economy.VowOfPoverty
 import oathdigital.gameplay.powers.rest.{Insomnia, SilverTongue}
-import oathdigital.gameplay.powers.wake.{Hunger, MarbleFountains,
-  Quartermaster, RiverSitePower}
+import oathdigital.gameplay.powers.wake.{HiddenPassages, Hunger,
+  MarbleFountains, Quartermaster, RiverSitePower, SinkingPassages}
 
-/** The production phase powers, beside [[WalkerPowerCatalog]]. A site power
-  * whose site is absent from `catalog` is omitted; every other card power
-  * names its card and is always present.
+/** The production phase powers, beside [[WalkerPowerCatalog]]. Every power
+  * names its card, so all are always present.
   */
 object PhasePowerCatalog:
-  def default(catalog: ExecutableCatalog): PhasePowers =
-    PhasePowers(Vector(SilverTongue.forCatalog(catalog)) ++
+  val default: PhasePowers =
+    PhasePowers(Vector(SilverTongue) ++
       Vector(Insomnia) ++
       Vector(VowOfObedience) ++
       Vector(VowOfPoverty) ++
       Vector[PhasePower](WaysideInn, Elders, MagicWaterskin, MarbleFountains,
         GrandScepterAction,
-        Quartermaster) ++
+        Quartermaster, StonePortal, SinkingPassages, HiddenPassages) ++
       DiceAndRelicDrawPowers.powers ++
-      TargetPowers.forCatalog(catalog) ++
-      MovementPowers.forCatalog(catalog) ++
-      SelfActionPowers.forCatalog(catalog) ++
-      OtherActionPowers.forCatalog(catalog) ++
-      WorldActionPowers.forCatalog(catalog) ++
+      TargetPowers.all ++
+      MovementPowers.all ++
+      SelfActionPowers.all ++
+      OtherActionPowers.all ++
+      WorldActionPowers.all ++
       BannerFacePowers.phasePowers ++
-      Vector(Hunger.forCatalog(catalog)) ++
+      Vector(Hunger) ++
       RiverSitePower.all,
-      WalkerPowerCatalog.useRestrictions(catalog))
+      WalkerPowerCatalog.useRestrictions)

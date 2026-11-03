@@ -2,6 +2,7 @@ package oathdigital.application
 
 import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignProcedure,
   PlanAid}
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.WalkerPowerCatalog
 import oathdigital.gameplay.powers.campaign.{EncirclementCard, ShieldWall}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
@@ -9,7 +10,7 @@ import oathdigital.gameplay.walker.{ParkedDecisionAssertions, ProcedureWalker,
   WalkerPowers}
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
-import oathdigital.testkit.{Dice, MenuPlay, Outcomes, Table}
+import oathdigital.testkit.{Commands, Dice, MenuPlay, Outcomes, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, present}
 
@@ -28,14 +29,14 @@ class PlanAidServiceSuite extends munit.FunSuite:
     * board warbands and 1 favor; p2, the Chancellor, holds Shield Wall
     * faceup and 2 favor. Nobody holds the Oathkeeper title. */
   private val table: Table = Table.start.imperial(p2, p3)
-    .turn(p1, Phase.Act).pawn(p3, at = "Ancient City")
+    .turn(p1, Phase.Act).pawn(p3, at = AncientCitySite)
     .boardWarbands(p1, 5).boardWarbands(p3, 2).favor(p2, 2)
     .adviser(p2, ShieldWall.cardId).oathkeeper(None)
 
   private def resolve(service: GameApplicationService, from: GameAccepted,
       player: PlayerId, id: String, answer: DecisionAnswer): GameAccepted =
     accepted(service.handle(gameId, from.nextSequence,
-      GameCommand.ResolveWalker(player, TreeDecision(id, answer))))
+      Commands.resolveWalker(player, TreeDecision(id, answer))))
 
   private def awaiting(at: GameAccepted): Option[(String, PlayerId)] =
     parked.parkedDecision(at.state).map(facts =>
@@ -90,7 +91,7 @@ class PlanAidServiceSuite extends munit.FunSuite:
 
   private def save(service: GameApplicationService, at: GameAccepted,
       ally: PlayerId, offer: AidOffer) =
-    service.handle(gameId, at.nextSequence, GameCommand.SavePlanAid(ally,
+    service.handle(gameId, at.nextSequence, Commands.savePlanAid(ally,
       offer))
 
   private def refusedFor(result: Either[GameApplicationError, GameAccepted])
@@ -173,7 +174,7 @@ class PlanAidServiceSuite extends munit.FunSuite:
     assertEquals(PlanAid.remaining(Outcomes.ready(picked.state), defending,
       p2), AidAmounts.none)
     val undone = accepted(service.handle(gameId, picked.nextSequence,
-      GameCommand.Undo(p3)))
+      Commands.undo(p3)))
     val ready = Outcomes.ready(undone.state)
     assertEquals(ready.planAid.offerOf(p2), shieldWallAndFavor)
     assertEquals(PlanAid.remaining(ready, defending, p2),
@@ -189,7 +190,7 @@ class PlanAidServiceSuite extends munit.FunSuite:
     val encirclement = DecisionOptionRef.Denizen(EncirclementCard.id)
     val attacking = AidWindow(p1, CampaignPlanSide.Attacker, p1)
     val (service, _) = Table.start.imperial(p2, p1, p3)
-      .turn(p1, Phase.Act).pawn(p3, at = "Ancient City")
+      .turn(p1, Phase.Act).pawn(p3, at = AncientCitySite)
       .boardWarbands(p1, 5).boardWarbands(p3, 2).favor(p2, 2)
       .adviser(p2, EncirclementCard.id).adviser(p2, ShieldWall.cardId)
       .oathkeeper(None).service(campaignDice = Dice.raid)

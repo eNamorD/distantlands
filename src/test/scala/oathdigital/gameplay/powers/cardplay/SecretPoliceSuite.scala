@@ -3,18 +3,19 @@ package oathdigital.gameplay.powers.cardplay
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import oathdigital.gameplay.actions.VisionRules
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.powers.{NoteText, PowerFixture, SearchFixture}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Refusals, Table}
+import oathdigital.testkit.{Refusals, Table}
 
 class SecretPoliceSuite extends munit.FunSuite:
   import PowerFixture._
   import VisionPlayFixture._
 
-  private val police = CatalogNames.denizen("Secret Police")
+  private val police = SecretPoliceCard.id
   private val other = Table.p2
-  private val home = CatalogNames.site("Ancient City")
-  private val elsewhere = CatalogNames.site("Broken Peaks")
+  private val home = AncientCitySite.id
+  private val elsewhere = BrokenPeaksSite.id
 
   /** Secret Police faceup at `at`, on `table`; p1's pawn at Ancient City. */
   private def policeAt(table: Table, at: SiteId): Table =

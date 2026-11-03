@@ -26,8 +26,7 @@ class ServerRoutesSuite extends munit.FunSuite:
       Files.createTempDirectory(label).resolve("database")))
 
   test("development routes serve health and refuse bad dev and seat " +
-      "requests, and mount authenticated routes only with complete session " +
-      "configuration"):
+      "requests"):
     val runtime = openRuntime("server-routes-")
     try
       val readiness = ServerReadiness.starting("test-version")
@@ -40,8 +39,6 @@ class ServerRoutesSuite extends munit.FunSuite:
         readiness.markReady()
         assertEquals(absent.get("/health/ready").statusCode(), 200)
         assertEquals(absent.get("/health").statusCode(), 200)
-        assertEquals(
-          absent.get("/api/authenticated/first-games/game").statusCode(), 404)
         // 400: the events history refuses a limit above 100.
         assertEquals(absent.get(
           "/api/dev/first-games/test-game/events?limit=101").statusCode(), 400)
@@ -50,23 +47,6 @@ class ServerRoutesSuite extends munit.FunSuite:
         // 403: the request carries no seat cookie.
         assertEquals(absent.get("/games/game/api").statusCode(), 403)
       finally absent.close()
-
-      val configuration = AuthenticatedRouteMountConfiguration(
-        "oath_session", "http://127.0.0.1")
-      val mounted = HttpTestServer.start("server-routes-mounted-test")(
-        blocking => ServerRoutes.route(
-          runtime,
-          blocking,
-          config(
-            ServerMode.Development,
-            authenticatedRouteMount = Some(configuration)
-          ),
-          ServerReadiness.starting("test-version"),
-          () => 0L
-        ))
-      try assertEquals(
-        mounted.get("/api/authenticated/first-games/game").statusCode(), 401)
-      finally mounted.close()
     finally runtime.close()
 
   test("trusted-alpha serves production frontend without development routes"):
@@ -76,13 +56,7 @@ class ServerRoutesSuite extends munit.FunSuite:
         ServerRoutes.route(
           runtime,
           blocking,
-          config(
-            ServerMode.TrustedAlpha,
-            authenticatedRouteMount = Some(AuthenticatedRouteMountConfiguration(
-              "oath_session",
-              "http://127.0.0.1"
-            ))
-          ),
+          config(ServerMode.TrustedAlpha),
           ServerReadiness.starting("test-version")
         ))
       try
@@ -91,8 +65,6 @@ class ServerRoutesSuite extends munit.FunSuite:
         assertEquals(server.get("/games/test-game/api").statusCode(), 403)
         assertEquals(server.get(
           "/api/dev/first-games/test-game?playerId=p1").statusCode(), 404)
-        assertEquals(server.get(
-          "/api/authenticated/first-games/test-game").statusCode(), 404)
       finally server.close()
     finally runtime.close()
 
@@ -166,7 +138,6 @@ class ServerRoutesSuite extends munit.FunSuite:
     * `listenPort`. */
   private def config(
       mode: ServerMode,
-      authenticatedRouteMount: Option[AuthenticatedRouteMountConfiguration] = None,
       publicBaseUrl: Option[URI] = None
   ): ServerConfig = ServerConfig(
     host = "127.0.0.1",
@@ -174,6 +145,5 @@ class ServerRoutesSuite extends munit.FunSuite:
     publicBaseUrl = publicBaseUrl,
     databasePath = Paths.get("var/test-server-routes"),
     mode = mode,
-    authenticatedRouteMount = authenticatedRouteMount,
     version = "test-version"
   )

@@ -1,8 +1,10 @@
 package oathdigital.gameplay.operations
 
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import oathdigital.gameplay.powers.setup.GreatMarketCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.{accepted, rejected}
 
@@ -104,7 +106,7 @@ class ChronicleStateOperationsSuite extends munit.FunSuite:
   test("a built edifice comes from the deck intact"):
     val ready = Table.start.ready
     val edifice = ready.game.current.commonCards.edificeDeck.head
-    val site = CatalogNames.site("Ancient City")
+    val site = AncientCitySite.id
     val after = accepted(run(ready, EdificeBuilt(edifice, site)))
     assert(!after.game.current.commonCards.edificeDeck.contains(edifice))
     assertEquals(after.game.current.map.sites(site).denizens.last,
@@ -118,14 +120,14 @@ class ChronicleStateOperationsSuite extends munit.FunSuite:
         edificeDeck = current.commonCards.edificeDeck.tail),
       setAsideEdifices = Vector(edifice)))
     val after = accepted(run(ready,
-      EdificeBuilt(edifice, CatalogNames.site("Ancient City"))))
+      EdificeBuilt(edifice, AncientCitySite.id)))
     assertEquals(after.game.current.setAsideEdifices, Vector.empty)
 
   test("an edifice already at a site cannot be built again"):
     val ready = Table.start
-      .edifice("Bandit Market", EdificeSide.Ruined, at = "Ancient City").ready
-    rejected(run(ready, EdificeBuilt(CatalogNames.edifice("Bandit Market"),
-      CatalogNames.site("Broken Peaks"))))
+      .edifice(GreatMarketCard, EdificeSide.Ruined, at = AncientCitySite).ready
+    rejected(run(ready, EdificeBuilt(GreatMarketCard.id,
+      BrokenPeaksSite.id)))
 
   /** Denizens of `suit` the quiet table does not have in play. */
   private def boxedOf(ready: ReadyGame, suit: Suit): Vector[DenizenId] =
@@ -146,7 +148,7 @@ class ChronicleStateOperationsSuite extends munit.FunSuite:
     val ready = Table.start.ready
     val inPlay = ready.game.current.commonCards.worldDeck
       .collectFirst { case id: DenizenId => id }.get
-    rejected(run(ready, SuitedReserveFromBox(CatalogNames.suitOf(inPlay),
+    rejected(run(ready, SuitedReserveFromBox(FirstGameSetupFixture.catalog.suitOf(inPlay).get,
       Vector(inPlay))))
 
   test("the pipeline's card inventory expects the denizens a reserve " +

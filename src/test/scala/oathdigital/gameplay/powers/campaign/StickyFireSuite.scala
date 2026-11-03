@@ -3,16 +3,17 @@ package oathdigital.gameplay.powers.campaign
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.action.WildAlliesCard
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseAmountAnswer
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Sticky Fire: when its user wins, they may kill the whole of the enemy's
   * force, and if they do they give the loser a favor. The question is asked in
   * the losses, by the winner, before anything dies. */
 class StickyFireSuite extends munit.FunSuite:
-  private val relic = CatalogNames.relic("Sticky Fire")
+  private val relic = StickyFireCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Relic(relic)
   private val decision = StickyFire.decisionId
 
@@ -134,7 +135,7 @@ class StickyFireSuite extends munit.FunSuite:
     val b = favored(withRelicFor(base, base.rival, relic), base.rival, 2)
     val g = rules(losingDice)
     val asked = committed(g, campaignQueuedFrom(g, b, away,
-        PowerSourceRef.Card(CatalogNames.denizen("Wild Allies"))), b,
+        PowerSourceRef.Card(WildAlliesCard.id)), b,
         force = 4, raid = true)
       .finishAttackerPlans(b.actor)
       .pick(b.rival, CampaignIds.defenderPlan, ref).declineSacrifice(b.actor)

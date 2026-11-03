@@ -1,9 +1,11 @@
 package oathdigital.gameplay.powers.economy
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.SearchFixture
+import oathdigital.gameplay.powers.search.ErrandBoyCard
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, EconomyActions,
-  Look, Outcomes, Table}
+import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look, Outcomes,
+  Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
@@ -11,16 +13,16 @@ import oathdigital.testkit.Unwrap.accepted
 class InitiationRiteSuite extends munit.FunSuite:
   import SearchFixture.rules
 
-  private val rite = CatalogNames.denizen("Initiation Rite")
+  private val rite = InitiationRiteCard.id
   // A plain Beast card with no Muster or Trade power.
-  private val beast = CatalogNames.denizen("Errand Boy")
+  private val beast = ErrandBoyCard.id
 
   /** p1 holds Initiation Rite as an adviser, faceup unless `facedown`, and
     * stands at Ancient City with Errand Boy. p1 has the start's 1 favor,
     * 1 faceup secret, 3 warbands and 7 Supply. */
   private def initiated(facedown: Boolean = false): Table = Table.start
     .adviser(p1, rite, facedown = facedown)
-    .pawn(p1, at = "Ancient City").denizen(beast, at = "Ancient City")
+    .pawn(p1, at = AncientCitySite).denizen(beast, at = AncientCitySite)
     .favor(p1, 1).secrets(p1, faceUp = 1).boardWarbands(p1, 3).supply(p1, 7)
 
   /** Musters from Errand Boy, selecting nothing. */
@@ -61,8 +63,8 @@ class InitiationRiteSuite extends munit.FunSuite:
       Some(OathViolation.CoreOperationRejected("insufficient-pieces",
         "player play area contains 0 of requested secrets")))
     // The same board without the rule musters with its favor.
-    val plain = Table.start.pawn(p1, at = "Ancient City")
-      .denizen(beast, at = "Ancient City")
+    val plain = Table.start.pawn(p1, at = AncientCitySite)
+      .denizen(beast, at = AncientCitySite)
       .secrets(p1, faceUp = 0, faceDown = 1).ready
     assertEquals(Look(Outcomes.ready(accepted(musterFromBeast(plain)).state))
       .tokensOn(beast), Tokens(1, 0))

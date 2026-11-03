@@ -1,10 +1,12 @@
 package oathdigital.model
 
-import oathdigital.testkit.CatalogNames
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import oathdigital.gameplay.operations.HallOfMinistersCard
+import oathdigital.gameplay.powers.campaign.WrestlersCard
 
 class DecisionOptionRefSuite extends munit.FunSuite:
   private val hall = DecisionOptionRef.Edifice(
-    CatalogNames.edifice("Hall of Ministers"))
+    HallOfMinistersCard.id)
 
   test("an edifice reference spells itself as a kind and id pair and parses back"):
     assertEquals((hall.kind, hall.wireId), ("edifice", "E16"))
@@ -34,7 +36,7 @@ class DecisionOptionRefSuite extends munit.FunSuite:
     }
 
   private val siteRelic = DecisionOptionRef.SiteRelicSlot(
-    CatalogNames.site("Broken Peaks"), 1)
+    BrokenPeaksSite.id, 1)
 
   test("a site relic slot spells itself as a kind and site-and-index id " +
       "and parses back"):
@@ -87,7 +89,7 @@ class DecisionOptionRefSuite extends munit.FunSuite:
       Some(DecisionOption.Banner(banner)))
 
   private val siteSlot = DecisionOptionRef.SiteSlot(
-    CatalogNames.site("Ancient City"), 2)
+    AncientCitySite.id, 2)
   private val adviserPlay =
     DecisionOptionRef.AdviserPlay(PlayerId("blue"), 1, faceup = false)
   private val revealed = DecisionOptionRef.RevealedVision(PlayerId("blue"))
@@ -133,7 +135,7 @@ class DecisionOptionRefSuite extends munit.FunSuite:
 
   test("a Replace mark keeps the wrapped option's reference and availability"):
     val marked = DecisionOption.Replacing(DecisionOption.SiteSlot(siteSlot),
-      CatalogNames.denizen("Wrestlers"))
+      WrestlersCard.id)
     assertEquals(marked.ref, siteSlot)
     assert(marked.available)
     assert(!DecisionOption.Unavailable(marked, OptionReason.Written("No"))

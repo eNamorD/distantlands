@@ -1,5 +1,6 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.gameplay.cards.BrokenPeaksSite
 import oathdigital.gameplay.operations.TheGrandScepterCard
 import oathdigital.gameplay.phases.PhaseMenu
 import oathdigital.gameplay.powers.PhasePowerCatalog
@@ -7,8 +8,7 @@ import oathdigital.gameplay.roles.Citizenship
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look,
-  PhasePowerHarness, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -20,8 +20,8 @@ class GrandScepterActionSuite extends munit.FunSuite:
 
   /** p2 is the Chancellor; p1, an Exile in their Act, holds the Scepter. */
   private def exileHolder: Table = Table.start.imperial(p2)
-    .turn(p1, Phase.Act).pawn(p1, at = "Broken Peaks")
-    .relic(p1, "The Grand Scepter").boardWarbands(p1, 2)
+    .turn(p1, Phase.Act).pawn(p1, at = BrokenPeaksSite)
+    .relic(p1, TheGrandScepterCard).boardWarbands(p1, 2)
     .allowingCitizenshipPowers
 
   private def used(ready: ReadyGame)(using munit.Location) =
@@ -31,7 +31,7 @@ class GrandScepterActionSuite extends munit.FunSuite:
   /** The Scepter's row in `ready`'s Act menu, if it lists one. */
   private def scepterRow(ready: ReadyGame): Option[DecisionOption] =
     PhaseMenu.offers(PhaseMenu.Menu.Act, catalog, ready, p1,
-      PhasePowerCatalog.default(catalog), WalkerPowers.empty)
+      PhasePowerCatalog.default, WalkerPowers.empty)
       .map(_.option).find(_.ref == scepter)
 
   private def reasonOf(option: DecisionOption): Option[String] = option match
@@ -51,7 +51,7 @@ class GrandScepterActionSuite extends munit.FunSuite:
 
   test("with no Empire the holder becomes the Chancellor"):
     val start = Table.start.turn(p1, Phase.Act)
-      .pawn(p1, at = "Broken Peaks").relic(p1, "The Grand Scepter")
+      .pawn(p1, at = BrokenPeaksSite).relic(p1, TheGrandScepterCard)
       .allowingCitizenshipPowers.ready
     val after = ActPowerHarness.replayed(rules, start, used(start).events)
     assertEquals(Imperials.chancellor(after), Some(p1))
@@ -59,10 +59,10 @@ class GrandScepterActionSuite extends munit.FunSuite:
   test("a short purple bank asks which warbands turn purple, and the split holds"):
     // The bank holds 1; p1 has 2 on their board and 1 at Broken Peaks.
     val start = exileHolder.boardWarbands(p2, 23)
-      .warbandsAt("Broken Peaks", p1, 1).ready
+      .warbandsAt(BrokenPeaksSite, p1, 1).ready
     val parked = used(start)
     assert(PhasePowerHarness.awaits(parked, Citizenship.replaceDecisionId(p1)))
-    val peaks = DecisionOptionRef.Site(CatalogNames.site("Broken Peaks"))
+    val peaks = DecisionOptionRef.Site(BrokenPeaksSite.id)
     val done = accepted(rules.resolveWalker(parked.state, p1,
       Citizenship.replaceDecisionId(p1), DecisionAnswer.DistributeAnswer(Vector(
         DistributeAmount(DecisionOptionRef.Player(p1), 0),
@@ -71,7 +71,7 @@ class GrandScepterActionSuite extends munit.FunSuite:
       ActPowerHarness.untilWalkEnds(parked.events ++ done.events))
     assertEquals(Imperials.role(after, p1), Some(Role.Citizen))
     assertEquals(Look(after).player(p1).board.warbands, 0)
-    assertEquals(Look(after).forces("Broken Peaks"),
+    assertEquals(Look(after).forces(BrokenPeaksSite),
       SiteForces.Occupied(ForceKind.Imperial, 1))
 
   test("the first-game option shows the Action disabled with its reason"):
@@ -88,5 +88,5 @@ class GrandScepterActionSuite extends munit.FunSuite:
 
   test("an Imperial holder's menu leaves the Action out"):
     val start = Table.start.imperial(p1).turn(p1, Phase.Act)
-      .relic(p1, "The Grand Scepter").allowingCitizenshipPowers.ready
+      .relic(p1, TheGrandScepterCard).allowingCitizenshipPowers.ready
     assertEquals(scepterRow(start), None)

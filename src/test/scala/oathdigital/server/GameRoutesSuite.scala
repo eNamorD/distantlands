@@ -6,11 +6,15 @@ import oathdigital.application.{
   GameProjector,
   InMemoryEventStreamRepository
 }
+import oathdigital.gameplay.cards.AncientCitySite
+import oathdigital.gameplay.powers.campaign.NatureWorshipCard
+import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.whenplayed.WizardsConclaveCard
 import oathdigital.gameplay.setup.SetupProcedure
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.protocol.{ActorlessCommandCodec, ActorlessCommandRequest,
   DecisionAnswerWire, GameIntent}
-import oathdigital.testkit.{CatalogNames, HttpTestServer}
+import oathdigital.testkit.HttpTestServer
 import oathdigital.testkit.HttpTestServer.cacheControl
 import oathdigital.testkit.Table.p2
 import oathdigital.testkit.Unwrap.accepted
@@ -33,16 +37,16 @@ class GameRoutesSuite extends munit.FunSuite:
       // park (2026-09-21 Chronicle design, slice 2): two records for one
       // Begin command.
       assertEquals(begun.nextSequence, 2L)
-      val gateway = new GameServerGateway(service, new GameProjector(catalog))
+      val gateway = new GameGateway(service, new GameProjector(catalog))
       BegunRoutes(
         HttpTestServer.start("first-game-route-test")(blocking =>
-          DevelopmentRoutes.route(gateway, blocking)),
+          DevelopmentRoutes.route(service, gateway, blocking)),
         begun.nextSequence),
     teardown = _.server.close())
 
   private val p2Commands =
     "/api/dev/first-games/route-game/commands?playerId=p2"
-  private val ancientCity = CatalogNames.site("Ancient City").value
+  private val ancientCity = AncientCitySite.id.value
 
   begunRoutes.test("the development shell is served uncached and /health " +
       "is not a development route"):
@@ -75,7 +79,7 @@ class GameRoutesSuite extends munit.FunSuite:
       assertEquals(ujson.read(history.body())("events")(0)("sequence").num.toLong,
         afterBegin - 1)
       assert(ujson.read(history.body())("warning").str.contains("hidden"))
-      // GameRoutes refuses a limit above 100.
+      // The events route refuses a limit above 100.
       assertEquals(server.get(
         "/api/dev/first-games/route-game/events?limit=101").statusCode(), 400)
 
@@ -126,9 +130,9 @@ class GameRoutesSuite extends munit.FunSuite:
         "options").arr.map(_("id").str).toVector
       // p2 is dealt Wizard's Conclave, Errand Boy and Nature Worship and keeps
       // Wizard's Conclave, which is not site-only, so Reveal Cards follows.
-      val adviser = CatalogNames.denizen("Wizard's Conclave").value
-      val rejectedAdvisers = Vector("Errand Boy", "Nature Worship")
-        .map(CatalogNames.denizen(_).value)
+      val adviser = WizardsConclaveCard.id.value
+      val rejectedAdvisers = Vector(ErrandBoyCard.id, NatureWorshipCard.id)
+        .map(_.value)
       assertEquals(handOptions, adviser +: rejectedAdvisers)
       val chosen = server.post(p2Commands,
         ujson.write(ujson.Obj(

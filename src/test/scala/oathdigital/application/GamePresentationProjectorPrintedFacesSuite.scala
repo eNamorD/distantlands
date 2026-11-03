@@ -1,9 +1,9 @@
 package oathdigital.application
 
+import oathdigital.gameplay.operations.HallOfMinistersCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.model.{EdificeSide, EdificeState, Tokens, VisionId}
 import oathdigital.testkit.Table
-import oathdigital.testkit.CatalogNames
 
 /** Card presentation must echo the authoritative printed text, independent
   * of which plan factory derived the game. */
@@ -21,7 +21,7 @@ class GamePresentationProjectorPrintedFacesSuite extends munit.FunSuite:
     }
 
   test("edifice card details use intact and ruined catalog face text"):
-    val id = CatalogNames.edifice("Hall of Ministers")
+    val id = HallOfMinistersCard.id
     val definition = catalog.edifices.find(_.id.value == id.value)
       .getOrElse(fail("Hall of Ministers is not in the catalog"))
     Vector(EdificeSide.Intact -> definition.intact,

@@ -1,11 +1,15 @@
 package oathdigital.gameplay.chronicle
 
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite}
+import oathdigital.gameplay.powers.setup.GreatMarketCard
+import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.gameplay.{OathRules, WalkerDiceFixture}
 import oathdigital.gameplay.actions.ProcedureNotes
 import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Outcomes, Table}
+import oathdigital.testkit.{Outcomes, Table}
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
 
@@ -18,12 +22,12 @@ class BuildEdificeSuite extends munit.FunSuite:
     walkerPowerCatalog = WalkerPowerCatalog.default(catalog),
     walkerDice = WalkerDiceFixture.reversingShuffle)
 
-  private val ancientCity = CatalogNames.site("Ancient City")
-  private val roar = CatalogNames.denizen("Threatening Roar")
+  private val ancientCity = AncientCitySite.id
+  private val roar = ThreateningRoarCard.id
   private val roarSuit = catalog.denizen(roar).get.suit
 
   private val empireAtAncientCity: Table =
-    ChronicleWalk.throneHeldByChancellorP1.warbandsAt("Ancient City", p1, 1)
+    ChronicleWalk.throneHeldByChancellorP1.warbandsAt(AncientCitySite, p1, 1)
 
   private def suitOf(id: EdificeId): Option[Suit] = catalog.edifice(id).map(_.suit)
 
@@ -58,7 +62,7 @@ class BuildEdificeSuite extends munit.FunSuite:
 
   test("a suit with a buriable card offers its edifice to the Throne holder"):
     val at = atBuildChoice(empireAtAncientCity
-      .denizen("Threatening Roar", at = "Ancient City"), roarSuit)
+      .denizen(ThreateningRoarCard, at = AncientCitySite), roarSuit)
     val parked = ChronicleWalk.parked(at.state).get
     assertEquals(parked.owner, p1)
     parked.query match
@@ -69,7 +73,7 @@ class BuildEdificeSuite extends munit.FunSuite:
 
   test("burying a denizen builds the offered edifice intact"):
     val table = empireAtAncientCity
-      .denizen("Threatening Roar", at = "Ancient City")
+      .denizen(ThreateningRoarCard, at = AncientCitySite)
     val edifice = offered(table, roarSuit)
     val done = build(atBuildChoice(table, roarSuit), roarSuit,
       Vector(DecisionOptionRef.Denizen(roar)))
@@ -81,10 +85,10 @@ class BuildEdificeSuite extends munit.FunSuite:
     assertEquals(throneEnded.game.current.commonCards.worldDeck.last, roar)
 
   test("an intact edifice can be buried for another of its suit"):
-    val old = CatalogNames.edifice("Great Market")
+    val old = GreatMarketCard.id
     val suit = suitOf(old).get
     val table = empireAtAncientCity
-      .edifice("Great Market", EdificeSide.Intact, at = "Ancient City")
+      .edifice(GreatMarketCard, EdificeSide.Intact, at = AncientCitySite)
     val edifice = offered(table, suit)
     val done = build(atBuildChoice(table, suit), suit,
       Vector(DecisionOptionRef.Edifice(old)))
@@ -94,14 +98,14 @@ class BuildEdificeSuite extends munit.FunSuite:
 
   test("declining builds nothing"):
     val done = build(atBuildChoice(empireAtAncientCity
-      .denizen("Threatening Roar", at = "Ancient City"), roarSuit), roarSuit,
+      .denizen(ThreateningRoarCard, at = AncientCitySite), roarSuit), roarSuit,
       Vector.empty)
     assertEquals(denizensAt(done, ancientCity).map(_.id), Vector(roar))
 
   test("a suit with no edifice left in the deck offers its first set-aside " +
       "one, and the set-aside list returns to the deck after"):
     val start = empireAtAncientCity
-      .denizen("Threatening Roar", at = "Ancient City")
+      .denizen(ThreateningRoarCard, at = AncientCitySite)
     val ofSuit = start.ready.game.current.commonCards.edificeDeck
       .filter(id => suitOf(id).contains(roarSuit))
     val table = start.update(_.updateCurrent(current => current.copy(
@@ -126,13 +130,13 @@ class BuildEdificeSuite extends munit.FunSuite:
         (roarSuit -> roar, otherSuit -> other)
       else (otherSuit -> other, roarSuit -> roar)
     val start = empireAtAncientCity
-      .denizen("Threatening Roar", at = "Ancient City")
-      .denizen(other, at = "Ancient City")
+      .denizen(ThreateningRoarCard, at = AncientCitySite)
+      .denizen(other, at = AncientCitySite)
     // Every edifice of the first suit but one stands intact at Buried Giant,
     // which the Empire does not rule, so building leaves that suit none.
     val ofSuit = start.ready.game.current.commonCards.edificeDeck
       .filter(id => suitOf(id).contains(first._1))
-    val buriedGiant = CatalogNames.site("Buried Giant")
+    val buriedGiant = BuriedGiantSite.id
     val table = start.update(_.updateCurrent(current => current.copy(
       commonCards = current.commonCards.copy(edificeDeck =
         current.commonCards.edificeDeck.filterNot(ofSuit.tail.contains)),
@@ -158,13 +162,13 @@ class BuildEdificeSuite extends munit.FunSuite:
 
   test("cards at sites the Empire does not rule are not offered"):
     val at = atBuildChoice(empireAtAncientCity
-      .denizen("Threatening Roar", at = "Broken Peaks"), roarSuit)
+      .denizen(ThreateningRoarCard, at = BrokenPeaksSite), roarSuit)
     assert(!ChronicleWalk.parked(at.state)
       .exists(_.decisionId == BuildEdifice.decisionId(roarSuit)))
 
   test("building writes its line"):
     val table = empireAtAncientCity
-      .denizen("Threatening Roar", at = "Ancient City")
+      .denizen(ThreateningRoarCard, at = AncientCitySite)
     val edifice = offered(table, roarSuit)
     val done = build(atBuildChoice(table, roarSuit), roarSuit,
       Vector(DecisionOptionRef.Denizen(roar)))

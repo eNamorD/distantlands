@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, PrintedPower, SiteOnly}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower,
+  SiteOnly}
 import oathdigital.gameplay.NoteSupport
 import oathdigital.model._
 
@@ -49,7 +50,8 @@ case object Bog extends PaidAction(BogCard.power):
         PositionedLocation(Location.PlayArea(player)), held.tokens.secrets,
         player)) ++ Option.when(take > 0)(Gain.Favor(player, Suit.Beast, take)))
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(
     relic.steps(player) :+ Note(id, discardNote(_, player, source),
       covers = true)))

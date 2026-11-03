@@ -57,9 +57,9 @@ Chancellor/Citizen/Imperial setup, restoring the rest of a stored campaign
 
 `GeneratedFirstGamePlanFactory` derives a random Chronicle through
 `FirstGameChronicleGenerator`, or takes a saved one, shuffles seating, and
-shuffles both decks into the deal; trusted-game
-provisioning, development game creation, and authenticated bootstrap all use
-it (the dev-only loopback bootstrap route and its deterministic
+shuffles both decks into the deal; trusted-game provisioning, which the
+development start page also uses, and `MembershipBootstrap`, kept for X6,
+both use it (the dev-only loopback bootstrap route and its deterministic
 `DevelopmentFirstGamePlanFactory` fixture were retired once the development
 start page moved onto the same trusted `POST /games` provisioning). Tests
 that need a fixed seating order construct it with an identity (no-shuffle)
@@ -69,7 +69,7 @@ event. Neither the bootstrap response nor ordinary projection exposes hidden
 order.
 
 Shared `FirstGameBootstrapRequest` and its codec compile on JVM and Scala.js.
-They are actorless configuration DTOs. The authenticated route derives
+They are actorless configuration DTOs. `MembershipBootstrap` derives
 authorization and player seats from memberships. The application maps bootstrap
 configuration to a Chronicle deal and appends the same current event envelope
 used by gameplay.

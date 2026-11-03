@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
 import oathdigital.gameplay.{NoteSupport, PowerAccess}
 import oathdigital.gameplay.powers.PowerAnswers
 import oathdigital.model._
@@ -50,7 +50,8 @@ case object SiegeEngines extends PaidAction(SiegeEnginesCard.power):
   override def noteKeys: Vector[NoteKey] = notes.declared
   override def narratedDecisions: Set[String] = Set(decisionId)
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     Decide(decisionId, player, DecisionQuery.ChooseOne(
       sites(ready, player).map(site =>

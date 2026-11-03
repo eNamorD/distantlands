@@ -1,11 +1,17 @@
 package oathdigital.gameplay.chronicle
 
+import oathdigital.catalog.Site
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite}
+import oathdigital.gameplay.powers.action.FaeMerchantCard
+import oathdigital.gameplay.powers.setup.{GreatMarketCard, SchoolOfVinesCard}
+import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.gameplay.{OathRules, WalkerDiceFixture}
 import oathdigital.gameplay.actions.{CardPlay, ProcedureNotes}
 import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
 
@@ -17,8 +23,8 @@ class ShapeEmpireSuite extends munit.FunSuite:
     walkerPowerCatalog = WalkerPowerCatalog.default(catalog),
     walkerDice = WalkerDiceFixture.reversingShuffle)
 
-  private val ancientCity = CatalogNames.site("Ancient City")
-  private val brokenPeaks = CatalogNames.site("Broken Peaks")
+  private val ancientCity = AncientCitySite.id
+  private val brokenPeaks = BrokenPeaksSite.id
 
   private def throneStarted(table: Table)(using munit.Location)
       : OathTransition =
@@ -35,7 +41,7 @@ class ShapeEmpireSuite extends munit.FunSuite:
       using munit.Location): ReadyGame = ChronicleWalk.endOf(rules,
     table.state, transition, TriggeredProcedureRef.ChronicleThrone)
 
-  private def empireAt(sites: String*): Table =
+  private def empireAt(sites: Site*): Table =
     sites.foldLeft(ChronicleWalk.throneHeldByChancellorP1)((table, site) =>
       table.warbandsAt(site, p1, 1))
 
@@ -43,7 +49,7 @@ class ShapeEmpireSuite extends munit.FunSuite:
     ready.game.current.map.sites(site).forces
 
   test("the Chancellor may remove Imperial warbands but keeps the last one"):
-    val table = empireAt("Ancient City", "Broken Peaks")
+    val table = empireAt(AncientCitySite, BrokenPeaksSite)
     // Offer Citizenship comes first; offering no one moves on.
     val started = ChronicleWalk.walkedTo(rules, throneStarted(table),
       ShapeEmpire.removeDecisionId)
@@ -66,54 +72,54 @@ class ShapeEmpireSuite extends munit.FunSuite:
       SiteForces.Occupied(ForceKind.Imperial, 1))
 
   test("one Imperial warband on the map asks nothing"):
-    val started = throneStarted(empireAt("Ancient City"))
+    val started = throneStarted(empireAt(AncientCitySite))
     assert(!ChronicleWalk.parked(started.state)
       .exists(_.decisionId == ShapeEmpire.removeDecisionId))
 
   test("with no Empire site the pawn's site gets one Imperial warband"):
     val after = throneDone(ChronicleWalk.throneHeldByChancellorP1
-      .bandits("Ancient City", 2))
+      .bandits(AncientCitySite, 2))
     assertEquals(forcesAt(after, ancientCity),
       SiteForces.Occupied(ForceKind.Imperial, 1))
 
   test("denizens at sites the Empire does not rule go to the next region's " +
       "discard pile"):
-    val kept = CatalogNames.denizen("Threatening Roar")
-    val lost = CatalogNames.denizen("Fae Merchant")
-    val after = throneDone(empireAt("Broken Peaks")
-      .denizen("Threatening Roar", at = "Broken Peaks")
-      .denizen("Fae Merchant", at = "Buried Giant"))
+    val kept = ThreateningRoarCard.id
+    val lost = FaeMerchantCard.id
+    val after = throneDone(empireAt(BrokenPeaksSite)
+      .denizen(ThreateningRoarCard, at = BrokenPeaksSite)
+      .denizen(FaeMerchantCard, at = BuriedGiantSite))
     val map = after.game.current.map
     assert(map.sites(brokenPeaks).denizens.exists(_.id == kept))
-    val region = map.regionOf(CatalogNames.site("Buried Giant")).get
+    val region = map.regionOf(BuriedGiantSite.id).get
     assert(after.game.current.commonCards.discard(CardPlay.nextRegion(region))
       .contains(lost))
 
   test("intact edifices stay and ruined ones leave the map; Build Edifice " +
       "returns the set-aside one to the deck"):
-    val intact = CatalogNames.edifice("Great Market")
-    val ruined = CatalogNames.edifice("Ruined School")
-    val after = throneDone(empireAt("Ancient City")
-      .edifice("Great Market", EdificeSide.Intact, at = "Broken Peaks")
-      .edifice("Ruined School", EdificeSide.Ruined, at = "Buried Giant"))
+    val intact = GreatMarketCard.id
+    val ruined = SchoolOfVinesCard.id
+    val after = throneDone(empireAt(AncientCitySite)
+      .edifice(GreatMarketCard, EdificeSide.Intact, at = BrokenPeaksSite)
+      .edifice(SchoolOfVinesCard, EdificeSide.Ruined, at = BuriedGiantSite))
     assert(after.game.current.map.sites(brokenPeaks).denizens
       .exists(_.id == intact))
-    assert(!after.game.current.map.sites(CatalogNames.site("Buried Giant"))
+    assert(!after.game.current.map.sites(BuriedGiantSite.id)
       .denizens.exists(_.id == ruined))
     assert(after.game.current.commonCards.edificeDeck.contains(ruined))
 
   test("cards at an Enduring site stay"):
-    val card = CatalogNames.denizen("Threatening Roar")
-    val after = throneDone(empireAt("Broken Peaks")
-      .denizen("Threatening Roar", at = "Ancient City"))
+    val card = ThreateningRoarCard.id
+    val after = throneDone(empireAt(BrokenPeaksSite)
+      .denizen(ThreateningRoarCard, at = AncientCitySite))
     assert(after.game.current.map.sites(ancientCity).denizens
       .exists(_.id == card))
 
   test("each discard writes its line"):
-    val lost = CatalogNames.denizen("Fae Merchant")
-    val buriedGiant = CatalogNames.site("Buried Giant")
+    val lost = FaeMerchantCard.id
+    val buriedGiant = BuriedGiantSite.id
     val done = ChronicleWalk.answeringEverything(rules, throneStarted(
-      empireAt("Broken Peaks").denizen("Fae Merchant", at = "Buried Giant")))
+      empireAt(BrokenPeaksSite).denizen(FaeMerchantCard, at = BuriedGiantSite)))
     val id = ProcedureNotes.id(TriggeredProcedureRef.ChronicleThrone)
     assert(NoteText.said(id, ChronicleThroneProcedure.noteKeys, done.events)
       .map(_.text).contains(s"${lost.value} was discarded from " +

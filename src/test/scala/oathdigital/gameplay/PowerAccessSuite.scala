@@ -1,17 +1,21 @@
 package oathdigital.gameplay
 
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import oathdigital.gameplay.operations.HallOfMinistersCard
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.search.ErrandBoyCard
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2}
 
 class PowerAccessSuite extends munit.FunSuite:
   private val actor = p1
   private val other = p2
   /** p1's pawn site. */
-  private val home = CatalogNames.site("Ancient City")
+  private val home = AncientCitySite.id
   /** A site p1 does not stand at. */
-  private val far = CatalogNames.site("Broken Peaks")
-  private val card = CatalogNames.denizen("Errand Boy")
+  private val far = BrokenPeaksSite.id
+  private val card = ErrandBoyCard.id
   /** p1 standing at Ancient City. */
   private val actorAtHome = Table.start.pawn(actor, at = home).ready
   private val farRuledByActor = Table.start.pawn(actor, at = home)
@@ -94,7 +98,7 @@ class PowerAccessSuite extends munit.FunSuite:
     assertEquals(PowerAccess.locate(facedown, actor, card), None)
 
   test("locate finds an edifice at a ruled site, intact or ruined"):
-    val edifice = CatalogNames.edifice("Hall of Ministers")
+    val edifice = HallOfMinistersCard.id
     Vector(EdificeSide.Intact, EdificeSide.Ruined).foreach { side =>
       val state = farRuledByActor.edifice(edifice, side, at = far).ready
       assertEquals(PowerAccess.locate(state, actor, edifice),
@@ -102,7 +106,7 @@ class PowerAccessSuite extends munit.FunSuite:
     }
 
   /** A plain Order denizen, at the pawn site. */
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
+  private val wrestlers = WrestlersCard.id
 
   /** `state` with `actor`, the walk's actor on their own turn, acting as if
     * at `site`, as `ActAsIf` leaves it. */

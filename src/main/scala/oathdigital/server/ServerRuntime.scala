@@ -2,21 +2,15 @@ package oathdigital.server
 
 import java.nio.file.Path
 
-import oathdigital.application.{
-  ChronicleRandomPort,
-  IdentityRepository,
-  MembershipAuthorizationService
-}
+import oathdigital.application.{ChronicleRandomPort, IdentityRepository}
 import oathdigital.application.chronicle.ChronicleConversion
 import oathdigital.gameplay.cards.NewFoundations
 import oathdigital.persistence.HsqldbDatabaseOwner
 final class ServerRuntime private (
-    val firstGame: GameServerGateway,
-    val authenticatedGame: AuthenticatedGameGateway,
-    val authorization: MembershipAuthorizationService,
+    val service: oathdigital.application.GameApplicationService,
+    val gateway: GameGateway,
     val identities: IdentityRepository,
     val trustedGameProvisioning: TrustedGameProvisioning,
-    val trustedGame: TrustedGameGateway,
     val chronicles: ChronicleConversion,
     private val database: HsqldbDatabaseOwner
 ) extends AutoCloseable:
@@ -50,26 +44,13 @@ object ServerRuntime:
           catalog,
           random
         )
-      val authorization =
-        new MembershipAuthorizationService(database.identities)
       val chronicles = new ChronicleConversion(catalog)
       new ServerRuntime(
-        new GameServerGateway(
-          firstGameService,
-          projector
-        ),
-        new AuthenticatedGameGateway(
-          firstGameService,
-          projector,
-          authorization,
-          database.identities,
-          generatedPlanFactory
-        ),
-        authorization,
+        firstGameService,
+        new GameGateway(firstGameService, projector),
         database.identities,
         new TrustedGameProvisioning(firstGameService, generatedPlanFactory,
           database.trustedGames, chronicles, generateGameId = gameIds),
-        new TrustedGameGateway(firstGameService, projector),
         chronicles,
         database
       )

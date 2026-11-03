@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.dice
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, PrintedPower}
 import oathdigital.gameplay.SiteRulers
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.actions.dice.{DiceThrow, RerollChoice}
@@ -29,36 +29,7 @@ object JinxCard extends Denizen(DenizenId("68"), "Jinx", Suit.Arcane):
   * It writes "Rerolled the attack dice." ("the defense dice"), before the
   * reroll's own roll line.
   */
-final case class Jinx private (catalog: ExecutableCatalog)
-    extends ContributingPower:
-  def id: PowerId = Jinx.id
-  def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
-  override def noteKeys: Vector[NoteKey] = Jinx.noteKeys
-
-  def contributions: Map[PowerWindow, Vector[Contribution]] = Map(
-    PowerWindow.Reroll -> Vector(OfferReroll(offer)))
-
-  /** Its use on the throw at hand (catalog batch 8, slice 10): the
-    * roller's, persistent, costing a secret. Nobody is asked about the
-    * Campaign's own dice. */
-  override def use(ctx: PowerCtx): Option[PowerUse] =
-    RerollChoice.throwOf(ctx).filter(rolled =>
-      Jinx.rules(ctx.state, rolled.roller)).map(rolled =>
-      PowerUse.of(rolled.roller, JinxCard.power, JinxCard.id,
-        consent = !Set(CampaignIds.attackPool, CampaignIds.defensePool)
-          .contains(rolled.pool)))
-
-  private def offer(ctx: PowerCtx): Option[RerollOffer] =
-    RerollChoice.throwOf(ctx).filter(rolled =>
-      Jinx.rules(ctx.state, rolled.roller)).map(rolled => RerollOffer(
-      JinxCard.id, Jinx.label,
-      Some(Costs.onCard(rolled.roller, JinxCard.id, JinxCard.power.cost,
-        catalog, intoOccupied = true)),
-      Vector(Note(id, _ => Some(Jinx.line(rolled)(
-        PowerSourceRef.Card(JinxCard.id)))),
-        Reroll(rolled.pool, rolled.indices))))
-
-object Jinx:
+case object Jinx extends ContributingPower:
   val id: PowerId = JinxCard.power.id
   private val card: DenizenId = JinxCard.id
 
@@ -66,7 +37,7 @@ object Jinx:
   val label: String = "Reroll all with Jinx"
 
   private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
+  override def noteKeys: Vector[NoteKey] = notes.declared
   /** "Rerolled the attack dice." */
   val rerolledAttack: NoteKey = notes.key("rerolled-attack",
     Vector(NotePart.Text("Rerolled the attack dice.")))
@@ -88,4 +59,27 @@ object Jinx:
       }) || SiteRulers.rulerOfCard(ready, card)
       .contains(SiteRuler.Player(player))
 
-  def forCatalog(catalog: ExecutableCatalog): Jinx = new Jinx(catalog)
+  def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
+
+  def contributions: Map[PowerWindow, Vector[Contribution]] = Map(
+    PowerWindow.Reroll -> Vector(OfferReroll(offer)))
+
+  /** Its use on the throw at hand (catalog batch 8, slice 10): the
+    * roller's, persistent, costing a secret. Nobody is asked about the
+    * Campaign's own dice. */
+  override def use(ctx: PowerCtx): Option[PowerUse] =
+    RerollChoice.throwOf(ctx).filter(rolled =>
+      Jinx.rules(ctx.state, rolled.roller)).map(rolled =>
+      PowerUse.of(rolled.roller, JinxCard.power, JinxCard.id,
+        consent = !Set(CampaignIds.attackPool, CampaignIds.defensePool)
+          .contains(rolled.pool)))
+
+  private def offer(ctx: PowerCtx): Option[RerollOffer] =
+    RerollChoice.throwOf(ctx).filter(rolled =>
+      Jinx.rules(ctx.state, rolled.roller)).map(rolled => RerollOffer(
+      JinxCard.id, Jinx.label,
+      Some(Costs.onCard(rolled.roller, JinxCard.id, JinxCard.power.cost,
+        Some(JinxCard.suit), intoOccupied = true)),
+      Vector(Note(id, _ => Some(Jinx.line(rolled)(
+        PowerSourceRef.Card(JinxCard.id)))),
+        Reroll(rolled.pool, rolled.indices))))

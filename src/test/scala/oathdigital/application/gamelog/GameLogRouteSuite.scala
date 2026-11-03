@@ -3,7 +3,7 @@ package oathdigital.application.gamelog
 import oathdigital.application._
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.protocol.projection.{LogKind, LogPageCodec}
-import oathdigital.server.{DevelopmentRoutes, GameServerGateway}
+import oathdigital.server.{DevelopmentRoutes, GameGateway}
 import oathdigital.testkit.HttpTestServer
 import oathdigital.testkit.Unwrap.{accepted, present}
 
@@ -12,24 +12,24 @@ class GameLogRouteSuite extends munit.FunSuite:
     val script = LogScripts.round
     val history = script.history
     val projector = new GameProjector(catalog)
-    val whole = present(projector.logPage("round", history, 0L, script.actor),
+    val whole = present(projector.logPage("round", history, 0L, Some(script.actor)),
       "the whole log page")
     assertEquals(whole.nextSequence, history.nextSequence)
     assert(whole.entries.nonEmpty)
     val after = whole.entries(whole.entries.size / 2).sequence
-    val tail = present(projector.logPage("round", history, after, script.actor),
+    val tail = present(projector.logPage("round", history, after, Some(script.actor)),
       s"the log page after $after")
     assertEquals(tail.entries, whole.entries.filter(_.sequence >= after))
     assertEquals(tail.after, after)
     assertEquals(projector.logPage("round", history, history.nextSequence,
-      script.actor).map(_.entries), Some(Vector.empty))
+      Some(script.actor)).map(_.entries), Some(Vector.empty))
     assertEquals(projector.logPage("round", history, history.nextSequence + 1,
-      script.actor), None)
+      Some(script.actor)), None)
 
   test("the log page carries each line's section, and no headline has one"):
     val script = LogScripts.round
     val page = present(new GameProjector(catalog).logPage("round",
-      script.history, 0L, script.actor), "the whole log page")
+      script.history, 0L, Some(script.actor)), "the whole log page")
     val tag = page.entries.find(_.kind == LogKind.Section).getOrElse(
       fail(s"no tag in ${page.entries}"))
     // The tag posts at Travel's cost step; its section is keyed by the start.
@@ -41,10 +41,9 @@ class GameLogRouteSuite extends munit.FunSuite:
   test("the development route binds playerId, checks the cursor, and leaves raw events alone"):
     // `woken` replays Setup: the route serves a game begun from the start.
     val script = LogScripts.woken
-    val gateway = new GameServerGateway(script.service,
-      new GameProjector(catalog))
+    val gateway = new GameGateway(script.service, new GameProjector(catalog))
     val server = HttpTestServer.start("game-log-route-test")(blocking =>
-      DevelopmentRoutes.route(gateway, blocking))
+      DevelopmentRoutes.route(script.service, gateway, blocking))
     val playerId = script.actor.value
     try
       val page =

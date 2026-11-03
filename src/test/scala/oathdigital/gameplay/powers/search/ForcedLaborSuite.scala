@@ -1,12 +1,13 @@
 package oathdigital.gameplay.powers.search
 
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.powers.{NoteText, PayOrAsk, SearchFixture,
   WalkerPowerCatalog}
+import oathdigital.gameplay.powers.campaign.{MercenariesCard, WrestlersCard}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look,
-  PlacementPicks, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, PlacementPicks, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.{accepted, present}
@@ -18,15 +19,15 @@ import oathdigital.testkit.StartPreview
 class ForcedLaborSuite extends munit.FunSuite:
   import SearchFixture.rules
 
-  private val labor = CatalogNames.denizen("Forced Labor")
-  private val power = ForcedLabor.forCatalog(catalog)
+  private val labor = ForcedLaborCard.id
+  private val power = ForcedLabor
   /** p1's pawn site. */
-  private val home = CatalogNames.site("Ancient City")
+  private val home = AncientCitySite.id
   /** Where Forced Labor stands. */
-  private val peaks = CatalogNames.site("Broken Peaks")
+  private val peaks = BrokenPeaksSite.id
   /** Plain denizens for the world deck; none is played. */
-  private val deckTop = Vector("Wrestlers", "Errand Boy", "Mercenaries")
-    .map(CatalogNames.denizen(_))
+  private val deckTop = Vector(WrestlersCard.id, ErrandBoyCard.id,
+    MercenariesCard.id)
   private val startingSupply = 5
 
   /** p1 in Act at Ancient City with `startingSupply` Supply and the start's

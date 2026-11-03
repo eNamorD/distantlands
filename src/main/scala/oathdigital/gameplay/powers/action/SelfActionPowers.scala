@@ -1,6 +1,5 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.powerresolver.PhasePower
 
 /** The phase powers of catalog batch 2's slice 3, catalog batch 3's slice
@@ -9,11 +8,9 @@ import oathdigital.gameplay.powerresolver.PhasePower
   * denizen card, so all are always present.
   */
 object SelfActionPowers:
-  def forCatalog(catalog: ExecutableCatalog): Vector[PhasePower] =
+  val all: Vector[PhasePower] =
     Vector[PhasePower](Tutor, ShiftingMap, DemonTail, WizardSchool,
-      SpiritSnare, ClayRattle, Scryer, OracularPig) ++
-      Vector(Oracle.forCatalog(catalog)) ++
-      Vector[PhasePower](BloodPact, ArcaneBrokers, Bog, RelicBreaker,
-        TavernSongs, TinkersFair, SkeletonKey, Messenger) ++
-      Vector(BedOfRoots.forCatalog(catalog)) ++
-      Vector(Homesteaders.forCatalog(catalog))
+      SpiritSnare, ClayRattle, Scryer, OracularPig,
+      Oracle, BloodPact, ArcaneBrokers, Bog,
+      RelicBreaker, TavernSongs, TinkersFair, SkeletonKey, Messenger,
+      BedOfRoots, Homesteaders)

@@ -1,23 +1,27 @@
 package oathdigital.gameplay.powers.setup
 
+import oathdigital.gameplay.cards.AncientCitySite
+import oathdigital.gameplay.operations.{AncientBloodlineCard,
+  HallOfMinistersCard}
 import oathdigital.gameplay.powers.{NoteText, PlayerFacts, WalkerPowerCatalog}
+import oathdigital.gameplay.powers.action.FaeMerchantCard
+import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.gameplay.setup.{FirstGameSetupFixture, SetupProcedure, SetupWalkDriver}
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Table}
+import oathdigital.testkit.{Look, Table}
 import oathdigital.testkit.Unwrap.accepted
 
 class ProvingGroundsRulesSuite extends munit.FunSuite:
   private val catalog = FirstGameSetupFixture.catalog
-  private val edifice = CatalogNames.edifice("Proving Grounds")
+  private val edifice = ProvingGroundsCard.id
   private val powers = WalkerPowers.selected(WalkerPowerCatalog.default(catalog),
     Vector.empty)
-  private val site = CatalogNames.site("Ancient City")
+  private val site = AncientCitySite.id
   // p2 is the first player of the fixture's first game.
   private val firstPlayer = Table.p2
   // Any two denizens will do: Empty Grounds must discard them.
-  private val otherDenizens = Vector("Threatening Roar", "Fae Merchant")
-    .map(CatalogNames.denizen(_))
+  private val otherDenizens = Vector(ThreateningRoarCard.id, FaeMerchantCard.id)
 
   // The Setup walk is the subject (the edifice's effect runs when the walk
   // reaches it), so these tests start from the fresh Setup, not a Table.
@@ -44,9 +48,9 @@ class ProvingGroundsRulesSuite extends munit.FunSuite:
     SetupWalkDriver.driveWithEvents(ready, tree, TriggeredProcedureRef.Setup,
       powers).events
 
-  private val proving = ProvingGrounds.forCatalog(catalog)
+  private val proving = ProvingGrounds
 
-  private val empty = EmptyGrounds.forCatalog(catalog)
+  private val empty = EmptyGrounds
 
   test("Proving Grounds gives the placing player three warbands"):
     val staged = stagedAt(EdificeSide.Intact)
@@ -78,13 +82,13 @@ class ProvingGroundsRulesSuite extends munit.FunSuite:
       "holder rules, since nobody moves them"):
     // p1, not the first player, rules Ancient City and holds Bloodline.
     val staged = Table.from(withOtherDenizens).warbandsAt(site, Table.p1, 1)
-      .adviser(Table.p1, CatalogNames.denizen("Ancient Bloodline"))
+      .adviser(Table.p1, AncientBloodlineCard.id)
       .ready
     assertEquals(cradleCards(finish(staged)), Vector[CardId](edifice))
 
   test("Empty Grounds discards denizens at a site the Hall of Ministers' " +
       "ruler rules, since nobody discards them"):
-    val hall = CatalogNames.edifice("Hall of Ministers")
+    val hall = HallOfMinistersCard.id
     val staged = Table.from(withOtherDenizens).warbandsAt(site, Table.p1, 1)
       .edifice(hall, EdificeSide.Intact, at = site).ready
     assertEquals(cradleCards(finish(staged)), Vector[CardId](edifice, hall))

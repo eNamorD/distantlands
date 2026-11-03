@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.economy
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
-  PrintedPower}
+import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
 import oathdigital.gameplay.actions.economy.{MusterSource, TradeProcedure}
 import oathdigital.gameplay.powerresolver.{Contribution, Transform}
 import oathdigital.gameplay.powers.SelectedModifier
@@ -26,10 +25,12 @@ object OldSongsCard extends Denizen(DenizenId("229"), "Old Songs", Suit.Hearth):
   * answered source is marked `intoOccupied`. It does not apply to a Muster.
   * It writes no line: the start line names it.
   */
-final case class OldSongs private (catalog: ExecutableCatalog)
-    extends SelectedModifier:
-  val cardId: DenizenId = OldSongsCard.id
-  def id: PowerId = OldSongs.id
+case object OldSongs extends SelectedModifier:
+  val id: PowerId = OldSongsCard.power.id
+  /** What a card must hold for Old Songs to admit it. */
+  val OneSecret: Tokens = Tokens(favor = 0, secrets = 1)
+
+  val card: Denizen = OldSongsCard
   def actions: Set[MajorActionType] = Set(MajorActionType.Trade)
   override def priority: Int = EconomySources.ExemptionPriority
 
@@ -41,11 +42,3 @@ final case class OldSongs private (catalog: ExecutableCatalog)
     PowerWindow.TradeCost -> Vector(Transform((ctx, operations) =>
       EconomySources.intoOccupied(ctx, operations,
         TradeProcedure.decisionId))))
-
-object OldSongs:
-  val id: PowerId = OldSongsCard.power.id
-  /** What a card must hold for Old Songs to admit it. */
-  val OneSecret: Tokens = Tokens(favor = 0, secrets = 1)
-
-  def forCatalog(catalog: ExecutableCatalog): OldSongs =
-    new OldSongs(catalog)

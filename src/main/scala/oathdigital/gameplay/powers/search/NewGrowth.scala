@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.search
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
-  PrintedPower}
+import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
 import oathdigital.gameplay.EffectiveSuit
 import oathdigital.gameplay.actions.PlaySites
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
@@ -29,27 +28,21 @@ object NewGrowthCard extends Denizen(DenizenId("188"), "New Growth",
   * card's suit is read in hand, where no lens changes it during the
   * action. It writes no line: "Played {card} to {site}" says where.
   */
-final case class NewGrowth private (catalog: ExecutableCatalog)
-    extends SelectedModifier:
-  val cardId: DenizenId = NewGrowthCard.id
-  def id: PowerId = NewGrowth.id
-  def actions: Set[MajorActionType] = Set(MajorActionType.Search)
-
-  def effects: Map[PowerWindow, Vector[Contribution]] = Map(
-    PowerWindow.SearchPlayAdviser -> Vector(Transform((ctx, children) =>
-      ctx.operation match
-        case tree: CardPlayProcedure.PlacementTree
-            if EffectiveSuit.of(catalog, ctx.state, tree.card)
-              .exists(NewGrowth.suits) =>
-          tree.adjust(children)(_.openSites(NewGrowth.everySite))
-        case _ => children)))
-
-object NewGrowth:
+case object NewGrowth extends SelectedModifier:
   val id: PowerId = NewGrowthCard.power.id
   /** The suits it lets go to any site. */
   val suits: Set[Suit] = Set(Suit.Beast, Suit.Hearth)
   /** Leave to play to every site. */
   val everySite: PlaySites = PlaySites((_, _) => true)
 
-  def forCatalog(catalog: ExecutableCatalog): NewGrowth =
-    new NewGrowth(catalog)
+  val card: Denizen = NewGrowthCard
+  def actions: Set[MajorActionType] = Set(MajorActionType.Search)
+
+  def effects: Map[PowerWindow, Vector[Contribution]] = Map(
+    PowerWindow.SearchPlayAdviser -> Vector(Transform((ctx, children) =>
+      ctx.operation match
+        case tree: CardPlayProcedure.PlacementTree
+            if EffectiveSuit.of(ctx.catalog, ctx.state, tree.card)
+              .exists(NewGrowth.suits) =>
+          tree.adjust(children)(_.openSites(NewGrowth.everySite))
+        case _ => children)))

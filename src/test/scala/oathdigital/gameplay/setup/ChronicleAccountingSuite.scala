@@ -1,9 +1,9 @@
 package oathdigital.gameplay.setup
 
 import oathdigital.gameplay.actions.VisionRules
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.operations.TheGrandScepterCard
 import oathdigital.model._
-import oathdigital.testkit.CatalogNames
 
 /** The card accounting a Chronicle passes before game start reads it, and
   * before the Chronicle Phase journals it (Chronicle steps design, "Exit
@@ -62,9 +62,9 @@ class ChronicleAccountingSuite extends munit.FunSuite:
   test("a Vision stored at a site is refused"):
     val vision = VisionRules.Conquest
     val stored = chronicle.copy(world = Vector(StoredSite(
-      CatalogNames.site("Ancient City"), Vector(vision))))
+      AncientCitySite.id, Vector(vision))))
       .copy(atlasBox = chronicle.atlasBox.filterNot(
-        _.site == CatalogNames.site("Ancient City")))
+        _.site == AncientCitySite.id))
     assertEquals(ChronicleAccounting.knownAndUnique(catalog, stored),
       Left(s"${vision.value} is a vision, which the Chronicle does not store"))
 

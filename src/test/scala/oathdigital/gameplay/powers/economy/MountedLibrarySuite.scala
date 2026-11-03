@@ -1,24 +1,25 @@
 package oathdigital.gameplay.powers.economy
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powerresolver.{FoldPhase, Transform}
 import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
+import oathdigital.gameplay.powers.campaign.{HorseArchersCard, WrestlersCard}
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, EconomyActions,
-  Look, PowerRules, Table}
+import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look, PowerRules,
+  Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.p1
 
 class MountedLibrarySuite extends munit.FunSuite:
-  private val library = CatalogNames.denizen("Mounted Library")
-  private val power = MountedLibrary.forCatalog(catalog)
+  private val library = MountedLibraryCard.id
+  private val power = MountedLibrary
   private val modifiers = Vector(MountedLibrary.id)
-  private val home = CatalogNames.site("Ancient City")
+  private val home = AncientCitySite.id
   /** A Nomad adviser, so a Trade with Mounted Library gains 1 secret, or 1
     * more favor. */
-  private val horseArchers = CatalogNames.denizen("Horse Archers")
+  private val horseArchers = HorseArchersCard.id
   /** A plain Order denizen to Trade with instead. */
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
+  private val wrestlers = WrestlersCard.id
   private val rules = PowerRules.withWalkerPowers
 
   /** p1 at Ancient City beside Mounted Library and Wrestlers, holding Horse

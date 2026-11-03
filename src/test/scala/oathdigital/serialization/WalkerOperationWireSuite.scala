@@ -1,6 +1,11 @@
 package oathdigital.serialization
 
 import oathdigital.gameplay.actions.VisionRules
+import oathdigital.gameplay.cards.DeepWoodsSite
+import oathdigital.gameplay.powers.action.FaeMerchantCard
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.economy.KnightsErrantCard
+import oathdigital.gameplay.powers.setup.GreatMarketCard
 import oathdigital.model._
 import oathdigital.gameplay.setup.FirstGameSetupFixture
 import oathdigital.gameplay.operations.{OperationPipeline, OperationPolicy}
@@ -8,7 +13,7 @@ import oathdigital.gameplay.walker.{DeltaPayload, RollPayload,
   WalkerStepRecorded}
 import oathdigital.serialization.WalkerWireEvents.{encodedStream,
   encodedStreamThatRoundTrips, recordedOperation}
-import oathdigital.testkit.{CatalogNames, RecordedOps, Table}
+import oathdigital.testkit.{RecordedOps, Table}
 import oathdigital.testkit.Unwrap.{accepted, as}
 
 /** Walker step events on the wire: the operations, locations, pieces and
@@ -430,13 +435,13 @@ class WalkerOperationWireSuite extends munit.FunSuite:
       Shuffle(ShufflePile.Search(
         SearchSource.RegionalDiscard(Region.Hinterland))),
       Shuffle(ShufflePile.EdificeDeck,
-        Some(Vector(CatalogNames.edifice("Great Market")))),
+        Some(Vector(GreatMarketCard.id))),
       Shuffle(ShufflePile.SetAsideRelics,
         Some(Vector(RelicId("R1")))),
       Shuffle(ShufflePile.ChronicleGathering, Some(Vector(denizen))),
       Shuffle(ShufflePile.Reliquary),
       Shuffle(ShufflePile.SuitedReserve(Suit.Beast),
-        Some(Vector(CatalogNames.denizen("Fae Merchant")))),
+        Some(Vector(FaeMerchantCard.id))),
       SetOathkeeper(Some(PlayerId("red"))),
       SetOathkeeper(None),
       SetOathkeeperGoal(OathkeeperGoal.ThePeople),
@@ -451,12 +456,12 @@ class WalkerOperationWireSuite extends munit.FunSuite:
       WarbandsAdded(ForceKind.Exile(LineageId("l1")), 3),
       UsurperLimiterRemoved,
       LineagePointsScored(LineageId("lineage:red"), 3),
-      EdificeBuilt(CatalogNames.edifice("Great Market"), site),
+      EdificeBuilt(GreatMarketCard.id, site),
       SuitedReserveFromBox(Suit.Beast,
-        Vector(CatalogNames.denizen("Fae Merchant"))),
+        Vector(FaeMerchantCard.id)),
       QueueProcedure(QueuedProcedure(PlayerId("p1"), ActionRef.Campaign,
           Vector.empty,
-          Some(PowerSourceRef.Card(CatalogNames.denizen("Knights Errant"))),
+          Some(PowerSourceRef.Card(KnightsErrantCard.id)),
           QueueKind.Offer)),
       QueueProcedure(QueuedProcedure(PlayerId("p1"), ActionRef.Trade,
         Vector(DecisionOptionRef.Button("favor")), None, QueueKind.Run),
@@ -581,7 +586,7 @@ class WalkerOperationWireSuite extends munit.FunSuite:
       OpenPick("campaign.defender-plan", DecisionOptionRef.Button("title"),
         Some("Oathkeeper title: add 1 defense die")),
       OpenPick("search.modifiers",
-        DecisionOptionRef.Denizen(CatalogNames.denizen("Wrestlers"))),
+        DecisionOptionRef.Denizen(WrestlersCard.id)),
       ClosePick()).foreach { op =>
       val event = recordedOperation(op)
       val encoded = accepted(GameEventWire.encodeEvent("walker", 0, event))
@@ -589,7 +594,7 @@ class WalkerOperationWireSuite extends munit.FunSuite:
     }
 
   test("an as-if site round trips"):
-    val event = recordedOperation(ActAsIf(CatalogNames.site("Deep Woods")))
+    val event = recordedOperation(ActAsIf(DeepWoodsSite.id))
     val encoded = accepted(GameEventWire.encodeEvent("walker", 0, event))
     assertEquals(GameEventWire.decode(encoded).map(_.event), Right(event))
     assertEquals(ujson.read(encoded)("payload")("step")("ops")(0)("kind").str,

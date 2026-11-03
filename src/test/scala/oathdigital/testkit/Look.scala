@@ -4,6 +4,7 @@ import oathdigital.gameplay.actions.CardPlay
 import oathdigital.gameplay.powers.PlayerFacts
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
+import oathdigital.testkit.CardRefs.{CardRef, SiteRef}
 
 /** The reads rule tests make of a state, named the way `Table` names what it
   * places. */
@@ -30,22 +31,22 @@ final class Look private (ready: ReadyGame):
     .getOrElse(throw AssertionError(s"$p has no pawn on the map"))
 
   /** The cards a site lists: its denizens and edifices. */
-  def cardsAt(site: String | SiteId)(using munit.Location): Vector[CardId] =
-    current.map.sites(CatalogNames.site(site)).denizens.map(_.id)
-  def relicsAt(site: String | SiteId)(using munit.Location): Vector[RelicId] =
-    current.map.sites(CatalogNames.site(site)).relics.map(_.id)
-  def forces(site: String | SiteId)(using munit.Location): SiteForces =
-    current.map.sites(CatalogNames.site(site)).forces
-  def siteTokens(site: String | SiteId)(using munit.Location): Tokens =
-    current.map.sites(CatalogNames.site(site)).tokens
+  def cardsAt(site: SiteRef): Vector[CardId] =
+    current.map.sites(CardRefs.siteId(site)).denizens.map(_.id)
+  def relicsAt(site: SiteRef): Vector[RelicId] =
+    current.map.sites(CardRefs.siteId(site)).relics.map(_.id)
+  def forces(site: SiteRef): SiteForces =
+    current.map.sites(CardRefs.siteId(site)).forces
+  def siteTokens(site: SiteRef): Tokens =
+    current.map.sites(CardRefs.siteId(site)).tokens
 
   def phase: Phase = current.turn.phase
   def active: PlayerId = current.turn.activePlayer
 
   /** The tokens on `card`, at a site or in a player's play area. Fails when
     * the card lies in neither, where it could carry no tokens. */
-  def tokensOn(card: String | CardId)(using munit.Location): Tokens =
-    val id = CatalogNames.card(card)
+  def tokensOn(card: CardRef)(using munit.Location): Tokens =
+    val id = CardRefs.cardId(card)
     val onSites = current.map.sites.values.flatMap(s =>
       s.denizens.filter(_.id == id).map(_.tokens) ++
         s.relics.filter(_.id == id).map(_.tokens))
@@ -53,23 +54,23 @@ final class Look private (ready: ReadyGame):
       p.advisers.collect { case d: DenizenState if d.id == id => d.tokens } ++
         p.relics.filter(_.id == id).map(_.tokens))
     Unwrap.present((onSites ++ held).headOption,
-      s"${CatalogNames.nameOf(id)} at a site or in a play area")
+      s"${CardRefs.nameOf(id)} at a site or in a play area")
 
   /** The tokens on `card` as `p`'s adviser. Fails when `p` holds no such
     * adviser. */
-  def adviserTokens(p: PlayerId, card: String | CardId)(
+  def adviserTokens(p: PlayerId, card: CardRef)(
       using munit.Location): Tokens =
-    val id = CatalogNames.card(card)
+    val id = CardRefs.cardId(card)
     Unwrap.present(player(p).advisers.collectFirst {
       case d: DenizenState if d.id == id => d.tokens },
-      s"${CatalogNames.nameOf(id)} as ${p.value}'s adviser")
+      s"${CardRefs.nameOf(id)} as ${p.value}'s adviser")
 
   /** The discard pile of the region after `site`'s region: where a card a
     * power discards from that site goes. Fails when the site is in no
     * region. */
-  def discardAfter(site: String | SiteId)(using munit.Location)
+  def discardAfter(site: SiteRef)(using munit.Location)
       : Vector[WorldCardId] =
-    val id = CatalogNames.site(site)
+    val id = CardRefs.siteId(site)
     val region = current.map.regionOf(id).getOrElse(
       munit.Assertions.fail(s"$id is in no region"))
     current.commonCards.discard(CardPlay.nextRegion(region))

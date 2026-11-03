@@ -1,14 +1,18 @@
 package oathdigital.gameplay.powers.search
 
+import oathdigital.catalog.holding.CrackedHornCard
 import oathdigital.gameplay.{PlacementFixture, PowerAccess}
 import oathdigital.gameplay.actions.{CardPlayRules, RuleNotes}
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import oathdigital.gameplay.cards.{AncientCitySite, DeepWoodsSite}
+import oathdigital.gameplay.operations.{AncientBloodlineCard,
+  HallOfMinistersCard}
 import oathdigital.gameplay.powers.{NoteText, SearchFixture, WalkerPowerCatalog}
+import oathdigital.gameplay.powers.campaign.CodeOfHonorCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look,
-  PlacementPicks, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, PlacementPicks, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
@@ -19,15 +23,15 @@ class ForestWardenSuite extends munit.FunSuite:
   import SearchFixture.{keep, placeAt, placeReplacing, rules, start}
 
   private val walkerPowers = WalkerPowerCatalog.default(catalog)
-  private val warden = CatalogNames.denizen("Forest Warden")
+  private val warden = ForestWardenCard.id
   private val modifiers = Vector(ForestWarden.id)
-  private val beast = CatalogNames.denizen("Errand Boy")
+  private val beast = ErrandBoyCard.id
   private val order = SearchFixture.anyPlainDenizensOf(Suit.Order).head
-  private val filler = CatalogNames.denizen("Code of Honor")
-  private val horn = CatalogNames.relic("Cracked Horn")
-  private val home = CatalogNames.site("Ancient City")
+  private val filler = CodeOfHonorCard.id
+  private val horn = CrackedHornCard.id
+  private val home = AncientCitySite.id
   /** The Beast Homeland: its rule gives a discard as well. */
-  private val woods = CatalogNames.site("Deep Woods")
+  private val woods = DeepWoodsSite.id
 
   /** p1 in Act at `at` holding Forest Warden faceup, with 5 Supply and
     * `top` on the world deck. */
@@ -76,12 +80,12 @@ class ForestWardenSuite extends munit.FunSuite:
 
   test("bury ignores locks: an intact edifice and a card Ancient Bloodline " +
       "locks may be buried, though a discard may not take them"):
-    val hall = CatalogNames.edifice("Hall of Ministers")
+    val hall = HallOfMinistersCard.id
     val ready = wardenHeldWithDeckTop(beast)
       .edifice(hall, EdificeSide.Intact, at = home)
       .denizen(filler, at = home).warbandsAt(home, p2, 1)
-      .adviser(p2, CatalogNames.denizen("Ancient Bloodline"))
-      .adviser(p1, CatalogNames.denizen("Crop Rotation")).ready
+      .adviser(p2, AncientBloodlineCard.id)
+      .adviser(p1, CropRotationCard.id).ready
     assert(PowerAccess.ruledSites(ready, p2).contains(home))
     // Crop Rotation's discard alone may take neither card.
     val discarding = parkedOptions(toPlacement(ready,
@@ -131,7 +135,7 @@ class ForestWardenSuite extends munit.FunSuite:
   test("a facedown relic at another site is offered by its slot, never by " +
       "its name"):
     val ready = wardenHeldWithDeckTop(beast)
-      .adviser(p1, CatalogNames.denizen("New Growth"))
+      .adviser(p1, NewGrowthCard.id)
       .relicAt(horn, at = woods).ready
     val asked = toPlacement(ready, selected = Vector(ForestWarden.id,
       NewGrowth.id))

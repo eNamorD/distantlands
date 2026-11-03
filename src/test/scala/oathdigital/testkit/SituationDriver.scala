@@ -1,7 +1,7 @@
 package oathdigital.testkit
 
 import oathdigital.application.{EventStreamRepository, ExpectedStream,
-  GameCommand, GameApplicationService, TreeDecision}
+  GameCommand, GameApplicationService, PlayerIntent, TreeDecision}
 import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.OathRules
 import oathdigital.gameplay.phases.PhaseMenu
@@ -92,7 +92,7 @@ sealed trait SituationDriver:
             catch case error: Exception =>
               failed(s"answering ${decide.decisionId} ($form) of " +
                 s"$procedure awaiting $awaiting threw $error")
-          GameCommand.ResolveWalker(awaiting,
+          Commands.resolveWalker(awaiting,
             TreeDecision(decide.decisionId, answer))
       situation = apply(situation, Step.Command(resume)).fold(violation =>
         failed(s"answering ${parked.get.decisionId} awaiting " +
@@ -184,13 +184,14 @@ object SituationDriver:
         : Either[OathViolation, OathTransition] = command match
       case GameCommand.Begin(chronicle, orders) =>
         rules.beginGame(state, chronicle, orders)
-      case GameCommand.ResolveWalker(actor, decision) =>
+      case GameCommand.Issued(actor, PlayerIntent.ResolveWalker(decision)) =>
         rules.resolveWalker(state, actor, decision.decisionId,
           decision.answer)
-      case _: GameCommand.ConsentCommand | _: GameCommand.SavePlanAid =>
+      case GameCommand.Issued(_, _: PlayerIntent.Consent |
+          _: PlayerIntent.SavePlanAid) =>
         Left(OathViolation.InvalidEventOrder(
           "consent and aid commands need a journal; use a journaled situation"))
-      case GameCommand.Undo(_) | GameCommand.Redo(_) =>
+      case GameCommand.Issued(_, PlayerIntent.Undo | PlayerIntent.Redo) =>
         Left(OathViolation.InvalidEventOrder(
           "undo and redo need a journal; use a journaled situation"))
 
@@ -204,7 +205,7 @@ object SituationDriver:
       catalog: ExecutableCatalog, repository: Option[EventStreamRepository],
       gameId: String, answers: Answers) extends SituationDriver:
     private val walkerPowers = WalkerPowerCatalog.default(catalog)
-    private val phasePowers = PhasePowerCatalog.default(catalog)
+    private val phasePowers = PhasePowerCatalog.default
 
     def withPolicy(answers: Answers): SituationDriver =
       copy(answers = answers)

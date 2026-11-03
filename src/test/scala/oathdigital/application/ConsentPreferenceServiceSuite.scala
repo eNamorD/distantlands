@@ -1,12 +1,13 @@
 package oathdigital.application
 
-import oathdigital.gameplay.powers.travel.{MinesSite, NarrowPassSite,
-  TravelFixture}
+import oathdigital.gameplay.cards.{MinesSite, NarrowPassSite}
+import oathdigital.gameplay.powers.travel.TravelFixture
 import oathdigital.model._
 import oathdigital.model.OathEvent.{ConsentPreferenceSet,
   ConsentPreferencesCleared}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.accepted
+import oathdigital.testkit.Commands
 
 /** Consent preferences through the service (consent design, rulings 15 to
   * 18, "Undo" and plan decision 1). */
@@ -39,7 +40,7 @@ class ConsentPreferenceServiceSuite extends munit.FunSuite:
     val set = accepted(service.handle(gameId, started.nextSequence,
       setPreference(ConsentSetting.Never)))
     val undone = accepted(service.handle(gameId, set.nextSequence,
-      GameCommand.Undo(p1)))
+      Commands.undo(p1)))
     assertEquals(consent(undone).preference(p2, NarrowPassSite.pass, p1),
       Some(ConsentPreference.Never))
     val reloaded = ParkedServiceFixture.replayingSecond(service, repository)
@@ -50,11 +51,11 @@ class ConsentPreferenceServiceSuite extends munit.FunSuite:
     val (service, _) = ConsentFixture.service()
     val started = startTravel(service)
     val undone = accepted(service.handle(gameId, started.nextSequence,
-      GameCommand.Undo(p1)))
+      Commands.undo(p1)))
     val set = accepted(service.handle(gameId, undone.nextSequence,
       setPreference(ConsentSetting.Always)))
     val redone = accepted(service.handle(gameId, set.nextSequence,
-      GameCommand.Redo(p1)))
+      Commands.redo(p1)))
     assertEquals(consent(redone).preference(p2, NarrowPassSite.pass, p1),
       Some(ConsentPreference.Always))
 
@@ -80,7 +81,7 @@ class ConsentPreferenceServiceSuite extends munit.FunSuite:
       setPreference(ConsentSetting.Always, requester = PlayerId("p9"))),
       rejected(OathViolation.ConsentUnavailable("p9 is not another player")))
     assertEquals(service.handle(gameId, 0L,
-      GameCommand.SetConsentPreference(p2, MinesSite.mountain, p1,
+      Commands.setConsentPreference(p2, MinesSite.mountain, p1,
         ConsentSetting.Always)),
       rejected(OathViolation.ConsentUnavailable(
         "site.mines.mountain cannot be waived")))

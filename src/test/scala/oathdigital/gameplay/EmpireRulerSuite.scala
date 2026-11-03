@@ -1,12 +1,13 @@
 package oathdigital.gameplay
 
+import oathdigital.gameplay.cards.{DunesSite, FairIsleSite}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2, p3}
 
 class EmpireRulerSuite extends munit.FunSuite:
-  private val dunes = CatalogNames.site("Dunes")
-  private val fairIsle = CatalogNames.site("Fair Isle")
+  private val dunes = DunesSite.id
+  private val fairIsle = FairIsleSite.id
 
   /** p1 is the Chancellor and p2 a Citizen; the Empire holds the Dunes and
     * p3, an Exile, holds Fair Isle. */

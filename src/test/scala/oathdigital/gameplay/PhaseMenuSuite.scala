@@ -1,22 +1,27 @@
 package oathdigital.gameplay
 
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite}
 import oathdigital.gameplay.phases.{ActOffers, PhaseMenu, PhasePowerProcedure}
 import oathdigital.gameplay.actions.economy.TradeProcedure
 import oathdigital.gameplay.phases.rest.FinishRestProcedure
 import oathdigital.gameplay.phases.wake.TakeWealthProcedure
 import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
+import oathdigital.gameplay.powers.action.{FaeMerchantCard, SecondChanceCard}
 import oathdigital.gameplay.powers.banner.{WanderingFlameMove,
   WanderingFlamePlace}
-import oathdigital.gameplay.powers.rest.Insomnia
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.rest.{Insomnia, InsomniaCard}
 import oathdigital.gameplay.powers.wake.TakeWealthLimit
+import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,
   Transform}
 import oathdigital.gameplay.walker.{ProcedureDequeued, WalkerCompleted,
   WalkerPowers}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, MenuPlay, Outcomes,
-  PowerRules, Refusals, Table}
+import oathdigital.testkit.{Look, MenuPlay, Outcomes, PowerRules, Refusals,
+  Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -24,25 +29,25 @@ import oathdigital.testkit.Unwrap.accepted
   * the driver leaves it. */
 class PhaseMenuSuite extends munit.FunSuite:
   private val walkerPowers = WalkerPowerCatalog.default(catalog)
-  private val phasePowers = PhasePowerCatalog.default(catalog)
+  private val phasePowers = PhasePowerCatalog.default
   private val rules = PowerRules.withWalkerAndPhasePowers
-  private val ancientCity = CatalogNames.site("Ancient City")
-  private val insomniaCard = CatalogNames.denizen("Insomnia")
+  private val ancientCity = AncientCitySite.id
+  private val insomniaCard = InsomniaCard.id
   private val insomnia = DecisionOptionRef.Denizen(insomniaCard)
   private val favor = PhaseMenu.takeWealth(WakeResource.Favor)
   private val secret = PhaseMenu.takeWealth(WakeResource.Secret)
 
   /** p1 at Ancient City, p2 at Broken Peaks and p3 at Buried Giant. */
   private def table: Table = Table.start
-    .pawn(p1, at = ancientCity).pawn(p2, at = "Broken Peaks")
-    .pawn(p3, at = "Buried Giant")
+    .pawn(p1, at = ancientCity).pawn(p2, at = BrokenPeaksSite)
+    .pawn(p3, at = BuriedGiantSite)
 
   /** p1's Wake, with one favor and no secret at Ancient City. */
   private def waking: Table = table.turn(p1, Phase.Wake)
     .siteTokens(ancientCity, favor = 1, secrets = 0)
 
   /** p1's Rest, with Insomnia as an adviser. */
-  private def resting: Table = table.adviser(p1, "Insomnia")
+  private def resting: Table = table.adviser(p1, InsomniaCard)
     .turn(p1, Phase.Rest)
 
   /** `at` with `used` spent this turn. */
@@ -236,7 +241,7 @@ class PhaseMenuSuite extends munit.FunSuite:
   test("an Act option only a modifier can open is available"):
     // p1 has no Supply; a stand-in modifier on Wrestlers waives Search's
     // cost.
-    val wrestlers = CatalogNames.denizen("Wrestlers")
+    val wrestlers = WrestlersCard.id
     val waiver = new ContributingPower:
       val id: PowerId = PowerId("stand.waiver")
       val source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
@@ -248,8 +253,8 @@ class PhaseMenuSuite extends munit.FunSuite:
       override def selectionCard: Option[CardId] = Some(wrestlers)
       override def selectionWindows: Set[PowerWindow] =
         Set(PowerWindow.SearchModifierSelection)
-    val ready = acting(supply = 0).worldDeckTop("Threatening Roar",
-      "Fae Merchant", "Second Chance").adviser(p1, wrestlers).ready
+    val ready = acting(supply = 0).worldDeckTop(ThreateningRoarCard,
+      FaeMerchantCard, SecondChanceCard).adviser(p1, wrestlers).ready
     val search = PhaseMenu.offers(PhaseMenu.Menu.Act, catalog, ready, p1,
       phasePowers, WalkerPowers.selected(WalkerPowers(Vector(waiver)),
         Vector.empty)).find(_.option.ref == act(ActionRef.Search))
@@ -296,7 +301,7 @@ class PhaseMenuSuite extends munit.FunSuite:
     // a secret.
     val flame = acting().darkestSecret(Some(p1), 1,
       face = DarkestSecretFace.WanderingFlame)
-      .siteTokens("Broken Peaks", secrets = 1).secrets(p1, faceUp = 1)
+      .siteTokens(BrokenPeaksSite, secrets = 1).secrets(p1, faceUp = 1)
     val listed = options(flame.phaseMenuParked.state)
     val moveButton = PhaseMenu.powerButton(WanderingFlameMove.id)
     val placeButton = PhaseMenu.powerButton(WanderingFlamePlace.id)

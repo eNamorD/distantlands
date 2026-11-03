@@ -1,16 +1,19 @@
 package oathdigital.application
 
+import oathdigital.gameplay.cards.BrokenPeaksSite
+import oathdigital.gameplay.powers.campaign.StickyFireCard
 import oathdigital.testkit.MenuPlay
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{Situation, Table}
 import oathdigital.testkit.Table.{p1, p2}
+import oathdigital.testkit.Commands
 
 /** Real batches that undo never takes back (undo design, "Barriers"). */
 class UndoBarrierPlaySuite extends munit.FunSuite:
   private def nothingToUndo(service: GameApplicationService, gameId: String,
       at: Long, player: PlayerId)(using munit.Location): Unit =
-    assertEquals(service.handle(gameId, at, GameCommand.Undo(player)),
+    assertEquals(service.handle(gameId, at, Commands.undo(player)),
       Left(GameApplicationError.CommandRejected(OathViolation.NothingToUndo)))
 
   test("a Recover's start rolls, so it cannot be taken back"):
@@ -20,8 +23,8 @@ class UndoBarrierPlaySuite extends munit.FunSuite:
 
   test("peeking at a site's relics cannot be taken back"):
     val table = Table.start
-      .pawn(p1, "Broken Peaks")
-      .relicAt("Sticky Fire", "Broken Peaks")
+      .pawn(p1, BrokenPeaksSite)
+      .relicAt(StickyFireCard, BrokenPeaksSite)
       .banditsRefilled
     val (service, repository) = table.service()
     val act = table.situation(Situation.journaled(service, catalog,

@@ -1,12 +1,13 @@
 package oathdigital.gameplay.walker
 
 import oathdigital.gameplay.actions.travel.TravelProcedure
+import oathdigital.gameplay.cards.NarrowPassSite
 import oathdigital.gameplay.powerresolver.QueuedStarts
 import oathdigital.gameplay.powers.PhasePowerCatalog
-import oathdigital.gameplay.powers.travel.{NarrowPassSite, TravelFixture}
+import oathdigital.gameplay.powers.action.PalanquinCard
+import oathdigital.gameplay.powers.travel.TravelFixture
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.CatalogNames
 import oathdigital.testkit.Table.{p1, p2, p3}
 
 /** What a queued start waits on when only waivable restrictions refuse it
@@ -20,7 +21,7 @@ class QueuedStartConsentSuite extends munit.FunSuite:
 
   private def p2SentTo(site: SiteId): QueuedProcedure =
     QueuedProcedure(p2, ActionRef.Travel, Vector(DecisionOptionRef.Site(site)),
-      Some(PowerSourceRef.Card(CatalogNames.denizen("Palanquin"))),
+      Some(PowerSourceRef.Card(PalanquinCard.id)),
       QueueKind.Run,
       sender = Some(p1))
 
@@ -32,7 +33,7 @@ class QueuedStartConsentSuite extends munit.FunSuite:
   private def verdict(ready: ReadyGame, entry: QueuedProcedure)
       : QueuedStarts.Verdict =
     QueuedStart.consent(catalog, ready, entry, powers(Vector.empty),
-      PhasePowerCatalog.default(catalog))
+      PhasePowerCatalog.default)
 
   test("an open route starts"):
     assertEquals(verdict(p2BesideP1WithThePassHeldBy(None), p2SentTo(coast)),

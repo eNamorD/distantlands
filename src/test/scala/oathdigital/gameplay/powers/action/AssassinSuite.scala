@@ -3,12 +3,16 @@ package oathdigital.gameplay.powers.action
 import oathdigital.gameplay.PlacementFixture
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite}
 import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
+import oathdigital.gameplay.powers.campaign.WildMountsCard
+import oathdigital.gameplay.powers.rest.InsomniaCard
+import oathdigital.gameplay.powers.search.{ErrandBoyCard, LandWardenCard}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness,
-  PlacementPicks, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, PlacementPicks, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.accepted
@@ -16,18 +20,18 @@ import oathdigital.testkit.Unwrap.accepted
 class AssassinSuite extends munit.FunSuite:
   import PhasePowerHarness._
 
-  private val power = Assassin.forCatalog(catalog)
-  private val assassin = CatalogNames.denizen("Assassin")
+  private val power = Assassin
+  private val assassin = AssassinCard.id
   private val source = DecisionOptionRef.Denizen(assassin)
-  private val home = CatalogNames.site("Ancient City")
+  private val home = AncientCitySite.id
   // Denizens whose powers these tests do not use.
-  private val elders = CatalogNames.denizen("Elders")
-  private val landWarden = CatalogNames.denizen("Land Warden")
-  private val wildMounts = CatalogNames.denizen("Wild Mounts")
-  private val errandBoy = CatalogNames.denizen("Errand Boy")
-  private val homesteaders = CatalogNames.denizen("Homesteaders")
+  private val elders = EldersCard.id
+  private val landWarden = LandWardenCard.id
+  private val wildMounts = WildMountsCard.id
+  private val errandBoy = ErrandBoyCard.id
+  private val homesteaders = HomesteadersCard.id
   /** Locked and adviser-only. */
-  private val insomnia = CatalogNames.denizen("Insomnia")
+  private val insomnia = InsomniaCard.id
   /** The automatic production powers, as a command with no modifier walks. */
   private val automaticPowers = WalkerPowers.selected(
     WalkerPowerCatalog.default(catalog), Vector.empty)
@@ -38,7 +42,7 @@ class AssassinSuite extends munit.FunSuite:
   private def staged: Table = Table.start.turn(p1, Phase.Act)
     .pawn(p1, at = home).adviser(p1, assassin).favor(p1, 1)
     .pawn(p2, at = home).adviser(p2, landWarden)
-    .pawn(p3, at = "Buried Giant")
+    .pawn(p3, at = BuriedGiantSite)
 
   /** The walk Assassin started and the walk after `card` was chosen. */
   private def chooseAdviser(ready: ReadyGame, card: DenizenId): UsedAndAnswered =
@@ -90,7 +94,7 @@ class AssassinSuite extends munit.FunSuite:
   test("with only the locked Assassin to discard it shows Continue, and " +
       "the line says so"):
     val ready = Table.start.turn(p1, Phase.Act).pawn(p1, at = home)
-      .pawn(p2, at = "Broken Peaks").pawn(p3, at = "Buried Giant")
+      .pawn(p2, at = BrokenPeaksSite).pawn(p3, at = BuriedGiantSite)
       .adviser(p1, assassin).favor(p1, 1).ready
     val asked = accepted(use(ready, power, source))
     assert(awaits(asked, Assassin.decisionId))

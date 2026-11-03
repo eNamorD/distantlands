@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.cardplay
 
-import oathdigital.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
+import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog, Locked,
+  PrintedPower}
 import oathdigital.gameplay.powerresolver._
 import oathdigital.gameplay.{NoteSupport, PowerAccess}
 import oathdigital.model._
@@ -45,11 +46,12 @@ case object VowOfObedience extends PhasePower with ContributingPower:
         .map(_ => VisionPlay.forbidden("Vow of Obedience")),
       VisionPlay.note(cardId))))
 
-  def usable(ready: ReadyGame, player: PlayerId,
-      source: DecisionOptionRef): Boolean =
+  def usable(catalog: ExecutableCatalog, ready: ReadyGame,
+      player: PlayerId, source: DecisionOptionRef): Boolean =
     FavorBankChoice.stocked(ready).nonEmpty
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] =
     val choice = VowOfObedience.choiceDecisionId(ready, player)
     Right(Sequence(Vector(

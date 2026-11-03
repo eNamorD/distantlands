@@ -1,9 +1,13 @@
 package oathdigital.gameplay.powers.poweruse
 
-import oathdigital.gameplay.powers.action.{RovingTerror, WardOfSilence}
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  DeepWoodsSite}
+import oathdigital.gameplay.powers.action.{RovingTerror, RovingTerrorCard,
+  WardOfSilence}
+import oathdigital.gameplay.powers.campaign.WrestlersCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, MenuPlay, PhasePowerHarness, Table}
+import oathdigital.testkit.{MenuPlay, PhasePowerHarness, Table}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.{accepted, present}
 
@@ -13,14 +17,14 @@ import oathdigital.testkit.Unwrap.{accepted, present}
 class SpellBreakerPhaseSuite extends munit.FunSuite:
   import PhasePowerHarness._
 
-  private val breaker = CatalogNames.denizen("Spell Breaker")
-  private val terror = CatalogNames.denizen("Roving Terror")
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
-  private val home = CatalogNames.site("Ancient City")
-  private val woods = CatalogNames.site("Deep Woods")
-  private val peaks = CatalogNames.site("Broken Peaks")
+  private val breaker = SpellBreakerCard.id
+  private val terror = RovingTerrorCard.id
+  private val wrestlers = WrestlersCard.id
+  private val home = AncientCitySite.id
+  private val woods = DeepWoodsSite.id
+  private val peaks = BrokenPeaksSite.id
   private val terrorRef = DecisionOptionRef.Denizen(terror)
-  private val power = RovingTerror.forCatalog(catalog)
+  private val power = RovingTerror
   private val covers = ConsentKey(SpellBreaker.id, p1, "power.use",
     terrorRef)
 

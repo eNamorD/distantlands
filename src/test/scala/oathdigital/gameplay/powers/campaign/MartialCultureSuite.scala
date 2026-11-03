@@ -2,19 +2,20 @@ package oathdigital.gameplay.powers.campaign
 
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
+import oathdigital.gameplay.cards.BrokenPeaksSite
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.gameplay.roles.Citizenship
 import oathdigital.gameplay.walker.WalkerDice
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames}
+import oathdigital.testkit.ActPowerHarness
 
 /** Martial Culture: an Exile who defeats another Exile may become a Citizen,
   * on either side (ruling R23). */
 class MartialCultureSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Martial Culture")
+  private val card = MartialCultureCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
-  private val held = CatalogNames.site("Broken Peaks")
+  private val held = BrokenPeaksSite.id
 
   private def lines(run: Run): Vector[NoteText.Said] =
     NoteText.said(MartialCulture.id, MartialCulture.noteKeys, run.events)
@@ -97,6 +98,6 @@ class MartialCultureSuite extends munit.FunSuite:
     // Battle Honors keeps the plan question open; a lone withheld plan
     // asks nothing.
     val b = withAdviser(exilesFight(_.actor, allowed = false),
-      "Battle Honors", Orientation.FaceUp)
+      BattleHonorsCard, Orientation.FaceUp)
     assertEquals(raided(b, winningDice).withheld(b.actor, ref),
       Some(OptionReason.Written(Citizenship.ignoredReason)))

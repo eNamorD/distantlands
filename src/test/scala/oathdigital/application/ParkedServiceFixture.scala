@@ -5,16 +5,24 @@ import oathdigital.gameplay.{SearchPlay, TravelPlay}
 import oathdigital.gameplay.actions.recover.RecoverProcedure
 import oathdigital.gameplay.actions.search.SearchProcedure
 import oathdigital.gameplay.actions.travel.TravelProcedure
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite, DeepWoodsSite}
 import oathdigital.gameplay.oathkeeper.OathkeeperProcedure
 import oathdigital.gameplay.phases.PhaseMenu
 import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.rest.{LeagueTreatyContribution, SilverTongue}
+import oathdigital.gameplay.powers.campaign.{CursedCauldronCard, StickyFireCard,
+  WrestlersCard}
+import oathdigital.gameplay.powers.economy.BirdsongCard
+import oathdigital.gameplay.powers.rest.{LeagueTreatyCard,
+  LeagueTreatyContribution, SilverTongue, SilverTongueCard}
+import oathdigital.gameplay.powers.whenplayed.BanditChiefCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.gameplay.walker.{ParkedDecisionAssertions, WalkerParked}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Dice, Look, MenuPlay, Outcomes,
-  PlacementPicks, Situation, SituationDriver, Table, Unwrap}
+import oathdigital.testkit.{Dice, Look, MenuPlay, Outcomes, PlacementPicks,
+  Situation, SituationDriver, Table, Unwrap}
 import oathdigital.testkit.Table.{p1, p2, p3}
+import oathdigital.testkit.Commands
 
 /** Real games parked on a walker through the application service.
   *
@@ -30,7 +38,7 @@ object ParkedServiceFixture:
     * (`GameApplicationService.scala:87-90`).
     */
   val parkedAssertions = new ParkedDecisionAssertions(catalog,
-    WalkerPowerCatalog.default(catalog), PhasePowerCatalog.default(catalog))
+    WalkerPowerCatalog.default(catalog), PhasePowerCatalog.default)
 
   /** `actor` starts playing a facedown adviser; the walk parks on the pick. */
   def playFacedownAdviser(actor: PlayerId): GameCommand =
@@ -38,7 +46,7 @@ object ParkedServiceFixture:
 
   /** `actor` answers the facedown-adviser pick with their adviser `card`. */
   def pickFacedownAdviser(actor: PlayerId, card: WorldCardId): GameCommand =
-    GameCommand.ResolveWalker(actor, TreeDecision(
+    Commands.resolveWalker(actor, TreeDecision(
       CardPlayProcedure.facedownAdviserDecisionId,
       DecisionAnswer.ChooseOneAnswer(PlacementPicks.optionNaming(card))))
 
@@ -49,7 +57,7 @@ object ParkedServiceFixture:
 
   /** `actor` answers the destination decision with `site`. */
   def pickTravelDestination(actor: PlayerId, site: SiteId): GameCommand =
-    GameCommand.ResolveWalker(actor, TreeDecision(
+    Commands.resolveWalker(actor, TreeDecision(
       TravelProcedure.destinationDecisionId, TravelPlay.destination(site)))
 
   /** `actor` starts a Search; the walk parks on the source. */
@@ -58,7 +66,7 @@ object ParkedServiceFixture:
 
   /** `actor` answers the source decision with `pile`. */
   def pickSearchSource(actor: PlayerId, pile: SearchSource): GameCommand =
-    GameCommand.ResolveWalker(actor, TreeDecision(
+    Commands.resolveWalker(actor, TreeDecision(
       SearchProcedure.sourceDecisionId, SearchPlay.source(pile)))
 
   /** A Travel played through the service: its start and its pick, the two
@@ -209,24 +217,24 @@ object ParkedServiceFixture:
     * Broken Peaks' secrets give p2's coming Wake an option, so that Wake
     * waits once p2 has answered. */
   def leagueTreatyPark(gameId: String)(using munit.Location): LeagueTreatyPark =
-    val treatyCard = CatalogNames.denizen("League Treaty")
+    val treatyCard = LeagueTreatyCard.id
     val base = Table.start
     val suit = catalog.suitOf(treatyCard).get
     val table = base
-      .denizen("League Treaty", "Ancient City")
-      .tokens("League Treaty", favor = 2)
+      .denizen(LeagueTreatyCard, AncientCitySite)
+      .tokens(LeagueTreatyCard, favor = 2)
       .bankFavor(suit, base.ready.banks.favor(suit) - 2)
-      .warbandsAt("Ancient City", p2, 1)
+      .warbandsAt(AncientCitySite, p2, 1)
       .boardWarbands(p2, 2)
-      .pawn(p1, "Ancient City")
-      .pawn(p2, "Broken Peaks")
-      .pawn(p3, "Buried Giant")
-      .siteTokens("Broken Peaks", secrets = 2)
+      .pawn(p1, AncientCitySite)
+      .pawn(p2, BrokenPeaksSite)
+      .pawn(p3, BuriedGiantSite)
+      .siteTokens(BrokenPeaksSite, secrets = 2)
     val (service, repository, act) = journaled(table, gameId)
     val parked = act.parkedAfter(MenuPlay.start(p1, PhaseTransitionRef.BeginRest))
     parkedAssertions.assertParked(parked.state, PhaseTransitionRef.FinishRest,
       LeagueTreatyContribution.destinationDecisionId(table.ready, p1,
-        CatalogNames.site("Ancient City"), treatyCard), p2)
+        AncientCitySite.id, treatyCard), p2)
     LeagueTreatyPark(
       ParkedGame(service, repository, accepted(parked, act), parked),
       p1, p2)
@@ -236,10 +244,10 @@ object ParkedServiceFixture:
     * would do), since a player at the site sees the relics lying there and
     * only p1 should. */
   lazy val recoverTable: Table = Table.start
-    .pawn(p1, "Broken Peaks")
-    .pawn(p2, "Deep Woods")
-    .relicAt("Sticky Fire", "Broken Peaks")
-    .relicAt("Cursed Cauldron", "Broken Peaks")
+    .pawn(p1, BrokenPeaksSite)
+    .pawn(p2, DeepWoodsSite)
+    .relicAt(StickyFireCard, BrokenPeaksSite)
+    .relicAt(CursedCauldronCard, BrokenPeaksSite)
 
   /** A Recover parked in Act on its continue-or-stop choice on
     * [[recoverTable]]. The service rolls `dice`, and the default
@@ -265,18 +273,18 @@ object ParkedServiceFixture:
   def oathkeeperTiePark(gameId: String)(using munit.Location)
       : OathkeeperTiePark =
     val table = Table.start
-      .pawn(p1, "Ancient City")
-      .pawn(p2, "Broken Peaks")
-      .pawn(p3, "Buried Giant")
+      .pawn(p1, AncientCitySite)
+      .pawn(p2, BrokenPeaksSite)
+      .pawn(p3, BuriedGiantSite)
       .oathkeeper(Some(p3))
-      .warbandsAt("Ancient City", p1, 1)
-      .warbandsAt("Broken Peaks", p2, 1)
+      .warbandsAt(AncientCitySite, p1, 1)
+      .warbandsAt(BrokenPeaksSite, p2, 1)
       .boardWarbands(p1, 2)
       .boardWarbands(p2, 2)
       .banditsRefilled
     val (service, repository, act) = journaled(table, gameId)
     val parked = act.parkedAfter(startTravel(p1))
-      .parkedAfter(pickTravelDestination(p1, CatalogNames.site("Buried Giant")))
+      .parkedAfter(pickTravelDestination(p1, BuriedGiantSite.id))
     assert(parked.events.last match {
       case WalkerParked(TriggeredProcedureRef.Oathkeeper, _, _, _, _) => true
       case _ => false
@@ -300,19 +308,19 @@ object ParkedServiceFixture:
       dice: CampaignDicePort = CampaignDicePort.random)(
       using munit.Location): SilverTonguePark =
     val table = Table.start
-      .pawn(p1, "Ancient City")
-      .pawn(p2, "Broken Peaks")
-      .pawn(p3, "Buried Giant")
-      .adviser(p1, "Silver Tongue")
-      .denizen("Wrestlers", "Ancient City")
-      .denizen("Bandit Chief", "Ancient City")
-      .adviser(p2, "Birdsong", facedown = true)
+      .pawn(p1, AncientCitySite)
+      .pawn(p2, BrokenPeaksSite)
+      .pawn(p3, BuriedGiantSite)
+      .adviser(p1, SilverTongueCard)
+      .denizen(WrestlersCard, AncientCitySite)
+      .denizen(BanditChiefCard, AncientCitySite)
+      .adviser(p2, BirdsongCard, facedown = true)
       .banditsRefilled
     val (service, repository, act) = journaled(table, gameId, dice)
     val resting = act.after(MenuPlay.start(p1, PhaseTransitionRef.BeginRest))
     parkedAssertions.assertMenuParked(resting.state, PhaseMenu.Menu.Rest, p1)
     val parked = resting.parkedAfter(MenuPlay.picking(p1,
-      DecisionOptionRef.Denizen(CatalogNames.denizen("Silver Tongue"))))
+      DecisionOptionRef.Denizen(SilverTongueCard.id)))
     parkedAssertions.assertParked(parked.state, ActionRef.UsePower(SilverTongue.id),
       SilverTongue.choiceDecisionId(resting.ready, p1), p1)
     // Wrestlers, the first site card, is an Order card.
@@ -324,6 +332,6 @@ object ParkedServiceFixture:
     * tied leaders, as the recipient. */
   def holderPicksLeader(park: OathkeeperTiePark, leader: PlayerId)
       : GameCommand =
-    GameCommand.ResolveWalker(park.holder, TreeDecision(
+    Commands.resolveWalker(park.holder, TreeDecision(
       OathkeeperProcedure.recipientDecisionId,
       DecisionAnswer.ChooseOneAnswer(DecisionOptionRef.Player(leader))))

@@ -1,5 +1,6 @@
 package oathdigital.gameplay.powers.poweruse
 
+import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.SiteRulers
 import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,
   PowerUse, PowerUseRefusal, PowerUseRestriction}
@@ -33,7 +34,8 @@ case object GiantPythonRestriction extends ContributingPower
 
   override def powerUseRestrictions: Vector[PowerUseRestriction] =
     Vector(this)
-  override def operationRestrictions: Vector[OperationRestriction] =
+  override def operationRestrictions(catalog: ExecutableCatalog)
+      : Vector[OperationRestriction] =
     Vector(placing)
 
   private val cardSource = PowerSourceRef.Card(GiantPythonCard.id)
@@ -48,7 +50,8 @@ case object GiantPythonRestriction extends ContributingPower
     OperationReason(code, s"cards at Giant Python's site cannot be used " +
       s"by ${player.value}", OperationReasonKind.Impossible)
 
-  def refusal(ready: ReadyGame, use: PowerUse): Option[PowerUseRefusal] =
+  def refusal(catalog: ExecutableCatalog, ready: ReadyGame, use: PowerUse)
+      : Option[PowerUseRefusal] =
     for
       card <- use.card
       if guarded(ready, card)

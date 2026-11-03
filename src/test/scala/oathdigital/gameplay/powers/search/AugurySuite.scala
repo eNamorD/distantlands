@@ -3,9 +3,10 @@ package oathdigital.gameplay.powers.search
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.SearchPlay
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.{PowerFixture, SearchFixture}
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
@@ -14,13 +15,13 @@ class AugurySuite extends munit.FunSuite:
   import PowerFixture._
   import SearchFixture._
 
-  private val augury = CatalogNames.denizen("Augury")
+  private val augury = AuguryCard.id
   private val modifiers = Vector(Augury.id)
 
   /** p1's Act at Ancient City with Augury at the site and 5 Supply, the
     * world deck topped by `top`. */
   private def withAugury(top: Vector[WorldCardId]): ReadyGame =
-    Table.start.pawn(p1, "Ancient City").denizen(augury, at = "Ancient City")
+    Table.start.pawn(p1, AncientCitySite).denizen(augury, at = AncientCitySite)
       .worldDeckTop(top*).supply(p1, 5).ready
 
   private def hand(transition: OathTransition): Vector[WorldCardId] =

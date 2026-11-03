@@ -2,18 +2,20 @@ package oathdigital.gameplay.powers.campaign
 
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignPlans}
+import oathdigital.gameplay.cards.BrokenPeaksSite
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
+import oathdigital.gameplay.powers.economy.VowOfWanderingCard
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseAmountAnswer
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Hospital: once chosen, each of its user's warbands the Campaign kills is
   * saved, and placed on Hospital's site at the end of the Campaign if the
   * user rules it then. */
 class HospitalSuite extends munit.FunSuite:
-  private val vow = CatalogNames.denizen("Vow of Wandering")
-  private val card = CatalogNames.denizen("Hospital")
+  private val vow = VowOfWanderingCard.id
+  private val card = HospitalCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
 
   private def kind(b: Board, who: PlayerId): ForceKind =
@@ -25,7 +27,7 @@ class HospitalSuite extends munit.FunSuite:
 
   /** Hospital's site, Broken Peaks: the first site after the origin. These
     * boards have no extras, so nobody else rules it. */
-  private val hospitalSite = CatalogNames.site("Broken Peaks")
+  private val hospitalSite = BrokenPeaksSite.id
 
   private def lines(run: Run): Vector[NoteText.Said] =
     NoteText.said(Hospital.id, Vector(Hospital.placed), run.events)
@@ -111,7 +113,7 @@ class HospitalSuite extends munit.FunSuite:
   test("the warbands Sticky Fire kills are saved too"):
     val base = rivalRulesOriginAndHoldsOathkeeper(
       board(warbands = 5, supply = 7))
-    val fire = CatalogNames.relic("Sticky Fire")
+    val fire = StickyFireCard.id
     val held = hospitalFor(base, base.actor, hospitalSite)
     val b = withRelicFor(held, base.rival, fire)
     val done = commit(rules(losingDice), b, 4)
@@ -128,7 +130,7 @@ class HospitalSuite extends munit.FunSuite:
       SiteForces.Occupied(kind(b, b.actor), 7))
     assertEquals(lines(done), Vector(placed(5, b.actor, hospitalSite)))
 
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
+  private val wrestlers = WrestlersCard.id
   private val wrestlersRef: DecisionOptionRef =
     DecisionOptionRef.Denizen(wrestlers)
 

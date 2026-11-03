@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.recover
 
-import oathdigital.catalog.{ExecutableCatalog, ModifierMark, PrintedPower,
-  Relic}
+import oathdigital.catalog.{ModifierMark, PrintedPower, Relic}
 import oathdigital.gameplay.actions.recover.RecoverProcedure
 import oathdigital.gameplay.powerresolver.{Contribution, Transform}
 import oathdigital.gameplay.powers.SelectedModifier
@@ -34,48 +33,7 @@ object SilverCharmCard extends Relic(RelicId("R31"), "Silver Charm", value = 37,
   * reroll shows every die. Choosing no die changes nothing and writes
   * nothing.
   */
-final case class SilverCharm private (catalog: ExecutableCatalog)
-    extends SelectedModifier:
-  val cardId: RelicId = SilverCharmCard.id
-  def id: PowerId = SilverCharm.id
-  def actions: Set[MajorActionType] = Set(MajorActionType.Recover)
-  override def noteKeys: Vector[NoteKey] = SilverCharm.noteKeys
-  override def narratedDecisions: Set[String] = Set(SilverCharm.decisionId)
-
-  def effects: Map[PowerWindow, Vector[Contribution]] = Map(
-    PowerWindow.RecoverRoll -> Vector(Transform((ctx, operations) =>
-      choice(ctx.actor) +: operations :+ reroll)))
-
-  /** Which earlier dice to reroll, on a payment after the first. */
-  private def choice(actor: PlayerId): Operation = Branch((ready, _) =>
-    val earlier = SilverCharm.earlier(ready)
-    if earlier.isEmpty then Vector.empty
-    else Vector(Decide(SilverCharm.decisionId, actor,
-      DecisionQuery.ChooseMany(0, earlier.size, earlier.map((index, face) =>
-        DecisionOption.Button(SilverCharm.die(index),
-          SilverCharm.label(index, face))),
-        heading = Some(SilverCharm.heading),
-        summary = Some(SilverCharm.summary),
-        confirm = Some(CountedConfirm("Reroll", "die", "dice",
-          Some("Keep the roll")))))))
-
-  /** The chosen dice, rerolled after the roll, and the line naming them.
-    * The `Reroll` is a leaf, never inside a `BuildOps`, so the walker
-    * fills its faces. */
-  private def reroll: Operation = Branch((_, pending) =>
-    val chosen = SilverCharm.chosen(pending)
-    if chosen.isEmpty then Vector.empty
-    else Vector(Note(id, states => named(states.now, chosen), covers = true),
-      Reroll(RecoverProcedure.recoverPool, chosen)))
-
-  /** "Rerolled {the chosen dice}.", read before the reroll changes them. */
-  private def named(ready: ReadyGame, chosen: Vector[Int])
-      : Option[LogNote] =
-    ready.game.current.rollOutcomes.get(RecoverProcedure.recoverPool)
-      .map(outcome => SilverCharm.rerolled(PowerSourceRef.Card(cardId),
-        NoteArg.Dice(chosen.flatMap(outcome.faces.lift))))
-
-object SilverCharm:
+case object SilverCharm extends SelectedModifier:
   val id: PowerId = SilverCharmCard.power.id
   /** Asked on every payment after the first. Each answer is read back by
     * the walk that gives it, as Recover's continue-or-stop decision is. */
@@ -84,7 +42,7 @@ object SilverCharm:
   /** "Reroll 2 dice". */
   val summary: DecisionSummary = DecisionSummary("Reroll", "die", "dice")
   private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
+  override def noteKeys: Vector[NoteKey] = notes.declared
   /** "Rerolled {dice}." */
   val rerolled: NoteKey = notes.key("rerolled", Vector(
     NotePart.Text("Rerolled "), NotePart.Arg(0), NotePart.Text(".")))
@@ -123,5 +81,39 @@ object SilverCharm:
         }.flatten.distinct.sorted
     }.getOrElse(Vector.empty)
 
-  def forCatalog(catalog: ExecutableCatalog): SilverCharm =
-    new SilverCharm(catalog)
+  val card: Relic = SilverCharmCard
+  def actions: Set[MajorActionType] = Set(MajorActionType.Recover)
+  override def narratedDecisions: Set[String] = Set(SilverCharm.decisionId)
+
+  def effects: Map[PowerWindow, Vector[Contribution]] = Map(
+    PowerWindow.RecoverRoll -> Vector(Transform((ctx, operations) =>
+      choice(ctx.actor) +: operations :+ reroll)))
+
+  /** Which earlier dice to reroll, on a payment after the first. */
+  private def choice(actor: PlayerId): Operation = Branch((ready, _) =>
+    val earlier = SilverCharm.earlier(ready)
+    if earlier.isEmpty then Vector.empty
+    else Vector(Decide(SilverCharm.decisionId, actor,
+      DecisionQuery.ChooseMany(0, earlier.size, earlier.map((index, face) =>
+        DecisionOption.Button(SilverCharm.die(index),
+          SilverCharm.label(index, face))),
+        heading = Some(SilverCharm.heading),
+        summary = Some(SilverCharm.summary),
+        confirm = Some(CountedConfirm("Reroll", "die", "dice",
+          Some("Keep the roll")))))))
+
+  /** The chosen dice, rerolled after the roll, and the line naming them.
+    * The `Reroll` is a leaf, never inside a `BuildOps`, so the walker
+    * fills its faces. */
+  private def reroll: Operation = Branch((_, pending) =>
+    val chosen = SilverCharm.chosen(pending)
+    if chosen.isEmpty then Vector.empty
+    else Vector(Note(id, states => named(states.now, chosen), covers = true),
+      Reroll(RecoverProcedure.recoverPool, chosen)))
+
+  /** "Rerolled {the chosen dice}.", read before the reroll changes them. */
+  private def named(ready: ReadyGame, chosen: Vector[Int])
+      : Option[LogNote] =
+    ready.game.current.rollOutcomes.get(RecoverProcedure.recoverPool)
+      .map(outcome => SilverCharm.rerolled(PowerSourceRef.Card(cardId),
+        NoteArg.Dice(chosen.flatMap(outcome.faces.lift))))

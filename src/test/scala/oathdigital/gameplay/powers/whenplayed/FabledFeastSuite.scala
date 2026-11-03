@@ -1,6 +1,9 @@
 package oathdigital.gameplay.powers.whenplayed
 
+import oathdigital.gameplay.MarriageCard
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.action.HomesteadersCard
+import oathdigital.gameplay.powers.search.{LandWardenCard, NewsFromAfarCard}
 import oathdigital.model._
 import oathdigital.testkit.{Look, Outcomes, Table}
 import oathdigital.testkit.Table.p1
@@ -8,7 +11,7 @@ import oathdigital.testkit.Table.p1
 class FabledFeastSuite extends munit.FunSuite:
   import WhenPlayedHarness._
 
-  private val power = registered[FabledFeast]
+  private val power = registered[FabledFeast.type]
   private val feast = power.cardId
   private val played = hook(feast)
 
@@ -17,9 +20,9 @@ class FabledFeastSuite extends munit.FunSuite:
     * nobody rules, does not count. p1 holds 1 favor.
     */
   private val ruling: Table = Table.start.adviser(p1, feast)
-    .adviser(p1, "Homesteaders").warbandsAt(homeSite, p1, 1)
-    .denizen("Land Warden", at = homeSite)
-    .denizen("News from Afar", at = nearSite)
+    .adviser(p1, HomesteadersCard).warbandsAt(homeSite, p1, 1)
+    .denizen(LandWardenCard, at = homeSite)
+    .denizen(NewsFromAfarCard, at = nearSite)
     .favor(p1, 1)
 
   private def took(n: Int, suit: Suit): NoteText.Said = NoteText.Said("took",
@@ -82,7 +85,7 @@ class FabledFeastSuite extends munit.FunSuite:
 
   test("a faceup Marriage counts as two Hearth cards"):
     // Fabled Feast and Marriage make X = 3, from the only stocked bank.
-    val ready = Table.start.adviser(p1, feast).adviser(p1, "Marriage")
+    val ready = Table.start.adviser(p1, feast).adviser(p1, MarriageCard)
       .favor(p1, 1).banksHoldingOnly(Suit.Order -> 5).ready
     val done = Outcomes.finished(play(ready, power, feast))
     assertEquals(Look(done.treeless).favor(p1), 1 + 3)

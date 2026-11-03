@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powerresolver
 
-import oathdigital.catalog.PrintedPower
+import oathdigital.catalog.{ExecutableCatalog, PrintedPower}
 import oathdigital.model.{CardId, OperationReason, PlayerId, PowerId,
   LogNote, ReadyGame}
 
@@ -51,5 +51,6 @@ final case class PowerUseRefusal(power: PowerId, note: LogNote,
   * is how its ruler may waive it, for the consent grid, the preferences and
   * the consent log (`ConsentPowers`); `None` when nothing waives it. */
 trait PowerUseRestriction:
-  def refusal(ready: ReadyGame, use: PowerUse): Option[PowerUseRefusal]
+  def refusal(catalog: ExecutableCatalog, ready: ReadyGame, use: PowerUse)
+      : Option[PowerUseRefusal]
   def waiver: Option[Waiver] = None

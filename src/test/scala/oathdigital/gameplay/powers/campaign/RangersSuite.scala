@@ -6,12 +6,12 @@ import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Rangers: an attacker's plan, a favor placed, that ignores every skull and
   * adds two attack dice when the defense pool holds four or more dice. */
 class RangersSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Rangers")
+  private val card = RangersCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
 
   private def attackDice(ops: Vector[CoreOperation]): Vector[Int] =

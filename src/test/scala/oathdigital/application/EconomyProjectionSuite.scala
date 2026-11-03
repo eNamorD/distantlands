@@ -1,13 +1,17 @@
 package oathdigital.application
 
+import oathdigital.catalog.holding.MagiciansCodeCard
 import oathdigital.gameplay.{EconomyFixture, OathRules}
 import oathdigital.gameplay.actions.economy.TradeProcedure
+import oathdigital.gameplay.cards.AncientCitySite
+import oathdigital.gameplay.powers.action.AlchemistCard
+import oathdigital.gameplay.powers.campaign.WrestlersCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
 import oathdigital.protocol.projection.DecisionOptionProjection
-import oathdigital.testkit.{CatalogNames, MenuPlay, Outcomes, Table}
+import oathdigital.testkit.{MenuPlay, Outcomes, Table}
 import oathdigital.testkit.Table.p1
 
 class EconomyProjectionSuite extends munit.FunSuite:
@@ -17,16 +21,16 @@ class EconomyProjectionSuite extends munit.FunSuite:
   private val projector = new GameProjector(catalog)
   private val favor = Vector[DecisionOptionRef](DecisionOptionRef.Button("favor"))
   private val secret = Vector[DecisionOptionRef](DecisionOptionRef.Button("secret"))
-  private val alchemist = CatalogNames.denizen("Alchemist")
-  private val magiciansCode = CatalogNames.denizen("Magician's Code")
+  private val alchemist = AlchemistCard.id
+  private val magiciansCode = MagiciansCodeCard.id
   /** A plain Order denizen, in the deck unless a test places it. */
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
+  private val wrestlers = WrestlersCard.id
 
   /** p1 stands at Ancient City, which holds the token-free Alchemist
     * (Arcane) and nothing else. p1 has 4 favor and 2 faceup secrets, and
     * the Arcane bank holds 5. */
   private def atAlchemist: Table = Table.start
-    .pawn(p1, at = "Ancient City").denizen(alchemist, at = "Ancient City")
+    .pawn(p1, at = AncientCitySite).denizen(alchemist, at = AncientCitySite)
     .favor(p1, 4).secrets(p1, faceUp = 2)
     .bankFavor(Suit.Arcane, 5)
 
@@ -115,7 +119,7 @@ class EconomyProjectionSuite extends munit.FunSuite:
 
   test("a parked Muster shows a card holding favor or secrets as " +
       "unavailable, with why"):
-    val board = atAlchemist.denizen(wrestlers, at = "Ancient City")
+    val board = atAlchemist.denizen(wrestlers, at = AncientCitySite)
       .tokens(wrestlers, favor = 1).ready
     val options = parkedOptions(board, ActionRef.Muster, Vector.empty)
     assertEquals(options.map(option =>

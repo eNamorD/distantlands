@@ -2,13 +2,14 @@ package oathdigital.application
 
 import oathdigital.application.gamelog.LogScripts.{formatter, texts}
 import oathdigital.gameplay.actions.campaign.CampaignIds
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.campaign.{ExtraProvisionsCard, ShieldWall}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.ParkedDecisionAssertions
 import oathdigital.gameplay.powers.WalkerPowerCatalog
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
-import oathdigital.testkit.{Dice, Look, MenuPlay, Outcomes, Table}
+import oathdigital.testkit.{Commands, Dice, Look, MenuPlay, Outcomes, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, present}
 
@@ -29,7 +30,7 @@ class ImperialTacticsScenarioSuite extends munit.FunSuite:
     * faceup and 1 favor. p2, the Chancellor, holds Shield Wall faceup and
     * 1 favor. Nobody holds the Oathkeeper title. */
   private val table: Table = Table.start.imperial(p2, p3)
-    .turn(p1, Phase.Act).pawn(p3, at = "Ancient City")
+    .turn(p1, Phase.Act).pawn(p3, at = AncientCitySite)
     .boardWarbands(p1, 5).boardWarbands(p3, 2)
     .adviser(p2, ShieldWall.cardId).favor(p2, 1)
     .adviser(p3, ExtraProvisionsCard.id).favor(p3, 1)
@@ -38,7 +39,7 @@ class ImperialTacticsScenarioSuite extends munit.FunSuite:
   private def resolve(service: GameApplicationService, from: GameAccepted,
       player: PlayerId, id: String, answer: DecisionAnswer): GameAccepted =
     accepted(service.handle(gameId, from.nextSequence,
-      GameCommand.ResolveWalker(player, TreeDecision(id, answer))))
+      Commands.resolveWalker(player, TreeDecision(id, answer))))
 
   private def look(at: GameAccepted): Look = Look(Outcomes.ready(at.state))
 
@@ -53,7 +54,7 @@ class ImperialTacticsScenarioSuite extends munit.FunSuite:
       (facts.decision, facts.awaiting)), Some((CampaignIds.defenderPlan, p3)))
     val defense = look(forced).diceInPool(CampaignIds.defensePool)
     val offered = accepted(service.handle(gameId, forced.nextSequence,
-      GameCommand.SavePlanAid(p2, AidOffer(plans = Vector(shieldWall),
+      Commands.savePlanAid(p2, AidOffer(plans = Vector(shieldWall),
         amounts = AidAmounts(favor = 1)))))
     val shield = resolve(service, offered, p3, CampaignIds.defenderPlan,
       ChooseOneAnswer(shieldWall))

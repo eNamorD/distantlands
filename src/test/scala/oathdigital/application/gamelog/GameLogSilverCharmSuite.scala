@@ -3,7 +3,7 @@ package oathdigital.application.gamelog
 import oathdigital.application.ParkedServiceFixture
 import oathdigital.gameplay.ModifierPlay
 import oathdigital.gameplay.actions.recover.RecoverProcedure
-import oathdigital.gameplay.powers.recover.SilverCharm
+import oathdigital.gameplay.powers.recover.{SilverCharm, SilverCharmCard}
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.{ChooseManyAnswer, ChooseOneAnswer}
 import oathdigital.protocol.projection.{LogKind}
@@ -26,7 +26,7 @@ class GameLogSilverCharmSuite extends munit.FunSuite:
     * which is at the test files' line limit. */
   private def recoverSilverCharm(using munit.Location): Script =
     val (service, act) = atTable("recover-silver-charm",
-      ParkedServiceFixture.recoverTable.relic(p1, "Silver Charm")
+      ParkedServiceFixture.recoverTable.relic(p1, SilverCharmCard)
         .banditsRefilled,
       new Dice.ScriptedDefense(Vector(
         Vector(DefenseDieFace.Blank, DefenseDieFace.OneShield),

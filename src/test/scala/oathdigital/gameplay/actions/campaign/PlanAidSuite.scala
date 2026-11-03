@@ -1,6 +1,7 @@
 package oathdigital.gameplay.actions.campaign
 
-import oathdigital.testkit.CatalogNames
+import oathdigital.gameplay.powers.banner.YewStaffCard
+import oathdigital.gameplay.powers.campaign.ShieldWallCard
 import oathdigital.model._
 import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2, p3}
@@ -77,7 +78,7 @@ class PlanAidSuite extends munit.FunSuite:
 
   test("a lent plan's use reads back from its marker"):
     val shieldWall =
-      DecisionOptionRef.Denizen(CatalogNames.denizen("Shield Wall"))
+      DecisionOptionRef.Denizen(ShieldWallCard.id)
     val pool = PlanAid.lentUse(defending, p2, shieldWall) match
       case ModifyDicePool(pool, _, _) => pool
       case other => fail(s"not a pool marker: $other")
@@ -92,9 +93,9 @@ class PlanAidSuite extends munit.FunSuite:
     assert(!PlanAid.meets(ready, p1, PlanAid.darkestSecret))
 
   test("a faceup Yew Staff meets the Darkest Secret, a facedown one does not"):
-    val faceup = Table.start.imperial(p2, p1, p3).relic(p2, "Yew Staff").ready
+    val faceup = Table.start.imperial(p2, p1, p3).relic(p2, YewStaffCard).ready
     val facedown = Table.start.imperial(p2, p1, p3)
-      .relic(p2, "Yew Staff", facedown = true).ready
+      .relic(p2, YewStaffCard, facedown = true).ready
     assert(PlanAid.meets(faceup, p2, PlanAid.yewStaff))
     assert(!PlanAid.meets(facedown, p2, PlanAid.yewStaff))
 

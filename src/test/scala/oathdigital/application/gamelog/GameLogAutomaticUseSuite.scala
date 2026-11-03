@@ -1,14 +1,14 @@
 package oathdigital.application.gamelog
 
 import oathdigital.application.{ConsentFixture, GameAccepted,
-  GameApplicationService, GameCommand, ParkedServiceFixture}
-import oathdigital.gameplay.powers.poweruse.CityWall
-import oathdigital.gameplay.powers.travel.TravelFixture
+  GameApplicationService, ParkedServiceFixture}
+import oathdigital.gameplay.powers.poweruse.{CityWall, CityWallCard}
+import oathdigital.gameplay.powers.travel.{TravelFixture, TyrantCard}
 import oathdigital.model._
-import oathdigital.testkit.CatalogNames
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.{accepted, present}
 import LogScripts.{formatter, texts}
+import oathdigital.testkit.Commands
 
 /** The Game Log of City Wall's ruler deciding on an enemy's Tyrant
   * (automatic power consent design, "Game Log"), as p1 reads it. */
@@ -20,8 +20,8 @@ class GameLogAutomaticUseSuite extends munit.FunSuite:
     * the coast, which p2 rules with 2 warbands. */
   private val tyrantBesideAWalledCoast: ReadyGame =
     TravelFixture.on(TravelFixture.board(supply = 7))(_
-      .adviser(p1, "Tyrant")
-      .denizen(CatalogNames.denizen("City Wall"), at = coast)
+      .adviser(p1, TyrantCard)
+      .denizen(CityWallCard.id, at = coast)
       .warbandsAt(coast, p2, 2))
 
   private def travelling(service: GameApplicationService, sequence: Long,
@@ -31,7 +31,7 @@ class GameLogAutomaticUseSuite extends munit.FunSuite:
   private def answering(service: GameApplicationService, at: GameAccepted,
       choice: ConsentChoice)(using munit.Location): GameAccepted =
     accepted(service.handle(gameId, at.nextSequence,
-      GameCommand.AnswerConsent(p2, choice)))
+      Commands.answerConsent(p2, choice)))
 
   private def p1sLog(service: GameApplicationService)(
       using munit.Location): Vector[String] =
@@ -81,7 +81,7 @@ class GameLogAutomaticUseSuite extends munit.FunSuite:
   test("a preference's automatic answer reads as a manual one"):
     val (service, _) = ConsentFixture.service(tyrantBesideAWalledCoast)
     val set = accepted(service.handle(gameId, 0L,
-      GameCommand.SetConsentPreference(p2, CityWall.id, p1,
+      Commands.setConsentPreference(p2, CityWall.id, p1,
         ConsentSetting.Never)))
     travelling(service, set.nextSequence, coast)
     val lines = p1sLog(service)

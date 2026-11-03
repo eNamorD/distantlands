@@ -1,8 +1,9 @@
 package oathdigital.gameplay.operations
 
+import oathdigital.gameplay.powers.rest.SilverTongueCard
 import oathdigital.model._
 import oathdigital.model.TestGameFixtures._
-import oathdigital.testkit.{CatalogNames, Look, Table}
+import oathdigital.testkit.{Look, Table}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -79,7 +80,7 @@ class OperationMutationSuite extends munit.FunSuite:
 
   test("BeginTurn hands the turn to a seated player and clears used powers"):
     val used = PowerUseRef(PowerTiming.Rest,
-      PowerSourceRef.Card(CatalogNames.denizen("Silver Tongue")),
+      PowerSourceRef.Card(SilverTongueCard.id),
       PowerId("denizen.silver-tongue"))
     val resting = ready.updateCurrent(_.copy(turn = TurnState(playerId, Phase.Rest,
         Set(used))))

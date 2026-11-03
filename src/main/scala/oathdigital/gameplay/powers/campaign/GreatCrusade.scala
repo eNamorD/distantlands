@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
-  PrintedPower}
+import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
 import oathdigital.gameplay.{EffectiveSuit, PledgeToDiscordCard}
 import oathdigital.model._
 
@@ -22,22 +21,7 @@ object GreatCrusadeCard extends Denizen(DenizenId("164"), "Great Crusade", Suit.
   * bandits rule. The card is discarded through the standard discard once the
   * Campaign has resolved, whoever won, as Horse Archers is.
   */
-final case class GreatCrusade private (catalog: ExecutableCatalog)
-    extends BattlePlan with DiscardedAtEnd:
-  val cardId: DenizenId = GreatCrusadeCard.id
-  def id: PowerId = GreatCrusade.id
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
-  def sides: Set[CampaignPlanSide] =
-    Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
-
-  def plan(context: PlanContext): Option[CampaignPlanOffer] =
-    context.denizen(cardId).map { source =>
-      val dice = GreatCrusade.nomads(catalog, context, cardId)
-      CampaignPlanOffer(source, PlanDice.label("Great Crusade", context.side,
-        dice), Vector.empty, Vector(PlanDice.effect(context.side, dice)))
-    }
-
-object GreatCrusade:
+case object GreatCrusade extends BattlePlan with DiscardedAtEnd:
   val id: PowerId = GreatCrusadeCard.power.id
 
   /** The nomad cards the plan's user rules, counting `card` once whatever its
@@ -47,9 +31,9 @@ object GreatCrusade:
     * who has Pledge to Discord faceup: revealed, it is Discord. Pledge of
     * Defense counts the same.
     */
-  private[campaign] def nomads(catalog: ExecutableCatalog, context: PlanContext,
+  private[campaign] def nomads(context: PlanContext,
       card: DenizenId): Int =
-    context.cardsRuled(catalog, context.ruler, Suit.Nomad).filter(_ != card)
+    context.cardsRuled(context.ruler, Suit.Nomad).filter(_ != card)
       .map(EffectiveSuit.weight).sum +
       (if pledged(context, card) then 0 else 1)
 
@@ -64,5 +48,14 @@ object GreatCrusade:
         case _ => false
       })
 
-  def forCatalog(catalog: ExecutableCatalog): GreatCrusade =
-    new GreatCrusade(catalog)
+  val card: Denizen = GreatCrusadeCard
+  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
+  def sides: Set[CampaignPlanSide] =
+    Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
+
+  def plan(context: PlanContext): Option[CampaignPlanOffer] =
+    context.denizen(cardId).map { source =>
+      val dice = GreatCrusade.nomads(context, cardId)
+      CampaignPlanOffer(source, PlanDice.label("Great Crusade", context.side,
+        dice), Vector.empty, Vector(PlanDice.effect(context.side, dice)))
+    }

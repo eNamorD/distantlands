@@ -1,27 +1,29 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
+import oathdigital.gameplay.powers.campaign.CodeOfHonorCard
+import oathdigital.gameplay.powers.economy.VowOfWanderingCard
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
 
 class BallotBoxSuite extends munit.FunSuite:
-  private val vow = CatalogNames.denizen("Vow of Wandering")
+  private val vow = VowOfWanderingCard.id
   private val forbidden = NoteText.Said("vow-of-wandering",
     "Vow of Wandering forbids placing warbands on sites.", covers = false)
   import PhasePowerHarness._
 
-  private val box = CatalogNames.denizen("Ballot Box")
+  private val box = BallotBoxCard.id
   private val source = DecisionOptionRef.Denizen(box)
-  private val power = BallotBox.forCatalog(catalog)
-  private val home = CatalogNames.site("Ancient City")
+  private val power = BallotBox
+  private val home = AncientCitySite.id
   // Denizens whose powers these tests do not use: one Hearth, two Order.
-  private val homesteaders = CatalogNames.denizen("Homesteaders")
-  private val codeOfHonor = CatalogNames.denizen("Code of Honor")
-  private val messenger = CatalogNames.denizen("Messenger")
+  private val homesteaders = HomesteadersCard.id
+  private val codeOfHonor = CodeOfHonorCard.id
+  private val messenger = MessengerCard.id
 
   /** p1's Act at Ancient City beside Ballot Box, site-only, with 2 favor and
     * an `adviser`. */

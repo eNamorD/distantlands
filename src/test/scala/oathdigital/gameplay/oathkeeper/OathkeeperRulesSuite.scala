@@ -1,5 +1,6 @@
 package oathdigital.gameplay.oathkeeper
 
+import oathdigital.gameplay.cards.{DeepWoodsSite, DunesSite, FairIsleSite}
 import oathdigital.gameplay.oathkeeper.OathkeeperOutcome._
 import oathdigital.model._
 import oathdigital.testkit.Table
@@ -10,7 +11,7 @@ class OathkeeperRulesSuite extends munit.FunSuite:
     * second Fair Isle. `holder` holds the title on `side`. */
   private def outcome(rulers: Vector[PlayerId],
       holder: Option[PlayerId] = None, side: TitleSide = TitleSide.Oathkeeper) =
-    val table = rulers.zip(Vector("Dunes", "Fair Isle")).foldLeft(
+    val table = rulers.zip(Vector(DunesSite, FairIsleSite)).foldLeft(
       Table.start.oathkeeper(holder, side)) { case (t, (ruler, site)) =>
         t.warbandsAt(site, ruler, 1) }
     OathkeeperRules.outcome(table.ready)
@@ -44,7 +45,7 @@ class OathkeeperRulesSuite extends munit.FunSuite:
     * the goal. */
   private def empireAgainstExile(empire: Int, exile: Int,
       holder: Option[PlayerId] = None): OathkeeperOutcome =
-    val sites = Vector("Dunes", "Fair Isle", "Deep Woods", "Mountains")
+    val sites = Vector(DunesSite, FairIsleSite, DeepWoodsSite)
     val withEmpire = sites.take(empire).foldLeft(
       Table.start.imperial(p1, p2).oathkeeper(holder))((t, site) =>
         t.warbandsAt(site, p1, 1))

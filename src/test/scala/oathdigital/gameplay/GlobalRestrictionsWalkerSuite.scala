@@ -1,10 +1,15 @@
 package oathdigital.gameplay
 
+import oathdigital.gameplay.cards.AncientCitySite
+import oathdigital.gameplay.operations.HallOfMinistersCard
 import oathdigital.gameplay.powers.WalkerPowerCatalog
+import oathdigital.gameplay.powers.campaign.SealingWardCard
+import oathdigital.gameplay.powers.cardplay.WildCryCard
+import oathdigital.gameplay.powers.travel.DragonskinDrumCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2}
 
 /** The production powers carry the global restrictions into every walker
@@ -12,10 +17,10 @@ import oathdigital.testkit.Table.{p1, p2}
   * design, "Testing: Slice 1"). */
 class GlobalRestrictionsWalkerSuite extends munit.FunSuite:
   private val powers = WalkerPowerCatalog.default(catalog)
-  private val hall = CatalogNames.edifice("Hall of Ministers")
-  private val drum = CatalogNames.relic("Dragonskin Drum")
-  private val wildCry = CatalogNames.denizen("Wild Cry")
-  private val lockedCard = CatalogNames.denizen("Sealing Ward")
+  private val hall = HallOfMinistersCard.id
+  private val drum = DragonskinDrumCard.id
+  private val wildCry = WildCryCard.id
+  private val lockedCard = SealingWardCard.id
 
   private def unchanged(ready: ReadyGame, tree: Operation,
       walked: WalkerPowers)(using munit.Location): Unit =
@@ -28,7 +33,7 @@ class GlobalRestrictionsWalkerSuite extends munit.FunSuite:
   test("a relic discard at a Hall-protected site is skipped, as Broken " +
       "Forge's is"):
     // p1 rules Ancient City, where the Hall stands, and p2 discards its relic.
-    val hallSite = CatalogNames.site("Ancient City")
+    val hallSite = AncientCitySite.id
     val ready = Table.start.pawn(p1, at = hallSite)
       .edifice(hall, EdificeSide.Intact, at = hallSite)
       .warbandsAt(hallSite, p1, 1).relicAt(drum, at = hallSite).ready

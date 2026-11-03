@@ -4,13 +4,13 @@ import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Wrestlers: a defender sacrifices a warband from its force for one more
   * defense die, and the force the defense is scored with is one lower.
   */
 class WrestlersSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Wrestlers")
+  private val card = WrestlersCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
 
   private def conquest: Board =
@@ -63,7 +63,7 @@ class WrestlersSuite extends munit.FunSuite:
     assert(awaits(run, b.actor, CampaignIds.sacrifice))
     assert(!run.ops.exists(_.isInstanceOf[Sacrifice]))
 
-  private val shield = CatalogNames.relic("Fearsome Shield")
+  private val shield = FearsomeShieldCard.id
 
   /** `conquest`, with the rival's only warband at the origin, and Fearsome
     * Shield (burn 2 secrets for 2 defense dice) as a second plan they can pay.

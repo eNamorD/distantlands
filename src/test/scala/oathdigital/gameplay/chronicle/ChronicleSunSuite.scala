@@ -1,5 +1,9 @@
 package oathdigital.gameplay.chronicle
 
+import oathdigital.catalog.holding.GrandMaskCard
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import oathdigital.gameplay.powers.action.BrassHorseCard
+import oathdigital.gameplay.powers.economy.VowOfWanderingCard
 import oathdigital.gameplay.{OathRules, WalkerDiceFixture}
 import oathdigital.gameplay.operations.TheGrandScepterCard
 import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
@@ -7,7 +11,7 @@ import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerCompleted
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{CatalogNames, Outcomes, Table}
+import oathdigital.testkit.{Outcomes, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -19,7 +23,7 @@ class ChronicleSunSuite extends munit.FunSuite:
     walkerPowerCatalog = WalkerPowerCatalog.default(catalog),
     walkerDice = WalkerDiceFixture.reversingShuffle)
 
-  private val ancientCity = CatalogNames.site("Ancient City")
+  private val ancientCity = AncientCitySite.id
   private val boxed = LineageId("lineage:boxed")
 
   /** The Sun started on `table`: the driver's step after Start Chronicle. */
@@ -82,8 +86,8 @@ class ChronicleSunSuite extends munit.FunSuite:
   test("facedown relics held by players are revealed; relics at sites stay " +
       "facedown"):
     val after = sunEnded(ChronicleWalk.chronicleWonByP1
-      .relic(p2, "Brass Horse", facedown = true)
-      .relicAt("Grand Mask", at = "Ancient City"))
+      .relic(p2, BrassHorseCard, facedown = true)
+      .relicAt(GrandMaskCard, at = AncientCitySite))
     assertEquals(relicsOf(after, p2).map(_.orientation),
       Vector(Orientation.FaceUp))
     assertEquals(after.game.current.map.sites(ancientCity).relics
@@ -92,7 +96,7 @@ class ChronicleSunSuite extends munit.FunSuite:
   test("an Exile winner becomes Chancellor and one Imperial warband " +
       "replaces theirs at each site they rule"):
     val after = sunEnded(ChronicleWalk.chronicleWonByP1
-      .warbandsAt("Ancient City", p1, 2))
+      .warbandsAt(AncientCitySite, p1, 2))
     assertEquals(roleOf(after, p1), Role.Chancellor)
     assertEquals(after.game.current.map.sites(ancientCity).forces,
       SiteForces.Occupied(ForceKind.Imperial, 1))
@@ -103,9 +107,9 @@ class ChronicleSunSuite extends munit.FunSuite:
 
   test("a broken Empire leaves each of its sites one warband of the former " +
       "Chancellor's colour (Chronicle ruling 20)"):
-    val peaks = CatalogNames.site("Broken Peaks")
+    val peaks = BrokenPeaksSite.id
     val after = sunEnded(ChronicleWalk.chronicleWonByP1.imperial(p2)
-      .warbandsAt("Ancient City", p2, 3).warbandsAt(peaks, p2, 1))
+      .warbandsAt(AncientCitySite, p2, 3).warbandsAt(peaks, p2, 1))
     assertEquals(roleOf(after, p2), Role.Exile)
     val colour = ForceKind.Exile(lineageOf(after, p2))
     Vector(ancientCity, peaks).foreach(site => assertEquals(
@@ -115,9 +119,9 @@ class ChronicleSunSuite extends munit.FunSuite:
   test("a former Chancellor's bank, short by their board, is topped up so " +
       "each of the Empire's sites takes one warband"):
     // 13 purple board warbands turn to p2's colour, leaving 1 in the bank.
-    val peaks = CatalogNames.site("Broken Peaks")
+    val peaks = BrokenPeaksSite.id
     val after = sunEnded(ChronicleWalk.chronicleWonByP1.imperial(p2)
-      .boardWarbands(p2, 13).warbandsAt("Ancient City", p2, 1)
+      .boardWarbands(p2, 13).warbandsAt(AncientCitySite, p2, 1)
       .warbandsAt(peaks, p2, 1))
     val colour = ForceKind.Exile(lineageOf(after, p2))
     Vector(ancientCity, peaks).foreach(site => assertEquals(
@@ -130,7 +134,7 @@ class ChronicleSunSuite extends munit.FunSuite:
     val table = withBoxedLineage(ChronicleWalk.chronicleWonByP1,
       Role.Chancellor).update(state => state.copy(banks = state.banks.copy(
         warbandSupply = state.banks.warbandSupply.updated(
-          ForceKind.Imperial, 24)))).warbandsAt("Ancient City", p3, 1)
+          ForceKind.Imperial, 24)))).warbandsAt(AncientCitySite, p3, 1)
       .update(state => state.updateCurrent(current => current.copy(map =
         current.map.copy(sites = current.map.sites.updatedWith(ancientCity)(
           _.map(_.copy(forces = SiteForces.Occupied(ForceKind.Imperial, 2))))))))
@@ -140,7 +144,7 @@ class ChronicleSunSuite extends munit.FunSuite:
 
   test("a former Chancellor holding Vow of Wandering still takes the sites"):
     val after = sunEnded(ChronicleWalk.chronicleWonByP1.imperial(p2)
-      .adviser(p2, "Vow of Wandering").warbandsAt("Ancient City", p2, 2))
+      .adviser(p2, VowOfWanderingCard).warbandsAt(AncientCitySite, p2, 2))
     assertEquals(after.game.current.map.sites(ancientCity).forces,
       SiteForces.Occupied(ForceKind.Exile(lineageOf(after, p2)), 1))
 
@@ -161,7 +165,7 @@ class ChronicleSunSuite extends munit.FunSuite:
     assertEquals(after.game.campaign.boxRoles, Map(boxed -> Role.Exile))
 
   test("the Reliquary's relics are discarded when the Empire breaks"):
-    val relic = CatalogNames.relic("Brass Horse")
+    val relic = BrassHorseCard.id
     val after = sunEnded(ChronicleWalk.chronicleWonByP1
       .update(_.updateCurrent(current => current.copy(commonCards =
         current.commonCards.copy(relicDeck =

@@ -1,22 +1,23 @@
 package oathdigital.application.gamelog
 
-import oathdigital.gameplay.powers.action.WardOfSilence
+import oathdigital.gameplay.cards.{AncientCitySite, BuriedGiantSite}
+import oathdigital.gameplay.powers.action.{WardOfSilence, WardOfSilenceCard}
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
-import oathdigital.testkit.{CatalogNames, MenuPlay, Table}
+import oathdigital.testkit.{MenuPlay, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import LogScripts.{atTable, format, playerLabel, texts}
 
 /** How Ward of Silence reads in the Game Log: its line is the action's own,
   * and neither of its questions posts a "Chose" line. */
 class WardOfSilenceLogSuite extends munit.FunSuite:
-  private val ward = CatalogNames.denizen("Ward of Silence")
+  private val ward = WardOfSilenceCard.id
 
   /** p1, holding Ward of Silence and 3 faceup secrets at Ancient City, flips
     * 2 of p2's 2 faceup secrets there facedown. The log as p3 sees it. */
   private def wardFlippedTwoOfP2sSecrets: Vector[String] =
-    val table = Table.start.pawn(p1, "Ancient City").pawn(p2, "Ancient City")
-      .pawn(p3, "Buried Giant").adviser(p1, ward).secrets(p1, faceUp = 3)
+    val table = Table.start.pawn(p1, AncientCitySite).pawn(p2, AncientCitySite)
+      .pawn(p3, BuriedGiantSite).adviser(p1, ward).secrets(p1, faceUp = 3)
       .secrets(p2, faceUp = 2).banditsRefilled
     val (service, act) = atTable("ward-of-silence", table)
     act.withAnswers {

@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
-  PrintedPower}
+import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
 import oathdigital.model._
 
 object RainBootsCard extends Denizen(DenizenId("14"), "Rain Boots", Suit.Nomad):
@@ -23,10 +22,10 @@ object RainBootsCard extends Denizen(DenizenId("14"), "Rain Boots", Suit.Nomad):
   * standard discard once the Campaign has resolved, whoever won, as Horse
   * Archers is.
   */
-final case class RainBoots private (catalog: ExecutableCatalog)
-    extends BattlePlan with DiscardedAtEnd:
-  val cardId: DenizenId = RainBootsCard.id
-  def id: PowerId = RainBoots.id
+case object RainBoots extends BattlePlan with DiscardedAtEnd:
+  val id: PowerId = RainBootsCard.power.id
+
+  val card: Denizen = RainBootsCard
   def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Attacker)
   private val notes = NoteSet(id)
@@ -41,9 +40,3 @@ final case class RainBoots private (catalog: ExecutableCatalog)
       : Map[PowerWindow, PlanUse => Vector[Operation]] = Map(
     PowerWindow.CampaignDefenseResult -> (use =>
       SingleShields.ignore(use, id, PowerSourceRef.Card(cardId))))
-
-object RainBoots:
-  val id: PowerId = RainBootsCard.power.id
-
-  def forCatalog(catalog: ExecutableCatalog): RainBoots =
-    new RainBoots(catalog)

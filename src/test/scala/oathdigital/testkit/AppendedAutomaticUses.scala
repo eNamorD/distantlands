@@ -2,6 +2,7 @@ package oathdigital.testkit
 
 import oathdigital.gameplay.powerresolver.{ContributingPower, PowerCtx,
   Transform}
+import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 
 /** The `AutomaticUse` nodes a power's fold appends (catalog batch 8, slice
@@ -18,7 +19,7 @@ object AppendedAutomaticUses:
   def nodes(power: ContributingPower, window: PowerWindow,
       operation: Operation, actor: PlayerId = Table.p1)
       : Vector[AutomaticUse] =
-    val ctx = PowerCtx(Table.start.ready, actor, power.source, window,
+    val ctx = PowerCtx(catalog, Table.start.ready, actor, power.source, window,
       Vector.empty, operation)
     val children = operation match
       case leaf: LeafOperation => Vector(leaf)

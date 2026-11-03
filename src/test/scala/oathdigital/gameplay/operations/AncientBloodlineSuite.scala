@@ -1,20 +1,24 @@
 package oathdigital.gameplay.operations
 
 import oathdigital.gameplay.PowerAccess
+import oathdigital.gameplay.cards.DeepWoodsSite
 import oathdigital.gameplay.powers.{ConsentPowers, PowerImplementationStatus}
+import oathdigital.gameplay.powers.action.DowsingSticksCard
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.search.ErrandBoyCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2}
 
 /** Ancient Bloodline's lock (card 165, catalog batch 8, slice 11): an
   * enemy of its faceup holder may not move a card at a site the holder
   * rules, unless the holder consents. */
 class AncientBloodlineSuite extends munit.FunSuite:
-  private val bloodline = CatalogNames.denizen("Ancient Bloodline")
-  private val woods = CatalogNames.site("Deep Woods")
-  private val errandBoy = CatalogNames.denizen("Errand Boy")
-  private val sticks = CatalogNames.relic("Dowsing Sticks")
+  private val bloodline = AncientBloodlineCard.id
+  private val woods = DeepWoodsSite.id
+  private val errandBoy = ErrandBoyCard.id
+  private val sticks = DowsingSticksCard.id
   private val lock = LockedCards(Set.empty, Vector(AncientBloodline))
 
   /** Errand Boy and Dowsing Sticks at Deep Woods, which `ruled` gives its
@@ -70,7 +74,7 @@ class AncientBloodlineSuite extends munit.FunSuite:
 
   test("a card arriving at the holder's site is not refused"):
     val ready = woodsBesideBloodlineHolder()
-    val wrestlers = CatalogNames.denizen("Wrestlers")
+    val wrestlers = WrestlersCard.id
     assertEquals(lock.reason(ready, Move(Piece.Card(wrestlers),
       PositionedLocation(Location.PlayArea(p1)),
       PositionedLocation(Location.Site(woods)), by = Some(p1))), None)
@@ -83,7 +87,7 @@ class AncientBloodlineSuite extends munit.FunSuite:
       turn = Some(ConsentTurn.of(ready))))
     assertEquals(ConsentedRestriction(lock).reason(granted,
       sticksTakenBy(p1)), None)
-    assertEquals(ConsentPowers.default(catalog)
+    assertEquals(ConsentPowers.default
       .granter(ready, AncientBloodline.id), Some(p2))
 
   test("the printed set holds the lock, and the card counts as " +
@@ -93,5 +97,5 @@ class AncientBloodlineSuite extends munit.FunSuite:
       case locked: LockedCards => locked.asIf.contains(AncientBloodline)
       case _ => false
     })
-    assert(PowerImplementationStatus.implemented(catalog)(
+    assert(PowerImplementationStatus.implemented(
       AncientBloodline.id))

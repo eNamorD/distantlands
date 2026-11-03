@@ -21,20 +21,30 @@ object MemoryOfNatureCard extends Denizen(DenizenId("191"), "Memory of Nature", 
   * player splits it only when there is a choice ([[FavorSplit]]). Its line
   * reads what the Beast bank gained.
   */
-final case class MemoryOfNature private (catalog: ExecutableCatalog)
-    extends PaidAction(MemoryOfNatureCard.power):
-  import MemoryOfNature._
+case object MemoryOfNature extends PaidAction(MemoryOfNatureCard.power):
+  val decisionId: String = "power.memory-of-nature.banks"
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "Moved {n favor} to {the Beast bank}." */
+  val moved: NoteKey = notes.key(NoteKey.Used, Vector(NotePart.Text("Moved "),
+    NotePart.Arg(0), NotePart.Text(" to "), NotePart.Arg(1),
+    NotePart.Text(".")))
+  /** "No favor moved to {the Beast bank}." */
+  val unmoved: NoteKey = notes.key("used.none", Vector(
+    NotePart.Text("No favor moved to "), NotePart.Arg(0), NotePart.Text(".")))
+  private val banks = new FavorSplit(decisionId,
+    Suit.all.filterNot(_ == Suit.Beast), "Move favor")
 
-  override def noteKeys: Vector[NoteKey] = MemoryOfNature.noteKeys
-
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     Branch { (live, _) =>
-      val x = beasts(live)
+      val x = beasts(catalog, live)
       banks.ask(live, player, x,
         s"Memory of Nature: move $x favor to the Beast bank")
     },
-    BuildOps((live, pending) => banks.split(live, pending, beasts(live)).map(
+    BuildOps((live, pending) =>
+      banks.split(live, pending, beasts(catalog, live)).map(
       _.map { case (suit, n) => Move(Piece.Favor(n),
         PositionedLocation(Location.FavorBank(suit)),
         PositionedLocation(Location.FavorBank(Suit.Beast))) })),
@@ -42,7 +52,7 @@ final case class MemoryOfNature private (catalog: ExecutableCatalog)
 
   /** The Beast cards on the map: faceup denizens, and edifices on either
     * face, at the sites in play. */
-  private def beasts(ready: ReadyGame): Int =
+  private def beasts(catalog: ExecutableCatalog, ready: ReadyGame): Int =
     val map = ready.game.current.map
     map.inPlay.flatMap(map.sites.get).flatMap(_.denizens).count {
       case DenizenState(card, Orientation.FaceUp, _) =>
@@ -61,21 +71,3 @@ final case class MemoryOfNature private (catalog: ExecutableCatalog)
       NoteArg.Bank(Suit.Beast))
     else unmoved(card, NoteArg.Bank(Suit.Beast))
   }
-
-object MemoryOfNature:
-  val id: PowerId = MemoryOfNatureCard.power.id
-  val decisionId: String = "power.memory-of-nature.banks"
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "Moved {n favor} to {the Beast bank}." */
-  val moved: NoteKey = notes.key(NoteKey.Used, Vector(NotePart.Text("Moved "),
-    NotePart.Arg(0), NotePart.Text(" to "), NotePart.Arg(1),
-    NotePart.Text(".")))
-  /** "No favor moved to {the Beast bank}." */
-  val unmoved: NoteKey = notes.key("used.none", Vector(
-    NotePart.Text("No favor moved to "), NotePart.Arg(0), NotePart.Text(".")))
-  private val banks = new FavorSplit(decisionId,
-    Suit.all.filterNot(_ == Suit.Beast), "Move favor")
-
-  def forCatalog(catalog: ExecutableCatalog): MemoryOfNature =
-    new MemoryOfNature(catalog)

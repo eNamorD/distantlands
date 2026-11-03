@@ -1,8 +1,9 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.gameplay.cards.{AncientCitySite, BuriedGiantSite}
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.accepted
@@ -10,10 +11,10 @@ import oathdigital.testkit.Unwrap.accepted
 class QuickExitSuite extends munit.FunSuite:
   import PhasePowerHarness._
 
-  private val exit = CatalogNames.denizen("Quick Exit")
+  private val exit = QuickExitCard.id
   private val source = DecisionOptionRef.Denizen(exit)
-  private val home = CatalogNames.site("Ancient City")
-  private val away = CatalogNames.site("Buried Giant")
+  private val home = AncientCitySite.id
+  private val away = BuriedGiantSite.id
 
   /** p1's Act at Ancient City holding Quick Exit with `secrets` faceup
     * secrets. p2 stands at Ancient City too and p3 at Buried Giant. */

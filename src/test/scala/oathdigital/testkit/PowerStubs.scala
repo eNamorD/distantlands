@@ -1,5 +1,6 @@
 package oathdigital.testkit
 
+import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,
   OptionRestriction, PowerCtx, Restriction, Transform}
 import oathdigital.model._
@@ -51,7 +52,8 @@ object PowerStubs:
       restriction: OperationRestriction) extends ContributingPower:
     def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
     def contributions: Map[PowerWindow, Vector[Contribution]] = Map.empty
-    override def operationRestrictions: Vector[OperationRestriction] =
+    override def operationRestrictions(catalog: ExecutableCatalog)
+      : Vector[OperationRestriction] =
       Vector(restriction)
 
   /** The source of every note the hiding and forbidding stubs write. */

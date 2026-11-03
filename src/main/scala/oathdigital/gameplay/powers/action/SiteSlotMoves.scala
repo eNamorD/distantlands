@@ -23,23 +23,23 @@ final case class SlotMove(site: SiteId, slot: DecisionOptionRef.SiteSlot,
   * mover takes the site's last slot with its tokens, since a row has no
   * gaps.
   */
-private[powers] final class SiteSlotMoves(catalog: ExecutableCatalog,
-    mover: DenizenId, empty: Boolean):
-  private val cards = new SiteCards(catalog, Suit.all.toSet)
+private[powers] final class SiteSlotMoves(mover: DenizenId, empty: Boolean):
+  private val cards = new SiteCards(Suit.all.toSet)
 
   /** Every slot the mover may take, in map order then slot order. */
-  def moves(ready: ReadyGame): Vector[SlotMove] =
+  def moves(catalog: ExecutableCatalog, ready: ReadyGame): Vector[SlotMove] =
     SiteRulers.siteOf(ready, mover).toVector.flatMap(here =>
       ready.game.current.map.inPlay.filter(_ != here).flatMap(site =>
-        movesAt(ready, site)))
+        movesAt(catalog, ready, site)))
 
-  private def movesAt(ready: ReadyGame, site: SiteId): Vector[SlotMove] =
+  private def movesAt(catalog: ExecutableCatalog,
+      ready: ReadyGame, site: SiteId): Vector[SlotMove] =
     val held = ready.game.current.map.sites.get(site).toVector
       .flatMap(_.denizens)
     val room = catalog.site(site).exists(held.size < _.capacity)
     val open = Option.when(empty && room)(SlotMove(site,
       DecisionOptionRef.SiteSlot(site, held.size), None))
-    val replacing = cards.at(ready, site).flatMap((card, suit) =>
+    val replacing = cards.at(catalog, ready, site).flatMap((card, suit) =>
       val index = held.indexWhere(_.id == card.id)
       Option.when(index >= 0)(SlotMove(site,
         DecisionOptionRef.SiteSlot(site, index), Some(card -> suit))))
@@ -51,13 +51,15 @@ private[powers] final class SiteSlotMoves(catalog: ExecutableCatalog,
       DecisionOption.Replacing(slot, replaced._1.id))
 
   /** Each move's option, judged for `actor`. */
-  def options(ready: ReadyGame, actor: PlayerId): Vector[DecisionOption] =
-    moves(ready).flatMap(move => CardSlots.judge(catalog, ready, actor,
-      option(move), operations(ready, actor, move)))
+  def options(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId): Vector[DecisionOption] =
+    moves(catalog, ready).flatMap(move => CardSlots.judge(catalog, ready,
+      actor, option(move), operations(ready, actor, move)))
 
   /** The move an answer names, read live. */
-  def chosen(ready: ReadyGame, ref: DecisionOptionRef): Option[SlotMove] =
-    moves(ready).find(_.slot == ref)
+  def chosen(catalog: ExecutableCatalog,
+      ready: ReadyGame, ref: DecisionOptionRef): Option[SlotMove] =
+    moves(catalog, ready).find(_.slot == ref)
 
   /** The discard, if any, then the mover's move. */
   def operations(ready: ReadyGame, actor: PlayerId, move: SlotMove)

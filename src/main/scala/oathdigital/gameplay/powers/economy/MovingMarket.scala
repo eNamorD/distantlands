@@ -38,52 +38,66 @@ object MovingMarketCard extends Denizen(DenizenId("241"), "Moving Market", Suit.
   * The gain is recorded under `TradeFavor.key`, at what the Nomad bank can
   * give, so a power that counts the Trade's favor sees it.
   */
-final case class MovingMarket private (catalog: ExecutableCatalog)
-    extends SelectedModifier:
-  import MovingMarket._
+case object MovingMarket extends SelectedModifier:
+  val id: PowerId = MovingMarketCard.power.id
+  /** Under the `trade.` prefix, as Knights Errant's is under `muster.`. */
+  val decisionId: String = "trade.moving-market.move"
+  val skip: DecisionOptionRef.Button = DecisionOptionRef.Button("skip")
+  /** The favor a move gains, best-effort. */
+  val Gained: Int = 1
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "Moved it to {site} and gained {n favor} from {the Nomad bank}." */
+  val moved: NoteKey = notes.key("moved", Vector(NotePart.Text("Moved it to "),
+    NotePart.Arg(0), NotePart.Text(" and gained "), NotePart.Arg(1),
+    NotePart.Text(" from "), NotePart.Arg(2), NotePart.Text(".")))
+  /** "Moved it to {site}." */
+  val movedOnly: NoteKey = notes.key("moved.only", Vector(
+    NotePart.Text("Moved it to "), NotePart.Arg(0), NotePart.Text(".")))
 
-  val cardId: DenizenId = MovingMarketCard.id
-  def id: PowerId = MovingMarket.id
+  val card: Denizen = MovingMarketCard
   def actions: Set[MajorActionType] = Set(MajorActionType.Trade)
-  override def noteKeys: Vector[NoteKey] = MovingMarket.noteKeys
   override def narratedDecisions: Set[String] = Set(decisionId)
 
   def effects: Map[PowerWindow, Vector[Contribution]] = Map(
     PowerWindow.TradeActionEligibility -> Vector(Transform((ctx, children) =>
-      children :+ offer(ctx.actor))))
+      children :+ offer(ctx.catalog, ctx.actor))))
 
-  private def offer(actor: PlayerId): Operation = Branch((ready, pending) =>
+  private def offer(catalog: ExecutableCatalog,
+      actor: PlayerId): Operation = Branch((ready, pending) =>
     val slots =
-      if tradedWith(pending) then openSlots(ready) else Vector.empty
+      if tradedWith(pending) then openSlots(catalog, ready) else Vector.empty
     if slots.isEmpty then Vector.empty
     else Vector(
       Decide(decisionId, actor, DecisionQuery.ChooseOne(
         slots.map(DecisionOption.SiteSlot(_)) :+
           DecisionOption.Button(skip, "Skip"),
         heading = Some("Moving Market: move it to another site?"))),
-      BuildOps((live, answered) => move(live, actor, answered),
+      BuildOps((live, answered) => move(catalog, live, actor, answered),
         required = true),
       BuildOps((live, answered) => gain(live, actor, answered)),
       Note(id, movedNote(_, actor))))
 
   private def tradedWith(pending: PendingTree): Boolean =
     PowerAnswers.one(pending, TradeProcedure.decisionId)
-      .contains(DecisionOptionRef.Denizen(cardId))
+      .contains(DecisionOptionRef.Denizen(card.id))
 
   /** Every empty slot at the other sites in play, in map then slot order. */
-  private def openSlots(ready: ReadyGame): Vector[DecisionOptionRef.SiteSlot] =
-    SiteRulers.siteOf(ready, cardId).toVector.flatMap(here =>
+  private def openSlots(catalog: ExecutableCatalog,
+      ready: ReadyGame): Vector[DecisionOptionRef.SiteSlot] =
+    SiteRulers.siteOf(ready, card.id).toVector.flatMap(here =>
       ready.game.current.map.inPlay.filter(_ != here).flatMap(site =>
         SiteRoom.emptySlots(catalog, ready, site)
           .map(DecisionOptionRef.SiteSlot(site, _))))
 
-  private def move(ready: ReadyGame, actor: PlayerId, pending: PendingTree)
+  private def move(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId, pending: PendingTree)
       : Either[OathViolation, Vector[CoreOperation]] =
     PowerAnswers.one(pending, decisionId) match
       case Some(`skip`) => Right(Vector.empty)
       case Some(slot: DecisionOptionRef.SiteSlot) => (for
-          here <- SiteRulers.siteOf(ready, cardId)
-          if openSlots(ready).contains(slot)
+          here <- SiteRulers.siteOf(ready, card.id)
+          if openSlots(catalog, ready).contains(slot)
         yield Vector[CoreOperation](Move(Piece.Card(cardId),
           PositionedLocation(Location.Site(here)),
           PositionedLocation(Location.Site(slot.site)),
@@ -99,7 +113,7 @@ final case class MovingMarket private (catalog: ExecutableCatalog)
       : Either[OathViolation, Vector[CoreOperation]] =
     Right(PowerAnswers.one(pending, decisionId).toVector.collect {
       case slot: DecisionOptionRef.SiteSlot
-          if SiteRulers.siteOf(ready, cardId).contains(slot.site) =>
+          if SiteRulers.siteOf(ready, card.id).contains(slot.site) =>
         Gain.Favor(actor, Suit.Nomad, Gained)
     }.flatMap(gain => TradeFavor.record(ready, gain) :+ gain))
 
@@ -109,30 +123,10 @@ final case class MovingMarket private (catalog: ExecutableCatalog)
       : Option[LogNote] = for
     case slot: DecisionOptionRef.SiteSlot <-
       NoteSupport.answer(states, decisionId)
-    if SiteRulers.siteOf(states.now, cardId).contains(slot.site)
+    if SiteRulers.siteOf(states.now, card.id).contains(slot.site)
   yield
     val card = PowerSourceRef.Card(cardId)
     val gained = states.previous.fold(0)(NoteSupport.favor(_, actor))
     if gained > 0 then moved(card, NoteArg.Site(slot.site),
       NoteArg.Amount(gained, NoteUnit.Favor), NoteArg.Bank(Suit.Nomad))
     else movedOnly(card, NoteArg.Site(slot.site))
-
-object MovingMarket:
-  val id: PowerId = MovingMarketCard.power.id
-  /** Under the `trade.` prefix, as Knights Errant's is under `muster.`. */
-  val decisionId: String = "trade.moving-market.move"
-  val skip: DecisionOptionRef.Button = DecisionOptionRef.Button("skip")
-  /** The favor a move gains, best-effort. */
-  val Gained: Int = 1
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "Moved it to {site} and gained {n favor} from {the Nomad bank}." */
-  val moved: NoteKey = notes.key("moved", Vector(NotePart.Text("Moved it to "),
-    NotePart.Arg(0), NotePart.Text(" and gained "), NotePart.Arg(1),
-    NotePart.Text(" from "), NotePart.Arg(2), NotePart.Text(".")))
-  /** "Moved it to {site}." */
-  val movedOnly: NoteKey = notes.key("moved.only", Vector(
-    NotePart.Text("Moved it to "), NotePart.Arg(0), NotePart.Text(".")))
-
-  def forCatalog(catalog: ExecutableCatalog): MovingMarket =
-    new MovingMarket(catalog)

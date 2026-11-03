@@ -1,8 +1,9 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
@@ -10,15 +11,15 @@ import oathdigital.testkit.Unwrap.accepted
 class TinkersFairSuite extends munit.FunSuite:
   import PhasePowerHarness._
 
-  private val fair = CatalogNames.denizen("Tinker's Fair")
+  private val fair = TinkersFairCard.id
   private val source = DecisionOptionRef.Denizen(fair)
-  private val top = CatalogNames.relic("Whistle")
+  private val top = WhistleCard.id
 
   /** p1's Act at Ancient City with Tinker's Fair at the site, `favor` favor
     * and `top` on the relic deck. Tinker's Fair is site-only. */
   private def stagedTable(favor: Int = 3): Table =
-    Table.start.turn(p1, Phase.Act).pawn(p1, "Ancient City")
-      .denizen(fair, at = "Ancient City").favor(p1, favor).relicDeckTop(top)
+    Table.start.turn(p1, Phase.Act).pawn(p1, AncientCitySite)
+      .denizen(fair, at = AncientCitySite).favor(p1, favor).relicDeckTop(top)
 
   private def staged(favor: Int = 3): ReadyGame = stagedTable(favor).ready
 

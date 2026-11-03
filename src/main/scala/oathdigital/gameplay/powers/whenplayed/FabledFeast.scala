@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.whenplayed
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, PrintedPower}
 import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.powerresolver.PowerCtx
 import oathdigital.gameplay.powers.{PowerAnswers, RuledCards}
@@ -25,34 +25,11 @@ object FabledFeastCard extends Denizen(DenizenId("136"), "Fabled Feast", Suit.He
   * gives what it holds. Its line names the bank, so the choice is narrated, and it
   * covers the Gain line.
   */
-final case class FabledFeast private (catalog: ExecutableCatalog)
-    extends WhenPlayedPower:
-  val cardId: DenizenId = FabledFeastCard.id
-  import FabledFeast._
-  def id: PowerId = FabledFeast.id
-
-  override def noteKeys: Vector[NoteKey] = FabledFeast.noteKeys
-  override def narratedDecisions: Set[String] = Set(decisionId)
-
-  def effect(ctx: PowerCtx): Vector[Operation] =
-    val source = PowerSourceRef.Card(cardId)
-    Vector(Branch((live, _) =>
-      val count = RuledCards.count(catalog, live, SiteRuler.Player(ctx.actor),
-        Suit.Hearth)
-      val banks = FavorBankChoice.stocked(live)
-      if count == 0 then Vector(Note(id, _ =>
-        Some(none(source, NoteArg.Player(ctx.actor)))))
-      else if banks.isEmpty then Vector(Note(id, _ => Some(empty(source))))
-      else ask(ctx.actor, banks, count) ++ Vector(
-        BuildOps((ready, pending) => take(ready, ctx.actor, pending, count)),
-        Note(id, NoteSupport.gainedFromNote(took, source, ctx.actor),
-          covers = true))))
-
-object FabledFeast:
+case object FabledFeast extends WhenPlayedPower:
   val id: PowerId = FabledFeastCard.power.id
   val decisionId: String = "cardplay.fabled-feast.bank"
   private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
+  override def noteKeys: Vector[NoteKey] = notes.declared
   /** "{Red} took {n favor} from {the Hearth bank}." */
   val took: NoteKey = notes.key("took", Vector(NotePart.Arg(0),
     NotePart.Text(" took "), NotePart.Arg(1), NotePart.Text(" from "),
@@ -63,9 +40,6 @@ object FabledFeast:
   /** "{Red} ruled no Hearth card." */
   val none: NoteKey = notes.key("none", Vector(NotePart.Arg(0),
     NotePart.Text(" ruled no Hearth card.")))
-
-  def forCatalog(catalog: ExecutableCatalog): FabledFeast =
-    new FabledFeast(catalog)
 
   /** The question, when two or more banks hold favor. */
   private def ask(actor: PlayerId, banks: Vector[Suit], count: Int)
@@ -90,3 +64,22 @@ object FabledFeast:
             s"${other.wireId} is not a bank that holds favor"))
         }
     bank.map(suit => Vector(Gain.Favor(actor, suit, count)))
+
+  val cardId: DenizenId = FabledFeastCard.id
+
+  override def narratedDecisions: Set[String] = Set(decisionId)
+
+  def effect(ctx: PowerCtx): Vector[Operation] =
+    val source = PowerSourceRef.Card(cardId)
+    Vector(Branch((live, _) =>
+      val count = RuledCards.count(ctx.catalog, live,
+        SiteRuler.Player(ctx.actor),
+        Suit.Hearth)
+      val banks = FavorBankChoice.stocked(live)
+      if count == 0 then Vector(Note(id, _ =>
+        Some(none(source, NoteArg.Player(ctx.actor)))))
+      else if banks.isEmpty then Vector(Note(id, _ => Some(empty(source))))
+      else ask(ctx.actor, banks, count) ++ Vector(
+        BuildOps((ready, pending) => take(ready, ctx.actor, pending, count)),
+        Note(id, NoteSupport.gainedFromNote(took, source, ctx.actor),
+          covers = true))))

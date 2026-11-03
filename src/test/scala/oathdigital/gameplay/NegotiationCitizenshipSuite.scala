@@ -1,6 +1,7 @@
 package oathdigital.gameplay
 
 import oathdigital.gameplay.actions.ProcedureNotes
+import oathdigital.gameplay.cards.{BrokenPeaksSite, DunesSite}
 import oathdigital.gameplay.operations.TheGrandScepterCard
 import oathdigital.gameplay.actions.negotiation.{NegotiationDeal,
   NegotiationProcedure}
@@ -11,7 +12,7 @@ import oathdigital.model._
 import oathdigital.model.DecisionAnswer.{AcceptDeal, ChooseManyAnswer,
   DistributeAnswer, ProposeTerms}
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, Table}
+import oathdigital.testkit.{Look, Outcomes, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 
 /** The Grand Scepter's term in a deal: its holder offers Citizenship to
@@ -19,7 +20,7 @@ import oathdigital.testkit.Table.{p1, p2, p3}
 class NegotiationCitizenshipSuite extends munit.FunSuite:
   private val rules = new OathRules(catalog)
   private val dealId = NegotiationDeal.dealDecisionId
-  private val site = CatalogNames.site("Broken Peaks")
+  private val site = BrokenPeaksSite.id
 
   /** p1, the Chancellor, holds the Grand Scepter at Broken Peaks beside p2
     * and p3, Exiles with 2 board warbands each. `purple` is what the purple
@@ -27,7 +28,7 @@ class NegotiationCitizenshipSuite extends munit.FunSuite:
   private def gathered(purple: Int = 10): Table = Table.start.imperial(p1)
     .turn(p1, Phase.Act)
     .pawn(p1, at = site).pawn(p2, at = site).pawn(p3, at = site)
-    .relic(p1, "The Grand Scepter")
+    .relic(p1, TheGrandScepterCard)
     .boardWarbands(p2, 2).boardWarbands(p3, 2)
     .boardWarbands(p1, MaterialBankState.ImperialWarbands - purple)
     .allowingCitizenshipPowers
@@ -128,7 +129,7 @@ class NegotiationCitizenshipSuite extends munit.FunSuite:
       "takes the Scepter; the next becomes a Citizen"):
     val noEmpire = Table.start.turn(p1, Phase.Act)
       .pawn(p1, at = site).pawn(p2, at = site).pawn(p3, at = site)
-      .relic(p1, "The Grand Scepter").allowingCitizenshipPowers
+      .relic(p1, TheGrandScepterCard).allowingCitizenshipPowers
     val (state, _) = agreed(noEmpire.ready, p2, p3)
     val after = Outcomes.ready(state)
     assertEquals(Imperials.chancellor(after), Some(p2))
@@ -156,8 +157,8 @@ class NegotiationCitizenshipSuite extends munit.FunSuite:
   test("an Exile who negotiates on their own turn and accepts ends their Act"):
     // p2, an Exile in their Act, negotiates with p1, the Scepter's holder.
     val table = Table.start.imperial(p1).turn(p2, Phase.Act)
-      .pawn(p1, at = site).pawn(p2, at = site).pawn(p3, at = "Dunes")
-      .relic(p1, "The Grand Scepter").boardWarbands(p2, 2)
+      .pawn(p1, at = site).pawn(p2, at = site).pawn(p3, at = DunesSite)
+      .relic(p1, TheGrandScepterCard).boardWarbands(p2, 2)
       .allowingCitizenshipPowers
     val started = rules.startWalker(Ready(table.ready), ActionRef.Negotiation,
       p2).getOrElse(fail("Negotiation must start"))

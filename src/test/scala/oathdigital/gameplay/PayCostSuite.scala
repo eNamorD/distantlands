@@ -1,20 +1,22 @@
 package oathdigital.gameplay
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.operations._
+import oathdigital.gameplay.powers.search.ErrandBoyCard
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Table}
+import oathdigital.testkit.{Look, Table}
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
 
 class PayCostSuite extends munit.FunSuite:
   private val actor = p1
-  private val denizen = CatalogNames.denizen("Errand Boy")
+  private val denizen = ErrandBoyCard.id
 
   /** p1 holds 3 favor and 3 faceup secrets; Errand Boy stands at Ancient
     * City carrying `tokens`. */
   private def errandBoyCarrying(tokens: Tokens): ReadyGame =
     Table.start.favor(actor, 3).secrets(actor, faceUp = 3)
-      .denizen(denizen, at = "Ancient City")
+      .denizen(denizen, at = AncientCitySite)
       .tokens(denizen, tokens.favor, tokens.secrets).ready
 
   private def pay(state: ReadyGame, operation: PayCost) =

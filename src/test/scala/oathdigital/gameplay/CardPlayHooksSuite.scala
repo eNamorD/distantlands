@@ -4,10 +4,11 @@ import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower, Transform}
+import oathdigital.gameplay.powers.search.ErrandBoyCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers, WalkerStepRecorded}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, PlacementPicks, Table}
+import oathdigital.testkit.{Look, Outcomes, PlacementPicks, Table}
 import oathdigital.testkit.Unwrap.{accepted, present}
 
 /** The played-card windows: a faceup play and a facedown play each visit their
@@ -33,7 +34,7 @@ class CardPlayHooksSuite extends munit.FunSuite:
   private val startSupply = 3
   private val actor = Table.p1
   // An unrestricted denizen whose power these tests do not use.
-  private val card = CatalogNames.denizen("Errand Boy")
+  private val card = ErrandBoyCard.id
 
   /** p1 holds `held` in a temporary hand, with `startSupply` Supply. */
   private def inHand(held: WorldCardId): ReadyGame =

@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
-  PrintedPower}
+import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
 import oathdigital.model._
 
 object KindredWarriorsCard extends Denizen(DenizenId("60"), "Kindred Warriors", Suit.Arcane):
@@ -24,10 +23,22 @@ object KindredWarriorsCard extends Denizen(DenizenId("60"), "Kindred Warriors", 
   * X = 0 it would do nothing and is not offered. Bandits pay nothing, so a
   * bandit defender never applies it.
   */
-final case class KindredWarriors private (catalog: ExecutableCatalog)
-    extends BattlePlan:
+case object KindredWarriors extends BattlePlan:
+  val id: PowerId = KindredWarriorsCard.power.id
+
+  /** "Kindred Warriors: add 2 attack dice and ignore all attack skulls", or
+    * without the dice at X = 0; "Kindred Warriors: remove 2 attack dice"
+    * for a defender. */
+  private def label(side: CampaignPlanSide, dice: Int): String = side match
+    case CampaignPlanSide.Attacker if dice == 0 =>
+      "Kindred Warriors: ignore all attack skulls"
+    case CampaignPlanSide.Attacker =>
+      s"${PlanDice.label("Kindred Warriors", side, dice)} and ignore all " +
+        "attack skulls"
+    case CampaignPlanSide.Defender =>
+      PlanDice.label("Kindred Warriors", side, dice)
+
   val cardId: DenizenId = KindredWarriorsCard.id
-  def id: PowerId = KindredWarriors.id
   def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] =
     Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
@@ -38,7 +49,7 @@ final case class KindredWarriors private (catalog: ExecutableCatalog)
   /** X: the suits other than Arcane among the cards the user rules. */
   private def suits(context: PlanContext): Int =
     Suit.all.filterNot(_ == Suit.Arcane).count(suit =>
-      context.cardsRuled(catalog, context.ruler, suit).nonEmpty)
+      context.cardsRuled(context.ruler, suit).nonEmpty)
 
   def plan(context: PlanContext): Option[CampaignPlanOffer] =
     val dice = suits(context)
@@ -54,21 +65,3 @@ final case class KindredWarriors private (catalog: ExecutableCatalog)
       if use.side == CampaignPlanSide.Attacker then
         Outriders.ignoreSkulls(use, id, PowerSourceRef.Card(cardId))
       else Vector.empty))
-
-object KindredWarriors:
-  val id: PowerId = KindredWarriorsCard.power.id
-
-  /** "Kindred Warriors: add 2 attack dice and ignore all attack skulls", or
-    * without the dice at X = 0; "Kindred Warriors: remove 2 attack dice"
-    * for a defender. */
-  private def label(side: CampaignPlanSide, dice: Int): String = side match
-    case CampaignPlanSide.Attacker if dice == 0 =>
-      "Kindred Warriors: ignore all attack skulls"
-    case CampaignPlanSide.Attacker =>
-      s"${PlanDice.label("Kindred Warriors", side, dice)} and ignore all " +
-        "attack skulls"
-    case CampaignPlanSide.Defender =>
-      PlanDice.label("Kindred Warriors", side, dice)
-
-  def forCatalog(catalog: ExecutableCatalog): KindredWarriors =
-    new KindredWarriors(catalog)

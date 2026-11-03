@@ -1,13 +1,24 @@
 package oathdigital.gameplay
 
+import oathdigital.catalog.holding.CrackedHornCard
 import oathdigital.gameplay.actions.{AdviserFace, AdviserPlayNote, CardPlay,
   CardPlayRules, PlacementLimit, RuleNotes, VisionRules}
 import oathdigital.gameplay.actions.cardplay.{CardSlot, CardSlots,
   MoreDiscards}
-import oathdigital.gameplay.operations.{AncientBloodline, HallOfMinisters}
+import oathdigital.gameplay.cards.{AncientCitySite, BuriedGiantSite,
+  DeepWoodsSite}
+import oathdigital.gameplay.operations.{AncientBloodline, AncientBloodlineCard,
+  HallOfMinisters, HallOfMinistersCard}
+import oathdigital.gameplay.powers.action.{AncientBindingCard, FaeMerchantCard,
+  PiedPiperCard, SecondChanceCard, WolvesCard}
+import oathdigital.gameplay.powers.campaign.{CodeOfHonorCard, RainBootsCard,
+  SealingWardCard, WrestlersCard}
+import oathdigital.gameplay.powers.economy.CurfewCard
+import oathdigital.gameplay.powers.search.{CropRotationCard, ErrandBoyCard}
+import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, PlacementPicks, Table, TestCards}
+import oathdigital.testkit.{PlacementPicks, Table, TestCards}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.{accepted, present}
 
@@ -19,24 +30,24 @@ import oathdigital.testkit.Unwrap.{accepted, present}
 class CardSlotsSuite extends munit.FunSuite:
   import PlacementFixture.{secondTestPermission, testPermission}
 
-  private val home = CatalogNames.site("Ancient City")
+  private val home = AncientCitySite.id
   /** The Beast Homeland, room for three. */
-  private val woods = CatalogNames.site("Deep Woods")
+  private val woods = DeepWoodsSite.id
   /** The plain Beast card p1 plays unless a test says otherwise. */
-  private val card = CatalogNames.denizen("Errand Boy")
+  private val card = ErrandBoyCard.id
   // Plain cards of other suits.
-  private val rainBoots = CatalogNames.denizen("Rain Boots")
-  private val binding = CatalogNames.denizen("Ancient Binding")
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
+  private val rainBoots = RainBootsCard.id
+  private val binding = AncientBindingCard.id
+  private val wrestlers = WrestlersCard.id
   /** Locked and adviser-only. */
-  private val sealingWard = CatalogNames.denizen("Sealing Ward")
+  private val sealingWard = SealingWardCard.id
   /** Site-only. */
-  private val curfew = CatalogNames.denizen("Curfew")
+  private val curfew = CurfewCard.id
   /** Faceup, it does not count toward the adviser limit. */
-  private val piper = CatalogNames.denizen("Pied Piper")
+  private val piper = PiedPiperCard.id
   private val ignoresPiper = CardPlayRules.default
     .ignoreLimit(AdviserFace(piper, Orientation.FaceUp))
-  private val hall = CatalogNames.edifice("Hall of Ministers")
+  private val hall = HallOfMinistersCard.id
   private val pile = DecisionOption.DiscardPile(
     DecisionOptionRef.DiscardPile(Region.Provinces))
   private val play = DecisionOption.Button(CardSlots.play, "Play")
@@ -140,7 +151,7 @@ class CardSlotsSuite extends munit.FunSuite:
       "that site, whatever its suit"):
     // Errand Boy is Beast and Deep Woods the Beast Homeland. Rain Boots is
     // Nomad and Wolves Beast: the replaced card's suit plays no part.
-    val wolves = CatalogNames.denizen("Wolves")
+    val wolves = WolvesCard.id
     val beast = atWoods(card, rainBoots, wolves)
     assertEquals(atSite(slotsOf(beast)), Vector(siteSlot(2, woods),
       replacing(siteSlot(0, woods), rainBoots),
@@ -150,7 +161,7 @@ class CardSlotsSuite extends munit.FunSuite:
 
   test("playing a card of another suit at a Homeland may replace nothing"):
     // Rain Boots is Nomad. The Beast Wolves at the site lends it no suit.
-    val wolves = CatalogNames.denizen("Wolves")
+    val wolves = WolvesCard.id
     assertEquals(atSite(slotsOf(atWoods(rainBoots, wolves), rainBoots)),
       Vector(siteSlot(1, woods)))
 
@@ -174,7 +185,7 @@ class CardSlotsSuite extends munit.FunSuite:
 
   test("a card picked as a modifier this action is refused as a Replace " +
       "slot"):
-    val crop = CatalogNames.denizen("Crop Rotation")
+    val crop = CropRotationCard.id
     val ready = atHome(crop).hand(p1, card).ready
     assertEquals(atSite(slotsOf(ready, rules = permitted,
       picked = Vector(crop))), Vector(siteSlot(1),
@@ -185,11 +196,11 @@ class CardSlotsSuite extends munit.FunSuite:
     * Woods' Homeland permits a discard; the intact Hall and two plain cards
     * stand there, with `ruled` deciding who rules it. */
   private def guarded(ruled: Table => Table): ReadyGame =
-    val roar = CatalogNames.denizen("Threatening Roar")
-    ruled(Vector("Fae Merchant", "Second Chance").map(CatalogNames.denizen(_))
+    val roar = ThreateningRoarCard.id
+    ruled(Vector(FaeMerchantCard.id, SecondChanceCard.id)
       .foldLeft(Table.start.pawn(p1, at = woods).hand(p1, roar))(
         _.denizen(_, at = woods))
-      .edifice(CatalogNames.edifice("Hall of Ministers"), EdificeSide.Intact,
+      .edifice(HallOfMinistersCard.id, EdificeSide.Intact,
         at = woods)).ready
 
   private def askingP2(replaced: DenizenId): OptionReason =
@@ -203,13 +214,12 @@ class CardSlotsSuite extends munit.FunSuite:
     * Roar, a Beast card, in hand. p2 rules Deep Woods and holds Ancient
     * Bloodline faceup. */
   private def fullWoodsBesideBloodlineHolder: ReadyGame =
-    val roar = CatalogNames.denizen("Threatening Roar")
-    Vector("Fae Merchant", "Second Chance", "Wrestlers")
-      .map(CatalogNames.denizen(_))
+    val roar = ThreateningRoarCard.id
+    Vector(FaeMerchantCard.id, SecondChanceCard.id, WrestlersCard.id)
       .foldLeft(Table.start.pawn(p1, at = woods).hand(p1, roar))(
         _.denizen(_, at = woods))
       .warbandsAt(woods, p2, 1)
-      .adviser(p2, CatalogNames.denizen("Ancient Bloodline")).ready
+      .adviser(p2, AncientBloodlineCard.id).ready
 
   private def askingBloodlineHolder(replaced: DenizenId): OptionReason =
     OptionReason.Askable(AncientBloodline.id,
@@ -220,9 +230,9 @@ class CardSlotsSuite extends munit.FunSuite:
 
   test("Ancient Bloodline makes its holder's site cards askable of the " +
       "holder in a Replace"):
-    val roar = CatalogNames.denizen("Threatening Roar")
-    val fillers = Vector("Fae Merchant", "Second Chance", "Wrestlers")
-      .map(CatalogNames.denizen(_))
+    val roar = ThreateningRoarCard.id
+    val fillers = Vector(FaeMerchantCard.id, SecondChanceCard.id,
+      WrestlersCard.id)
     assertEquals(atSite(slotsOf(fullWoodsBesideBloodlineHolder, roar)),
       fillers.zipWithIndex.map((filler, index) => DecisionOption.Unavailable(
         replacing(siteSlot(index, woods), filler),
@@ -231,9 +241,8 @@ class CardSlotsSuite extends munit.FunSuite:
   test("the Hall of Ministers makes its ruler's site cards askable of that " +
       "ruler, protects them from everyone under bandits, and binds no ruler " +
       "of its own"):
-    val roar = CatalogNames.denizen("Threatening Roar")
-    val fillers = Vector("Fae Merchant", "Second Chance")
-      .map(CatalogNames.denizen(_))
+    val roar = ThreateningRoarCard.id
+    val fillers = Vector(FaeMerchantCard.id, SecondChanceCard.id)
     def slotsAt(ruled: Table => Table) =
       atSite(slotsOf(guarded(ruled), roar))
     assertEquals(slotsAt(_.warbandsAt(woods, p2, 1)), Vector(
@@ -254,8 +263,8 @@ class CardSlotsSuite extends munit.FunSuite:
 
   test("a grant remembered for a site card opens its Replace slot; a " +
       "refusal leaves the Hall's reason"):
-    val roar = CatalogNames.denizen("Threatening Roar")
-    val fae = CatalogNames.denizen("Fae Merchant")
+    val roar = ThreateningRoarCard.id
+    val fae = FaeMerchantCard.id
     val ready = guarded(_.warbandsAt(woods, p2, 1))
     def remembering(answer: ConsentAnswer) = ready.copy(consent =
       ConsentState(answers = Map(ConsentKey(HallOfMinisters.id, p1,
@@ -499,9 +508,9 @@ class CardSlotsSuite extends munit.FunSuite:
 
   test("a grant for the replaced card frees the follow-up's other site " +
       "cards: they are discarded with it, at the same time"):
-    val roar = CatalogNames.denizen("Threatening Roar")
-    val fae = CatalogNames.denizen("Fae Merchant")
-    val secondChance = CatalogNames.denizen("Second Chance")
+    val roar = ThreateningRoarCard.id
+    val fae = FaeMerchantCard.id
+    val secondChance = SecondChanceCard.id
     val ready = guarded(_.warbandsAt(woods, p2, 1))
     val granted = ready.copy(consent = ConsentState(answers = Map(
       ConsentKey(HallOfMinisters.id, p1, HallOfMinisters.discardKey,
@@ -515,7 +524,7 @@ class CardSlotsSuite extends munit.FunSuite:
       DecisionOptionRef.Denizen(secondChance))), more.options.toString)
     assertEquals(more.most, 1)
 
-  private val giant = CatalogNames.site("Buried Giant")
+  private val giant = BuriedGiantSite.id
   private val openWoods =
     CardPlayRules.default.openSites(PlacementFixture.opening(woods))
 
@@ -528,7 +537,7 @@ class CardSlotsSuite extends munit.FunSuite:
   test("a full opened site offers nothing without a permission, and its " +
       "Replace options with one"):
     // An Order card: no Homeland rule at Deep Woods.
-    val honor = CatalogNames.denizen("Code of Honor")
+    val honor = CodeOfHonorCard.id
     val full = Vector(binding, wrestlers, rainBoots).foldLeft(
       atHome().hand(p1, card).hand(p1, honor))((t, held) =>
       t.denizen(held, at = woods)).ready
@@ -547,9 +556,9 @@ class CardSlotsSuite extends munit.FunSuite:
   test("a permission scoped to one site applies there and nowhere else"):
     val scoped = openWoods.permitSiteDiscard(testPermission.copy(
       appliesAt = (_, site) => site == woods))
-    val ready = atHome(rainBoots).hand(p1, CatalogNames.denizen("Wrestlers"))
+    val ready = atHome(rainBoots).hand(p1, WrestlersCard.id)
       .denizen(binding, at = woods).ready
-    val replaced = slotsOf(ready, CatalogNames.denizen("Wrestlers"),
+    val replaced = slotsOf(ready, WrestlersCard.id,
       rules = scoped).flatMap(_.replacedAtSite)
     assertEquals(replaced, Vector[CardId](binding))
 
@@ -576,7 +585,7 @@ class CardSlotsSuite extends munit.FunSuite:
     PlacementFixture.testBury)
   private def bury(option: DecisionOption, card: CardId): DecisionOption =
     DecisionOption.Burying(option, card)
-  private val horn = CatalogNames.relic("Cracked Horn")
+  private val horn = CrackedHornCard.id
 
   test("a bury alone makes each Replace a bury, a locked card included"):
     val ready = atHome(rainBoots).hand(p1, card)

@@ -7,15 +7,15 @@ import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignPlans}
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** War Tortoise: a favor placed. Used by the defender, the attacker's skull
   * faces score nothing and payable skulls still kill; used by the attacker,
   * the defender's double shields score nothing. */
 class WarTortoiseSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("War Tortoise")
+  private val card = WarTortoiseCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
-  private val general = CatalogNames.denizen("Fearsome General")
+  private val general = FearsomeGeneralCard.id
   private val noAttack = NoteText.Said("attack",
     "Double swords added no attack.", covers = false)
   private val noDefense = NoteText.Said("defense",

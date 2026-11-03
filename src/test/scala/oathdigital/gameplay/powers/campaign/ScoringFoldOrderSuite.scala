@@ -1,5 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
+import oathdigital.catalog.Denizen
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.OathRules
 import oathdigital.gameplay.actions.campaign.CampaignIds
@@ -11,7 +12,6 @@ import oathdigital.gameplay.walker.WalkerDice
 import oathdigital.model._
 import oathdigital.model.AttackDieFace.{OneSword, TwoSwordsSkull}
 import oathdigital.model.DefenseDieFace.{OneShield, TwoShields}
-import oathdigital.testkit.CatalogNames
 
 /** `inner` with its priority replaced, so its transforms fold elsewhere. */
 private final class Reprioritised(inner: ContributingPower,
@@ -48,20 +48,20 @@ class ScoringFoldOrderSuite extends munit.FunSuite:
     new OathRules(catalog, walkerPowerCatalog = default.copy(powers = powers),
       walkerDice = roll)
 
-  private def refOf(name: String): DecisionOptionRef =
-    DecisionOptionRef.Denizen(CatalogNames.denizen(name))
+  private def refOf(card: Denizen): DecisionOptionRef =
+    DecisionOptionRef.Denizen(card.id)
 
   test("Lancers, Fearsome General and Outriders score the same attack in " +
       "either fold order"):
-    val b = Vector("Lancers", "Fearsome General", "Outriders").foldLeft(
-      board(warbands = 5, supply = 7))((held, name) =>
-      withAdviser(held, name, Orientation.FaceUp))
+    val b = Vector(LancersCard, FearsomeGeneralCard, OutridersCard).foldLeft(
+      board(warbands = 5, supply = 7))((held, card) =>
+      withAdviser(held, card, Orientation.FaceUp))
     val roll = dice(attack = Vector(TwoSwordsSkull, TwoSwordsSkull, OneSword),
       defense = Vector.fill(2)(DefenseDieFace.Blank))
     def scored(game: OathRules): (Int, Int) =
-      val done = Vector("Lancers", "Fearsome General", "Outriders")
-        .foldLeft(commit(game, b, 3))((run, name) =>
-          run.pick(b.actor, CampaignIds.attackerPlan, refOf(name)))
+      val done = Vector(LancersCard, FearsomeGeneralCard, OutridersCard)
+        .foldLeft(commit(game, b, 3))((run, card) =>
+          run.pick(b.actor, CampaignIds.attackerPlan, refOf(card)))
         .finishPlanWindows
       (done.result.attackScore, done.result.skullLosses)
     // Doubled and ignored: four skulls of four swords, and two swords.
@@ -72,20 +72,20 @@ class ScoringFoldOrderSuite extends munit.FunSuite:
       "score the same defense in either fold order"):
     val base = rivalRulesOriginAndHoldsOathkeeper(
       board(warbands = 5, supply = 7))
-    val attacker = withSecrets(withRelic(Vector("Rain Boots", "War Tortoise")
-      .foldLeft(base)((held, name) =>
-        withAdviser(held, name, Orientation.FaceUp)), "Bag of Siegeworks"), 1)
-    val b = on(withAdviserFor(attacker, base.rival, "Garrison Armory",
+    val attacker = withSecrets(withRelic(Vector(RainBootsCard, WarTortoiseCard)
+      .foldLeft(base)((held, card) =>
+        withAdviser(held, card, Orientation.FaceUp)), BagOfSiegeworksCard), 1)
+    val b = on(withAdviserFor(attacker, base.rival, GarrisonArmoryCard,
       Orientation.FaceUp))(_.favor(base.actor, 1).favor(base.rival, 1))
     val roll = dice(attack = Vector.fill(5)(OneSword),
       defense = Vector(OneShield, TwoShields))
-    val attackerPlans = Vector(refOf("Rain Boots"), refOf("War Tortoise"),
-      DecisionOptionRef.Relic(CatalogNames.relic("Bag of Siegeworks")))
+    val attackerPlans = Vector(refOf(RainBootsCard), refOf(WarTortoiseCard),
+      DecisionOptionRef.Relic(BagOfSiegeworksCard.id))
     def scored(game: OathRules): Int =
       val chosen = attackerPlans.foldLeft(commit(game, b, 5))((run, plan) =>
         run.pick(b.actor, CampaignIds.attackerPlan, plan))
       chosen.finishAttackerPlans(b.actor).pick(b.rival,
-        CampaignIds.defenderPlan, refOf("Garrison Armory"))
+        CampaignIds.defenderPlan, refOf(GarrisonArmoryCard))
         .finishPlanWindows.result.defenseScore
     // Both faces are ignored; the two warbands are added twice.
     assertEquals(scored(rules(roll)), 4)

@@ -1,9 +1,12 @@
 package oathdigital.gameplay.powers.economy
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.SearchFixture
+import oathdigital.gameplay.powers.action.AlchemistCard
+import oathdigital.gameplay.powers.campaign.{RainBootsCard, WrestlersCard}
+import oathdigital.gameplay.powers.search.ErrandBoyCard
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, EconomyActions,
-  Look, Table}
+import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
@@ -11,13 +14,13 @@ import oathdigital.testkit.Unwrap.accepted
 class BirdsongSuite extends munit.FunSuite:
   import SearchFixture.rules
 
-  private val birdsong = CatalogNames.denizen("Birdsong")
+  private val birdsong = BirdsongCard.id
   private val modifiers = Vector(Birdsong.id)
   // Plain cards of each suit the tests trade with: none has a Muster or
   // Trade power of its own.
-  private val beast = CatalogNames.denizen("Errand Boy")
-  private val nomad = CatalogNames.denizen("Rain Boots")
-  private val order = CatalogNames.denizen("Wrestlers")
+  private val beast = ErrandBoyCard.id
+  private val nomad = RainBootsCard.id
+  private val order = WrestlersCard.id
 
   /** p1 holds Birdsong as an adviser; p1's site, Ancient City, holds
     * Alchemist and `source`, token-free. p1 has 4 favor, 2 faceup secrets
@@ -25,9 +28,9 @@ class BirdsongSuite extends munit.FunSuite:
   private def at(source: DenizenId, facedown: Boolean = false): ReadyGame =
     Table.start
       .adviser(p1, birdsong, facedown = facedown)
-      .pawn(p1, at = "Ancient City")
-      .denizen("Alchemist", at = "Ancient City")
-      .denizen(source, at = "Ancient City")
+      .pawn(p1, at = AncientCitySite)
+      .denizen(AlchemistCard, at = AncientCitySite)
+      .denizen(source, at = AncientCitySite)
       .favor(p1, 4).secrets(p1, faceUp = 2).supply(p1, 7)
       .ready
 

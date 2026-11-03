@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.whenplayed
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog, Locked,
-  PrintedPower}
+import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
+  Locked, PrintedPower}
 import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.powerresolver.PowerCtx
 import oathdigital.gameplay.powers.{OathkeeperGoalChoice, PowerAnswers,
@@ -30,25 +30,38 @@ object TrueOathCard extends Denizen(DenizenId("209"), "True Oath",
   * Oathkeeper goal." and "Ruled fewer than three other Beast cards." It
   * narrates its question.
   */
-final case class TrueOath private (catalog: ExecutableCatalog)
-    extends WhenPlayedPower:
-  val cardId: DenizenId = TrueOathCard.id
-  import TrueOath._
-  def id: PowerId = TrueOath.id
+case object TrueOath extends WhenPlayedPower:
+  val id: PowerId = TrueOathCard.power.id
+  val decisionId: String = "cardplay.true-oath.goal"
+  val keep: DecisionOptionRef.Button = DecisionOptionRef.Button("keep")
+  /** The other Beast cards it needs. */
+  val Others: Int = 3
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "Changed the Oathkeeper goal to Protection." */
+  val changed: NoteKey = OathkeeperGoalChoice.changed(notes, "changed")
+  /** "Kept the Oathkeeper goal." */
+  val kept: NoteKey = notes.key("kept", Vector(
+    NotePart.Text("Kept the Oathkeeper goal.")))
+  /** "Ruled fewer than three other Beast cards." */
+  val unmet: NoteKey = notes.key("unmet", Vector(
+    NotePart.Text("Ruled fewer than three other Beast cards.")))
 
-  override def noteKeys: Vector[NoteKey] = TrueOath.noteKeys
+  val cardId: DenizenId = TrueOathCard.id
+
   override def narratedDecisions: Set[String] = Set(decisionId)
 
   private def cardSource: PowerSourceRef = PowerSourceRef.Card(cardId)
 
   /** The other Beast cards `actor` rules. */
-  private def others(ready: ReadyGame, actor: PlayerId): Int =
+  private def others(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId): Int =
     RuledCards.of(catalog, ready, SiteRuler.Player(actor), Suit.Beast)
       .count(_ != cardId)
 
   def effect(ctx: PowerCtx): Vector[Operation] =
     Vector(Branch((live, _) =>
-      if others(live, ctx.actor) < Others then
+      if others(ctx.catalog, live, ctx.actor) < Others then
         Vector(Note(id, _ => Some(unmet(cardSource))))
       else Vector(
         Decide(decisionId, ctx.actor, DecisionQuery.ChooseOne(
@@ -68,22 +81,3 @@ final case class TrueOath private (catalog: ExecutableCatalog)
     OathkeeperGoalChoice.changedNote(states, changed, cardSource).orElse(
       Option.when(NoteSupport.answer(states, decisionId).contains(keep))(
         kept(cardSource)))
-
-object TrueOath:
-  val id: PowerId = TrueOathCard.power.id
-  val decisionId: String = "cardplay.true-oath.goal"
-  val keep: DecisionOptionRef.Button = DecisionOptionRef.Button("keep")
-  /** The other Beast cards it needs. */
-  val Others: Int = 3
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "Changed the Oathkeeper goal to Protection." */
-  val changed: NoteKey = OathkeeperGoalChoice.changed(notes, "changed")
-  /** "Kept the Oathkeeper goal." */
-  val kept: NoteKey = notes.key("kept", Vector(
-    NotePart.Text("Kept the Oathkeeper goal.")))
-  /** "Ruled fewer than three other Beast cards." */
-  val unmet: NoteKey = notes.key("unmet", Vector(
-    NotePart.Text("Ruled fewer than three other Beast cards.")))
-
-  def forCatalog(catalog: ExecutableCatalog): TrueOath = new TrueOath(catalog)

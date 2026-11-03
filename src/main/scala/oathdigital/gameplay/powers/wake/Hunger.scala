@@ -31,24 +31,41 @@ object HungerCard extends Denizen(DenizenId("216"), "Hunger", Suit.Beast) with L
   *
   * Its line covers the generic "Buried" line.
   */
-final case class Hunger private (catalog: ExecutableCatalog)
-    extends PhasePower:
+case object Hunger extends PhasePower:
+  val id: PowerId = HungerCard.power.id
+  val decisionId: String = "power.hunger.adviser"
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "{Red} buried {card} from {Blue}'s advisers." The card reads as its
+    * back to anyone who may not identify it, so the owner is named apart
+    * from it, as Ivory Eye's line does. */
+  val buried: NoteKey = notes.key("buried", Vector(NotePart.Arg(0),
+    NotePart.Text(" buried "), NotePart.Arg(1), NotePart.Text(" from "),
+    NotePart.Arg(2), NotePart.Text("'s advisers.")))
+  /** "No adviser could be buried." */
+  val spared: NoteKey = notes.key("none", Vector(
+    NotePart.Text("No adviser could be buried.")))
+
+  private final case class Candidate(owner: PlayerId, slot: Int,
+      card: BuryableCard, tokens: Tokens):
+    def ref: DecisionOptionRef.AdviserSlot =
+      DecisionOptionRef.AdviserSlot(owner, slot)
+
   val cardId: DenizenId = HungerCard.id
-  import Hunger._
-  def id: PowerId = Hunger.id
   def timing: PowerTiming = PowerTiming.Wake
   override def forced: Boolean = true
 
-  override def noteKeys: Vector[NoteKey] = Hunger.noteKeys
   override def narratedDecisions: Set[String] = Set(decisionId)
 
-  def usable(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def usable(catalog: ExecutableCatalog, ready: ReadyGame,
+      player: PlayerId, source: DecisionOptionRef)
       : Boolean = true
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     Branch((live, _) => ask(live, player)),
-    BuildOps((live, pending) => bury(live, player, pending)),
+    BuildOps((live, pending) => bury(catalog, live, player, pending)),
     Note(id, buriedNote(_, player), covers = true))))
 
   private def candidates(ready: ReadyGame, holder: PlayerId): Vector[Candidate] =
@@ -71,7 +88,8 @@ final case class Hunger private (catalog: ExecutableCatalog)
       found.map(c => DecisionOption.AdviserSlot(c.ref)),
       heading = Some("Hunger: bury an adviser at your site"))))
 
-  private def bury(ready: ReadyGame, holder: PlayerId, pending: PendingTree)
+  private def bury(catalog: ExecutableCatalog,
+      ready: ReadyGame, holder: PlayerId, pending: PendingTree)
       : Either[OathViolation, Vector[CoreOperation]] =
     val found = candidates(ready, holder)
     if found.isEmpty then Right(Vector.empty)
@@ -100,26 +118,3 @@ final case class Hunger private (catalog: ExecutableCatalog)
           candidates(before, holder).find(_.ref == ref)).map(chosen =>
           buried(card, NoteArg.Player(holder), NoteArg.Card(chosen.card.id),
             NoteArg.Player(chosen.owner)))
-
-object Hunger:
-  val id: PowerId = HungerCard.power.id
-  val decisionId: String = "power.hunger.adviser"
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "{Red} buried {card} from {Blue}'s advisers." The card reads as its
-    * back to anyone who may not identify it, so the owner is named apart
-    * from it, as Ivory Eye's line does. */
-  val buried: NoteKey = notes.key("buried", Vector(NotePart.Arg(0),
-    NotePart.Text(" buried "), NotePart.Arg(1), NotePart.Text(" from "),
-    NotePart.Arg(2), NotePart.Text("'s advisers.")))
-  /** "No adviser could be buried." */
-  val spared: NoteKey = notes.key("none", Vector(
-    NotePart.Text("No adviser could be buried.")))
-
-  private final case class Candidate(owner: PlayerId, slot: Int,
-      card: BuryableCard, tokens: Tokens):
-    def ref: DecisionOptionRef.AdviserSlot =
-      DecisionOptionRef.AdviserSlot(owner, slot)
-
-  def forCatalog(catalog: ExecutableCatalog): Hunger =
-    new Hunger(catalog)

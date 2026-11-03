@@ -1,9 +1,11 @@
 package oathdigital.gameplay
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.operations._
+import oathdigital.gameplay.powers.search.ErrandBoyCard
 import oathdigital.model._
 import oathdigital.gameplay.actions.VisionRules
-import oathdigital.testkit.{CatalogNames, Look, Table}
+import oathdigital.testkit.{Look, Table}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -53,8 +55,8 @@ class OperationVocabularySuite extends munit.FunSuite:
 
   test("a buried site denizen returns its favor to the bank and its secrets " +
       "to the acting player facedown"):
-    val siteId = CatalogNames.site("Ancient City")
-    val denizen = CatalogNames.denizen("Errand Boy")
+    val siteId = AncientCitySite.id
+    val denizen = ErrandBoyCard.id
     val suit = Suit.Beast  // Errand Boy is a Beast.
     val loaded = Table.start.denizen(denizen, at = siteId)
       .tokens(denizen, favor = 2, secrets = 1).ready

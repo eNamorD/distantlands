@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
 import oathdigital.gameplay.NoteSupport
 import oathdigital.model._
 
@@ -40,7 +40,8 @@ case object RelicBreaker extends PaidAction(RelicBreakerCard.power):
         PositionedLocation(Location.PlayArea(player)), None, 0,
         held.tokens.secrets, player) :+ Gain.Secrets(player, Gained))
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(
     relic.steps(player) :+ Note(id, buryNote(_, player, source),
       covers = true)))

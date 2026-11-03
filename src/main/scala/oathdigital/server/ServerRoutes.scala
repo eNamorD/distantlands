@@ -29,8 +29,7 @@ object ServerRoutes:
       runtime: ServerRuntime,
       blockingExecutionContext: ExecutionContext,
       config: ServerConfig,
-      readiness: ServerReadiness,
-      nowMillis: () => Long = () => System.currentTimeMillis()
+      readiness: ServerReadiness
   ): Route =
     val publicOrigin = config.publicBaseUrl.getOrElse(
       new java.net.URI("http", null, config.host, config.port, null, null, null))
@@ -44,32 +43,15 @@ object ServerRoutes:
       Seq("localhost", "127.0.0.1", "[::1]").map(host =>
         new java.net.URI(s"http://$host:${config.port}"))
     val trustedSeats = new TrustedSeatRoutes(runtime.identities,
-      runtime.trustedGameProvisioning, runtime.trustedGame, runtime.chronicles,
+      runtime.trustedGameProvisioning, runtime.gateway, runtime.chronicles,
       publicOrigin,
       blockingExecutionContext, loopbackAliases).route
     val application = config.mode match
       case ServerMode.Development =>
         // The development start page creates games through the same trusted
         // provisioning as trusted-alpha mode, so both get the generated setup.
-        val development = DevelopmentRoutes.route(
-          runtime.firstGame,
-          blockingExecutionContext
-        ) ~ trustedSeats
-        config.authenticatedRouteMount.fold(development) { configuration =>
-          val authenticator = new SessionCookieAuthenticator(
-            runtime.identities,
-            configuration.sessionCookieName,
-            nowMillis,
-            blockingExecutionContext
-          )
-          val csrf = new SameOriginCsrfProtection(configuration.publicOrigin)
-          development ~ new AuthenticatedGameRoutes(
-            authenticator,
-            csrf,
-            runtime.authenticatedGame,
-            blockingExecutionContext
-          ).route
-        }
+        DevelopmentRoutes.route(runtime.service, runtime.gateway,
+          blockingExecutionContext) ~ trustedSeats
       case ServerMode.TrustedAlpha =>
         trustedSeats ~ ProductionFrontendRoutes.route
     HealthRoutes.route(readiness) ~ application

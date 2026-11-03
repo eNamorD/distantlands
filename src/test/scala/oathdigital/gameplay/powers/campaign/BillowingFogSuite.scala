@@ -3,16 +3,17 @@ package oathdigital.gameplay.powers.campaign
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.action.WildAlliesCard
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseAmountAnswer
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Billowing Fog: when its user is defeated, the defeat kills none of their
   * force, and the powers that kill all of it are ignored. */
 class BillowingFogSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Billowing Fog")
+  private val card = BillowingFogCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
 
   private def spared(who: PlayerId): NoteText.Said = NoteText.Said("spared",
@@ -78,7 +79,7 @@ class BillowingFogSuite extends munit.FunSuite:
     val b = withFogFor(base, base.actor)
     val game = rules(losingDice)
     val fought = committed(game, campaignQueuedFrom(game, b, away,
-        PowerSourceRef.Card(CatalogNames.denizen("Wild Allies"))), b,
+        PowerSourceRef.Card(WildAlliesCard.id)), b,
         force = 4, raid = true)
       .pick(b.actor, CampaignIds.attackerPlan, ref)
       .answer(b.actor, CampaignIds.sacrifice, ChooseAmountAnswer(2))
@@ -128,7 +129,7 @@ class BillowingFogSuite extends munit.FunSuite:
 
   test("a defeated user ignores Sticky Fire: nothing is asked, nothing more " +
       "dies and no favor is given"):
-    val fire = CatalogNames.relic("Sticky Fire")
+    val fire = StickyFireCard.id
     val base = rivalRulesOriginAndHoldsOathkeeper(
       board(warbands = 5, supply = 7))
     val b = on(withRelicFor(withFogFor(base, base.actor), base.rival, fire))(
@@ -145,7 +146,7 @@ class BillowingFogSuite extends munit.FunSuite:
     assertEquals(said(BillowingFog, done.events), Vector(spared(b.actor)))
 
   test("a defeated defender ignores its own Shield Wall"):
-    val wall = CatalogNames.denizen("Shield Wall")
+    val wall = ShieldWallCard.id
     val base = rivalRulesOriginAndHoldsOathkeeper(
       board(warbands = 5, supply = 7))
     val b = on(withAdviserFor(withFogFor(base, base.rival), base.rival, wall,

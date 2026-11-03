@@ -1,11 +1,15 @@
 package oathdigital.gameplay.walker
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.operations.Costs
 import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,
   ModifierPicks, OfferReason, OptionRestriction, PowerCtx, Transform}
+import oathdigital.gameplay.powers.action.HomesteadersCard
+import oathdigital.gameplay.powers.campaign.{MercenariesCard, WrestlersCard}
+import oathdigital.gameplay.powers.search.ErrandBoyCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Outcomes, RecordedOps, Table}
+import oathdigital.testkit.{Outcomes, RecordedOps, Table}
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
 
@@ -15,11 +19,11 @@ import oathdigital.testkit.Unwrap.accepted
 class ModifierChoiceSuite extends munit.FunSuite:
   private val window = PowerWindow.SearchModifierSelection
   private val decisionId = ModifierPicks.decisionId(window)
-  private val alpha = CatalogNames.denizen("Wrestlers")
-  private val beta = CatalogNames.denizen("Mercenaries")
-  private val gamma = CatalogNames.denizen("Errand Boy")
+  private val alpha = WrestlersCard.id
+  private val beta = MercenariesCard.id
+  private val gamma = ErrandBoyCard.id
   /** A card p1 does not hold. */
-  private val outside = CatalogNames.denizen("Homesteaders")
+  private val outside = HomesteadersCard.id
   private val go = DecisionOptionRef.Button("go")
 
   /** A stand-in modifier on `card`, pickable at the Search window. */
@@ -57,7 +61,7 @@ class ModifierChoiceSuite extends munit.FunSuite:
   /** p1 at Ancient City with `favor` favor and `supply` Supply, holding
     * alpha, beta and gamma faceup. */
   private def table(favor: Int = 3, supply: Int = 5): ReadyGame =
-    Table.start.pawn(p1, "Ancient City").favor(p1, favor)
+    Table.start.pawn(p1, AncientCitySite).favor(p1, favor)
       .supply(p1, supply).adviser(p1, alpha).adviser(p1, beta)
       .adviser(p1, gamma).ready
 

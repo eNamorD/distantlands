@@ -1,9 +1,10 @@
 package oathdigital.gameplay
 
 import oathdigital.gameplay.actions.RecoverRules
+import oathdigital.gameplay.cards.BrokenPeaksSite
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, MenuPlay, Table}
+import oathdigital.testkit.{MenuPlay, Table}
 import oathdigital.testkit.Table.p1
 
 /** Covers Recover's availability in the Act menu: the menu delegates to the
@@ -14,7 +15,7 @@ class RecoverEligibilitySuite extends munit.FunSuite:
   /** p1, in Act, stands at Broken Peaks, whose Recover difficulty is 4. On
     * the quiet table the site holds no relic and no card, Catacombs
     * included. */
-  private val recoverSite = CatalogNames.site("Broken Peaks")
+  private val recoverSite = BrokenPeaksSite.id
   private def atRecoverSite: Table = Table.start.pawn(p1, at = recoverSite)
 
   private def recoverAvailable(ready: ReadyGame): Boolean =

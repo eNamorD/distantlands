@@ -1,9 +1,13 @@
 package oathdigital.application
 
+import oathdigital.gameplay.cards.DunesSite
 import oathdigital.gameplay.operations.OperationExecutor
+import oathdigital.gameplay.powers.action.FaeMerchantCard
+import oathdigital.gameplay.powers.campaign.{StickyFireCard, WrestlersCard}
+import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 
 /** Knowledge follows the card (spec, "Knowledge follows the card"). The
   * board and the log read knowledge through the same `identifiesAt`, so
@@ -15,11 +19,11 @@ class CardKnowledgeSuite extends munit.FunSuite:
     * rule never identifies it for p1, p2 or p3. p1 holds a facedown
     * Wrestlers. */
   private val board: ReadyGame = Table.start
-    .relicAt("Sticky Fire", at = "Dunes")
-    .adviser(Table.p1, "Wrestlers", facedown = true)
+    .relicAt(StickyFireCard, at = DunesSite)
+    .adviser(Table.p1, WrestlersCard, facedown = true)
     .ready
   private val (site, relic) =
-    (CatalogNames.site("Dunes"), CatalogNames.relic("Sticky Fire"))
+    (DunesSite.id, StickyFireCard.id)
   private val (owner, other, third) = (Table.p1, Table.p2, Table.p3)
 
   /** `op` executed on `ready`; fails with the refusal. */
@@ -65,7 +69,7 @@ class CardKnowledgeSuite extends munit.FunSuite:
     assert(!knows(back, other, relic))
 
   test("a face-down adviser shuffled into the world deck is forgotten"):
-    val adviser = CatalogNames.denizen("Wrestlers")
+    val adviser = WrestlersCard.id
     val peeked = run(Peek(other, adviser, Location.PlayArea(owner)))
     assert(knows(peeked, other, adviser))
     val gone = executed(peeked, Move(Piece.Card(adviser),
@@ -73,7 +77,7 @@ class CardKnowledgeSuite extends munit.FunSuite:
       PositionedLocation(Location.Deck(CardDeck.World), StackPosition.Bottom)))
     assert(!gone.knowledge.advisers.values.exists(_.contains(adviser)))
 
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
+  private val wrestlers = WrestlersCard.id
   private val cradleDiscard = PositionedLocation(
     Location.RegionalDiscard(Region.Cradle), StackPosition.Top)
 
@@ -117,7 +121,7 @@ class CardKnowledgeSuite extends munit.FunSuite:
       gone.knowledge.advisers)
 
   test("a card discarded from a Search hand is known to the searcher alone"):
-    val drawn = CatalogNames.denizen("Fae Merchant")
+    val drawn = FaeMerchantCard.id
     val discarded = executed(Table.from(board).hand(owner, drawn).ready,
       Move(Piece.Card(drawn), PositionedLocation(Location.Hand(owner)),
         cradleDiscard))
@@ -137,8 +141,8 @@ class CardKnowledgeSuite extends munit.FunSuite:
   test("a card peeked in the world deck or a discard pile is named to its peeker alone"):
     // Threatening Roar tops the world deck; Fae Merchant lies in the Cradle
     // discard pile.
-    val top = CatalogNames.denizen("Threatening Roar")
-    val next = CatalogNames.denizen("Fae Merchant")
+    val top = ThreateningRoarCard.id
+    val next = FaeMerchantCard.id
     val staged = Table.from(board).worldDeckTop(top)
       .discarded(Region.Cradle, next).ready
     val peeked = Vector(Peek(owner, top, Location.Deck(CardDeck.World)),

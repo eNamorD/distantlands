@@ -1,10 +1,10 @@
 package oathdigital.gameplay.powers.wake
 
+import oathdigital.gameplay.cards.BrokenPeaksSite
 import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Refusals,
-  Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Refusals, Table}
 import oathdigital.testkit.Unwrap.accepted
 
 class RiverSitePowerSuite extends munit.FunSuite:
@@ -32,7 +32,7 @@ class RiverSitePowerSuite extends munit.FunSuite:
   test("every River the catalog prints is a registered phase power"):
     val printed = catalog.sites.flatMap(_.handlers).filter(
       _.value.endsWith(".river")).map(_.value).toSet
-    assertEquals(PhasePowerCatalog.default(catalog).powers.collect {
+    assertEquals(PhasePowerCatalog.default.powers.collect {
       case power: RiverSitePower => power.id.value }.toSet, printed)
 
   test("it is usable in the Wake at a River while another River is in play"):
@@ -48,7 +48,7 @@ class RiverSitePowerSuite extends munit.FunSuite:
   test("it is not usable from a site that is not a River"):
     val ready = staged(Vector(riverbank, tidalMarshes), Phase.Wake)
     // Broken Peaks is in play and is not a River.
-    val dry = CatalogNames.site("Broken Peaks")
+    val dry = BrokenPeaksSite.id
     assert(ready.game.current.map.inPlay.contains(dry))
     assert(!RiverSitePower.isRiver(dry))
     val away = Table.from(ready).pawn(actor, dry).ready

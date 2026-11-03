@@ -1,16 +1,20 @@
 package oathdigital.gameplay
 
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite, DunesSite, FairIsleSite}
 import oathdigital.gameplay.oathkeeper.OathkeeperProcedure
 import oathdigital.gameplay.phases.PhaseMenu
 import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
+import oathdigital.gameplay.powers.action.BrassHorseCard
+import oathdigital.gameplay.powers.economy.KnightsErrantCard
+import oathdigital.gameplay.powers.rest.InsomniaCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{ActionBoundaryRan, ProcedureDequeued,
   WalkerCompleted}
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{CatalogNames, MenuPlay, Outcomes, TakeWealthFixture,
-  Table}
+import oathdigital.testkit.{MenuPlay, Outcomes, Table, TakeWealthFixture}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -20,10 +24,10 @@ class OathDriverSuite extends munit.FunSuite:
   private val rules = new OathRules(catalog,
     walkerPowerCatalog = WalkerPowerCatalog.default(catalog),
     walkerDice = WalkerDiceFixture.blanks)
-  private val ancientCity = CatalogNames.site("Ancient City")
-  private val brokenPeaks = CatalogNames.site("Broken Peaks")
+  private val ancientCity = AncientCitySite.id
+  private val brokenPeaks = BrokenPeaksSite.id
   private val knights =
-    PowerSourceRef.Card(CatalogNames.denizen("Knights Errant"))
+    PowerSourceRef.Card(KnightsErrantCard.id)
 
   private def offer(action: StartableRef): QueuedProcedure =
     QueuedProcedure(p1, action, Vector.empty, Some(knights), QueueKind.Offer)
@@ -38,7 +42,7 @@ class OathDriverSuite extends munit.FunSuite:
     * at Buried Giant. It is p1's Act. */
   private def table: Table = Table.start
     .pawn(p1, at = ancientCity).pawn(p2, at = brokenPeaks)
-    .pawn(p3, at = "Buried Giant").bandits(ancientCity, 2)
+    .pawn(p3, at = BuriedGiantSite).bandits(ancientCity, 2)
 
   private def replayed(from: OathState, events: Vector[OathEvent])
       : OathState =
@@ -90,7 +94,7 @@ class OathDriverSuite extends munit.FunSuite:
       Some(TriggeredProcedureRef.ChronicleBegin))
 
   test("a minor action runs the boundary"):
-    val start = table.relicAt("Brass Horse", at = ancientCity).state
+    val start = table.relicAt(BrassHorseCard, at = ancientCity).state
     val peeked = accepted(rules.startWalker(start, ActionRef.PeekSiteRelics,
       p1))
     assertEquals(boundaries(peeked.events), 1)
@@ -101,10 +105,10 @@ class OathDriverSuite extends munit.FunSuite:
     // breaks. p1 takes Ancient City's only favor, which leaves no Wake
     // option.
     val ready = Table.start
-      .pawn(p1, at = "Ancient City").pawn(p2, at = "Broken Peaks")
-      .pawn(p3, at = "Buried Giant").oathkeeper(Some(p2))
-      .warbandsAt("Dunes", p1, 1).warbandsAt("Fair Isle", p3, 1)
-      .turn(p1, Phase.Wake).siteTokens("Ancient City", favor = 1, secrets = 0)
+      .pawn(p1, at = AncientCitySite).pawn(p2, at = BrokenPeaksSite)
+      .pawn(p3, at = BuriedGiantSite).oathkeeper(Some(p2))
+      .warbandsAt(DunesSite, p1, 1).warbandsAt(FairIsleSite, p3, 1)
+      .turn(p1, Phase.Wake).siteTokens(AncientCitySite, favor = 1, secrets = 0)
       .ready
     val parked = accepted(TakeWealthFixture.take(rules, ready))
     assertEquals(current(parked.state).walkerProcedure,
@@ -145,7 +149,7 @@ class OathDriverSuite extends munit.FunSuite:
   test("a Wake with an option left parks the Wake menu"):
     // A favor at p2's and p3's sites, so whoever wakes next is asked.
     val start = table.siteTokens(brokenPeaks, favor = 1)
-      .siteTokens("Buried Giant", favor = 1).state
+      .siteTokens(BuriedGiantSite, favor = 1).state
     val rested = accepted(rules.startWalker(start,
       PhaseTransitionRef.BeginRest, p1))
     assertEquals(current(rested.state).turn.phase, Phase.Wake)
@@ -167,14 +171,14 @@ class OathDriverSuite extends munit.FunSuite:
       "once it is used"):
     val withPowers = new OathRules(catalog,
       walkerPowerCatalog = WalkerPowerCatalog.default(catalog),
-      phasePowerCatalog = PhasePowerCatalog.default(catalog),
+      phasePowerCatalog = PhasePowerCatalog.default,
       walkerDice = WalkerDiceFixture.blanks)
-    val start = table.adviser(p1, "Insomnia").state
+    val start = table.adviser(p1, InsomniaCard).state
     val rested = accepted(withPowers.startWalker(start,
       PhaseTransitionRef.BeginRest, p1))
     assertEquals(MenuPlay.parked(rested.state), Some(PhaseMenu.Menu.Rest))
     val insomnia = DecisionOptionRef.Denizen(
-      CatalogNames.denizen("Insomnia"))
+      InsomniaCard.id)
     val used = accepted(MenuPlay.picked(withPowers, rested.state, p1,
       insomnia))
     assert(used.events.contains(
@@ -190,5 +194,5 @@ class OathDriverSuite extends munit.FunSuite:
 
   test("an action in Act ends at the Act menu"):
     val traveled = accepted(TravelPlay.travelled(rules,
-      table.phaseMenuParked.state, p1, CatalogNames.site("Broken Peaks")))
+      table.phaseMenuParked.state, p1, BrokenPeaksSite.id))
     assertEquals(MenuPlay.parked(traveled.state), Some(PhaseMenu.Menu.Act))

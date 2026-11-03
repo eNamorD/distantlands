@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
-  ModifierMark, PrintedPower}
+import oathdigital.catalog.{AdviserOnly, Denizen, ModifierMark, PrintedPower}
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   OptionRestriction, PowerCtx}
 import oathdigital.model._
@@ -23,12 +22,18 @@ object BeastTamerCard extends Denizen(DenizenId("90"), "Beast Tamer", Suit.Disco
   * or Nomad battle plans.". A plan's suit is its source card's
   * (`EnemyPlans.suitOf`); a relic and the title have none.
   */
-final case class BeastTamer private (catalog: ExecutableCatalog)
-    extends ContributingPower:
+case object BeastTamer extends ContributingPower:
+  val id: PowerId = BeastTamerCard.power.id
+  /** The suits of the plans it withholds. */
+  val Suits: Set[Suit] = Set(Suit.Beast, Suit.Nomad)
+  /** "No Beast or Nomad battle plans." */
+  private val notes = NoteSet(id)
+  val tamed: NoteKey = notes.key("tamed",
+    Vector(NotePart.Text("No Beast or Nomad battle plans.")))
+  override def noteKeys: Vector[NoteKey] = notes.declared
+
   val cardId: DenizenId = BeastTamerCard.id
-  def id: PowerId = BeastTamer.id
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
-  override def noteKeys: Vector[NoteKey] = BeastTamer.noteKeys
 
   private val barring: OptionRestriction = OptionRestriction(
     (ctx, ref) => Option.when(bars(ctx, ref))(
@@ -44,17 +49,4 @@ final case class BeastTamer private (catalog: ExecutableCatalog)
   /** Whether `ref` is a Beast or Nomad plan of the holder's enemy. */
   private def bars(ctx: PowerCtx, ref: DecisionOptionRef): Boolean =
     EnemyPlans.holderAgainst(ctx, cardId).nonEmpty &&
-      EnemyPlans.suitOf(catalog, ctx.state, ref).exists(BeastTamer.Suits)
-
-object BeastTamer:
-  val id: PowerId = BeastTamerCard.power.id
-  /** The suits of the plans it withholds. */
-  val Suits: Set[Suit] = Set(Suit.Beast, Suit.Nomad)
-  /** "No Beast or Nomad battle plans." */
-  private val notes = NoteSet(id)
-  val tamed: NoteKey = notes.key("tamed",
-    Vector(NotePart.Text("No Beast or Nomad battle plans.")))
-  def noteKeys: Vector[NoteKey] = notes.declared
-
-  def forCatalog(catalog: ExecutableCatalog): BeastTamer =
-    new BeastTamer(catalog)
+      EnemyPlans.suitOf(ctx.catalog, ctx.state, ref).exists(BeastTamer.Suits)

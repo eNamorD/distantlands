@@ -2,14 +2,16 @@ package oathdigital.gameplay
 
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.actions.travel.TravelProcedure
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite}
 import oathdigital.gameplay.powers.WalkerPowerCatalog
 import oathdigital.gameplay.powers.campaign.{PlanDriver, SecondWindCard}
-import oathdigital.gameplay.powers.travel.SpecialEnvoy
+import oathdigital.gameplay.powers.travel.{SpecialEnvoy, SpecialEnvoyCard}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes,
-  PhasePowerHarness, RecordedOps, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, Outcomes, PhasePowerHarness,
+  RecordedOps, Table}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -19,9 +21,9 @@ class OffTurnWalkSuite extends munit.FunSuite:
   private val rules = new OathRules(catalog,
     walkerPowerCatalog = WalkerPowerCatalog.default(catalog),
     walkerDice = WalkerDiceFixture.blanks)
-  private val ancientCity = CatalogNames.site("Ancient City")
-  private val brokenPeaks = CatalogNames.site("Broken Peaks")
-  private val buriedGiant = CatalogNames.site("Buried Giant")
+  private val ancientCity = AncientCitySite.id
+  private val brokenPeaks = BrokenPeaksSite.id
+  private val buriedGiant = BuriedGiantSite.id
   private val secondWind = PowerSourceRef.Card(SecondWindCard.id)
 
   /** An offer owed to p2 on p1's turn, sourced by Second Wind. */
@@ -86,7 +88,7 @@ class OffTurnWalkSuite extends munit.FunSuite:
   test("an off-turn Travel with Special Envoy spends no Supply and leaves " +
       "the Act Phase running"):
     val board = p2OwedOnP1sTurn(ActionRef.Travel)
-      .adviser(p2, "Special Envoy").state
+      .adviser(p2, SpecialEnvoyCard).state
     val taken = accepted(FollowUpPlay.taken(rules, board, p2))
     val started = accepted(ModifierPlay.picking(rules, taken, p2,
       PowerWindow.TravelModifierSelection, Vector(SpecialEnvoy.id)))

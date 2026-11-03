@@ -1,11 +1,14 @@
 package oathdigital.gameplay.powers.poweruse
 
+import oathdigital.gameplay.cards.{AncientCitySite, DeepWoodsSite}
 import oathdigital.gameplay.powerresolver.ModifierPicks
 import oathdigital.gameplay.powers.{SearchFixture, WalkerPowerCatalog}
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.search.MushroomsCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, MenuPlay, ParkedNode, Table}
+import oathdigital.testkit.{MenuPlay, ParkedNode, Table}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -15,8 +18,8 @@ import oathdigital.testkit.Unwrap.accepted
 class PlacementBanModifierSuite extends munit.FunSuite:
   import SearchFixture.rules
 
-  private val mushrooms = CatalogNames.denizen("Mushrooms")
-  private val home = CatalogNames.site("Ancient City")
+  private val mushrooms = MushroomsCard.id
+  private val home = AncientCitySite.id
   private val mushroomsRef = DecisionOptionRef.Denizen(mushrooms)
   private val decisionId =
     ModifierPicks.decisionId(PowerWindow.SearchModifierSelection)
@@ -27,17 +30,17 @@ class PlacementBanModifierSuite extends munit.FunSuite:
   private def besideMushrooms(steps: Table => Table): ReadyGame =
     steps(Table.start.pawn(p1, home).denizen(mushrooms, at = home)
       .supply(p1, 5)
-      .discarded(Region.Cradle, CatalogNames.denizen("Wrestlers"))).ready
+      .discarded(Region.Cradle, WrestlersCard.id)).ready
 
   /** City Wall at Ancient City, ruled by p2. */
   private val insideCityWall: Table => Table =
-    _.denizen(CatalogNames.denizen("City Wall"), at = home)
+    _.denizen(CityWallCard.id, at = home)
       .warbandsAt(home, p2, 1)
 
   /** Forest Council at Deep Woods, ruled by p2. */
   private val underForestCouncil: Table => Table = table =>
-    val woods = CatalogNames.site("Deep Woods")
-    table.denizen(CatalogNames.denizen("Forest Council"), at = woods)
+    val woods = DeepWoodsSite.id
+    table.denizen(ForestCouncilCard.id, at = woods)
       .warbandsAt(woods, p2, 1)
 
   /** The modifier decision's Mushrooms option, once p1 starts a Search. */

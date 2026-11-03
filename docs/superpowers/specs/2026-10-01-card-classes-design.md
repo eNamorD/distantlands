@@ -1,8 +1,9 @@
 # Card Classes Design
 
 Date: 2026-10-01. Phase: **Phase - Card classes**, since removed from
-`docs/ROADMAP.md`. Status: implemented 2026-10-01 in four slices; the
-roadmap's "Shrink cached catalog fields" holds what is left.
+`docs/ROADMAP.md`. Status: implemented 2026-10-01 in four slices. The sweep
+of 2026-11-02 removed the `forCatalog` constructors that only passed the
+catalog on; the roadmap's "Put the catalog on `PowerCtx`" holds what is left.
 
 ## Goal
 

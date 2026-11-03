@@ -2,14 +2,15 @@ package oathdigital.gameplay.powers.economy
 
 import oathdigital.gameplay.ModifierPlay
 import oathdigital.gameplay.actions.economy.MusterProcedure
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powerresolver.ModifierPicks
 import oathdigital.gameplay.powers.{SearchFixture, WalkerPowerCatalog}
+import oathdigital.gameplay.powers.search.ErrandBoyCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, EconomyActions, Look, Outcomes,
-  Table}
+import oathdigital.testkit.{EconomyActions, Look, Outcomes, Table}
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
 import oathdigital.testkit.StartPreview
@@ -20,10 +21,10 @@ class MusterModifierChoiceSuite extends munit.FunSuite:
   import EconomyActions.parkedDecision
   import SearchFixture.rules
 
-  private val playmates = CatalogNames.denizen("Animal Playmates")
+  private val playmates = AnimalPlaymatesCard.id
   /** A plain Beast denizen to muster on: it has no Muster or Trade power. */
-  private val errandBoy = CatalogNames.denizen("Errand Boy")
-  private val home = "Ancient City"
+  private val errandBoy = ErrandBoyCard.id
+  private val home = AncientCitySite
   private val modifierDecisionId =
     ModifierPicks.decisionId(PowerWindow.MusterModifierSelection)
   private val startMuster: DecisionOption =

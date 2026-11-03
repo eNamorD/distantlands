@@ -1,6 +1,7 @@
 package oathdigital.gameplay
 
 import oathdigital.gameplay.powerresolver.{Contribution, ContributionCollector, ContributingPower, PowerCtx, PowerWindowIndex, Transform}
+import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.Table
 
@@ -25,8 +26,8 @@ class ContributionIgnoresSuite extends munit.FunSuite:
       ignoring(ctx, candidate)
 
   private def ctxAt(operation: Operation)(candidate: ContributingPower)
-      : PowerCtx = PowerCtx(Table.start.ready, actor, candidate.source, window,
-    Vector.empty, operation)
+      : PowerCtx = PowerCtx(catalog, Table.start.ready, actor,
+    candidate.source, window, Vector.empty, operation)
 
   private def survivors(powers: Vector[ContributingPower], operation: Operation)
       : Vector[PowerId] = ContributionCollector.gather(window,

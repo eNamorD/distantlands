@@ -2,38 +2,41 @@ package oathdigital.gameplay.powers.economy
 
 import oathdigital.gameplay.PowerAccess
 import oathdigital.gameplay.actions.economy.TradeProcedure
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powerresolver.ModifierPicks
 import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
+import oathdigital.gameplay.powers.action.AlchemistCard
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.search.ErrandBoyCard
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, MenuPlay,
-  Outcomes, PhasePowerHarness, PowerRules, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, MenuPlay, Outcomes,
+  PhasePowerHarness, PowerRules, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
 
 class SmallFriendsSuite extends munit.FunSuite:
-  private val friends = CatalogNames.denizen("Small Friends")
-  private val power = SmallFriends.forCatalog(catalog)
+  private val friends = SmallFriendsCard.id
+  private val power = SmallFriends
   private val map = Table.start.ready.game.current.map
   /** p1's pawn site. */
-  private val home = CatalogNames.site("Ancient City")
+  private val home = AncientCitySite.id
   /** A site in play in another region. */
   private val away = Table.siteInAnotherRegionThan(home)
   /** A third site in play. */
   private val third = map.inPlay.find(site =>
     site != home && site != away).get
   /** A plain Beast denizen. */
-  private val errandBoy = CatalogNames.denizen("Errand Boy")
+  private val errandBoy = ErrandBoyCard.id
   /** A plain Order denizen. */
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
+  private val wrestlers = WrestlersCard.id
   /** A plain Arcane denizen. */
-  private val alchemist = CatalogNames.denizen("Alchemist")
-  private val oldOak = CatalogNames.denizen("The Old Oak")
-  private val market = CatalogNames.denizen("Moving Market")
-  private val merchants = CatalogNames.denizen("Skilled Merchants")
+  private val alchemist = AlchemistCard.id
+  private val oldOak = TheOldOakCard.id
+  private val market = MovingMarketCard.id
+  private val merchants = SkilledMerchantsCard.id
   private val modifiers =
     ModifierPicks.decisionId(PowerWindow.TradeModifierSelection)
   private val rules = PowerRules.withWalkerPowers

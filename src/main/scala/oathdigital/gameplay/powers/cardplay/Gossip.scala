@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.cardplay
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
-  ModifierMark, PrintedPower}
+import oathdigital.catalog.{AdviserOnly, Denizen, ModifierMark, PrintedPower}
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution, PowerCtx, Transform}
 import oathdigital.gameplay.powers.CatalogResolution
 import oathdigital.gameplay.{NoteSupport, PowerAccess}
@@ -27,15 +26,18 @@ object GossipCard extends Denizen(DenizenId("99"), "Gossip", Suit.Discord) with 
   * generic gain line, and reads the gain's step, so an empty bank writes
   * nothing.
   */
-final case class Gossip private (catalog: ExecutableCatalog)
-    extends ContributingPower:
+case object Gossip extends ContributingPower:
+  val id: PowerId = GossipCard.power.id
+  val Favor: Int = 1
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  val gained: NoteKey = NoteSupport.gainedFromKey(notes, "gained")
+
   val cardId: DenizenId = GossipCard.id
-  def id: PowerId = Gossip.id
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
   override lazy val resolution: PowerResolution =
-    CatalogResolution.of(catalog, id)
+    CatalogResolution.of(GossipCard.power)
 
-  override def noteKeys: Vector[NoteKey] = Gossip.noteKeys
 
   def contributions: Map[PowerWindow, Vector[Contribution]] = Map(
     PowerWindow.ActionCardPlayedFacedown -> Vector(Transform((ctx, children) =>
@@ -51,13 +53,3 @@ final case class Gossip private (catalog: ExecutableCatalog)
     case CardPlayedFacedown(_, player) =>
       PowerAccess.faceupAdviserHolder(ctx.state, cardId).filter(_ != player)
     case _ => None
-
-object Gossip:
-  val id: PowerId = GossipCard.power.id
-  val Favor: Int = 1
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  val gained: NoteKey = NoteSupport.gainedFromKey(notes, "gained")
-
-  def forCatalog(catalog: ExecutableCatalog): Gossip =
-    new Gossip(catalog)

@@ -1,8 +1,10 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.rest.InsomniaCard
+import oathdigital.gameplay.powers.search.{LandWardenCard, NewsFromAfarCard}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.accepted
@@ -10,13 +12,13 @@ import oathdigital.testkit.Unwrap.accepted
 class EnchantressSuite extends munit.FunSuite:
   import PhasePowerHarness._
 
-  private val enchantress = CatalogNames.denizen("Enchantress")
+  private val enchantress = EnchantressCard.id
   private val source = DecisionOptionRef.Denizen(enchantress)
   // Hearth denizens whose powers these tests do not use.
-  private val homesteaders = CatalogNames.denizen("Homesteaders")
-  private val landWarden = CatalogNames.denizen("Land Warden")
-  private val newsFromAfar = CatalogNames.denizen("News from Afar")
-  private val insomnia = CatalogNames.denizen("Insomnia")
+  private val homesteaders = HomesteadersCard.id
+  private val landWarden = LandWardenCard.id
+  private val newsFromAfar = NewsFromAfarCard.id
+  private val insomnia = InsomniaCard.id
 
   /** p1's Act holding Enchantress with `secrets` faceup secrets. p2 holds
     * Homesteaders faceup with 1 favor and 2 secrets on it. */

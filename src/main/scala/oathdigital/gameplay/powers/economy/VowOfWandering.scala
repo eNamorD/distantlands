@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.economy
 
-import oathdigital.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
+import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog, Locked,
+  PrintedPower}
 import oathdigital.gameplay.actions.VowOfWanderingRule
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
@@ -97,7 +98,8 @@ case object VowOfWandering extends ContributingPower:
   override def applicable(ctx: PowerCtx): Boolean =
     holds(ctx.state, ctx.actor)
 
-  override def operationRestrictions: Vector[OperationRestriction] =
+  override def operationRestrictions(catalog: ExecutableCatalog)
+      : Vector[OperationRestriction] =
     Vector(placing)
 
   /** Whether `player` holds this card faceup. */

@@ -82,7 +82,9 @@ object CardSlots:
     "locked" -> "Locked: cannot be discarded",
     "active-modifier" -> "In use as a modifier this action",
     "discard-immune" -> "Protected by the Hall of Ministers",
-    "bloodline-locked" -> "Ancient Bloodline: Locked.")
+    "bloodline-locked" -> "Ancient Bloodline: Locked.",
+    "still-boiling-lake" -> ("Still Boiling Lake: Cards cannot be played " +
+      "to this site."))
 
   def slots(catalog: ExecutableCatalog, ready: ReadyGame, actor: PlayerId,
       card: WorldCardId, origin: CardPlay.Origin, rules: CardPlayRules,

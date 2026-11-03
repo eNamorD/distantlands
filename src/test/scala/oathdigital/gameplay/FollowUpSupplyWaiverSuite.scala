@@ -1,12 +1,16 @@
 package oathdigital.gameplay
 
 import oathdigital.gameplay.actions.travel.TravelProcedure
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite, FairIsleSite}
 import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.travel.SpecialEnvoy
+import oathdigital.gameplay.powers.action.DowsingSticksCard
+import oathdigital.gameplay.powers.economy.KnightsErrantCard
+import oathdigital.gameplay.powers.travel.{SpecialEnvoy, SpecialEnvoyCard}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, RecordedOps, Table}
+import oathdigital.testkit.{Look, Outcomes, RecordedOps, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -16,10 +20,10 @@ class FollowUpSupplyWaiverSuite extends munit.FunSuite:
   private val rules = new OathRules(catalog,
     walkerPowerCatalog = WalkerPowerCatalog.default(catalog),
     walkerDice = WalkerDiceFixture.blanks)
-  private val ancientCity = CatalogNames.site("Ancient City")
-  private val brokenPeaks = CatalogNames.site("Broken Peaks")
+  private val ancientCity = AncientCitySite.id
+  private val brokenPeaks = BrokenPeaksSite.id
   private val knights =
-    PowerSourceRef.Card(CatalogNames.denizen("Knights Errant"))
+    PowerSourceRef.Card(KnightsErrantCard.id)
 
   private def owed(action: ActionRef): QueuedProcedure = QueuedProcedure(p1,
       action, Vector.empty, Some(knights), QueueKind.Offer)
@@ -28,7 +32,7 @@ class FollowUpSupplyWaiverSuite extends munit.FunSuite:
     * Broken Peaks and p3 at Buried Giant. */
   private def table(supply: Int): Table = Table.start
     .pawn(p1, at = ancientCity).pawn(p2, at = brokenPeaks)
-    .pawn(p3, at = "Buried Giant")
+    .pawn(p3, at = BuriedGiantSite)
     .bandits(ancientCity, 2).supply(p1, supply)
 
   private def spent(events: Vector[OathEvent]): Vector[SpendSupply] =
@@ -62,7 +66,7 @@ class FollowUpSupplyWaiverSuite extends munit.FunSuite:
       "Campaign still starts there"):
     val board = table(supply = 0).offering(owed(ActionRef.Travel))
       .update(_.updateCurrent(_.copy(queue = Vector(owed(ActionRef.Campaign)))))
-      .adviser(p1, "Special Envoy").state
+      .adviser(p1, SpecialEnvoyCard).state
     val taken = accepted(FollowUpPlay.taken(rules, board, p1))
     val started = accepted(ModifierPlay.picking(rules, taken, p1,
       PowerWindow.TravelModifierSelection, Vector(SpecialEnvoy.id)))
@@ -87,9 +91,9 @@ class FollowUpSupplyWaiverSuite extends munit.FunSuite:
 
   test("a queued Recover spends no Supply on its roll"):
     // p1 has no Supply, so a Recover started normally cannot pay its roll.
-    val fairIsle = CatalogNames.site("Fair Isle")
+    val fairIsle = FairIsleSite.id
     val base = Table.start.pawn(p1, at = fairIsle)
-      .relicAt(CatalogNames.relic("Dowsing Sticks"), at = fairIsle)
+      .relicAt(DowsingSticksCard.id, at = fairIsle)
       .supply(p1, 0)
     assert(rules.startWalker(base.state, ActionRef.Recover, p1).isLeft)
     val started = accepted(FollowUpPlay.taken(rules,

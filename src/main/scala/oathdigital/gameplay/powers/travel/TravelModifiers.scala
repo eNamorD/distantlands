@@ -1,6 +1,5 @@
 package oathdigital.gameplay.powers.travel
 
-import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.powerresolver.ContributingPower
 
 /** The Travel modifiers and rules that are not terrain, registered together.
@@ -8,15 +7,7 @@ import oathdigital.gameplay.powerresolver.ContributingPower
   * [[TravelSitePowers]].
   */
 object TravelModifiers:
-  def forCatalog(catalog: ExecutableCatalog): Vector[ContributingPower] =
-    Vector(Tents.forCatalog(catalog)) ++
-      Vector(RoyalStables.forCatalog(catalog)) ++
-      Vector(ForestPaths.forCatalog(catalog)) ++
-      Vector(DragonskinDrum.forCatalog(catalog)) ++
-      Vector(TollRoads.forCatalog(catalog)) ++
-      Vector(GraspingVines.forCatalog(catalog)) ++
-      Vector(AFastSteed.forCatalog(catalog)) ++
-      Vector(SpecialEnvoy.forCatalog(catalog)) ++
-      Vector(WayStation.forCatalog(catalog)) ++
-      Vector(Hospitality.forCatalog(catalog)) ++
-      Vector(Tyrant)
+  val all: Vector[ContributingPower] =
+    Vector(Tents, RoyalStables, ForestPaths,
+      DragonskinDrum, TollRoads, GraspingVines, AFastSteed, SpecialEnvoy,
+      WayStation, Hospitality, Tyrant)

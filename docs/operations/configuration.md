@@ -21,16 +21,13 @@ firewall, HTTPS proxy, and provisional browser guidance is in
 | `--host HOST` | `OATH_HOST` | `127.0.0.1` |
 | `--port PORT` | `OATH_PORT` | `8080` |
 | `--public-base-url URL` | `OATH_PUBLIC_BASE_URL` | unset |
-| `--session-cookie-name NAME` | `OATH_SESSION_COOKIE_NAME` | unset; development mode only; must be supplied with authenticated public origin |
-| `--authenticated-public-origin ORIGIN` | `OATH_AUTHENTICATED_PUBLIC_ORIGIN` | unset; development mode only; must be supplied with session cookie name |
 | `--database-path PATH` | `OATH_DATABASE_PATH` | `var/oathdigital` |
 | `--mode development\|trusted-alpha` | `OATH_MODE` | `development`; packaged launcher uses `trusted-alpha` |
 
 `development` accepts loopback bind hosts only. `trusted-alpha` accepts a
 non-loopback host only when `--public-base-url` or `OATH_PUBLIC_BASE_URL`
 provides the browser-visible HTTP or HTTPS origin. Public base URLs cannot
-contain credentials, a path, query, or fragment. Authenticated public origins
-must use HTTPS except for loopback HTTP origins.
+contain credentials, a path, query, or fragment.
 
 Requests that change state, such as creating a game or making a move, must come
 from a page at the public base URL. In every mode, a page at `localhost`,

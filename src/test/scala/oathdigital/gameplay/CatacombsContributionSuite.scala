@@ -5,7 +5,8 @@ import oathdigital.gameplay.operations.Costs
 import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,
   Restriction}
 import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.recover.CatacombsContribution
+import oathdigital.gameplay.powers.recover.{CatacombsContribution,
+  RelicWorshipCard}
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.gameplay.walker.{ChoicePayload, RollPayload,
   WalkerPowers, WalkerStepRecorded}
@@ -193,7 +194,7 @@ class CatacombsContributionSuite extends munit.FunSuite:
       "empty relic deck"):
     // Relic Worship can be picked, so the decision asks and lists Catacombs.
     def withWorship(game: Game): ReadyGame =
-      Table.from(game.ready).adviser(Table.p1, "Relic Worship").ready
+      Table.from(game.ready).adviser(Table.p1, RelicWorshipCard).ready
     def catacombsOption(ready: ReadyGame)(using munit.Location)
         : DecisionOption =
       val begun = accepted(rules.startWalker(Ready(ready), ActionRef.Recover,
@@ -233,7 +234,7 @@ class CatacombsContributionSuite extends munit.FunSuite:
 
   test("Catacombs pays its secret onto its card, as its selection payment"):
     val fixture = reliclessSite(secrets = 1)
-    val power = CatacombsContribution.forCatalog(catalog)
+    val power = CatacombsContribution
     assertEquals(power.selectionPayments(fixture.ready, fixture.actor),
       Vector(Costs.onCard(fixture.actor, power.cardId, Cost(secret = 1),
         catalog)))

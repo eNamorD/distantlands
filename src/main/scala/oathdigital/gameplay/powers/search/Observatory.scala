@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.search
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
-  PrintedPower, SiteOnly}
+import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
 import oathdigital.gameplay.powerresolver.{Contribution, Transform}
 import oathdigital.gameplay.powers.SelectedModifier
 import oathdigital.model._
@@ -21,18 +20,12 @@ object ObservatoryCard extends Denizen(DenizenId("64"), "Observatory", Suit.Arca
   * slice 3). It writes no line: the start line names it, and the Search
   * line names the pile.
   */
-final case class Observatory private (catalog: ExecutableCatalog)
-    extends SelectedModifier:
-  val cardId: DenizenId = ObservatoryCard.id
-  def id: PowerId = Observatory.id
+case object Observatory extends SelectedModifier:
+  val id: PowerId = ObservatoryCard.power.id
+
+  val card: Denizen = ObservatoryCard
   def actions: Set[MajorActionType] = Set(MajorActionType.Search)
 
   def effects: Map[PowerWindow, Vector[Contribution]] = Map(
     PowerWindow.SearchSourceSelection -> Vector(Transform((ctx, operations) =>
       SearchSources.withPiles(ctx, operations, Region.all))))
-
-object Observatory:
-  val id: PowerId = ObservatoryCard.power.id
-
-  def forCatalog(catalog: ExecutableCatalog): Observatory =
-    new Observatory(catalog)

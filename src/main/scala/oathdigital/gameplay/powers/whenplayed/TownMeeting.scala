@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.whenplayed
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import oathdigital.catalog.{Denizen, PrintedPower}
 import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.powerresolver.PowerCtx
 import oathdigital.gameplay.powers.RuledCards
@@ -26,20 +26,29 @@ object TownMeetingCard extends Denizen(DenizenId("236"), "Town Meeting", Suit.He
   * unlike Fabled Feast's one bank. Its line tells the whole gain; each
   * bank's Gain line stays.
   */
-final case class TownMeeting private (catalog: ExecutableCatalog)
-    extends WhenPlayedPower:
-  val cardId: DenizenId = TownMeetingCard.id
-  import TownMeeting._
-  def id: PowerId = TownMeeting.id
+case object TownMeeting extends WhenPlayedPower:
+  val id: PowerId = TownMeetingCard.power.id
+  val decisionId: String = "cardplay.town-meeting.banks"
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "{Red} gained {n favor}." */
+  val gained: NoteKey = NoteSupport.gainedKey(notes, "gained")
+  /** "Every favor bank was empty." */
+  val empty: NoteKey = notes.key("empty", Vector(
+    NotePart.Text("Every favor bank was empty.")))
+  /** "{Red} ruled no Hearth card." */
+  val none: NoteKey = notes.key("none", Vector(NotePart.Arg(0),
+    NotePart.Text(" ruled no Hearth card.")))
 
-  override def noteKeys: Vector[NoteKey] = TownMeeting.noteKeys
+  val cardId: DenizenId = TownMeetingCard.id
 
   private val banks = new FavorSplit(decisionId, Suit.all, "Take favor")
 
   def effect(ctx: PowerCtx): Vector[Operation] =
     val source = PowerSourceRef.Card(cardId)
     Vector(Branch((live, _) =>
-      val count = RuledCards.count(catalog, live, SiteRuler.Player(ctx.actor),
+      val count = RuledCards.count(ctx.catalog, live,
+        SiteRuler.Player(ctx.actor),
         Suit.Hearth)
       if count == 0 then Vector(Note(id, _ =>
         Some(none(source, NoteArg.Player(ctx.actor)))))
@@ -51,20 +60,3 @@ final case class TownMeeting private (catalog: ExecutableCatalog)
           _.map { case (suit, n) => Gain.Favor(ctx.actor, suit, n) })),
         Note(id, NoteSupport.gainedNote(gained, source, ctx.actor,
           NoteUnit.Favor, NoteSupport.favor)))))
-
-object TownMeeting:
-  val id: PowerId = TownMeetingCard.power.id
-  val decisionId: String = "cardplay.town-meeting.banks"
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "{Red} gained {n favor}." */
-  val gained: NoteKey = NoteSupport.gainedKey(notes, "gained")
-  /** "Every favor bank was empty." */
-  val empty: NoteKey = notes.key("empty", Vector(
-    NotePart.Text("Every favor bank was empty.")))
-  /** "{Red} ruled no Hearth card." */
-  val none: NoteKey = notes.key("none", Vector(NotePart.Arg(0),
-    NotePart.Text(" ruled no Hearth card.")))
-
-  def forCatalog(catalog: ExecutableCatalog): TownMeeting =
-    new TownMeeting(catalog)

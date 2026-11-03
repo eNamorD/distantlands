@@ -1,8 +1,13 @@
 package oathdigital.gameplay
 
+import oathdigital.gameplay.powers.economy.HallowedSpringCard
+import oathdigital.catalog.holding.{ArbiterCard, IronHandCard}
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  DeepWoodsSite}
+import oathdigital.gameplay.powers.campaign.{StickyFireCard, WrestlersCard}
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.present
 
@@ -11,15 +16,15 @@ class RuleSourceIndexSuite extends munit.FunSuite:
     * Sticky Fire facedown at Broken Peaks, the ruined Hiding Place at Deep
     * Woods, and a facedown Wrestlers advising p1. */
   private val board: ReadyGame = Table.start
-    .relicAt("Sticky Fire", at = "Broken Peaks")
-    .edifice("Hiding Place", EdificeSide.Ruined, at = "Deep Woods")
-    .adviser(p1, "Wrestlers", facedown = true)
+    .relicAt(StickyFireCard, at = BrokenPeaksSite)
+    .edifice(HallowedSpringCard, EdificeSide.Ruined, at = DeepWoodsSite)
+    .adviser(p1, WrestlersCard, facedown = true)
     .ready
 
   test("the source index lists a printed site, a facedown source, an " +
       "edifice and an adviser, each once, in a stable order"):
     val ready = board
-    val ancientCity = CatalogNames.site("Ancient City")
+    val ancientCity = AncientCitySite.id
     val facts = RuleSourceIndex.enumerate(catalog, ready)
     val printed = present(facts.collectFirst {
       case value @ IndexedRuleSource(RuleSourceRef.Site(id), _, _, _)
@@ -37,8 +42,8 @@ class RuleSourceIndexSuite extends munit.FunSuite:
 
   test("site relics retain site identity, orientation, and declared handlers"):
     val ready = board
-    val siteId = CatalogNames.site("Broken Peaks")
-    val relic = CatalogNames.relic("Sticky Fire")
+    val siteId = BrokenPeaksSite.id
+    val relic = StickyFireCard.id
     val indexed = present(RuleSourceIndex.enumerate(catalog, ready).find(
       _.source == RuleSourceRef.SiteRelic(siteId, relic)),
       "Sticky Fire's source")
@@ -70,8 +75,8 @@ class RuleSourceIndexSuite extends munit.FunSuite:
 
   test("all six Foundations expose ordered identities, faces, and state"):
     val base = board
-    val arbiter = CatalogNames.legacy("Arbiter")
-    val ironHand = CatalogNames.legacy("Iron Hand")
+    val arbiter = ArbiterCard.id
+    val ironHand = IronHandCard.id
     // No Table step sets foundations or legacies.
     val altered = base.updateCampaign(_.copy(foundations =
       base.game.campaign.foundations.updated(FoundationNumber.III,

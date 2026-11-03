@@ -1,5 +1,6 @@
 package oathdigital.gameplay.powers
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.model._
 import oathdigital.testkit.{Look, Table}
 
@@ -9,7 +10,7 @@ import oathdigital.testkit.{Look, Table}
   * inventory whole: a card leaves the place it came from when it is placed.
   */
 object PowerFixture:
-  val quietTable: ReadyGame = Table.start.pawn(Table.p1, "Ancient City").ready
+  val quietTable: ReadyGame = Table.start.pawn(Table.p1, AncientCitySite).ready
   val actor: PlayerId = Table.p1
 
   /** The site the actor's pawn stands on. */

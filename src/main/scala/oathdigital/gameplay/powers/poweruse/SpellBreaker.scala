@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.poweruse
 
-import oathdigital.catalog.{Denizen, PrintedPower, SiteOnly}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower,
+  SiteOnly}
 import oathdigital.gameplay.operations.PowerUseRules
 import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,
   PowerUse, PowerUseRefusal, PowerUseRestriction, PowerUseStep, Waiver}
@@ -41,7 +42,8 @@ case object SpellBreaker extends ContributingPower with PowerUseRestriction:
   /** "{card} stays deactivated." (automatic power consent design). */
   val staysDeactivated: NoteKey = notes.borrow(PowerUseStep.staysDeactivated)
 
-  def refusal(ready: ReadyGame, use: PowerUse): Option[PowerUseRefusal] =
+  def refusal(catalog: ExecutableCatalog, ready: ReadyGame, use: PowerUse)
+      : Option[PowerUseRefusal] =
     for
       ruler <- RulerBans.ruler(ready, SpellBreakerCard.id)
       if use.costsSecret && RulerBans.enemy(ruler, use.user)

@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.{PrintedPower, Relic}
+import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
 import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.powers.PowerAnswers
 import oathdigital.model._
@@ -33,7 +33,8 @@ case object Whistle extends PaidAction(WhistleCard.power):
   override def noteKeys: Vector[NoteKey] = notes.declared
   override def narratedDecisions: Set[String] = Set(decisionId)
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = source match
     case DecisionOptionRef.Relic(whistle) => Right(Sequence(Vector[Operation](
       Branch((state, _) => ask(state, player)),

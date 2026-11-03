@@ -1,12 +1,12 @@
 package oathdigital.application.gamelog
 
-import oathdigital.application.{GameApplicationService, GameCommand,
-  TreeDecision}
+import oathdigital.application.{GameApplicationService, TreeDecision}
 import oathdigital.gameplay.actions.campaign.{CampaignIds, PlanAid}
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.campaign.ShieldWall
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseAmountAnswer
-import oathdigital.testkit.{Dice, MenuPlay, Table}
+import oathdigital.testkit.{Commands, Dice, MenuPlay, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, present}
 import LogScripts.{formatter, texts}
@@ -20,7 +20,7 @@ class GameLogPlanAidSuite extends munit.FunSuite:
   private val shieldWall: DecisionOptionRef =
     DecisionOptionRef.Denizen(ShieldWall.cardId)
   private val table: Table = Table.start.imperial(p2, p3)
-    .turn(p1, Phase.Act).pawn(p3, at = "Ancient City")
+    .turn(p1, Phase.Act).pawn(p3, at = AncientCitySite)
     .boardWarbands(p1, 5).boardWarbands(p3, 2).favor(p2, 2)
     .adviser(p2, ShieldWall.cardId).darkestSecret(Some(p2), 1)
     .oathkeeper(None)
@@ -35,10 +35,10 @@ class GameLogPlanAidSuite extends munit.FunSuite:
     val started = accepted(service.handle(gameId, 0L,
       MenuPlay.starting(p1, ActionRef.Campaign)))
     val parked = accepted(service.handle(gameId, started.nextSequence,
-      GameCommand.ResolveWalker(p1, TreeDecision(CampaignIds.force,
+      Commands.resolveWalker(p1, TreeDecision(CampaignIds.force,
         ChooseAmountAnswer(4)))))
     offers.foldLeft(parked)((at, offer) => accepted(service.handle(gameId,
-      at.nextSequence, GameCommand.SavePlanAid(p2, offer))))
+      at.nextSequence, Commands.savePlanAid(p2, offer))))
     service
 
   private val full = AidOffer(plans = Vector(shieldWall),

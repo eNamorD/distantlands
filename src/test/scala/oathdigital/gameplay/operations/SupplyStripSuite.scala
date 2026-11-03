@@ -1,6 +1,7 @@
 package oathdigital.gameplay.operations
 
 import oathdigital.gameplay.powerresolver.PowerCtx
+import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.Table
 import oathdigital.testkit.Unwrap.as
@@ -16,7 +17,7 @@ class SupplyStripSuite extends munit.FunSuite:
   private val othersPay: SpendSupply = SpendSupply(Table.p2, 2)
 
   /** The context of folding the cost window, a windowed `Sequence`. */
-  private val folding: PowerCtx = PowerCtx(ready, actor,
+  private val folding: PowerCtx = PowerCtx(catalog, ready, actor,
     RuleSourceRef.GameRule("test"), window, Vector("0"),
     Sequence(Vector.empty, Some(window)))
 

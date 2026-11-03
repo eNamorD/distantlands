@@ -1,8 +1,10 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite}
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.accepted
@@ -10,7 +12,7 @@ import oathdigital.testkit.Unwrap.accepted
 class PlagueEnginesSuite extends munit.FunSuite:
   import PhasePowerHarness._
 
-  private val engines = CatalogNames.denizen("Plague Engines")
+  private val engines = PlagueEnginesCard.id
   private val source = DecisionOptionRef.Denizen(engines)
 
   /** p1's Act holding Plague Engines with two secrets, the Arcane bank
@@ -24,8 +26,8 @@ class PlagueEnginesSuite extends munit.FunSuite:
   test("each player puts 1 favor per site they rule into the Arcane bank, " +
       "the user first"):
     val ready = staged.favor(p1, 5).favor(p2, 3).favor(p3, 1)
-      .warbandsAt("Ancient City", p1, 1).warbandsAt("Buried Giant", p1, 1)
-      .warbandsAt("Broken Peaks", p2, 1).ready
+      .warbandsAt(AncientCitySite, p1, 1).warbandsAt(BuriedGiantSite, p1, 1)
+      .warbandsAt(BrokenPeaksSite, p2, 1).ready
     val t = accepted(use(ready, PlagueEngines, source))
     parked.assertResumed(t.state, Phase.Act, p1)
     val end = after(t)
@@ -42,7 +44,7 @@ class PlagueEnginesSuite extends munit.FunSuite:
 
   test("a player short of favor gives all they have"):
     val ready = staged.favor(p2, 1)
-      .warbandsAt("Broken Peaks", p2, 1).warbandsAt("Buried Giant", p2, 1)
+      .warbandsAt(BrokenPeaksSite, p2, 1).warbandsAt(BuriedGiantSite, p2, 1)
       .ready
     val t = accepted(use(ready, PlagueEngines, source))
     assertEquals((Look(after(t)).favor(p2), arcane(after(t))), (0, 1))

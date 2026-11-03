@@ -1,14 +1,17 @@
 package oathdigital.gameplay.powers.rest
 
+import oathdigital.catalog.Denizen
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Table.p1
 
 /** Silver Tongue staged in the Rest phase, shared by its own suite, the
   * projection suite and the pending-walker invariant (Task 13).
   */
 object SilverTongueFixture:
-  val tongue: DenizenId = CatalogNames.denizen("Silver Tongue")
+  val tongue: DenizenId = SilverTongueCard.id
 
   /** p1's Rest at Ancient City, holding Silver Tongue as the only adviser.
     * Ancient City shows `siteCards` faceup. Every bank in `stocked` holds 3
@@ -18,11 +21,11 @@ object SilverTongueFixture:
     * No site holds a bandit, so the action boundary visibly refills the sites
     * with capacity.
     */
-  def silverTongueRest(siteCards: Vector[String], stocked: Set[Suit])
+  def silverTongueRest(siteCards: Vector[Denizen], stocked: Set[Suit])
       : ReadyGame =
-    val resting = Table.start.turn(p1, Phase.Rest).pawn(p1, "Ancient City")
-      .pawn(Table.p2, "Broken Peaks").pawn(Table.p3, "Buried Giant")
+    val resting = Table.start.turn(p1, Phase.Rest).pawn(p1, AncientCitySite)
+      .pawn(Table.p2, BrokenPeaksSite).pawn(Table.p3, BuriedGiantSite)
       .adviser(p1, tongue)
-      .siteTokens("Broken Peaks", secrets = 2)
-    val shown = siteCards.foldLeft(resting)(_.denizen(_, at = "Ancient City"))
+      .siteTokens(BrokenPeaksSite, secrets = 2)
+    val shown = siteCards.foldLeft(resting)(_.denizen(_, at = AncientCitySite))
     shown.banksHoldingOnly(stocked.toSeq.map(_ -> 3)*).ready

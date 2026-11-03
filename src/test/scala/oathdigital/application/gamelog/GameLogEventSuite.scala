@@ -1,8 +1,8 @@
 package oathdigital.application.gamelog
 
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.model._
 import oathdigital.protocol.projection.{LogEntry, LogKind, LogSpan}
-import oathdigital.testkit.CatalogNames
 import oathdigital.testkit.Table.p3
 import LogScripts._
 
@@ -21,7 +21,7 @@ class GameLogEventSuite extends munit.FunSuite:
 
   test("Peek Site Relics names the relics for the peeker only"):
     val script = peekRelics
-    val site = CatalogNames.site("Broken Peaks")
+    val site = BrokenPeaksSite.id
     val mine = entryStarting(format(script, Some(script.actor)), "Peeked at ")
     assertEquals(mine.kind, LogKind.Action)
     assert(mine.spans.exists(_.isInstanceOf[LogSpan.Card]), mine.spans)
@@ -33,7 +33,7 @@ class GameLogEventSuite extends munit.FunSuite:
       s"Peeked at a Relic at ${presentation.siteLabel(site)}")
 
   test("each Move Warbands posts one line, in a section of its own"):
-    val peaks = presentation.siteLabel(CatalogNames.site("Broken Peaks"))
+    val peaks = presentation.siteLabel(BrokenPeaksSite.id)
     val moves = format(warbandsMoved, None)
       .filter(entry => text(entry).startsWith("Moved "))
     assertEquals(texts(moves), Vector(
@@ -48,7 +48,7 @@ class GameLogEventSuite extends munit.FunSuite:
 
   test("bandits returned and a new Usurper each post one line"):
     val script = recordedEventsBoard
-    val site = CatalogNames.site("Ancient City")
+    val site = AncientCitySite.id
     val other = script.otherSeat
     val cases = Vector(
       OathEvent.BanditsRefilled(Vector(site -> 1)) ->

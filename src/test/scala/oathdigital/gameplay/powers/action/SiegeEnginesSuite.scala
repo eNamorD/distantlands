@@ -1,9 +1,10 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite}
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Refusals,
-  Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Refusals, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Unwrap.accepted
 
@@ -11,14 +12,14 @@ class SiegeEnginesSuite extends munit.FunSuite:
   import PowerFixture._
   import PhasePowerHarness._
 
-  private val engines = CatalogNames.denizen("Siege Engines")
+  private val engines = SiegeEnginesCard.id
   private val source = DecisionOptionRef.Denizen(engines)
   private val victim = Table.p2
   /** p1's site, Ancient City, and Broken Peaks lie in the Cradle; Buried
     * Giant lies in the Provinces. */
-  private val home = CatalogNames.site("Ancient City")
-  private val neighbour = CatalogNames.site("Broken Peaks")
-  private val faraway = CatalogNames.site("Buried Giant")
+  private val home = AncientCitySite.id
+  private val neighbour = BrokenPeaksSite.id
+  private val faraway = BuriedGiantSite.id
 
   private def forcesAt(ready: ReadyGame, site: SiteId) =
     ready.game.current.map.sites(site).forces

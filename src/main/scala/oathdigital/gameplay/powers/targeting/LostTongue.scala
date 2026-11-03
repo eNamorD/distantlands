@@ -40,35 +40,40 @@ object LostTongueCard extends Denizen(DenizenId("157"), "Lost Tongue", Suit.Noma
   *
   * Bandits hold nothing and take nothing, so they are never refused.
   */
-final case class LostTongue private (catalog: ExecutableCatalog)
-    extends ContributingPower:
+case object LostTongue extends ContributingPower:
+  val id: PowerId = LostTongueCard.power.id
+
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "{Blue}'s banners and relics cannot be targeted." */
+  val shielded: NoteKey = notes.key("shielded", Vector(NotePart.Arg(0),
+    NotePart.Text("'s banners and relics cannot be targeted.")))
+
   val cardId: DenizenId = LostTongueCard.id
-  def id: PowerId = LostTongue.id
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
   override lazy val resolution: PowerResolution =
-    CatalogResolution.of(catalog, id)
-  override def noteKeys: Vector[NoteKey] = LostTongue.noteKeys
+    CatalogResolution.of(LostTongueCard.power)
 
   def contributions: Map[PowerWindow, Vector[Contribution]] = Map(
     PowerWindow.CampaignTargetSelection -> Vector(OptionRestriction(guard,
-      (ctx, _) => protectedHolder(ctx.state, ctx.actor).map(owner =>
-        LostTongue.shielded(PowerSourceRef.Card(cardId),
+      (ctx, _) => protectedHolder(ctx.catalog, ctx.state, ctx.actor).map(
+        owner => LostTongue.shielded(PowerSourceRef.Card(cardId),
           NoteArg.Player(owner))))),
     PowerWindow.ConspiracyTargetSelection -> Vector(Transform((ctx, operations) =>
       ConspiracyTargets.narrowed(ctx, id, operations,
         bannerShielded(ctx, _), None))))
 
-  override def operationRestrictions: Vector[OperationRestriction] =
-    Vector(takes)
+  override def operationRestrictions(catalog: ExecutableCatalog)
+      : Vector[OperationRestriction] =
+    Vector(takes(catalog))
 
   /** Refuses a `Take` of the holder's relic or banner by a player who rules
     * no nomad card. */
-  private object takes extends OperationRestriction:
-    def reason(ready: ReadyGame, operation: CoreOperation)
-        : Option[OperationReason] = operation match
+  private def takes(catalog: ExecutableCatalog): OperationRestriction =
+    (ready, operation) => operation match
       case Take(piece, taker, Location.PlayArea(owner), _, _, _, _, _)
           if relicOrBanner(piece) &&
-            protectedHolder(ready, taker).contains(owner) =>
+            protectedHolder(catalog, ready, taker).contains(owner) =>
         Some(OperationReason("lost-tongue", s"${owner.value}'s Lost Tongue " +
           s"keeps ${taker.value} from taking their relics and banners",
           OperationReasonKind.Impossible))
@@ -86,7 +91,7 @@ final case class LostTongue private (catalog: ExecutableCatalog)
   /** Whether `ref` names a relic or banner of the protected holder. */
   private def shields(ctx: PowerCtx, ref: DecisionOptionRef): Boolean =
     val current = ctx.state.game.current
-    protectedHolder(ctx.state, ctx.actor).exists(owner => ref match
+    protectedHolder(ctx.catalog, ctx.state, ctx.actor).exists(owner => ref match
       case DecisionOptionRef.Banner(banner) =>
         BannerRules.holder(current, banner).contains(owner)
       case DecisionOptionRef.Relic(relic) => current.players.exists(p =>
@@ -105,24 +110,14 @@ final case class LostTongue private (catalog: ExecutableCatalog)
     * rules no nomad card. A power that must leave such a take out of its
     * question reads this, as Relic Thief does before its roll, past which
     * the search does not look. */
-  def protects(ready: ReadyGame, taker: PlayerId, owner: PlayerId): Boolean =
-    protectedHolder(ready, taker).contains(owner)
+  def protects(catalog: ExecutableCatalog,
+      ready: ReadyGame, taker: PlayerId, owner: PlayerId): Boolean =
+    protectedHolder(catalog, ready, taker).contains(owner)
 
   /** The holder of this card faceup, when `actor` is another player who rules
     * no nomad card. */
-  private def protectedHolder(ready: ReadyGame, actor: PlayerId)
+  private def protectedHolder(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId)
       : Option[PlayerId] =
     PowerAccess.faceupAdviserHolder(ready, cardId).filter(owner => owner != actor &&
       RuledCards.of(catalog, ready, SiteRuler.Player(actor), Suit.Nomad).isEmpty)
-
-object LostTongue:
-  val id: PowerId = LostTongueCard.power.id
-
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "{Blue}'s banners and relics cannot be targeted." */
-  val shielded: NoteKey = notes.key("shielded", Vector(NotePart.Arg(0),
-    NotePart.Text("'s banners and relics cannot be targeted.")))
-
-  def forCatalog(catalog: ExecutableCatalog): LostTongue =
-    new LostTongue(catalog)

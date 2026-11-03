@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.{AdviserOnly, Denizen, PrintedPower}
+import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
+  PrintedPower}
 import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.actions.AdviserFace
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
@@ -74,7 +75,8 @@ case object PiedPiper extends PaidAction(PiedPiperCard.power)
         AdviserFace(card, Orientation.FaceUp)
     }
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     Branch((live, _) => ask(live, player)),
     BuildOps((live, pending) => lead(live, player, pending), required = true),

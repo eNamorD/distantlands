@@ -1,8 +1,9 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.gameplay.cards.{AncientCitySite, BuriedGiantSite}
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
@@ -10,17 +11,17 @@ import oathdigital.testkit.Unwrap.accepted
 class WhisperingLeavesSuite extends munit.FunSuite:
   import PhasePowerHarness._
 
-  private val leaves = CatalogNames.denizen("Whispering Leaves")
+  private val leaves = WhisperingLeavesCard.id
   private val source = DecisionOptionRef.Denizen(leaves)
 
   /** p1's Act at Ancient City holding Whispering Leaves with `secrets`
     * faceup secrets. p2 stands at Ancient City too, with `favor` favor, and
     * p3 at Buried Giant. */
   private def staged(favor: Int = 3, secrets: Int = 1): Table =
-    Table.start.turn(p1, Phase.Act).pawn(p1, "Ancient City")
+    Table.start.turn(p1, Phase.Act).pawn(p1, AncientCitySite)
       .adviser(p1, leaves).secrets(p1, secrets)
-      .pawn(p2, at = "Ancient City").favor(p2, favor)
-      .pawn(Table.p3, at = "Buried Giant")
+      .pawn(p2, at = AncientCitySite).favor(p2, favor)
+      .pawn(Table.p3, at = BuriedGiantSite)
 
   /** The walk Whispering Leaves started and the walk after `target` was
     * chosen. */

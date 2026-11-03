@@ -2,13 +2,15 @@ package oathdigital.gameplay
 
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.whenplayed.WizardsConclaveCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{ParkedDecisionAssertions, ProcedureWalker,
   WalkerPowers}
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look, PlacementPicks, Table}
+import oathdigital.testkit.{Look, PlacementPicks, Table}
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
 
@@ -18,8 +20,8 @@ import oathdigital.testkit.Unwrap.accepted
 class FacedownAdviserWalkerSuite extends munit.FunSuite:
   private val rules = new OathRules(catalog)
   private val parked = new ParkedDecisionAssertions(catalog)
-  private val conclave = CatalogNames.denizen("Wizard's Conclave")
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
+  private val conclave = WizardsConclaveCard.id
+  private val wrestlers = WrestlersCard.id
   private val holdingTwo = Table.start.adviser(p1, conclave, facedown = true)
     .adviser(p1, wrestlers, facedown = true).ready
 

@@ -1,6 +1,5 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.powerresolver.PhasePower
 
 /** The phase powers of catalog batch 2's slice 4, catalog batch 3's slice 3b
@@ -10,13 +9,13 @@ import oathdigital.gameplay.powerresolver.PhasePower
   * always present.
   */
 object OtherActionPowers:
-  def forCatalog(catalog: ExecutableCatalog): Vector[PhasePower] =
+  val all: Vector[PhasePower] =
     Vector[PhasePower](SpoiledSupplies, CharmingFriend, SiegeEngines,
       BookOfRecords, BarbedNet, QuickExit, DreamThief, WhisperingLeaves,
-      Enchantress, AmberFlame, WitchsBargain, Inquisitor, PiedPiper) ++
-      Vector(SecondChance.forCatalog(catalog)) ++
-      Vector(ArmedMob.forCatalog(catalog)) ++
-      Vector(HonorGuard.forCatalog(catalog)) ++
-      Vector(Resettle.forCatalog(catalog)) ++
-      Vector(RelicThief.forCatalog(catalog)) ++
-      Vector(Assassin.forCatalog(catalog))
+      Enchantress, AmberFlame, WitchsBargain, Inquisitor, PiedPiper,
+      SecondChance, ArmedMob,
+      HonorGuard, Resettle,
+      RelicThief, Assassin,
+      ForestHorn, GiantsRampage,
+      TempleOfAncestors,
+      SqualidDistrict, UndergroundLibrary)

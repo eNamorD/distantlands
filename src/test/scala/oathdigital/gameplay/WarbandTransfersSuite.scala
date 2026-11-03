@@ -2,6 +2,7 @@ package oathdigital.gameplay
 
 import oathdigital.application._
 import oathdigital.gameplay.actions.ImperialLaws
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.phases.ActOffers
 import oathdigital.gameplay.actions.minor.WarbandTransfers
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
@@ -9,7 +10,7 @@ import oathdigital.model._
 import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
 import oathdigital.model.OathEvent.{ConsentAnswered, ConsentRequested}
 import oathdigital.protocol.projection._
-import oathdigital.testkit.{MenuPlay, Outcomes, Table}
+import oathdigital.testkit.{Commands, MenuPlay, Outcomes, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, present}
 
@@ -25,8 +26,8 @@ class WarbandTransfersSuite extends munit.FunSuite:
   /** p1 is the Chancellor and p2 a Citizen, both at Broken Peaks on p1's
     * turn; p1's board holds 5 warbands and p2's 2. */
   private def imperialsTogether: Table = Table.start.imperial(p1, p2)
-    .turn(p1, Phase.Act).pawn(p1, at = "Broken Peaks")
-    .pawn(p2, at = "Broken Peaks").boardWarbands(p1, 5).boardWarbands(p2, 2)
+    .turn(p1, Phase.Act).pawn(p1, at = BrokenPeaksSite)
+    .pawn(p2, at = BrokenPeaksSite).boardWarbands(p1, 5).boardWarbands(p2, 2)
 
   private val giveThree = WarbandTransfers.confirmation(WarbandTransfers.give,
     3)
@@ -38,7 +39,7 @@ class WarbandTransfersSuite extends munit.FunSuite:
   private def answer(service: GameApplicationService, at: GameAccepted,
       decisionId: String, value: DecisionAnswer)(using munit.Location)
       : GameAccepted = accepted(service.handle(gameId, at.nextSequence,
-    GameCommand.ResolveWalker(p1, TreeDecision(decisionId, value))))
+    Commands.resolveWalker(p1, TreeDecision(decisionId, value))))
 
   /** p1 starts the transfer and picks p2 as the partner. */
   private def withPartner(service: GameApplicationService)
@@ -62,7 +63,7 @@ class WarbandTransfersSuite extends munit.FunSuite:
       : GameAccepted =
     val confirm = confirming(service, WarbandTransfers.give, 3)
     accepted(service.handle(gameId, confirm.nextSequence,
-      GameCommand.RequestConsent(p1, WarbandTransfers.confirmDecisionId,
+      Commands.requestConsent(p1, WarbandTransfers.confirmDecisionId,
         giveThree)))
 
   private def row(at: GameAccepted, ref: DecisionOptionRef)
@@ -73,7 +74,7 @@ class WarbandTransfersSuite extends munit.FunSuite:
 
   private def granted(service: GameApplicationService, at: GameAccepted)
       (using munit.Location): GameAccepted = accepted(service.handle(gameId,
-    at.nextSequence, GameCommand.AnswerConsent(p2, ConsentChoice.Yes)))
+    at.nextSequence, Commands.answerConsent(p2, ConsentChoice.Yes)))
 
   private def boardWarbands(at: GameAccepted, player: PlayerId): Int =
     Outcomes.ready(at.state).game.current.players.find(_.player == player)
@@ -81,7 +82,7 @@ class WarbandTransfersSuite extends munit.FunSuite:
 
   test("an Exile cannot start a transfer"):
     val table = imperialsTogether.turn(p3, Phase.Act)
-      .pawn(p3, at = "Broken Peaks")
+      .pawn(p3, at = BrokenPeaksSite)
     assertEquals(rules.startWalker(table.state, ActionRef.TransferWarbands, p3)
       .left.map(ActOffers.reason(ActionRef.TransferWarbands, _)),
       Left("Only an Imperial player transfers warbands"))
@@ -99,7 +100,7 @@ class WarbandTransfersSuite extends munit.FunSuite:
       p1).left.toOption, refusal.left.toOption)
 
   test("with no Imperial at the site the transfer is unavailable"):
-    val table = imperialsTogether.pawn(p2, at = "Ancient City")
+    val table = imperialsTogether.pawn(p2, at = AncientCitySite)
     assert(rules.startWalker(table.state, ActionRef.TransferWarbands, p1)
       .isLeft)
 
@@ -120,7 +121,7 @@ class WarbandTransfersSuite extends munit.FunSuite:
     val (service, _) = imperialsTogether.service()
     val asked = asking(service)
     val no = accepted(service.handle(gameId, asked.nextSequence,
-      GameCommand.AnswerConsent(p2, ConsentChoice.No)))
+      Commands.answerConsent(p2, ConsentChoice.No)))
     assertEquals(no.events, Vector(ConsentAnswered(p2, granted = false)))
     assertEquals(row(no, giveThree).state, "unavailable")
     assertEquals(row(no, giveThree).reason, Some("p2 refused this turn."))
@@ -141,7 +142,7 @@ class WarbandTransfersSuite extends munit.FunSuite:
     val (service, _) = imperialsTogether.service()
     val confirm = confirming(service, WarbandTransfers.take, 2)
     val asked = accepted(service.handle(gameId, confirm.nextSequence,
-      GameCommand.RequestConsent(p1, WarbandTransfers.confirmDecisionId,
+      Commands.requestConsent(p1, WarbandTransfers.confirmDecisionId,
         WarbandTransfers.confirmation(WarbandTransfers.take, 2))))
     val done = granted(service, asked)
     assertEquals(boardWarbands(done, p1), 7)
@@ -154,7 +155,7 @@ class WarbandTransfersSuite extends munit.FunSuite:
       ChooseOneAnswer(WarbandTransfers.give))
     Vector(0, 6).foreach: amount =>
       assert(service.handle(gameId, gave.nextSequence,
-        GameCommand.ResolveWalker(p1, TreeDecision(
+        Commands.resolveWalker(p1, TreeDecision(
           WarbandTransfers.amountDecisionId, ChooseAmountAnswer(amount))))
         .isLeft, s"amount $amount was accepted")
 

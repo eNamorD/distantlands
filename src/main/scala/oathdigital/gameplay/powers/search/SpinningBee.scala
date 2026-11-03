@@ -42,12 +42,46 @@ object SpinningBeeCard extends Denizen(DenizenId("232"), "Spinning Bee", Suit.He
   * line runs there is nothing in it (procedures journal their own notes,
   * slice 3 plan-time ruling 5).
   */
-final case class SpinningBee private (catalog: ExecutableCatalog)
-    extends SelectedModifier:
-  val cardId: DenizenId = SpinningBeeCard.id
-  def id: PowerId = SpinningBee.id
+case object SpinningBee extends SelectedModifier:
+  val id: PowerId = SpinningBeeCard.power.id
+  /** The decision that takes the source decision's place. */
+  val suitDecisionId: String = "search.suit"
+  val heading: String = "Declare a suit"
+  /** Why Spinning Bee is unavailable once another modifier is picked. */
+  val notWithOthers: String = "Cannot be used with other Search modifiers"
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "You cannot use other Search modifiers.": why every other modifier
+    * is unavailable once Spinning Bee is picked. */
+  val alone: NoteKey = notes.key("alone", Vector(
+    NotePart.Text("You cannot use other Search modifiers.")))
+  /** "Drawing from the {region} discard until {suit} card is drawn". */
+  val drawing: NoteKey = notes.key("drawing", Vector(
+    NotePart.Text("Drawing from the "), NotePart.Arg(0),
+    NotePart.Text(" discard until "), NotePart.Arg(1),
+    NotePart.Text(" card is drawn")))
+  /** "Spinning Bee: Drew Homesteaders, Wrestlers and Defame, and discarded
+    * them all". */
+  val drewNone: NoteKey = notes.key("drew-none", Vector(
+    NotePart.Text("Drew "), NotePart.Arg(0),
+    NotePart.Text(", and discarded them all")))
+
+  /** "Declare a suit", asked of `actor`: the six favor banks, in suit
+    * order. */
+  def declaration(actor: PlayerId): Decide = Decide(suitDecisionId, actor,
+    DecisionQuery.ChooseOne(Suit.all.map(suit =>
+      DecisionOption.FavorBank(DecisionOptionRef.FavorBank(suit))),
+      heading = Some(heading)))
+
+  /** The suit declared in `answered`. */
+  def declared(answered: Vector[Answered]): Option[Suit] =
+    answered.collectFirst {
+      case Answered(`suitDecisionId`, DecisionAnswer.ChooseOneAnswer(
+          DecisionOptionRef.FavorBank(suit)), _) => suit
+    }
+
+  val card: Denizen = SpinningBeeCard
   def actions: Set[MajorActionType] = Set(MajorActionType.Search)
-  override def noteKeys: Vector[NoteKey] = SpinningBee.noteKeys
   /** The declared suit is told by Spinning Bee's own line. */
   override def narratedDecisions: Set[String] =
     Set(SpinningBee.suitDecisionId)
@@ -71,8 +105,8 @@ final case class SpinningBee private (catalog: ExecutableCatalog)
             if node.window.contains(PowerWindow.SearchBeforeDraw) =>
           Vector(line(ctx.actor),
             node.copy(build = (ready, pending) => node.build(ready, pending)
-              .flatMap(throughMatch(ready, pending))),
-            discardedUnlessMatched(ctx.actor),
+              .flatMap(throughMatch(ctx.catalog, ready, pending))),
+            discardedUnlessMatched(ctx.catalog, ctx.actor),
             discardedLine(ctx.actor))
         case other => Vector(other)
       })))
@@ -92,13 +126,14 @@ final case class SpinningBee private (catalog: ExecutableCatalog)
       ref != ModifierPicks.start &&
       !ModifierPicks.cardRef(cardId).contains(ref)
 
-  private def matches(suit: Suit)(card: WorldCardId): Boolean =
+  private def matches(catalog: ExecutableCatalog,
+      suit: Suit)(card: WorldCardId): Boolean =
     catalog.suitOf(card).contains(suit)
 
   /** The draw taken again from the top, through the first card of the
     * declared suit, or the whole pile when none matches. */
-  private def throughMatch(ready: ReadyGame, pending: PendingTree)(
-      operations: Vector[CoreOperation])
+  private def throughMatch(catalog: ExecutableCatalog, ready: ReadyGame,
+      pending: PendingTree)(operations: Vector[CoreOperation])
       : Either[OathViolation, Vector[CoreOperation]] =
     operations.collectFirst { case draw: Draw => draw } match
       case None => Right(operations)
@@ -110,18 +145,20 @@ final case class SpinningBee private (catalog: ExecutableCatalog)
               "Spinning Bee draws once a suit is declared"))
         yield
           val pile = SearchRules.pile(ready, source)
-          val index = pile.indexWhere(matches(suit))
+          val index = pile.indexWhere(matches(catalog, suit))
           DrawExtension.redrawn(draw, source,
             if index < 0 then pile else pile.take(index + 1))
 
   /** Every drawn card discarded, in draw order, when none is of the
     * declared suit. */
-  private def discardedUnlessMatched(actor: PlayerId): Operation =
+  private def discardedUnlessMatched(catalog: ExecutableCatalog,
+      actor: PlayerId): Operation =
     BuildOps((ready, pending) => {
       val hand = ready.game.current.temporaryHands
         .getOrElse(actor, Vector.empty)
       SpinningBee.declared(pending.answered) match
-        case Some(suit) if hand.nonEmpty && !hand.exists(matches(suit)) =>
+        case Some(suit)
+            if hand.nonEmpty && !hand.exists(matches(catalog, suit)) =>
           hand.foldLeft[Either[OathViolation, Vector[CoreOperation]]](
               Right(Vector.empty)) { (done, card) =>
             for
@@ -160,44 +197,3 @@ final case class SpinningBee private (catalog: ExecutableCatalog)
     region <- SearchProcedure.actorRegion(states.now, actor).toOption
   yield SpinningBee.drawing(PowerSourceRef.Card(cardId),
     NoteArg.RegionName(region), NoteArg.SuitName(suit)))
-
-object SpinningBee:
-  val id: PowerId = SpinningBeeCard.power.id
-  /** The decision that takes the source decision's place. */
-  val suitDecisionId: String = "search.suit"
-  val heading: String = "Declare a suit"
-  /** Why Spinning Bee is unavailable once another modifier is picked. */
-  val notWithOthers: String = "Cannot be used with other Search modifiers"
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "You cannot use other Search modifiers.": why every other modifier
-    * is unavailable once Spinning Bee is picked. */
-  val alone: NoteKey = notes.key("alone", Vector(
-    NotePart.Text("You cannot use other Search modifiers.")))
-  /** "Drawing from the {region} discard until {suit} card is drawn". */
-  val drawing: NoteKey = notes.key("drawing", Vector(
-    NotePart.Text("Drawing from the "), NotePart.Arg(0),
-    NotePart.Text(" discard until "), NotePart.Arg(1),
-    NotePart.Text(" card is drawn")))
-  /** "Spinning Bee: Drew Homesteaders, Wrestlers and Defame, and discarded
-    * them all". */
-  val drewNone: NoteKey = notes.key("drew-none", Vector(
-    NotePart.Text("Drew "), NotePart.Arg(0),
-    NotePart.Text(", and discarded them all")))
-
-  /** "Declare a suit", asked of `actor`: the six favor banks, in suit
-    * order. */
-  def declaration(actor: PlayerId): Decide = Decide(suitDecisionId, actor,
-    DecisionQuery.ChooseOne(Suit.all.map(suit =>
-      DecisionOption.FavorBank(DecisionOptionRef.FavorBank(suit))),
-      heading = Some(heading)))
-
-  /** The suit declared in `answered`. */
-  def declared(answered: Vector[Answered]): Option[Suit] =
-    answered.collectFirst {
-      case Answered(`suitDecisionId`, DecisionAnswer.ChooseOneAnswer(
-          DecisionOptionRef.FavorBank(suit)), _) => suit
-    }
-
-  def forCatalog(catalog: ExecutableCatalog): SpinningBee =
-    new SpinningBee(catalog)

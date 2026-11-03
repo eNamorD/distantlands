@@ -1,24 +1,24 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes,
-  Table}
+import oathdigital.testkit.{ActPowerHarness, Look, Outcomes, Table}
 import oathdigital.testkit.Unwrap.accepted
 import oathdigital.testkit.PhasePowerHarness
 
 class ElderSuite extends munit.FunSuite:
   import PowerFixture._
 
-  private val elders = CatalogNames.denizen("Elders")
+  private val elders = EldersCard.id
   private val source = DecisionOptionRef.Denizen(elders)
   private val rules = ActPowerHarness.rules()
   /** p1's Act at Ancient City with Elders at the site and `favor` favor. */
   private def staged(favor: Int) = Table.start.turn(actor, Phase.Act)
-    .pawn(actor, "Ancient City").denizen(elders, at = "Ancient City")
+    .pawn(actor, AncientCitySite).denizen(elders, at = AncientCitySite)
     .favor(actor, favor).ready
   private def use(ready: ReadyGame) = rules.startWalker(Ready(ready),
     ActionRef.UsePower(Elders.id), actor, Vector(source))
@@ -36,7 +36,7 @@ class ElderSuite extends munit.FunSuite:
   test("one favor is not enough"):
     val broke = staged(favor = 1)
     assertEquals(PhasePowerHarness.menuPowers(catalog, broke, actor,
-        PhasePowerCatalog.default(catalog), WalkerPowers.empty), Vector.empty)
+        PhasePowerCatalog.default, WalkerPowers.empty), Vector.empty)
     assertEquals(use(broke).left.toOption,
       Some(OathViolation.InsufficientFavor(2, 1)))
 

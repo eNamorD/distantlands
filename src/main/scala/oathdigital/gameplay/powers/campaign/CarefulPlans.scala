@@ -77,5 +77,4 @@ case object CarefulPlans extends BattlePlan:
         else battle)) ++ children.drop(last + 1)
 
   private def used(ready: ReadyGame, pending: PendingTree, actor: PlayerId)
-      : Boolean = PlanUse.chosen(ready, pending, actor, cardRef, sides,
-    afterOutcome = false).nonEmpty
+      : Boolean = PlanUse.sideUsed(ready, pending, cardRef, sides).nonEmpty

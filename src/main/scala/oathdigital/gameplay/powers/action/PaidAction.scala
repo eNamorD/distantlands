@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.PrintedPower
+import oathdigital.catalog.{ExecutableCatalog, PrintedPower}
 import oathdigital.gameplay.powerresolver.PhasePower
 import oathdigital.model._
 
@@ -16,5 +16,6 @@ abstract class PaidAction(final val id: PowerId, override val cost: Cost)
   def this(power: PrintedPower) = this(power.id, power.cost)
 
   final def timing: PowerTiming = PowerTiming.Act
-  def usable(ready: ReadyGame, player: PlayerId,
-      source: DecisionOptionRef): Boolean = true
+  def usable(catalog: ExecutableCatalog, ready: ReadyGame,
+      player: PlayerId, source: DecisionOptionRef): Boolean =
+    true

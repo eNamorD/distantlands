@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
-  ModifierMark, PrintedPower}
+import oathdigital.catalog.{AdviserOnly, Denizen, ModifierMark, PrintedPower}
 import oathdigital.gameplay.actions.campaign.CampaignSetup
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   Transform}
@@ -35,13 +34,13 @@ object SneakAttackCard extends Denizen(DenizenId("98"), "Sneak Attack", Suit.Dis
   * and the card as its source, so the Campaign spends no Supply. The holder
   * walks it off turn as the attacker.
   */
-final case class SneakAttack private (catalog: ExecutableCatalog)
-    extends ContributingPower:
+case object SneakAttack extends ContributingPower:
+  val id: PowerId = SneakAttackCard.power.id
+
   val cardId: DenizenId = SneakAttackCard.id
-  def id: PowerId = SneakAttack.id
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
   override lazy val resolution: PowerResolution =
-    CatalogResolution.of(catalog, id)
+    CatalogResolution.of(SneakAttackCard.power)
 
   def contributions: Map[PowerWindow, Vector[Contribution]] = Map(
     PowerWindow.CampaignActionEligibility -> Vector(Transform((ctx, children) =>
@@ -60,9 +59,3 @@ final case class SneakAttack private (catalog: ExecutableCatalog)
 
   private def holderOf(ready: ReadyGame): Option[PlayerId] =
     PowerAccess.faceupAdviserHolder(ready, cardId)
-
-object SneakAttack:
-  val id: PowerId = SneakAttackCard.power.id
-
-  def forCatalog(catalog: ExecutableCatalog): SneakAttack =
-    new SneakAttack(catalog)

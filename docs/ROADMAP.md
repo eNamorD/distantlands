@@ -20,17 +20,6 @@ campaign-continuity and Empire rules.
 
 Left behind by earlier phases:
 
-- [ ] **Shrink cached catalog fields.**
-  [Card classes](superpowers/specs/2026-10-01-card-classes-design.md) made powers
-  read their cards from card objects, yet many classes still take a
-  `catalog: ExecutableCatalog` constructor parameter (power classes, the
-  projectors, the Game Log and the Campaign plan files), and many
-  `forCatalog(catalog)` constructors thread it, often only to pass it on.
-  Sweep them out; a standing rule stops new ones.
-- [ ] **Migrate `CatalogNames` to card objects.** Test files look
-  cards up by name through `CatalogNames` (the test readability sweep of
-  2026-10-02 moved numeric ids onto it). Sweep them to direct object
-  references such as `AlchemistCard`; a standing rule stops new uses.
 - [ ] **Show that the action pane scrolls at 1024×700.** At that size the
   action pane is about 330px tall, and the Keep and Discard zones of the
   starting-adviser decision sit wholly below the sticky confirm button with
@@ -38,26 +27,6 @@ Left behind by earlier phases:
   proportions are deliberate (DESIGN.md), so the fix is a visible scroll
   cue or a smaller decision header rather than new proportions. Observed in
   the browser during the clean-up run of 2026-10-23.
-- [ ] **Bring the holding files in step with the status.** Holding and
-  `PowerImplementationStatus` (snapshot
-  `src/test/resources/powers/unimplemented.txt`) disagree, so card counts
-  read from either are off:
-  - All 11 sites left in `catalog/holding/HoldingSites.scala` play correctly,
-    yet the status reports their powers unimplemented. The six Homelands
-    (Deep Woods, Golden Valley, Great Slum, Painted Towers, Standing Stones,
-    Steppe) run through card play's `rule.homeland-discard`
-    (`CardPlayRules.homeland`), not through their `site.*.homeland-*`
-    handlers. The five Plains (Buried Giant, Dunes, Salt Flats, Shrouded
-    Woods, Solitary Pillar) print "This site has no power". Make the status
-    count both, and move the 11 out of holding.
-  - Ancient Bloodline (denizen 165) is implemented, and the status agrees,
-    but the card still sits in `HoldingNomadDenizens.scala`. Move it out.
-  - A test that fails when every power of a holding card is implemented
-    would keep the two in step.
-- [ ] **Split `LogScripts.scala` before it grows.** The log-script support
-  file is at 799 of the 800 lines `BackendArchitectureSuite` allows a test
-  file, so the next script added there fails the build. Split it along the
-  procedures its scripts play.
 
 Left behind by the
 [consent work](superpowers/specs/2026-10-08-consent-system-design.md):
@@ -96,39 +65,31 @@ did":
 ### Phase - Catalog batch - engine-blocked
 
 Cards that need an engine change first, grouped by the missing mechanism.
-[Catalog batch 8](superpowers/specs/2026-10-12-catalog-batch-8-design.md#out-of-scope)
-left these out: each costs a slice or more per card, or belongs with another
-phase.
+[Catalog batch 9](superpowers/specs/2026-11-02-catalog-batch-9-design.md)
+(landed 2026-11-02) implemented every edifice face whose mechanisms the
+engine had; its [Out of scope](superpowers/specs/2026-11-02-catalog-batch-9-design.md#out-of-scope)
+section describes each seam below in a paragraph.
 
-- **Search Party:** a card played after its WHEN PLAYED, as if searched.
-  Nested inside the WHEN PLAYED, the played card fires neither its own WHEN
-  PLAYED nor the card-play triggers (`WalkerHooks.gathered` is keyed by
-  window), and Search re-reads its live hand on a single-card draw. It needs
-  its own spec. Recorded in the
-  [catalog batch 4 rulings](superpowers/specs/2026-10-05-catalog-batch-4-rulings.md#moved-out-of-the-batch).
-- **A choice of discard destination:** Bracken, Cracked Horn, Ring of
-  Devotion. A discard is always to the top of a region's pile, and an
-  optional destination needs a deferred operation plus a question.
-- **Acting as another card:** Master of Disguise and Acting Troupe, a choice
-  made per use.
-- **New target kinds:** Relic Hunter, Glamor.
-- **Challenge** (`legalBanners` is hard-coded, no ribbon adjustment): Sigil of
-  the Eye, Sigil of the Heart, Favored Son, Magician's Code (its 2 secrets
-  count toward placing more than the banner holds, but the start gate runs
-  before any modifier).
-- **Other:** Pilgrimage (shuffling the Dispossessed), Autumn Wind (a combined
-  shuffle and deal), Tracker (memory across turns), Obsidian Cage (a new
-  warband store), and False Prophet.
-  False Prophet is the only card that plays a card outside the active
-  player's turn: its holder plays the Vision when another player's action
-  discards it. The off-turn actor of catalog batch 8, slice 14, lets a
-  queued walk belong to another player, so only the player-aware card play
-  is left. Card play assumes the player is the walk's actor, `ctx.actor`
-  (the `SearchPlayAdviser` transforms, such as `HolderAdviserLimit`, Pied
-  Piper and Lost Tapestry, and the `ActionCardPlayedFaceup` readers, such as
-  Book Binders, Secret Police and Conspiracy). So the play must either run
-  as its own procedure for its holder, or give `PlacementTree` and
-  `CardPlayedFaceup` the playing player and move those readers onto it.
+- **Live terrain:** Grand Canal, Lost Lagoon.
+- **Round advance and the round die:** Great Clock, Broken Clock, Shattered
+  Portal.
+- **Recover source:** Drowned Library.
+- **Discard replacement with a question:** Wild Pastures.
+- **Own-power lock exemption:** Giant's Path.
+- **Dispossessed shuffles:** Great Spire, Fallen Spire, Pilgrimage.
+- **Vision collection:** Desecrated Ground.
+- **As-if ruler:** Bandit Crown.
+- **Favor source redirection:** Vow of Kinship.
+- **An askable Act action:** consent for Relic Patrols and Bandit Patrols.
+- **Challenge** (`legalBanners` is hard-coded, no ribbon adjustment): School
+  of Vines, Sigil of the Eye, Sigil of the Heart, Favored Son, Magician's
+  Code.
+- **Unchanged from batch 8:** Search Party (recorded in the
+  [catalog batch 4 rulings](superpowers/specs/2026-10-05-catalog-batch-4-rulings.md#moved-out-of-the-batch)),
+  Bracken, Cracked Horn and Ring of Devotion (a discard destination),
+  Master of Disguise and Acting Troupe (acting as another card), Relic
+  Hunter and Glamor (new target kinds), Autumn Wind, Tracker, Obsidian
+  Cage and False Prophet (a player-aware off-turn card play).
 
 ### Phase - All-Exile alpha readiness
 
@@ -299,6 +260,7 @@ one.
   [wording ledger](superpowers/specs/2026-10-16-game-log-wording-ledger.md), each
   with where it is built and why it is worth a second look. Recorded in the
   [procedures journal their own notes design](superpowers/specs/2026-10-16-procedures-journal-their-notes-design.md).
+  Audited in the [wording audit](testing/audits/game-log-wording-audit.md).
 - [ ] **A card play's line before the lines its own batch causes.**
   `WalkerSteps.recordBatch` runs `AdviserArrivalPass.after` and an executed
   trigger's follow-up inside the play's own leaf, so a power whose effect
@@ -319,6 +281,7 @@ one.
   seat, and `formatAppended` takes `stateBefore` and `lastStateAfter`
   without checking them. Recorded as separate candidates in the
   [log operation strictness decision](superpowers/specs/2026-10-19-log-operation-strictness-decision.md).
+  Audited in the [split delta audit](testing/audits/split-delta-bracketing-audit.md).
 
 ### Powers-related deferred items
 
@@ -337,6 +300,7 @@ one.
   `WalkerDecisionProjector.waiting` reads only a parked decision's heading and
   Negotiation query, which the look-ahead never narrows, so its second
   `parkedDecide` could skip the look-ahead like the other identity-only callers.
+  Audited in the [walker follow-ups audit](testing/audits/walker-follow-ups-audit.md).
 - [ ] **Mercenaries' player-chosen sign.** Mercenaries adds attack dice
   when its user attacks and removes defense dice from the attacker when it
   defends. The card lets the player choose the sign, and the plan fixes it by side.
@@ -452,19 +416,14 @@ before treating the numbers below as current.
   derived codec must still report a stale client bundle, which strict
   unknown-field rejection does today. The operation codec co-changed with
   `CoreOperations` in 13 of 16 commits; count its mechanical arms before
-  deciding it the same way.
-- [ ] **One command vocabulary.** Each command is written in seven files
-  (intent, codec, decoder, mapper, command, authorization builder, service
-  arm); `AuthorizedPlayer.forPlayer` mints a "transport" access context to
-  build commands, and `GameCommand.issuer` answers `None` for commands that
-  carry an actor. A command could be an actor plus a model-typed intent.
-- [ ] **One HTTP gateway.** Three transports write the same load, submit and
-  log over the same service calls; only the trusted-seat one is used in
-  production, and the authenticated stack mounts only in development, with no
-  session issuer. One gateway behind a seam for how the actor is resolved
-  would serve both. The authenticated stack's public-only projection scope is
-  the one behaviour the seat transport lacks. `SearchDrawPort`, a port checked
-  against itself, can fold away with the service arm it guards.
+  deciding it the same way. Design note:
+  [derive the wire codecs](superpowers/specs/2026-11-02-derive-wire-codecs-design.md).
+- [ ] **One frontend client (optional).** The development shell still talks
+  to `/api/dev/first-games/{gameId}?playerId=` through its own
+  `HttpGameClient`; mounting the dev API at `/games/{gameId}/api` with the
+  query-parameter resolution would retire the second client. Slice 5 of the
+  [one HTTP gateway](superpowers/specs/2026-11-02-one-http-gateway-design.md)
+  note, left for a frontend session.
 - [ ] **`ConsentDesk` settles a batch.** Its seven verbs have one caller,
   which owns their order at nine sites; the last five consent commits all
   edited the service. The desk could take a batch and return it settled.
@@ -473,7 +432,10 @@ before treating the numbers below as current.
 
 - [ ] **X6 — Complete production authentication and deployment**
   - [ ] Add OIDC Authorization Code + PKCE, session issuance/rotation/logout,
-    secure cookie-setting responses, and frontend login/session-expiry UX.
+    secure cookie-setting responses, and frontend login/session-expiry UX;
+    then mount `GameApiRoutes` with `SessionMembershipActor` and a bootstrap
+    route on `MembershipBootstrap`, which the retired authenticated transport
+    left behind for it.
   - [ ] Add membership-management UX, rate limiting, audit logging, and the
     final production deployment gate. The alpha phase may add a narrower safe
     invitation flow first; until then, keep development routes loopback-only.
@@ -513,10 +475,15 @@ before treating the numbers below as current.
 
 ## Standing rules
 
-- New code reads cards from their card objects. A new class takes no
-  `catalog: ExecutableCatalog` parameter and adds no `forCatalog`
-  constructor only to pass the catalog on, and a new test names cards by
-  their card objects, not through `CatalogNames`.
+- New code reads cards from their card objects. A power is a `case object`
+  that holds no `catalog: ExecutableCatalog` and offers no `forCatalog`
+  constructor: one that looks other cards up reads `PowerCtx.catalog`, or
+  the `catalog` its hook is handed (`PhasePower.build`,
+  `operationRestrictions`, `PowerUseRestriction.refusal`, `AdviserArrivals`,
+  `ExecutedBatch`, `PlanContext`), and `scripts/check-architecture.py`
+  refuses any other. A new test names cards and sites by their card objects
+  (`AlchemistCard`, `DeepWoodsSite`), never by a printed name looked up at
+  run time (BackendArchitectureSuite checks).
 - The verification gate is the complete JVM and Scala.js suites, the optimized
   Scala.js linker, the card catalog suite, the architecture and documentation-link
   checks, and diff validation.

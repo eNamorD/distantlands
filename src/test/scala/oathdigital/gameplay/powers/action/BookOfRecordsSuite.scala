@@ -1,9 +1,10 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.gameplay.cards.{AncientCitySite, BuriedGiantSite}
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look,
-  PhasePowerHarness, Refusals, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, PhasePowerHarness, Refusals,
+  Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Unwrap.accepted
 
@@ -12,7 +13,7 @@ class BookOfRecordsSuite extends munit.FunSuite:
   import PhasePowerHarness._
   import ActPowerHarness.allSecrets
 
-  private val book = CatalogNames.relic("Book of Records")
+  private val book = BookOfRecordsCard.id
   private val source = DecisionOptionRef.Relic(book)
   private val holder = Table.p2
   private val bystander = Table.p3
@@ -28,9 +29,9 @@ class BookOfRecordsSuite extends munit.FunSuite:
     * Darkest Secret with 3 secrets, so it is never offered.
     */
   private def stagedTable(favor: Int = 3, faceUp: Int = 3): Table =
-    Table.start.turn(actor, Phase.Act).pawn(actor, "Ancient City")
+    Table.start.turn(actor, Phase.Act).pawn(actor, AncientCitySite)
       .relic(actor, book).secrets(actor, faceUp)
-      .pawn(holder, "Ancient City").pawn(bystander, "Buried Giant")
+      .pawn(holder, AncientCitySite).pawn(bystander, BuriedGiantSite)
       .peoplesFavor(Some(holder), favor).darkestSecret(Some(bystander), 3)
   private def staged(favor: Int = 3, faceUp: Int = 3): ReadyGame =
     stagedTable(favor, faceUp).ready

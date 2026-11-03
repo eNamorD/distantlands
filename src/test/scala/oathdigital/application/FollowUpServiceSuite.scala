@@ -1,19 +1,23 @@
 package oathdigital.application
 
 import oathdigital.gameplay.FollowUpPlay
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite}
+import oathdigital.gameplay.powers.economy.KnightsErrantCard
 import oathdigital.gameplay.walker.{FollowUpOffer, FollowUpSkipped}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.accepted
+import oathdigital.testkit.Commands
 
 /** The follow-up offer is a parked walker decision, so the service holds
   * every other command until its player answers (walker-driven game loop
   * design, ruling 6). */
 class FollowUpServiceSuite extends munit.FunSuite:
-  private val ancientCity = CatalogNames.site("Ancient City")
+  private val ancientCity = AncientCitySite.id
   private val knights =
-    PowerSourceRef.Card(CatalogNames.denizen("Knights Errant"))
+    PowerSourceRef.Card(KnightsErrantCard.id)
   private val campaign = QueuedProcedure(p1, ActionRef.Campaign, Vector.empty,
     Some(knights), QueueKind.Offer)
 
@@ -21,12 +25,12 @@ class FollowUpServiceSuite extends munit.FunSuite:
     * bandits rule Ancient City, so it can start. */
   private def offered(using munit.Location)
       : (GameApplicationService, InMemoryEventStreamRepository) =
-    Table.start.pawn(p1, at = ancientCity).pawn(p2, at = "Broken Peaks")
-      .pawn(p3, at = "Buried Giant").bandits(ancientCity, 2)
+    Table.start.pawn(p1, at = ancientCity).pawn(p2, at = BrokenPeaksSite)
+      .pawn(p3, at = BuriedGiantSite).bandits(ancientCity, 2)
       .offering(campaign).service()
 
   private def answer(chosen: DecisionAnswer, by: PlayerId = p1) =
-    GameCommand.ResolveWalker(by, TreeDecision(FollowUpOffer.decisionId,
+    Commands.resolveWalker(by, TreeDecision(FollowUpOffer.decisionId,
       chosen))
 
   test("Skip is an answer, and writes FollowUpSkipped"):
@@ -39,5 +43,5 @@ class FollowUpServiceSuite extends munit.FunSuite:
     val (service, _) = offered
     val taken = accepted(service.handle("game", 0L, answer(FollowUpPlay.take)))
     val undone = accepted(service.handle("game", taken.nextSequence,
-      GameCommand.Undo(p1)))
+      Commands.undo(p1)))
     assertEquals(FollowUpPlay.offered(undone.state), Some(campaign))

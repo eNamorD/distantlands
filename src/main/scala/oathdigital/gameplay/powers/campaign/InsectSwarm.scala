@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
-  ModifierMark, PrintedPower}
+import oathdigital.catalog.{AdviserOnly, Denizen, ModifierMark, PrintedPower}
 import oathdigital.model._
 
 object InsectSwarmCard extends Denizen(DenizenId("184"), "Insect Swarm", Suit.Beast) with AdviserOnly:
@@ -23,18 +22,7 @@ object InsectSwarmCard extends Denizen(DenizenId("184"), "Insect Swarm", Suit.Be
   *
   * Each taxed plan writes "{Red}'s battle plans cost 1 extra favor, burnt."
   */
-final case class InsectSwarm private (catalog: ExecutableCatalog)
-    extends PlanSurcharge:
-  val cardId: DenizenId = InsectSwarmCard.id
-  def id: PowerId = InsectSwarm.id
-  protected def cost: Cost = Cost(favorBurnt = InsectSwarm.Favor)
-  protected def taxed: NoteKey = InsectSwarm.taxed
-  protected def surchargeNotes: NoteSet = InsectSwarm.notes
-  protected def amount: Int = InsectSwarm.Favor
-  protected def unpayable: OathViolation =
-    OathViolation.InsufficientFavor(InsectSwarm.Favor, 0)
-
-object InsectSwarm:
+case object InsectSwarm extends PlanSurcharge:
   val id: PowerId = InsectSwarmCard.power.id
   /** The added cost, in favor burnt. */
   val Favor: Int = 1
@@ -44,5 +32,10 @@ object InsectSwarm:
     NotePart.Text("'s battle plans cost "), NotePart.Arg(1),
     NotePart.Text(" extra favor, burnt.")))
 
-  def forCatalog(catalog: ExecutableCatalog): InsectSwarm =
-    new InsectSwarm(catalog)
+  val cardId: DenizenId = InsectSwarmCard.id
+  protected def power: PrintedPower = InsectSwarmCard.power
+  protected def cost: Cost = Cost(favorBurnt = InsectSwarm.Favor)
+  protected def surchargeNotes: NoteSet = InsectSwarm.notes
+  protected def amount: Int = InsectSwarm.Favor
+  protected def unpayable: OathViolation =
+    OathViolation.InsufficientFavor(InsectSwarm.Favor, 0)

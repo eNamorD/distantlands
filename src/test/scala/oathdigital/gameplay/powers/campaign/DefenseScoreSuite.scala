@@ -1,8 +1,8 @@
 package oathdigital.gameplay.powers.campaign
 
+import oathdigital.catalog.{Denizen, Relic}
 import oathdigital.model.{CampaignPlanSide, DecisionOptionRef, DefenseDieFace}
 import oathdigital.model.DefenseDieFace.{Blank, Doubler, OneShield, TwoShields}
-import oathdigital.testkit.CatalogNames
 
 /** The defense scorer: face filters, then doublers on what is left, then the
   * defender's force (catalog batch 4 rulings, "The defense score"). Each
@@ -10,15 +10,12 @@ import oathdigital.testkit.CatalogNames
   * so a card mapped to the wrong rules or the wrong side fails here. */
 class DefenseScoreSuite extends munit.FunSuite:
   private final case class Plan(side: CampaignPlanSide, ref: DecisionOptionRef)
-  private def attacker(name: String)(using munit.Location): Plan =
-    Plan(CampaignPlanSide.Attacker,
-      DecisionOptionRef.Denizen(CatalogNames.denizen(name)))
-  private def attackerRelic(name: String)(using munit.Location): Plan =
-    Plan(CampaignPlanSide.Attacker,
-      DecisionOptionRef.Relic(CatalogNames.relic(name)))
-  private def defender(name: String)(using munit.Location): Plan =
-    Plan(CampaignPlanSide.Defender,
-      DecisionOptionRef.Denizen(CatalogNames.denizen(name)))
+  private def attacker(card: Denizen): Plan =
+    Plan(CampaignPlanSide.Attacker, DecisionOptionRef.Denizen(card.id))
+  private def attackerRelic(relic: Relic): Plan =
+    Plan(CampaignPlanSide.Attacker, DecisionOptionRef.Relic(relic.id))
+  private def defender(card: Denizen): Plan =
+    Plan(CampaignPlanSide.Defender, DecisionOptionRef.Denizen(card.id))
 
   /** The rules once `plans` are chosen, folded from `DefenseScore.changes` as
     * a Campaign folds them; fails if the scorer does not know a plan. */
@@ -39,19 +36,19 @@ class DefenseScoreSuite extends munit.FunSuite:
       "scores nothing"):
     // The two shields are left, doubled.
     val faces = Vector(OneShield, TwoShields, Doubler)
-    for plan <- Vector(attacker("Rain Boots"),
-        attackerRelic("Bag of Siegeworks")) do
+    for plan <- Vector(attacker(RainBootsCard),
+        attackerRelic(BagOfSiegeworksCard)) do
       assertEquals(DefenseScore.dice(faces, chosen(plan)), 4)
 
   test("the attacker's War Tortoise with Rain Boots and a doubler: the " +
       "filters run before the doubler"):
     val faces = Vector(OneShield, TwoShields, TwoShields, Doubler)
     assertEquals(DefenseScore.dice(faces, chosen()), 10)
-    assertEquals(DefenseScore.dice(faces, chosen(attacker("War Tortoise"))), 2)
-    assertEquals(DefenseScore.dice(faces, chosen(attacker("Rain Boots"))), 8)
+    assertEquals(DefenseScore.dice(faces, chosen(attacker(WarTortoiseCard))), 2)
+    assertEquals(DefenseScore.dice(faces, chosen(attacker(RainBootsCard))), 8)
     assertEquals(DefenseScore.dice(faces,
-      chosen(attacker("War Tortoise"), attacker("Rain Boots"))), 0)
+      chosen(attacker(WarTortoiseCard), attacker(RainBootsCard))), 0)
 
   test("the defender's Garrison Armory adds the force twice, undoubled"):
     assertEquals(DefenseScore.of(Vector(TwoShields, Doubler), 2,
-      chosen(defender("Garrison Armory"))), 4 + 2 + 2)
+      chosen(defender(GarrisonArmoryCard))), 4 + 2 + 2)

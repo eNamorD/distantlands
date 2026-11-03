@@ -1,15 +1,16 @@
 package oathdigital.gameplay.powerresolver
 
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.travel.TentsCard
 import oathdigital.model._
-import oathdigital.testkit.CatalogNames
 import oathdigital.testkit.Table.p1
 
 /** The modifier decision's vocabulary: its id per window, its Start answer,
   * and the picks read back out of the answers (modifier walker design,
   * plan-time rulings 1 and 6). */
 class ModifierPicksSuite extends munit.FunSuite:
-  private val tents = CatalogNames.denizen("Tents")
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
+  private val tents = TentsCard.id
+  private val wrestlers = WrestlersCard.id
   private val search = ModifierPicks.decisionId(
     PowerWindow.SearchModifierSelection)
 

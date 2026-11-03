@@ -1,6 +1,5 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.powerresolver.ContributingPower
 
 /** The battle plans that reach beyond the plan window, the rules that tax them,
@@ -30,43 +29,15 @@ import oathdigital.gameplay.powerresolver.ContributingPower
   * replaced). Each names its card, so all are always present.
   */
 object PlanRules:
-  def forCatalog(catalog: ExecutableCatalog): Vector[ContributingPower] =
-    Vector(StickyFire) ++
-      Vector(ImperialTactics) ++
-      Vector(WarningSignals.forCatalog(catalog)) ++
-      Vector(GleamingArmor.forCatalog(catalog)) ++
-      Vector(InsectSwarm.forCatalog(catalog)) ++
-      Vector(HorseArchers.forCatalog(catalog)) ++
-      Vector(StormCaller.forCatalog(catalog)) ++
-      Vector(RivalKhan.forCatalog(catalog)) ++
-      Vector(GreatCrusade.forCatalog(catalog)) ++
-      Vector(PledgeOfDefense.forCatalog(catalog)) ++
-      Vector(BagOfSiegeworks) ++
-      Vector(RainBoots.forCatalog(catalog)) ++
-      Vector(GreatLevy) ++
-      Vector(GarrisonArmory) ++
-      Vector(Hospital) ++
-      Vector(BookBurning) ++
-      Vector(RustingRay) ++
-      Vector(FaeBattalion) ++
-      Vector(WarTortoise) ++
-      Vector(Lancers.forCatalog(catalog)) ++
-      Vector(WeepingBanner) ++
-      Vector(FearsomeGeneral) ++
-      Vector(KindredWarriors.forCatalog(catalog)) ++
-      Vector(Rangers) ++
-      Vector(MasterAtArms.forCatalog(catalog)) ++
-      Vector(UnstableSummon) ++
-      Vector(ArcaneArmor) ++
-      Vector(MountainGiant.forCatalog(catalog)) ++
-      Vector(MountedPatrol.forCatalog(catalog)) ++
-      Vector(ShieldWall) ++
-      Vector(BillowingFog) ++
-      Vector(TravelingDoctor.forCatalog(catalog)) ++
-      Vector(CursedCauldron) ++
-      Vector(SaltTheEarth.forCatalog(catalog)) ++
-      Vector(SealingWard.forCatalog(catalog)) ++
-      Vector(Herald.forCatalog(catalog)) ++
-      Vector(SneakAttack.forCatalog(catalog)) ++
-      Vector(VowOfUnion) ++
-      Vector(KeepRule)
+  val all: Vector[ContributingPower] =
+    Vector(StickyFire, ImperialTactics, WarningSignals, GleamingArmor,
+      InsectSwarm, HorseArchers, StormCaller, RivalKhan,
+      GreatCrusade, PledgeOfDefense,
+      BagOfSiegeworks, RainBoots, GreatLevy, GarrisonArmory, Hospital,
+      BookBurning, RustingRay, FaeBattalion, WarTortoise, Lancers,
+      WeepingBanner, FearsomeGeneral, KindredWarriors,
+      Rangers, MasterAtArms, UnstableSummon, ArcaneArmor,
+      MountainGiant, MountedPatrol, ShieldWall,
+      BillowingFog, TravelingDoctor, CursedCauldron,
+      SaltTheEarth, SealingWard, Herald, SneakAttack,
+      VowOfUnion, KeepRule)

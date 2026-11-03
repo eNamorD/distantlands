@@ -1,26 +1,29 @@
 package oathdigital.gameplay.powers.campaign
 
+import oathdigital.catalog.holding.{BrackenCard, CouncilSeatCard, GlamorCard,
+  RelicHunterCard}
+import oathdigital.gameplay.MarriageCard
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Military Parade: a free plan for either side. If its user wins, they gain a
   * favor for each faceup adviser the enemy holds then, from that adviser's
   * suit bank. Bandits hold no advisers, so an attacker is not offered it
   * against them. */
 class MilitaryParadeSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Military Parade")
+  private val card = MilitaryParadeCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
-  private val honors = CatalogNames.denizen("Battle Honors")
+  private val honors = BattleHonorsCard.id
   private val honorsRef: DecisionOptionRef =
     DecisionOptionRef.Denizen(honors)
-  private val orders = planless("Council Seat", "Relic Hunter")
-  private val beast = planlessCard("Bracken")
-  private val arcane = planlessCard("Glamor")
+  private val orders = planless(CouncilSeatCard, RelicHunterCard)
+  private val beast = planlessCard(BrackenCard)
+  private val arcane = planlessCard(GlamorCard)
   /** Implemented, but its power offers no battle plan. */
-  private val marriage = CatalogNames.denizen("Marriage")
+  private val marriage = MarriageCard.id
 
   /** The attacker holds Military Parade. The other player rules the origin and
     * holds two order advisers and a beast adviser faceup, and an arcane

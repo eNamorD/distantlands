@@ -1,14 +1,14 @@
 package oathdigital.application
 
 import oathdigital.gameplay.operations.TheGrandScepterCard
+import oathdigital.gameplay.powers.setup.GreatForgeCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.powers.PowerImplementationStatus
 import oathdigital.model.{CardId, Chronicle, DenizenId, EdificeId, Suit}
-import oathdigital.testkit.CatalogNames
 import oathdigital.testkit.Unwrap.{accepted, present}
 
 class FirstGameChronicleGeneratorSuite extends munit.FunSuite:
-  private val status = PowerImplementationStatus.implemented(catalog)
+  private val status = PowerImplementationStatus.implemented
   private val random = ChronicleRandomPort.random
   private val policy = ShufflePolicy.implementedFirst
 
@@ -76,7 +76,7 @@ class FirstGameChronicleGeneratorSuite extends munit.FunSuite:
   test("implemented means what the UI marker reads: a walker-only power " +
       "counts, and a denizen with an unimplemented power is left out"):
     // The Broken Forge, the Great Forge's ruined face, has a walker-only power.
-    val brokenForge = CatalogNames.edifice("Broken Forge")
+    val brokenForge = GreatForgeCard.id
     val greatForge = present(catalog.edifices.find(
       _.id.value == brokenForge.value), "the Broken Forge")
     val walkerOnly =

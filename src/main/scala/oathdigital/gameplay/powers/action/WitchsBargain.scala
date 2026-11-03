@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
 import oathdigital.gameplay.{NoteSupport, PowerAccess}
 import oathdigital.gameplay.powers.{PlayerFacts, PowerAnswers}
 import oathdigital.model._
@@ -61,7 +61,8 @@ case object WitchsBargain extends PaidAction(WitchsBargainCard.power):
     NotePart.Arg(1), NotePart.Text(" and took "), NotePart.Arg(2),
     NotePart.Text(".")))
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     Repeat((_, pending) => !latest(pending.answered).contains(stop),
       Sequence(Vector[Operation](

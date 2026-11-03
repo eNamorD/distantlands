@@ -73,7 +73,7 @@ object PhasePowerProcedure:
         case PowerSourceRef.Card(card) => Some(card)
         case _ => None
       val persistent = catalog.printedPower(power.id).exists(_.persistent)
-      PowerUseRules.refusals(ready, PowerUse(player, power.id, card,
+      PowerUseRules.refusals(catalog, ready, PowerUse(player, power.id, card,
         persistent, power.costsSecret,
         places = power.cost.favor > 0 || power.cost.secret > 0),
         restrictions)
@@ -108,10 +108,10 @@ object PhasePowerProcedure:
         !current.turn.usedPowers.contains(useRef(power, found)), (),
         PowerAlreadyUsed(useRef(power, found)))
       _ <- payable(ready, active, power, found)
-      _ <- Either.cond(power.usable(ready, active, source), (),
+      _ <- Either.cond(power.usable(catalog, ready, active, source), (),
         InvalidEventOrder(s"${power.id.value} has nothing to do from " +
           s"${source.kind}/${source.wireId}"))
-      _ <- power.refusal(ready, active, source, starts)
+      _ <- power.refusal(catalog, ready, active, source, starts)
         .toLeft(()).left.map(OathViolation.StartUnavailable(_))
     yield found
 
@@ -124,7 +124,7 @@ object PhasePowerProcedure:
       source <- single(id, args)
       found <- check(catalog, ready, player, power, source,
         powers.useRestrictions, starts)
-      tree <- power.build(ready, player, source, starts)
+      tree <- power.build(catalog, ready, player, source, starts)
     yield assemble(catalog, power, player, found, tree)
 
   /** Resume skips the gate: the walker is pending and the use is not yet
@@ -138,7 +138,7 @@ object PhasePowerProcedure:
       power <- find(id, powers)
       source <- single(id, args)
       found <- sourceOf(source)
-      tree <- power.build(ready, player, source, starts)
+      tree <- power.build(catalog, ready, player, source, starts)
     yield assemble(catalog, power, player, found, tree)
 
   /** The driver's start check, for a power that queues a procedure. One

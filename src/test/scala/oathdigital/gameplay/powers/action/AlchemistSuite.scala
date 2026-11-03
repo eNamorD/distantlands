@@ -1,16 +1,17 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
 import oathdigital.model._
 import oathdigital.protocol.projection.DecisionQueryProjection
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Unwrap.accepted
 
 class AlchemistSuite extends munit.FunSuite:
   import PowerFixture._
   import PhasePowerHarness._
 
-  private val alchemist = CatalogNames.denizen("Alchemist")
+  private val alchemist = AlchemistCard.id
   private val source = DecisionOptionRef.Denizen(alchemist)
 
   /** p1's Act at Ancient City with two faceup secrets and Alchemist at the
@@ -18,8 +19,8 @@ class AlchemistSuite extends munit.FunSuite:
     */
   private def staged(favor: (Suit, Int)*) =
     val banks = favor.toMap
-    val table = Table.start.pawn(actor, "Ancient City")
-      .denizen("Alchemist", at = "Ancient City").secrets(actor, 2)
+    val table = Table.start.pawn(actor, AncientCitySite)
+      .denizen(AlchemistCard, at = AncientCitySite).secrets(actor, 2)
     Suit.all.foldLeft(table)((t, suit) =>
       t.bankFavor(suit, banks.getOrElse(suit, 0))).ready
   private def bank(ready: ReadyGame, suit: Suit) = ready.banks.favor(suit)

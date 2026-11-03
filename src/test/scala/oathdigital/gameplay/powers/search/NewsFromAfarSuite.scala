@@ -1,10 +1,14 @@
 package oathdigital.gameplay.powers.search
 
 import oathdigital.gameplay.SearchPlay
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.SearchFixture
+import oathdigital.gameplay.powers.action.MessengerCard
+import oathdigital.gameplay.powers.campaign.{CodeOfHonorCard, MercenariesCard,
+  ShieldWallCard, WrestlersCard}
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
@@ -12,14 +16,14 @@ import oathdigital.testkit.Unwrap.accepted
 class NewsFromAfarSuite extends munit.FunSuite:
   import SearchFixture.rules
 
-  private val news = CatalogNames.denizen("News from Afar")
+  private val news = NewsFromAfarCard.id
   private val modifiers = Vector(NewsFromAfar.id)
   /** Plain denizens for the world deck and the Cradle discard; none is
     * played. */
-  private val deckTop = Vector("Wrestlers", "Errand Boy", "Mercenaries")
-    .map(CatalogNames.denizen(_))
-  private val discardPile = Vector("Code of Honor", "Messenger", "Shield Wall")
-    .map(CatalogNames.denizen(_))
+  private val deckTop = Vector(WrestlersCard.id, ErrandBoyCard.id,
+    MercenariesCard.id)
+  private val discardPile = Vector(CodeOfHonorCard.id, MessengerCard.id,
+    ShieldWallCard.id)
   private val region = Region.Cradle // Ancient City's region
   private val startingSupply = 5
 
@@ -28,7 +32,7 @@ class NewsFromAfarSuite extends munit.FunSuite:
     * plain cards and the Cradle discard holding three more. */
   private def holdingNews(favor: Int = 2): ReadyGame = Table.start
     .worldDeckTop(deckTop*).discarded(region, discardPile*)
-    .pawn(p1, "Ancient City").supply(p1, startingSupply).adviser(p1, news)
+    .pawn(p1, AncientCitySite).supply(p1, startingSupply).adviser(p1, news)
     .favor(p1, favor).ready
 
   private def searchedWithNews(ready: ReadyGame, source: SearchSource)

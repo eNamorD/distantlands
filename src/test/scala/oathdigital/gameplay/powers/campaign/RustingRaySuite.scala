@@ -3,15 +3,16 @@ package oathdigital.gameplay.powers.campaign
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.banner.YewStaffCard
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Rusting Ray: a defender's plan, a secret placed, offered while its user
   * holds the Darkest Secret, that scores the attacker's hollow swords as
   * nothing. */
 class RustingRaySuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Rusting Ray")
+  private val card = RustingRayCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
   private val ignored = NoteText.Said("ignored", "Hollow swords ignored.",
     covers = false)
@@ -59,7 +60,7 @@ class RustingRaySuite extends munit.FunSuite:
 
   test("with Yew Staff the defender uses it without the Darkest Secret"):
     val base = defender(darkest = false)
-    val b = on(base)(_.relic(base.rival, "Yew Staff"))
+    val b = on(base)(_.relic(base.rival, YewStaffCard))
     val done = commit(rules(losingDice), b, 4)
       .pick(b.rival, CampaignIds.defenderPlan, ref).finishPlanWindows
     assertEquals(done.result.attackScore, 0)

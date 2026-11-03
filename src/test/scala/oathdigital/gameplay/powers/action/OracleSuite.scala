@@ -3,12 +3,15 @@ package oathdigital.gameplay.powers.action
 import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog,
   PowerFixture, WalkerPowerCatalog}
+import oathdigital.gameplay.powers.cardplay.VowOfObedienceCard
+import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness,
-  PlacementPicks, PowerRules, Refusals, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, PlacementPicks, PowerRules,
+  Refusals, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Unwrap.accepted
 
@@ -16,11 +19,11 @@ class OracleSuite extends munit.FunSuite:
   import PowerFixture._
   import PhasePowerHarness.{after, awaits, parked, usableNow}
 
-  private val oracle = CatalogNames.denizen("Oracle")
+  private val oracle = OracleCard.id
   private val source = DecisionOptionRef.Denizen(oracle)
   private val faith = VisionRules.Faith
-  private val vow = CatalogNames.denizen("Vow of Obedience")
-  private val power = Oracle.forCatalog(catalog)
+  private val vow = VowOfObedienceCard.id
+  private val power = Oracle
   private val placement = CardPlayProcedure.placementDecisionId(faith)
   /** The production walker rules and phase powers, so a Restriction such as
     * Vow of Obedience's hides what it forbids. */
@@ -31,12 +34,12 @@ class OracleSuite extends munit.FunSuite:
     * the world deck's third card, under Threatening Roar and Fae Merchant,
     * or, `withVision = false`, in that pile too. */
   private def staged(withVision: Boolean = true): ReadyGame =
-    val table = Table.start.turn(actor, Phase.Act).pawn(actor, "Ancient City")
-      .denizen(oracle, at = "Ancient City").secrets(actor, 2)
+    val table = Table.start.turn(actor, Phase.Act).pawn(actor, AncientCitySite)
+      .denizen(oracle, at = AncientCitySite).secrets(actor, 2)
       .discarded(Region.Provinces, VisionRules.Sanctuary,
         VisionRules.Rebellion, VisionRules.Conspiracy, VisionRules.Conquest)
     (if withVision then
-      table.worldDeckTop("Threatening Roar", "Fae Merchant", faith)
+      table.worldDeckTop(ThreateningRoarCard, FaeMerchantCard, faith)
     else table.discarded(Region.Provinces, faith)).ready
   private def deckOf(ready: ReadyGame) = ready.game.current.commonCards.worldDeck
   private def drawn(ready: ReadyGame) = ready.game.current.tracks.visionsDrawn
@@ -47,7 +50,7 @@ class OracleSuite extends munit.FunSuite:
   private def place(from: OathTransition, way: PlayedAs) =
     rules.resolveWalker(from.state, actor, placement,
       PlacementPicks.parkedAnswer(from.state, way,
-        WalkerPowerCatalog.default(catalog), PhasePowerCatalog.default(catalog)))
+        WalkerPowerCatalog.default(catalog), PhasePowerCatalog.default))
   private def replayed(from: ReadyGame, events: Vector[OathEvent]) =
     events.foldLeft[Either[OathViolation, OathState]](
       Right(OathState.Ready(from)))((state, event) =>
@@ -57,7 +60,7 @@ class OracleSuite extends munit.FunSuite:
     * after the restriction look-ahead. */
   private def buttons(from: OathTransition): Vector[PlayedAs] =
     PlacementPicks.offered(PlacementPicks.parkedOptions(from.state,
-      WalkerPowerCatalog.default(catalog), PhasePowerCatalog.default(catalog)))
+      WalkerPowerCatalog.default(catalog), PhasePowerCatalog.default))
 
   test("it places two secrets and draws the first Vision, the cards above " +
       "it staying in place"):

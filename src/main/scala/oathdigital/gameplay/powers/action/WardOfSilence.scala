@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
 import oathdigital.gameplay.{NoteSupport, PowerAccess}
 import oathdigital.gameplay.operations.Costs
 import oathdigital.gameplay.powerresolver.QueuedStarts
@@ -51,17 +51,19 @@ case object WardOfSilence extends PaidAction(WardOfSilenceCard.power):
   override def narratedDecisions: Set[String] =
     Set(targetDecisionId, amountDecisionId)
 
-  override def usable(ready: ReadyGame, player: PlayerId,
-      source: DecisionOptionRef): Boolean =
+  override def usable(catalog: ExecutableCatalog, ready: ReadyGame,
+      player: PlayerId, source: DecisionOptionRef): Boolean =
     Costs.affordable(ready, player, Location.OnCard(cardId),
       Cost(secret = 1))
 
-  override def refusal(ready: ReadyGame, player: PlayerId,
-      source: DecisionOptionRef, starts: QueuedStarts): Option[String] =
+  override def refusal(catalog: ExecutableCatalog, ready: ReadyGame,
+      player: PlayerId, source: DecisionOptionRef, starts: QueuedStarts)
+      : Option[String] =
     Option.unless(targets(ready, player).exists(faceUp(_) > 0))(
       PawnMoves.noValidEnemyPawn)
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     Branch((live, _) => askTarget(live, player)),
     Branch((live, pending) => askAmount(live, player, pending)),

@@ -3,29 +3,34 @@ package oathdigital.gameplay.powers.cardplay
 import oathdigital.gameplay.actions.{CardPlayRules, VisionRules}
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import oathdigital.gameplay.cards.AncientCitySite
+import oathdigital.gameplay.powers.action.FaeMerchantCard
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome,
   WalkerPowers}
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Unwrap
 import oathdigital.testkit.Unwrap.{accepted, present}
 
 class LostTapestrySuite extends munit.FunSuite:
   private val actor = Table.p1
-  private val tapestry = CatalogNames.relic("Lost Tapestry")
+  private val tapestry = LostTapestryCard.id
   private val faith = VisionRules.Faith
-  private val plain = Vector("Threatening Roar", "Fae Merchant", "Wrestlers")
-    .map(CatalogNames.denizen(_))
+  private val plain = Vector(ThreateningRoarCard.id, FaeMerchantCard.id,
+    WrestlersCard.id)
   /** A plain denizen in hand. */
-  private val played = CatalogNames.denizen("Errand Boy")
+  private val played = ErrandBoyCard.id
 
   /** p1's Act at Ancient City, holding Lost Tapestry (facedown when
     * `facedownTapestry`), `held` as facedown advisers and `card` in hand. */
   private def holding(card: WorldCardId, held: Vector[WorldCardId],
       facedownTapestry: Boolean = false): ReadyGame =
     held.foldLeft(Table.start.turn(actor, Phase.Act)
-      .pawn(actor, "Ancient City")
+      .pawn(actor, AncientCitySite)
       .relic(actor, tapestry, facedown = facedownTapestry)
       .hand(actor, card))(_.adviser(actor, _, facedown = true)).ready
 

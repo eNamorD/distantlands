@@ -2,11 +2,11 @@ package oathdigital.gameplay
 
 import oathdigital.application._
 import oathdigital.gameplay.actions.campaign.CampaignIds
+import oathdigital.gameplay.cards.{BrokenPeaksSite, BuriedGiantSite}
 import oathdigital.gameplay.setup.FirstGameSetupFixture
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseAmountAnswer
-import oathdigital.testkit.{CatalogNames, Dice, Look, MenuPlay, Outcomes,
-  Table}
+import oathdigital.testkit.{Commands, Dice, Look, MenuPlay, Outcomes, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -14,7 +14,7 @@ import oathdigital.testkit.Unwrap.accepted
   * (Imperial Infighting, CR p. 35), played through the service. */
 class EmpireCampaignScenarioSuite extends munit.FunSuite:
   private val gameId = "empire-campaign"
-  private val peaks = CatalogNames.site("Broken Peaks")
+  private val peaks = BrokenPeaksSite.id
 
   /** p2 is the Chancellor and p3 a Citizen, active in Act at Broken Peaks,
     * which the Empire holds with 2 warbands. p3 has 4 warbands on their
@@ -23,7 +23,7 @@ class EmpireCampaignScenarioSuite extends munit.FunSuite:
     * Chancellor has no title plan. */
   private val table: Table = Table.start.imperial(p2, p3)
     .turn(p3, Phase.Act).pawn(p3, at = peaks)
-    .pawn(p2, at = "Buried Giant").pawn(p1, at = "Buried Giant")
+    .pawn(p2, at = BuriedGiantSite).pawn(p1, at = BuriedGiantSite)
     .warbandsAt(peaks, p2, 2).boardWarbands(p3, 4).boardWarbands(p2, 0)
     .supply(p3, 7).oathkeeper(Some(p1))
 
@@ -32,7 +32,7 @@ class EmpireCampaignScenarioSuite extends munit.FunSuite:
   private def resolve(service: GameApplicationService, from: GameAccepted,
       player: PlayerId, id: String, answer: DecisionAnswer): GameAccepted =
     accepted(service.handle(gameId, from.nextSequence,
-      GameCommand.ResolveWalker(player, TreeDecision(id, answer))))
+      Commands.resolveWalker(player, TreeDecision(id, answer))))
 
   test("a Citizen conquers the Empire's site, places no warbands, and the " +
       "bandits take it"):

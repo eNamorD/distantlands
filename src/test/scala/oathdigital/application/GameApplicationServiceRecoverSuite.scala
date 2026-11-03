@@ -1,5 +1,9 @@
 package oathdigital.application
 
+import oathdigital.gameplay.cards.{BrokenPeaksSite, DunesSite, SaltFlatsSite}
+import oathdigital.gameplay.powers.action.DowsingSticksCard
+import oathdigital.gameplay.powers.campaign.StickyFireCard
+import oathdigital.gameplay.powers.recover.CatacombsCard
 import oathdigital.testkit.MenuPlay
 import oathdigital.model._
 import oathdigital.gameplay.actions.RecoverRules
@@ -11,18 +15,18 @@ import oathdigital.model.DecisionAnswer.ChooseOneAnswer
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.model.OathState.Ready
 import oathdigital.gameplay.OathRules
-import oathdigital.testkit.{CatalogNames, Dice, Look, Outcomes, RecordedOps,
-  Table}
+import oathdigital.testkit.{Dice, Look, Outcomes, RecordedOps, Table}
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.{accepted, present}
 import ParkedServiceFixture.{firstPlayer, loaded, parkedAssertions,
   replayingSecond, setupViaService}
+import oathdigital.testkit.Commands
 
 /** The application service drives a walker Recover, its dice and Catacombs
   * through persisted parks and reloads.
   */
 class GameApplicationServiceRecoverSuite extends munit.FunSuite:
-  private val catacombs = CatalogNames.denizen("Catacombs")
+  private val catacombs = CatacombsCard.id
   /** The power printed on Catacombs. */
   private val catacombsPower = present(
     catalog.denizens.find(_.id.value == catacombs.value), "Catacombs")
@@ -46,13 +50,13 @@ class GameApplicationServiceRecoverSuite extends munit.FunSuite:
       newChronicle.atlasBox.take(8).map(_.site))
 
   /** The relic deck's top. */
-  private val dowsingSticks = CatalogNames.relic("Dowsing Sticks")
+  private val dowsingSticks = DowsingSticksCard.id
 
   /** p1 stands at Dunes, which has one relic slot and no relic, beside a
     * faceup Catacombs: a Recover there that names Catacombs puts the top of
     * the relic deck, Dowsing Sticks, on the site and pays a secret for it. */
-  private val catacombsTable = Table.start.pawn(p1, "Dunes")
-    .denizen("Catacombs", "Dunes").relicDeckTop(dowsingSticks)
+  private val catacombsTable = Table.start.pawn(p1, DunesSite)
+    .denizen(CatacombsCard, DunesSite).relicDeckTop(dowsingSticks)
 
   /** Two shields and a Doubler: they reach the difficulty of Broken Peaks,
     * and Recover rolls them as the walker walks, so the dice come from the
@@ -63,7 +67,7 @@ class GameApplicationServiceRecoverSuite extends munit.FunSuite:
 
   test("walker Recover persists every park and replays to the same final state"):
     // p1 stands at Broken Peaks, difficulty 4, with two facedown relics.
-    val recoverSite = CatalogNames.site("Broken Peaks")
+    val recoverSite = BrokenPeaksSite.id
     val actor = p1
 
     val walkerDice = new Dice.CountingDefense(meetingTheDifficulty)
@@ -94,13 +98,13 @@ class GameApplicationServiceRecoverSuite extends munit.FunSuite:
       replayingSecond(walkerService, walkerRepository).load("walker-recover"))
     assertEquals(reloadedAtRelic.state, started.state)
     // Sticky Fire lies first at Broken Peaks, before Cursed Cauldron.
-    val relic = CatalogNames.relic("Sticky Fire")
+    val relic = StickyFireCard.id
     assertEquals(atRelic.game.current.map.sites(recoverSite).relics.head.id,
       relic)
 
     val finished = accepted(walkerService.handle("walker-recover",
       reloadedAtRelic.nextSequence,
-        GameCommand.ResolveWalker(actor, TreeDecision(RecoverProcedure.relicDecisionId,
+        Commands.resolveWalker(actor, TreeDecision(RecoverProcedure.relicDecisionId,
           ChooseOneAnswer(DecisionOptionRef.Relic(relic))))))
     val afterWalker = Outcomes.ready(finished.state)
     assert(finished.events.exists(_.isInstanceOf[WalkerCompleted]))
@@ -156,7 +160,7 @@ class GameApplicationServiceRecoverSuite extends munit.FunSuite:
     // which fails again and parks the same choice: the continuation names
     // the parked node's own decision id either way.
     val continued = accepted(service.handle("walker-continue",
-      failed.nextSequence, GameCommand.ResolveWalker(actor, TreeDecision(
+      failed.nextSequence, Commands.resolveWalker(actor, TreeDecision(
         RecoverProcedure.choiceDecisionId,
         ChooseOneAnswer(DecisionOptionRef.Button("continue"))))))
     assertEquals(dice.calls, 2)
@@ -203,7 +207,7 @@ class GameApplicationServiceRecoverSuite extends munit.FunSuite:
       "multiplies shields from an earlier roll"):
     // Stays on the replayed setup: Salt Flats is not in play on a Table's
     // map, and no Table step changes the map.
-    val saltFlats = CatalogNames.site("Salt Flats")
+    val saltFlats = SaltFlatsSite.id
     assertEquals(RecoverRules.difficulty(catalog, saltFlats), Some(2))
     val ChronicleWithSiteInPlay(saltFlatsChronicle, orderedSites) =
       withSiteInPlay(saltFlats)
@@ -241,7 +245,7 @@ class GameApplicationServiceRecoverSuite extends munit.FunSuite:
     // roll, which is the accumulation under test.
     val walkerSecond = accepted(walkerService.handle(
       "walker-cross-roll-doubler", walkerFirstReloaded.nextSequence,
-      GameCommand.ResolveWalker(actor, TreeDecision(RecoverProcedure.choiceDecisionId,
+      Commands.resolveWalker(actor, TreeDecision(RecoverProcedure.choiceDecisionId,
         ChooseOneAnswer(DecisionOptionRef.Button("continue"))))))
     val walkerAfterSecond = Outcomes.ready(walkerSecond.state)
     assertEquals(walkerAfterSecond.game.current.rollOutcomes(
@@ -258,12 +262,12 @@ class GameApplicationServiceRecoverSuite extends munit.FunSuite:
     // The walker is now the only Recover path: finish the walk and assert
     // its own final state directly rather than against a legacy run.
     // Setup lays Sticky Fire at Salt Flats.
-    val walkerRelic = CatalogNames.relic("Sticky Fire")
+    val walkerRelic = StickyFireCard.id
     assertEquals(walkerAfterSecond.game.current.map.sites(saltFlats)
       .relics.head.id, walkerRelic)
     val walkerFinished = accepted(walkerService.handle(
       "walker-cross-roll-doubler", walkerSecondReloaded.nextSequence,
-      GameCommand.ResolveWalker(actor, TreeDecision(RecoverProcedure.relicDecisionId,
+      Commands.resolveWalker(actor, TreeDecision(RecoverProcedure.relicDecisionId,
         ChooseOneAnswer(DecisionOptionRef.Relic(walkerRelic))))))
     val walkerFinal = Outcomes.ready(walkerFinished.state)
     val actorState = Look(walkerFinal).player(actor)
@@ -296,7 +300,7 @@ class GameApplicationServiceRecoverSuite extends munit.FunSuite:
     // Catacombs is the one modifier p1 can pick, so the start asks for it,
     // and picking it starts the Recover.
     val started = service.handle(gameId, begun.nextSequence,
-      GameCommand.ResolveWalker(actor, TreeDecision("recover.modifiers",
+      Commands.resolveWalker(actor, TreeDecision("recover.modifiers",
         ModifierPlay.pick(catacombsPower)))) match
       case Right(accepted) => accepted
       case Left(error) =>
@@ -344,7 +348,7 @@ class GameApplicationServiceRecoverSuite extends munit.FunSuite:
     assertEquals(atRelic.game.current.map.sites(siteId).relics.head.id,
       topRelic)
     val finished = accepted(service.handle(gameId, reloaded.nextSequence,
-      GameCommand.ResolveWalker(actor, TreeDecision(RecoverProcedure.relicDecisionId,
+      Commands.resolveWalker(actor, TreeDecision(RecoverProcedure.relicDecisionId,
         ChooseOneAnswer(DecisionOptionRef.Relic(topRelic))))))
     assert(finished.events.exists(_.isInstanceOf[WalkerCompleted]))
     assertEquals(loaded(replayingSecond(service, repository).load(gameId)

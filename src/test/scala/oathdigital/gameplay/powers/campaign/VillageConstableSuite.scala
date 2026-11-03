@@ -2,21 +2,21 @@ package oathdigital.gameplay.powers.campaign
 
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
+import oathdigital.gameplay.cards.BrokenPeaksSite
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
-import oathdigital.testkit.CatalogNames
 
 /** Village Constable: a free, site-only plan for two attack dice, added or
   * removed, unless the enemy holds the People's Favor. */
 class VillageConstableSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Village Constable")
+  private val card = VillageConstableCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
 
   /** The actor also rules a site outside the Campaign, where Village
     * Constable stands. */
   private def attacker(b: Board): Board =
     // Broken Peaks: these boards have no extras, so nobody else rules it.
-    val site = CatalogNames.site("Broken Peaks")
+    val site = BrokenPeaksSite.id
     withSiteCard(actorRules(b, site), site, card)
 
   test("an attacker adds two attack dice against bandits, for nothing"):

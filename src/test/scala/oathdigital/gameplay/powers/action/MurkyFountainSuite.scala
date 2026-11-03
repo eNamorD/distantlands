@@ -2,10 +2,13 @@ package oathdigital.gameplay.powers.action
 
 import oathdigital.gameplay.WalkerDiceFixture.scripted
 import oathdigital.gameplay.actions.dice.RerollChoice
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
+import oathdigital.gameplay.powers.dice.JinxCard
+import oathdigital.gameplay.powers.wake.MarbleFountainsCard
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look,
-  PhasePowerHarness, Refusals, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, PhasePowerHarness, Refusals,
+  Table}
 import oathdigital.testkit.Outcomes.{assertWireRoundTrips, ready}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -15,7 +18,7 @@ class MurkyFountainSuite extends munit.FunSuite:
 
   private val walkerParked = PhasePowerHarness.parked
 
-  private val fountain = CatalogNames.edifice("Marble Fountains")
+  private val fountain = MarbleFountainsCard.id
   private val source = DecisionOptionRef.Edifice(fountain)
   /** p1's Act at Ancient City with `supply` Supply and the one faceup secret
     * the power places. The edifice stands on
@@ -25,11 +28,11 @@ class MurkyFountainSuite extends munit.FunSuite:
     */
   private def staged(side: EdificeSide = EdificeSide.Ruined,
       pawnAtEdifice: Boolean = true, supply: Int): ReadyGame =
-    val table = Table.start.turn(actor, Phase.Act).pawn(actor, "Ancient City")
+    val table = Table.start.turn(actor, Phase.Act).pawn(actor, AncientCitySite)
       .supply(actor, supply).secrets(actor, 1)
-    (if pawnAtEdifice then table.edifice(fountain, side, at = "Ancient City")
-    else table.edifice(fountain, side, at = "Broken Peaks")
-      .warbandsAt("Broken Peaks", actor, 1)).ready
+    (if pawnAtEdifice then table.edifice(fountain, side, at = AncientCitySite)
+    else table.edifice(fountain, side, at = BrokenPeaksSite)
+      .warbandsAt(BrokenPeaksSite, actor, 1)).ready
 
   test("at its site it places a secret and gains Supply equal to the total"):
     val rules0 = rules(defenseDice(DefenseDieFace.OneShield,
@@ -122,11 +125,11 @@ class MurkyFountainSuite extends munit.FunSuite:
         covers = false)))
 
   test("Jinx rerolls the Murky Fountain's roll"):
-    val jinx = CatalogNames.denizen("Jinx")
+    val jinx = JinxCard.id
     val ready0 = Table.start.turn(actor, Phase.Act)
-      .pawn(actor, "Ancient City").supply(actor, 1)
+      .pawn(actor, AncientCitySite).supply(actor, 1)
       .secrets(actor, faceUp = 2).adviser(actor, jinx)
-      .edifice(fountain, EdificeSide.Ruined, at = "Ancient City").ready
+      .edifice(fountain, EdificeSide.Ruined, at = AncientCitySite).ready
     val rules0 = rulesWithPrintedRestrictions(scripted(
       Vector.fill(MurkyFountain.Dice)(DefenseDieFace.Blank),
       Vector.fill(MurkyFountain.Dice)(DefenseDieFace.OneShield)))

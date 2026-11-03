@@ -1,12 +1,12 @@
 package oathdigital.gameplay
 
 import oathdigital.gameplay.actions.ProcedureNotes
+import oathdigital.gameplay.powers.action.GamblingHallCard
 import oathdigital.gameplay.walker.{LogNoted, ProcedureWalker, WalkerOutcome,
   WalkerPowers, WalkerStepRecorded}
 import oathdigital.model._
 import oathdigital.model.TestGameFixtures._
 import oathdigital.testkit.Outcomes.{finished, parked}
-import oathdigital.testkit.CatalogNames
 import oathdigital.testkit.Unwrap.{accepted, present}
 import oathdigital.testkit.DecisionOptions.button
 
@@ -121,7 +121,7 @@ class LogNoteWalkerSuite extends munit.FunSuite:
 
   test("a selected card, site or banner is its note source, and a button has " +
       "none"):
-    val gamblingHall = CatalogNames.denizen("Gambling Hall")
+    val gamblingHall = GamblingHallCard.id
     assertEquals(PowerSourceRef.of(DecisionOptionRef.Denizen(gamblingHall)),
       Some(PowerSourceRef.Card(gamblingHall)))
     assertEquals(PowerSourceRef.of(DecisionOptionRef.Site(SiteId("s"))),

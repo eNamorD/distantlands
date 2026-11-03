@@ -5,9 +5,10 @@ import oathdigital.gameplay.CampaignFixture.{Board, on, rules,
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.campaign.PlanDriver.{awaits, commit,
   losingDice, winningDice}
+import oathdigital.gameplay.powers.campaign.WrestlersCard
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseAmountAnswer
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 import oathdigital.testkit.Table.{p1, p2, p3}
 
 /** Whole Campaigns with Imperial players (Empire slice 1b-i): every
@@ -74,7 +75,7 @@ class ImperialCampaignBattleSuite extends munit.FunSuite:
 
   test("a Citizen raided by another Citizen sacrifices a purple warband " +
       "from their board for Wrestlers"):
-    val wrestlers = CatalogNames.denizen("Wrestlers")
+    val wrestlers = WrestlersCard.id
     val citizens = seated(p1, p3)
     val base = on(citizens)(_.pawn(p3, at = citizens.origin)
       .boardWarbands(p3, 3))

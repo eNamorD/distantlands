@@ -1,19 +1,20 @@
 package oathdigital.gameplay.powers.campaign
 
+import oathdigital.catalog.holding.{GlamorCard, SearchPartyCard}
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Rival Khan: a free plan for four attack dice, added or removed, offered
   * only when the enemy has a faceup nomad adviser, and discarded after the
   * Campaign. */
 class RivalKhanSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Rival Khan")
+  private val card = RivalKhanCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
-  private val nomad = planlessCard("Search Party")
+  private val nomad = planlessCard(SearchPartyCard)
   private val line = NoteText.Said("discarded", "Discarded after the Campaign.",
     covers = false)
 
@@ -49,7 +50,7 @@ class RivalKhanSuite extends munit.FunSuite:
     val base = rivalRulesOriginAndHoldsOathkeeper(
       board(warbands = 5, supply = 7))
     val b = withAdviserFor(withAdviser(base, card, Orientation.FaceUp),
-      base.rival, planlessCard("Glamor"), Orientation.FaceUp)
+      base.rival, planlessCard(GlamorCard), Orientation.FaceUp)
     assert(!commit(rules(losingDice), b, 3).offers(b.actor, b.actor,
       CampaignIds.attackerPlan, ref))
 

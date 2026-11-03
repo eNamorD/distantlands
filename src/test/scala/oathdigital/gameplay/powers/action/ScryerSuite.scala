@@ -1,9 +1,13 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
+import oathdigital.gameplay.powers.search.MushroomsCard
+import oathdigital.gameplay.powers.whenplayed.{BanditChiefCard,
+  ThreateningRoarCard}
 import oathdigital.model._
 import oathdigital.protocol.projection.DecisionQueryProjection
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Unwrap.accepted
 
@@ -11,7 +15,7 @@ class ScryerSuite extends munit.FunSuite:
   import PowerFixture._
   import PhasePowerHarness._
 
-  private val scryer = CatalogNames.denizen("Scryer")
+  private val scryer = ScryerCard.id
   private val source = DecisionOptionRef.Denizen(scryer)
   /** Whether `player` has peeked `card`, which the projector then names to
     * them alone (`CardKnowledgeSuite`). */
@@ -22,10 +26,10 @@ class ScryerSuite extends munit.FunSuite:
     * The Cradle discard pile holds six named cards, Bandit Chief on top; the
     * Hinterland's is empty, as on the quiet table. */
   private val staged: ReadyGame =
-    Table.start.turn(actor, Phase.Act).pawn(actor, "Ancient City")
-      .denizen(scryer, at = "Ancient City").secrets(actor, 1)
-      .discarded(Region.Cradle, "Threatening Roar", "Fae Merchant",
-        "Second Chance", "Pied Piper", "Mushrooms", "Bandit Chief").ready
+    Table.start.turn(actor, Phase.Act).pawn(actor, AncientCitySite)
+      .denizen(scryer, at = AncientCitySite).secrets(actor, 1)
+      .discarded(Region.Cradle, ThreateningRoarCard, FaeMerchantCard,
+        SecondChanceCard, PiedPiperCard, MushroomsCard, BanditChiefCard).ready
   /** The Cradle discard pile, top first. */
   private val top: Vector[WorldCardId] =
     staged.game.current.commonCards.discard(Region.Cradle).reverse

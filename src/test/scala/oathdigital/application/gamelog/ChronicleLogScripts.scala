@@ -1,5 +1,7 @@
 package oathdigital.application.gamelog
 
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite}
 import oathdigital.gameplay.chronicle.OfferCitizenship
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.{ChooseManyAnswer, ChooseOneAnswer}
@@ -15,8 +17,8 @@ object ChronicleLogScripts:
     * unchanged. */
   def chronicleStarted(using munit.Location): Script =
     val (service, acting) = atTable("chronicle-started", Table.start
-      .pawn(p1, "Ancient City").pawn(p2, "Broken Peaks")
-      .pawn(p3, "Buried Giant").oathkeeper(Some(p1), TitleSide.Usurper)
+      .pawn(p1, AncientCitySite).pawn(p2, BrokenPeaksSite)
+      .pawn(p3, BuriedGiantSite).oathkeeper(Some(p1), TitleSide.Usurper)
       .turn(p3, Phase.Act).banditsRefilled)
     acting.after(MenuPlay.start(p3, PhaseTransitionRef.BeginRest))
     Script("chronicle-started", service, p1)
@@ -25,9 +27,9 @@ object ChronicleLogScripts:
     * Chancellor, offers p2 Citizenship and p2 accepts (Empire slice 3b). */
   def throneOffered(using munit.Location): Script =
     val (service, acting) = atTable("throne-offered", Table.start
-      .pawn(p1, "Ancient City").pawn(p2, "Broken Peaks")
-      .pawn(p3, "Buried Giant").oathkeeper(Some(p1), TitleSide.Usurper)
-      .warbandsAt("Broken Peaks", p2, 2)
+      .pawn(p1, AncientCitySite).pawn(p2, BrokenPeaksSite)
+      .pawn(p3, BuriedGiantSite).oathkeeper(Some(p1), TitleSide.Usurper)
+      .warbandsAt(BrokenPeaksSite, p2, 2)
       .turn(p3, Phase.Act).banditsRefilled)
     acting.withAnswers {
       case park if park.decisionId == OfferCitizenship.offerDecisionId =>

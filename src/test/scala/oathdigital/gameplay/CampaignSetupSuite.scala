@@ -3,10 +3,13 @@ package oathdigital.gameplay
 import oathdigital.gameplay.CampaignFixture.{actorRules, board, on,
   withEnemyAtOrigin}
 import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignSetup}
+import oathdigital.gameplay.powers.action.DowsingSticksCard
+import oathdigital.gameplay.powers.campaign.{CursedCauldronCard,
+  SneakAttackCard}
 import oathdigital.gameplay.walker.QueuedStart
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 
 class CampaignSetupSuite extends munit.FunSuite:
   private def pending(answers: (String, DecisionAnswer)*) = PendingTree(
@@ -43,7 +46,7 @@ class CampaignSetupSuite extends munit.FunSuite:
   test("a Raid setup is the pawn first, then the chosen relic and banner in " +
       "canonical order"):
     val b = withEnemyAtOrigin(board(warbands = 5, supply = 7))
-    val relic = CatalogNames.relic("Cursed Cauldron")
+    val relic = CursedCauldronCard.id
     // The rival holds Cursed Cauldron faceup and the People's Favor.
     val armed = on(b)(_.relic(b.rival, relic)
       .peoplesFavor(Some(b.rival), favor = 1)).ready
@@ -64,9 +67,9 @@ class CampaignSetupSuite extends munit.FunSuite:
     val b = withEnemyAtOrigin(board(warbands = 5, supply = 7))
     // The rival holds Cursed Cauldron faceup, Dowsing Sticks facedown, and the
     // Darkest Secret.
-    val up = CatalogNames.relic("Cursed Cauldron")
+    val up = CursedCauldronCard.id
     val armed = on(b)(_.relic(b.rival, up)
-      .relic(b.rival, "Dowsing Sticks", facedown = true)
+      .relic(b.rival, DowsingSticksCard, facedown = true)
       .darkestSecret(Some(b.rival), secrets = 1)).ready
     assertEquals(CampaignSetup.targetOptions(armed, b.actor, CampaignKind.Raid,
       CampaignDefender.Player(b.rival)), Vector(
@@ -105,7 +108,7 @@ class CampaignSetupSuite extends munit.FunSuite:
     val b = on(withEnemyAtOrigin(apart))(_.pawn(Table.p3, at = apart.origin))
     val entry = QueuedProcedure(b.actor, ActionRef.Campaign,
       Vector(DecisionOptionRef.Player(b.rival)),
-      Some(PowerSourceRef.Card(CatalogNames.denizen("Sneak Attack"))),
+      Some(PowerSourceRef.Card(SneakAttackCard.id)),
       QueueKind.Run)
     val dequeued = QueuedStart.startingFrom(b.ready, entry)
     assertEquals(CampaignSetup.raidDefenders(b.ready, b.actor),

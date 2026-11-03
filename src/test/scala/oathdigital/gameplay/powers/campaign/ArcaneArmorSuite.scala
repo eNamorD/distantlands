@@ -7,13 +7,14 @@ import oathdigital.gameplay.actions.dice.RerollChoice
 import oathdigital.gameplay.powerresolver.{FoldPhase, Transform}
 import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import oathdigital.gameplay.powers.campaign.PlanDriver._
+import oathdigital.gameplay.powers.dice.JinxCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{RollPayload, WalkerPowers,
   WalkerStepRecorded}
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseAmountAnswer
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 import oathdigital.testkit.PowerStubs.ContributingStub
 
 /** Arcane Armor: a defender's plan costing X secrets, which sets X defense
@@ -23,9 +24,9 @@ import oathdigital.testkit.PowerStubs.ContributingStub
 class ArcaneArmorSuite extends munit.FunSuite:
   import AttackDieFace.OneSword
   import DefenseDieFace.{Blank, TwoShields}
-  private val card = CatalogNames.denizen("Arcane Armor")
+  private val card = ArcaneArmorCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
-  private val jinx = CatalogNames.denizen("Jinx")
+  private val jinx = JinxCard.id
 
   private def lines(run: Run): Vector[NoteText.Said] =
     said(ArcaneArmor, run.events)
@@ -187,7 +188,7 @@ class ArcaneArmorSuite extends munit.FunSuite:
   /** `secrets` for the defender, and the attacker holds Gleaming Armor, which
     * makes every plan the defender chooses cost a secret more. */
   private def defenderTaxedByGleamingArmor(secrets: Int): Board =
-    withAdviser(defenderWithArcaneArmor(secrets), "Gleaming Armor",
+    withAdviser(defenderWithArcaneArmor(secrets), GleamingArmorCard,
       Orientation.FaceUp)
 
   test("a surcharge takes its secret first, so X counts what is left"):

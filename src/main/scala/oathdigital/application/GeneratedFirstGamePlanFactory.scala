@@ -24,7 +24,7 @@ final class GeneratedFirstGamePlanFactory(
   override def build(config: FirstGameBootstrapConfig, choice: ChronicleChoice)
       : Either[BootstrapPlanFailure, FirstGamePlan] =
     val resolvedConfig = shuffledSeating(config)
-    val implemented = PowerImplementationStatus.implemented(catalog)
+    val implemented = PowerImplementationStatus.implemented
     val chronicle = choice match
       case ChronicleChoice.New(name) =>
         FirstGameChronicleGenerator.generate(catalog, name, implemented,

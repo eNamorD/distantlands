@@ -1,6 +1,11 @@
 package oathdigital.gameplay.powers.whenplayed
 
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.action.{FaeMerchantCard, HomesteadersCard,
+  SecondChanceCard}
+import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.setup.SchoolOfVinesCard
+import oathdigital.gameplay.powers.targeting.OakenFortressCard
 import oathdigital.model._
 import oathdigital.testkit.{Look, Outcomes, Table}
 import oathdigital.testkit.Table.{p1, p2}
@@ -8,7 +13,7 @@ import oathdigital.testkit.Table.{p1, p2}
 class AnimalHostSuite extends munit.FunSuite:
   import WhenPlayedHarness._
 
-  private val power = registered[AnimalHost]
+  private val power = registered[AnimalHost.type]
   private val host = power.cardId
 
   private def gained(n: Int): NoteText.Said = NoteText.Said("gained",
@@ -21,13 +26,13 @@ class AnimalHostSuite extends munit.FunSuite:
     // bandit site, and the Oaken Fortress and Fae Merchant at p2's site.
     // Homesteaders (Hearth) and p2's Beast adviser Second Chance do not.
     val ready = Table.start.adviser(p1, host).boardWarbands(p1, 3)
-      .denizen("Errand Boy", at = homeSite)
-      .denizen("Homesteaders", at = homeSite)
+      .denizen(ErrandBoyCard, at = homeSite)
+      .denizen(HomesteadersCard, at = homeSite)
       .bandits(nearSite, 2)
-      .edifice("Ruined School", EdificeSide.Ruined, at = nearSite)
-      .edifice("Oaken Fortress", EdificeSide.Intact, at = awaySite)
-      .denizen("Fae Merchant", at = awaySite).warbandsAt(awaySite, p2, 1)
-      .adviser(p2, "Second Chance").ready
+      .edifice(SchoolOfVinesCard, EdificeSide.Ruined, at = nearSite)
+      .edifice(OakenFortressCard, EdificeSide.Intact, at = awaySite)
+      .denizen(FaeMerchantCard, at = awaySite).warbandsAt(awaySite, p2, 1)
+      .adviser(p2, SecondChanceCard).ready
     val done = Outcomes.finished(play(ready, power, host))
     assertEquals(Look(done.treeless).boardWarbands(p1), 3 + 4)
     assertJournalRebuilds(ready, done.events, done.treeless)
@@ -36,7 +41,7 @@ class AnimalHostSuite extends munit.FunSuite:
   test("played to a site it counts itself"):
     // Animal Host itself and Errand Boy.
     val ready = Table.start.denizen(host, at = homeSite).boardWarbands(p1, 3)
-      .denizen("Errand Boy", at = nearSite).ready
+      .denizen(ErrandBoyCard, at = nearSite).ready
     val done = Outcomes.finished(fire(ready, power, hookAt(host, homeSite)))
     assertEquals(Look(done.treeless).boardWarbands(p1), 3 + 2)
     assertEquals(said(power, done.events), Vector(gained(2)))
@@ -44,15 +49,15 @@ class AnimalHostSuite extends munit.FunSuite:
   test("the gain takes what the bank holds"):
     // Two Beast cards, but p1's bank holds 1 warband.
     val ready = Table.start.adviser(p1, host)
-      .denizen("Errand Boy", at = homeSite)
-      .denizen("Fae Merchant", at = nearSite)
+      .denizen(ErrandBoyCard, at = homeSite)
+      .denizen(FaeMerchantCard, at = nearSite)
       .warbandsInBank(p1, 1).ready
     val done = Outcomes.finished(play(ready, power, host))
     assertEquals(said(power, done.events), Vector(gained(1)))
 
   test("with no Beast card at a site it gains none, and the line says so"):
     // Errand Boy is p1's adviser, at no site.
-    val ready = Table.start.adviser(p1, host).adviser(p1, "Errand Boy").ready
+    val ready = Table.start.adviser(p1, host).adviser(p1, ErrandBoyCard).ready
     val done = Outcomes.finished(play(ready, power, host))
     assertEquals(ops(done.events), Vector.empty)
     assertEquals(said(power, done.events), Vector(NoteText.Said("none",

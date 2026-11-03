@@ -1,13 +1,19 @@
 package oathdigital.gameplay.powers.wake
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.operations.OperationRestrictions
 import oathdigital.gameplay.powerresolver.PhasePowers
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
+import oathdigital.gameplay.powers.action.{EldersCard, PiedPiperCard,
+  WaysideInnCard, WolvesCard}
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.rest.SilverTongueCard
+import oathdigital.gameplay.powers.whenplayed.{ASmallFavorCard,
+  FaithfulFriendCard, FamilyHeirloomCard}
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Refusals,
-  Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Refusals, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Unwrap.accepted
 
@@ -15,23 +21,23 @@ class HornedMaskSuite extends munit.FunSuite:
   import PowerFixture._
   import PhasePowerHarness._
 
-  private val mask = CatalogNames.relic("Horned Mask")
+  private val mask = HornedMaskCard.id
   private val source = DecisionOptionRef.Relic(mask)
-  private val power = HornedMask(catalog)
-  private val inn = CatalogNames.denizen("Wayside Inn")
-  private val elders = CatalogNames.denizen("Elders")
-  private val wolves = CatalogNames.denizen("Wolves")
+  private val power = HornedMask
+  private val inn = WaysideInnCard.id
+  private val elders = EldersCard.id
+  private val wolves = WolvesCard.id
   // A denizen with no restriction on discard.
-  private val fresh = CatalogNames.denizen("Wrestlers")
-  private val tongue = CatalogNames.denizen("Silver Tongue")
-  private val piper = CatalogNames.denizen("Pied Piper")
+  private val fresh = WrestlersCard.id
+  private val tongue = SilverTongueCard.id
+  private val piper = PiedPiperCard.id
   // Each is printed Locked: faceup, it cannot be discarded.
-  private val locked = Vector("Faithful Friend", "A Small Favor",
-    "Family Heirloom").map(CatalogNames.denizen(_))
+  private val locked = Vector(FaithfulFriendCard.id, ASmallFavorCard.id,
+    FamilyHeirloomCard.id)
   private val used = PowerUseRef(PowerTiming.Wake, PowerSourceRef.Card(mask),
     HornedMask.id)
   // The actor's site, in the Cradle.
-  private val home = CatalogNames.site("Ancient City")
+  private val home = AncientCitySite.id
 
   /** The actor in Wake at Ancient City, holding the Horned Mask faceup, with
     * no adviser. */
@@ -56,7 +62,7 @@ class HornedMaskSuite extends munit.FunSuite:
 
   test("it offers the denizens at the site and never the edifice"):
     val ready = Table.from(innAtHome).denizen(elders, at = home)
-      .edifice("Marble Fountains", EdificeSide.Intact, at = home).ready
+      .edifice(MarbleFountainsCard, EdificeSide.Intact, at = home).ready
     val t = accepted(use(ready, power, source))
     assert(awaits(t, HornedMask.denizenDecisionId),
       parked.parkedDecision(t.state).toString)

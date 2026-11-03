@@ -2,28 +2,30 @@ package oathdigital.gameplay.powers.cardplay
 
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powerresolver.PowerCtx
 import oathdigital.gameplay.powers.{PlayerFacts, PowerFixture, SearchFixture}
+import oathdigital.gameplay.powers.action.{HomesteadersCard, WardOfSilenceCard}
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.search.{ErrandBoyCard, LandWardenCard}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerStepRecorded
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Refusals,
-  Table}
+import oathdigital.testkit.{ActPowerHarness, Look, Refusals, Table}
 import oathdigital.testkit.Unwrap.accepted
 
 class WildCrySuite extends munit.FunSuite:
   import PowerFixture._
   import SearchFixture._
 
-  private val wildCry = CatalogNames.denizen("Wild Cry")
+  private val wildCry = WildCryCard.id
   private val modifiers = Vector(WildCry.id)
   // A Beast denizen p1 plays, and two Hearth fillers; their powers are not
   // used here.
-  private val beastCard = CatalogNames.denizen("Errand Boy")
-  private val others = Vector("Homesteaders", "Land Warden")
-    .map(CatalogNames.denizen(_))
+  private val beastCard = ErrandBoyCard.id
+  private val others = Vector(HomesteadersCard.id, LandWardenCard.id)
   // p1's site on the quiet table.
-  private val home = CatalogNames.site("Ancient City")
+  private val home = AncientCitySite.id
 
   /** Wild Cry at p1's site, Ancient City, the deck topped by `kept` and two
     * fillers, with 5 Supply. */
@@ -86,9 +88,9 @@ class WildCrySuite extends munit.FunSuite:
 
   test("a card does not trigger on its own play"):
     val hook = CardPlayedFaceup(wildCry, RuleSourceRef.Adviser(actor, wildCry))
-    val power = WildCry.forCatalog(catalog)
-    val ctx = PowerCtx(Table.start.denizen(wildCry, at = home).ready, actor,
-      power.source,
+    val power = WildCry
+    val ctx = PowerCtx(catalog, Table.start.denizen(wildCry, at = home).ready,
+      actor, power.source,
       PowerWindow.ActionCardPlayedFaceup, Vector.empty, hook)
     assert(!power.applicable(ctx))
     val beastHook = CardPlayedFaceup(beastCard,
@@ -106,13 +108,13 @@ class WildCrySuite extends munit.FunSuite:
     assertEquals(Look(after).supply(actor), supplyAfterCost + 1)
 
   test("Wild Cry cannot be replaced while it is selected"):
-    val extra = CatalogNames.denizen("Ward of Silence")
+    val extra = WardOfSilenceCard.id
     val kept = beastCard
     // The actor holds a facedown Wrestlers, a facedown Ward of Silence and a
     // faceup Wild Cry: the area of three is full, and a faceup play asks for
     // a replacement.
     val holding = Table.from(withCry(kept))
-      .adviser(actor, "Wrestlers", facedown = true)
+      .adviser(actor, WrestlersCard, facedown = true)
       .adviser(actor, extra, facedown = true).adviser(actor, wildCry).ready
     val before = Look(holding).player(actor).advisers.map(_.id).toSet
     assertEquals(before.size, 3)

@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.setup
 
-import oathdigital.catalog.{Edifice, EdificeFace, ExecutableCatalog, Locked,
-  PrintedPower}
+import oathdigital.catalog.{Edifice, EdificeFace, ExecutableCatalog,
+  Locked, PrintedPower}
 import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.actions.CardPlay
 import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower, PowerCtx, Transform}
@@ -25,10 +25,14 @@ object ProvingGroundsCard extends Edifice(EdificeId("E22"), Suit.Hearth):
 /** E22, both faces (2026-09-21 Chronicle design, "Setup powers"). See
   * `MarketRule` for the `WhenExplored`/window-sharing rationale.
   */
-final case class ProvingGrounds private (catalog: ExecutableCatalog)
-    extends ContributingPower:
+case object ProvingGrounds extends ContributingPower:
+  val id: PowerId = ProvingGroundsCard.intact.power.id
+  private val notes = NoteSet(id)
+  override def noteKeys: Vector[NoteKey] = notes.declared
+  /** "{player} gained {3 warbands}." */
+  val gained: NoteKey = NoteSupport.gainedKey(notes, "gained")
+
   val edifice: EdificeId = ProvingGroundsCard.id
-  def id: PowerId = ProvingGrounds.id
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
 
   private def at(ctx: PowerCtx): Option[(PlayerId, SiteId)] =
@@ -39,8 +43,6 @@ final case class ProvingGrounds private (catalog: ExecutableCatalog)
     yield placement
 
   override def applicable(ctx: PowerCtx): Boolean = at(ctx).isDefined
-
-  override def noteKeys: Vector[NoteKey] = ProvingGrounds.noteKeys
 
   private def build(ready: ReadyGame, actor: PlayerId)
       : Either[OathViolation, Vector[CoreOperation]] =
@@ -56,14 +58,6 @@ final case class ProvingGrounds private (catalog: ExecutableCatalog)
       case None => ops
     }))
     Map(PowerWindow.SetupPawnPlaced -> effect, PowerWindow.WhenExplored -> effect)
-object ProvingGrounds:
-  val id: PowerId = ProvingGroundsCard.intact.power.id
-  private val notes = NoteSet(id)
-  def noteKeys: Vector[NoteKey] = notes.declared
-  /** "{player} gained {3 warbands}." */
-  val gained: NoteKey = NoteSupport.gainedKey(notes, "gained")
-  def forCatalog(catalog: ExecutableCatalog): ProvingGrounds =
-    new ProvingGrounds(catalog)
 
 /** Discards all OTHER denizens in this region -- edifices count as denizens
   * for this clause specifically (design spec table), and a discarded ruined
@@ -73,10 +67,10 @@ object ProvingGrounds:
   * actorless and no restriction against enemies holds. Returned secrets go
   * to the active player.
   */
-final case class EmptyGrounds private (catalog: ExecutableCatalog)
-    extends ContributingPower:
+case object EmptyGrounds extends ContributingPower:
+  val id: PowerId = ProvingGroundsCard.ruined.power.id
+
   val edifice: EdificeId = ProvingGroundsCard.id
-  def id: PowerId = EmptyGrounds.id
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
 
   private def at(ready: ReadyGame): Option[SiteId] =
@@ -108,7 +102,7 @@ final case class EmptyGrounds private (catalog: ExecutableCatalog)
     Option.when(gone.nonEmpty)(EdificeSetupSupport.discarded(
       PowerSourceRef.Card(edifice), NoteArg.Cards(gone)))
 
-  private def build(ready: ReadyGame, site: SiteId)
+  private def build(catalog: ExecutableCatalog, ready: ReadyGame, site: SiteId)
       : Either[OathViolation, Vector[CoreOperation]] =
     val active = ready.game.current.turn.activePlayer
     ready.game.current.map.regionOf(site).toRight(OathViolation.InvalidEventOrder(
@@ -136,12 +130,9 @@ final case class EmptyGrounds private (catalog: ExecutableCatalog)
 
   def contributions: Map[PowerWindow, Vector[Contribution]] =
     val effect = Vector(Transform((ctx, ops) => at(ctx.state) match {
-      case Some(site) => ops :+ BuildOps((ready, _) => build(ready, site)) :+
+      case Some(site) => ops :+
+        BuildOps((ready, _) => build(ctx.catalog, ready, site)) :+
         Note(id, discardNote(ctx.state, site), covers = true)
       case None => ops
     }))
     Map(PowerWindow.SetupEnd -> effect, PowerWindow.WhenExplored -> effect)
-object EmptyGrounds:
-  val id: PowerId = ProvingGroundsCard.ruined.power.id
-  def forCatalog(catalog: ExecutableCatalog): EmptyGrounds =
-    new EmptyGrounds(catalog)

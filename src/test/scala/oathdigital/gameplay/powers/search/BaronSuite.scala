@@ -3,11 +3,15 @@ package oathdigital.gameplay.powers.search
 import oathdigital.gameplay.PowerAccess
 import oathdigital.gameplay.actions.CardPlayRules
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite}
 import oathdigital.gameplay.powers.{NoteText, SearchFixture, WalkerPowerCatalog}
+import oathdigital.gameplay.powers.action.MessengerCard
+import oathdigital.gameplay.powers.campaign.{CodeOfHonorCard, ShieldWallCard,
+  WrestlersCard}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look,
-  PlacementPicks, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, PlacementPicks, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
@@ -18,16 +22,16 @@ class BaronSuite extends munit.FunSuite:
   import SearchFixture.{keep, placeAt, placeReplacing, rules, start}
 
   private val walkerPowers = WalkerPowerCatalog.default(catalog)
-  private val baron = CatalogNames.denizen("Baron")
+  private val baron = BaronCard.id
   private val modifiers = Vector(Baron.id)
   /** The Beast card each Search keeps and plays. */
-  private val played = CatalogNames.denizen("Errand Boy")
-  private val fillers = Vector("Code of Honor", "Messenger", "Shield Wall")
-    .map(CatalogNames.denizen(_))
-  private val home = CatalogNames.site("Ancient City")
+  private val played = ErrandBoyCard.id
+  private val fillers = Vector(CodeOfHonorCard.id, MessengerCard.id,
+    ShieldWallCard.id)
+  private val home = AncientCitySite.id
   /** Room for one, no Homeland. */
-  private val giant = CatalogNames.site("Buried Giant")
-  private val peaks = CatalogNames.site("Broken Peaks")
+  private val giant = BuriedGiantSite.id
+  private val peaks = BrokenPeaksSite.id
 
   /** p1 in Act at Ancient City holding Baron faceup, with 5 Supply and
     * `played` on the world deck. p1 rules Buried Giant, which holds
@@ -76,7 +80,7 @@ class BaronSuite extends munit.FunSuite:
 
   test("its discard holds only at ruled sites: a full pawn site the " +
       "player does not rule has no Replace"):
-    val wrestlers = CatalogNames.denizen("Wrestlers")
+    val wrestlers = WrestlersCard.id
     val ready = fillers.foldLeft(p1RulesGiantHolding(Vector(wrestlers)))(
       (t, card) => t.denizen(card, at = home)).ready
     assert(!PowerAccess.ruledSites(ready, p1).contains(home))

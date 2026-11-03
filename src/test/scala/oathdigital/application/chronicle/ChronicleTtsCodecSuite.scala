@@ -1,9 +1,14 @@
 package oathdigital.application.chronicle
 
 import oathdigital.application.FirstGameBootstrapMapper.lineageOf
+import oathdigital.catalog.holding.{ArbiterCard, CrackedHornCard,
+  LightFingersCard, SigilOfTheEyeCard}
+import oathdigital.gameplay.SpitefulMirrorCard
+import oathdigital.gameplay.powers.action.WhistleCard
+import oathdigital.gameplay.powers.campaign.ScoutsCard
+import oathdigital.gameplay.powers.cardplay.LostTapestryCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture
 import oathdigital.model._
-import oathdigital.testkit.CatalogNames
 
 /** TTS strings to and from Chronicles (Chronicle TTS codec design). */
 class ChronicleTtsCodecSuite extends munit.FunSuite:
@@ -16,17 +21,17 @@ class ChronicleTtsCodecSuite extends munit.FunSuite:
 
   test("the full Lua export decodes to the values its own test asserts"):
     val full = codec.decode(fullExport, "Imported").fold(fail(_), identity)
-    assertEquals(full.reliquary, Vector("Spiteful Mirror", "Sigil of the Eye",
-      "Whistle", "Lost Tapestry", "Cracked Horn").map(CatalogNames.relic))
+    assertEquals(full.reliquary, Vector(SpitefulMirrorCard.id, SigilOfTheEyeCard.id,
+      WhistleCard.id, LostTapestryCard.id, CrackedHornCard.id))
     assertEquals(full.foundations, Map(FoundationNumber.IV ->
       FoundationState(FoundationFace.Altered, Set.empty)))
     val yellow = full.lineages.find(_.id == lineageOf(PlayerColor.Yellow)).get
     assertEquals(yellow.role, Role.Chancellor)
     assertEquals(yellow.startingAdvisers.map(_.id),
-      Vector(CatalogNames.denizen("Scouts")))
+      Vector(ScoutsCard.id))
     assertEquals(yellow.legacies, Vector(
-      LegacyState(CatalogNames.legacy("Light Fingers"), active = false),
-      LegacyState(CatalogNames.legacy("Arbiter"), active = true)))
+      LegacyState(LightFingersCard.id, active = false),
+      LegacyState(ArbiterCard.id, active = true)))
     assertEquals(full.lineages.find(_.id == lineageOf(PlayerColor.Brown))
       .map(_.legacies.map(_.active)), Some(Vector(true, false, true)))
     assert(!full.lineages.exists(_.id == lineageOf(PlayerColor.Black)))
@@ -47,7 +52,7 @@ class ChronicleTtsCodecSuite extends munit.FunSuite:
   test("a lineage's role, legacies, advisers and relics round trip"):
     val relic = chronicle.relicDeck.head
     val red = LineageState(lineageOf(PlayerColor.Red), None, Role.Citizen,
-      Vector(LegacyState(CatalogNames.legacy("Arbiter"), active = true)),
+      Vector(LegacyState(ArbiterCard.id, active = true)),
       Vector(DenizenState(chronicle.worldDeck.head, Orientation.FaceDown,
         Tokens.empty)), startingRelics = Vector(relic))
     val kept = chronicle.copy(relicDeck = chronicle.relicDeck.tail,
@@ -61,7 +66,7 @@ class ChronicleTtsCodecSuite extends munit.FunSuite:
       lineages = Vector(LineageState(lineageOf(PlayerColor.Red),
         Some(PlayerId("Red")), Role.Exile, Vector.empty, Vector.empty)),
       foundations = Map(FoundationNumber.II -> FoundationState(
-        FoundationFace.Altered, Set(CatalogNames.legacy("Arbiter")))))
+        FoundationFace.Altered, Set(ArbiterCard.id))))
     assertEquals(codec.encode(evolved).map(_.omitted), Right(Vector(
       "the name", "the era target", "the era scorepad", "previous players",
       "Foundation alteration sources", "Exile lineages with nothing kept")))

@@ -9,7 +9,7 @@ import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look, PowerRules, Refusals, Table}
+import oathdigital.testkit.{Look, PowerRules, Refusals, Table}
 import oathdigital.testkit.Unwrap.accepted
 import oathdigital.testkit.PhasePowerHarness
 
@@ -17,7 +17,7 @@ class VowOfObedienceSuite extends munit.FunSuite:
   import PowerFixture._
   import VisionPlayFixture._
 
-  private val vow = CatalogNames.denizen("Vow of Obedience")
+  private val vow = VowOfObedienceCard.id
   private val other = Table.p2
 
   private def holding(ready: ReadyGame, owner: PlayerId = actor,
@@ -112,7 +112,7 @@ class VowOfObedienceSuite extends munit.FunSuite:
 
   test("REST: with every bank empty the power is not offered"):
     assert(!PhasePowerHarness.menuPowers(catalog, resting(Map.empty), actor,
-        PhasePowerCatalog.default(catalog), WalkerPowers.empty)
+        PhasePowerCatalog.default, WalkerPowers.empty)
       .exists(_.power.id == VowOfObedience.id))
 
   test("REST: the take is written as its own line, covering the generic one"):

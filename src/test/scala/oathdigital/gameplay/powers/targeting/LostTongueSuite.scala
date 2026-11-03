@@ -1,27 +1,30 @@
 package oathdigital.gameplay.powers.targeting
 
+import oathdigital.catalog.holding.CrackedHornCard
 import oathdigital.gameplay.CampaignFixture.{RaidBoard, on, raidBoard}
 import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.actions.campaign.CampaignIds
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
+import oathdigital.gameplay.powers.campaign.WildMountsCard
 import oathdigital.gameplay.powers.whenplayed.ConspiracyWhenPlayed
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome,
   WalkerPowers}
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, PowerRules, Table}
+import oathdigital.testkit.{Look, Outcomes, PowerRules, Table}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.{accepted, as, present}
 
 class LostTongueSuite extends munit.FunSuite:
   import TargetingFixture._
 
-  private val tongue = CatalogNames.denizen("Lost Tongue")
+  private val tongue = LostTongueCard.id
   /** A plain Nomad card: holding it faceup, a player rules a nomad card. */
-  private val nomadCard = CatalogNames.denizen("Wild Mounts")
-  private val crackedHorn = CatalogNames.relic("Cracked Horn")
-  private val power = LostTongue.forCatalog(catalog)
+  private val nomadCard = WildMountsCard.id
+  private val crackedHorn = CrackedHornCard.id
+  private val power = LostTongue
   private val raid = ChooseOneAnswer(DecisionOptionRef.Button("raid"))
   private val parked = PowerRules.parkedUnderWalkerPowers
 
@@ -64,8 +67,8 @@ class LostTongueSuite extends munit.FunSuite:
     * `withRelic`. p1 holds a faceup nomad adviser when `nomad`. */
   private def conspiracyAt(withRelic: Boolean = true, nomad: Boolean = false)
       : ReadyGame =
-    val staged = Table.start.pawn(p1, at = "Ancient City")
-      .pawn(p2, at = "Ancient City").hand(p1, conspiracy)
+    val staged = Table.start.pawn(p1, at = AncientCitySite)
+      .pawn(p2, at = AncientCitySite).hand(p1, conspiracy)
       .peoplesFavor(Some(p2), favor = 2).adviser(p2, tongue)
     val holding = if withRelic then staged.relic(p2, crackedHorn) else staged
     (if nomad then holding.adviser(p1, nomadCard) else holding).ready
@@ -135,7 +138,7 @@ class LostTongueSuite extends munit.FunSuite:
       .relic(p2, crackedHorn).peoplesFavor(Some(p2), favor = 2).ready
     def reasonFor(state: ReadyGame, operation: CoreOperation)
         : Vector[OperationReason] =
-      power.operationRestrictions.flatMap(_.reason(state, operation))
+      power.operationRestrictions(catalog).flatMap(_.reason(state, operation))
     val mine = Location.PlayArea(p1)
     val theirs = Location.PlayArea(p2)
     val takeRelic = Take(Piece.Card(crackedHorn), p1, theirs, mine)

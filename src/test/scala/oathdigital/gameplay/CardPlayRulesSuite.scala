@@ -4,9 +4,15 @@ import oathdigital.gameplay.actions.{AdviserFace, AdviserPlayNote,
   CardPlayRules}
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import oathdigital.gameplay.cards.AncientCitySite
+import oathdigital.gameplay.powers.action.PiedPiperCard
+import oathdigital.gameplay.powers.campaign.{BattleHonorsCard, WrestlersCard}
+import oathdigital.gameplay.powers.cardplay.FamilyWagonCard
+import oathdigital.gameplay.powers.rest.SilverTongueCard
+import oathdigital.gameplay.powers.search.ErrandBoyCard
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.as
 
@@ -20,11 +26,11 @@ class CardPlayRulesSuite extends munit.FunSuite:
     options, park, secondTestPermission, testPermission}
 
   /** A plain Beast card p1 plays from hand. */
-  private val card = CatalogNames.denizen("Errand Boy")
-  private val tongue = CatalogNames.denizen("Silver Tongue")
-  private val piper = CatalogNames.denizen("Pied Piper")
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
-  private val wagon = CatalogNames.denizen("Family Wagon")
+  private val card = ErrandBoyCard.id
+  private val tongue = SilverTongueCard.id
+  private val piper = PiedPiperCard.id
+  private val wrestlers = WrestlersCard.id
+  private val wagon = FamilyWagonCard.id
   private def faceup(held: CardId) = AdviserFace(held, Orientation.FaceUp)
   private def facedown(held: CardId) = AdviserFace(held, Orientation.FaceDown)
   
@@ -88,7 +94,7 @@ class CardPlayRulesSuite extends munit.FunSuite:
       Vector(testPermission.source, secondTestPermission.source))
 
   test("without a contributor the tree is the play under the default rules"):
-    val ready = Table.start.pawn(p1, "Ancient City").hand(p1, card).ready
+    val ready = Table.start.pawn(p1, AncientCitySite).hand(p1, card).ready
     val tree = build(ready, p1, card)
     // Ancient City is empty and p1 holds no adviser, so the default play
     // offers the discard pile, the first site slot and the first adviser slot
@@ -96,7 +102,7 @@ class CardPlayRulesSuite extends munit.FunSuite:
     assertEquals(options(ready, tree, park(ready, tree, WalkerPowers.empty),
       WalkerPowers.empty), Vector[DecisionOptionRef](
         DecisionOptionRef.DiscardPile(Region.Provinces),
-        DecisionOptionRef.SiteSlot(CatalogNames.site("Ancient City"), 0),
+        DecisionOptionRef.SiteSlot(AncientCitySite.id, 0),
         DecisionOptionRef.AdviserPlay(p1, 0, faceup = true),
         DecisionOptionRef.AdviserPlay(p1, 0, faceup = false)))
 
@@ -141,8 +147,8 @@ class CardPlayRulesSuite extends munit.FunSuite:
 
   test("a contributed limit reaches the placement: two advisers fill an " +
       "area limited to two"):
-    val first = CatalogNames.denizen("Wrestlers")
-    val second = CatalogNames.denizen("Battle Honors")
+    val first = WrestlersCard.id
+    val second = BattleHonorsCard.id
     val ready = Table.start.hand(p1, card)
       .adviser(p1, first, facedown = true).adviser(p1, second, facedown = true)
       .ready

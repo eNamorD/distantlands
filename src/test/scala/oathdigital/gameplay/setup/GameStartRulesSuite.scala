@@ -1,7 +1,8 @@
 package oathdigital.gameplay.setup
 
+import oathdigital.gameplay.cards.GreatSlumSite
+import oathdigital.gameplay.powers.setup.HallOfDebateCard
 import oathdigital.model._
-import oathdigital.testkit.CatalogNames
 import oathdigital.testkit.Unwrap.{accepted, as, rejected}
 
 class GameStartRulesSuite extends munit.FunSuite:
@@ -29,8 +30,8 @@ class GameStartRulesSuite extends munit.FunSuite:
       "atlas and is not also in the edifice deck"):
     // Great Slum is not one of the Chronicle's 8 sites, and Hall of Debate,
     // its Homeland edifice, is stored at none of them.
-    val site = CatalogNames.site("Great Slum")
-    val edifice = CatalogNames.edifice("Hall of Debate")
+    val site = GreatSlumSite.id
+    val edifice = HallOfDebateCard.id
     assert(!chronicle.atlasBox.exists(_.site == site))
     assert(!chronicle.atlasBox.exists(_.items.contains(edifice)))
     assertEquals(catalog.sites.find(_.id == site).flatMap(_.homeland),

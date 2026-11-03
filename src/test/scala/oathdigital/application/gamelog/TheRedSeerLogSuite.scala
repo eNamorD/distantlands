@@ -1,10 +1,12 @@
 package oathdigital.application.gamelog
 
+import oathdigital.gameplay.cards.{AncientCitySite, BuriedGiantSite}
 import oathdigital.gameplay.powers.OathkeeperGoalChoice
-import oathdigital.gameplay.powers.action.TheRedSeer
+import oathdigital.gameplay.powers.action.{TheRedSeer, TheRedSeerCard}
+import oathdigital.gameplay.powers.cardplay.LostTapestryCard
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{CatalogNames, MenuPlay, Table}
+import oathdigital.testkit.{MenuPlay, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import LogScripts.{atTable, format, playerLabel, texts}
 
@@ -12,19 +14,19 @@ import LogScripts.{atTable, format, playerLabel, texts}
   * question posts no "Chose" line, and the title follows the new goal when
   * the action ends. */
 class TheRedSeerLogSuite extends munit.FunSuite:
-  private val seer = CatalogNames.denizen("The Red Seer")
+  private val seer = TheRedSeerCard.id
 
   /** p1 holds The Red Seer, the Darkest Secret, 3 faceup secrets and the
     * Oathkeeper title, and rules Ancient City under Supremacy; p2 holds
     * Lost Tapestry. p1 changes the goal to Protection, which p2 leads. The
     * log as p3 sees it. */
   private def seerChangedTheGoalToProtection: Vector[String] =
-    val table = Table.start.pawn(p1, "Ancient City")
-      .pawn(p2, "Buried Giant").pawn(p3, "Buried Giant")
+    val table = Table.start.pawn(p1, AncientCitySite)
+      .pawn(p2, BuriedGiantSite).pawn(p3, BuriedGiantSite)
       .adviser(p1, seer).secrets(p1, faceUp = 3)
       .darkestSecret(Some(p1), 1).oathkeeper(Some(p1))
       .oathkeeperGoal(OathkeeperGoal.Supremacy)
-      .warbandsAt("Ancient City", p1, 1).relic(p2, "Lost Tapestry")
+      .warbandsAt(AncientCitySite, p1, 1).relic(p2, LostTapestryCard)
       .banditsRefilled
     val (service, act) = atTable("the-red-seer", table)
     act.withAnswers {

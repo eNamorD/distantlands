@@ -1,48 +1,11 @@
 package oathdigital.gameplay.powers.wake
 
-import oathdigital.catalog.Site
+import oathdigital.catalog.ExecutableCatalog
+import oathdigital.gameplay.cards.{AncientCitySite, HeadwatersSite,
+  RiverbankSite, TidalMarshesSite}
 import oathdigital.gameplay.powerresolver.PhasePower
 import oathdigital.gameplay.powers.action.PawnMoves
 import oathdigital.model._
-
-object AncientCitySite extends Site(SiteId("site:ancient-city"), "Ancient City",
-    defense = 2, capacity = 3, relicSlots = 0,
-    recoverDifficulty = None,
-    startingResources = Tokens(0, 0),
-    forgeRequirements = Some(Tokens(3, 0)),
-    homeland = None):
-  val enduring = PowerId("site.ancient-city.enduring")
-  val river = PowerId("site.ancient-city.river")
-  val handlers: Vector[PowerId] = Vector(enduring, river)
-
-object HeadwatersSite extends Site(SiteId("site:headwaters"), "Headwaters",
-    defense = 1, capacity = 2, relicSlots = 1,
-    recoverDifficulty = Some(4),
-    startingResources = Tokens(0, 0),
-    forgeRequirements = None,
-    homeland = None):
-  val river = PowerId("site.headwaters.river")
-  val mountain = PowerId("site.headwaters.mountain")
-  val handlers: Vector[PowerId] = Vector(river, mountain)
-
-object RiverbankSite extends Site(SiteId("site:riverbank"), "Riverbank",
-    defense = 1, capacity = 2, relicSlots = 0,
-    recoverDifficulty = None,
-    startingResources = Tokens(0, 0),
-    forgeRequirements = None,
-    homeland = None):
-  val river = PowerId("site.riverbank.river")
-  val handlers: Vector[PowerId] = Vector(river)
-
-object TidalMarshesSite extends Site(SiteId("site:tidal-marshes"), "Tidal Marshes",
-    defense = 1, capacity = 2, relicSlots = 0,
-    recoverDifficulty = None,
-    startingResources = Tokens(0, 0),
-    forgeRequirements = None,
-    homeland = None):
-  val river = PowerId("site.tidal-marshes.river")
-  val coast = PowerId("site.tidal-marshes.coast")
-  val handlers: Vector[PowerId] = Vector(river, coast)
 
 /** The River site power (CR p. 31, NF p. 11), WAKE: "You may place your pawn
   * at another River. This is not a Travel action."
@@ -63,10 +26,12 @@ final case class RiverSitePower(id: PowerId, site: SiteId)
   override def noteKeys: Vector[NoteKey] = own.declared
   override def noteSource: Option[String] = Some(name)
 
-  def usable(ready: ReadyGame, player: PlayerId,
-      source: DecisionOptionRef): Boolean = destinations(ready).nonEmpty
+  def usable(catalog: ExecutableCatalog, ready: ReadyGame,
+      player: PlayerId, source: DecisionOptionRef): Boolean =
+    destinations(ready).nonEmpty
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     PawnMoves.siteChoice(siteDecisionId, player, destinations(ready),
       "River: choose the River to place your pawn at"),

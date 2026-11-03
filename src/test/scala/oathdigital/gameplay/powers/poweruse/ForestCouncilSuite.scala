@@ -1,18 +1,24 @@
 package oathdigital.gameplay.powers.poweruse
 
 import oathdigital.gameplay.actions.economy.MusterProcedure
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  DeepWoodsSite}
 import oathdigital.gameplay.operations.PowerUseRules
 import oathdigital.gameplay.powerresolver.PowerUse
-import oathdigital.gameplay.powers.action.RovingTerror
+import oathdigital.gameplay.powers.action.{MessengerCard, RovingTerror,
+  RovingTerrorCard}
 import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.economy.VowOfBeastkin
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.economy.{VowOfBeastkin, VowOfBeastkinCard}
+import oathdigital.gameplay.powers.search.ErrandBoyCard
+import oathdigital.gameplay.powers.travel.TyrantCard
 import oathdigital.gameplay.powers.whenplayed.{ThreateningRoar,
   WhenPlayedHarness}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome,
   WalkerPowers}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, MenuPlay, Outcomes, Table}
+import oathdigital.testkit.{Look, MenuPlay, Outcomes, Table}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.{accepted, present}
 
@@ -20,14 +26,14 @@ import oathdigital.testkit.Unwrap.{accepted, present}
   * place [favor] / [secret] on [suit-beast] cards or use their
   * non-persistent powers." (catalog batch 8, slice 10, part 2). */
 class ForestCouncilSuite extends munit.FunSuite:
-  private val council = CatalogNames.denizen("Forest Council")
-  private val woods = CatalogNames.site("Deep Woods")
-  private val home = CatalogNames.site("Ancient City")
-  private val terror = CatalogNames.denizen("Roving Terror")
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
-  private val errandBoy = CatalogNames.denizen("Errand Boy")
+  private val council = ForestCouncilCard.id
+  private val woods = DeepWoodsSite.id
+  private val home = AncientCitySite.id
+  private val terror = RovingTerrorCard.id
+  private val wrestlers = WrestlersCard.id
+  private val errandBoy = ErrandBoyCard.id
   private val errandBoyRef = DecisionOptionRef.Denizen(errandBoy)
-  private val power = ForestCouncil.forCatalog(catalog)
+  private val power = ForestCouncil
   private val source = PowerSourceRef.Card(council)
 
   /** p1's Act at Ancient City with 4 favor and 7 Supply, beside Errand Boy
@@ -45,7 +51,7 @@ class ForestCouncilSuite extends munit.FunSuite:
 
   test("it refuses an enemy a Beast card's non-persistent power, waivable " +
       "by the ruler"):
-    val refusal = power.refusal(councilAtDeepWoods(),
+    val refusal = power.refusal(catalog, councilAtDeepWoods(),
       useOf(terror, persistent = false))
     assertEquals(refusal.map(_.note), Some(ForestCouncil.usePlain(source)))
     assertEquals(refusal.flatMap(_.reason.waiver).flatMap(_.granter),
@@ -54,27 +60,31 @@ class ForestCouncilSuite extends munit.FunSuite:
   test("it refuses neither a Beast card's persistent power that places " +
       "nothing, nor another suit's non-persistent power, nor its ruler"):
     val ready = councilAtDeepWoods()
-    assertEquals(power.refusal(ready, useOf(terror, persistent = true)),
+    assertEquals(power.refusal(catalog, ready,
+      useOf(terror, persistent = true)),
       None)
-    assertEquals(power.refusal(ready, useOf(wrestlers, persistent = false)),
+    assertEquals(power.refusal(catalog, ready,
+      useOf(wrestlers, persistent = false)),
       None)
-    assertEquals(power.refusal(councilAtDeepWoods(_.warbandsAt(woods, p1,
-      1)), useOf(terror, persistent = false)), None)
+    assertEquals(power.refusal(catalog, councilAtDeepWoods(
+      _.warbandsAt(woods, p1, 1)), useOf(terror, persistent = false)), None)
 
   test("a persistent power whose cost places on a Beast card is refused " +
       "on its user's turn, with the placing reason"):
     val placing = useOf(terror, persistent = true).copy(places = true)
-    assertEquals(power.refusal(councilAtDeepWoods(), placing).map(_.note),
+    assertEquals(power.refusal(catalog, councilAtDeepWoods(), placing)
+      .map(_.note),
       Some(ForestCouncil.placingPlain(source)))
     val offTurn = councilAtDeepWoods().updateCurrent(current =>
       current.copy(turn = current.turn.copy(activePlayer = p2)))
-    assertEquals(power.refusal(offTurn, placing), None)
+    assertEquals(power.refusal(catalog, offTurn, placing), None)
 
   test("it refuses a payment onto a Beast card on the payer's turn, and " +
       "not off it"):
     val ready = councilAtDeepWoods()
     val pay = PayCost(p1, Location.OnCard(errandBoy), Cost(favor = 1))
-    val ban = present(power.operationRestrictions.headOption, "the ban")
+    val ban = present(power.operationRestrictions(catalog).headOption,
+      "the ban")
     assertEquals(ban.reason(ready, pay).flatMap(_.waiver).map(_.covers),
       Some(ConsentKey(ForestCouncil.id, p1, "power.use", errandBoyRef)))
     assertEquals(ban.reason(ready, pay.copy(placedAt =
@@ -86,7 +96,8 @@ class ForestCouncilSuite extends munit.FunSuite:
 
   test("it refuses an enemy's gift of favor onto a Beast card, the giver " +
       "placing it"):
-    val ban = present(power.operationRestrictions.headOption, "the ban")
+    val ban = present(power.operationRestrictions(catalog).headOption,
+      "the ban")
     val gift = Give(Piece.Favor(1), p1, Location.PlayArea(p1),
       Location.OnCard(errandBoy))
     assertEquals(ban.reason(councilAtDeepWoods(), gift).flatMap(_.waiver)
@@ -124,7 +135,8 @@ class ForestCouncilSuite extends munit.FunSuite:
     val banditsRule = grantedByP2(councilAtDeepWoods(_.bandits(woods, 2)))
     assertEquals(musterSources(banditsRule).find(_.ref == errandBoyRef)
       .map(_.askable), Some(false))
-    assertEquals(power.refusal(banditsRule, useOf(terror, persistent = false))
+    assertEquals(power.refusal(catalog, banditsRule,
+      useOf(terror, persistent = false))
       .map(_.power), Some(ForestCouncil.id))
 
   test("under bandits the Beast source shows the plain reason, as nobody " +
@@ -141,10 +153,10 @@ class ForestCouncilSuite extends munit.FunSuite:
     // Roving Terror's secret is paid onto it: the placement ban and the
     // use ban are one ask.
     val ready = Table.from(councilAtDeepWoods()).denizen(terror, at = home)
-      .denizen(CatalogNames.denizen("Messenger"),
-        at = CatalogNames.site("Broken Peaks")).ready
+      .denizen(MessengerCard.id,
+        at = BrokenPeaksSite.id).ready
     MenuPlay.menuOptionFor(catalog, ready, ActionRef.UsePower(
-        RovingTerror.forCatalog(catalog).id),
+        RovingTerror.id),
         Vector(DecisionOptionRef.Denizen(terror))) match
       case DecisionOption.Unavailable(_, ask: OptionReason.Askable) =>
         assertEquals(ask.power, ForestCouncil.id)
@@ -156,7 +168,7 @@ class ForestCouncilSuite extends munit.FunSuite:
     // a Beast card at p1's site. Forest Council stands outside p1's
     // region, where the Roar does not reach.
     import WhenPlayedHarness.{awaySite, homeSite, p1AtHomeSite}
-    val roar = WhenPlayedHarness.registered[ThreateningRoar]
+    val roar = WhenPlayedHarness.registered[ThreateningRoar.type]
     def errandBoyStays(ruled: Table => Table): Boolean =
       val ready = ruled(p1AtHomeSite.adviser(p1, roar.cardId)
         .denizen(errandBoy, at = homeSite).denizen(council, at = awaySite))
@@ -174,8 +186,8 @@ class ForestCouncilSuite extends munit.FunSuite:
     // source limit is a restriction, not a use, so it holds: Tyrant, an
     // Order adviser, makes Wrestlers (Order) a legal source. Wrestlers is
     // not a Beast card, so Forest Council lets p1 place favor on it.
-    val vow = CatalogNames.denizen("Vow of Beastkin")
-    val tyrant = CatalogNames.denizen("Tyrant")
+    val vow = VowOfBeastkinCard.id
+    val tyrant = TyrantCard.id
     def board(withCouncil: Boolean): ReadyGame =
       val base = Table.start.turn(p1, Phase.Act).pawn(p1, at = home)
         .denizen(wrestlers, at = home).adviser(p1, vow).adviser(p1, tyrant)
@@ -199,7 +211,7 @@ class ForestCouncilSuite extends munit.FunSuite:
   test("an enemy's Beast When Played power waits on Forest Council's " +
       "ruler, whose remembered answer decides it"):
     import WhenPlayedHarness.{awaySite, homeSite, p1AtHomeSite}
-    val roar = WhenPlayedHarness.registered[ThreateningRoar]
+    val roar = WhenPlayedHarness.registered[ThreateningRoar.type]
     val councilRuledByP2 = p1AtHomeSite.adviser(p1, roar.cardId)
       .denizen(errandBoy, at = homeSite).denizen(council, at = awaySite)
       .warbandsAt(awaySite, p2, 1).ready
@@ -221,8 +233,8 @@ class ForestCouncilSuite extends munit.FunSuite:
 
   test("an enemy's Vow of Beastkin adds its warband once Forest Council's " +
       "ruler lets it work"):
-    val vow = CatalogNames.denizen("Vow of Beastkin")
-    val tyrant = CatalogNames.denizen("Tyrant")
+    val vow = VowOfBeastkinCard.id
+    val tyrant = TyrantCard.id
     val musterer = Table.start.turn(p1, Phase.Act).pawn(p1, at = home)
       .denizen(wrestlers, at = home).adviser(p1, vow).adviser(p1, tyrant)
       .favor(p1, 4).supply(p1, 7).boardWarbands(p1, 3)

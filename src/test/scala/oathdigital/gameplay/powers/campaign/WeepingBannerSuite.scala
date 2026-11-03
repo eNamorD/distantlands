@@ -4,7 +4,7 @@ import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 
 /** Weeping Banner: a defender's relic plan, a secret placed, under which
   * each skull kills two warbands. */
@@ -12,10 +12,10 @@ class WeepingBannerSuite extends munit.FunSuite:
   import AttackDieFace.{OneSword, TwoSwordsSkull}
   import DefenseDieFace.TwoShields
 
-  private val relic = CatalogNames.relic("Weeping Banner")
+  private val relic = WeepingBannerCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Relic(relic)
-  private val general = CatalogNames.denizen("Fearsome General")
-  private val outriders = CatalogNames.denizen("Outriders")
+  private val general = FearsomeGeneralCard.id
+  private val outriders = OutridersCard.id
   // Two double shields and the two warbands defend with 6, so the attacker
   // loses every battle here and nothing is placed.
   private val shields = Vector(TwoShields, TwoShields)

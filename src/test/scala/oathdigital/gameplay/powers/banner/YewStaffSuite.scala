@@ -1,5 +1,6 @@
 package oathdigital.gameplay.powers.banner
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.model._
 import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2}
@@ -7,7 +8,7 @@ import oathdigital.testkit.Table.{p1, p2}
 /** Yew Staff: its holder holds the Darkest Secret as the card powers they
   * use see it. Each power's own suite tests that it reads the check. */
 class YewStaffSuite extends munit.FunSuite:
-  private val yewStaff = "Yew Staff"
+  private val yewStaff = YewStaffCard.id
 
   private def holdsForCardPowers(table: Table, player: PlayerId): Boolean =
     CardPowerBanners.holdsDarkestSecret(table.ready, player)
@@ -27,5 +28,5 @@ class YewStaffSuite extends munit.FunSuite:
       .relic(p1, yewStaff, facedown = true)
     assert(!holdsForCardPowers(facedown, p1))
     val atSite = Table.start.darkestSecret(None, 1)
-      .pawn(p1, "Ancient City").relicAt(yewStaff, "Ancient City")
+      .pawn(p1, AncientCitySite).relicAt(yewStaff, AncientCitySite)
     assert(!holdsForCardPowers(atSite, p1))

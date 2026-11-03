@@ -2,7 +2,6 @@ package oathdigital.server
 
 import java.net.{URI, URLEncoder}
 import java.nio.charset.StandardCharsets
-import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success, Try}
 import akka.http.scaladsl.model._
@@ -17,14 +16,15 @@ import oathdigital.protocol._
 final class TrustedSeatRoutes(
     identities: IdentityRepository,
     provisioning: TrustedGameProvisioning,
-    gateway: TrustedGameGateway,
+    gateway: GameGateway,
     chronicles: ChronicleConversion,
     publicBaseUrl: URI,
     blockingExecutionContext: ExecutionContext,
     extraOrigins: Seq[URI] = Nil
 ):
   private val logger = LoggerFactory.getLogger(classOf[TrustedSeatRoutes])
-  private val cookieName = "oath_seat"
+  private val seats = new SeatCookieActor(identities, blockingExecutionContext)
+  private val api = new GameApiRoutes(seats, gateway, blockingExecutionContext)
   private val privateHeaders = List(RawHeader("Cache-Control", "no-store"),
     RawHeader("Referrer-Policy", "no-referrer"))
 
@@ -67,14 +67,14 @@ final class TrustedSeatRoutes(
       get { noQuery { async {
         SeatCode.parse(raw) match
           case Left(_) => invalidLink
-          case Right(code) => resolve(code) match
+          case Right(code) => seats.seat(code) match
             case Right(seat) if DevelopmentTrustBoundary.validateIdentifier(seat.gameId, "$.gameId").isRight =>
               val path = canonicalPath(seat.gameId)
-              val cookie = HttpCookie(cookieName, code.raw, maxAge = Some(31536000L),
+              val cookie = HttpCookie(seats.cookieName, code.raw, maxAge = Some(31536000L),
                 path = Some(path), secure = publicBaseUrl.getScheme.equalsIgnoreCase("https"),
                 httpOnly = true).withSameSite(SameSite.Lax)
               HttpResponse(StatusCodes.SeeOther, headers = List(canonicalLocation(seat.gameId), `Set-Cookie`(cookie)))
-            case Left(TrustedSeatFailure.StorageFailure) => internalError()
+            case Left(AccessRefusal.Storage) => internalError()
             case _ => invalidLink
       } } }
     } ~ pathPrefix("games" / Segment) { gameId =>
@@ -83,40 +83,24 @@ final class TrustedSeatRoutes(
         else extractRequest { request =>
           pathEnd {
             get:
-              onComplete(Future {
-                authenticate(request, gameId).flatMap(gateway.load(gameId, _))
-              }(using blockingExecutionContext)):
+              // The page is served to a seat that can load its game; any
+              // other holder is sent back to its seat link.
+              onComplete(seats.resolve(request, gameId).map(_.left
+                .map(GatewayFailure.Access.apply)
+                .flatMap(gateway.load(gameId, _)))(using blockingExecutionContext)):
                 case Success(Right(_)) => ProductionFrontendRoutes.gamePage
-                case Success(Left(TrustedSeatFailure.Forbidden)) => complete(recovery)
-                case Success(Left(TrustedSeatFailure.Application(_: GameApplicationError.StreamNotFound))) =>
+                case Success(Left(GatewayFailure.Access(AccessRefusal.Forbidden))) =>
+                  complete(recovery)
+                case Success(Left(GatewayFailure.Application(_: GameApplicationError.StreamNotFound))) =>
                   complete(recovery)
                 case _ => complete(internalError())
           } ~ pathSingleSlash {
             get { complete(HttpResponse(StatusCodes.SeeOther,
               headers = List(canonicalLocation(gameId)))) }
           } ~ pathPrefix("api"):
-            pathEndOrSingleSlash {
-              get { async {
-                authenticate(request, gameId).flatMap(gateway.load(gameId, _))
-                  .fold(publicError, projection => json(StatusCodes.OK, GameHttpWire.encodeProjection(projection)))
-              } }
-            } ~ path("commands") {
-              post { sameOrigin {
-                entity(as[String]) { body => async {
-                  authenticate(request, gameId).fold(publicError, seat =>
-                    AuthenticatedGameHttpWire.decodeCommand(body).fold(_ => malformed, command =>
-                      gateway.submit(gameId, seat, command).fold(publicError,
-                        projection => json(StatusCodes.OK, GameHttpWire.encodeProjection(projection)))))
-                } }
-              } }
-            } ~ path("log" / Segment) { raw =>
-              get { async {
-                raw.toLongOption.filter(_ >= 0).fold(malformed)(after =>
-                  authenticate(request, gameId).flatMap(gateway.log(gameId, _, after))
-                    .fold(publicError, page => json(StatusCodes.OK,
-                      oathdigital.protocol.projection.LogPageCodec.encode(page))))
-              } }
-            }
+            // Only a mutation passes the same-origin check; the API itself
+            // is the shared one, with the seat cookie as its actor.
+            get { api.route(gameId) } ~ post { sameOrigin { api.route(gameId) } }
         }
     }
 
@@ -149,44 +133,12 @@ final class TrustedSeatRoutes(
           origin.getHost.equalsIgnoreCase(allowed.getHost) && port(origin) == port(allowed))
   }
 
-  private def resolve(code: SeatCode): Either[TrustedSeatFailure, TrustedSeat] =
-    identities.resolveTrustedSeat(code.digest).left.map:
-      case IdentityFailure.TrustedSeatNotFound => TrustedSeatFailure.Forbidden
-      case _ => TrustedSeatFailure.StorageFailure
-
-  private def authenticate(request: HttpRequest, gameId: String)
-      : Either[TrustedSeatFailure, TrustedSeat] = request.cookies.filter(_.name == cookieName).map(_.value) match
-    case Seq(raw) => SeatCode.parse(raw).left.map(_ => TrustedSeatFailure.Forbidden)
-      .flatMap(resolve).flatMap(seat => Either.cond(seat.gameId == gameId, seat, TrustedSeatFailure.Forbidden))
-    case _ => Left(TrustedSeatFailure.Forbidden)
-
   private def async(operation: => HttpResponse): Route =
     onComplete(Future(operation)(using blockingExecutionContext)):
       case Success(response) => complete(response)
       case Failure(_) => complete(internalError())
 
-  private def publicError(failure: TrustedSeatFailure): HttpResponse = failure match
-    case TrustedSeatFailure.Forbidden => error(StatusCodes.Forbidden, "forbidden", "access is denied")
-    case TrustedSeatFailure.InvalidIntent => malformed
-    case TrustedSeatFailure.Application(application) => application match
-      case _: GameApplicationError.StreamNotFound =>
-        error(StatusCodes.NotFound, "stream-not-found", "the requested game does not exist")
-      case _: GameApplicationError.StaleClientPosition =>
-        error(StatusCodes.Conflict, "stale-client-position", "the client position is stale; refresh and retry")
-      case _: GameApplicationError.SequenceConflict =>
-        error(StatusCodes.Conflict, "sequence-conflict", "the game changed while the command was handled")
-      case GameApplicationError.CommandRejected(violation) =>
-        error(StatusCodes.UnprocessableContent, "command-rejected", CommandRejectionMessage.text(violation))
-      case _ => internalError()
-    case TrustedSeatFailure.StorageFailure => internalError()
-
-  private def internalError(): HttpResponse =
-    // Exception messages and request URIs can contain credentials. Log only a
-    // generated reference, never the request, principal, failure value or throwable.
-    val reference = UUID.randomUUID().toString
-    logger.error("Trusted seat request failed; reference={}", reference)
-    error(StatusCodes.InternalServerError, "internal-error", "the server could not complete the request")
-      .addHeader(RawHeader("X-Request-ID", reference))
+  private def internalError(): HttpResponse = GameHttpWire.internalError(logger)
 
   private def invalidLink: HttpResponse = HttpResponse(StatusCodes.NotFound,
     entity = HttpEntity(ContentTypes.`text/html(UTF-8)`,
@@ -196,6 +148,6 @@ final class TrustedSeatRoutes(
       "<!doctype html><html lang=\"en\"><title>Open your seat link</title><body><h1>Open your seat link</h1><p>Open the assigned seat link from your host to return to your game.</p></body></html>"))
   private def malformed: HttpResponse = error(StatusCodes.BadRequest, "malformed-request", "the request is invalid")
   private def error(status: StatusCode, code: String, message: String): HttpResponse =
-    json(status, GameHttpWire.encodeError(code, message))
+    GameHttpWire.errorResponse(status, code, message)
   private def json(status: StatusCode, body: String): HttpResponse =
-    HttpResponse(status, entity = HttpEntity(ContentTypes.`application/json`, body))
+    GameHttpWire.jsonResponse(status, body)

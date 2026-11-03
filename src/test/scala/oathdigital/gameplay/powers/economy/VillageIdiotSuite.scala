@@ -1,9 +1,10 @@
 package oathdigital.gameplay.powers.economy
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.SearchFixture
+import oathdigital.gameplay.powers.search.ErrandBoyCard
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, EconomyActions,
-  Look, Table}
+import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
@@ -11,16 +12,16 @@ import oathdigital.testkit.Unwrap.accepted
 class VillageIdiotSuite extends munit.FunSuite:
   import SearchFixture.rules
 
-  private val idiot = CatalogNames.denizen("Village Idiot")
-  private val other = CatalogNames.denizen("Errand Boy")
+  private val idiot = VillageIdiotCard.id
+  private val other = ErrandBoyCard.id
   private val modifiers = Vector(VillageIdiot.id)
 
   /** p1's site, Ancient City, holds Errand Boy (Beast) and Village Idiot
     * (Hearth), both token-free, and the Hearth bank holds `hearth` favor.
     * p1 has the start's 1 favor, 3 warbands and 7 Supply. */
   private def idiotAtSite(hearth: Int = 3): Table = Table.start
-    .pawn(p1, at = "Ancient City").denizen(other, at = "Ancient City")
-    .denizen(idiot, at = "Ancient City")
+    .pawn(p1, at = AncientCitySite).denizen(other, at = AncientCitySite)
+    .denizen(idiot, at = AncientCitySite)
     .favor(p1, 1).boardWarbands(p1, 3).supply(p1, 7)
     .bankFavor(Suit.Hearth, hearth)
 

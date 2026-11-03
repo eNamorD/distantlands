@@ -1,5 +1,6 @@
 package oathdigital.gameplay.chronicle
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.{OathRules, WalkerDiceFixture}
 import oathdigital.gameplay.actions.ProcedureNotes
 import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
@@ -18,7 +19,7 @@ class LineageScoringSuite extends munit.FunSuite:
 
   private def atGifts(using munit.Location): OathTransition =
     ChronicleWalk.walkedTo(rules, accepted(rules.next(OathTransition(
-      ChronicleWalk.throneHeldByChancellorP1.warbandsAt("Ancient City", p1, 1)
+      ChronicleWalk.throneHeldByChancellorP1.warbandsAt(AncientCitySite, p1, 1)
         .state, Vector.empty), TriggeredProcedureRef.ChronicleSun)),
       LineageScoring.giftsDecisionId)
 

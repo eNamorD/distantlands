@@ -3,14 +3,13 @@ package oathdigital.gameplay.powers.action
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes,
-  Table}
+import oathdigital.testkit.{ActPowerHarness, Look, Outcomes, Table}
 import oathdigital.testkit.Unwrap.accepted
 
 class MagicWaterskinSuite extends munit.FunSuite:
   import PowerFixture._
 
-  private val skin = CatalogNames.relic("Magic Waterskin")
+  private val skin = MagicWaterskinCard.id
   private val source = DecisionOptionRef.Relic(skin)
   private val rules = ActPowerHarness.rules()
   /** p1's Act holding Magic Waterskin, with `supply` Supply. */

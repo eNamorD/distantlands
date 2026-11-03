@@ -2,9 +2,8 @@ package oathdigital.gameplay.powers.travel
 
 import oathdigital.gameplay.actions.travel.TravelProcedure
 import oathdigital.gameplay.powers.{NoteText, PlayerFacts, PowerFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes}
+import oathdigital.testkit.{ActPowerHarness, Look, Outcomes}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Unwrap.accepted
 
@@ -12,11 +11,11 @@ class DragonskinDrumSuite extends munit.FunSuite:
   import PowerFixture._
   import TravelFixture._
 
-  private val drum = CatalogNames.relic("Dragonskin Drum")
+  private val drum = DragonskinDrumCard.id
   private val modifiers = Vector(DragonskinDrum.id)
   private def held = withRelic(board(supply = 7), drum)
 
-  private val power = DragonskinDrum.forCatalog(catalog)
+  private val power = DragonskinDrum
 
   private def said(events: Vector[OathEvent]): Vector[NoteText.Said] =
     NoteText.said(power.id, power.noteKeys, events)

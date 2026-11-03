@@ -22,7 +22,7 @@ class TrustedGameProvisioningSuite extends munit.FunSuite:
     * (`GameApplicationService.scala:87-90`).
     */
   private val parkedAssertions = new ParkedDecisionAssertions(catalog,
-    WalkerPowerCatalog.default(catalog), PhasePowerCatalog.default(catalog))
+    WalkerPowerCatalog.default(catalog), PhasePowerCatalog.default)
 
   private val gameId = "trusted-game"
   private val request = TrustedGameCreateRequest(Vector(

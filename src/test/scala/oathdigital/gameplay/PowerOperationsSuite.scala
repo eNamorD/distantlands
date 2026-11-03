@@ -1,14 +1,16 @@
 package oathdigital.gameplay
 
+import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.operations._
+import oathdigital.gameplay.powers.search.ErrandBoyCard
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Table}
+import oathdigital.testkit.{Look, Table}
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
 
 class PowerOperationsSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Errand Boy")
-  private val cardSite = CatalogNames.site("Ancient City")
+  private val card = ErrandBoyCard.id
+  private val cardSite = AncientCitySite.id
 
   /** p1 stands at Ancient City with 3 favor and 3 faceup secrets, where
     * Errand Boy, with nothing on it, shows facedown when `facedown` is true,

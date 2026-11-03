@@ -1,10 +1,12 @@
 package oathdigital.application
 
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
+import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.whenplayed.WizardsConclaveCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.protocol.projection.{DecisionQueryProjection,
   WalkerWaitingProjection}
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -12,8 +14,8 @@ import oathdigital.testkit.Unwrap.accepted
   * player sees (undo design, "The facedown-adviser pick"). Undo of the pick
   * is covered by `UndoServiceSuite`. */
 class FacedownAdviserPickServiceSuite extends munit.FunSuite:
-  private val conclave = CatalogNames.denizen("Wizard's Conclave")
-  private val wrestlers = CatalogNames.denizen("Wrestlers")
+  private val conclave = WizardsConclaveCard.id
+  private val wrestlers = WrestlersCard.id
   private val table = Table.start.adviser(p1, conclave, facedown = true)
     .adviser(p1, wrestlers, facedown = true).banditsRefilled
   test("the parked pick is a board decision naming each adviser to its " +

@@ -2,19 +2,21 @@ package oathdigital.application
 
 import oathdigital.gameplay.actions.travel.TravelProcedure
 import oathdigital.gameplay.powers.action.{Palanquin, PalanquinCard}
+import oathdigital.gameplay.powers.poweruse.CityWallCard
 import oathdigital.gameplay.powers.travel.{TravelFixture, TyrantCard}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, MenuPlay, Outcomes}
+import oathdigital.testkit.{Look, MenuPlay, Outcomes}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, present}
+import oathdigital.testkit.Commands
 
 /** Undo and Redo around an automatic power's request (automatic power
   * consent design, "Undo coupling" and ruling 9). */
 class AutomaticUseUndoSuite extends munit.FunSuite:
   import ConsentFixture.gameId
   private val projector = new GameProjector(catalog)
-  private val wall = CatalogNames.denizen("City Wall")
+  private val wall = CityWallCard.id
   private val coast = TravelFixture.coast
   private val home = TravelFixture.cradlePlains
 
@@ -22,7 +24,7 @@ class AutomaticUseUndoSuite extends munit.FunSuite:
     * the coast, which p2 rules with 2 warbands. */
   private val tyrantBesideAWalledCoast: ReadyGame =
     TravelFixture.on(TravelFixture.board(supply = 7))(_
-      .adviser(p1, "Tyrant").denizen(wall, at = coast)
+      .adviser(p1, TyrantCard).denizen(wall, at = coast)
       .warbandsAt(coast, p2, 2))
 
   /** p1 travels to `site` at `sequence`; returns the pick's batch. */
@@ -33,7 +35,7 @@ class AutomaticUseUndoSuite extends munit.FunSuite:
   private def answering(service: GameApplicationService, at: GameAccepted,
       choice: ConsentChoice)(using munit.Location): GameAccepted =
     accepted(service.handle(gameId, at.nextSequence,
-      GameCommand.AnswerConsent(p2, choice)))
+      Commands.answerConsent(p2, choice)))
 
   private def readyAfter(at: GameAccepted)(using munit.Location)
       : ReadyGame = Outcomes.ready(at.state)
@@ -45,11 +47,11 @@ class AutomaticUseUndoSuite extends munit.FunSuite:
 
   private def undoing(service: GameApplicationService, at: GameAccepted,
       actor: PlayerId = p1)(using munit.Location): GameAccepted =
-    accepted(service.handle(gameId, at.nextSequence, GameCommand.Undo(actor)))
+    accepted(service.handle(gameId, at.nextSequence, Commands.undo(actor)))
 
   private def redoing(service: GameApplicationService, at: GameAccepted)(
       using munit.Location): GameAccepted =
-    accepted(service.handle(gameId, at.nextSequence, GameCommand.Redo(p1)))
+    accepted(service.handle(gameId, at.nextSequence, Commands.redo(p1)))
 
   private def parkedOnTheDestination(at: GameAccepted)(
       using munit.Location): Boolean =
@@ -69,7 +71,7 @@ class AutomaticUseUndoSuite extends munit.FunSuite:
     val (service, _) = ConsentFixture.service(tyrantBesideAWalledCoast)
     val waiting = travelling(service, 0L, coast)
     assertEquals(service.handle(gameId, waiting.nextSequence,
-      GameCommand.Undo(p2)), Left(GameApplicationError.CommandRejected(
+      Commands.undo(p2)), Left(GameApplicationError.CommandRejected(
         OathViolation.ConsentPending)))
 
   test("while the ruler decides, the traveller is offered Undo and the " +
@@ -116,17 +118,17 @@ class AutomaticUseUndoSuite extends munit.FunSuite:
     // p1 holds Palanquin and sends p3, who holds Tyrant, to the coast.
     val sent = TravelFixture.on(TravelFixture.board())(_
       .adviser(p1, PalanquinCard.id).favor(p1, 1)
-      .pawn(p3, home).adviser(p3, "Tyrant")
+      .pawn(p3, home).adviser(p3, TyrantCard)
       .denizen(wall, at = coast).warbandsAt(coast, p2, 2))
     val (service, _) = ConsentFixture.service(sent)
     val used = accepted(service.handle(gameId, 0L, MenuPlay.starting(p1,
       ActionRef.UsePower(Palanquin.id),
       Vector(DecisionOptionRef.Denizen(PalanquinCard.id)))))
     val aimed = accepted(service.handle(gameId, used.nextSequence,
-      GameCommand.ResolveWalker(p1, TreeDecision(Palanquin.targetDecisionId,
+      Commands.resolveWalker(p1, TreeDecision(Palanquin.targetDecisionId,
         DecisionAnswer.ChooseOneAnswer(DecisionOptionRef.Player(p3))))))
     val waiting = accepted(service.handle(gameId, aimed.nextSequence,
-      GameCommand.ResolveWalker(p1, TreeDecision(
+      Commands.resolveWalker(p1, TreeDecision(
         Palanquin.destinationDecisionId, DecisionAnswer.ChooseOneAnswer(
           DecisionOptionRef.Site(coast))))))
     val request = present(readyAfter(waiting).consent.pending, "the request")
@@ -135,7 +137,7 @@ class AutomaticUseUndoSuite extends munit.FunSuite:
     assertEquals(projector.project(gameId, waiting.loaded, p3).undo, None)
     assert(projector.project(gameId, waiting.loaded, p1).undo.nonEmpty)
     assertEquals(service.handle(gameId, waiting.nextSequence,
-      GameCommand.Undo(p3)), Left(GameApplicationError.CommandRejected(
+      Commands.undo(p3)), Left(GameApplicationError.CommandRejected(
         OathViolation.ConsentPending)))
     val undone = undoing(service, waiting, actor = p1)
     assertEquals(readyAfter(undone).consent.pending, None)

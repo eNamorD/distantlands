@@ -4,9 +4,9 @@ import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
+import oathdigital.gameplay.powers.economy.VowOfWanderingCard
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 import oathdigital.model.DecisionAnswer._
 import oathdigital.testkit.ActPowerHarness
 import oathdigital.testkit.Unwrap.present
@@ -16,8 +16,8 @@ import oathdigital.testkit.Outcomes.assertWireRoundTrips
   * the sites they rule, before their force is scored, and the card is discarded
   * when the Campaign has resolved. */
 class WarningSignalsSuite extends munit.FunSuite:
-  private val vow = CatalogNames.denizen("Vow of Wandering")
-  private val card = CatalogNames.denizen("Warning Signals")
+  private val vow = VowOfWanderingCard.id
+  private val card = WarningSignalsCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
   private val decision = WarningSignals.decisionId
 
@@ -188,7 +188,7 @@ class WarningSignalsSuite extends munit.FunSuite:
 
   // ---- Lines ----
 
-  private val power = WarningSignals.forCatalog(catalog)
+  private val power = WarningSignals
   test("the arrangement is written as the Signals' line, after the answer"):
     val b = defending
     val asked = chosen(b)

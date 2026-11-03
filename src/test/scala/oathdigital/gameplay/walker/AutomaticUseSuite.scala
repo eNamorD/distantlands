@@ -1,10 +1,12 @@
 package oathdigital.gameplay.walker
 
+import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.operations.PowerUseRules
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerUse, PowerUseRefusal, PowerUseRestriction, PowerUseStep}
+import oathdigital.gameplay.powers.campaign.WrestlersCard
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Table}
+import oathdigital.testkit.{Look, Table}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.{accepted, present}
 
@@ -13,7 +15,7 @@ import oathdigital.testkit.Unwrap.{accepted, present}
   * at that node (catalog batch 8, slice 10, part 2). */
 class AutomaticUseSuite extends munit.FunSuite:
   private val automatic = PowerId("test.automatic")
-  private val card = CatalogNames.denizen("Wrestlers")
+  private val card = WrestlersCard.id
 
   /** A test power: refuses every use of `automatic` while p1 holds no
     * favor, and nobody may waive it. */
@@ -24,7 +26,8 @@ class AutomaticUseSuite extends munit.FunSuite:
     def contributions: Map[PowerWindow, Vector[Contribution]] = Map.empty
     override def powerUseRestrictions: Vector[PowerUseRestriction] =
       Vector(this)
-    def refusal(ready: ReadyGame, use: PowerUse): Option[PowerUseRefusal] =
+    def refusal(catalog: ExecutableCatalog, ready: ReadyGame, use: PowerUse)
+      : Option[PowerUseRefusal] =
       Option.when(use.power == automatic && Look(ready).favor(p1) == 0)(
         PowerUseRefusal(id,
           LogNote(Some(PowerSourceRef.Card(card)), "refused",
@@ -42,7 +45,8 @@ class AutomaticUseSuite extends munit.FunSuite:
       Vector(this)
     private val note = LogNote(Some(PowerSourceRef.Card(card)), "refused",
       Vector.empty)
-    def refusal(ready: ReadyGame, use: PowerUse): Option[PowerUseRefusal] =
+    def refusal(catalog: ExecutableCatalog, ready: ReadyGame, use: PowerUse)
+      : Option[PowerUseRefusal] =
       Option.when(use.power == automatic && Look(ready).favor(p1) == 0)(
         PowerUseRefusal(id, note, OperationReason("test-refused",
           "no favor", OperationReasonKind.Impossible, Some(OperationWaiver(

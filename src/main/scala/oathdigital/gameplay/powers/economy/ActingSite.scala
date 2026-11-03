@@ -1,5 +1,6 @@
 package oathdigital.gameplay.powers.economy
 
+import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.{NoteSupport, PowerAccess}
 import oathdigital.gameplay.powerresolver.{Contribution, ModifierPicks,
   OfferReason, PowerCtx, Transform}
@@ -27,7 +28,8 @@ import oathdigital.model._
   */
 trait ActingSite extends SelectedModifier:
   /** The sites the player may act as if at: never the pawn site. */
-  def sites(ready: ReadyGame, actor: PlayerId): Vector[SiteId]
+  def sites(catalog: ExecutableCatalog, ready: ReadyGame, actor: PlayerId)
+      : Vector[SiteId]
   /** Why the card is unavailable when `sites` is empty. */
   def noSite: String
   /** The site question's heading. */
@@ -43,23 +45,24 @@ trait ActingSite extends SelectedModifier:
 
   final def effects: Map[PowerWindow, Vector[Contribution]] = Map(
     PowerWindow.TradeSourceSelection -> Vector(Transform((ctx, operations) =>
-      EconomySources.relocated(catalog, ctx, operations))))
+      EconomySources.relocated(ctx.catalog, ctx, operations))))
 
   final override def offerReason(ctx: PowerCtx): Option[OfferReason] =
     val reason =
       if PowerAccess.asIfSite(ctx.state, ctx.actor).nonEmpty then
         Some(ActingSite.elsewhere)
       else if pickedAtPawnSite(ctx) then Some(ActingSite.pickedHere)
-      else Option.when(sites(ctx.state, ctx.actor).isEmpty)(noSite)
+      else Option.when(sites(ctx.catalog, ctx.state, ctx.actor).isEmpty)(
+        noSite)
     reason.map(OfferReason.Unavailable(_))
 
   /** The site question, then the answer recorded as state, then the line.
     * The pick and its payment come before the question, so they are judged
     * at the pawn site. */
-  final override def selectionQuestions(ready: ReadyGame, actor: PlayerId)
-      : Vector[Operation] = Vector(
+  final override def selectionQuestions(catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId): Vector[Operation] = Vector(
     Decide(PowerAccess.asIfDecision, actor, DecisionQuery.ChooseOne(
-      sites(ready, actor).map(site =>
+      sites(catalog, ready, actor).map(site =>
         DecisionOption.Site(DecisionOptionRef.Site(site))),
       heading = Some(heading))),
     BuildOps((_, tree) => Right(PowerAnswers.last(tree.answered,

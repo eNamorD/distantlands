@@ -1,9 +1,11 @@
 package oathdigital.application
 
+import oathdigital.gameplay.cards.BrokenPeaksSite
+import oathdigital.gameplay.powers.campaign.StickyFireCard
 import oathdigital.gameplay.walker.{DeltaPayload, RollPayload,
   WalkerStepRecorded}
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2}
 
 /** Which closed command batches undo never takes back (undo design,
@@ -11,8 +13,8 @@ import oathdigital.testkit.Table.{p1, p2}
 class UndoBarrierSuite extends munit.FunSuite:
   private val table = Table.start.turn(p1, Phase.Act)
   private val before = table.state
-  private val relicCard: CardId = CatalogNames.card("Sticky Fire")
-  private val peaks: SiteId = CatalogNames.site("Broken Peaks")
+  private val relicCard: CardId = StickyFireCard.id
+  private val peaks: SiteId = BrokenPeaksSite.id
 
   /** A walker step recording a delta that applies `ops`. */
   private def deltaStep(ops: CoreOperation*): WalkerStepRecorded =

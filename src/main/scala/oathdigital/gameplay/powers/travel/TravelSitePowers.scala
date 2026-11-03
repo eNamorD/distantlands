@@ -1,97 +1,15 @@
 package oathdigital.gameplay.powers.travel
 
-import oathdigital.catalog.Site
 import oathdigital.gameplay.SiteRulers
 import oathdigital.gameplay.actions.campaign.CampaignSetup
 import oathdigital.gameplay.powerresolver._
-import oathdigital.gameplay.powers.wake.{HeadwatersSite, TidalMarshesSite}
+import oathdigital.gameplay.cards.{BrokenPeaksSite, DesolateShoreSite,
+  FairIsleSite, GreenShoreSite, HeadwatersSite, HiddenPlaceSite, MinesSite,
+  NarrowPassSite, RockyCoastSite, SunkenIslesSite, TidalMarshesSite}
 import oathdigital.model.{DecisionOptionRef, Location, Move, NoteKey,
   NotePart, NoteSet, OathViolation, Operation, Piece, PlayerId,
   PositionedLocation, PowerId, LogNote, PowerSourceRef, PowerWindow,
-  RuleSourceRef, SiteId, SiteRule, SiteRuler, SpendSupply, Tokens}
-
-object BrokenPeaksSite extends Site(SiteId("site:broken-peaks"), "Broken Peaks",
-    defense = 2, capacity = 1, relicSlots = 2,
-    recoverDifficulty = Some(4),
-    startingResources = Tokens(0, 2),
-    forgeRequirements = None,
-    homeland = None):
-  val mountain = PowerId("site.broken-peaks.mountain")
-  val handlers: Vector[PowerId] = Vector(mountain)
-
-object DesolateShoreSite extends Site(SiteId("site:desolate-shore"), "Desolate Shore",
-    defense = 1, capacity = 1, relicSlots = 2,
-    recoverDifficulty = Some(5),
-    startingResources = Tokens(0, 0),
-    forgeRequirements = None,
-    homeland = None):
-  val coast = PowerId("site.desolate-shore.coast")
-  val handlers: Vector[PowerId] = Vector(coast)
-
-object FairIsleSite extends Site(SiteId("site:fair-isle"), "Fair Isle",
-    defense = 2, capacity = 2, relicSlots = 1,
-    recoverDifficulty = Some(3),
-    startingResources = Tokens(3, 0),
-    forgeRequirements = None,
-    homeland = None):
-  val coast = PowerId("site.fair-isle.coast")
-  val island = PowerId("site.fair-isle.island")
-  val handlers: Vector[PowerId] = Vector(coast, island)
-
-object GreenShoreSite extends Site(SiteId("site:green-shore"), "Green Shore",
-    defense = 1, capacity = 2, relicSlots = 0,
-    recoverDifficulty = None,
-    startingResources = Tokens(0, 0),
-    forgeRequirements = None,
-    homeland = None):
-  val coast = PowerId("site.green-shore.coast")
-  val handlers: Vector[PowerId] = Vector(coast)
-
-object HiddenPlaceSite extends Site(SiteId("site:hidden-place"), "Hidden Place",
-    defense = 2, capacity = 2, relicSlots = 1,
-    recoverDifficulty = Some(4),
-    startingResources = Tokens(0, 0),
-    forgeRequirements = None,
-    homeland = None):
-  val mountain = PowerId("site.hidden-place.mountain")
-  val handlers: Vector[PowerId] = Vector(mountain)
-
-object MinesSite extends Site(SiteId("site:mines"), "Mines",
-    defense = 1, capacity = 1, relicSlots = 2,
-    recoverDifficulty = Some(5),
-    startingResources = Tokens(3, 0),
-    forgeRequirements = None,
-    homeland = None):
-  val mountain = PowerId("site.mines.mountain")
-  val handlers: Vector[PowerId] = Vector(mountain)
-
-object NarrowPassSite extends Site(SiteId("site:narrow-pass"), "Narrow Pass",
-    defense = 2, capacity = 1, relicSlots = 1,
-    recoverDifficulty = Some(5),
-    startingResources = Tokens(0, 0),
-    forgeRequirements = None,
-    homeland = None):
-  val pass = PowerId("site.narrow-pass.pass")
-  val handlers: Vector[PowerId] = Vector(pass)
-
-object RockyCoastSite extends Site(SiteId("site:rocky-coast"), "Rocky Coast",
-    defense = 2, capacity = 1, relicSlots = 0,
-    recoverDifficulty = None,
-    startingResources = Tokens(0, 0),
-    forgeRequirements = None,
-    homeland = None):
-  val coast = PowerId("site.rocky-coast.coast")
-  val handlers: Vector[PowerId] = Vector(coast)
-
-object SunkenIslesSite extends Site(SiteId("site:sunken-isles"), "Sunken Isles",
-    defense = 2, capacity = 0, relicSlots = 3,
-    recoverDifficulty = Some(6),
-    startingResources = Tokens(0, 0),
-    forgeRequirements = None,
-    homeland = None):
-  val coast = PowerId("site.sunken-isles.coast")
-  val island = PowerId("site.sunken-isles.island")
-  val handlers: Vector[PowerId] = Vector(coast, island)
+  RuleSourceRef, SiteId, SiteRule, SiteRuler, SpendSupply}
 
 private[travel] object TravelRoute:
   final case class PawnMove(player: PlayerId, source: SiteId, destination: SiteId)

@@ -1,8 +1,11 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.gameplay.cards.{AncientCitySite, BuriedGiantSite}
 import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.campaign.{MountainGiantCard, WildMountsCard}
+import oathdigital.gameplay.powers.search.ErrandBoyCard
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, PhasePowerHarness, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.p1
 import oathdigital.testkit.Unwrap.accepted
@@ -10,15 +13,15 @@ import oathdigital.testkit.Unwrap.accepted
 class ConvoysSuite extends munit.FunSuite:
   import PhasePowerHarness._
 
-  private val convoys = CatalogNames.denizen("Convoys")
+  private val convoys = ConvoysCard.id
   private val source = DecisionOptionRef.Denizen(convoys)
   /** In the Cradle, and in the Provinces. */
-  private val home = CatalogNames.site("Ancient City")
-  private val giant = CatalogNames.site("Buried Giant")
+  private val home = AncientCitySite.id
+  private val giant = BuriedGiantSite.id
   /** Plain cards for the piles. */
-  private val errandBoy = CatalogNames.denizen("Errand Boy")
-  private val wildMounts = CatalogNames.denizen("Wild Mounts")
-  private val mountainGiant = CatalogNames.denizen("Mountain Giant")
+  private val errandBoy = ErrandBoyCard.id
+  private val wildMounts = WildMountsCard.id
+  private val mountainGiant = MountainGiantCard.id
 
   /** p1's Act at Ancient City beside Convoys, site-only. The Cradle pile
     * holds Errand Boy; the Provinces pile holds Wild Mounts under Mountain

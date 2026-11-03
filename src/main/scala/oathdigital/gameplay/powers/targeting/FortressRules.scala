@@ -54,17 +54,18 @@ object OakenFortressCard extends Edifice(EdificeId("E28"), Suit.Beast):
   * blocks the whole action and writes nothing.
   */
 sealed abstract class FortressRule extends ContributingPower:
-  def catalog: ExecutableCatalog
+  /** The face's printed power, which sets how the rule activates. */
+  protected def power: PrintedPower
   protected def fortress: EdificeId
   protected def side: EdificeSide
 
   /** Whether `defender` may not be targeted by `attacker`. */
-  protected def shields(ready: ReadyGame, attacker: PlayerId,
-      defender: PlayerId): Boolean
+  protected def shields(catalog: ExecutableCatalog, ready: ReadyGame,
+      attacker: PlayerId, defender: PlayerId): Boolean
 
   final def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
   final override lazy val resolution: PowerResolution =
-    CatalogResolution.of(catalog, id)
+    CatalogResolution.of(power)
 
   private val notes = NoteSet(id)
   notes.include(FortressRule.notes)
@@ -121,35 +122,38 @@ sealed abstract class FortressRule extends ContributingPower:
       : Option[SiteId] = ready.game.current.players.find(_.player == player)
     .flatMap(_.pawnSite)
 
-  private def raidBlocked(ready: ReadyGame, attacker: PlayerId): Boolean =
+  private def raidBlocked(catalog: ExecutableCatalog,
+      ready: ReadyGame, attacker: PlayerId): Boolean =
     val defenders = CampaignSetup.raidDefenders(ready, attacker)
-    defenders.nonEmpty && defenders.forall(shields(ready, attacker, _))
+    defenders.nonEmpty &&
+      defenders.forall(shields(catalog, ready, attacker, _))
 
   private def kindGuard(ctx: PowerCtx, ref: DecisionOptionRef)
       : Option[OathViolation] = ref match
     case DecisionOptionRef.Button("raid")
-        if raidBlocked(ctx.state, ctx.actor) =>
+        if raidBlocked(ctx.catalog, ctx.state, ctx.actor) =>
       Some(blocked("a Fortress protects every player a Raid could target"))
     case _ => None
 
   private def defenderGuard(ctx: PowerCtx, ref: DecisionOptionRef)
       : Option[OathViolation] = ref match
     case DecisionOptionRef.Player(defender)
-        if shields(ctx.state, ctx.actor, defender) =>
+        if shields(ctx.catalog, ctx.state, ctx.actor, defender) =>
       Some(blocked(s"a Fortress protects ${defender.value} from a Raid"))
     case _ => None
 
   private def startGuard(ctx: PowerCtx): Option[OathViolation] =
     Option.when(!FortressRule.underway(ctx.state) &&
       CampaignSetup.legalKinds(ctx.state, ctx.actor) ==
-        Vector(CampaignKind.Raid) && raidBlocked(ctx.state, ctx.actor))(
+        Vector(CampaignKind.Raid) &&
+        raidBlocked(ctx.catalog, ctx.state, ctx.actor))(
       blocked("a Fortress protects every player a Raid could target"))
 
   private def bannerGuard(ctx: PowerCtx, ref: DecisionOptionRef)
       : Option[OathViolation] = ref match
     case DecisionOptionRef.Banner(banner)
         if BannerRules.holder(ctx.state.game.current, banner)
-          .exists(shields(ctx.state, ctx.actor, _)) =>
+          .exists(shields(ctx.catalog, ctx.state, ctx.actor, _)) =>
       Some(OathViolation.InvalidEventOrder(
         s"a Fortress protects the holder of ${banner.key} from a Challenge"))
     case _ => None
@@ -178,47 +182,38 @@ object FortressRule:
   * cannot be targeted by a Challenge or a Raid. While the
   * Empire rules its site, it shields every Imperial player there.
   */
-final case class OakenFortress private (catalog: ExecutableCatalog)
-    extends FortressRule:
+case object OakenFortress extends FortressRule:
+  protected def power: PrintedPower = OakenFortressCard.intact.power
+  val id: PowerId = power.id
+
   val fortress: EdificeId = OakenFortressCard.id
-  def id: PowerId = OakenFortress.id
   protected def side: EdificeSide = EdificeSide.Intact
 
-  protected def shields(ready: ReadyGame, attacker: PlayerId,
-      defender: PlayerId): Boolean = defender != attacker &&
+  protected def shields(catalog: ExecutableCatalog, ready: ReadyGame,
+      attacker: PlayerId, defender: PlayerId): Boolean = defender != attacker &&
     sites(ready).exists(site => pawnSite(ready, defender).contains(site) &&
       SiteRulers.protectedAt(ready, site).contains(defender))
-
-object OakenFortress:
-  val id: PowerId = OakenFortressCard.intact.power.id
-
-  def forCatalog(catalog: ExecutableCatalog): OakenFortress =
-    new OakenFortress(catalog)
 
 /** The Rotting Fortress (E28, ruined): players at this site cannot be targeted
   * by a Challenge or a Raid, unless the targeting player has a faceup beast
   * adviser.
   */
-final case class RottingFortress private (catalog: ExecutableCatalog)
-    extends FortressRule:
+case object RottingFortress extends FortressRule:
+  protected def power: PrintedPower = OakenFortressCard.ruined.power
+  val id: PowerId = power.id
+
   val fortress: EdificeId = OakenFortressCard.id
-  def id: PowerId = RottingFortress.id
   protected def side: EdificeSide = EdificeSide.Ruined
 
-  protected def shields(ready: ReadyGame, attacker: PlayerId,
-      defender: PlayerId): Boolean = defender != attacker &&
+  protected def shields(catalog: ExecutableCatalog, ready: ReadyGame,
+      attacker: PlayerId, defender: PlayerId): Boolean = defender != attacker &&
     sites(ready).exists(site => pawnSite(ready, defender).contains(site)) &&
-    !holdsBeastAdviser(ready, attacker)
+    !holdsBeastAdviser(catalog, ready, attacker)
 
-  private def holdsBeastAdviser(ready: ReadyGame, player: PlayerId): Boolean =
+  private def holdsBeastAdviser(catalog: ExecutableCatalog,
+      ready: ReadyGame, player: PlayerId): Boolean =
     ready.game.current.players.find(_.player == player).exists(_.advisers.exists {
       case DenizenState(card, Orientation.FaceUp, _) =>
         EffectiveSuit.of(catalog, ready, card).contains(Suit.Beast)
       case _ => false
     })
-
-object RottingFortress:
-  val id: PowerId = OakenFortressCard.ruined.power.id
-
-  def forCatalog(catalog: ExecutableCatalog): RottingFortress =
-    new RottingFortress(catalog)

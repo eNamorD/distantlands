@@ -7,14 +7,14 @@ import oathdigital.gameplay.actions.travel.TravelProcedure
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{CatalogNames, Look}
+import oathdigital.testkit.Look
 import oathdigital.testkit.Unwrap.accepted
 
 /** Second Wind (card 16): an attacker's battle plan that, once the Campaign is
   * won, owes a Travel and then a Campaign, each spending no Supply
   * (follow-up actions design, rulings 9 and 11). */
 class SecondWindSuite extends munit.FunSuite:
-  private val card = CatalogNames.denizen("Second Wind")
+  private val card = SecondWindCard.id
   private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(card)
 
   /** p1 can conquer the origin, which bandits rule, with 5 warbands and 7

@@ -1,5 +1,6 @@
 package oathdigital.gameplay.powers.banner
 
+import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.powers.action.{PaidAction, PawnMoves}
 import oathdigital.model._
@@ -24,10 +25,12 @@ case object WanderingFlamePlace extends PaidAction(
   override def buttonName: Option[String] =
     BannerFacePowers.printed(id).map(_._1)
 
-  override def usable(ready: ReadyGame, player: PlayerId,
-      source: DecisionOptionRef): Boolean = faceUpSecrets(ready, player) > 0
+  override def usable(catalog: ExecutableCatalog, ready: ReadyGame,
+      player: PlayerId, source: DecisionOptionRef): Boolean =
+    faceUpSecrets(ready, player) > 0
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     BuildOps((state, _) => place(state, player)),
     Note(id, placeNote(_, player, source)))))

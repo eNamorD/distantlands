@@ -1,9 +1,12 @@
 package oathdigital.gameplay
 
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.operations.OperationRestrictions
+import oathdigital.gameplay.powers.action.{EnchantressCard, WaysideInnCard}
+import oathdigital.gameplay.powers.search.ErrandBoyCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2}
 
 /** The restriction-icon rule (catalog batch 4 design, "The restriction-icon
@@ -14,13 +17,13 @@ import oathdigital.testkit.Table.{p1, p2}
 class RestrictionIconsSuite extends munit.FunSuite:
   private val set = OperationRestrictions.forCatalog(catalog)
   /** Adviser-only, and not locked. */
-  private val adviserOnly = CatalogNames.denizen("Enchantress")
+  private val adviserOnly = EnchantressCard.id
   /** Site-only. */
-  private val siteOnly = CatalogNames.denizen("Wayside Inn")
+  private val siteOnly = WaysideInnCard.id
   /** A plain Beast card, unrestricted. */
-  private val plainCard = CatalogNames.denizen("Errand Boy")
+  private val plainCard = ErrandBoyCard.id
   /** p1's pawn site on the quiet table. */
-  private val home = CatalogNames.site("Ancient City")
+  private val home = AncientCitySite.id
   private val atHome = PositionedLocation(Location.Site(home))
   private val mine = PositionedLocation(Location.PlayArea(p1))
   private val theirs = PositionedLocation(Location.PlayArea(p2))
@@ -78,7 +81,7 @@ class RestrictionIconsSuite extends munit.FunSuite:
     assertEquals(refusal(held, Swap(adviserOnly, mine, plainCard, theirs)),
       None)
     val elsewhere =
-      PositionedLocation(Location.Site(CatalogNames.site("Broken Peaks")))
+      PositionedLocation(Location.Site(BrokenPeaksSite.id))
     assertEquals(refusal(siteOnlyAtHome,
       Move(Piece.Card(siteOnly), atHome, elsewhere, by = Some(p1))), None)
     val plain = Table.start.adviser(p1, plainCard).ready

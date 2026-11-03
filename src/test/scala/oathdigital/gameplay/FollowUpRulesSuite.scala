@@ -1,5 +1,8 @@
 package oathdigital.gameplay
 
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite}
+import oathdigital.gameplay.powers.economy.KnightsErrantCard
 import oathdigital.testkit.MenuPlay
 import oathdigital.gameplay.actions.travel.TravelProcedure
 import oathdigital.gameplay.powers.WalkerPowerCatalog
@@ -8,7 +11,7 @@ import oathdigital.gameplay.walker.{FollowUpOffer, FollowUpSkipped,
   ProcedureDequeued, WalkerCompleted}
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{CatalogNames, Outcomes, ParkedNode, Table}
+import oathdigital.testkit.{Outcomes, ParkedNode, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -20,10 +23,10 @@ class FollowUpRulesSuite extends munit.FunSuite:
   private val rules = new OathRules(catalog,
     walkerPowerCatalog = WalkerPowerCatalog.default(catalog),
     walkerDice = WalkerDiceFixture.blanks)
-  private val ancientCity = CatalogNames.site("Ancient City")
-  private val brokenPeaks = CatalogNames.site("Broken Peaks")
+  private val ancientCity = AncientCitySite.id
+  private val brokenPeaks = BrokenPeaksSite.id
   private val knights =
-    PowerSourceRef.Card(CatalogNames.denizen("Knights Errant"))
+    PowerSourceRef.Card(KnightsErrantCard.id)
 
   private def offer(action: StartableRef): QueuedProcedure =
     QueuedProcedure(p1, action, Vector.empty, Some(knights), QueueKind.Offer)
@@ -35,7 +38,7 @@ class FollowUpRulesSuite extends munit.FunSuite:
     * Broken Peaks and p3 at Buried Giant. `queue` is owed to p1. */
   private def table(queue: QueuedProcedure*): Table = Table.start
     .pawn(p1, at = ancientCity).pawn(p2, at = brokenPeaks)
-    .pawn(p3, at = "Buried Giant")
+    .pawn(p3, at = BuriedGiantSite)
     .bandits(ancientCity, 2)
     .update(_.updateCurrent(_.copy(queue = queue.toVector)))
 

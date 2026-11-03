@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, PrintedPower}
+import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
 import oathdigital.gameplay.actions.BannerRules
 import oathdigital.model._
 
@@ -27,7 +27,8 @@ case object Storyteller extends PaidAction(StorytellerCard.power):
     NotePart.Arg(2), NotePart.Text(".")))
   override def noteKeys: Vector[NoteKey] = notes.declared
 
-  def build(ready: ReadyGame, player: PlayerId, source: DecisionOptionRef)
+  def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
+      source: DecisionOptionRef)
       : Either[OathViolation, Operation] = Right(Sequence(Vector[Operation](
     Move(Piece.Secrets(Placed), PositionedLocation(Location.SharedBank),
       PositionedLocation(Location.OnBanner(Banner.DarkestSecret))),

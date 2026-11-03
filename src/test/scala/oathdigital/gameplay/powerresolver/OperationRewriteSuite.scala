@@ -1,7 +1,9 @@
 package oathdigital.gameplay.powerresolver
 
+import oathdigital.gameplay.powers.campaign.WildMountsCard
+import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import oathdigital.testkit.Table
 import oathdigital.testkit.Unwrap.as
 
 /** A composite that is not the walker's own and carries no window, as a
@@ -29,7 +31,7 @@ class OperationRewriteSuite extends munit.FunSuite:
 
   /** The context of folding `operation` at `window`, with `foldState`. */
   private def foldingCtx(operation: Operation): PowerCtx =
-    PowerCtx(foldState, actor, RuleSourceRef.GameRule("test"), window,
+    PowerCtx(catalog, foldState, actor, RuleSourceRef.GameRule("test"), window,
       Vector("0"), operation)
 
   /** The context of folding a windowed `Sequence`. */
@@ -150,7 +152,7 @@ class OperationRewriteSuite extends munit.FunSuite:
       dropPoolChanges), Vector[Operation](Sequence(Vector.empty)))
 
   test("a semantic composite is matched whole, never entered"):
-    val discard = Discard.Denizen(CatalogNames.denizen("Wild Mounts"),
+    val discard = Discard.Denizen(WildMountsCard.id,
       PositionedLocation(Location.PlayArea(actor)), Region.Cradle,
       Suit.Nomad, favor = 0, secrets = 0, actingPlayer = actor)
     val dropMoves: OperationRewrite.Matcher[CoreOperation, CoreOperation] =
