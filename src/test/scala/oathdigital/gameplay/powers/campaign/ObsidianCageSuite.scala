@@ -2,6 +2,7 @@ package oathdigital.gameplay.powers.campaign
 
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
+import oathdigital.gameplay.cards.BrokenPeaksSite
 import oathdigital.gameplay.powers.{NoteText, PlayerFacts}
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.model._
@@ -79,6 +80,31 @@ class ObsidianCageSuite extends munit.FunSuite:
     assertEquals(onCage(done), Map(kindOf(b, b.actor) -> 4))
     assertEquals(said(ObsidianCage, done.events), Vector(NoteText.Said(
       "caged.own", "Moved 4 warbands onto Obsidian Cage.", covers = true)))
+
+  test("the warbands the enemy's Hospital saved are caged with the rest, " +
+      "and none reach Hospital's site"):
+    // Owner's ruling, 2026-11-03: a warband that survives through Hospital
+    // is still in the force, so it ends on the Cage.
+    val ruled = rivalRulesOriginAndHoldsOathkeeper(
+      board(warbands = 5, supply = 7))
+    val hospitalSite = BrokenPeaksSite.id
+    val b = withSiteCard(on(ruled)(_.relic(ruled.rival, ObsidianCageCard)
+      .warbandsAt(hospitalSite, ruled.actor, 2)), hospitalSite, HospitalCard.id)
+    val done = commit(rules(losingDice), b, 2)
+      .pick(b.actor, CampaignIds.attackerPlan,
+        DecisionOptionRef.Denizen(HospitalCard.id))
+      .finishAttackerPlans(b.actor)
+      .pick(b.rival, CampaignIds.defenderPlan, ref)
+      .finishPlanWindows
+    // The attacker loses 1 of the 2 committed, which Hospital saves: the 4
+    // left on the board and the saved one go to the Cage.
+    assertEquals(done.winner, Some(false))
+    assertEquals(onCage(done), Map(kindOf(b, b.actor) -> 5))
+    assertEquals(Look(done.state).forces(hospitalSite),
+      SiteForces.Occupied(kindOf(b, b.actor), 2))
+    assertEquals(said(Hospital, done.events), Vector.empty)
+    assertEquals(said(ObsidianCage, done.events), Vector(NoteText.Said(
+      "caged.own", "Moved 5 warbands onto Obsidian Cage.", covers = true)))
 
   test("a defeated user cages nothing"):
     val b = raidingWithTheCage

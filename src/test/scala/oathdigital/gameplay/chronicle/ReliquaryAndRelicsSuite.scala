@@ -4,6 +4,7 @@ import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.{OathRules, WalkerDiceFixture}
 import oathdigital.gameplay.operations.TheGrandScepterCard
 import oathdigital.gameplay.powers.WalkerPowerCatalog
+import oathdigital.gameplay.powers.PlayerFacts
 import oathdigital.gameplay.powers.campaign.ObsidianCageCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
@@ -107,16 +108,21 @@ class ReliquaryAndRelicsSuite extends munit.FunSuite:
     val after = done(throneStarted(empire.relic(p1, TheGrandScepterCard.id)))
     assertEquals(relicsOf(after, p1), Vector(TheGrandScepterCard.id))
 
-  test("warbands on Obsidian Cage go back to their boards before the " +
-      "relics leave their holders"):
+  test("warbands on Obsidian Cage go back to their supply, not to a board, " +
+      "before the relics leave their holders"):
+    // The game has ended, so the Cage's warbands simply return (owner's
+    // ruling, 2026-11-03).
     val cage = ObsidianCageCard.id
     val table = empire.relic(p2, cage).boardWarbands(p2, 1)
       .warbandsOnCard(cage, p2, 2).warbandsOnCard(cage, p1, 1)
     val board = (ready: ReadyGame, player: PlayerId) =>
       ready.game.current.players.find(_.player == player).get.board.warbands
     val before = table.ready
+    val kinds = before.game.current.warbandsOnCards(cage).keys
+    val supply = (ready: ReadyGame) =>
+      kinds.toVector.map(PlayerFacts.banked(ready, _)).sum
     val after = done(throneStarted(table))
     assertEquals(after.game.current.warbandsOnCards, Map.empty)
-    assertEquals(board(after, p2), 1 + 2)
-    // p1, the Chancellor, takes back the purple warband.
-    assertEquals(board(after, p1), board(before, p1) + 1)
+    assertEquals(board(after, p2), board(before, p2))
+    assertEquals(board(after, p1), board(before, p1))
+    assertEquals(supply(after), supply(before) + 3)

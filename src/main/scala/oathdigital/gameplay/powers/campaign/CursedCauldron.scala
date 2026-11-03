@@ -28,8 +28,9 @@ object CursedCauldronCard extends Relic(RelicId("R02"), "Cursed Cauldron", value
   *    out of it;
   *  - warbands Billowing Fog or Traveling Doctor spare are never killed, since
   *    those fold first;
-  *  - warbands the enemy's Hospital will place on its site did not stay dead
-  *    (`Hospital.placeable`).
+  *  - warbands the enemy's Hospital will place on its site, or that
+  *    Obsidian Cage took from it, did not stay dead (`Hospital.placeable`,
+  *    `ObsidianCage.fromHospital`).
   *
   * When its user won, they gain that many warbands at the end of the losses,
   * up to their supply, and it says so: "{Blue} gained 2 warbands.". The gain
@@ -106,7 +107,8 @@ case object CursedCauldron extends BattlePlan:
   private def gain(use: PlanUse, user: PlayerId): Operation =
     BuildOps((ready, _) => PlayerFacts.forceKind(ready, user).map { kind =>
       val saved = enemy(use).flatMap(playerOf)
-        .fold(0)(Hospital.placeable(ready, _))
+        .fold(0)(Hospital.placeable(ready, _)) +
+        ObsidianCage.fromHospital(ready)
       val died = ready.game.current.rollPools.get(CursedCauldron.Died)
         .fold(0)(_.count) - saved
       if died > 0 then Vector[CoreOperation](Gain.Warbands(user, kind, died))

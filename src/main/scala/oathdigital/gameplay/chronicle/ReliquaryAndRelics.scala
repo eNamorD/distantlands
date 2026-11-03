@@ -2,7 +2,7 @@ package oathdigital.gameplay.chronicle
 
 import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.operations.TheGrandScepterCard
-import oathdigital.gameplay.powers.{PlayerFacts, PowerAnswers}
+import oathdigital.gameplay.powers.PowerAnswers
 import oathdigital.model._
 
 /** Stock Reliquary and Scatter Relics, the Throne's fourth and fifth steps
@@ -15,7 +15,8 @@ object ReliquaryAndRelics:
 
   /** The Throne holder adds every relic they hold but the Grand Scepter to
     * the Reliquary, facedown, then discards down to five of their choice.
-    * Before any relic leaves its holder, warbands on a card go home. */
+    * Before any relic leaves its holder, warbands on a card go back to
+    * their supply. */
   val stock: Vector[Operation] = Vector(
     BuildOps((state, _) => Right(returnFromCards(state)), required = true),
     Branch((state, _) =>
@@ -26,40 +27,15 @@ object ReliquaryAndRelics:
           PositionedLocation(Location.Reliquary)))), required = true),
       Branch((live, _) => discardDown(live.game.campaign.reliquary, holder))))))
 
-  /** Every warband standing on a card (Obsidian Cage) returned as the Cage's
-    * Action would (FAQ: a Cage returned to the relic deck returns its
-    * warbands), since the relics leave their holders here. An Exile's go to
-    * the player of that lineage; when that player has become a Citizen they
-    * return to their own bank and the Citizen gains as many purple ones,
-    * as far as the Imperial bank holds (FAQ: they become purple). Imperial
-    * warbands go to the Chancellor. A force with no board goes to its
-    * bank. Nothing is asked: each force has one board to go to. */
+  /** Every warband standing on a card (Obsidian Cage) back to its supply,
+    * since the relics leave their holders here and the game has ended
+    * (owner's ruling, 2026-11-03). Nothing is asked. */
   private def returnFromCards(ready: ReadyGame): Vector[CoreOperation] =
-    val current = ready.game.current
-    def board(player: PlayerId) = PositionedLocation(Location.PlayArea(player))
-    current.warbandsOnCards.toVector.flatMap((card, forces) =>
-      forces.toVector.filter(_._2 > 0).flatMap { (kind, n) =>
-        val from = PositionedLocation(Location.OnCard(card))
-        val home: Option[PlayerId] = kind match
-          case ForceKind.Exile(lineage) =>
-            current.players.find(_.lineage == lineage).map(_.player)
-          case ForceKind.Imperial => Imperials.chancellor(ready)
-          case ForceKind.Bandit => None
-        val bank = Move(Piece.Warbands(kind, n), from,
-          PositionedLocation(Location.WarbandBank(kind)))
-        home.flatMap(player => current.players.find(_.player == player))
-          .map(player => PlayerForceKind.of(ready, player) match
-            case Some(`kind`) => Vector[CoreOperation](Move(
-              Piece.Warbands(kind, n), from, board(player.player)))
-            case Some(other) =>
-              val purple = n min PlayerFacts.banked(ready, other)
-              Vector[CoreOperation](bank) ++ Option.when(purple > 0)(Move(
-                Piece.Warbands(other, purple),
-                PositionedLocation(Location.WarbandBank(other)),
-                board(player.player)))
-            case None => Vector[CoreOperation](bank))
-          .getOrElse(Vector(bank))
-      })
+    ready.game.current.warbandsOnCards.toVector.flatMap((card, forces) =>
+      forces.toVector.filter(_._2 > 0).map((kind, n) =>
+        Move(Piece.Warbands(kind, n),
+          PositionedLocation(Location.OnCard(card)),
+          PositionedLocation(Location.WarbandBank(kind)))))
 
   private def held(state: ReadyGame, player: PlayerId): Vector[RelicState] =
     state.game.current.players.find(_.player == player).toVector

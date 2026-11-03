@@ -325,8 +325,8 @@ decided as follows, for the owner to confirm:
 Obsidian Cage's battle plan (R18) is implemented in
 `gameplay/powers/campaign/ObsidianCage.scala`, under the owner's ruling of
 2026-11-03 (bandit warbands are always killed, so none reach the Cage).
-What the card, the FAQ and the ruling left open was decided as follows,
-for the owner to confirm:
+What the card, the FAQ and the ruling left open was decided as follows;
+the owner confirmed it on 2026-11-03, with the changes noted:
 
 - **Side.** Either side: the card's braid is printed red into blue, and
   "your enemy's force" reads for both. Its holder uses it from the faceup
@@ -338,9 +338,13 @@ for the owner to confirm:
   board (not the board it held before), a Raid defender's whole board, and
   a defeated attacker's whole board with its warbands at a queued origin.
 - **Timing.** In the losses window, after the losses, so a Conquest's
-  placement and a Raid's transfer follow it. Hospital and Sticky Fire fold
-  in the same window; their order with the Cage is the fold's, not pinned
-  by a test.
+  placement and a Raid's transfer follow it.
+- **Hospital (owner's ruling).** A warband the enemy's Hospital saves
+  still survives in the force, so it ends on the Cage, not on Hospital's
+  site: the Cage moves Hospital's count from the supply to the card and
+  clears it (`Hospital.divert`), so Hospital places nothing at the end.
+  Cursed Cauldron counts those warbands as not dead
+  (`ObsidianCage.fromHospital`). Both are pinned by tests.
 - **The location.** Warbands on a card are kept by card and force in
   `CurrentGameState.warbandsOnCards`, so they stay on the Cage wherever it
   goes and keep an Exile's colour. They count as out of their bank
@@ -360,13 +364,9 @@ for the owner to confirm:
   "Returned 2 warbands from Obsidian Cage to Blue." and "Took back 1
   warband from Obsidian Cage." for the user's own.
 - **The return (FAQ).** No in-game power returns a held relic to the relic
-  deck; the Chronicle's Throne does, so before the Reliquary is stocked
-  every warband on a card goes home as the Action would, with nothing
-  asked: an Exile's to that lineage's player, Imperial ones to the
-  Chancellor, a force with no board to its bank. An Exile who has become a
-  Citizen gets as many purple warbands as the Imperial bank holds, and the
-  Exile ones return to their bank (FAQ: they become purple); that path is
-  not pinned by a test.
+  deck; the Chronicle's Throne does, at the game's end, so before the
+  Reliquary is stocked every warband on a card goes back to its supply,
+  with nothing asked (owner's ruling: no board takes them).
 The roadmap's separate item "Record a bandit's applied battle plan as an
 event" covers how that use is journaled.
 

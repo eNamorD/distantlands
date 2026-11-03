@@ -85,6 +85,31 @@ class CursedCauldronSuite extends munit.FunSuite:
     assertEquals(Look(done.state).boardWarbands(b.actor), 3)
     assertEquals(said(CursedCauldron, done.events), Vector.empty)
 
+  test("a warband Obsidian Cage took from the enemy's Hospital did not die"):
+    val hospital = HospitalCard.id
+    val site = BrokenPeaksSite.id
+    val base = rivalRulesOriginAndHoldsOathkeeper(
+      board(warbands = 5, supply = 7))
+    val b = withRelic(withRelic(withSiteCard(
+      on(base)(_.warbandsAt(site, base.rival, 2)), site, hospital), relic),
+      ObsidianCageCard)
+    val done = commit(rules(winningDice), b, 4)
+      .pick(b.actor, CampaignIds.attackerPlan, ref)
+      .pick(b.actor, CampaignIds.attackerPlan,
+        DecisionOptionRef.Relic(ObsidianCageCard.id))
+      .pick(b.rival, CampaignIds.defenderPlan,
+        DecisionOptionRef.Denizen(hospital))
+      .finishPlanWindows
+    // Two died at the origin: one returned to the rival's board and the
+    // other Hospital saved; the Cage takes both, so none stayed dead.
+    val rival: ForceKind = ForceKind.Exile(b.player(b.rival).lineage)
+    assertEquals(done.winner, Some(true))
+    assertEquals(ready(done.state).game.current.warbandsOnCards
+      .get(ObsidianCageCard.id), Some(Map(rival -> 2)))
+    assertEquals(ready(done.state).game.current.map.sites(site).forces,
+      SiteForces.Occupied(rival, 2))
+    assertEquals(said(CursedCauldron, done.events), Vector.empty)
+
   test("a warband the enemy's Hospital places on its site did not die"):
     val hospital = HospitalCard.id
     // Broken Peaks, the first site after the origin, which nobody else rules.

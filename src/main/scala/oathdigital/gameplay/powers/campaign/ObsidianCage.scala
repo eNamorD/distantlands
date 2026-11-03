@@ -28,8 +28,10 @@ object ObsidianCageCard extends Relic(RelicId("R18"), "Obsidian Cage", value = 7
   * the Cage, read as Shield Wall and Sticky Fire read the force they kill
   * (`KillWholeForce`): a Conquest defender's warbands the victory returned
   * to its board, a Raid defender's whole board, an attacker's whole board
-  * and its warbands at a queued origin. The move runs in the losses window,
-  * after the losses, so a Conquest's placement follows it. The warbands
+  * and its warbands at a queued origin, with the warbands the enemy's
+  * Hospital saved, which survive too (owner's ruling, 2026-11-03). The
+  * move runs in the losses window, after the losses, so a Conquest's
+  * placement follows it. The warbands
   * keep their force on the card (`CurrentGameState.warbandsOnCards`) and
   * count as out of their bank.
   *
@@ -88,7 +90,8 @@ case object ObsidianCage extends BattlePlan:
       case CampaignDefender.Player(player) => player }
     case CampaignPlanSide.Defender => Some(result.attacker)
 
-  /** The enemy's force, as the losses left it, moved onto the Cage. */
+  /** The enemy's force, as the losses left it, moved onto the Cage, with
+    * the warbands the enemy's Hospital saved. */
   private def cage(ready: ReadyGame, side: CampaignPlanSide,
       result: CampaignResult, returns: KillWholeForce.Returns)
       : Either[OathViolation, Vector[CoreOperation]] =
@@ -97,9 +100,17 @@ case object ObsidianCage extends BattlePlan:
         KillWholeForce.defenderForce(ready, result, returns)
       case CampaignPlanSide.Defender =>
         KillWholeForce.attackerForce(ready, result)
+    // The enemy's warbands their Hospital saved survive too, so they join
+    // the force on the Cage rather than reach Hospital's site.
+    val fromHospital = enemyOf(side, result).toVector.flatMap(player =>
+      Hospital.divert(ready, player, Location.OnCard(relic)))
+    val diverted = fromHospital.collect {
+      case Move(Piece.Warbands(_, count), _, _, _, _) => count }.sum
     force.map(_.map(stack => Move(Piece.Warbands(stack.kind, stack.count),
       PositionedLocation(stack.at),
-      PositionedLocation(Location.OnCard(relic)))))
+      PositionedLocation(Location.OnCard(relic))): CoreOperation) ++
+      fromHospital ++ Option.when(diverted > 0)(
+        ModifyDicePool(FromHospital, diverted)).toVector)
 
   /** How many warbands the step put on the Cage, whose they are named
     * unless they are the actor's. */
@@ -112,6 +123,15 @@ case object ObsidianCage extends BattlePlan:
     val card = PowerSourceRef.Card(relic)
     if enemy == actor then cagedOwn(card, NoteArg.Number(moved))
     else caged(card, NoteArg.Number(moved), NoteArg.Player(enemy))
+
+  /** How many warbands the Cage took from its enemy's Hospital, which
+    * Cursed Cauldron must not count as dead. The walker clears it with
+    * every pool when the Campaign ends. */
+  val FromHospital: PoolKey = PoolKey("campaign.obsidian-cage.from-hospital")
+
+  /** The count of `FromHospital`. */
+  def fromHospital(ready: ReadyGame): Int =
+    ready.game.current.rollPools.get(FromHospital).fold(0)(_.count)
 
   private def onCage(ready: ReadyGame): Int =
     ready.game.current.warbandsOnCards.get(relic).fold(0)(_.values.sum)
