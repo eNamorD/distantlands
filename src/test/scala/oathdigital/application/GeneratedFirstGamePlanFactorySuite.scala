@@ -81,3 +81,31 @@ class GeneratedFirstGamePlanFactorySuite extends munit.FunSuite:
     assertEquals(plan.orders.relicOrder.sortBy(_.value),
       saved.relicDeck.sortBy(_.value))
     assertEquals(plan.chronicle, saved)
+
+  private def lineage(id: String, role: Role) =
+    LineageState(LineageId(id), None, role, Vector.empty, Vector.empty)
+
+  private def seatedFirst(lineages: Vector[LineageState],
+      random: oathdigital.application.ChronicleRandomPort) =
+    accepted(new GeneratedFirstGamePlanFactory(catalog, random).build(config,
+      ChronicleChoice.Saved(FirstGameSetupFixture.chronicle.copy(
+        lineages = lineages)))).resolvedConfig.firstPlayer
+
+  test("the seated Chancellor goes first in a later game"):
+    assertEquals(seatedFirst(Vector(lineage("l1", Role.Citizen),
+      lineage("l2", Role.Chancellor)), ChronicleShuffles.unshuffled),
+      PlayerId("p2"))
+
+  test("with the Chancellor's lineage absent, a random seated Citizen goes " +
+      "first"):
+    // l9 is the Chancellor and not seated; l1 and l3 are Citizens. The
+    // seats stay in order, and the port's pick is the head of its shuffle
+    // of the seated Citizens.
+    val citizens = Vector(lineage("l9", Role.Chancellor),
+      lineage("l1", Role.Citizen), lineage("l3", Role.Citizen))
+    val reversingCitizens = new oathdigital.application.ChronicleRandomPort:
+      def shuffle[A](values: Vector[A]): Vector[A] =
+        if values.size == 2 then values.reverse else values
+    assertEquals(seatedFirst(citizens, ChronicleShuffles.unshuffled),
+      PlayerId("p1"))
+    assertEquals(seatedFirst(citizens, reversingCitizens), PlayerId("p3"))
