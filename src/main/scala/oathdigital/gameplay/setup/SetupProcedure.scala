@@ -15,7 +15,8 @@ import oathdigital.model.OathViolation._
  * Sequence(                                              // no window
  *   Branch(                                              // a later game's
  *     Decide(reliquary-pick, chancellor),                // Chancellor, when the
- *     BuildOps(keep the relic facedown))                 // Reliquary holds one
+ *     BuildOps(keep the relic facedown),                 // Reliquary holds one
+ *     Note(took a relic))
  *   Sequence(                                            // per participant
  *     Decide(pawn-placement, participant),               // legal sites only
  *     BuildOps(place the pawn)                           // window = SetupPawnPlaced

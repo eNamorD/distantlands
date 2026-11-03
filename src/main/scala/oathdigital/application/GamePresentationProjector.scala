@@ -267,7 +267,9 @@ private[application] final class GamePresentationProjector(
     *    the last three, the facedown stack (CR p. 38).
     *  - A lineage's starting advisers are named only to the player seated
     *    with that lineage.
-    *  - Everything else -- other decks, the reliquary, set-aside relics, the
+    *  - The Reliquary is named only to the Chancellor, and only in Setup,
+    *    where they pick one of its relics (Empire ruling R29).
+    *  - Everything else -- other decks, set-aside relics, the
     *    dispossessed pile, suited reserves, atlas sites -- is never
     *    identified. A card in a deck has no orientation at all, so it must be
     *    rejected by its container rather than by being facedown.

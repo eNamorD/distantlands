@@ -54,7 +54,7 @@ class ChronicleEndToEndSuite extends munit.FunSuite:
         rules.evolve(_, event)))), done.state)
 
   test("game 2 starts from the Chronicle game 1 journals, with the Empire, " +
-      "and Setup runs to the Chancellor's Wake"):
+      "and Setup runs to the Chancellor's first turn"):
     // p1 was crowned, and plays l1 again.
     val orders = LaterGameFixture.orders(record, p1)
     val ready = accepted(GameStartRules.evolve(catalog, record, orders))
@@ -63,12 +63,15 @@ class ChronicleEndToEndSuite extends munit.FunSuite:
       record.world.map(_.site))
     // Every choice takes the first option offered: the Reliquary pick if
     // the record has one, a legal pawn site, an adviser, no reveal.
+    // An Exile won game 1, so the broken Empire discarded the Reliquary and
+    // Setup asks for no pick.
+    assert(record.reliquary.isEmpty)
     val woken = Situation.wake(Situation.rules(catalog), record, orders)
+    // A Wake with nothing to decide has already ended, in Act.
     assertEquals(woken.ready.game.current.turn.activePlayer, p1)
-    assertNotEquals(woken.ready.game.current.turn.phase, Phase.Setup)
+    assert(Set(Phase.Wake, Phase.Act)(woken.ready.game.current.turn.phase))
+    assertEquals(woken.ready.game.current.tracks.round, 1)
     assert(woken.ready.game.current.players.forall(_.pawnSite.nonEmpty))
-    assertEquals(woken.ready.game.campaign.reliquary.size,
-      math.max(0, record.reliquary.size - 1))
 
   test("game start refuses a crowned Chancellor whose Empire has no site"):
     val withoutEmpire = record.copy(atlasBox = record.world ++ record.atlasBox,
