@@ -198,6 +198,23 @@ class ModifierChoiceSuite extends munit.FunSuite:
       DecisionOption.Warned(card(gamma),
         OptionReason.Written("Wasted with Wrestlers"))))
 
+  test("a modifier's option is judged in the procedure the walk starts, as " +
+      "its offer is"):
+    // `ModifierOffers.offerable` judges a modifier in its procedure; the
+    // decision's option judged it in none on the start command, so a
+    // modifier usable only in a Search went unasked, and the start walked
+    // straight past the modifier decision.
+    val on = tree()
+    val walked = powers(Stand("a", alpha, reason = ctx =>
+      Option.unless(ctx.procedure.contains(ActionRef.Search))(
+        OfferReason.Unavailable("Only in a Search"))))
+    val started = accepted(ProcedureWalker.advance(table(), on, None, walked,
+      procedure = Some(ActionRef.Search)))
+    val inSearch = table().updateCurrent(
+      _.copy(walkerProcedure = Some(ActionRef.Search)))
+    val at = parked(inSearch, PendingTree(Vector.empty, Vector.empty), started)
+    assertEquals(decide(at, on, walked).decisionId, decisionId)
+
   test("a picked modifier's option restriction acts on the options left"):
     val forbids = OptionRestriction(
       (_, ref) => Option.when(ref == DecisionOptionRef.Denizen(beta))(

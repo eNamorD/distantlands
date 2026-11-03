@@ -67,9 +67,10 @@ private[gameplay] trait OathRulesWalker:
       powers = walkerPowers
       tree <- buildWalker(procedure, ready, actor, startArgs,
         starting = true)
-      _ <- checkRestrictions(tree, powers, ready, actor)
+      _ <- checkRestrictions(tree, powers, ready, actor,
+        procedure = Some(procedure))
       outcome <- walkerCall(ProcedureWalker.advance(ready, tree, None,
-        powers, walkerDice))
+        powers, walkerDice, procedure = Some(procedure)))
       _ <- requirePlayableOption(procedure, ready, tree, outcome, powers)
       transition <- walkerTransition(state, procedure, tree,
         outcome, powers, startArgs,
@@ -110,9 +111,10 @@ private[gameplay] trait OathRulesWalker:
         for
           tree <- buildWalker(procedure, ready, actor, Vector.empty,
             starting = true)
-          _ <- checkRestrictions(tree, powers, ready, actor)
+          _ <- checkRestrictions(tree, powers, ready, actor,
+            procedure = Some(procedure))
           outcome <- walkerCall(ProcedureWalker.advance(ready, tree, None, powers,
-            walkerDice))
+            walkerDice, procedure = Some(procedure)))
           started <- walkerTransition(transition.state, procedure, tree,
             outcome, powers, Vector.empty, Vector.empty)
         yield started.copy(events = transition.events ++ started.events)
@@ -156,9 +158,10 @@ private[gameplay] trait OathRulesWalker:
     */
   private def checkRestrictions(tree: Operation, powers: WalkerPowers,
       ready: ReadyGame, actor: PlayerId,
-      answered: Vector[Answered] = Vector.empty): Either[OathViolation, Unit] =
-    ProcedureWalker.restrictionViolations(tree, powers, ready, actor, answered)
-      .headOption.toLeft(())
+      answered: Vector[Answered] = Vector.empty,
+      procedure: Option[ProcedureRef] = None): Either[OathViolation, Unit] =
+    ProcedureWalker.restrictionViolations(tree, powers, ready, actor, answered,
+      procedure).headOption.toLeft(())
 
   /** Resolves the current parked Decide. Procedure identity is reconstructed
     * from the durable walkerProcedure fact, never supplied by the client.
@@ -403,7 +406,10 @@ private[gameplay] trait OathRulesWalker:
           case _ => false
         } then Left(InvalidEventOrder(s"${procedure.key} runs operations before " +
           "its first decision, so its start cannot be previewed"))
-        else WalkerSimulation.previewParked(ready, tree, pending, powers)
+        // Previewed as the resume it stands for, whose state records the
+        // procedure the start's park writes.
+        else WalkerSimulation.previewParked(ready.updateCurrent(_.copy(
+            walkerProcedure = Some(procedure))), tree, pending, powers)
           .flatMap(options => Either.cond(options.exists(_.outcome.isRight), (),
             NoPlayableOption(procedure.key)))
       case _ => Right(())

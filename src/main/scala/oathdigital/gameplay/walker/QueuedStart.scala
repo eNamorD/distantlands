@@ -52,7 +52,8 @@ object QueuedStart:
     for
       tree <- WalkerProcedureRegistry.build(entry.procedure, catalog, state,
         entry.actor, entry.startArgs, phasePowers, walkerPowers = powers)
-      past <- WalkerSimulation.started(tree, state, powers)
+      past <- WalkerSimulation.started(tree, state, powers,
+        Some(entry.procedure))
       cost <- costOf(entry, tree, past, powers)
     yield cost
 

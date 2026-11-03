@@ -66,7 +66,7 @@ final class ModifierChoice(val actor: PlayerId, modifierWindow: PowerWindow,
   yield
     val ctx = PowerCtx(pass.powers.catalog, pass.state, actor, power.source,
       modifierWindow,
-      Vector.empty, this, None, pass.answered)
+      Vector.empty, this, pass.procedure, pass.answered)
     val refusal = refusedUse(pass, power, ctx)
     // A refused pick is priced as its grant would leave it.
     val judging = pass.powers.quiet.without(refusal.fold(Set.empty)(_._1))
@@ -74,7 +74,7 @@ final class ModifierChoice(val actor: PlayerId, modifierWindow: PowerWindow,
       case Some(OfferReason.Unavailable(reason)) => unavailable(shown, reason)
       case judged =>
         val priced = WalkerSimulation.applies(paying(power), pass.state,
-            judging) match
+            judging, pass.procedure) match
           case Left(_) => unavailable(shown, shortfall(pass.state,
             power.selectionPayments(pass.state, actor)))
           case Right(_) if !power.applicable(ctx) =>
@@ -162,7 +162,7 @@ final class ModifierChoice(val actor: PlayerId, modifierWindow: PowerWindow,
         pass.answered) match
       case Right(previewed) => previewed.exists(_.outcome.isRight)
       case Left(_) => WalkerSimulation.refusal(rest, pass.state, powers,
-        pass.answered).isEmpty
+        pass.answered, pass.procedure).isEmpty
     if opens then None
     else Some(explained(pass.state, powers, pass.answered)
       .getOrElse(ModifierChoice.cannotStart))
@@ -191,7 +191,8 @@ object ModifierChoice:
     * so far, whether the walk resumes inside the pass, and the powers it
     * walks with, picks included. */
   final case class Pass(state: ReadyGame, answered: Vector[Answered],
-      resuming: Boolean, powers: WalkerPowers)
+      resuming: Boolean, powers: WalkerPowers,
+      procedure: Option[ProcedureRef])
 
   val heading: String = "Choose modifiers, or start"
   val cannotStart: String = "Cannot start now"

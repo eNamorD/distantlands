@@ -1,7 +1,7 @@
 package oathdigital.gameplay.walker
 
 import oathdigital.gameplay.operations.OperationResolution
-import oathdigital.model.{Answered, AutomaticUse, Branch, Burn, BuildOps, ConsentKey, ConsentTurn, CoreOperation, Decide, DecisionAnswer, DecisionOptionRef, DieFace, EndWalk, Note, NoteStates, OathState, OathViolation, Operation, OptionReason, PayCost, PendingTree, PlayerId, PoolKey, PowerId, PowerWindow, LeafOperation, ReadyGame, Repeat, Reroll, Roll, RollMode, Shuffle, TakeDeferred, WalkerEvent}
+import oathdigital.model.{Answered, AutomaticUse, Branch, Burn, BuildOps, ConsentKey, ConsentTurn, CoreOperation, Decide, DecisionAnswer, DecisionOptionRef, DieFace, EndWalk, Note, NoteStates, OathState, OathViolation, Operation, OptionReason, PayCost, PendingTree, PlayerId, PoolKey, PowerId, PowerWindow, LeafOperation, ProcedureRef, ReadyGame, Repeat, Reroll, Roll, RollMode, Shuffle, TakeDeferred, WalkerEvent}
 
 /** Auto-walk engine over an [[oathdigital.model.Operation]] action tree (Tasks 3-5).
   *
@@ -72,14 +72,16 @@ object ProcedureWalker:
       : Either[OathViolation, Vector[ReadyGame]] =
     WalkerReplay.applyBatch(state, ops)
 
-
   /** `seed` are the answers a fresh walk starts with, for a dry run of the
     * rest of an action that must see what the player answered before it. A
-    * resumed walk ignores it and reads `pending`. */
+    * resumed walk ignores it and reads `pending`. `procedure` is the
+    * procedure a start walks, which the state does not record until the
+    * walk parks; a walk inside a procedure reads the state's. */
   def advance(state: ReadyGame, action: Operation,
       pending: Option[PendingTree], powers: WalkerPowers,
       dice: WalkerDice = WalkerDice.unavailable,
-      seed: Vector[Answered] = Vector.empty)
+      seed: Vector[Answered] = Vector.empty,
+      procedure: Option[ProcedureRef] = None)
       : Either[OathViolation, WalkerOutcome] =
     val actor = state.game.current.walkActor
     val answered = pending.fold(seed)(_.answered)
@@ -90,7 +92,7 @@ object ProcedureWalker:
     val base = strip(state)
     walk(action, WalkCtx(base, Vector.empty, actor, answered,
       powers.withAnswers(answered), dice,
-      state.game.current.walkerProcedure, action),
+      procedure.orElse(state.game.current.walkerProcedure), action),
       Vector.empty, cursor, PlainResume, WalkerHooks.none).flatMap(toOutcome)
 
   /** Resumes the `Roll` park recorded by `advance` (Task 4 roll contract).
@@ -155,9 +157,10 @@ object ProcedureWalker:
     */
   def restrictionViolations(tree: Operation, powers: WalkerPowers,
       state: ReadyGame, actor: PlayerId,
-      answered: Vector[oathdigital.model.Answered] = Vector.empty)
+      answered: Vector[oathdigital.model.Answered] = Vector.empty,
+      procedure: Option[ProcedureRef] = None)
       : Vector[OathViolation] = WalkerPowerGather.restrictionViolations(tree,
-    powers, state, actor, answered)
+    powers, state, actor, answered, procedure)
 
   /** When `pending` parks on a `Roll` node of `action`, reports the node's
     * `pool` and the face count that node requires (read from

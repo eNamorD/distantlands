@@ -92,7 +92,7 @@ private[walker] object WalkerPowerGather:
                     withheld = refused(byId(powerId))))(_ => plan)))
               }, gathered.optionRestrictions, ctxFor, byId)
             (folded ++ host.expand(offered, OfferHost.Pass(state, answered,
-              resuming, WalkerSimulation.applies(_, state, powers))),
+              resuming, WalkerSimulation.applies(_, state, powers, procedure))),
               gathered.order)
           case host: RerollHost =>
             val offered = gathered.rerolls.flatMap { case (powerId, reroll) =>
@@ -101,11 +101,11 @@ private[walker] object WalkerPowerGather:
                   withheld = refused(byId(powerId))))(_ => offer)))
             }
             (folded ++ host.expand(offered, OfferHost.Pass(state, answered,
-              resuming, WalkerSimulation.applies(_, state, powers))),
+              resuming, WalkerSimulation.applies(_, state, powers, procedure))),
               gathered.order)
           case choice: ModifierChoice =>
             (restrictOptions(folded ++ choice.expand(ModifierChoice.Pass(
-              state, answered, resuming, powers)),
+              state, answered, resuming, powers, procedure)),
               gathered.optionRestrictions, ctxFor, byId), gathered.order)
           case _ => (folded, gathered.order)
 
@@ -294,15 +294,18 @@ private[walker] object WalkerPowerGather:
     */
   def restrictionViolations(tree: Operation, powers: WalkerPowers,
       state: ReadyGame, actor: PlayerId,
-      answered: Vector[Answered] = Vector.empty): Vector[OathViolation] =
+      answered: Vector[Answered] = Vector.empty,
+      procedure: Option[ProcedureRef] = None): Vector[OathViolation] =
     val (rejected, emptied) = attributed(tree, powers.withAnswers(answered),
-      state, actor, answered)
+      state, actor, answered,
+      procedure.orElse(state.game.current.walkerProcedure))
     rejected.map(_.violation) ++ emptied
 
   /** [[restrictionViolations]], keeping who rejected: the restrictions'
     * violations with their power, and the emptied decisions. */
   private def attributed(tree: Operation, powers: WalkerPowers,
-      state: ReadyGame, actor: PlayerId, answered: Vector[Answered])
+      state: ReadyGame, actor: PlayerId, answered: Vector[Answered],
+      procedure: Option[ProcedureRef])
       : (Vector[Attributed], Vector[OathViolation]) =
     val byId: Map[PowerId, ContributingPower] =
       powers.powers.map(power => power.id -> power).toMap
@@ -312,7 +315,7 @@ private[walker] object WalkerPowerGather:
     def ctxFor(window: PowerWindow, path: Vector[String], operation: Operation)
         : ContributingPower => PowerCtx =
       power => PowerCtx(powers.catalog, state, actor, power.source, window,
-        path, operation, state.game.current.walkerProcedure, answered)
+        path, operation, procedure, answered)
     def windowsIn(node: Operation, path: Vector[String])
         : Vector[(PowerWindow, Vector[String], Operation)] =
       val own = node.window.map(w => Vector((w, path, node))).getOrElse(Vector.empty)
@@ -327,13 +330,13 @@ private[walker] object WalkerPowerGather:
         case branch: Branch => descend(applyWindow(branch.window, branch,
           state, actor, powers, path, branch.select(state,
             PendingTree(at = path, answered = answered)),
-          state.game.current.walkerProcedure, answered)._1)
+          procedure, answered)._1)
         case use: AutomaticUse => descend(AutomaticUses.children(use, state,
           PendingTree(at = path, answered = answered), powers,
           cursor = None))
         case _ => descend(applyWindow(node.window, node, state,
           actor, powers, path, node.children,
-          state.game.current.walkerProcedure, answered)._1)
+          procedure, answered)._1)
       own ++ nested
     val windows = windowsIn(tree, Vector.empty)
     val rejected = windows.flatMap:
@@ -398,7 +401,7 @@ private[walker] object WalkerPowerGather:
       val seen = state.updateCurrent(_.copy(walkerPending = None,
         walkerProcedure = procedure))
       val found = attributed(root, powers.quiet, seen, actor,
-        answered)._1
+        answered, procedure)._1
       val waivable = found.map(breach => for
         waiver <- breach.restriction.waiver
         granter <- waiver.granter(breach.ctx.state)
@@ -418,7 +421,7 @@ private[walker] object WalkerPowerGather:
     if !powers.hasRestrictions then Vector.empty
     else restrictionViolations(root, powers.quiet, state.updateCurrent(
       _.copy(walkerPending = None, walkerProcedure = procedure)),
-      actor, answered)
+      actor, answered, procedure)
 
   /** Why each option `narrowed` no longer offers is hidden, read from the
     * restrictions whose violation answering it would add. It is askable
@@ -442,7 +445,7 @@ private[walker] object WalkerPowerGather:
       val seen = state.updateCurrent(_.copy(walkerPending = None,
         walkerProcedure = procedure))
       def found(answers: Vector[Answered]): Vector[Attributed] =
-        attributed(root, quiet, seen, actor, answers)._1
+        attributed(root, quiet, seen, actor, answers, procedure)._1
       val baseline = found(answered).map(_.violation).toSet
       hidden.flatMap { ref =>
         val answer = decide.query match

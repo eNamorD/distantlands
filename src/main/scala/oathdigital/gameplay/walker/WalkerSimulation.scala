@@ -4,7 +4,7 @@ import oathdigital.gameplay.powerresolver.ModifierPicks
 import oathdigital.model.{Answered, ConsentKey, ConsentTurn, CoreOperation,
   Decide, DecisionAnswer, DecisionOption, DecisionOptionRef, DecisionQuery,
   OathEvent, OathState, OathViolation, Operation, OptionReason, PendingTree,
-  PowerWindow, ReadyGame}
+  PowerWindow, ProcedureRef, ReadyGame}
 
 import scala.collection.mutable
 
@@ -54,14 +54,15 @@ object WalkerSimulation:
   final case class PreviewedOption(option: DecisionOption,
       outcome: Either[OathViolation, PreviewOutcome])
 
-  def run(tree: Operation, state: ReadyGame,
-      powers: WalkerPowers): Either[OathViolation, Vector[CoreOperation]] =
+  def run(tree: Operation, state: ReadyGame, powers: WalkerPowers,
+      procedure: Option[ProcedureRef] = None)
+      : Either[OathViolation, Vector[CoreOperation]] =
     guarded:
       ProcedureWalker.restrictionViolations(tree, powers.previewed, state,
-        state.game.current.walkActor)
+        state.game.current.walkActor, procedure = procedure)
         .headOption.toLeft(())
         .flatMap(_ => ProcedureWalker.advance(state, tree, None,
-          powers.previewed, WalkerDice.placeholder))
+          powers.previewed, WalkerDice.placeholder, procedure = procedure))
         .flatMap:
           case WalkerOutcome.Finished(_, events) =>
             Right(recordedOperations(events))
@@ -75,10 +76,11 @@ object WalkerSimulation:
     * decision is accepted when everything before the decision ran, because a
     * decision is not a cost. The state is not changed.
     */
-  def applies(tree: Operation, state: ReadyGame,
-      powers: WalkerPowers): Either[OathViolation, Vector[CoreOperation]] =
+  def applies(tree: Operation, state: ReadyGame, powers: WalkerPowers,
+      procedure: Option[ProcedureRef] = None)
+      : Either[OathViolation, Vector[CoreOperation]] =
     guarded(ProcedureWalker.advance(state, tree, None, powers.previewed,
-      WalkerDice.placeholder).map {
+      WalkerDice.placeholder, procedure = procedure).map {
         case WalkerOutcome.Finished(_, events) => recordedOperations(events)
         case WalkerOutcome.Parked(_, events) => recordedOperations(events)
       })
@@ -88,13 +90,14 @@ object WalkerSimulation:
     * that parks and one that finishes both start. `answered` are the answers
     * the walk starts with (`ProcedureWalker.advance`'s `seed`). */
   def refusal(tree: Operation, state: ReadyGame, powers: WalkerPowers,
-      answered: Vector[Answered] = Vector.empty): Option[OathViolation] =
+      answered: Vector[Answered] = Vector.empty,
+      procedure: Option[ProcedureRef] = None): Option[OathViolation] =
     guarded {
       ProcedureWalker.restrictionViolations(tree, powers.previewed, state,
-        state.game.current.walkActor, answered)
+        state.game.current.walkActor, answered, procedure)
         .headOption.toLeft(())
         .flatMap(_ => ProcedureWalker.advance(state, tree, None,
-          powers.previewed, WalkerDice.placeholder, answered))
+          powers.previewed, WalkerDice.placeholder, answered, procedure))
     }.left.toOption
 
   /** Where a start's walk is once it is past its modifier decision: the
@@ -112,14 +115,15 @@ object WalkerSimulation:
     * answer the walk can go on from. `Left` is the start's own refusal, or
     * `StartUnavailable` with the reason "Start" shows before any pick.
     * Nothing is persisted. */
-  def started(tree: Operation, state: ReadyGame, powers: WalkerPowers)
+  def started(tree: Operation, state: ReadyGame, powers: WalkerPowers,
+      procedure: Option[ProcedureRef] = None)
       : Either[OathViolation, Started] = guarded:
     val tried = mutable.Set.empty[Set[DecisionOptionRef]]
     ProcedureWalker.restrictionViolations(tree, powers.previewed, state,
-      state.game.current.walkActor)
+      state.game.current.walkActor, procedure = procedure)
       .headOption.toLeft(())
       .flatMap(_ => ProcedureWalker.advance(state, tree, None,
-        powers.previewed, WalkerDice.placeholder))
+        powers.previewed, WalkerDice.placeholder, procedure = procedure))
       .flatMap(reached(state, tree, None, Vector.empty, powers,
         picked = false, tried))
 
