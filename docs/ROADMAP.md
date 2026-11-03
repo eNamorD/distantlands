@@ -11,14 +11,6 @@ specs.
 
 **Phase - Cleanup tasks** holds what finished phases left behind.
 
-## Next
-
-Work toward a playable all-Exile alpha, then finish the Chronicle and
-campaign-continuity rules. The Empire rules are in place
-([Empire phase design](superpowers/specs/2026-10-29-empire-phase-design.md));
-their remaining cards and edge cases are listed with the phases and deferred
-items below.
-
 ### Phase - Cleanup tasks
 
 Left behind by earlier phases:
