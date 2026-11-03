@@ -121,6 +121,20 @@ case object Hospital extends BattlePlan:
   yield Hospital.saved(ready)
     .min(ready.banks.warbandSupply.getOrElse(kind, 0))).getOrElse(0)
 
+  /** The warbands Hospital would place, moved to `to` instead and taken
+    * out of its count, so its placement at the end places none: Obsidian
+    * Cage takes them with the rest of its enemy's surviving force (owner's
+    * ruling, 2026-11-03). */
+  def divert(ready: ReadyGame, user: PlayerId, to: Location)
+      : Vector[CoreOperation] =
+    val count = placeable(ready, user)
+    PlayerFacts.forceKind(ready, user).toOption.toVector.flatMap(kind =>
+      Option.when(count > 0)(Move(Piece.Warbands(kind, count),
+        PositionedLocation(Location.WarbandBank(kind)),
+        PositionedLocation(to))).toVector) ++
+      Option.when(saved(ready) > 0)(
+        ModifyDicePool(Saved, -saved(ready))).toVector
+
   /** The saved warbands, from the user's supply to Hospital's site, when the
     * user rules it now. */
   private def placement(ready: ReadyGame, user: PlayerId)
