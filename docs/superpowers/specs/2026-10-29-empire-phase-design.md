@@ -1,6 +1,6 @@
 # Empire phase design
 
-Status: designed, 2026-10-29. Slice 1a implemented, 2026-10-29. Slice 1b-i implemented, 2026-10-30. Slice 1b-ii implemented, 2026-11-01. Slice 2 implemented, 2026-11-01. Slice 3a implemented, 2026-11-01. Slice 3b implemented, 2026-11-01. Slice 4 implemented, 2026-11-02.
+Status: designed, 2026-10-29. Slice 1a implemented, 2026-10-29. Slice 1b-i implemented, 2026-10-30. Slice 1b-ii implemented, 2026-11-01. Slice 2 implemented, 2026-11-01. Slice 3a implemented, 2026-11-01. Slice 3b implemented, 2026-11-01. Slice 4 implemented, 2026-11-02. Simultaneous Throne answers implemented, 2026-11-03 ([simultaneous decisions design](2026-11-02-simultaneous-decisions-design.md)).
 
 Roadmap item: **Phase - Empire**. Chancellor and Citizen roles in play,
 Imperial warbands, the Imperial Campaign, the Stable Regime and Successor
@@ -380,7 +380,7 @@ created, and the rules under
   same Chronicle (ruling 5); each accepts or declines. Accepting changes the
   role and replaces the player's warbands on sites with purple warbands.
   See Chronicle rulings 20-22: a broken Empire's sites pass to the former
-  Chancellor, offers go to seated Exiles in seat order, and the Throne
+  Chancellor, offers go to seated Exiles, who answer at once, and the Throne
   assumes unlimited purple warbands.
   The other Citizenship steps do not apply in the Chronicle, since boards
   reset at the next setup.
