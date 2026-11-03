@@ -264,18 +264,14 @@ one.
   builders that still lack them, as playtests find options people wonder
   about. Left by the
   [board decisions design](superpowers/specs/2026-10-03-board-decisions-design.md).
-- [ ] **Walker follow-ups.** Audit the first-game rules the walker actions
-  dropped as gates (exile-only roles, unaltered Foundations, inactive legacies).
-  Add the remaining attacker, defender and bandit battle plan families,
-  non-deterministic loss choices, and the additional Raid, victory, defeat and
-  At End handlers that the Campaign timing windows already expose.
-  At an action's start, window folds and the restriction look-ahead
-  see no walker procedure (`PowerCtx.procedure` is `None`), while every later
-  command sees it. Make them agree before a Restriction reads the procedure.
-  `WalkerDecisionProjector.waiting` reads only a parked decision's heading and
-  Negotiation query, which the look-ahead never narrows, so its second
-  `parkedDecide` could skip the look-ahead like the other identity-only callers.
-  Audited in the [walker follow-ups audit](testing/audits/walker-follow-ups-audit.md).
+- [ ] **The last battle plans: Glamor, Relic Hunter, Obsidian Cage.** Every
+  other New Foundations battle plan is implemented. Glamor and Relic Hunter
+  add a target kind (an enemy's secrets, facedown site relics) to the Raid
+  and Conquest target decisions and a take on victory; Obsidian Cage needs
+  a warband location on a card. Each is one slice, after the owner's
+  rulings on its timing and takes. See the
+  [walker follow-ups audit](testing/audits/walker-follow-ups-audit.md),
+  section 2.
 - [ ] **Mercenaries' player-chosen sign.** Mercenaries adds attack dice
   when its user attacks and removes defense dice from the attacker when it
   defends. The card lets the player choose the sign, and the plan fixes it by side.
