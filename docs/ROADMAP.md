@@ -190,9 +190,9 @@ Foundation mutation, Legacy activation and scoring, and era scoring.
 - [ ] **Foundations.** Fills the Beacon's empty Shape Foundation window.
   Game start also sets every foundation to its normal face and ignores the
   Chronicle's stored faces.
-  After Empire slice 4, game start also refuses a later game with no
-  Chancellor and no Citizen seated, which needs Foundation I's altered face,
-  Wide Horizons, and its Explore action.
+  Game start also refuses a later game with no Chancellor and no Citizen
+  seated, which needs Foundation I's altered face, Wide Horizons, and its
+  Explore action.
 - [ ] **The Grand Council and Festival banner faces.** Legacies that set
   Foundation V or VI turn the banners to these faces. Their ids are in
   `RuleSourceIndex`, and the faces have no behaviour.
@@ -215,10 +215,6 @@ Each slice gets its own plan, in this order.
 - [ ] **Simultaneous Throne answers.** Build the walker's Simultaneous node
   (negotiation walker design, "Simultaneous decisions") so the Exiles
   offered Citizenship at the Throne answer at once instead of in seat order.
-- [ ] **Slice 4, Later-game setup.** Start game 2 from the Chronicle that the
-  Chronicle Phase journals (CR pp. 8-13). Game start refuses a non-empty
-  world, any Imperial role and a seated lineage's starting advisers until it
-  exists.
 
 ### Phase - Settings Feature
 
@@ -249,9 +245,8 @@ one.
 - [ ] **Simultaneous setup effects.** The Chancellor or first player should
   resolve simultaneous setup effects; site order is used until then. Still to
   add: player choices earlier in setup once foundations and legacies exist,
-  such as the Chancellor choosing Recent or Forgotten sites; later-game setup
-  (Empire `world` sites, stored denizens and relics); and WHEN EXPLORED
-  triggers once an explore procedure exists.
+  such as the Chancellor choosing Recent or Forgotten sites; and WHEN
+  EXPLORED triggers once an explore procedure exists.
 - [ ] **Keyboard focus on the Chronicle pages.** A redraw of the Chronicle
   page drops the focused control, and the table's save dialog does not trap
   focus. Do it with the next accessibility pass over the start pages.

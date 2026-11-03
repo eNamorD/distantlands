@@ -89,6 +89,18 @@ R23. **Either side.** Martial Culture works for an Exile who defeats another Exi
 
 R24. **Queued actions after a role change (provisional).** Actions a player has queued, such as Second Wind's Travel and Campaign, still run after a role change ends that player's Act phase (Empire slice 3b). The Martial Culture FAQ suggests Second Wind's second Campaign does not happen once its holder has become a Citizen; revisit this.
 
+R25. **Exile pawn sites.** With an Empire, an Exile places their pawn at the Hintermost Empire site or at a site the bandits rule. A site with no warbands, such as Sunken Isles with capacity 0, is not ruled by bandits, so an Exile may not start there (Empire slice 4).
+
+R26. **Homelands in later games.** The check that each Homeland in play has a stored edifice of its suit applies only to a Chronicle with no Empire, a first game. Later-game setup places only the edifices stored with each site (CR p. 9, Foundation I; Empire slice 4).
+
+R27. **Stored cards at the remaining sites.** A site filled from the atlas in a later game keeps its stored cards: its edifice on the ruined side, its denizens faceup, its relics facedown. Its empty relic slots, its relic slots less its stored relics and never fewer than 0, are filled from the relic deck. Sites always come from the Recent end; the Chancellor's choice of Recent or Forgotten sites waits for simultaneous setup effects (Empire slice 4).
+
+R28. **The Empire always holds a site.** The Throne's Shape Empire step gives a winner who rules no site the site their pawn stands on, so a Chronicle with a Chancellor and an empty Empire is malformed. Game start refuses it, and an Empire of more than 8 sites (Empire slice 4).
+
+R29. **The Chancellor's Reliquary pick.** The pick is the first Setup step. During Setup the Chancellor alone sees the Reliquary's relics, and keeps one facedown. An empty Reliquary skips the step. The log reads "p1 took a relic from the Reliquary" (Empire slice 4).
+
+R30. **A short purple supply at setup.** Purple warbands are limited to the 24 components, in setup and in play. Setup first gives each Imperial player their 3 board warbands, then places 1 Imperial warband on each Empire site, Cradlemost first, until the supply runs out. An Empire site left without one is otherwise set up as an Empire site: intact edifice, stored relics only, no relic slots filled. The empty-site check the walker runs after each action then fills every empty site with bandits up to its capacity; a capacity-0 site stays empty. Chronicle rulings 20 and 22 keep their unlimited supply, since the Chronicle phase is not play (Empire slice 4).
+
 ## Chronicle rulings
 
 Rulings given by the project owner for the Chronicle Phase ([chronicle.md](chronicle.md)). The rev1 task cards are slightly older than the CR; where they disagree, the CR governs.

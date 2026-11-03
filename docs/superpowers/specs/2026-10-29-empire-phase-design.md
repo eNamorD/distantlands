@@ -1,6 +1,6 @@
 # Empire phase design
 
-Status: designed, 2026-10-29. Slice 1a implemented, 2026-10-29. Slice 1b-i implemented, 2026-10-30. Slice 1b-ii implemented, 2026-11-01. Slice 2 implemented, 2026-11-01. Slice 3a implemented, 2026-11-01. Slice 3b implemented, 2026-11-01.
+Status: designed, 2026-10-29. Slice 1a implemented, 2026-10-29. Slice 1b-i implemented, 2026-10-30. Slice 1b-ii implemented, 2026-11-01. Slice 2 implemented, 2026-11-01. Slice 3a implemented, 2026-11-01. Slice 3b implemented, 2026-11-01. Slice 4 implemented, 2026-11-02.
 
 Roadmap item: **Phase - Empire**. Chancellor and Citizen roles in play,
 Imperial warbands, the Imperial Campaign, the Stable Regime and Successor
@@ -408,7 +408,8 @@ legacies stay refused (see [Out of scope](#out-of-scope)).
   Chronicle with a Chancellor where neither the Chancellor nor any Citizen is
   seated.
 - **Chancellor.** If the Chancellor's lineage is not seated, a random seated
-  Citizen becomes the Chancellor (seeded randomness), and the absent
+  Citizen becomes the Chancellor (seeded randomness, recorded as the plan's
+  `firstPlayer`), and the absent
   Chancellor's lineage becomes a Citizen in the box (ruling R6). The
   Chancellor takes the Chancellor board, the purple bank and the Grand
   Scepter, and chooses one Reliquary relic to take facedown, a setup decision
@@ -425,12 +426,18 @@ legacies stay refused (see [Out of scope](#out-of-scope)).
   Hinterward from the Chronicle's `world` (the Recent Sites up to the Empire
   divider). Stored edifices start intact, other denizens faceup and stored
   relics facedown; empty relic slots stay empty. Each site gets 1 Imperial
-  warband. The existing foundation-driven setup fills the remaining slots.
+  warband, Cradlemost first, while the 24 purple warbands last after the
+  boards; a site the supply misses takes bandits (R30). The existing
+  foundation-driven setup fills the remaining slots, each keeping its stored
+  cards (R27). The Homeland edifice check is a first game's only (R26), and
+  game start refuses an Empire with no site or more than 8 (R28).
 - **Foundation IV.** Only a player with no starting advisers draws 3
   denizens into their temporary hand.
 - **Player choices**, starting with the Chancellor and going clockwise:
   1. Place pawn. An Exile places at the Hintermost Empire site or at any
-     bandit site; an Imperial player places at any Empire site.
+     bandit site, never at a site with no warbands (R25); an Imperial player
+     places at any Empire site. Before the first pawn, the Chancellor takes
+     the Reliquary relic (R29).
   2. Choose adviser. Skipped for a player whose temporary hand is empty.
   3. Reveal cards, starting advisers included.
 - **UI.** Imperial roles on player selection; the Chancellor's Reliquary
@@ -502,6 +509,11 @@ legacies stay refused (see [Out of scope](#out-of-scope)).
   the attacker is not legal.
 - **First game.** "Become a Citizen" powers are ignored in a first game by a
   setup option, on by default (ambiguity F8).
+- **R25-R30, later-game setup.** Exile pawn sites (R25), Homelands in
+  later games (R26), stored cards at the remaining sites (R27), the Empire
+  always holds a site (R28), the Chancellor's Reliquary pick (R29) and a
+  short purple supply at setup (R30); see
+  [ambiguities.md](../../rules/ambiguities.md#empire-rulings).
 
 ## Testing
 

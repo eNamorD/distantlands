@@ -35,12 +35,12 @@ No one begins Chancellor or Oathkeeper; the first player to satisfy Supremacy ta
 ### Later games
 
 1. Initialize map tracks, end die if Imperials play, relic deck, prior Oathkeeper goal/title, and stored world-deck denizens with Visions removed (CR p. 8).
-2. Players recover their stored color, legacies, starting adviser, 1 favor, 1 secret, 3 board warbands, and Supply. Imperials use purple warbands. Chancellor takes the Chancellor board, Grand Scepter, and one chosen facedown Reliquary relic (CR p. 8).
-3. If a Chancellor exists, restore Imperial sites from Recent Sites until the Empire divider, intact edifices/faceup denizens, stored facedown relics, and one Imperial warband each (CR p. 9).
+2. Players recover their stored color, legacies, starting adviser, 1 favor, 1 secret, 3 board warbands, and Supply. Imperials use purple warbands. Chancellor takes the Chancellor board, Grand Scepter, and one chosen facedown Reliquary relic (CR p. 8; the pick is Setup's first step, [Empire ruling R29](ambiguities.md#empire-rulings)).
+3. If a Chancellor exists, restore Imperial sites from Recent Sites until the Empire divider, intact edifices/faceup denizens, stored facedown relics, and one Imperial warband each (CR p. 9). Purple warbands are limited to 24: boards first, then sites Cradlemost first; a site the supply misses takes bandits ([R30](ambiguities.md#empire-rulings)). Remaining sites keep their stored cards and Homelands need no stored edifice ([R26, R27](ambiguities.md#empire-rulings)); the Empire always holds a site ([R28](ambiguities.md#empire-rulings)).
 4. With no Chancellor: force Foundation I to Wide Horizons and V to Mob's Favor; restore sites with ruined edifices, stored relics, capacity bandits; clear Reliquary; fill empty relic slots; turn stored Citizens into Exiles; choose first player; use Usurper Limiter and no end die (CR p. 9).
 5. Resolve six foundation setup cards in order. Their normal/altered faces determine map filling, banks/resources, player wealth, world composition, and banner side (CR pp. 10-11).
 6. Populate site resources, then build the world deck from the foundation-determined starting denizen stack, combining Vision packets as instructed (CR p. 12).
-7. In order, players place pawn (subject to Imperial placement), choose adviser, and reveal cards as allowed (CR p. 13).
+7. In order, players place pawn (subject to Imperial placement; Exiles at the Hintermost Empire site or a bandit site, [R25](ambiguities.md#empire-rulings)), choose adviser, and reveal cards as allowed (CR p. 13).
 
 ## Round and turn flow
 
