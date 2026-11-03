@@ -95,6 +95,25 @@ object ParkedNode:
             yield Some(node)
       case _ => Right(None)
 
+  /** Every open decision at the park, in their owners' seat order. */
+  def openDecisions(state: OathState, catalog: ExecutableCatalog,
+      walkerPowers: WalkerPowers = WalkerPowers.empty): Vector[Decide] =
+    state match
+      case Ready(ready) =>
+        val current = ready.game.current
+        val seats = current.players.map(_.player)
+        val powers = WalkerPowers.selected(walkerPowers, Vector.empty)
+        (for
+          pending <- current.walkerPending
+          procedure <- current.walkerProcedure
+          tree <- WalkerProcedureRegistry.rebuild(procedure, catalog, ready,
+            current.walkActor, current.walkerStartArgs, PhasePowers.empty,
+            walkerPowers = powers).toOption
+        yield ProcedureWalker.openDecisions(ready, tree, pending, powers)
+          .sortBy(decide => seats.indexOf(decide.owner)))
+          .getOrElse(Vector.empty)
+      case _ => Vector.empty
+
   private def noneAwaited(at: String, procedure: ProcedureRef,
       decision: String): String =
     s"a walker is pending at '$at' of $procedure on '$decision' but no " +

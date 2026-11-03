@@ -990,7 +990,7 @@ Expected: PASS, and the `throne-offered` golden log is unchanged (ruling P6).
     - Change the status line to "Status: designed, 2026-11-02. Implemented, 2026-11-02."
   - **`ambiguities.md`, Chronicle ruling 21.** Replace the seat-order bullet with: "The offered Exiles answer at once, in any order, with "Decline" first. Each answer applies when it is given and is public (user, 2026-11-02)."
   - **`chronicle.md`, task 2, step 1.** In the Digital line, replace "each answers in seat order, Decline first" with "the offered Exiles answer at once, in any order, Decline first".
-  - **The negotiation walker design.** Rename the heading "Simultaneous decisions (not built, kept possible)" to "Simultaneous decisions". Add a first line: "Built: see the [simultaneous decisions design](2026-11-02-simultaneous-decisions-design.md)."
+  - **The negotiation walker design.** Rename the heading "Simultaneous decisions (not built, kept possible)" to "Simultaneous decisions". Add a first line: "Built: see the [simultaneous decisions design](../specs/2026-11-02-simultaneous-decisions-design.md)."
   - **`implementation-traceability.md`.** Add a row in the file's format for the Throne's Offer Citizenship answers:
     - code: `OfferCitizenship.answers`, `Simultaneous`, `ProcedureWalker.walkSimultaneous`;
     - tests: `SimultaneousDecideSuite`, `OfferCitizenshipSuite`.

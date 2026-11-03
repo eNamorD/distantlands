@@ -76,7 +76,9 @@ Sequence(
 - **Answers already carry attribution.** `Answered.by` records who answered, each answer is a `WalkerStepRecorded(ChoicePayload)`, and `WalkerParked` records the answered list, so the journal needs no Negotiation-specific event.
 - **Continuations.** `OathContinue.AwaitingNegotiation(playerId, decision)` addresses the primary owner, the actor, and covers both decisions. It is registered through `WalkerProcedureRegistry.continuationFor` for both ids.
 
-### Simultaneous decisions (not built, kept possible)
+### Simultaneous decisions
+
+Built: see the [simultaneous decisions design](2026-11-02-simultaneous-decisions-design.md).
 
 Lineage setup will need players to decide at the same time. That is a different shape from a co-owned decision. A co-owned decision is one decision that any owner may answer once. A simultaneous step is N decisions, one per player, all open at once, answered in any order, and the walker continues when all are answered.
 

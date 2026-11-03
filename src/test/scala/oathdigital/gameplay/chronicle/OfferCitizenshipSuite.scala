@@ -7,7 +7,7 @@ import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.{ChooseManyAnswer, ChooseOneAnswer}
-import oathdigital.testkit.{Look, Outcomes, Table}
+import oathdigital.testkit.{Look, Outcomes, ParkedNode, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -50,6 +50,12 @@ class OfferCitizenshipSuite extends munit.FunSuite:
     NoteText.said(ProcedureNotes.id(TriggeredProcedureRef.ChronicleThrone),
       OfferCitizenship.noteKeys, events).map(_.text)
 
+  /** The Throne answers still open, in seat order. */
+  private def openAnswers(step: OathTransition): Vector[Decide] =
+    ParkedNode.openDecisions(step.state, catalog,
+      WalkerPowerCatalog.default(catalog)).filter(_.decisionId
+      .startsWith("chronicle.throne.citizenship"))
+
   private def ready(step: OathTransition): ReadyGame =
     Outcomes.ready(step.state)
 
@@ -70,17 +76,29 @@ class OfferCitizenshipSuite extends munit.FunSuite:
       .startsWith("chronicle.throne.citizenship")))
     assertEquals(lines(next.events), Vector.empty)
 
-  test("each offered Exile answers in seat order, Decline first"):
+  test("the offered Exiles answer at once, Decline first"):
     val asked = offered(throneStarted(exilesHoldSites), p3, p2)
-    val first = ChronicleWalk.parked(asked.state).get
-    assertEquals((first.decisionId, first.owner),
-      (OfferCitizenship.answerDecisionId(p2), p2))
-    first.query match
+    val open = openAnswers(asked)
+    assertEquals(open.map(decide => (decide.decisionId, decide.owner)),
+      Vector(OfferCitizenship.answerDecisionId(p2) -> p2,
+        OfferCitizenship.answerDecisionId(p3) -> p3))
+    open.foreach(_.query match
       case one: DecisionQuery.ChooseOne => assertEquals(
         one.options.map(_.ref).head, OfferCitizenship.decline)
-      case other => fail(other.toString)
-    val second = replied(asked, p2, OfferCitizenship.decline)
-    assertEquals(ChronicleWalk.parked(second.state).map(_.owner), Some(p3))
+      case other => fail(other.toString))
+
+  test("a later Exile may answer first, and each answer applies at once"):
+    val asked = offered(throneStarted(exilesHoldSites), p2, p3)
+    val third = replied(asked, p3, OfferCitizenship.accept)
+    assertEquals(Imperials.role(ready(third), p3), Some(Role.Citizen))
+    assertEquals(openAnswers(third).map(_.owner), Vector(p2))
+    val done = replied(third, p2, OfferCitizenship.decline)
+    assertEquals(lines(done.events), Vector("p1 offered Citizenship to p2, p3",
+      "p3 accepted Citizenship", "p2 declined Citizenship"))
+    val replayed = done.events.foldLeft[Either[OathViolation, OathState]](
+      Right(exilesHoldSites.state))((state, event) =>
+      state.flatMap(rules.evolve(_, event)))
+    assertEquals(replayed.map(Outcomes.ready), Right(ready(done)))
 
   test("an Exile who accepts becomes a Citizen: their board empties and each " +
       "site they rule keeps one Imperial warband"):
