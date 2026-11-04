@@ -35,6 +35,19 @@ class WalkerOperationWireSuite extends munit.FunSuite:
     assertEquals(replayed.game.current.tracks.visionsDrawn,
       base.game.current.tracks.visionsDrawn + 1)
 
+  test("a recorded round advance round trips and replays as one more round"):
+    val event = recordedOperation(AdvanceRound)
+    val encoded = accepted(GameEventWire.encodeEvent("walker", 0, event))
+    assertEquals(GameEventWire.decode(encoded).map(_.event), Right(event))
+    assertEquals(ujson.read(encoded)("payload")("step")("ops")(0),
+      ujson.Obj("kind" -> "advance-round"))
+    val decoded = as[WalkerStepRecorded](
+      accepted(GameEventWire.decode(encoded)).event)
+    val base = Table.start.roundMarkerAt(4).ready
+    val replayed = accepted(OperationPipeline.run(base, RecordedOps.of(decoded),
+      OperationPolicy.Permissive, Vector.empty)(Right(_))).state
+    assertEquals(replayed.game.current.tracks.round, 5)
+
   test("reduced optional spend is canonical in memory and on the wire"):
     val withOneSupply = Table.start.supply(Table.p1, 1).ready
     val run = accepted(OperationPipeline.run(withOneSupply,

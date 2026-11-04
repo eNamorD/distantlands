@@ -652,6 +652,13 @@ case object UsurperLimiterRemoved extends PrimitiveOperation
 case object AdvanceVisionsDrawn extends PrimitiveOperation:
   override val required: Boolean = true
 
+/** Moves the round marker one space forward, as Great Clock and Broken
+  * Clock do. Passing round 3 takes the Usurper Limiter off, as the end of
+  * round 3 does (catalog batch 10, ruling 1). It rolls no end die; applying
+  * it on round 8 is an error. */
+case object AdvanceRound extends PrimitiveOperation:
+  override val required: Boolean = true
+
 /** Reorders a shuffle pile: a pile Search draws from (the world deck, or
   * one region's discard pile), the edifice deck, or the set-aside relics.
   * `order` is the pile's new contents in stored order (the world deck top

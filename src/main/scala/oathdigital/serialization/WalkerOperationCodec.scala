@@ -38,7 +38,7 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
   private type PieceOperation =
     Move | Take | Kill | Replace | Sacrifice | Burn | Give | Exchange | PayCost
   private type ResourceOperation = SpendSupply | GainSupply | FlipSecrets | Gain
-  private type TurnOperation = AdvanceVisionsDrawn.type |
+  private type TurnOperation = AdvanceVisionsDrawn.type | AdvanceRound.type |
     UsurperLimiterRemoved.type | BeginTurn | EnterPhase |
     SetOathkeeper | SetOathkeeperGoal | ChronicleUpdated | RecordPowerUse | RecordCampaignResult |
     ModifyDicePool | Roll | ModifyRollOutcome | Reroll | SetDieFaces |
@@ -234,6 +234,7 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
   private def encodeTurnOperation(operation: TurnOperation): ujson.Value =
     operation match
       case AdvanceVisionsDrawn => ujson.Obj("kind" -> "advance-visions-drawn")
+      case AdvanceRound => ujson.Obj("kind" -> "advance-round")
       case UsurperLimiterRemoved =>
         ujson.Obj("kind" -> "usurper-limiter-removed")
       case BeginTurn(player, phase) => ujson.Obj("kind" -> "begin-turn",
@@ -588,6 +589,7 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
   private def decodeTurnOperation(value: ujson.Value,
       path: String): DecodedOperation =
     case "advance-visions-drawn" => Right(AdvanceVisionsDrawn)
+    case "advance-round" => Right(AdvanceRound)
     case "usurper-limiter-removed" => Right(UsurperLimiterRemoved)
     case "begin-turn" =>
       val key = value("phase").str

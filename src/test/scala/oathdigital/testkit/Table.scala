@@ -320,6 +320,16 @@ final case class Table private (private val game: ReadyGame,
     update(_.updateCurrent(c => c.copy(tracks =
       c.tracks.copy(visionsDrawn = n))))
 
+  /** The round marker on round `n`; no other track moves. */
+  def roundMarkerAt(n: Int): Table =
+    update(_.updateCurrent(c => c.copy(tracks = c.tracks.copy(round = n))))
+
+  /** The Usurper Limiter on the round track when `onTrack`, off it
+    * otherwise. */
+  def usurperLimiter(onTrack: Boolean): Table =
+    update(_.updateCurrent(c => c.copy(tracks =
+      c.tracks.copy(usurperLimited = onTrack))))
+
   /** `vision` as `player`'s revealed Vision, faceup, taken from wherever
     * it lay. */
   def revealedVision(player: PlayerId, vision: VisionId): Table =

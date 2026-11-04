@@ -193,6 +193,8 @@ private[gameplay] object OperationApplication:
         result.flatMap(TurnStateOperations.adjustSupply(_, player, amount))
       case (result, AdvanceVisionsDrawn) =>
         result.flatMap(TurnStateOperations.advanceVisionsDrawn)
+      case (result, AdvanceRound) =>
+        result.flatMap(TurnStateOperations.advanceRound)
       case (result, UsurperLimiterRemoved) =>
         result.flatMap(TurnStateOperations.usurperLimiterRemoved)
       case (result, Shuffle(pile, order)) =>

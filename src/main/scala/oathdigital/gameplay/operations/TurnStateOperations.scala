@@ -187,6 +187,14 @@ private[operations] object TurnStateOperations:
         title = OathkeeperState(holder, TitleSide.Oathkeeper))),
       OathkeeperUnchanged(holder))
 
+  def advanceRound(ready: ReadyGame): Either[OperationError, ReadyGame] =
+    val tracks = ready.game.current.tracks
+    val next = tracks.round + 1
+    Either.cond(tracks.round < 8,
+      ready.updateCurrent(current => current.copy(tracks = tracks.copy(
+        round = next, usurperLimited = tracks.usurperLimited && next <= 3))),
+      InvalidDescription("the round marker is on its last space"))
+
   def usurperLimiterRemoved(ready: ReadyGame)
       : Either[OperationError, ReadyGame] =
     Either.cond(ready.game.current.tracks.usurperLimited,

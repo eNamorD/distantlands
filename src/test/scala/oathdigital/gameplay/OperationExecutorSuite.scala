@@ -35,6 +35,28 @@ class OperationExecutorSuite extends munit.FunSuite:
     assertEquals(rejectionCode(maximum, AdvanceVisionsDrawn),
       "visions-drawn-overflow")
 
+  test("the round marker advances once and is refused on its last space"):
+    val second = Table.from(ready).roundMarkerAt(1).ready
+    assertEquals(accepted(executor.execute(second, AdvanceRound))
+      .game.current.tracks.round, 2)
+    val last = Table.from(ready).roundMarkerAt(8).ready
+    assertEquals(rejectionCode(last, AdvanceRound), "invalid-description")
+
+  test("passing round 3 takes the Usurper Limiter off; earlier advances " +
+      "leave it on"):
+    def limitedAfter(round: Int): Boolean =
+      val staged = Table.from(ready).roundMarkerAt(round)
+        .usurperLimiter(onTrack = true).ready
+      accepted(executor.execute(staged, AdvanceRound))
+        .game.current.tracks.usurperLimited
+    assert(limitedAfter(1))
+    assert(limitedAfter(2))
+    assert(!limitedAfter(3))
+    val off = Table.from(ready).roundMarkerAt(5)
+      .usurperLimiter(onTrack = false).ready
+    assert(!accepted(executor.execute(off, AdvanceRound))
+      .game.current.tracks.usurperLimited)
+
   /** Rejection code for a single operation through the authoritative pipeline
     * with a permissive allowlist (shape checks only).
     */
