@@ -70,7 +70,8 @@ object WalkerPowerCatalog:
       Vector(SpellBreaker) ++
       Vector(ForestCouncil) ++
       Vector(CityWall) ++
-      Vector(GiantPythonRestriction) ++
+      Vector(NonPersistentPowerRestriction.giantPython,
+        NonPersistentPowerRestriction.banditForest) ++
       Vector(HiddenPassages) ++
       Vector(TempleOfAncestors) ++
       TravelSitePowers.all ++

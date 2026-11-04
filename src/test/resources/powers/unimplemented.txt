@@ -39,7 +39,6 @@ edifice.e19.ruined
 edifice.e21.intact
 edifice.e26.ruined
 edifice.e27.intact
-edifice.e29.ruined
 legacy.ancestral-lands
 legacy.arbiter
 legacy.beloved

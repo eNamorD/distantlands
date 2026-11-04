@@ -29,7 +29,8 @@ object GiantPythonCard extends Denizen(DenizenId("186"), "Giant Python", Suit.Be
   * site's slots ([[SiteSlotMoves]]): the first empty slot where there is
   * room, and each card there to replace. At a full site only a Replace is
   * offered. Giant Python moves carrying its secrets; its restriction reads
-  * where it stands, so it moves too (`GiantPythonRestriction`).
+  * where it stands, so it moves too
+  * (`NonPersistentPowerRestriction.giantPython`).
   *
   * Its line covers the generic discard and move lines: "Moved {card} to
   * {site}." or "Replaced {card} at {site}."

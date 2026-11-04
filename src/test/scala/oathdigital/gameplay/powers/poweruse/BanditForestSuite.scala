@@ -1,0 +1,72 @@
+package oathdigital.gameplay.powers.poweruse
+
+import oathdigital.gameplay.cards.{AncientCitySite, DeepWoodsSite}
+import oathdigital.gameplay.powerresolver.PowerUse
+import oathdigital.gameplay.powers.action.RovingTerrorCard
+import oathdigital.gameplay.powers.travel.ForbiddenForestCard
+import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
+import oathdigital.model._
+import oathdigital.testkit.Table
+import oathdigital.testkit.Table.{p1, p2, p3}
+
+/** Bandit Forest (E29, ruined): "Imperials cannot place [favor]/[secret] on
+  * cards ruled by bandits or use their non-persistent powers." (catalog
+  * batch 10, slice 1). It binds Imperial players only, and nobody may
+  * waive it. */
+class BanditForestSuite extends munit.FunSuite:
+  private val forest = NonPersistentPowerRestriction.banditForest
+  private val home = AncientCitySite.id
+  private val woods = DeepWoodsSite.id
+  private val terror = RovingTerrorCard.id
+  private val source = PowerSourceRef.Card(ForbiddenForestCard.id)
+
+  /** p2 is the Chancellor and p1 a Citizen; p3 is an Exile. Bandits rule
+    * Ancient City, where Roving Terror stands, and Bandit Forest lies
+    * ruined at Deep Woods. It is `actor`'s Act. */
+  private def terrorUnderBanditsWithForestRuined(actor: PlayerId): Table =
+    Table.start.imperial(p2, p1).turn(actor, Phase.Act)
+      .bandits(home, 2).denizen(terror, at = home)
+      .edifice(ForbiddenForestCard, EdificeSide.Ruined, at = woods)
+
+  private def nonPersistentUseOf(card: DenizenId, by: PlayerId): PowerUse =
+    PowerUse(by, PowerId("test.power"), Some(card), persistent = false,
+      costsSecret = false)
+
+  test("it refuses an Imperial player a non-persistent power of a card " +
+      "bandits rule, and nobody may waive it"):
+    val ready = terrorUnderBanditsWithForestRuined(p1).ready
+    val refusal = forest.refusal(catalog, ready, nonPersistentUseOf(terror,
+      by = p1))
+    assertEquals(refusal.map(_.note), Some(forest.usePlain(source)))
+    assertEquals(refusal.flatMap(_.reason.waiver), None)
+
+  test("an Exile may use the card"):
+    val ready = terrorUnderBanditsWithForestRuined(p3).ready
+    assertEquals(forest.refusal(catalog, ready, nonPersistentUseOf(terror,
+      by = p3)), None)
+
+  test("it refuses an Imperial player's payment onto a card bandits rule, " +
+      "and lets an Exile's through"):
+    val ban = forest.operationRestrictions(catalog).head
+    val imperialPays = PayCost(p1, Location.OnCard(terror), Cost(favor = 1))
+    assert(ban.reason(terrorUnderBanditsWithForestRuined(p1).ready,
+      imperialPays).exists(_.waiver.isEmpty))
+    val exilePays = PayCost(p3, Location.OnCard(terror), Cost(favor = 1))
+    assertEquals(ban.reason(terrorUnderBanditsWithForestRuined(p3).ready,
+      exilePays), None)
+
+  test("a card at a site bandits do not rule is free"):
+    val ready = terrorUnderBanditsWithForestRuined(p1)
+      .update(_.updateCurrent(current => current.copy(map =
+        current.map.copy(sites = current.map.sites.updatedWith(home)(
+          _.map(_.copy(forces = SiteForces.Empty)))))))
+      .ready
+    assertEquals(forest.refusal(catalog, ready, nonPersistentUseOf(terror,
+      by = p1)), None)
+
+  test("with the Forest's intact face on the map, nothing is refused"):
+    val ready = Table.start.imperial(p2, p1).turn(p1, Phase.Act)
+      .bandits(home, 2).denizen(terror, at = home)
+      .edifice(ForbiddenForestCard, EdificeSide.Intact, at = woods).ready
+    assertEquals(forest.refusal(catalog, ready, nonPersistentUseOf(terror,
+      by = p1)), None)

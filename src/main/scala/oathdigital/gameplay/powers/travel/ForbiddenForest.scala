@@ -35,8 +35,8 @@ object ForbiddenForestCard extends Edifice(EdificeId("E29"), Suit.Beast):
   * every player is an enemy. Nobody is restricted at an unruled site. A
   * Travel another player sent counts its destination as the traveller's
   * answer (catalog batch 8, slice 15), so its sender may ask the ruler.
-  * The ruined face, Bandit Forest, binds Imperials only and is not
-  * implemented.
+  * The ruined face, Bandit Forest, is
+  * `NonPersistentPowerRestriction.banditForest`.
   */
 case object ForbiddenForest extends ContributingPower:
   val id: PowerId = ForbiddenForestCard.intact.power.id
