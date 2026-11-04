@@ -73,7 +73,7 @@ section describes each seam below in a paragraph.
 - **Own-power lock exemption:** Giant's Path.
 - **Dispossessed shuffles:** Great Spire, Fallen Spire, Pilgrimage.
 - **Vision collection:** Desecrated Ground.
-- **As-if ruler:** Bandit Crown.
+- **As-if ruler:** Bandit Crown, Grand Mask.
 - **Favor source redirection:** Vow of Kinship.
 - **An askable Act action:** consent for Relic Patrols and Bandit Patrols.
 - **Challenge** (`legalBanners` is hard-coded, no ribbon adjustment): School
@@ -159,34 +159,6 @@ Foundation mutation, Legacy activation and scoring, and era scoring.
 - [ ] **Edit Chronicle.** The Chronicle page shows the button disabled,
   "Coming in a later release". Edits a saved Chronicle's fields in the
   browser.
-
-### Phase - Empire cards
-
-The Empire phase built the roles, the Imperial Campaign, the Empire endings,
-Citizenship and later-game setup, but left these cards to the catalog
-([Empire phase design](superpowers/specs/2026-10-29-empire-phase-design.md),
-"Out of scope"). Catalog batch 9 marked each "phase: Empire" because the roles
-did not exist yet; they do now
-([batch 9 card table](superpowers/specs/2026-11-02-catalog-batch-9-design.md)).
-
-- [ ] **Council Seat (123).** A Citizen who rules it cannot be exiled, even
-  by themselves: the Grand Scepter's battle plan, self-exile and every other
-  exile path must refuse them.
-- [ ] **Naysayers (21).** Rest: if any Exile is the Oathkeeper or the
-  Usurper, take one favor from the Chancellor.
-- [ ] **Grand Mask (R05).** An Exile who holds it rules the denizens at
-  Imperial sites during their turn, except battle plans, and the Imperials do
-  not.
-- [ ] **Imperial Seal (R26).** Action: if no Imperial pawn is at your site,
-  move any number of Imperial warbands from your site to any Imperial site or
-  Imperial player board.
-- [ ] **Bandit Forest (E29, ruined).** Imperials cannot place favor or
-  secrets on denizens ruled by bandits, or use those denizens' non-persistent
-  powers.
-
-False Prophet stays under **Phase - Catalog batch - engine-blocked** (a
-player-aware off-turn card play), and the Empire legacies stay with
-**Legacies**.
 
 ### Phase - Settings Feature
 
