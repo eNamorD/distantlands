@@ -6,13 +6,6 @@ import oathdigital.model.{Cost, DenizenId, PowerId, Suit}
 // Generated from the retired runtime JSON (card classes slice 1).
 // Hand-edited from here on; a card moves out when it is implemented.
 
-object NaysayersCard extends Denizen(DenizenId("21"), "Naysayers", Suit.Discord) with AdviserOnly:
-  val power = PrintedPower(PowerId("denizen.naysayers"),
-    persistent = false, cost = Cost.free,
-    text = "**REST:** If any Exile is the Oathkeeper or Usurper, take " +
-      "[favor] from the Chancellor.")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object ReliquaryRaidCard extends Denizen(DenizenId("220"), "Reliquary Raid", Suit.Discord) with Locked with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.reliquary-raid"),
     persistent = false, cost = Cost.free,

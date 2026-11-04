@@ -1,13 +1,14 @@
 package oathdigital.gameplay
 
 import oathdigital.catalog.holding.{ArbiterCard, BanditCrownCard,
-  CrackedHornCard, NaysayersCard}
+  CrackedHornCard}
 import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite, DunesSite, GoldenValleySite}
 import oathdigital.gameplay.phases.{PhaseMenu, RestCleanupPlan}
 import oathdigital.gameplay.powers.action.{DowsingSticksCard, MessengerCard}
 import oathdigital.gameplay.powers.campaign.{CodeOfHonorCard, RainBootsCard,
   WrestlersCard}
+import oathdigital.gameplay.powers.rest.NaysayersCard
 import oathdigital.gameplay.powers.search.ErrandBoyCard
 import oathdigital.gameplay.powers.setup.HallOfDebateCard
 import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
@@ -183,9 +184,9 @@ class RestSuite extends munit.FunSuite:
         Vector(LegacyState(arbiter, active = true))))))
     rest(Ready(supported), p1).fold(error => fail(error.toString), _ => ())
 
-  test("an unimplemented Rest power, held or at the site, does not block Rest"):
-    // Naysayers is not implemented; Insomnia's and Vow of Poverty's RESTs
-    // run as phase powers.
+  test("an optional Rest power, held or at the site, does not block Rest"):
+    // Naysayers' REST, like Insomnia's and Vow of Poverty's, runs as an
+    // optional phase power.
     val held = restBoard.adviser(p1, NaysayersCard).ready
     accepted(rest(Ready(held), p1))
     val atSite = Table.from(act).denizen(NaysayersCard, at = ancientCity).ready

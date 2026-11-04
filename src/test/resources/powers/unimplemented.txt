@@ -7,7 +7,6 @@ denizen.false-prophet
 denizen.favored-son
 denizen.magicians-code
 denizen.master-of-disguise
-denizen.naysayers
 denizen.pilgrimage
 denizen.reliquary-raid
 denizen.search-party

@@ -218,6 +218,7 @@ denizen.mounted-patrol halved = The attack pool was halved to {0}{0? die.| dice.
 denizen.moving-market moved = Moved it to {0} and gained {1} from {2}.
 denizen.moving-market moved.only = Moved it to {0}.
 denizen.mushrooms drawing = Drawing one card from the bottom of the {0} discard
+denizen.naysayers used = Took 1 favor from {0}.
 denizen.oracle used = {0} drew {1} from the world deck.
 denizen.oracle used.none = The world deck held no Vision.
 denizen.outriders ignored = Skulls ignored.

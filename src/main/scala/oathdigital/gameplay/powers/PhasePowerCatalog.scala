@@ -7,7 +7,7 @@ import oathdigital.gameplay.powers.action.{DiceAndRelicDrawPowers, Elders,
 import oathdigital.gameplay.powers.banner.BannerFacePowers
 import oathdigital.gameplay.powers.cardplay.VowOfObedience
 import oathdigital.gameplay.powers.economy.VowOfPoverty
-import oathdigital.gameplay.powers.rest.{Insomnia, SilverTongue}
+import oathdigital.gameplay.powers.rest.{Insomnia, Naysayers, SilverTongue}
 import oathdigital.gameplay.powers.wake.{HiddenPassages, Hunger,
   MarbleFountains, Quartermaster, RiverSitePower, SinkingPassages}
 
@@ -17,7 +17,7 @@ import oathdigital.gameplay.powers.wake.{HiddenPassages, Hunger,
 object PhasePowerCatalog:
   val default: PhasePowers =
     PhasePowers(Vector(SilverTongue) ++
-      Vector(Insomnia) ++
+      Vector(Insomnia, Naysayers) ++
       Vector(VowOfObedience) ++
       Vector(VowOfPoverty) ++
       Vector[PhasePower](WaysideInn, Elders, MagicWaterskin, MarbleFountains,
