@@ -40,3 +40,12 @@ private[gameplay] object SiteRulers:
       case Some(SiteRuler.Empire) => Imperials.players(ready).toSet
       case Some(SiteRuler.Player(player)) => Set(player)
       case _ => Set.empty
+
+  /** The Imperial sites in play, in map order: the sites the Empire holds
+    * with its warbands (rules: "Sites with Imperial warbands are called
+    * Imperial sites"). */
+  def imperialSites(ready: ReadyGame): Vector[SiteId] =
+    ready.game.current.map.inPlay.filter(site =>
+      ready.game.current.map.sites.get(site).exists(state =>
+        SiteRule.ruler(state.forces, ready.game.current.players) ==
+          Right(SiteRuler.Empire)))

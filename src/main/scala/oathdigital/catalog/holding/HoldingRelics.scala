@@ -41,14 +41,6 @@ object AncientWritCard extends Relic(RelicId("R22"), "Ancient Writ", value = 81,
       "facedown, and discard the other 2.")
   val powers: Vector[PrintedPower] = Vector(power)
 
-object ImperialSealCard extends Relic(RelicId("R26"), "Imperial Seal", value = 35, defense = 2):
-  val power = PrintedPower(PowerId("relic.imperial-seal"),
-    persistent = false, cost = Cost(secret = 1),
-    text = "**ACTION:** If no Imperial pawns are at your site, move any " +
-      "number of Imperial warbands from your site to any Imperial " +
-      "site or Imperial player board.")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object WhisperingStoneCard extends Relic(RelicId("R34"), "Whispering Stone", value = 13, defense = 2):
   val power = PrintedPower(PowerId("relic.whispering-stone"),
     persistent = false, cost = Cost(secret = 1),

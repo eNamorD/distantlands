@@ -77,7 +77,6 @@ relic.ancient-grit
 relic.bandit-crown
 relic.cracked-horn
 relic.grand-mask
-relic.imperial-seal
 relic.king-of-devotion
 relic.sigil-of-the-eye
 relic.sigil-of-the-heart
