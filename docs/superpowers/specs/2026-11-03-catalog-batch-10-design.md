@@ -381,7 +381,9 @@ buried by the Horn; codec.
 ## Slice 10: Shuffle every discard pile
 
 `Location.ChronicleGathering` and `ShufflePile.ChronicleGathering` are
-renamed `Gathering`, since a play-time power now uses them. The wire names
+renamed `CardGathering`, since a play-time power now uses them. It holds
+cards gathered for a shuffle, Visions included, so `DenizenGathering` would
+misname it. The wire names
 change; old journals need not decode.
 
 **Autumn Wind.** WHEN PLAYED, with no new primitive. When the cards across
@@ -511,7 +513,7 @@ lost before Wake; codec; replay.
 | `answered` in `EffectiveSuit` | 7 | Acting Troupe |
 | `RecoverFromRelicDeck` | 8 | Drowned Library |
 | `Discard` position | 9 | Bracken |
-| `Gathering` rename | 10 | Autumn Wind, the Chronicle |
+| `CardGathering` rename | 10 | Autumn Wind, the Chronicle |
 | Challenge judged after modifiers | 11 | four Challenge modifiers |
 | Nested WHEN PLAYED | 12 | Search Party |
 | Askable Act options | 13 | both Patrols |
