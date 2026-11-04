@@ -533,6 +533,7 @@ procedure.search drew-from-deck = Drew {0} from the World Deck
 procedure.search drew-from-discard = Drew {0} from the {1} discard
 procedure.search kept = Kept {0}
 procedure.self-exile left = Gave {0} to {1} and became an Exile.
+procedure.self-exile stayed = Gave {0} to {1} and stayed a Citizen.
 procedure.setup kept-adviser = {0} kept {1}
 procedure.setup placed-pawn = {0} placed their pawn at {1}
 procedure.setup revealed-card = {0} revealed {1}

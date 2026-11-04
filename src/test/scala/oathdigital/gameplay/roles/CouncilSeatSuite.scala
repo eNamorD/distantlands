@@ -1,5 +1,8 @@
 package oathdigital.gameplay.roles
 
+import oathdigital.gameplay.actions.ProcedureNotes
+import oathdigital.gameplay.actions.minor.SelfExile
+import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{Look, MenuPlay, Outcomes, Table}
@@ -52,6 +55,9 @@ class CouncilSeatSuite extends munit.FunSuite:
     assertEquals(Imperials.role(after, p2), Some(Role.Citizen))
     assertEquals(Look(after).player(p2).board.favor, 2)
     assertEquals(Look(after).player(p1).board.favor, chancellorFavor + 4)
+    assertEquals(NoteText.said(ProcedureNotes.id(ActionRef.SelfExile),
+      SelfExile.keys, done.events), Vector(NoteText.Said("stayed",
+      s"Gave 4 favor to ${p1.value} and stayed a Citizen.", covers = false)))
 
   test("with the Seat facedown, self-exile exiles"):
     val (service, _) = citizenHoldingSeat(facedown = true).service()

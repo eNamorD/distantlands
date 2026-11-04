@@ -2,11 +2,11 @@ package oathdigital.gameplay.powers.poweruse
 
 import oathdigital.gameplay.cards.{AncientCitySite, DeepWoodsSite}
 import oathdigital.gameplay.powerresolver.PowerUse
-import oathdigital.gameplay.powers.action.RovingTerrorCard
+import oathdigital.gameplay.powers.action.{RovingTerror, RovingTerrorCard}
 import oathdigital.gameplay.powers.travel.ForbiddenForestCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
-import oathdigital.testkit.Table
+import oathdigital.testkit.{MenuPlay, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 
 /** Bandit Forest (E29, ruined): "Imperials cannot place [favor]/[secret] on
@@ -70,3 +70,25 @@ class BanditForestSuite extends munit.FunSuite:
       .edifice(ForbiddenForestCard, EdificeSide.Intact, at = woods).ready
     assertEquals(forest.refusal(catalog, ready, nonPersistentUseOf(terror,
       by = p1)), None)
+
+  test("it binds the Chancellor too"):
+    val ready = terrorUnderBanditsWithForestRuined(p2).ready
+    assert(forest.refusal(catalog, ready, nonPersistentUseOf(terror,
+      by = p2)).nonEmpty)
+
+  test("it refuses an Imperial player's persistent use whose cost places " +
+      "on a card bandits rule"):
+    val ready = terrorUnderBanditsWithForestRuined(p1).ready
+    val placing = PowerUse(p1, PowerId("test.power"), Some(terror),
+      persistent = true, costsSecret = false, places = true)
+    assertEquals(forest.refusal(catalog, ready, placing).map(_.note),
+      Some(forest.placingPlain(source)))
+
+  test("the phase menu shows a card bandits rule with its reason"):
+    val option = MenuPlay.menuOptionFor(catalog,
+      terrorUnderBanditsWithForestRuined(p1).ready,
+      ActionRef.UsePower(RovingTerror.id),
+      Vector(DecisionOptionRef.Denizen(terror)))
+    assertEquals(option, DecisionOption.Unavailable(
+      DecisionOption.Denizen(DecisionOptionRef.Denizen(terror)),
+      OptionReason.Noted(forest.id, forest.usePlain(source))))
