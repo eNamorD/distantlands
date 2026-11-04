@@ -119,7 +119,7 @@ object PhaseMenu:
     val acting: Vector[Offered] =
       if menu != Menu.Act then Vector.empty
       else ActOffers.offeredTo(ready, actor).map(offer => offered(offer.procedure, offer.args,
-        DecisionOption.Button(offer.ref, offer.label),
+        ActOffers.button(ready, actor, offer),
         offer.actionClass match
           case ActionClass.Major => OptionGroup.Major
           case ActionClass.Minor => OptionGroup.Minor))

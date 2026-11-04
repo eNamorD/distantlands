@@ -2,7 +2,6 @@ denizen.acting-troupe
 denizen.autumn-wind
 denizen.bracken
 denizen.council-arbiter
-denizen.council-seat
 denizen.deed-writer
 denizen.false-prophet
 denizen.favored-son

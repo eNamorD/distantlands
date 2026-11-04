@@ -3,7 +3,7 @@ package oathdigital.gameplay.powers.campaign
 import oathdigital.gameplay.actions.campaign.CampaignProcedure
 import oathdigital.gameplay.operations.TheGrandScepterCard
 import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.gameplay.roles.Citizenship
+import oathdigital.gameplay.roles.{Citizenship, CouncilSeat}
 import oathdigital.model._
 
 /** The Grand Scepter's battle plan, for either side: "[favor-burnt]
@@ -16,6 +16,10 @@ import oathdigital.model._
   * whether to exile the Citizen. Roles are read again then, since one may
   * have changed during the Campaign. The first-game option does not touch
   * it: it exiles, it makes no one a Citizen.
+  *
+  * Against a Citizen holding Council Seat faceup, the plan and the exile
+  * carry the Seat's warning, and the exile leaves them a Citizen ("Did not
+  * exile p2.").
   *
   * Lines: "Exiled p2." and "Did not exile p2." It narrates its question.
   */
@@ -50,7 +54,9 @@ case object GrandScepterPlan extends BattlePlan:
     source <- context.relic(relic)
   yield CampaignPlanOffer(source,
     "The Grand Scepter: you may exile the Citizen if victorious",
-    Vector(CampaignPlanCost.FavorBurnt(3)), Vector.empty)
+    Vector(CampaignPlanCost.FavorBurnt(3)), Vector.empty,
+    warning = Option.when(CouncilSeat.guards(context.ready, enemy))(
+      OptionReason.Written(CouncilSeat.warning)))
 
   override def later: Map[PowerWindow, PlanUse => Vector[Operation]] =
     Map(PowerWindow.CampaignActionEligibility -> resolve)
@@ -64,18 +70,22 @@ case object GrandScepterPlan extends BattlePlan:
   yield Vector[Operation](Branch((live, _) =>
     if !Imperials.isImperial(live, user) || !citizen(live, enemy) then
       Vector.empty
-    else ask(user, enemy)))).getOrElse(Vector.empty)
+    else ask(live, user, enemy)))).getOrElse(Vector.empty)
 
-  private def ask(user: PlayerId, enemy: PlayerId): Vector[Operation] =
+  private def ask(ready: ReadyGame, user: PlayerId, enemy: PlayerId)
+      : Vector[Operation] =
     Vector(
       Decide(decisionId, user, DecisionQuery.ChooseOne(Vector(
-        DecisionOption.Button(exile, s"Exile ${enemy.value}"),
+        CouncilSeat.warned(ready, enemy,
+          DecisionOption.Button(exile, s"Exile ${enemy.value}")),
         DecisionOption.Button(spare, "Do not exile")),
         heading = Some("The Grand Scepter: you may exile the Citizen"))),
       Branch((_, pending) =>
         if PowerAnswers.one(pending, decisionId).contains(exile) then
-          Vector(Citizenship.exile(enemy),
-            Note(id, _ => Some(exiled(card, NoteArg.Player(enemy)))))
+          Vector(Citizenship.exile(enemy), Note(id, states => Some(
+            if Imperials.role(states.now, enemy).contains(Role.Exile) then
+              exiled(card, NoteArg.Player(enemy))
+            else spared(card, NoteArg.Player(enemy)))))
         else Vector(Note(id, _ => Some(spared(card, NoteArg.Player(enemy)))))))
 
   private def citizen(ready: ReadyGame, player: PlayerId): Boolean =

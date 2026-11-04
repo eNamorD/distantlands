@@ -1,9 +1,9 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.holding.CouncilSeatCard
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignPlans}
 import oathdigital.gameplay.powers.campaign.PlanDriver._
+import oathdigital.gameplay.roles.CouncilSeatCard
 import oathdigital.model._
 import oathdigital.testkit.Look
 

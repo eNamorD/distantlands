@@ -5,6 +5,7 @@ import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.operations.TheGrandScepterCard
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
+import oathdigital.gameplay.roles.{CouncilSeat, CouncilSeatCard}
 import oathdigital.model._
 import oathdigital.testkit.{ActPowerHarness, Look}
 
@@ -103,3 +104,37 @@ class GrandScepterPlanSuite extends munit.FunSuite:
     assertEquals(lost.winner, Some(false))
     assert(!awaits(lost, b.actor, GrandScepterPlan.decisionId))
     assertEquals(lines(lost), Vector.empty)
+
+  /** As `chancellorRaidsCitizen`, with the Citizen holding Council Seat
+    * faceup. */
+  private def chancellorRaidsSeatedCitizen: Board =
+    val base = chancellorRaidsCitizen
+    on(base)(_.adviser(base.rival, CouncilSeatCard))
+
+  private val seatWarning = OptionReason.Written(CouncilSeat.warning)
+
+  private def warningOf(option: Option[DecisionOption]): Option[OptionReason] =
+    option.collect { case DecisionOption.Warned(_, reason) => reason }
+
+  test("against a Citizen holding Council Seat, the plan carries the " +
+      "Seat's warning"):
+    val b = chancellorRaidsSeatedCitizen
+    val asked = commit(rules(winningDice), b, 4, raid = true)
+    assertEquals(warningOf(asked.options(b.actor).find(_.ref == ref)),
+      Some(seatWarning))
+
+  test("against a Citizen holding Council Seat, the exile carries the " +
+      "Seat's warning"):
+    val b = chancellorRaidsSeatedCitizen
+    val won = wonWithScepter(b)
+    assertEquals(warningOf(won.options(b.actor).find(
+      _.ref == GrandScepterPlan.exile)), Some(seatWarning))
+
+  test("exiling a Citizen who holds Council Seat leaves them a Citizen"):
+    val b = chancellorRaidsSeatedCitizen
+    val done = wonWithScepter(b).pick(b.actor, GrandScepterPlan.decisionId,
+      GrandScepterPlan.exile)
+    assertEquals(Imperials.role(ready(done.state), b.rival),
+      Some(Role.Citizen))
+    assertEquals(lines(done), Vector(NoteText.Said("spared",
+      s"Did not exile ${b.rival.value}.", covers = false)))

@@ -1,11 +1,11 @@
 package oathdigital.gameplay.powers.campaign
 
 import oathdigital.gameplay.powers.economy.HallowedSpringCard
-import oathdigital.catalog.holding.CouncilSeatCard
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.campaign.PlanDriver._
 import oathdigital.gameplay.powers.whenplayed.RoyalTaxCard
+import oathdigital.gameplay.roles.CouncilSeatCard
 import oathdigital.model._
 import oathdigital.testkit.Look
 

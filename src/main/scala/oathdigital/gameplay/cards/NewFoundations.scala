@@ -23,6 +23,7 @@ import oathdigital.gameplay.powers.title._
 import oathdigital.gameplay.powers.travel._
 import oathdigital.gameplay.powers.wake._
 import oathdigital.gameplay.powers.whenplayed._
+import oathdigital.gameplay.roles.CouncilSeatCard
 
 /** Every printed New Foundations component, listed by kind in printed-id
   * order. A new card is added here and in its own file; `CardCatalogSuite`

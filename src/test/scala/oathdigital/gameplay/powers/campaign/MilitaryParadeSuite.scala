@@ -1,12 +1,12 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.holding.{BrackenCard, CouncilSeatCard,
-  MagiciansCodeCard}
+import oathdigital.catalog.holding.{BrackenCard, MagiciansCodeCard}
 import oathdigital.gameplay.MarriageCard
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.powers.whenplayed.RoyalTaxCard
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.campaign.PlanDriver._
+import oathdigital.gameplay.roles.CouncilSeatCard
 import oathdigital.model._
 import oathdigital.testkit.Look
 

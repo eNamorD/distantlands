@@ -31,9 +31,12 @@ object Citizenship:
       ops <- RoleChanges.becomeImperial(live, actor, kept)
     yield ops, required = true)))
 
-  /** `actor`, a Citizen, becomes an Exile. */
+  /** `actor`, a Citizen, becomes an Exile. Nothing happens while Council
+    * Seat guards them (catalog batch 10, slice 1). */
   def exile(actor: PlayerId): Operation =
-    BuildOps((live, _) => RoleChanges.exile(live, actor), required = true)
+    BuildOps((live, _) =>
+      if CouncilSeat.guards(live, actor) then Right(Vector.empty)
+      else RoleChanges.exile(live, actor), required = true)
 
   /** The split a short purple bank asks for: one slot per place that holds
     * the player's warbands, each opening empty, and together they take the

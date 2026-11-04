@@ -2,6 +2,7 @@ package oathdigital.gameplay.phases
 
 import oathdigital.gameplay.actions.campaign.CampaignProcedure
 import oathdigital.gameplay.actions.economy.TradeProcedure
+import oathdigital.gameplay.roles.CouncilSeat
 import oathdigital.model._
 
 /** The Act menu's own options (walker-driven game loop design, slice 4,
@@ -61,6 +62,15 @@ object ActOffers:
       case ActionRef.SelfExile =>
         Imperials.role(ready, actor).contains(Role.Citizen)
       case _ => true)
+
+  /** The button `offer` shows `actor`. Self-exile carries Council Seat's
+    * warning while the Seat guards them. */
+  def button(ready: ReadyGame, actor: PlayerId, offer: ActOffer)
+      : DecisionOption =
+    val plain = DecisionOption.Button(offer.ref, offer.label)
+    if offer.procedure == ActionRef.SelfExile then
+      CouncilSeat.warned(ready, actor, plain)
+    else plain
 
   /** Why an Act action cannot start, in the player's words, when its
     * refusal is not about Supply or favor. */

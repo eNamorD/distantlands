@@ -1,13 +1,14 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.holding.{CouncilSeatCard, SearchPartyCard,
-  TheGatheringCard, VowOfKinshipCard}
+import oathdigital.catalog.holding.{SearchPartyCard, TheGatheringCard,
+  VowOfKinshipCard}
 import oathdigital.gameplay.PledgeToDiscordCard
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.cards.BrokenPeaksSite
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.campaign.PlanDriver._
+import oathdigital.gameplay.roles.CouncilSeatCard
 import oathdigital.model._
 import oathdigital.testkit.Look
 

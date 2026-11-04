@@ -5,8 +5,7 @@ import oathdigital.gameplay.{OathRules, WalkerDiceFixture}
 import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignProcedure}
 import oathdigital.gameplay.CampaignFixture.Board
 import oathdigital.gameplay.powerresolver.ContributingPower
-import oathdigital.gameplay.powers.{NoteText, PowerImplementationStatus,
-  WalkerPowerCatalog}
+import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{ParkedDecisionAssertions, ProcedureWalker,
   RollPayload, WalkerDice, WalkerPowers, WalkerStepRecorded}
@@ -32,13 +31,14 @@ object PlanDriver:
     * is half a sword and every defense die blank. */
   val losingDice: WalkerDice = WalkerDiceFixture.blanks
 
-  /** These denizens, after checking that no power of theirs is implemented
-    * yet: held as advisers, they offer no battle plan of their own. */
+  /** These denizens, after checking that no power of theirs is a battle
+    * plan: held as advisers, they offer no battle plan of their own. */
   def planless(cards: Denizen*): Vector[DenizenId] =
-    val implemented = PowerImplementationStatus.implemented
+    val plans = WalkerPowerCatalog.contributing.collect {
+      case plan: BattlePlan => plan.id }.toSet
     cards.toVector.map { card =>
-      assert(card.powers.forall(power => !implemented(power.id)),
-        s"${card.name} has an implemented power, so it may offer a battle plan")
+      assert(card.powers.forall(power => !plans(power.id)),
+        s"${card.name} has a battle plan")
       card.id
     }
 

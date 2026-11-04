@@ -20,6 +20,7 @@ import oathdigital.gameplay.powers.title._
 import oathdigital.gameplay.powers.travel._
 import oathdigital.gameplay.powers.wake._
 import oathdigital.gameplay.powers.whenplayed._
+import oathdigital.gameplay.roles.CouncilSeat
 import oathdigital.gameplay.walker.WalkerPowers
 
 /** The real catalog of `ContributingPower`s wired onto the generic walker
@@ -72,6 +73,7 @@ object WalkerPowerCatalog:
       Vector(CityWall) ++
       Vector(NonPersistentPowerRestriction.giantPython,
         NonPersistentPowerRestriction.banditForest) ++
+      Vector(CouncilSeat) ++
       Vector(HiddenPassages) ++
       Vector(TempleOfAncestors) ++
       TravelSitePowers.all ++
