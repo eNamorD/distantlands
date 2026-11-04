@@ -35,9 +35,13 @@ class NaysayersSuite extends munit.FunSuite:
         covers = true)))
     assertEquals(replayed(ready, done.events), Right(done.state))
 
-  test("another Exile as Usurper counts too"):
-    assert(usableFor(restingExileWhileTitled(Some(p3),
-      TitleSide.Usurper).ready))
+  test("another Exile as Usurper counts too, and takes the Chancellor's " +
+      "last favor"):
+    val ready = restingExileWhileTitled(Some(p3), TitleSide.Usurper)
+      .favor(p2, 1).ready
+    val end = Look(after(accepted(use(ready, Naysayers, source))))
+    assertEquals(end.player(p1).board.favor, 1)
+    assertEquals(end.player(p2).board.favor, 0)
 
   test("it is not usable while an Imperial player or nobody holds the " +
       "title"):

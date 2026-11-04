@@ -2,6 +2,7 @@ package oathdigital.gameplay.powers.action
 
 import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
 import oathdigital.gameplay.{NoteSupport, SiteRulers}
+import oathdigital.gameplay.powerresolver.QueuedStarts
 import oathdigital.gameplay.powers.PowerAnswers
 import oathdigital.model._
 
@@ -17,9 +18,10 @@ object ImperialSealCard extends Relic(RelicId("R26"), "Imperial Seal", value = 3
   * move any number of Imperial warbands from your site to any Imperial site
   * or Imperial player board." (catalog batch 10, slice 1).
   *
-  * It is usable when no Imperial player's pawn stands at the user's site
-  * and Imperial warbands are there, the user's own pawn counting when they
-  * are Imperial. After the secret it asks how many, from 1, then one
+  * An Imperial user's own pawn always stands at their site, so only an
+  * Exile's menu lists it. The menu shows it disabled with the reason while
+  * an Imperial pawn stands at the user's site, or no Imperial warbands are
+  * there. After the secret it asks how many, from 1, then one
   * destination (ruling 4): another Imperial site
   * ([[SiteRulers.imperialSites]]) or an Imperial player's board. Its line
   * covers the generic move line: "Moved 2 Imperial warbands to {site}." or
@@ -42,6 +44,9 @@ case object ImperialSeal extends PaidAction(ImperialSealCard.power):
   override def noteKeys: Vector[NoteKey] = notes.declared
   override def narratedDecisions: Set[String] =
     Set(countDecisionId, destinationDecisionId)
+  val ImperialPawnHere: String = "An Imperial pawn is at your site"
+  val NoImperialWarbands: String = "No Imperial warbands at your site"
+  val NowhereToGo: String = "No Imperial site or board to move them to"
 
   /** The Imperial warbands at `site`. */
   def imperialAt(ready: ReadyGame, site: SiteId): Int =
@@ -62,11 +67,23 @@ case object ImperialSeal extends PaidAction(ImperialSealCard.power):
       Imperials.players(ready).map(player =>
         DecisionOption.Player(DecisionOptionRef.Player(player)))
 
+  /** An Imperial user's own pawn is always at their site, so their role
+    * can never use it. */
+  override def listed(ready: ReadyGame, player: PlayerId): Boolean =
+    !Imperials.isImperial(ready, player)
+
   override def usable(catalog: ExecutableCatalog, ready: ReadyGame,
       player: PlayerId, source: DecisionOptionRef): Boolean =
-    ready.game.current.pawnSite(player).exists(site =>
-      !imperialPawnAt(ready, site) && imperialAt(ready, site) > 0 &&
-        destinations(ready, site).nonEmpty)
+    listed(ready, player) && ready.game.current.pawnSite(player).isDefined
+
+  override def refusal(catalog: ExecutableCatalog, ready: ReadyGame,
+      player: PlayerId, source: DecisionOptionRef, starts: QueuedStarts)
+      : Option[String] =
+    ready.game.current.pawnSite(player).flatMap(site =>
+      if imperialPawnAt(ready, site) then Some(ImperialPawnHere)
+      else if imperialAt(ready, site) == 0 then Some(NoImperialWarbands)
+      else if destinations(ready, site).isEmpty then Some(NowhereToGo)
+      else None)
 
   def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
       source: DecisionOptionRef): Either[OathViolation, Operation] =
