@@ -32,6 +32,19 @@ class GameLogHeadlineSuite extends munit.FunSuite:
       Vector(LogKind.Round, LogKind.Round, LogKind.Turn, LogKind.Phase))
     assertEquals(entries.head.sequence, 0L)
 
+  test("a Setup whose Broken Clock moves the marker hands the first turn " +
+      "to Round 2"):
+    val script = LaterGameLogScripts.laterGameWithBrokenClock
+    val entries = format(script, Some(script.actor))
+    val rounds = entries.filter(entry => entry.depth == 0 &&
+      entry.kind == LogKind.Round).map(text)
+    assertEquals(rounds, Vector("Setup", "Round 2"))
+    // Setup's last line moves the marker, and the next headline follows it.
+    val all = texts(entries)
+    val opened = all.indexOf("Round 2")
+    assertEquals(all.slice(opened - 1, opened + 1), Vector(
+      "Broken Clock: Advanced the round marker to round 2.", "Round 2"))
+
   test("a journal that starts at a table opens with its round, turn and " +
       "phase"):
     val table = Table.start.turn(p1, Phase.Wake)

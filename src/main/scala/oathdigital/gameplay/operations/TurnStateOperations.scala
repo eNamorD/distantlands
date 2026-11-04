@@ -190,9 +190,13 @@ private[operations] object TurnStateOperations:
   def advanceRound(ready: ReadyGame): Either[OperationError, ReadyGame] =
     val tracks = ready.game.current.tracks
     val next = tracks.round + 1
+    // The turn goes on, so the consent ledger keeps its answers.
+    def moved = ready.updateCurrent(current => current.copy(tracks =
+      tracks.copy(round = next,
+        usurperLimited = tracks.usurperLimited && next <= 3)))
     Either.cond(tracks.round < 8,
-      ready.updateCurrent(current => current.copy(tracks = tracks.copy(
-        round = next, usurperLimited = tracks.usurperLimited && next <= 3))),
+      moved.copy(consent = ready.consent.turnRenamed(ConsentTurn.of(ready),
+        ConsentTurn.of(moved))),
       InvalidDescription("the round marker is on its last space"))
 
   def usurperLimiterRemoved(ready: ReadyGame)

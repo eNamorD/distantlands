@@ -1,5 +1,6 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.gameplay.StateBasedEvaluation
 import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.phases.PhaseMenu
 import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture}
@@ -9,7 +10,8 @@ import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._
 import oathdigital.model.OathEvent.{EndDieRolled, RoundEnded}
 import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{Look, MenuPlay, PhasePowerHarness, Table}
+import oathdigital.testkit.{Look, MenuPlay, PhasePowerHarness, RoundEndChoices,
+  Table}
 import oathdigital.testkit.Outcomes.{assertWireRoundTrips, ready}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -64,18 +66,31 @@ class GreatClockSuite extends munit.FunSuite:
     assertEquals(after.game.current.tracks.round, 4)
     assert(!after.game.current.tracks.usurperLimited)
 
-  test("a jump past round 5 under an Imperial Oathkeeper rolls no end die " +
-      "and ends no round"):
-    val start = clockAtRound(5).usurperLimiter(onTrack = false)
-      .imperial(actor, Table.p2).oathkeeper(Some(actor), TitleSide.Oathkeeper)
-      .ready
-    val done = accepted(use(start))
-    assertEquals(ready(done.state).game.current.tracks.round, 6)
-    assertEquals(ready(done.state).game.current.result, None)
-    assert(!done.events.exists {
-      case _: EndDieRolled | _: RoundEnded => true
-      case _ => false
-    })
+  /** The events of the round's end after the Clock moves the marker from
+    * `round` in an Empire, with `face` on any end die. The Chancellor holds
+    * the Oathkeeper title at the round's end, since the title is settled
+    * again after the Clock's command. */
+  private def roundEndAfterClockFrom(round: Int, face: Int)
+      : Vector[OathEvent] =
+    val start = clockAtRound(round).usurperLimiter(onTrack = false)
+      .imperial(actor, Table.p2).ready
+    val advanced = ready(accepted(use(start)).state)
+    accepted(StateBasedEvaluation.endRound(Ready(Table.from(advanced)
+      .oathkeeper(Some(actor), TitleSide.Oathkeeper)
+      .turn(actor, Phase.RoundEnd).ready), RoundEndChoices.endDie(face)))
+
+  test("a jump from round 5 rolls no die for round 5; the round's end " +
+      "rolls round 6's and moves on to round 7"):
+    val events = roundEndAfterClockFrom(5, face = 1)
+    assertEquals(events.collect { case EndDieRolled(round, _, _) => round },
+      Vector(6))
+    assert(events.contains(RoundEnded(6, Some(7))))
+
+  test("a jump to round 8 rolls no die, and the round's end goes to War " +
+      "Exhaustion"):
+    val events = roundEndAfterClockFrom(7, face = 1)
+    assert(!events.exists(_.isInstanceOf[EndDieRolled]))
+    assert(events.contains(RoundEnded(8, None)))
 
   test("on round 8 the Clock is shown unavailable with the reason"):
     val last = clockAtRound(8).ready

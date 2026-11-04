@@ -42,6 +42,14 @@ class OperationExecutorSuite extends munit.FunSuite:
     val last = Table.from(ready).roundMarkerAt(8).ready
     assertEquals(rejectionCode(last, AdvanceRound), "invalid-description")
 
+  test("a round advance carries the turn's consent answers to the new round"):
+    val base = Table.from(ready).roundMarkerAt(2).ready
+    val staged = base.copy(consent =
+      ConsentState(turn = Some(ConsentTurn.of(base))))
+    val after = accepted(executor.execute(staged, AdvanceRound))
+    assertEquals(after.consent.turn, Some(ConsentTurn.of(after)))
+    assertEquals(after.consent.turn.map(_.round), Some(3))
+
   test("passing round 3 takes the Usurper Limiter off; earlier advances " +
       "leave it on"):
     def limitedAfter(round: Int): Boolean =

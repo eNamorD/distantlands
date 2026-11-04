@@ -268,15 +268,17 @@ private[application] final class GameLogFormatter(catalog: ExecutableCatalog,
         (posted, next)
 
   /** A turn begins at `BeginTurn(player, Wake)`, with its Wake headline.
-    * Setup's closing one also opens Round 1; a `BeginTurn` into the round's
-    * end posts nothing, since `gameplay.round-ended` posts the next round and
-    * its first turn. Act, Rest and the Chronicle begin at the `EnterPhase` into
+    * Setup's closing one also opens the round the marker is on: Round 1,
+    * or Round 2 after Broken Clock. A `BeginTurn` into the round's end posts
+    * nothing, since `gameplay.round-ended` posts the next round and its
+    * first turn. Act, Rest and the Chronicle begin at the `EnterPhase` into
     * them. */
   private def headlines(journal: LogJournal, at: Int): Vector[Posted] =
     journal.ops(at).flatMap {
       case OpStep(BeginTurn(player, Phase.Wake), before, _) =>
         if before.game.current.turn.phase == Phase.Setup then
-          Vector(roundHeadline(1), turnHeadline(player),
+          Vector(roundHeadline(before.game.current.tracks.round),
+            turnHeadline(player),
             phaseHeadline(Phase.Wake))
         else Vector(turnHeadline(player), phaseHeadline(Phase.Wake))
       case OpStep(EnterPhase(phase @ (Phase.Act | Phase.Rest | Phase.Chronicle)),

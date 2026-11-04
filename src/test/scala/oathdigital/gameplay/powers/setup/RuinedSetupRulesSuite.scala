@@ -168,12 +168,11 @@ class RuinedSetupRulesSuite extends munit.FunSuite:
 
   test("Broken Clock advances the round marker once at Setup's end"):
     val staged = stagedWith(GreatClockCard.id).ready
-    val round = staged.game.current.tracks.round
+    assertEquals(staged.game.current.tracks.round, 1)
     val walked = finish(staged)
-    assertEquals(walked.ready.game.current.tracks.round, round + 1)
+    assertEquals(walked.ready.game.current.tracks.round, 2)
     assertEquals(said(BrokenClock, walked.events), Vector(NoteText.Said(
-      "advanced", s"Advanced the round marker to round ${round + 1}.",
-      covers = false)))
+      "advanced", "Advanced the round marker to round 2.", covers = false)))
 
   test("the intact Great Clock moves no marker at Setup's end"):
     val staged = stagedWith(GreatClockCard.id, EdificeSide.Intact).ready

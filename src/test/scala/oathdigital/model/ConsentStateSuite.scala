@@ -197,3 +197,13 @@ class ConsentStateSuite extends munit.FunSuite:
       Some(ConsentAnswer.Refused))
     val withdrawn = accepted(refused.withdrawn(blue))
     assertEquals(withdrawn.answer(key(pass), Some(yellow), turn), None)
+
+  test("a turn renamed by a round advance keeps its answers; another " +
+      "turn's are left alone"):
+    val refused = accepted(waitingOn(redOnPass).answered(red,
+      granted = false, turn))
+    val later = ConsentTurn(2, blue)
+    assertEquals(refused.turnRenamed(turn, later).remembered(key(pass), later),
+      Some(ConsentAnswer.Refused))
+    assertEquals(refused.turnRenamed(ConsentTurn(1, red), later)
+      .remembered(key(pass), later), None)

@@ -149,6 +149,12 @@ final case class ConsentState(
       answer
   }
 
+  /** The answers of turn `from` kept as `to`'s, when the round marker moves
+    * within a turn (Great Clock): the turn goes on, so its answers stand
+    * (consent ruling 9). Another turn's answers are left alone. */
+  def turnRenamed(from: ConsentTurn, to: ConsentTurn): ConsentState =
+    if turn.contains(from) then copy(turn = Some(to)) else this
+
   private def rememberedAt(key: ConsentKey, now: ConsentTurn)
       : Option[Remembered] = if turn.contains(now) then answers.get(key)
     else None
