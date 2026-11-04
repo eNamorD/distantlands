@@ -31,6 +31,39 @@ object ForestHornCard extends Edifice(EdificeId("E30"), Suit.Beast):
         "pile.")
     val powers: Vector[PrintedPower] = Vector(power)
 
+object GreatClockCard extends Edifice(EdificeId("E12"), Suit.Arcane):
+  object intact extends EdificeFace("Great Clock") with Locked:
+    val power = PrintedPower(PowerId("edifice.e12.intact"),
+      persistent = false, cost = Cost(favor = 1, secret = 2, secretBurnt = 1),
+      text = "**ACTION:** Advance the round marker once, if possible. _Do " +
+        "not roll [round-die]. This cannot end the game._")
+    val powers: Vector[PrintedPower] = Vector(power)
+  object ruined extends EdificeFace("Broken Clock"):
+    val power = PrintedPower(PowerId("edifice.e12.ruined"),
+      persistent = false, cost = Cost.free,
+      text = "**SETUP (END) / WHEN EXPLORED:** Advance the round marker " +
+        "once, if possible. _Do not roll [round-die]. This cannot " +
+        "end the game._")
+    val powers: Vector[PrintedPower] = Vector(power)
+
+/** The round marker's advance that both Great Clock faces make "if
+  * possible" (catalog batch 10, slice 2): none on round 8, the last space.
+  */
+object RoundMarker:
+  val LastRound: Int = 8
+
+  /** The advance, or none on the last space. */
+  def advance(ready: ReadyGame): Vector[CoreOperation] =
+    Option.when(ready.game.current.tracks.round < LastRound)(AdvanceRound)
+      .toVector
+
+  /** The round the step before a line reached, when it moved the marker. */
+  def reached(states: NoteStates): Option[Int] = for
+    (before, after) <- states.previous
+    round = after.game.current.tracks.round
+    if round > before.game.current.tracks.round
+  yield round
+
 /** Ruined School (E27, ruined): "SETUP (END): Place 1 secret on each site
   * ruled by the bandits. Players may take it in Wake."
   *
@@ -115,3 +148,28 @@ case object BrokenHorn extends RuinedSetupRule:
     if count > 0 then buried(card, NoteArg.RegionName(home),
       NoteArg.Number(count))
     else empty(card, NoteArg.RegionName(home)))
+
+/** Broken Clock (E12, ruined): "SETUP (END): Advance the round marker
+  * once, if possible. Do not roll the round die. This cannot end the game."
+  *
+  * The advance is [[RoundMarker]]'s. At Setup the marker is on round 1, so
+  * it always moves. Its line reads the step: "Advanced the round marker to
+  * round 2." The WHEN EXPLORED half waits for an Explore procedure. Great
+  * Clock, the intact face, is an action (catalog batch 10, slice 2).
+  */
+case object BrokenClock extends RuinedSetupRule:
+  val edifice: EdificeId = GreatClockCard.id
+  val id: PowerId = GreatClockCard.ruined.power.id
+  private val notes = NoteSet(id)
+  /** "Advanced the round marker to round {2}." */
+  val advanced: NoteKey = notes.key("advanced", Vector(
+    NotePart.Text("Advanced the round marker to round "), NotePart.Arg(0),
+    NotePart.Text(".")))
+  override def noteKeys: Vector[NoteKey] = notes.declared
+
+  protected def build(ready: ReadyGame, at: SiteId): Vector[CoreOperation] =
+    RoundMarker.advance(ready)
+
+  protected def note(at: SiteId): Note = Note(id, states =>
+    RoundMarker.reached(states).map(round =>
+      advanced(PowerSourceRef.Card(edifice), NoteArg.Number(round))))

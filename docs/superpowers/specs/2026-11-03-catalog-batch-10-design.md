@@ -1,6 +1,6 @@
 # Catalog Batch 10: Engine Seams
 
-**Status:** designed 2026-11-03. Slice 1 landed.
+**Status:** designed 2026-11-03. Slices 1 and 2 landed.
 
 **Builds on** [Catalog batch 9](2026-11-02-catalog-batch-9-design.md) and
 [batch 8](2026-10-12-catalog-batch-8-design.md), whose vocabulary, cost

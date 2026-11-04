@@ -83,21 +83,6 @@ object GreatSpireCard extends Edifice(EdificeId("E11"), Suit.Arcane):
         "Visions in this pile.")
     val powers: Vector[PrintedPower] = Vector(power)
 
-object GreatClockCard extends Edifice(EdificeId("E12"), Suit.Arcane):
-  object intact extends EdificeFace("Great Clock") with Locked:
-    val power = PrintedPower(PowerId("edifice.e12.intact"),
-      persistent = false, cost = Cost(favor = 1, secret = 2, secretBurnt = 1),
-      text = "**ACTION:** Advance the round marker once, if possible. _Do " +
-        "not roll [round-die]. This cannot end the game._")
-    val powers: Vector[PrintedPower] = Vector(power)
-  object ruined extends EdificeFace("Broken Clock"):
-    val power = PrintedPower(PowerId("edifice.e12.ruined"),
-      persistent = false, cost = Cost.free,
-      text = "**SETUP (END) / WHEN EXPLORED:** Advance the round marker " +
-        "once, if possible. _Do not roll [round-die]. This cannot " +
-        "end the game._")
-    val powers: Vector[PrintedPower] = Vector(power)
-
 object TheTribunalCard extends Edifice(EdificeId("E19"), Suit.Order):
   object intact extends EdificeFace("The Tribunal") with Locked:
     val power = PrintedPower(PowerId("edifice.e19.intact"),

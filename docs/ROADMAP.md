@@ -66,8 +66,7 @@ engine had; its [Out of scope](superpowers/specs/2026-11-02-catalog-batch-9-desi
 section describes each seam below in a paragraph.
 
 - **Live terrain:** Grand Canal, Lost Lagoon.
-- **Round advance and the round die:** Great Clock, Broken Clock, Shattered
-  Portal.
+- **Round die:** Shattered Portal.
 - **Recover source:** Drowned Library.
 - **Discard replacement with a question:** Wild Pastures.
 - **Own-power lock exemption:** Giant's Path.
