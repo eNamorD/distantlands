@@ -36,9 +36,8 @@ object GiantsPathCard extends Edifice(EdificeId("E09"), Suit.Nomad):
   * anywhere the question shows Continue and the cost stays paid.
   *
   * Its line covers the bury and the moves: "Buried {card} at {site};
-  * Giant's Rampage and {Blue} now stand there." The intact face, Giant's
-  * Path, is locked and cannot move itself (catalog batch 9, "Out of
-  * scope").
+  * Giant's Rampage and {Blue} now stand there." The intact face is
+  * [[GiantsPath]].
   */
 case object GiantsRampage extends PaidAction(GiantsPathCard.ruined.power):
   val edifice: EdificeId = GiantsPathCard.id

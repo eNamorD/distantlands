@@ -3,7 +3,7 @@ package oathdigital.gameplay.powers
 import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.operations.OperationRestrictions
 import oathdigital.gameplay.powerresolver.{ContributingPower,
-  PowerUseRestriction}
+  IgnoresOwnLock, PowerUseRestriction}
 import oathdigital.gameplay.powers.action._
 import oathdigital.gameplay.powers.banner._
 import oathdigital.gameplay.powers.burn._
@@ -22,6 +22,7 @@ import oathdigital.gameplay.powers.wake._
 import oathdigital.gameplay.powers.whenplayed._
 import oathdigital.gameplay.roles.CouncilSeat
 import oathdigital.gameplay.walker.WalkerPowers
+import oathdigital.model.{CardId, PowerId}
 
 /** The real catalog of `ContributingPower`s wired onto the generic walker
   * seam. Every power names its card, so all are always present; `default`
@@ -121,7 +122,16 @@ object WalkerPowerCatalog:
   val useRestrictions: Vector[PowerUseRestriction] =
     contributing.flatMap(_.powerUseRestrictions)
 
+  /** The card each phase power that ignores its own lock may move, by
+    * power (catalog batch 10, slice 4). Lazy, so that reading
+    * `PhasePowerCatalog.default` never runs during this object's own
+    * initialisation, which `PhasePowerCatalog` reads for
+    * `useRestrictions`. */
+  lazy val lockExemptions: Map[PowerId, CardId] =
+    IgnoresOwnLock.exemptions(PhasePowerCatalog.default.powers)
+
   def default(catalog: ExecutableCatalog): WalkerPowers =
     WalkerPowers(contributing,
       restrictionSet = OperationRestrictions.forCatalog(catalog),
-      declared = Some(DeclaredNotes.of(contributing)), catalog = catalog)
+      declared = Some(DeclaredNotes.of(contributing)), catalog = catalog,
+      lockExemptions = lockExemptions)

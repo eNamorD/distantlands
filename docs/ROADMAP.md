@@ -68,7 +68,6 @@ section describes each seam below in a paragraph.
 - **Live terrain:** Grand Canal, Lost Lagoon.
 - **Recover source:** Drowned Library.
 - **Discard replacement with a question:** Wild Pastures.
-- **Own-power lock exemption:** Giant's Path.
 - **Dispossessed shuffles:** Great Spire, Fallen Spire, Pilgrimage.
 - **Vision collection:** Desecrated Ground.
 - **As-if ruler:** Bandit Crown, Grand Mask.

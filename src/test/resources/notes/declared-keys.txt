@@ -409,6 +409,7 @@ edifice.e02.ruined placed-and-burned = Placed {0}{0? on the bandit site| on the 
 edifice.e06.intact used = {0} drew {1} facedown.
 edifice.e06.ruined discarded = Discarded {0}.
 edifice.e08.intact no-faceup = Cannot play a Vision faceup.
+edifice.e09.intact used = Giant's Path and {0} now stand at {1}.
 edifice.e09.ruined used = Buried {0} at {1}; Giant's Rampage and {2} now stand there.
 edifice.e09.ruined used.none = No denizen could be buried.
 edifice.e10.intact used = {0} drew {1} from the bottom of the world deck.

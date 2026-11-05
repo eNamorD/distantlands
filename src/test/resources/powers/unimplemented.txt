@@ -23,7 +23,6 @@ edifice.e05.ruined
 edifice.e07.intact
 edifice.e07.ruined
 edifice.e08.ruined
-edifice.e09.intact
 edifice.e10.ruined
 edifice.e11.intact
 edifice.e11.ruined

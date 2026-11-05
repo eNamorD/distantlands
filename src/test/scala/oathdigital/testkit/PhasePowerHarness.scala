@@ -6,7 +6,7 @@ import oathdigital.gameplay.operations.OperationRestrictions
 import oathdigital.gameplay.phases.PhaseMenu
 import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.powerresolver.{PhasePower, PhasePowers}
-import oathdigital.gameplay.powers.PhasePowerCatalog
+import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.walker.{ParkedDecisionAssertions, WalkerPowers}
 import oathdigital.model._
@@ -90,7 +90,8 @@ object PhasePowerHarness:
   def usableNow(ready: ReadyGame): Vector[MenuPower] =
     menuPowers(catalog, ready, actor, PhasePowerCatalog.default,
       WalkerPowers(Vector.empty,
-        restrictionSet = OperationRestrictions.forCatalog(catalog)))
+        restrictionSet = OperationRestrictions.forCatalog(catalog),
+        lockExemptions = WalkerPowerCatalog.lockExemptions))
 
   /** The phase powers `player`'s phase menu offers available on `ready`
     * under `phasePowers` and `powers`, in menu order. */

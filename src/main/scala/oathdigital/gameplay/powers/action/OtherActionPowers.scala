@@ -16,6 +16,6 @@ object OtherActionPowers:
       SecondChance, ArmedMob,
       HonorGuard, Resettle,
       RelicThief, Assassin,
-      ForestHorn, GiantsRampage, GreatClock, ShatteredPortal,
+      ForestHorn, GiantsPath, GiantsRampage, GreatClock, ShatteredPortal,
       TempleOfAncestors,
       SqualidDistrict, UndergroundLibrary)
