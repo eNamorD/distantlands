@@ -258,10 +258,11 @@ needs no journaled data.
 
 A capability trait, `IgnoresOwnLock`, mixed into a power rather than added
 to `ContributingPower` (see the roadmap's "Narrow `ContributingPower` to
-capability traits"). When the walker runs `ProcedureRef.UsePower` for a
-power with the trait, `WalkerPowers.operationRestrictions` rebuilds
-`LockedCards` without that power's card. The exemption lasts for that use
-only. The rulebook's own vocabulary matches: "Bury ignores locked".
+capability traits"). When the walker runs `ActionRef.UsePower` for a
+power with the trait, `WalkerPowers.restrictionsDuring` returns the
+restrictions with that power's card left out of `LockedCards`; each walk
+reads them through `WalkCtx.operationRestrictions`. The exemption lasts for
+that use only. The rulebook's own vocabulary matches: "Bury ignores locked".
 
 **Giant's Path.** A paid Action costing 1 secret, mixing in `IgnoresOwnLock`.
 Its destination is a choice over `SiteRoom.open` without its own site. It

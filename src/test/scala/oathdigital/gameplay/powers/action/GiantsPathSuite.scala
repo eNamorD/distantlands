@@ -103,10 +103,12 @@ class GiantsPathSuite extends munit.FunSuite:
     assertEquals(GiantsPath.destinations(catalog, start),
       start.game.current.map.inPlay.filterNot(Set(home, peaks)))
     val parked = accepted(use(rules0, start, GiantsPath.id, source))
-    assert(answer(rules0, parked.state, GiantsPath.decisionId,
-      toSite(home)).isLeft, "its own site")
-    assert(answer(rules0, parked.state, GiantsPath.decisionId,
-      toSite(peaks)).isLeft, "a full site")
+    val notOffered = Some(OathViolation.InvalidEventOrder(
+      s"decision ${GiantsPath.decisionId} does not offer the selected option"))
+    assertEquals(answer(rules0, parked.state, GiantsPath.decisionId,
+      toSite(home)).left.toOption, notOffered, "its own site")
+    assertEquals(answer(rules0, parked.state, GiantsPath.decisionId,
+      toSite(peaks)).left.toOption, notOffered, "a full site")
 
   test("with no other site in room it is shown unavailable with the " +
       "reason, and a direct use is refused"):
