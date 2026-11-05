@@ -22,8 +22,9 @@ import oathdigital.model.{ActionRef, Answered, CardId, OperationRestriction,
   * `modifiers` the modifiers picked so far. Together with the
   * offered powers' own restrictions they make `operationRestrictions`, which
   * every walker step runs with (global operation restrictions design). A
-  * walk reads them through `restrictionsDuring`, which lifts
-  * `lockExemptions`' lock for that power's own use.
+  * walk reads them through `restrictionsDuring`, which drops a power's
+  * exempt card (`lockExemptions`) from `LockedCards` during that power's
+  * own use.
   * `pool` is the full catalog a selection was made from, so the modifiers a
   * walk picks can join it (`withAnswers`).
   */

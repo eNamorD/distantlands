@@ -54,6 +54,18 @@ class WalkerPowersLockExemptionSuite extends munit.FunSuite:
     assertEquals(refusal(Some(ActionRef.UsePower(PowerId("test.other"))),
       hall), Some("locked"))
 
+  test("a walk of the exempt power's use runs its card's move, and the " +
+      "same walk under no procedure refuses it"):
+    val moveHall = BuildOps((_, _) => Right(Vector(moveToPeaks(hall))),
+      required = true)
+    def walked(procedure: Option[ProcedureRef]) = ProcedureWalker.advance(
+      twoLockedEdifices, moveHall, None, powers, procedure = procedure)
+    assert(walked(hallMoverUse).exists {
+      case _: WalkerOutcome.Finished => true
+      case _ => false
+    }, walked(hallMoverUse).toString)
+    assert(walked(None).isLeft, walked(None).toString)
+
   test("the exempt set is built once, and a plain walk keeps the shared set"):
     assert(powers.restrictionsDuring(hallMoverUse) eq
       powers.restrictionsDuring(hallMoverUse))
