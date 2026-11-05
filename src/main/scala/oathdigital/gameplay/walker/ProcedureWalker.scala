@@ -312,7 +312,7 @@ object ProcedureWalker:
         val runs = composite match
           case core: CoreOperation if cursor.isEmpty =>
             OperationResolution.screen(ctx.state, core,
-              ctx.powers.operationRestrictions, required || hooks.strict)
+              ctx.operationRestrictions, required || hooks.strict)
           case _ => Right(true)
         runs.flatMap { run =>
           if !run then Right(Done(ctx.copy(previous = Some((ctx.state, ctx.state)))))

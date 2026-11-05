@@ -63,7 +63,7 @@ private[walker] object WalkerSteps:
       if swapped.operations.isEmpty then
         Right(OperationRun(ctx.state, Vector.empty, Vector.empty))
       else OperationPipeline.run(ctx.state, swapped.operations,
-        OperationPolicy.Permissive, ctx.powers.operationRestrictions,
+        OperationPolicy.Permissive, ctx.operationRestrictions,
         requireAll)(Right(_))
     ran.flatMap(run => ExecutedTriggers.held(ctx, run).flatMap { updated =>
       val nodeId = if path.isEmpty then label else path.mkString(".")

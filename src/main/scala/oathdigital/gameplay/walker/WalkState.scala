@@ -1,6 +1,7 @@
 package oathdigital.gameplay.walker
 
-import oathdigital.model.{Answered, OathEvent, Operation, PlayerId, ReadyGame}
+import oathdigital.model.{Answered, OathEvent, Operation,
+  OperationRestriction, PlayerId, ReadyGame}
 
 /** Command-local walk state: the state threaded through executed deltas,
   * the events recorded so far, the walk's actor
@@ -32,7 +33,12 @@ private[walker] final case class WalkCtx(
     /** Set while the walk runs a trigger's follow-up, whose batches start
       * no follow-up of their own (`ExecutedTriggers`). */
     following: Boolean = false
-)
+):
+  /** The operation restrictions this walk's batches run with: its powers'
+    * restrictions for the procedure it walks, which lift a power's own lock
+    * during that power's use (catalog batch 10, slice 4). */
+  def operationRestrictions: Vector[OperationRestriction] =
+    powers.restrictionsDuring(procedure)
 
 private[walker] object WalkCtx:
   /** The state a search compares to tell whether it has stood at a decision

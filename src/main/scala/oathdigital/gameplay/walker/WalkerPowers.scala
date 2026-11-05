@@ -5,8 +5,8 @@ import oathdigital.gameplay.cards.NewFoundations
 import oathdigital.gameplay.operations.OperationRestrictions
 import oathdigital.gameplay.powerresolver.{ContributingPower, ModifierPicks,
   PowerUseRestriction, PowerWindowIndex}
-import oathdigital.model.{Answered, OperationRestriction, PowerId,
-  PowerResolution}
+import oathdigital.model.{ActionRef, Answered, CardId, OperationRestriction,
+  PowerId, PowerResolution, ProcedureRef}
 
 /** The powers available to one `advance`/`roll`/`resolve` command (Task 3).
   * `OathRules` supplies it at command entry; `applyRecorded` (replay) never
@@ -21,7 +21,9 @@ import oathdigital.model.{Answered, OperationRestriction, PowerId,
   * `restrictionSet` is the catalog's global operation restrictions and
   * `modifiers` the modifiers picked so far. Together with the
   * offered powers' own restrictions they make `operationRestrictions`, which
-  * every walker step runs with (global operation restrictions design).
+  * every walker step runs with (global operation restrictions design). A
+  * walk reads them through `restrictionsDuring`, which lifts
+  * `lockExemptions`' lock for that power's own use.
   * `pool` is the full catalog a selection was made from, so the modifiers a
   * walk picks can join it (`withAnswers`).
   */
@@ -44,7 +46,12 @@ final case class WalkerPowers(powers: Vector[ContributingPower],
       * as `PowerCtx.catalog`. `WalkerPowerCatalog.default` sets the one it
       * was built from; a `WalkerPowers` assembled by hand in a test runs
       * against the production catalog unless it names another. */
-    catalog: ExecutableCatalog = NewFoundations.catalog):
+    catalog: ExecutableCatalog = NewFoundations.catalog,
+    /** The card each power that ignores its own lock may move, by power
+      * ([[oathdigital.gameplay.powerresolver.IgnoresOwnLock]]).
+      * `WalkerPowerCatalog.default` fills it from the phase powers; a
+      * `WalkerPowers` assembled by hand exempts nothing. */
+    lockExemptions: Map[PowerId, CardId] = Map.empty):
   /** These powers indexed by the windows they hook, built once per instance
     * (see [[PowerWindowIndex]]). */
   lazy val windowIndex: PowerWindowIndex = PowerWindowIndex.of(powers)
@@ -54,13 +61,34 @@ final case class WalkerPowers(powers: Vector[ContributingPower],
     */
   lazy val hasRestrictions: Boolean = windowIndex.hasRestrictions
 
-  /** The operation restrictions every step of this command runs with. A
-    * selected power that discards its own card is not held in play by the
-    * active-modifier rule. */
+  /** The operation restrictions every step of this command runs with,
+    * outside a use that ignores its own lock. A selected power that
+    * discards its own card is not held in play by the active-modifier
+    * rule. */
   lazy val operationRestrictions: Vector[OperationRestriction] =
+    restrictionsUnlocking(Set.empty)
+
+  /** The operation restrictions a walk of `procedure` runs with: for the
+    * use of a power that ignores its own lock, every restriction but that
+    * card's lock (catalog batch 10, slice 4); otherwise
+    * [[operationRestrictions]]. Each exempt card's set is built once per
+    * instance. */
+  def restrictionsDuring(procedure: Option[ProcedureRef])
+      : Vector[OperationRestriction] = procedure match
+    case Some(ActionRef.UsePower(id)) =>
+      lockExemptions.get(id).fold(operationRestrictions)(card =>
+        exempted.computeIfAbsent(card, own => restrictionsUnlocking(Set(own))))
+    case _ => operationRestrictions
+
+  private lazy val exempted =
+    new java.util.concurrent.ConcurrentHashMap[CardId,
+      Vector[OperationRestriction]]
+
+  private def restrictionsUnlocking(unlocked: Set[CardId])
+      : Vector[OperationRestriction] =
     restrictionSet.active(powers.flatMap(_.operationRestrictions(catalog)),
       modifiers.filterNot(id => powers.exists(power =>
-        power.id == id && power.discardsItself)))
+        power.id == id && power.discardsItself)), unlocked = unlocked)
 
   /** The power-use restrictions these powers declare (catalog batch 8,
     * slice 10). */

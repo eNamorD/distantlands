@@ -40,7 +40,7 @@ private[walker] object AdviserArrivalPass:
       if followUp.operations.isEmpty then
         Right(OperationRun(ctx.state, Vector.empty, Vector.empty))
       else OperationPipeline.run(ctx.state, followUp.operations,
-        OperationPolicy.Permissive, ctx.powers.operationRestrictions,
+        OperationPolicy.Permissive, ctx.operationRestrictions,
         requireAll = true)(Right(_))
     ran.map { updated =>
       val step = Option.when(updated.executed.nonEmpty)(WalkerStepRecorded(

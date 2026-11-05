@@ -14,6 +14,9 @@ import oathdigital.model._
   * restriction itself. The printed rules are `printedRules`.
   * `active` adds the [[ActiveModifier]] rule for the modifiers picked for
   * the running action, and the restrictions the offered powers register.
+  * `unlocked` are the cards whose lock does not bind for this walk: the
+  * own card of a power whose use ignores its lock
+  * ([[oathdigital.gameplay.powerresolver.IgnoresOwnLock]]).
   * Every one refuses as `Impossible`: an optional operation is skipped, a
   * required one rejects.
   * `active` reads each printed restriction and each power's through
@@ -25,9 +28,11 @@ final class OperationRestrictions private (catalog: Option[ExecutableCatalog]):
     catalog.fold(Vector.empty)(OperationRestrictions.printedBy)
 
   def active(powerRestrictions: Vector[OperationRestriction],
-      modifiers: Vector[PowerId], picked: Vector[CardId] = Vector.empty)
+      modifiers: Vector[PowerId], picked: Vector[CardId] = Vector.empty,
+      unlocked: Set[CardId] = Set.empty)
       : Vector[OperationRestriction] =
-    printed.map(ConsentedRestriction(_)) ++ catalog
+    printed.map(restriction => ConsentedRestriction(
+        OperationRestrictions.unlocking(restriction, unlocked))) ++ catalog
       .filter(_ => modifiers.nonEmpty || picked.nonEmpty)
       .map(ActiveModifier(_, modifiers, picked)).toVector ++
       powerRestrictions.map(ConsentedRestriction(_))
@@ -53,6 +58,15 @@ object OperationRestrictions:
   private[operations] def inPlay(from: Location): Boolean = from match
     case _: Location.Site | _: Location.PlayArea => true
     case _ => false
+
+  /** `restriction` with the locks on `unlocked` lifted: a [[LockedCards]]
+    * without those cards, its as-if rules kept. Any other restriction is
+    * returned unchanged. */
+  private def unlocking(restriction: OperationRestriction,
+      unlocked: Set[CardId]): OperationRestriction = restriction match
+    case locks: LockedCards if unlocked.nonEmpty =>
+      locks.copy(cards = locks.cards -- unlocked)
+    case other => other
 
   private def printedBy(catalog: ExecutableCatalog): Vector[OperationRestriction] =
     val locked: Set[CardId] =
