@@ -1,7 +1,7 @@
 package oathdigital.gameplay.walker
 
 import oathdigital.model.{AttackDieFace, DefenseDieFace, DiceKind, DieFace,
-  OathViolation, PoolKey, ReadyGame, Roll, RollOutcome}
+  OathViolation, PoolKey, ReadyGame, Roll, RollOutcome, RoundDieFace}
 
 /** Roll outcome mechanics, split out of [[ProcedureWalker]] (which is close to
   * the project's per-file bound) and shared by the live walk and by
@@ -33,6 +33,9 @@ private[walker] object WalkerRolls:
         case DiceKind.Attack => Either.cond(
           faces.forall(_.isInstanceOf[AttackDieFace]), (), invalid(
             s"attack roll for pool $pool received a non-attack die face"))
+        case DiceKind.Round => Either.cond(
+          faces.forall(_.isInstanceOf[RoundDieFace]), (), invalid(
+            s"round roll for pool $pool received a non-round die face"))
     yield
       val (skulls, score) = RollOutcome.derive(faces)
       RollOutcome(pool, count, faces, skulls, score)
@@ -47,9 +50,8 @@ private[walker] object WalkerRolls:
       invalid(s"recorded roll references missing pool ${pool.value}"))
     _ <- Either.cond(faces.size == count, (), invalid(
       s"recorded roll has ${faces.size} faces but pool count is $count"))
-    _ <- Either.cond(faces.forall(_.isInstanceOf[DefenseDieFace]) ||
-      faces.forall(_.isInstanceOf[AttackDieFace]), (), invalid(
-      "recorded roll mixes attack and defense faces"))
+    _ <- Either.cond(RollOutcome.oneFamily(faces), (), invalid(
+      "recorded roll mixes faces of different dice"))
   yield
     val (skulls, score) = RollOutcome.derive(faces)
     RollOutcome(pool, count, faces, skulls, score)

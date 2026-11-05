@@ -1,7 +1,8 @@
 package oathdigital.model
 
-/** Family of a rolled die, matching the two physical die kinds in Oath. */
-enum DiceKind { case Defense, Attack }
+/** Family of a rolled die: the two Campaign dice, and the round die, a d6
+  * numbered 1 to 6 (Shattered Portal rolls it). */
+enum DiceKind { case Defense, Attack, Round }
 
 /** Die specification a walker `Roll` node draws from a named pool.
   *

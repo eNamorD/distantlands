@@ -5,7 +5,7 @@ package oathdigital.model
   * vocabulary (the `BackendArchitectureSuite` inner/outer guard forbids that).
   *
   * Deliberately NOT sealed: each concrete face family ([[DefenseDieFace]],
-  * [[AttackDieFace]], any later family) extends it from its own file, so
+  * [[AttackDieFace]], [[RoundDieFace]]) extends it from its own file, so
   * walker `RollPayload`s and state outcomes store a plain `Vector[DieFace]`
   * while the families keep their own sealed typing and scoring.
   */

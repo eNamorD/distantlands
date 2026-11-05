@@ -116,10 +116,11 @@ object RerollChoice:
   def heading(die: DiceKind): String = s"Reroll the ${word(die)} dice, " +
     "or keep the roll"
 
-  /** "attack" or "defense". */
+  /** "attack", "defense" or "round". */
   def word(die: DiceKind): String = die match
     case DiceKind.Attack => "attack"
     case DiceKind.Defense => "defense"
+    case DiceKind.Round => "round"
 
   /** The throw a reroll offer is asked about: the hooked node's, when it
     * is a reroll choice. */

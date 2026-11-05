@@ -7,6 +7,10 @@ import oathdigital.model._
 trait CampaignDicePort:
   def rollAttack(count: Int): Vector[AttackDieFace]
   def rollDefense(count: Int): Vector[DefenseDieFace]
+  /** `count` round dice, each uniform over 1 to 6. A test port may fix
+    * them. */
+  def rollRound(count: Int): Vector[RoundDieFace] =
+    CampaignDicePort.uniformRound(count)
   /** A uniform order for a pile of `count` cards, as a permutation of
     * `0 until count`. A test port may fix it. */
   def shuffle(count: Int): Vector[Int] = CampaignDicePort.uniform(count)
@@ -32,6 +36,7 @@ object CampaignDicePort:
         : Either[OathViolation, Vector[DieFace]] = Right(kind match {
       case DiceKind.Attack => port.rollAttack(count)
       case DiceKind.Defense => port.rollDefense(count)
+      case DiceKind.Round => port.rollRound(count)
     })
     override def shuffle(count: Int): Either[OathViolation, Vector[Int]] =
       Right(port.shuffle(count))
@@ -39,3 +44,7 @@ object CampaignDicePort:
   private val shuffler = new scala.util.Random()
   private def uniform(count: Int): Vector[Int] =
     shuffler.shuffle((0 until count).toVector)
+
+  private val roundRoller = new scala.util.Random()
+  private def uniformRound(count: Int): Vector[RoundDieFace] =
+    Vector.fill(count)(RoundDieFace.values(roundRoller.nextInt(6)))

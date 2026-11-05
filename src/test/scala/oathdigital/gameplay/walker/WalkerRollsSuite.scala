@@ -10,6 +10,8 @@ class WalkerRollsSuite extends munit.FunSuite:
   private val defensePool = PoolKey("campaign.defense")
   private val attackRoll = Roll(attackPool, DiceSpec(DiceKind.Attack))
   private val defenseRoll = Roll(defensePool, DiceSpec(DiceKind.Defense))
+  private val roundPool = PoolKey("shattered-portal")
+  private val roundRoll = Roll(roundPool, DiceSpec(DiceKind.Round))
 
   private def withPools(pools: (PoolKey, Int)*): ReadyGame =
     TestGameFixtures.ready.updateCurrent(current => current.copy(rollPools =
@@ -31,6 +33,26 @@ class WalkerRollsSuite extends munit.FunSuite:
       Right(RollOutcome(defensePool, 2, faces, skulls = 0,
         score = DefenseDieFace.score(Vector(DefenseDieFace.OneShield,
           DefenseDieFace.Doubler)))))
+
+  test("a round roll scores the number it shows and has no skulls"):
+    val faces: Vector[DieFace] = Vector(RoundDieFace.Four)
+    val state = withPools(roundPool -> 1)
+    assertEquals(WalkerRolls.outcomeFor(roundRoll, state, faces),
+      Right(RollOutcome(roundPool, 1, faces, skulls = 0, score = 4)))
+    assertEquals(WalkerRolls.outcomeFor(roundRoll, state,
+      Vector(DefenseDieFace.Blank)), Left(OathViolation.InvalidEventOrder(
+        s"round roll for pool $roundPool received a non-round die face")))
+
+  test("a recorded round roll is one family; round and defense faces mixed " +
+      "are not"):
+    val state = withPools(roundPool -> 2)
+    val faces: Vector[DieFace] = Vector(RoundDieFace.Six, RoundDieFace.One)
+    assertEquals(WalkerRolls.outcomeForRecorded(state, roundPool, faces),
+      Right(RollOutcome(roundPool, 2, faces, skulls = 0, score = 7)))
+    assertEquals(WalkerRolls.outcomeForRecorded(state, roundPool,
+      Vector[DieFace](RoundDieFace.Six, DefenseDieFace.Blank)),
+      Left(OathViolation.InvalidEventOrder(
+        "recorded roll mixes faces of different dice")))
 
   test("a roll must match its pool count and its die kind"):
     val state = withPools(attackPool -> 4, defensePool -> 2)
@@ -61,7 +83,7 @@ class WalkerRollsSuite extends munit.FunSuite:
       Vector[DieFace](AttackDieFace.OneSword, AttackDieFace.OneSword,
         DefenseDieFace.Blank, DefenseDieFace.Blank)),
       Left(OathViolation.InvalidEventOrder(
-        "recorded roll mixes attack and defense faces")))
+        "recorded roll mixes faces of different dice")))
 
   test("two attack rolls of one pool accumulate faces, skulls and a re-scored total"):
     val first: Vector[DieFace] = Vector(AttackDieFace.HollowSword,

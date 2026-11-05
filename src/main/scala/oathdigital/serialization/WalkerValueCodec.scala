@@ -57,11 +57,13 @@ private[serialization] trait WalkerValueCodec extends PositionWire:
   protected final def encodeDiceKind(kind: DiceKind): String = kind match
     case DiceKind.Defense => "defense"
     case DiceKind.Attack => "attack"
+    case DiceKind.Round => "round"
 
   protected final def decodeDiceKind(value: String,
       path: String): Either[WireError, DiceKind] = value match
     case "defense" => Right(DiceKind.Defense)
     case "attack" => Right(DiceKind.Attack)
+    case "round" => Right(DiceKind.Round)
     case other => Left(InvalidValue(path, s"unknown dice kind '$other'"))
 
   protected final def decodeOptionalSignedInt(value: ujson.Value,
@@ -254,6 +256,7 @@ private[serialization] trait WalkerValueCodec extends PositionWire:
   protected final def encodeDieFace(face: DieFace): ujson.Value = face match
     case face: DefenseDieFace => ujson.Str(encodeDefenseFace(face))
     case face: AttackDieFace => ujson.Str(encodeAttackFace(face))
+    case face: RoundDieFace => ujson.Str(roundFaceKey(face))
     case other => throw new IllegalArgumentException(
       s"unsupported walker die face $other")
 
@@ -261,7 +264,13 @@ private[serialization] trait WalkerValueCodec extends PositionWire:
       : Either[WireError, DieFace] = value match
     case "hollow-sword" | "one-sword" | "two-swords-skull" =>
       decodeAttackFace(value, path)
+    case round if round.startsWith("round-") =>
+      RoundDieFace.values.find(face => roundFaceKey(face) == round)
+        .toRight(InvalidValue(path, s"unknown round die face '$round'"))
     case _ => decodeDefenseFace(value, path)
+
+  /** A round face's journal key: `round-1` to `round-6`. */
+  private def roundFaceKey(face: RoundDieFace): String = s"round-${face.value}"
 
   protected final def decodeSignedInt(value: ujson.Value,
       path: String): Either[WireError, Int] = value match

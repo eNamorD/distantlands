@@ -27,8 +27,9 @@ private[gameplay] object RollOperations:
             indices.exists(index => index < 0 ||
               index >= outcome.faces.size) =>
           invalid("names a die the roll does not have")
-        case Some(rolled) if !sameFamily(indices.map(outcome.faces) ++
-            rolled) => invalid("mixes attack and defense faces")
+        case Some(rolled) if !RollOutcome.oneFamily(
+            indices.map(outcome.faces) ++ rolled) =>
+          invalid("mixes faces of different dice")
         case Some(rolled) =>
           val replaced = indices.zip(rolled).foldLeft(outcome.faces) {
             case (all, (index, face)) => all.updated(index, face) }
@@ -56,8 +57,8 @@ private[gameplay] object RollOperations:
     val (skulls, _) = RollOutcome.derive(faces)
     if faces.isEmpty || faces.size > held then Left(InvalidDescription(
       s"setting ${faces.size} dice of ${pool.value}, which holds $held"))
-    else if !sameFamily(all) then Left(InvalidDescription(
-      s"setting dice of ${pool.value} mixes attack and defense faces"))
+    else if !RollOutcome.oneFamily(all) then Left(InvalidDescription(
+      s"setting dice of ${pool.value} mixes faces of different dice"))
     else
       val score = RollOutcome.derive(all)._2
       val outcome = before.fold(RollOutcome(pool, faces.size, faces, skulls,
@@ -68,7 +69,3 @@ private[gameplay] object RollOperations:
         rollPools = state.rollPools.updated(pool,
           DicePoolState(held - faces.size)),
         rollOutcomes = state.rollOutcomes.updated(pool, outcome))))
-
-  private def sameFamily(faces: Vector[DieFace]): Boolean =
-    faces.forall(_.isInstanceOf[AttackDieFace]) ||
-      faces.forall(_.isInstanceOf[DefenseDieFace])

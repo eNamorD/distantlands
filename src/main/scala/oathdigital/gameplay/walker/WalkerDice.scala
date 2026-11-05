@@ -1,7 +1,7 @@
 package oathdigital.gameplay.walker
 
 import oathdigital.model.{AttackDieFace, DefenseDieFace, DiceKind, DieFace,
-  OathViolation}
+  OathViolation, RoundDieFace}
 
 /** Where the walker's randomness comes from: an automatic `Roll`'s faces,
   * asked once per roll with the die kind and the pool's count, and a
@@ -39,6 +39,7 @@ object WalkerDice:
       Right(Vector.fill(count)(kind match {
         case DiceKind.Attack => AttackDieFace.HollowSword: DieFace
         case DiceKind.Defense => DefenseDieFace.Blank: DieFace
+        case DiceKind.Round => RoundDieFace.One: DieFace
       }))
     override def shuffle(count: Int): Either[OathViolation, Vector[Int]] =
       Right((0 until count).toVector)

@@ -1,7 +1,7 @@
 package oathdigital.gameplay.walker
 
 import oathdigital.model.{AttackDieFace, DiceKind, OathViolation, ReadyGame,
-  Reroll}
+  Reroll, RoundDieFace}
 
 /** Fills a declared `Reroll`'s faces from the walker's dice source. Split out
   * of [[ProcedureWalker]], which is close to the project's per-file bound,
@@ -21,6 +21,7 @@ private[walker] object WalkerRerolls:
       case Some(face) =>
         val kind = face match
           case _: AttackDieFace => DiceKind.Attack
+          case _: RoundDieFace => DiceKind.Round
           case _ => DiceKind.Defense
         dice.roll(kind, reroll.indices.size).flatMap(faces => Either.cond(
           faces.size == reroll.indices.size,

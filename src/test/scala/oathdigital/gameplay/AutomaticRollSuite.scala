@@ -16,10 +16,11 @@ class AutomaticRollSuite extends munit.FunSuite:
   private val faces: Vector[DieFace] = Vector(AttackDieFace.TwoSwordsSkull,
     AttackDieFace.OneSword, AttackDieFace.HollowSword)
   /** Stub of WalkerDice: attack faces from `faces`, defense always
-    * OneShield. */
+    * OneShield, round always One. */
   private val fixed: WalkerDice = (kind, count) => kind match
     case DiceKind.Attack => Right(faces.take(count))
     case DiceKind.Defense => Right(Vector.fill(count)(DefenseDieFace.OneShield))
+    case DiceKind.Round => Right(Vector.fill(count)(RoundDieFace.One))
   private val automatic = Roll(pool, DiceSpec(DiceKind.Attack),
     RollMode.Automatic)
   private val afterPool = PoolKey("after")

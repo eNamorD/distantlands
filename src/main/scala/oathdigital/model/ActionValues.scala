@@ -19,6 +19,17 @@ object DefenseDieFace:
     }.sum
     shields * (1 << faces.count(_ == Doubler))
 
+/** The round die's faces, a d6 numbered 1 to 6. Each scores its number. */
+enum RoundDieFace(val value: Int) extends DieFace:
+  case One extends RoundDieFace(1)
+  case Two extends RoundDieFace(2)
+  case Three extends RoundDieFace(3)
+  case Four extends RoundDieFace(4)
+  case Five extends RoundDieFace(5)
+  case Six extends RoundDieFace(6)
+object RoundDieFace:
+  def score(faces: Vector[RoundDieFace]): Int = faces.map(_.value).sum
+
 sealed trait SearchSource extends Product with Serializable
 object SearchSource:
   case object WorldDeck extends SearchSource

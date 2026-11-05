@@ -16,7 +16,9 @@ import oathdigital.protocol.projection.{DieFace => RolledFace}
   *
   * `oathdigital.model.DieFace` is open, so a face family neither pool rolls
   * maps to nothing rather than to a guess, and a wire leaves it out rather
-  * than inventing a key for it.
+  * than inventing a key for it. The round die is such a family: Shattered
+  * Portal's own line states its number, no decision follows its roll, and
+  * the client draws no round face.
   */
 private[application] object RolledFaces:
   def of(value: DieFace): Option[RolledFace] = value match

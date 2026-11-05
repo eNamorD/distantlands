@@ -53,6 +53,11 @@ object ActPowerHarness:
   def attackDice(faces: AttackDieFace*): WalkerDice =
     WalkerDiceFixture.dice(attack = faces.toVector)
 
+  /** Stub of WalkerDice: one round die showing `face`; any other pool
+    * fails. */
+  def roundDie(face: RoundDieFace): WalkerDice =
+    WalkerDiceFixture.dice(round = Vector(face))
+
   def use(rules: OathRules, ready: ReadyGame, id: PowerId,
       source: DecisionOptionRef): Either[OathViolation, OathTransition] =
     rules.startWalker(Ready(MenuPlay.withoutMenu(ready)),

@@ -41,12 +41,21 @@ final case class RollOutcome(
 
 object RollOutcome:
   /** Skulls and score of `faces`, all of one family: attack faces score
-    * swords and count skulls, defense faces score shields, a Doubler
-    * applying across every face. */
+    * swords and count skulls, round faces score their numbers, defense
+    * faces score shields, a Doubler applying across every face. */
   def derive(faces: Vector[DieFace]): (Int, Int) =
     val attack = faces.collect { case face: AttackDieFace => face }
+    val round = faces.collect { case face: RoundDieFace => face }
     if attack.nonEmpty then
       (AttackDieFace.skulls(attack), AttackDieFace.score(attack))
+    else if round.nonEmpty then (0, RoundDieFace.score(round))
     else (0, DefenseDieFace.score(faces.collect {
       case face: DefenseDieFace => face
     }))
+
+  /** Whether every face of `faces` is on one die: all attack, all defense or
+    * all round. No faces is one family. */
+  def oneFamily(faces: Vector[DieFace]): Boolean =
+    faces.forall(_.isInstanceOf[AttackDieFace]) ||
+      faces.forall(_.isInstanceOf[DefenseDieFace]) ||
+      faces.forall(_.isInstanceOf[RoundDieFace])

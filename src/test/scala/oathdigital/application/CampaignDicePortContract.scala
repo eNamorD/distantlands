@@ -1,6 +1,6 @@
 package oathdigital.application
 
-import oathdigital.model.{AttackDieFace, DefenseDieFace}
+import oathdigital.model.{AttackDieFace, DefenseDieFace, RoundDieFace}
 import oathdigital.testkit.Dice
 
 /** What every `CampaignDicePort` promises (the trait's doc): a pool of `n`
@@ -22,6 +22,11 @@ trait CampaignDicePortContract extends munit.FunSuite:
     test(s"$name: a pool of n defense dice rolls n faces"):
       Vector(0, 1, 2, 5).foreach { count =>
         assertEquals(port.rollDefense(count).size, count, s"pool of $count")
+      }
+
+    test(s"$name: a pool of n round dice rolls n faces"):
+      Vector(0, 1, 2, 5).foreach { count =>
+        assertEquals(port.rollRound(count).size, count, s"pool of $count")
       }
   }
 
@@ -45,6 +50,8 @@ class RandomCampaignDicePortSuite extends CampaignDicePortContract:
       AttackDieFace.values.toSet)
     assertEquals(CampaignDicePort.random.rollDefense(600).toSet,
       DefenseDieFace.values.toSet)
+    assertEquals(CampaignDicePort.random.rollRound(600).toSet,
+      RoundDieFace.values.toSet)
 
 /** The stubs the service tests share. The stubs that return fixed faces
   * whatever the count (`defending`, the counting and scripted spies) cannot

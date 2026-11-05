@@ -503,6 +503,22 @@ class WalkerOperationWireSuite extends munit.FunSuite:
       _("payload")("step").obj.contains("automatic")).toVector,
       Vector(false, true))
 
+  test("a walker roll payload round-trips round faces, and a round Roll " +
+      "keeps its die"):
+    val events = Vector[OathEvent](
+      WalkerStepRecorded("1", RollPayload(PoolKey("shattered-portal"),
+        Vector(RoundDieFace.One, RoundDieFace.Six), automatic = true),
+        Vector.empty),
+      recordedOperation(Roll(PoolKey("shattered-portal"),
+        DiceSpec(DiceKind.Round))))
+    val encoded = encodedStreamThatRoundTrips("walker-round", events)
+    val written = ujson.read(encoded).arr
+    assertEquals(written(0)("payload")("step")("faces"),
+      ujson.Arr("round-1", "round-6"))
+    assertEquals(written(1)("payload")("step")("ops")(0)("die").str, "round")
+    assert(GameEventWire.decodeStream(encoded.replace("round-6", "round-7"))
+      .isLeft)
+
   test("every Piece variant round-trips through the walker codec"):
     // `encodePiece` is fully total (I8): unlike `encodeOperation`, it has no
     // throwing arm at all, so this list is the whole of `Piece`. `Take`

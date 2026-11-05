@@ -21,9 +21,9 @@ object JinxCard extends Denizen(DenizenId("68"), "Jinx", Suit.Arcane):
   * [defense-die] for any reason, you may use this power to reroll all those
   * dice once." It costs one secret, paid onto the card when used.
   *
-  * It offers itself at every roll step whose roller rules it: a faceup
-  * adviser of the roller, or a card faceup at a site the roller rules. A
-  * facedown adviser has no power. The roll step stops offering it once it
+  * It offers itself at every attack or defense roll step whose roller rules
+  * it: a faceup adviser of the roller, or a card faceup at a site the roller
+  * rules. A facedown adviser has no power. The roll step stops offering it once it
   * is used on a throw, which is the "once".
   *
   * It writes "Rerolled the attack dice." ("the defense dice"), before the
@@ -45,9 +45,17 @@ case object Jinx extends ContributingPower:
   val rerolledDefense: NoteKey = notes.key("rerolled-defense",
     Vector(NotePart.Text("Rerolled the defense dice.")))
 
-  private def line(rolled: DiceThrow): NoteKey = rolled.die match
-    case DiceKind.Attack => rerolledAttack
-    case DiceKind.Defense => rerolledDefense
+  /** Its line for `rolled`; none for the round die, which Jinx's text does
+    * not name, so Jinx offers nothing after a round roll. */
+  private def line(rolled: DiceThrow): Option[NoteKey] = rolled.die match
+    case DiceKind.Attack => Some(rerolledAttack)
+    case DiceKind.Defense => Some(rerolledDefense)
+    case DiceKind.Round => None
+
+  /** The throw at hand, when its roller rules Jinx and Jinx can reroll it. */
+  private def jinxable(ctx: PowerCtx): Option[DiceThrow] =
+    RerollChoice.throwOf(ctx).filter(rolled => line(rolled).nonEmpty &&
+      Jinx.rules(ctx.state, rolled.roller))
 
   /** Whether `player` rules Jinx: a faceup adviser of theirs, or faceup at a
     * site they rule. */
@@ -68,18 +76,16 @@ case object Jinx extends ContributingPower:
     * roller's, persistent, costing a secret. Nobody is asked about the
     * Campaign's own dice. */
   override def use(ctx: PowerCtx): Option[PowerUse] =
-    RerollChoice.throwOf(ctx).filter(rolled =>
-      Jinx.rules(ctx.state, rolled.roller)).map(rolled =>
+    jinxable(ctx).map(rolled =>
       PowerUse.of(rolled.roller, JinxCard.power, JinxCard.id,
         consent = !Set(CampaignIds.attackPool, CampaignIds.defensePool)
           .contains(rolled.pool)))
 
   private def offer(ctx: PowerCtx): Option[RerollOffer] =
-    RerollChoice.throwOf(ctx).filter(rolled =>
-      Jinx.rules(ctx.state, rolled.roller)).map(rolled => RerollOffer(
+    jinxable(ctx).map(rolled => RerollOffer(
       JinxCard.id, Jinx.label,
       Some(Costs.onCard(rolled.roller, JinxCard.id, JinxCard.power.cost,
         Some(JinxCard.suit), intoOccupied = true)),
-      Vector(Note(id, _ => Some(Jinx.line(rolled)(
+      Vector(Note(id, _ => line(rolled).map(_(
         PowerSourceRef.Card(JinxCard.id)))),
         Reroll(rolled.pool, rolled.indices))))

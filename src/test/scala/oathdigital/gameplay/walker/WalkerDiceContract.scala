@@ -2,7 +2,8 @@ package oathdigital.gameplay.walker
 
 import oathdigital.application.CampaignDicePort
 import oathdigital.gameplay.WalkerDiceFixture
-import oathdigital.model.{AttackDieFace, DefenseDieFace, DiceKind, DieFace}
+import oathdigital.model.{AttackDieFace, DefenseDieFace, DiceKind, DieFace,
+  RoundDieFace}
 import oathdigital.testkit.Unwrap.*
 
 /** One dice source under contract: a name for the test title, the source, and
@@ -12,8 +13,8 @@ final case class DiceSubject(name: String, dice: WalkerDice,
     poolSizes: Vector[Int] = Vector(1, 2, 5))
 
 /** What the walker asks of every `WalkerDice` that rolls (the trait's doc): a
-  * pool of `n` attack dice rolls `n` attack faces, and a pool of `n` defense
-  * dice rolls `n` defense faces. The production adapter over the campaign dice
+  * pool of `n` dice of a kind rolls `n` faces of that kind, for attack,
+  * defense and round dice. The production adapter over the campaign dice
   * port and the shared stubs of `WalkerDiceFixture` run it, so a stub cannot
   * hand a test a roll the real source never gives. */
 trait WalkerDiceRollContract extends munit.FunSuite:
@@ -36,6 +37,15 @@ trait WalkerDiceRollContract extends munit.FunSuite:
           accepted(subject.dice.roll(DiceKind.Defense, count))
         assertEquals(faces.size, count, s"pool of $count")
         assertEquals(faces.collect { case face: DefenseDieFace => face }, faces,
+          s"pool of $count")
+      }
+
+    test(s"${subject.name}: a pool of n round dice rolls n round faces"):
+      subject.poolSizes.foreach { count =>
+        val faces: Vector[DieFace] =
+          accepted(subject.dice.roll(DiceKind.Round, count))
+        assertEquals(faces.size, count, s"pool of $count")
+        assertEquals(faces.collect { case face: RoundDieFace => face }, faces,
           s"pool of $count")
       }
   }
@@ -67,6 +77,8 @@ class CampaignWalkerDiceSuite
     val defense = accepted(production.roll(DiceKind.Defense, 600)).toSet
     assertEquals(attack, AttackDieFace.values.toSet[DieFace])
     assertEquals(defense, DefenseDieFace.values.toSet[DieFace])
+    val round = accepted(production.roll(DiceKind.Round, 600)).toSet
+    assertEquals(round, RoundDieFace.values.toSet[DieFace])
 
 /** The placeholder source simulations use. */
 class PlaceholderWalkerDiceSuite
@@ -91,7 +103,8 @@ class WalkerDiceFixtureSuite
     DiceSubject("skull then swords", WalkerDiceFixture.skullThenSwords),
     DiceSubject("exact faces", WalkerDiceFixture.dice(
       attack = Vector(AttackDieFace.OneSword, AttackDieFace.HollowSword),
-      defense = Vector(DefenseDieFace.Doubler, DefenseDieFace.Blank)),
+      defense = Vector(DefenseDieFace.Doubler, DefenseDieFace.Blank),
+      round = Vector(RoundDieFace.Two, RoundDieFace.Five)),
       poolSizes = Vector(2)))
   protected def shufflers = Vector(
     "reversing shuffle" -> WalkerDiceFixture.reversingShuffle,
