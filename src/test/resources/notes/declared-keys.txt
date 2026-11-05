@@ -419,6 +419,7 @@ edifice.e13.intact used = Swapped {0} for {1} at {2}.
 edifice.e13.intact used.none = No relic could be swapped.
 edifice.e13.intact used.peeked = {0} peeked at the relics in the {1}: {2}.
 edifice.e14.intact used = {0} placed at {1}.
+edifice.e14.ruined used = Rolled {0}; {1} placed at {2}.
 edifice.e15.intact used = {0}'s Supply refreshed to {1}.
 edifice.e15.ruined ended = {0}'s Act phase ended.
 edifice.e15.ruined gained = {0} gained {1}.

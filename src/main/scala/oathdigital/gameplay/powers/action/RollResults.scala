@@ -7,8 +7,9 @@ import oathdigital.model._
   * no case of its own.
   */
 private[action] object RollResults:
-  /** Shields for a defense roll, swords for an attack roll, scored by
-    * `DefenseDieFace.score` and `AttackDieFace.score` when the roll was
+  /** Shields for a defense roll, swords for an attack roll and the number
+    * shown for a round roll, scored by `DefenseDieFace.score`,
+    * `AttackDieFace.score` and `RoundDieFace.score` when the roll was
     * recorded.
     */
   def score(ready: ReadyGame, pool: PoolKey): Int =

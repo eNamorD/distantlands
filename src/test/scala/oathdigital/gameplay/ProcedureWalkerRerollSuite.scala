@@ -30,3 +30,18 @@ class ProcedureWalkerRerollSuite extends munit.FunSuite:
         assertEquals(outcome.score, 2)
       case other => fail(s"expected the tree to finish, got $other")
 
+
+  test("a reroll of a round die asks the dice source for a round die"):
+    // These dice answer only a round pool of one, so asking for the wrong
+    // kind fails the walk.
+    val dice = WalkerDiceFixture.dice(round = Vector(RoundDieFace.Five))
+    val pool = PoolKey("shattered-portal")
+    val rerolled = Sequence(ModifyDicePool(pool, 1),
+      Roll(pool, DiceSpec(DiceKind.Round), RollMode.Automatic),
+      Reroll(pool, Vector(0)))
+    ProcedureWalker.advance(ready, rerolled, None, noPowers, dice) match
+      case Right(WalkerOutcome.Finished(end, events)) =>
+        assert(RecordedOps.all(events).contains(Reroll(pool, Vector(0),
+          Some(Vector(RoundDieFace.Five)))))
+        assertEquals(end.game.current.rollOutcomes(pool).score, 5)
+      case other => fail(s"expected the tree to finish, got $other")

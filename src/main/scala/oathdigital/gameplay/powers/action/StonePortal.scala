@@ -30,8 +30,7 @@ object StonePortalCard extends Edifice(EdificeId("E14"), Suit.Arcane):
   * The engine's access rule gates it: the Portal is usable at the pawn's
   * site or at a site the user rules. The placement is a plain `Move`, not a
   * Travel, as Whistle and Magic Carpet place pawns. Its line is theirs:
-  * "{Blue} placed at {site}." The ruined face, Shattered Portal, needs the
-  * round die and is not implemented.
+  * "{Blue} placed at {site}." The ruined face is [[ShatteredPortal]].
   */
 case object StonePortal extends PaidAction(StonePortalCard.intact.power):
   val edifice: EdificeId = StonePortalCard.id
