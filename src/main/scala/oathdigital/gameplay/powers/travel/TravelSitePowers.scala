@@ -47,7 +47,8 @@ private[travel] object TravelRoute:
   */
 private[travel] object TravelTerrain:
   def coastSites(ready: ReadyGame): Set[SiteId] =
-    TravelSitePowers.printedCoastSites ++ GrandCanal.site(ready)
+    TravelSitePowers.printedCoastSites ++ GrandCanal.site(ready) ++
+      LostLagoon.site(ready)
 
   def coastOrIslandSites(ready: ReadyGame): Set[SiteId] =
     coastSites(ready) ++ TravelSitePowers.printedIslandSites
@@ -61,7 +62,7 @@ private[travel] object TravelTerrain:
     * modifiers (Mountain, Pass, etc.)". The Pass is not an add; its
     * restriction reads `coastRoute` itself. */
   def ignoredOnCoastRoute(other: ContributingPower): Boolean = other match
-    case _: MountainSitePower | _: IslandSitePower => true
+    case _: MountainSitePower | _: IslandSitePower | LostLagoon => true
     case _ => false
 
 final case class MountainSitePower(id: PowerId, site: SiteId)

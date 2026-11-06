@@ -1,6 +1,6 @@
 # Catalog Batch 10: Engine Seams
 
-**Status:** designed 2026-11-03. Slices 1 to 4 landed.
+**Status:** designed 2026-11-03. Slices 1 to 5 landed.
 
 **Builds on** [Catalog batch 9](2026-11-02-catalog-batch-9-design.md) and
 [batch 8](2026-10-12-catalog-batch-8-design.md), whose vocabulary, cost
@@ -136,6 +136,10 @@ Taken with the owner on 2026-11-03, except where another source is named.
     guards only exiles during play.
 11. **Secret Testament leaves Favored Son alone.** Testament is a Challenge
     modifier, and Favored Son takes its banner outside a Challenge.
+12. **Lost Lagoon has the Coast power** (owner, 2026-11-05). Every printed
+    Island "has the Coast power", so the Lagoon's site joins both live
+    sets: Lagoon-to-Coast costs 1 Supply and counts as a Coast route for
+    Narrow Pass.
 
 ### Readings
 
@@ -276,21 +280,24 @@ with room; replay.
 
 ## Slice 5: Live terrain
 
-`TravelSitePowers` builds `coastSites` and `coastOrIslandSites` once from a
-static list. They become reads of the state: the static set, plus the site
-of Grand Canal's intact face (Coast), plus the site of its ruined face for
-the Coast-or-Island set. `CoastSitePower.applicable` and
-`NarrowPassSitePower.blocked` take them from `ctx.state`.
+`TravelSitePowers` builds the Coast and Island sets once from a static
+list. `TravelTerrain` reads them from the state instead: the printed Coast
+sites plus the site of either E03 face for the Coast set, and the Coast set
+plus the printed Islands for the Coast-or-Island set (ruling 12).
+`CoastSitePower.applicable` and `NarrowPassSitePower.blocked` take them from
+`ctx.state`.
 
 Two new powers stand at a live site, found with
-`EdificeSetupSupport.siteOf`: a Canal power with Coast behaviour, and a
-Lagoon power with Island behaviour (+2 Supply to arrive) that a Coast route
-also reaches. Each keeps a `RuleSourceRef.Site` source, so Forest Paths
-ignores it as it ignores printed terrain.
+`EdificeSetupSupport.siteOf`: `GrandCanal`, with Coast behaviour, and
+`LostLagoon`, with Island behaviour (+2 Supply to arrive, skipped on a
+Coast route) and Coast behaviour to leave. A power's `source` is static, so
+each has a `RuleSourceRef.GameRule` source and extends the `LiveTerrain`
+marker; Forest Paths ignores a `LiveTerrain` as it ignores printed terrain.
 
 Tests: Coast-to-Canal and Canal-to-Coast at 1 Supply; Lagoon's +2 and the
-Coast route to it; Narrow Pass's coast exemption with a Canal; Forest Paths
-ignoring both; the edifice ruined mid-game switching terrain.
+Coast route to it; Lagoon-to-Coast at 1 Supply; Narrow Pass's coast
+exemption with a Canal; Forest Paths ignoring both; the edifice ruined mid-
+game switching terrain.
 
 ## Slice 6: Dispossessed draws
 
