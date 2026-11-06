@@ -34,7 +34,8 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
     * `CoreOperation` case belongs to no group.
     */
   private type CardOperation =
-    Peek | Flip | Bury | Discard | Draw | Play | Reveal | Swap | Shuffle
+    Peek | Flip | Bury | Discard | RemoveFromMap | Draw | Play | Reveal | Swap |
+      Shuffle
   private type PieceOperation =
     Move | Take | Kill | Replace | Sacrifice | Burn | Give | Exchange | PayCost
   private type ResourceOperation = SpendSupply | GainSupply | FlipSecrets | Gain
@@ -110,6 +111,12 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
         "kind" -> "discard-relic", "card" -> card.value,
         "from" -> encodePositionedLocation(from), "secrets" -> secrets,
         "actingPlayerId" -> actingPlayer.value)
+      case RemoveFromMap(card, from, to, suit, favor, secrets, actingPlayer) =>
+        ujson.Obj("kind" -> "remove-from-map", "card" -> encodeCardRef(card),
+          "from" -> encodePositionedLocation(from),
+          "to" -> encodePositionedLocation(to), "suit" -> suit.key,
+          "favor" -> favor, "secrets" -> secrets,
+          "actingPlayerId" -> actingPlayer.value)
       case Draw(player, cards, source, destination, position) => ujson.Obj(
         "kind" -> "draw", "playerId" -> player.value,
         "cards" -> ujson.Arr.from(cards.map(encodeCardRef)),
@@ -370,6 +377,15 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
       from <- decodePositionedLocation(value("from"), s"$path.from")
       secrets <- safeIntField(value.obj, "secrets", path)
     yield Discard.Relic(RelicId(value("card").str), from, secrets,
+      PlayerId(value("actingPlayerId").str))
+    case "remove-from-map" => for
+      card <- decodeCardRef(value("card"), s"$path.card")
+      from <- decodePositionedLocation(value("from"), s"$path.from")
+      to <- decodePositionedLocation(value("to"), s"$path.to")
+      suit <- decodeSuit(value("suit").str, s"$path.suit")
+      favor <- safeIntField(value.obj, "favor", path)
+      secrets <- safeIntField(value.obj, "secrets", path)
+    yield RemoveFromMap(card, from, to, suit, favor, secrets,
       PlayerId(value("actingPlayerId").str))
     case "draw" => for
       cards <- traverse(value("cards").arr.zipWithIndex.toVector):

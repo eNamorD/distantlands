@@ -20,35 +20,6 @@ sealed trait CoreOperation extends Operation:
 
 sealed trait PrimitiveOperation extends CoreOperation, LeafOperation
 
-sealed trait Piece extends Product with Serializable
-object Piece:
-  final case class Card(id: CardId) extends Piece
-  final case class Banner(banner: oathdigital.model.Banner) extends Piece
-  final case class Pawn(player: PlayerId) extends Piece
-
-  sealed trait Counted extends Piece { def amount: Int }
-  final case class Favor(amount: Int) extends Counted:
-    require(amount > 0, "favor amount must be positive")
-  final case class Secrets(amount: Int) extends Counted:
-    require(amount > 0, "secret amount must be positive")
-  final case class Warbands(kind: ForceKind, amount: Int) extends Counted:
-    require(amount > 0, "warband amount must be positive")
-
-enum SecretSide { case FaceUp, FaceDown }
-
-enum StackPosition { case Unspecified, Top, Bottom }
-
-/** A location, and where in it a piece is moved from or to. `side`, for
-  * secrets on a player's board, is the side a move takes them from; with
-  * none, the move takes either side as its destination allows. Moved
-  * secrets keep their side (catalog batch 8, slice 5). */
-final case class PositionedLocation(
-    location: Location,
-    position: StackPosition = StackPosition.Unspecified,
-    side: Option[SecretSide] = None):
-  require(side.isEmpty || location.isInstanceOf[Location.PlayArea],
-    "only secrets on a board have a side to move from")
-
 /** Changes a piece's location or role within one play area. `by` is the
   * player who moves it, where a rule names one (catalog batch 8, slice 11):
   * a restriction that holds against some players only reads it off the
@@ -260,6 +231,23 @@ object Discard:
       to: PositionedLocation): Vector[Operation] =
     if amount == 0 then Vector.empty
     else Vector(Move(piece(amount), from, to))
+
+/** Takes a card off the map into a pile that holds no tokens (Pilgrimage,
+  * catalog batch 10, slice 6): a denizen to the Dispossessed, or a ruined
+  * edifice to the bottom of the edifice deck. Its favor goes to `suit`'s
+  * bank and its secrets to `actingPlayer`, facedown, as a discard's do.
+  * The returns are children of this operation with the card's move, so a
+  * restriction that refuses the move, such as a lock, refuses them too,
+  * and the card keeps its tokens. */
+final case class RemoveFromMap(card: CardId, from: PositionedLocation,
+    to: PositionedLocation, suit: Suit, favor: Int, secrets: Int,
+    actingPlayer: PlayerId) extends CoreOperation:
+  require(favor >= 0, "removed favor must be non-negative")
+  require(secrets >= 0, "removed secrets must be non-negative")
+
+  override val children: Vector[Operation] =
+    Discard.returns(card, Some(suit), favor, secrets, actingPlayer) :+
+      Move(Piece.Card(card), from, to, by = Some(actingPlayer))
 
 /** Takes known cards from a prompted draw source, in the order drawn: from
   * the top, or from the bottom when `position` says so (a Search drawn
