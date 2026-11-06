@@ -25,6 +25,8 @@ private[frontend] object WalkerPanelSupport:
     */
   private[frontend] val continueOptionKey = "continue"
   private[frontend] val stopOptionKey = "stop"
+  /** Why the buy is withheld when the acting player has no Supply. */
+  private[frontend] val NoSupplyReason = "No Supply left."
 
   /** The answer for any projected choose-one option, built from the option's
     * own `kind`/`id` pair. One builder serves Recover's buttons and its
@@ -91,9 +93,13 @@ private[frontend] object WalkerPanelSupport:
             else if option.id == stopOptionKey then ("Stop Recover", "recover-stop")
             else (option.label, "recover-choice")
           val control = button(label, className)
-          control.disabled = !canControl || (spendsSupply && !hasSupply)
+          control.disabled = !canControl
           control.onclick = _ => controls.submitCommand(
             resolveChooseOneCommand(decision, option))
+          // Without the Supply the buy is withheld, not merely disabled, so
+          // the control says why it cannot be used.
+          if spendsSupply && !hasSupply then
+            HoverTip.withhold(control, NoSupplyReason)
           panel.appendChild(control)
           withholds(control, option)
         }

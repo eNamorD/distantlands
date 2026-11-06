@@ -48,12 +48,24 @@ class RecoverPanelSuite extends munit.FunSuite:
     assertEquals(all(panel, ".recover-stop").map(_.textContent),
       Vector("Stop Recover"))
 
-  test("without the supply to buy them, the control is refused"):
-    assert(as[dom.html.Button](
-      all(render(choice(), supply = 0), ".recover-add").head).disabled)
+  test("without the supply to buy them, the control is withheld with its reason"):
+    val ui = new RecordingControls()
+    val panel = dom.document.createElement("div")
+    WalkerPanelSupport.renderRecoverPanel(choice(),
+      TestProjections.actingProjection().copy(activePlayerResources = Some(
+        ActivePlayerResources(favor = 0, faceUpSecrets = 0, faceDownSecrets = 0,
+          committedSecrets = 0, totalSecrets = 0, supply = 0))),
+      canControl = true, panel, ui)
+    val add = as[dom.html.Button](all(panel, ".recover-add").head)
+    assertEquals(add.getAttribute("aria-disabled"), "true")
+    assertEquals(add.getAttribute("data-tip"), "No Supply left.")
+    add.click()
+    assertEquals(ui.submitted, Vector.empty)
     // The label costs 1 Supply, so 1 is enough.
-    assert(!as[dom.html.Button](
-      all(render(choice(), supply = 1), ".recover-add").head).disabled)
+    val affordable = as[dom.html.Button](
+      all(render(choice(), supply = 1), ".recover-add").head)
+    assert(!affordable.disabled)
+    assert(!affordable.hasAttribute("aria-disabled"))
 
   test("Recover shows its dice and how close the score is to the target"):
     val outcome = WalkerRollOutcomeState("recover",
