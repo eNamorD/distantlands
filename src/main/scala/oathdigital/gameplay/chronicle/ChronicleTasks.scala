@@ -44,8 +44,7 @@ object ChronicleTasks:
     * Imperial, the player's own for an Exile (Chronicle ruling 11). */
   def rules(ready: ReadyGame, player: PlayerId, site: SiteId): Boolean =
     val current = ready.game.current
-    val imperial = lineageOf(ready, player)
-      .flatMap(ready.game.campaign.lineages.get).exists(_.role.isImperial)
+    val imperial = Imperials.isImperial(ready, player)
     current.map.sites.get(site).flatMap(state =>
       SiteRule.ruler(state.forces, current.players).toOption).exists {
         case SiteRuler.Empire => imperial
