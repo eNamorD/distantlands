@@ -9,7 +9,7 @@ import oathdigital.gameplay.cards.{BrokenPeaksSite, DesolateShoreSite,
 import oathdigital.model.{DecisionOptionRef, Location, Move, NoteKey,
   NotePart, NoteSet, OathViolation, Operation, Piece, PlayerId,
   PositionedLocation, PowerId, LogNote, PowerSourceRef, PowerWindow,
-  RuleSourceRef, SiteId, SiteRule, SiteRuler, SpendSupply}
+  ReadyGame, RuleSourceRef, SiteId, SiteRule, SiteRuler, SpendSupply}
 
 private[travel] object TravelRoute:
   final case class PawnMove(player: PlayerId, source: SiteId, destination: SiteId)
@@ -40,6 +40,30 @@ private[travel] object TravelRoute:
         Vector(payment.copy(amount = rewrite(amount)))
     })
 
+/** The Travel terrain of the sites in play, read from the state on every
+  * call: the printed Coast and Island sites, plus the site of either face
+  * of E03. Grand Canal makes its site a Coast. Lost Lagoon makes its site
+  * an Island, which has the Coast power (catalog batch 10, ruling 12).
+  */
+private[travel] object TravelTerrain:
+  def coastSites(ready: ReadyGame): Set[SiteId] =
+    TravelSitePowers.printedCoastSites ++ GrandCanal.site(ready)
+
+  def coastOrIslandSites(ready: ReadyGame): Set[SiteId] =
+    coastSites(ready) ++ TravelSitePowers.printedIslandSites
+
+  /** Whether `route` leaves a Coast for a Coast or an Island. */
+  def coastRoute(ready: ReadyGame, route: TravelRoute.PawnMove): Boolean =
+    coastSites(ready).contains(route.source) &&
+      coastOrIslandSites(ready).contains(route.destination)
+
+  /** The terrain adds a Coast route ignores: "ignores other Travel
+    * modifiers (Mountain, Pass, etc.)". The Pass is not an add; its
+    * restriction reads `coastRoute` itself. */
+  def ignoredOnCoastRoute(other: ContributingPower): Boolean = other match
+    case _: MountainSitePower | _: IslandSitePower => true
+    case _ => false
+
 final case class MountainSitePower(id: PowerId, site: SiteId)
     extends ContributingPower:
   def source: RuleSourceRef = RuleSourceRef.Site(site)
@@ -60,8 +84,8 @@ final case class IslandSitePower(id: PowerId, site: SiteId)
   override def applicable(ctx: PowerCtx): Boolean =
     TravelRoute.pawnMove(ctx.operation).exists(_.destination == site)
 
-final case class CoastSitePower(id: PowerId, site: SiteId,
-    coastOrIslandSites: Set[SiteId]) extends ContributingPower:
+final case class CoastSitePower(id: PowerId, site: SiteId)
+    extends ContributingPower:
   def source: RuleSourceRef = RuleSourceRef.Site(site)
   def contributions: Map[PowerWindow, Vector[Contribution]] =
     Map.empty.updated(PowerWindow.TravelCost,
@@ -69,13 +93,11 @@ final case class CoastSitePower(id: PowerId, site: SiteId,
         TravelRoute.adjustSupply(ctx, operations)(_ => 1))))
   override def applicable(ctx: PowerCtx): Boolean = TravelRoute
     .pawnMove(ctx.operation).exists(route => route.source == site &&
-      coastOrIslandSites.contains(route.destination))
-  override def shouldIgnore(other: ContributingPower): Boolean = other match
-    case _: MountainSitePower | _: IslandSitePower => true
-    case _ => false
+      TravelTerrain.coastRoute(ctx.state, route))
+  override def shouldIgnore(other: ContributingPower): Boolean =
+    TravelTerrain.ignoredOnCoastRoute(other)
 
-final case class NarrowPassSitePower(id: PowerId, site: SiteId,
-    coastSites: Set[SiteId], coastOrIslandSites: Set[SiteId])
+final case class NarrowPassSitePower(id: PowerId, site: SiteId)
     extends ContributingPower:
   def source: RuleSourceRef = RuleSourceRef.Site(site)
   private val own = NoteSet(id)
@@ -152,9 +174,7 @@ final case class NarrowPassSitePower(id: PowerId, site: SiteId,
 
   private def blocked(ctx: PowerCtx): Option[OathViolation] =
     TravelRoute.pawnMove(ctx.operation).flatMap { route =>
-      val coastRoute = coastSites.contains(route.source) &&
-        coastOrIslandSites.contains(route.destination)
-      if coastRoute then None
+      if TravelTerrain.coastRoute(ctx.state, route) then None
       else SiteRule.rulingPlayer(ctx.state, site) match
         case Some(SiteRuler.Player(player)) if player == route.player => None
         case _ =>
@@ -183,8 +203,9 @@ object NarrowPassSitePower:
     NotePart.Text("Cannot target other sites in the region without " +
       "ruler's consent.")))
 
-/** The sites' Travel terrain contributions. Static site topology lives on
-  * the power objects; command state supplies only the current route through
+/** The sites' Travel terrain contributions. Printed site topology lives on
+  * the power objects; the live Coast and Island sets come from
+  * [[TravelTerrain]], and command state supplies the current route through
   * PowerCtx.operation.
   */
 object TravelSitePowers:
@@ -210,17 +231,15 @@ object TravelSitePowers:
     Supported(SunkenIslesSite.coast, SunkenIslesSite.id, Coast),
     Supported(SunkenIslesSite.island, SunkenIslesSite.id, Island),
     Supported(TidalMarshesSite.coast, TidalMarshesSite.id, Coast))
-  private val coastSites = supported.collect {
+  private[travel] val printedCoastSites: Set[SiteId] = supported.collect {
     case Supported(_, site, Coast) => site
   }.toSet
-  private val coastOrIslandSites = supported.collect {
-    case Supported(_, site, Coast | Island) => site
+  private[travel] val printedIslandSites: Set[SiteId] = supported.collect {
+    case Supported(_, site, Island) => site
   }.toSet
 
   val all: Vector[ContributingPower] = supported.map:
     case Supported(id, site, Mountain) => MountainSitePower(id, site)
     case Supported(id, site, Island) => IslandSitePower(id, site)
-    case Supported(id, site, Coast) =>
-      CoastSitePower(id, site, coastOrIslandSites)
-    case Supported(id, site, NarrowPass) =>
-      NarrowPassSitePower(id, site, coastSites, coastOrIslandSites)
+    case Supported(id, site, Coast) => CoastSitePower(id, site)
+    case Supported(id, site, NarrowPass) => NarrowPassSitePower(id, site)

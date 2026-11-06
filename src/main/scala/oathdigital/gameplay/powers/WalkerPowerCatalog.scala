@@ -78,6 +78,7 @@ object WalkerPowerCatalog:
       Vector(HiddenPassages) ++
       Vector(TempleOfAncestors) ++
       TravelSitePowers.all ++
+      Vector(GrandCanal) ++
       Vector(BoilingLakeTravel, ForbiddenForest) ++
       Vector(HallowedSpring) ++
       TravelModifiers.all ++

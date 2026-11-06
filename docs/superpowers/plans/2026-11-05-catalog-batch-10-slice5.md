@@ -104,15 +104,20 @@ class GrandCanalSuite extends munit.FunSuite:
 
   private val canal = GrandCanalCard.id
 
+  /** The Travel board with the actor's pawn moved to `from`. The board's
+    * own `source` would reorder its regions for a named site. */
+  private def boardWithPawnAt(from: SiteId): ReadyGame =
+    on(board())(_.pawn(actor, from))
+
   /** The Travel board with the actor at `from` and E03's `side` at `at`. */
   private def boardWithE03(side: EdificeSide, at: SiteId, from: SiteId)
       : ReadyGame =
-    on(board(source = from))(_.edifice(canal, side, at = at))
+    on(boardWithPawnAt(from))(_.edifice(canal, side, at = at))
 
   test("a Coast reaches the Canal's site for 1 Supply, and the journal " +
       "replays and round trips"):
     // The printed Cradle-to-Hinterland 4.
-    assertEquals(candidates(board(source = coast)).get(hinterlandPlains),
+    assertEquals(candidates(boardWithPawnAt(coast)).get(hinterlandPlains),
       Some(4))
     val ready = boardWithE03(EdificeSide.Intact, at = hinterlandPlains,
       from = coast)
@@ -144,7 +149,7 @@ class GrandCanalSuite extends munit.FunSuite:
   test("a Canal at a Mountain: a Coast route skips the Mountain's Supply " +
       "and the Narrow Pass"):
     // The Pass blocks the Provinces to a player who does not rule it.
-    assertEquals(candidates(board(source = coast)).get(mountain), None)
+    assertEquals(candidates(boardWithPawnAt(coast)).get(mountain), None)
     val ready = boardWithE03(EdificeSide.Intact, at = mountain, from = coast)
     // The printed 2 and the Mountain's 1, both skipped.
     assertEquals(candidates(ready).get(mountain), Some(1))

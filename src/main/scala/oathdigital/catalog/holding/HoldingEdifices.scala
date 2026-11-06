@@ -1,26 +1,10 @@
 package oathdigital.catalog.holding
 
-import oathdigital.catalog.{Edifice, EdificeFace, Locked, ModifierMark,
-  PrintedPower}
-import oathdigital.model.{Cost, EdificeId, MajorActionType, PowerId, Suit}
+import oathdigital.catalog.{Edifice, EdificeFace, Locked, PrintedPower}
+import oathdigital.model.{Cost, EdificeId, PowerId, Suit}
 
 // Generated from the retired runtime JSON (card classes slice 1).
 // Hand-edited from here on; a card moves out when it is implemented.
-
-object GrandCanalCard extends Edifice(EdificeId("E03"), Suit.Discord):
-  object intact extends EdificeFace("Grand Canal") with Locked:
-    val power = PrintedPower(PowerId("edifice.e03.intact"),
-      persistent = true, cost = Cost.free,
-      modifier = Some(ModifierMark.Action(MajorActionType.Travel)),
-      text = "Act as if this site is a Coast along with its other powers.")
-    val powers: Vector[PrintedPower] = Vector(power)
-  object ruined extends EdificeFace("Lost Lagoon"):
-    val power = PrintedPower(PowerId("edifice.e03.ruined"),
-      persistent = true, cost = Cost.free,
-      modifier = Some(ModifierMark.Action(MajorActionType.Travel)),
-      text = "Act as if this site is an Island along with its other " +
-        "powers.")
-    val powers: Vector[PrintedPower] = Vector(power)
 
 object StoneBathsCard extends Edifice(EdificeId("E04"), Suit.Discord):
   object intact extends EdificeFace("Stone Baths") with Locked:
