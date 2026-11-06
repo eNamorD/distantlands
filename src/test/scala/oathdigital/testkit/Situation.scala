@@ -1,7 +1,7 @@
 package oathdigital.testkit
 
 import oathdigital.application.{CampaignDicePort, EventStreamRepository,
-  GameCommand, GameApplicationService, InMemoryEventStreamRepository}
+  GameCommand, GameApplicationService}
 import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.phases.PhaseMenu
 import oathdigital.gameplay.phases.rest.RoundEndRandomPort
@@ -11,7 +11,6 @@ import oathdigital.gameplay.setup.{FirstGameSetupFixture, SetupProcedure}
 import oathdigital.gameplay.walker.{WalkerDice, WalkerPowers}
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
-import oathdigital.serialization.GameEventWire
 
 /** One thing a situation is reached by. */
 enum Step:
@@ -99,15 +98,6 @@ final case class Situation(state: OathState, events: Vector[OathEvent],
     * replacing any overrides given earlier. */
   def withAnswers(overrides: Answers): Situation =
     copy(driver = driver.withAnswers(overrides))
-
-  /** Writes this situation's journal into `repository` as `gameId`'s whole
-    * stream, the way a journal written by real play would hold it. */
-  def seedInto(repository: InMemoryEventStreamRepository, gameId: String)(
-      using munit.Location): Unit =
-    repository.seed(gameId, journal.zipWithIndex.map { case (event, index) =>
-      ujson.write(GameEventWire.encodeEvent(gameId, index.toLong, event).fold(error => munit.Assertions.fail(
-          s"event $index ($event) does not encode: $error"), identity))
-    })
 
 object Situation:
   /** The answer a park gets when the test names none. `ChooseOne`: the first

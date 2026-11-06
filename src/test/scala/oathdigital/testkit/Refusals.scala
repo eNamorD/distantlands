@@ -24,10 +24,3 @@ object Refusals:
       : OathViolation = OathViolation.InvalidEventOrder(
     s"${source.kind}/${source.wireId} is not an accessible source of " +
       power.value)
-
-  /** The selected modifier `power` cannot be used for this `action` ("search",
-    * "travel", "recover"): its card is out of reach or facedown, or its cost
-    * cannot be paid. */
-  def notApplicable(power: PowerId, action: String): OathViolation =
-    OathViolation.InvalidEventOrder(
-      s"power ${power.value} is not applicable to this $action")

@@ -37,10 +37,6 @@ object CardRefs:
     case edifice: Edifice => edifice.id
     case id: EdificeId => id
 
-  def legacyId(card: LegacyRef): LegacyId = card match
-    case legacy: Legacy => legacy.id
-    case id: LegacyId => id
-
   def cardId(card: CardRef): CardId = card match
     case denizen: Denizen => denizen.id
     case relic: Relic => relic.id
