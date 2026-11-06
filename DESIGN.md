@@ -545,8 +545,9 @@ brass inset ring for a board option, a soft brass halo on hover, a
 host page.
 
 ### Shadow Vocabulary
-- **Target halo** (`box-shadow: 0 0 0 3px rgba(210, 168, 94, 0.35)`): a
-  hovered or focused board option. It is a ring, not a lift.
+- **Target halo** (`box-shadow: 0 0 0 4px rgba(241, 199, 129, 0.5)`, twice
+  the option ring in Bright Brass at half strength): a hovered or focused
+  board option. It is a ring, not a lift.
 - **Overlay lift** (`box-shadow: 0 12px 45px #000b`): the developer panel
   only, which floats above the table as a fixed aside.
 - **Note lift** (`box-shadow: 0 6px 18px #000b`): the hover note only, a
@@ -591,14 +592,14 @@ Nothing on the board is clipped except by its own `overflow: hidden` box.
 Solid, bordered, no gloss. Every action button is at least 44px tall; compact
 controls are 30px.
 - **Shape:** 4px on map controls and the dev toggle; 7px on load-game,
-  adviser and restart.
+  the chronicle save dialog's buttons and restart.
 - **Control** (map zoom, Fit, dev tools, overlay close, the log's New chip):
   Raised fill, `#e8d9bb`
   text, Brass Line border, `4px 9px` padding, 0.78rem. Hover: Pressed fill,
   Bright Cream border, the Action face's own answer. The two player pills
   (title, Vision) take the Raised fill on hover.
-- **Action** (load game, adviser, and every act, decision and confirm
-  button in the Actions pane): `#282117` fill, white text, `#bca780`
+- **Action** (load game, the chronicle save dialog, and every act,
+  decision and confirm button in the Actions pane): `#282117` fill, white text, `#bca780`
   border, `8px 12px` padding. Hover: Pressed fill, Bright Cream border. The
   small movers and steppers beside an option (card pickers, distribute
   `−`/`+`) wear the Control face at their
