@@ -38,11 +38,6 @@ Left behind by earlier phases:
   the computed style on a synthetic button, but no browser session reached
   a Plan Aid decision. Confirm the −/+ pair sits level with the amount
   between them.
-- [ ] **Count a site's warbands of every kind once.** `SiteForces.count(kind)`
-  landed on 2026-11-06; six sites still sum every kind by hand
-  (`TerrorSpells`, `KillWholeForce`, `PeaceEnvoy`, `StickyFire`,
-  `CampaignBattle`, `ResourceOperations`). A `total` beside `count` would
-  take them.
 
 Left behind by the
 [consent work](superpowers/specs/2026-10-08-consent-system-design.md):
