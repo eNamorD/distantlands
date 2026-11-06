@@ -97,19 +97,6 @@ object Burn:
   private final case class ResourceBurn(resource: Piece.Counted,
       from: PositionedLocation, by: Option[PlayerId]) extends Burn
 
-sealed trait BuryableCard extends Product with Serializable:
-  def id: CardId
-  def deck: CardDeck
-object BuryableCard:
-  final case class Denizen(id: DenizenId) extends BuryableCard:
-    override val deck: CardDeck = CardDeck.World
-  final case class Relic(id: RelicId) extends BuryableCard:
-    override val deck: CardDeck = CardDeck.Relic
-  final case class Edifice(id: EdificeId) extends BuryableCard:
-    override val deck: CardDeck = CardDeck.Edifice
-  final case class Vision(id: VisionId) extends BuryableCard:
-    override val deck: CardDeck = CardDeck.World
-
 /** Adds a denizen, relic, or edifice to the bottom of its matching deck.
   * Bury explicitly ignores the locked restriction.
   */
@@ -311,18 +298,6 @@ final case class Give(piece: Piece, giver: PlayerId,
   val move: Move = Move(piece, PositionedLocation(from),
     PositionedLocation(to), by = Some(giver))
   override val children: Vector[Operation] = Vector(move)
-
-/** A typed payment: `favor`/`secret` are placed at a destination card,
-  * `favorBurnt`/`secretBurnt` leave play to the shared bank. All fields are
-  * non-negative; an all-zero cost is legal and represents a free payment.
-  */
-final case class Cost(favor: Int = 0, secret: Int = 0, favorBurnt: Int = 0,
-    secretBurnt: Int = 0):
-  require(favor >= 0 && secret >= 0 && favorBurnt >= 0 && secretBurnt >= 0,
-    "costs must be non-negative")
-
-object Cost:
-  val free: Cost = Cost(0, 0, 0, 0)
 
 /** Pays a typed cost. The placed portions (`favor`/`secret`) move from the
   * player's play area to `placedAt`; the burnt portions leave play to the
@@ -705,11 +680,6 @@ final case class Reroll(pool: PoolKey, indices: Vector[Int],
 final case class SetDieFaces(pool: PoolKey, faces: Vector[DieFace])
     extends PrimitiveOperation:
   override val required: Boolean = true
-
-/** The name [[Defer]] holds ops under, until a later step of the same
-  * action takes them (operation rewrite design, "Deferral"). Named after
-  * the power that owns it. */
-final case class DeferralKey(value: String)
 
 /** Holds `ops` under `key` in `CurrentGameState.walkerDeferred`, after any
   * held there already, without running them. A later step of the same
