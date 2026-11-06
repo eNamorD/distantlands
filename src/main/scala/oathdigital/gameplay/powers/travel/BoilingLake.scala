@@ -55,7 +55,7 @@ case object BoilingLakeTravel extends ContributingPower:
             .contains(SiteRuler.Player(route.player))))
 
   private def boardWarbands(ready: ReadyGame, player: PlayerId): Int =
-    ready.game.current.players.find(_.player == player)
+    ready.game.current.player(player)
       .fold(0)(_.board.warbands)
 
   /** Up to two of the traveller's own warbands, from their board. */

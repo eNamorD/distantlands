@@ -103,7 +103,7 @@ object QueuedStart:
       Option.when(state != ready)(priced(catalog, state, entry, powers,
         phasePowers).toOption).flatten
     for
-      board <- ready.game.current.players.find(_.player == entry.actor)
+      board <- ready.game.current.player(entry.actor)
         .map(_.board)
       cost <- lifted(resources = false).orElse(lifted(resources = true))
       text <- PricedOptions.needs(cost.least, board)

@@ -5,7 +5,7 @@ package oathdigital.model
   * the Chancellor, goes through here. */
 object Imperials:
   def role(ready: ReadyGame, player: PlayerId): Option[Role] =
-    ready.game.current.players.find(_.player == player)
+    ready.game.current.player(player)
       .flatMap(state => ready.game.campaign.lineages.get(state.lineage))
       .map(_.role)
 

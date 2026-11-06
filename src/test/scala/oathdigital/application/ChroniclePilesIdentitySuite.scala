@@ -43,7 +43,7 @@ class ChroniclePilesIdentitySuite extends munit.FunSuite:
 
   test("only the lineage's player identifies a starting adviser"):
     val table = Table.start.update(state =>
-      val lineage = state.game.current.players.find(_.player == p2).get.lineage
+      val lineage = state.game.current.player(p2).get.lineage
       val card = state.game.current.commonCards.worldDeck.collectFirst {
         case id: DenizenId => id }.get
       state.updateCurrent(current => current.copy(commonCards =
@@ -54,7 +54,7 @@ class ChroniclePilesIdentitySuite extends munit.FunSuite:
             startingAdvisers = Vector(DenizenState(card,
               Orientation.FaceDown, Tokens.empty))))))))
     val ready = table.ready
-    val lineage = ready.game.current.players.find(_.player == p2).get.lineage
+    val lineage = ready.game.current.player(p2).get.lineage
     val card = ready.game.campaign.lineages(lineage).startingAdvisers.head.id
     assert(presentation.identifiesAt(ready, Some(p2), card))
     assert(!presentation.identifiesAt(ready, Some(p1), card))

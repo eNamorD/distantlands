@@ -55,7 +55,7 @@ case object ChaosCult extends ContributingPower:
 
   private def take(ready: ReadyGame, holder: PlayerId): Vector[CoreOperation] =
     ready.game.current.title.holder.filter(_ != holder)
-      .flatMap(newHolder => ready.game.current.players.find(_.player == newHolder))
+      .flatMap(newHolder => ready.game.current.player(newHolder))
       .filter(_.board.favor > 0).toVector.map(from => Take(Piece.Favor(Favor),
         holder, Location.PlayArea(from.player), Location.PlayArea(holder)))
 

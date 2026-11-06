@@ -201,7 +201,7 @@ case object RottingFortress extends FortressRule:
 
   private def holdsBeastAdviser(catalog: ExecutableCatalog,
       ready: ReadyGame, player: PlayerId): Boolean =
-    ready.game.current.players.find(_.player == player).exists(_.advisers.exists {
+    ready.game.current.player(player).exists(_.advisers.exists {
       case DenizenState(card, Orientation.FaceUp, _) =>
         EffectiveSuit.of(catalog, ready, card).contains(Suit.Beast)
       case _ => false

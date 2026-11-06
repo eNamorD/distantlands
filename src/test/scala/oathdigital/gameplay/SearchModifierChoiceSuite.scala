@@ -68,8 +68,8 @@ class SearchModifierChoiceSuite extends munit.FunSuite:
     val picked = accepted(rules.resolveWalker(begun.state, p1, search,
       ModifierPlay.pick(NewsFromAfar.id)))
     // The favor is paid at the pick, onto the card.
-    assertEquals(Outcomes.ready(picked.state).game.current.players
-      .find(_.player == p1).map(_.board.favor), Some(0))
+    assertEquals(Outcomes.ready(picked.state).game.current.player(p1)
+      .map(_.board.favor), Some(0))
     assertEquals(parked(picked.state).decisionId,
       SearchProcedure.sourceDecisionId)
 
@@ -77,8 +77,8 @@ class SearchModifierChoiceSuite extends munit.FunSuite:
     val ready = withNews(supply = 5, favor = 3)
     val searched = accepted(SearchPlay.searched(rules, Ready(ready), p1,
       modifiers = Vector(NewsFromAfar.id)))
-    assertEquals(Outcomes.ready(searched.state).game.current.players
-      .find(_.player == p1).map(_.board.favor), Some(1))
+    assertEquals(Outcomes.ready(searched.state).game.current.player(p1)
+      .map(_.board.favor), Some(1))
 
   test("a facedown-adviser play offers the Search modifiers first"):
     val wildCry = WildCryCard.id

@@ -84,7 +84,7 @@ object SetupProcedure:
     * every other viewer without naming a facedown card. */
   def revealable(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId)
       : Vector[DecisionOption] =
-    ready.game.current.players.find(_.player == player).toVector.flatMap { state =>
+    ready.game.current.player(player).toVector.flatMap { state =>
       state.advisers.zipWithIndex.collect {
         case (DenizenState(id, Orientation.FaceDown, _), slot)
             if !catalog.denizen(id).exists(_.isInstanceOf[SiteOnly]) =>
@@ -134,7 +134,7 @@ object SetupProcedure:
     val order = ready.game.current.players.map(_.player)
     val start = order.indexOf(ready.setup.firstPlayer)
     (order.drop(start) ++ order.take(start)).map { playerId =>
-      val player = ready.game.current.players.find(_.player == playerId).get
+      val player = ready.game.current.player(playerId).get
       FirstGameParticipant(playerId, player.lineage,
         ready.playerColors(playerId))
     }
@@ -232,7 +232,7 @@ object SetupProcedure:
     * writes no line for what was not revealed. */
   private def revealed(ready: ReadyGame, player: PlayerId, decisionId: String,
       answered: Vector[Answered]): Option[Vector[CardId]] =
-    val held = ready.game.current.players.find(_.player == player)
+    val held = ready.game.current.player(player)
     answered.find(_.decisionId == decisionId).map(_.answer).collect {
       case DecisionAnswer.ChooseManyAnswer(selected) =>
         selected.flatMap {
@@ -271,7 +271,7 @@ object SetupProcedure:
     (ready, pending) => for
       selection <- adviserSelection(pending, decisionId)
       (chosen, rejected) = selection
-      pawnSite <- ready.game.current.players.find(_.player == player)
+      pawnSite <- ready.game.current.player(player)
         .flatMap(_.pawnSite).toRight(PawnSiteMissing(player))
       region <- ready.game.current.map.regionOf(pawnSite)
         .toRight(InvalidEventOrder(s"${pawnSite.value} is not in play"))

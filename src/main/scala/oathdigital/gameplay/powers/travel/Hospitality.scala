@@ -67,7 +67,7 @@ case object Hospitality extends ContributingPower:
 
   /** Whether `player` has Hospitality faceup among their advisers. */
   private def holds(ready: ReadyGame, player: PlayerId): Boolean =
-    ready.game.current.players.find(_.player == player)
+    ready.game.current.player(player)
       .exists(_.advisers.exists {
         case DenizenState(card, Orientation.FaceUp, _) =>
           card == HospitalityCard.id

@@ -78,6 +78,6 @@ case object CircletOfCommand extends ContributingPower:
         current.players.find(_.relics.exists(_.id == relic)).exists(p =>
           held(p.player))
       case DecisionOptionRef.RelicSlot(owner, slot) => held(owner) &&
-        !current.players.find(_.player == owner).flatMap(_.relics.lift(slot))
+        !current.player(owner).flatMap(_.relics.lift(slot))
           .exists(_.id == cardId)
       case _ => false

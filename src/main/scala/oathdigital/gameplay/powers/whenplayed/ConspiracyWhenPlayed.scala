@@ -122,7 +122,7 @@ case object ConspiracyWhenPlayed extends ContributingPower:
       Location.PlayArea(actor), leaving = leaving)
     ref match
       case DecisionOptionRef.RelicSlot(owner, slot) =>
-        current.players.find(_.player == owner).flatMap(_.relics.lift(slot))
+        current.player(owner).flatMap(_.relics.lift(slot))
           .toVector.map(relic => Give(Piece.Card(relic.id), owner,
             Location.PlayArea(owner), Location.PlayArea(actor)))
       case DecisionOptionRef.Banner(held) =>

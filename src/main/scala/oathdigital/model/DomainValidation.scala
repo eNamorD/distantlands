@@ -164,7 +164,7 @@ object DomainValidation:
     game.current.title match
       case OathkeeperState(Some(holder), TitleSide.Usurper)
           if game.current.turn.phase != Phase.Chronicle =>
-        game.current.players.find(_.player == holder)
+        game.current.player(holder)
           .flatMap(player => game.campaign.lineages.get(player.lineage))
           .filter(_.role.isImperial)
           .foreach(_ => problems += ImperialUsurper(holder))

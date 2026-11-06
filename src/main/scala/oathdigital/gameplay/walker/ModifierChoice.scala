@@ -142,7 +142,7 @@ final class ModifierChoice(val actor: PlayerId, modifierWindow: PowerWindow,
     val costs = payments.collect { case PayCost(_, _, cost, _, _, _) => cost }
     val favor = costs.map(cost => cost.favor + cost.favorBurnt).sum
     val secrets = costs.map(cost => cost.secret + cost.secretBurnt).sum
-    state.game.current.players.find(_.player == actor).map(_.board)
+    state.game.current.player(actor).map(_.board)
       .flatMap(board =>
         if board.favor < favor then Some(needs(favor, "favor", board.favor))
         else if board.faceUpSecrets < secrets then Some(needs(secrets,

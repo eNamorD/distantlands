@@ -43,7 +43,7 @@ case object Naysayers extends PhasePower:
     * with favor. */
   private def payer(ready: ReadyGame, player: PlayerId): Option[PlayerId] =
     Imperials.chancellor(ready).filter(chancellor => chancellor != player &&
-      ready.game.current.players.find(_.player == chancellor)
+      ready.game.current.player(chancellor)
         .exists(_.board.favor > 0))
 
   def usable(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,

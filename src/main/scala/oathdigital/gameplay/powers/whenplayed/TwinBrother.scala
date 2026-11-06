@@ -99,7 +99,7 @@ case object TwinBrother extends WhenPlayedPower:
     (before, after) <- states.previous
     owner <- before.game.current.players
       .find(_.advisers.exists(_.id == target)).map(_.player)
-    if after.game.current.players.find(_.player == actor)
+    if after.game.current.player(actor)
       .exists(_.advisers.exists(_.id == target))
   yield swapped(PowerSourceRef.Card(cardId), NoteArg.Player(actor),
     NoteArg.Player(owner), NoteArg.Card(target))

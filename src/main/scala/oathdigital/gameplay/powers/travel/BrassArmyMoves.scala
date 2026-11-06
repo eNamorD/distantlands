@@ -52,8 +52,8 @@ case object BrassArmyMoves extends ExecutedTrigger:
 
   def onExecuted(batch: ExecutedBatch): Option[Operation] =
     holderOf(batch.now).filter(moved(batch.executed, _)).map { holder =>
-      val faceUp = batch.now.game.current.players
-        .find(_.player == holder).fold(0)(_.board.faceUpSecrets)
+      val faceUp = batch.now.game.current.player(holder)
+        .fold(0)(_.board.faceUpSecrets)
       if faceUp == 0 then Sequence(buryIt(batch.actor, holder))
       else Sequence(question(holder), Branch((_, pending) =>
         if PowerAnswers.one(pending, decisionId).contains(flip) then

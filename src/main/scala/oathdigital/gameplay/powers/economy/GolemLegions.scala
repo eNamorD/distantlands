@@ -41,7 +41,7 @@ case object GolemLegions extends SelectedModifier:
   /** Golem Legions among `actor`'s advisers. */
   private def held(ready: ReadyGame, actor: PlayerId)
       : Vector[SiteDenizenState] =
-    ready.game.current.players.find(_.player == actor).toVector
+    ready.game.current.player(actor).toVector
       .flatMap(_.advisers).collect {
         case card: DenizenState if card.id == cardId => card
       }

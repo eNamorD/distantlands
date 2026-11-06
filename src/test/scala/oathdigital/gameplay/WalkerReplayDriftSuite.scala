@@ -306,8 +306,8 @@ class WalkerReplayDriftSuite extends munit.FunSuite
       case WalkerOutcome.Finished(treeless, _) =>
         assertEquals(treeless.game.current.map.sites(fixture.site).relics,
           Vector.empty)
-        assertEquals(treeless.game.current.players.find(
-          _.player == fixture.actor).get.relics.map(_.id),
+        assertEquals(treeless.game.current.player(fixture.actor).get
+          .relics.map(_.id),
           Vector(fixture.topRelic))
       case other => fail(s"expected a Finished outcome, got $other")
 

@@ -160,7 +160,7 @@ class ProcedureWalkerDeltaSuite extends munit.FunSuite:
   // one by one and a bare `Move` is best-effort. The flag must survive the
   // walk, or an unaffordable payment silently shrinks instead of rejecting.
   private val tooMuchFavor: Int =
-    ready.game.current.players.find(_.player == actor).get.board.favor + 1
+    ready.game.current.player(actor).get.board.favor + 1
 
   test("a required composite in the tree rejects when it cannot fully execute"):
     val payment = PayCost(actor, Location.SharedBank,
@@ -185,7 +185,7 @@ class ProcedureWalkerDeltaSuite extends munit.FunSuite:
         assertEquals(
           events.collect { case WalkerStepRecorded(_, DeltaPayload(ops), _) => ops },
           Vector(payment.children.collect { case child: Move => child }))
-        assertEquals(state.game.current.players.find(_.player == actor).get
+        assertEquals(state.game.current.player(actor).get
           .board.favor, tooMuchFavor - 2)
       case other => fail(s"expected a Finished walk, got $other")
 
@@ -194,8 +194,8 @@ class ProcedureWalkerDeltaSuite extends munit.FunSuite:
     ProcedureWalker.advance(ready, Sequence(gain), None, noPowers) match
       case Right(WalkerOutcome.Finished(state, _)) =>
         // It takes all the Order bank holds rather than rejecting.
-        assertEquals(state.game.current.players.find(_.player == actor).get
-          .board.favor, ready.game.current.players.find(_.player == actor).get
+        assertEquals(state.game.current.player(actor).get
+          .board.favor, ready.game.current.player(actor).get
           .board.favor + ready.banks.favor(Suit.Order))
         assertEquals(state.banks.favor(Suit.Order), 0)
       case other => fail(s"expected a Finished walk, got $other")

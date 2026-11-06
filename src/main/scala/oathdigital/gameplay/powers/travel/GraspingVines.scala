@@ -80,7 +80,7 @@ case object GraspingVines extends ContributingPower:
     ruler <- SiteRulers.rulerOfCard(ctx.state, cardId)
     if SiteRule.enemies(ruler, SiteRuler.Player(route.player))
     if SiteRulers.rulerOf(ctx.state, route.source).contains(ruler)
-    if ctx.state.game.current.players.find(_.player == route.player)
+    if ctx.state.game.current.player(route.player)
       .exists(_.board.warbands >= GraspingVines.Warbands)
     warband <- TravelPayments.ownWarband(ctx.state, route.player,
       GraspingVines.Warbands)

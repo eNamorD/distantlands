@@ -19,7 +19,7 @@ import oathdigital.model._
 final case class HolderAdviserLimit(cardId: DenizenId, limit: Int):
   /** `limit`, when `player` holds `cardId` as a faceup adviser. */
   def limitFor(ready: ReadyGame, player: PlayerId): Option[Int] =
-    ready.game.current.players.find(_.player == player)
+    ready.game.current.player(player)
       .filter(_.advisers.exists {
         case DenizenState(card, Orientation.FaceUp, _) => card == cardId
         case _ => false
@@ -27,7 +27,7 @@ final case class HolderAdviserLimit(cardId: DenizenId, limit: Int):
 
   /** Whether `player` holds `cardId` among their advisers, in either face. */
   private def holds(ready: ReadyGame, player: PlayerId): Boolean =
-    ready.game.current.players.find(_.player == player)
+    ready.game.current.player(player)
       .exists(_.advisers.exists(_.id == cardId))
 
   val contribution: Contribution = Transform((ctx, children) =>

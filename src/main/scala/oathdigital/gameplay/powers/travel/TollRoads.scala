@@ -158,7 +158,7 @@ case object TollRoads extends ContributingPower:
 
   /** Whether `traveller` holds the favor the toll takes. */
   def canPay(ready: ReadyGame, traveller: PlayerId): Boolean =
-    ready.game.current.players.find(_.player == traveller)
+    ready.game.current.player(traveller)
       .fold(0)(_.board.favor) >= Favor
 
   def sending(ready: ReadyGame, traveller: PlayerId, destination: SiteId,

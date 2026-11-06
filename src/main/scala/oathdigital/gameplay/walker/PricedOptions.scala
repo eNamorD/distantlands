@@ -136,7 +136,7 @@ object PricedOptions:
   private def shortfall(state: ReadyGame, tree: Operation,
       pending: PendingTree, powers: WalkerPowers, actor: PlayerId,
       ref: DecisionOptionRef, fallback: String): String =
-    val board = state.game.current.players.find(_.player == actor).map(_.board)
+    val board = state.game.current.player(actor).map(_.board)
     def lifted(resources: Boolean): Option[PreviewOutcome] =
       previews(lift(state, actor, resources), tree, pending, powers,
         followUp = false).get(ref).flatMap(_.toOption)

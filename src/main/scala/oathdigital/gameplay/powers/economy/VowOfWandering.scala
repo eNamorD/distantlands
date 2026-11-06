@@ -145,7 +145,7 @@ case object VowOfWandering extends ContributingPower:
   /** Whether warbands of `kind` are `holder`'s wherever they come from. */
   private def holdersKind(ready: ReadyGame, holder: PlayerId,
       kind: ForceKind): Boolean =
-    ready.game.current.players.find(_.player == holder)
+    ready.game.current.player(holder)
       .flatMap(PlayerForceKind.of(ready, _)).contains(kind) &&
       (kind != ForceKind.Imperial ||
         ready.game.current.turn.activePlayer == holder)

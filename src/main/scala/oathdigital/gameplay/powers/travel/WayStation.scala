@@ -83,7 +83,7 @@ case object WayStation extends ContributingPower:
     val payment = operations.collect {
       case spend @ SpendSupply(player, _, _) if player == traveller => spend }
     val supply = payment.map(_.amount).sum
-    val board = ctx.state.game.current.players.find(_.player == traveller)
+    val board = ctx.state.game.current.player(traveller)
       .map(_.board)
     lazy val stripped = SupplyStrip(ctx, traveller, operations)
     if supply == 0 then operations

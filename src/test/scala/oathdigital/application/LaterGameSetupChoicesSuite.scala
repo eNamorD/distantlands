@@ -33,7 +33,7 @@ class LaterGameSetupChoicesSuite extends munit.FunSuite:
     present(accepted(ParkedNode.of(situation.state, catalog)), "a park")
 
   private def player(ready: ReadyGame, id: PlayerId): PlayerState =
-    ready.game.current.players.find(_.player == id).get
+    ready.game.current.player(id).get
 
   test("the Chancellor first keeps one Reliquary relic facedown (R29)"):
     val parked = begin(withReliquary)

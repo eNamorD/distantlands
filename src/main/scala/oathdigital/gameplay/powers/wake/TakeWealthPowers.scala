@@ -46,7 +46,7 @@ case object TakeWealthLimit extends ContributingPower:
     * report the wrong reason.
     */
   private def blocked(ctx: PowerCtx): Option[OathViolation] =
-    ctx.state.game.current.players.find(_.player == ctx.actor)
+    ctx.state.game.current.player(ctx.actor)
       .flatMap(_.pawnSite).map(useRef)
       .filter(ctx.state.game.current.turn.usedPowers.contains)
       .map(OathViolation.PowerAlreadyUsed.apply)
