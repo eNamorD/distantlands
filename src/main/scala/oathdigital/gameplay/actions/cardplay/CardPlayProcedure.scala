@@ -3,7 +3,7 @@ package oathdigital.gameplay.actions.cardplay
 import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.actions.{CardPlay, CardPlayRules, ProcedureNotes}
 import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.walker.ModifierChoice
+import oathdigital.gameplay.walker.{ModifierChoice, ProcedureStart}
 import oathdigital.model._
 
 /** The embeddable card play (card play slots design, "Placement procedure"):
@@ -130,8 +130,7 @@ object CardPlayProcedure:
   def buildFacedown(catalog: ExecutableCatalog, ready: ReadyGame,
       actor: PlayerId, args: Vector[DecisionOptionRef])
       : Either[OathViolation, Operation] = for
-    _ <- Either.cond(args.isEmpty, (), OathViolation.InvalidEventOrder(
-      "facedown-adviser play takes no start selection"))
+    _ <- ProcedureStart.noSelection("facedown-adviser play", args)
     _ <- Either.cond(facedownAdvisers(ready, actor).nonEmpty, (),
       OathViolation.InvalidSearchPlacement("no facedown adviser to play"))
   yield facedownTree(catalog, ready, actor)

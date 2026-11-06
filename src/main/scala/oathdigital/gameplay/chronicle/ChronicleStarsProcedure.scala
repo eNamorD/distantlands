@@ -2,6 +2,7 @@ package oathdigital.gameplay.chronicle
 
 import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.actions.ProcedureNotes
+import oathdigital.gameplay.walker.ProcedureStart
 import oathdigital.model._
 
 /** The Stars task (CR pp. 40-41, `docs/rules/chronicle.md` task 5). No step
@@ -21,8 +22,8 @@ object ChronicleStarsProcedure:
 
   def build(catalog: ExecutableCatalog, ready: ReadyGame, actor: PlayerId,
       args: Vector[DecisionOptionRef]): Either[OathViolation, Operation] =
-    Either.cond(args.isEmpty, Sequence(steps),
-      OathViolation.InvalidEventOrder("the Stars take no start selection"))
+    ProcedureStart.noSelection("the Stars task", args)
+      .map(_ => Sequence(steps))
 
   private val steps: Vector[Operation] = Vector(
     // The constellation and narrative are not implemented (ruling 7).

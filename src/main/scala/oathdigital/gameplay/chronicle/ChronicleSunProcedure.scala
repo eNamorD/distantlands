@@ -2,6 +2,7 @@ package oathdigital.gameplay.chronicle
 
 import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.actions.ProcedureNotes
+import oathdigital.gameplay.walker.ProcedureStart
 import oathdigital.model._
 
 /** The Sun task (CR p. 36, `docs/rules/chronicle.md` task 1). Each step is
@@ -29,8 +30,7 @@ object ChronicleSunProcedure:
   def build(catalog: ExecutableCatalog, ready: ReadyGame, actor: PlayerId,
       args: Vector[DecisionOptionRef]): Either[OathViolation, Operation] =
     for
-      _ <- Either.cond(args.isEmpty, (), OathViolation.InvalidEventOrder(
-        "the Sun takes no start selection"))
+      _ <- ProcedureStart.noSelection("the Sun", args)
       winner <- ChronicleTasks.winner(ready)
     yield Sequence(steps(winner))
 

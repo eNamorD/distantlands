@@ -5,7 +5,8 @@ import oathdigital.gameplay.phases.rest.FinishRestProcedure
 import oathdigital.gameplay.operations.PowerUseRules
 import oathdigital.gameplay.phases.wake.TakeWealthProcedure
 import oathdigital.gameplay.powerresolver.PhasePowers
-import oathdigital.gameplay.walker.{QueuedStart, WalkerPowers}
+import oathdigital.gameplay.walker.{ProcedureStart, QueuedStart,
+  WalkerPowers}
 import oathdigital.model._
 
 /** A phase's menu (walker-driven game loop design, "The menus"): one
@@ -182,8 +183,7 @@ object PhaseMenu:
       args: Vector[DecisionOptionRef]): Either[OathViolation, Operation] =
     val phase = ready.game.current.turn.phase
     for
-      _ <- Either.cond(args.isEmpty, (), OathViolation.InvalidEventOrder(
-        s"the ${menu.phase.key} menu takes no start selection"))
+      _ <- ProcedureStart.noSelection(s"the ${menu.phase.key} menu", args)
       _ <- Either.cond(phase == menu.phase, (),
         OathViolation.WrongPhase(menu.phase, phase))
     yield

@@ -28,8 +28,7 @@ object FollowUpOffer:
       catalog: ExecutableCatalog, ready: ReadyGame, actor: PlayerId,
       args: Vector[DecisionOptionRef]): Either[OathViolation, Operation] =
     for
-      _ <- Either.cond(args.isEmpty, (), OathViolation.InvalidEventOrder(
-        "the follow-up offer takes no start selection"))
+      _ <- ProcedureStart.noSelection("the follow-up offer", args)
       entry <- ready.game.current.walkerEntry
         .filter(_.kind == QueueKind.Offer)
         .toRight(OathViolation.InvalidEventOrder(

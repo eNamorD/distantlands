@@ -1,6 +1,7 @@
 package oathdigital.gameplay.chronicle
 
 import oathdigital.catalog.ExecutableCatalog
+import oathdigital.gameplay.walker.ProcedureStart
 import oathdigital.model._
 
 /** The Throne task (CR p. 37, `docs/rules/chronicle.md` task 2), resolved
@@ -8,8 +9,8 @@ import oathdigital.model._
 object ChronicleThroneProcedure:
   def build(catalog: ExecutableCatalog, ready: ReadyGame, actor: PlayerId,
       args: Vector[DecisionOptionRef]): Either[OathViolation, Operation] =
-    Either.cond(args.isEmpty, Sequence(steps(catalog)),
-      OathViolation.InvalidEventOrder("the Throne takes no start selection"))
+    ProcedureStart.noSelection("the Throne", args)
+      .map(_ => Sequence(steps(catalog)))
 
   /** The notes the Throne's steps write. */
   def noteKeys: Vector[NoteKey] = OfferCitizenship.noteKeys ++

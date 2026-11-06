@@ -4,7 +4,8 @@ import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.actions.{CardPlay, ProcedureNotes, SearchRules}
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
 import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.walker.{ModifierChoice, WalkerPowers}
+import oathdigital.gameplay.walker.{ModifierChoice, ProcedureStart,
+  WalkerPowers}
 import oathdigital.model._
 
 /** Search on the walker (search source design; modifier walker design).
@@ -113,7 +114,7 @@ object SearchProcedure:
   /** The start-only gates, and the region searched from. */
   private def gated(ready: ReadyGame, actor: PlayerId,
       args: Vector[DecisionOptionRef]): Either[OathViolation, Region] = for
-    _ <- noSelection(args)
+    _ <- ProcedureStart.noSelection("search", args)
     _ <- Either.cond(ready.game.current.temporaryHands.valuesIterator
       .forall(_.isEmpty), (), OathViolation.SearchDrawMismatch(
       "a temporary card hand already exists"))
@@ -123,7 +124,7 @@ object SearchProcedure:
   /** Resume never re-runs the start-only gates. */
   def rebuild(catalog: ExecutableCatalog, ready: ReadyGame, actor: PlayerId,
       args: Vector[DecisionOptionRef]): Either[OathViolation, Operation] = for
-    _ <- noSelection(args)
+    _ <- ProcedureStart.noSelection("search", args)
     origin <- actorRegion(ready, actor)
   yield tree(catalog, actor, origin)
 
@@ -157,10 +158,6 @@ object SearchProcedure:
     ready.game.current.pawnSite(actor)
       .flatMap(ready.game.current.map.regionOf)
       .toRight(OathViolation.PawnSiteMissing(actor))
-
-  private def noSelection(args: Vector[DecisionOptionRef])
-      : Either[OathViolation, Unit] = Either.cond(args.isEmpty, (),
-    OathViolation.InvalidEventOrder("search takes no start selection"))
 
   private def tree(catalog: ExecutableCatalog, actor: PlayerId,
       origin: Region): Operation =

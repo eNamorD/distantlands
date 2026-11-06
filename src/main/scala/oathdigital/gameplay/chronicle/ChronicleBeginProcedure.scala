@@ -1,6 +1,7 @@
 package oathdigital.gameplay.chronicle
 
 import oathdigital.catalog.ExecutableCatalog
+import oathdigital.gameplay.walker.ProcedureStart
 import oathdigital.model._
 
 /** The winner's Start Chronicle decision (Chronicle steps design, "Explicit
@@ -18,8 +19,7 @@ object ChronicleBeginProcedure:
   def build(catalog: ExecutableCatalog, ready: ReadyGame, actor: PlayerId,
       args: Vector[DecisionOptionRef]): Either[OathViolation, Operation] =
     for
-      _ <- Either.cond(args.isEmpty, (), OathViolation.InvalidEventOrder(
-        "Start Chronicle takes no start selection"))
+      _ <- ProcedureStart.noSelection("Start Chronicle", args)
       result <- ready.game.current.result.toRight(
         OathViolation.InvalidEventOrder("the game has no result"))
     yield Sequence(Vector(

@@ -1,6 +1,7 @@
 package oathdigital.gameplay.chronicle
 
 import oathdigital.catalog.ExecutableCatalog
+import oathdigital.gameplay.walker.ProcedureStart
 import oathdigital.model._
 
 /** The World task (CR p. 38, `docs/rules/chronicle.md` task 3), resolved by
@@ -8,8 +9,8 @@ import oathdigital.model._
 object ChronicleWorldProcedure:
   def build(catalog: ExecutableCatalog, ready: ReadyGame, actor: PlayerId,
       args: Vector[DecisionOptionRef]): Either[OathViolation, Operation] =
-    Either.cond(args.isEmpty, Sequence(steps(catalog)),
-      OathViolation.InvalidEventOrder("the World takes no start selection"))
+    ProcedureStart.noSelection("the World", args)
+      .map(_ => Sequence(steps(catalog)))
 
   /** The notes the World's steps write. */
   def noteKeys: Vector[NoteKey] = ProtectAndDispossess.noteKeys
