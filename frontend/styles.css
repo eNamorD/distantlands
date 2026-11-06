@@ -62,8 +62,11 @@
   --brass-bright: #f1c781;
   --brass-label: #d5bd8f;
   --brass-line: #7c694b;
+  --table: #0f0e0c;
   --base: #17140f;
   --pane: #211f1b;
+  --pane-header: #26231d;
+  --panel: #211d17;
   --site: #2b251d;
   --raised: #302a20;
   --pressed: #3b3123;
@@ -72,7 +75,11 @@
   --line-dim: #40382c;
   --line-pane: #443c30;
   --selection-fill: #243442;
+  --pile-back: #493751;
+  --unimplemented: #a15c4a;
   --error-line: #e27f79;
+  --error-text: #ffd0cd;
+  --token-symbol: #d8cdb4;
   --replay: #9ed59e;
   --band-neutral: #b8ab92;
   --player-purple: #d9b8ff;
@@ -104,7 +111,7 @@
 .token-defense-die { color: var(--die-defense); }
 .token-round-die { color: var(--die-round); }
 .token-skull, .token-shield, .token-sword, .token-hollow-sword,
-.token-warband { color: #d8cdb4; }
+.token-warband { color: var(--token-symbol); }
 /* One rolled die: the symbols printed on that face, on a face-shaped chip.
    A blank face is an empty chip, which is what a blank face looks like. */
 .die-faces { display: inline-flex; flex-wrap: wrap; gap: 0.25em;
@@ -246,7 +253,7 @@ span.color-swatch { display: inline-block; width: 1.25rem; height: 1.25rem; padd
 .chronicle-save-prompt { position: fixed; inset: 0; z-index: 60; display: grid;
   place-items: center; padding: 16px; background: #000a; }
 .chronicle-save-panel { width: min(30rem, 100%); display: grid; gap: 0.75rem;
-  padding: 18px; background: #211d17; border: 1px solid var(--brass);
+  padding: 18px; background: var(--panel); border: 1px solid var(--brass);
   border-radius: 12px; }
 .chronicle-save-name { font: inherit; padding: 0.5rem; }
 
@@ -271,7 +278,7 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .status, .panel {
   border: 1px solid #554a38;
   border-radius: 12px;
-  background: #211d17;
+  background: var(--panel);
 }
 
 .status { padding: 14px 16px; margin: 22px 0; }
@@ -449,7 +456,7 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .board-option-card > .card-face { width: 100%; }
 .board-option-inspect { position: absolute; right: 4px; bottom: 4px;
   z-index: 1; width: 22px; height: 22px; padding: 0;
-  border: 1px solid var(--brass); border-radius: 50%; background: #211d17;
+  border: 1px solid var(--brass); border-radius: 50%; background: var(--panel);
   color: var(--cream-bright); font: inherit; font-size: 12px; font-weight: 800;
   line-height: 1; cursor: pointer; }
 .board-option-inspect:hover, .board-option-inspect:focus-visible {
@@ -575,7 +582,7 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .step-controls { display: flex; gap: 8px; margin: 0 0 12px; }
 .undo-action, .redo-action { min-height: 44px; }
 .adviser-panel { margin-top: 18px; }
-.error { border-color: var(--error-line); color: #ffd0cd; }
+.error { border-color: var(--error-line); color: var(--error-text); }
 
 .events {
   max-height: 270px;
@@ -709,7 +716,7 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   background: var(--base); color: var(--cream); font: inherit; line-height: 1.15; }
 .card-face-denizen { border-color: var(--line); }
 .card-face-relic { height: var(--card-w); border-color: #7a6a4c; }
-.card-face-unimplemented { border-style: dashed; border-color: #a15c4a; }
+.card-face-unimplemented { border-style: dashed; border-color: var(--unimplemented); }
 /* An empty slot is a place, not a card: nothing to inspect, so no ring. */
 .card-face:not(.card-slot-empty):hover, .card-face:focus-visible {
   outline: var(--option-ring) solid var(--cream-focus);
@@ -756,7 +763,7 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    at its foot, worked out in the card's own font, so the restriction above
    it never runs under it. */
 .card-unimplemented-badge { position: absolute; right: 0; bottom: 0; left: 0;
-  padding: 0 0.2em; background: #a15c4a; color: var(--cream);
+  padding: 0 0.2em; background: var(--unimplemented); color: var(--cream);
   font-size: max(0.62em, 0.7rem); line-height: 1.35; text-align: center;
   white-space: nowrap; }
 .card-face:has(> .card-unimplemented-badge) {
@@ -897,7 +904,7 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   min-height: 2.3rem; align-items: center; justify-content: center;
   border: 2px solid var(--brass); border-radius: 4px; font-weight: 700;
   line-height: 1; vertical-align: middle; }
-.pile-display > .pile-back { background-color: #493751; color: #fff; }
+.pile-display > .pile-back { background-color: var(--pile-back); color: #fff; }
 .pile-display > .pile-empty { background-color: var(--base); color: transparent; }
 /* The pile and the Supply figure as controls, with the title pill's hover.
    A button resets the text it inherits, so the colour and font are given
@@ -970,7 +977,7 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   width: 66px; height: var(--deck-h); padding-bottom: 12px;
   border: 2px solid var(--line-mid); border-radius: 7px; font-size: 1.9rem;
   line-height: 1; }
-.deck-card.pile-back { background: #493751; color: #fff; }
+.deck-card.pile-back { background: var(--pile-back); color: #fff; }
 .deck-card.pile-empty { background: var(--base); }
 .deck-letter { font-weight: 700; }
 .deck-card > .pile-count { color: #e8d9bb; font-size: 0.5em; font-weight: 700; }
@@ -1114,7 +1121,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 /* Actions lead the table, top left and two rows tall, beside the players
    and the map they are answered on; the Log takes the corner under them. */
 .game-table { width: 100%; height: 100%; display: grid; gap: 4px; padding: 4px;
-  background: #0f0e0c; grid-template-columns: minmax(300px, 1fr) minmax(0, 2.4fr);
+  background: var(--table); grid-template-columns: minmax(300px, 1fr) minmax(0, 2.4fr);
   grid-template-rows: minmax(188px, 21%) minmax(0, 1fr) minmax(120px, 24%);
   grid-template-areas: "actions players" "actions world" "log world"; }
 .game-pane { min-width: 0; min-height: 0; display: flex; flex-direction: column;
@@ -1143,7 +1150,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 .sidebar-resizing > .game-pane { pointer-events: none; }
 .pane-header { display: flex; align-items: center; justify-content: space-between;
   flex: 0 0 auto; gap: 8px; min-height: 39px; padding: 4px 10px;
-  border-bottom: 1px solid var(--line-pane); background: #26231d; }
+  border-bottom: 1px solid var(--line-pane); background: var(--pane-header); }
 .pane-heading { margin: 0; color: var(--brass-label); font-size: .8rem; font-weight: 700;
   letter-spacing: .06em; text-transform: uppercase; }
 .pane-content { --pane-pad: 12px; flex: 1 1 auto; min-width: 0; min-height: 0;
