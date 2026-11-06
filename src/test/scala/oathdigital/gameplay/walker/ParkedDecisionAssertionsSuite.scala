@@ -22,8 +22,8 @@ class ParkedDecisionAssertionsSuite extends munit.FunSuite:
   /** p1, active in the Act, stands at Fair Isle, the easiest Recover
     * (difficulty 3, reachable by `WalkerDiceFixture.shields` in one roll),
     * where no relic lies, so a successful roll finishes the whole action in
-    * one command. `RecoverProcedure.build`/`rebuild` require a site with a
-    * declared Recover difficulty, which p1's Ancient City lacks.
+    * one command. A Recover at a site with no declared Recover difficulty,
+    * such as p1's Ancient City, is refused.
     */
   private val recoverable: ReadyGame =
     Table.start.pawn(p1, at = FairIsleSite).ready

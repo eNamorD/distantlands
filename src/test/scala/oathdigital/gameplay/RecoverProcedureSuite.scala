@@ -368,7 +368,9 @@ class RecoverProcedureSuite extends munit.FunSuite
 
   test("a Recover at a site with no Recover difficulty is refused after " +
       "its modifiers, before any Supply is spent"):
-    val ready = Table.start.pawn(actor, at = noDifficultySite).ready
+    // With no Supply, a refusal after the payment would be the payment's.
+    val ready = Table.start.pawn(actor, at = noDifficultySite)
+      .supply(actor, 0).ready
     val tree = accepted(RecoverProcedure.afterModifiers(catalog, ready, actor))
     assertEquals(ProcedureWalker.advance(ready, tree, None, noPowers,
         scripted(highRoll)).left.toOption,

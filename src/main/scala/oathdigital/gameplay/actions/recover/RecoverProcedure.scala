@@ -312,17 +312,17 @@ object RecoverProcedure:
 
     // Empty-site success is legal and finishes without a decision.
     //
-    // The relic query is built from `actorFacedownRelics(ready, actor)` --
-    // the actor's LIVE pawn site, re-derived from `ready` on every command --
-    // rather than from this closure's own `siteId`, which froze at
-    // build/rebuild time. That one method is also what the projector reads to
+    // The relic query is built from `takeable`. Without Drowned Library it
+    // reads `actorFacedownRelics(ready, actor)` -- the actor's LIVE pawn
+    // site, re-derived from `ready` on every command -- rather than this
+    // closure's own `siteId`, which froze at build/rebuild time. That method is also what the projector reads to
     // offer a client its candidates, so the offered set and the accepted set
     // are the SAME expression rather than two that agree only by convention.
     // A relic that left the site between the park and the answer is simply
     // absent from the rebuilt query, so the answer naming it is rejected.
     // Each relic is judged as card play judges a slot, so a relic Ancient
     // Bloodline locks is askable of its holder.
-    // A Recover the player stopped declares its own line in the third
+    // A Recover the player stopped declares its own line in the stopped
     // branch, which is the only place the abandoned Recover is named.
     //
     // With no difficulty the `Repeat` ran no round, and this branch refuses,

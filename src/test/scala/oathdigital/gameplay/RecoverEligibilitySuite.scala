@@ -2,6 +2,7 @@ package oathdigital.gameplay
 
 import oathdigital.gameplay.actions.RecoverRules
 import oathdigital.gameplay.cards.{BrokenPeaksSite, DeepWoodsSite}
+import oathdigital.gameplay.powers.recover.RelicWorshipCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.model._
 import oathdigital.testkit.{MenuPlay, Table}
@@ -30,6 +31,16 @@ class RecoverEligibilitySuite extends munit.FunSuite:
     assert(recoverAvailable(withSupply(1)))
     assert(!recoverAvailable(withSupply(0)))
 
-  test("Recover is not available at a site with no Recover difficulty"):
+  test("Recover is not available at a site with no Recover difficulty, " +
+      "whether or not a modifier could be picked"):
     assertEquals(RecoverRules.difficulty(catalog, DeepWoodsSite.id), None)
-    assert(!recoverAvailable(Table.start.pawn(p1, at = DeepWoodsSite).ready))
+    val atDeepWoods = Table.start.pawn(p1, at = DeepWoodsSite)
+    def menuReason(table: Table): Option[String] =
+      MenuPlay.menuOptionFor(catalog, table.ready, ActionRef.Recover) match
+        case DecisionOption.Unavailable(_, OptionReason.Written(text)) =>
+          Some(text)
+        case _ => None
+    assertEquals(menuReason(atDeepWoods), Some("Cannot recover here"))
+    // Relic Worship may be picked, so the modifier decision would be asked.
+    assertEquals(menuReason(atDeepWoods.adviser(p1, RelicWorshipCard)
+      .secrets(p1, faceUp = 1)), Some("Cannot recover here"))
