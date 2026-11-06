@@ -61,10 +61,8 @@ case object BookBurning extends BattlePlan:
   override def later: Map[PowerWindow, PlanUse => Vector[Operation]] = Map(
     PowerWindow.CampaignActionEligibility -> (use =>
       if !use.won.contains(true) then Vector.empty
-      else use.result.map(_.defender).collect {
-        case CampaignDefender.Player(defender) => defender
-      }.toVector.flatMap(defender => Vector(
-        BuildOps((ready, _) =>
+      else use.result.flatMap(_.defender.player).toVector.flatMap(defender =>
+        Vector(BuildOps((ready, _) =>
           Right(BookBurning.burn(ready, defender, use.actor))),
         Note(id, states => states.previous.map { step =>
           val burnt = -NoteSupport.secrets(step, defender)

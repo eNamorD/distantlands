@@ -62,17 +62,12 @@ case object SealingWard extends ContributingPower:
       : Int = (for
     setup <- CampaignSetup.setup(ready, actor, pending)
     if setup.kind == CampaignKind.Raid
-    holder <- playerOf(setup.defender)
+    holder <- setup.defender.player
     if holds(ready, holder)
   yield setup.raidTargets.count {
     case CampaignRaidTarget.Relic(`holder`, _) => true
     case _ => false
   }).getOrElse(0)
-
-  private def playerOf(defender: CampaignDefender): Option[PlayerId] =
-    defender match
-      case CampaignDefender.Player(player) => Some(player)
-      case CampaignDefender.Bandits => None
 
   private def holds(ready: ReadyGame, player: PlayerId): Boolean =
     PowerAccess.holdsFaceupAdviser(ready, player, cardId)

@@ -95,8 +95,7 @@ final case class PlanContext(catalog: ExecutableCatalog, ready: ReadyGame,
     owner.filter(owner => !user.contains(owner))
 
   private def rulerOf(site: SiteId): Option[PlayerId] =
-    CampaignSetup.defenderAt(ready, site).collect {
-      case CampaignDefender.Player(player) => player }
+    CampaignSetup.defenderAt(ready, site).flatMap(_.player)
 
   /** An ally's requirement that meets `need`, with the ref that meets it:
     * what the plan's application records as used. */
@@ -242,8 +241,7 @@ final case class PlanUse(catalog: ExecutableCatalog, side: CampaignPlanSide,
   def user: Option[PlayerId] = side match
     case CampaignPlanSide.Attacker => Some(actor)
     case CampaignPlanSide.Defender =>
-      result.map(_.defender).orElse(defender).collect:
-        case CampaignDefender.Player(player) => player
+      result.map(_.defender).orElse(defender).flatMap(_.player)
 
   /** Whether the plan's user won. `None` before the outcome is known. */
   def won: Option[Boolean] = result.map(_.attackerWins == (

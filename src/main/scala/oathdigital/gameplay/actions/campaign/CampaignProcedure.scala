@@ -119,8 +119,7 @@ object CampaignProcedure:
       Some(PowerWindow.CampaignSacrificeLosses)),
     Branch((ready, pending) => Vector(RollStep(CampaignIds.defensePool,
       DiceSpec(DiceKind.Defense), CampaignSetup.setup(ready, actor, pending)
-        .map(_.defender).collect { case CampaignDefender.Player(player) =>
-          player }, Some(PowerWindow.CampaignDefenseRoll)))),
+        .flatMap(_.defender.player), Some(PowerWindow.CampaignDefenseRoll)))),
     Sequence(Vector[Operation](BuildOps((ready, pending) =>
       withSetup(ready, actor, pending)(setup =>
         CampaignBattle.defenseResultOps(ready, setup)))),

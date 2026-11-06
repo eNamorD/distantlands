@@ -25,7 +25,12 @@ object CampaignRaidTarget:
   def canonical(targets: Iterable[CampaignRaidTarget]): Vector[CampaignRaidTarget] =
     targets.toVector.sortBy(_.canonicalOrder)
 
-sealed trait CampaignDefender extends Product with Serializable
+sealed trait CampaignDefender extends Product with Serializable:
+  /** The defending player; `None` when bandits defend. */
+  def player: Option[PlayerId] = this match
+    case CampaignDefender.Player(player) => Some(player)
+    case CampaignDefender.Bandits => None
+
 object CampaignDefender:
   case object Bandits extends CampaignDefender
   final case class Player(playerId: PlayerId) extends CampaignDefender

@@ -14,9 +14,7 @@ object CampaignPlans:
   def userOf(setup: CampaignSetup, side: CampaignPlanSide): Option[PlayerId] =
     side match
       case CampaignPlanSide.Attacker => Some(setup.actor)
-      case CampaignPlanSide.Defender => setup.defender match
-        case CampaignDefender.Player(player) => Some(player)
-        case CampaignDefender.Bandits => None
+      case CampaignPlanSide.Defender => setup.defender.player
 
   /** The card a plan's source is printed on. The title has none. */
   def cardOf(source: CampaignPlanSource): Option[CardId] = source match

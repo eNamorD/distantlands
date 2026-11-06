@@ -90,8 +90,7 @@ case object SpiralCastle extends BattlePlan:
     PowerWindow.CampaignRaidRelocation -> ((_, use, children) =>
       (for
         result <- use.result if result.attackerWins
-        defender <- Some(result.defender).collect {
-          case CampaignDefender.Player(player) => player }
+        defender <- result.defender.player
         site <- use.ready.game.current.edificeSite(edifice,
           EdificeSide.Intact)
       yield SpiralSteps.steps(id, PowerSourceRef.Card(edifice), sent,

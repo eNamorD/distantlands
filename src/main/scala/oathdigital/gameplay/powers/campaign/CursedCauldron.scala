@@ -84,10 +84,6 @@ case object CursedCauldron extends BattlePlan:
       use.result.map(_.defender).orElse(use.defender)
     case CampaignPlanSide.Defender => Some(CampaignDefender.Player(use.actor))
 
-  private def playerOf(side: CampaignDefender): Option[PlayerId] = side match
-    case CampaignDefender.Player(player) => Some(player)
-    case CampaignDefender.Bandits => None
-
   private def forceOf(ready: ReadyGame, side: CampaignDefender)
       : Option[ForceKind] = side match
     case CampaignDefender.Player(player) =>
@@ -99,14 +95,14 @@ case object CursedCauldron extends BattlePlan:
     (for
       foe <- enemy(use)
       kind <- forceOf(use.ready, foe)
-    yield LossRewrite.counted(CursedCauldron.Died, kind, playerOf(foe),
+    yield LossRewrite.counted(CursedCauldron.Died, kind, foe.player,
       returns)(ctx, children)).getOrElse(children)
 
   /** The count, less what the enemy's Hospital will place, as warbands for
     * `user`. */
   private def gain(use: PlanUse, user: PlayerId): Operation =
     BuildOps((ready, _) => PlayerFacts.forceKind(ready, user).map { kind =>
-      val saved = enemy(use).flatMap(playerOf)
+      val saved = enemy(use).flatMap(_.player)
         .fold(0)(Hospital.placeable(ready, _)) +
         ObsidianCage.fromHospital(ready)
       val died = ready.game.current.rollPools.get(CursedCauldron.Died)

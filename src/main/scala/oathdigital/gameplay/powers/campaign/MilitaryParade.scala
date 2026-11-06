@@ -34,8 +34,7 @@ case object MilitaryParade extends BattlePlan:
     * defending player for an attacker. */
   private def enemy(use: PlanUse): Option[PlayerId] = use.side match
     case CampaignPlanSide.Defender => Some(use.actor)
-    case CampaignPlanSide.Attacker => use.result.map(_.defender).collect {
-      case CampaignDefender.Player(player) => player }
+    case CampaignPlanSide.Attacker => use.result.flatMap(_.defender.player)
 
   /** `player`'s faceup advisers, a Marriage listed twice since it counts as
     * two (`EffectiveSuit.weight`). */

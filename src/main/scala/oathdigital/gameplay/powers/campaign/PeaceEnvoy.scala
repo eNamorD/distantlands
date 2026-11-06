@@ -153,12 +153,9 @@ case object PeaceEnvoy extends BattlePlan:
   /** The user and the enemy, when both are players whose pawns stand at
     * one site. */
   private def parties(context: PlanContext): Option[(PlayerId, PlayerId)] =
-    val enemy = context.enemy match
-      case CampaignDefender.Player(player) => Some(player)
-      case CampaignDefender.Bandits => None
     for
       user <- context.user
-      other <- enemy
+      other <- context.enemy.player
       site <- standingSite(context.ready, user)
       if standingSite(context.ready, other).contains(site)
     yield (user, other)

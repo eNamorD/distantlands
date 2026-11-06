@@ -86,8 +86,7 @@ case object ObsidianCage extends BattlePlan:
   /** The user's enemy, when a player: bandits have no force left to cage. */
   private def enemyOf(side: CampaignPlanSide, result: CampaignResult)
       : Option[PlayerId] = side match
-    case CampaignPlanSide.Attacker => Some(result.defender).collect {
-      case CampaignDefender.Player(player) => player }
+    case CampaignPlanSide.Attacker => result.defender.player
     case CampaignPlanSide.Defender => Some(result.attacker)
 
   /** The enemy's force, as the losses left it, moved onto the Cage, with

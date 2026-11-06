@@ -51,7 +51,7 @@ case object MartialCulture extends BattlePlan:
   def plan(context: PlanContext): Option[CampaignPlanOffer] = for
     user <- context.user
     if exile(context.ready, user)
-    enemy <- playerOf(context.enemy)
+    enemy <- context.enemy.player
     if exile(context.ready, enemy)
     source <- context.denizen(cardId)
   yield CampaignPlanOffer(source,
@@ -83,10 +83,6 @@ case object MartialCulture extends BattlePlan:
         Vector(Citizenship.become(user),
           Note(id, roleNotes.became(_, user, card)))
       else Vector(Note(id, _ => Some(declined(card))))))
-
-  private def playerOf(side: CampaignDefender): Option[PlayerId] = side match
-    case CampaignDefender.Player(player) => Some(player)
-    case CampaignDefender.Bandits => None
 
   private def exile(ready: ReadyGame, player: PlayerId): Boolean =
     Imperials.role(ready, player).contains(Role.Exile)

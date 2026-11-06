@@ -234,7 +234,7 @@ object CampaignNotes:
     * refused is not named, because nothing was gained. */
   def spoilsNote(states: NoteStates): Option[LogNote] = for
     result <- resultOf(states)
-    defender <- defenderOf(result)
+    defender <- result.defender.player
     step <- states.previous
     taken = NoteSupport.relicsGained(step, result.attacker)
       .map(relic => NoteThing.Card(relic): NoteThing) ++
@@ -260,7 +260,7 @@ object CampaignNotes:
     * Conspiracy goes to the box, not a pile, so no clause names it. */
   def consequenceNote(states: NoteStates): Option[LogNote] = for
     result <- resultOf(states)
-    defender <- defenderOf(result)
+    defender <- result.defender.player
     step <- states.previous
     clauses = consequences(step, defender)
     if clauses.nonEmpty
@@ -289,7 +289,7 @@ object CampaignNotes:
     * step's operations and its own line says where the pawn stands. */
   def relocationNote(states: NoteStates): Option[LogNote] = for
     result <- resultOf(states)
-    defender <- defenderOf(result)
+    defender <- result.defender.player
     step <- states.previous
     to <- step._2.game.current.pawnSite(defender)
     if !step._1.game.current.pawnSite(defender).contains(to)
@@ -303,14 +303,10 @@ object CampaignNotes:
   private def resultOf(states: NoteStates): Option[CampaignResult] =
     states.now.game.current.lastCampaignResult
 
-  private def defenderOf(result: CampaignResult): Option[PlayerId] =
-    Some(result.defender).collect {
-      case CampaignDefender.Player(player) => player }
-
   /** Who lost the battle: the defender when the attacker won, else the
     * attacker. `None` is the bandits. */
   private def loserOf(result: CampaignResult): Option[PlayerId] =
-    if result.attackerWins then defenderOf(result)
+    if result.attackerWins then result.defender.player
     else Some(result.attacker)
 
   private def forceKindOf(ready: ReadyGame, owner: Option[PlayerId])

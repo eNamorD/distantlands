@@ -92,8 +92,7 @@ case object Glamor extends BattlePlan:
   private val takeAt: PlanUse => Vector[Operation] = use =>
     (for
       result <- use.result if use.won.contains(true)
-      defender <- Some(result.defender).collect {
-        case CampaignDefender.Player(player) => player }
+      defender <- result.defender.player
     yield Vector[Operation](
       BuildOps((ready, pending) => Right(takes(ready, use.actor, defender,
         pending))),

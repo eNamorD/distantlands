@@ -65,8 +65,7 @@ case object KeepRule extends ContributingPower:
     * so the recorded result is this Raid's. */
   def kept(ready: ReadyGame): Option[(PlayerId, SiteId)] = for
     result <- ready.game.current.lastCampaignResult
-    defender <- Some(result.defender).collect {
-      case CampaignDefender.Player(player) => player }
+    defender <- result.defender.player
     site <- ready.game.current.faceUpDenizenSite(cardId)
     if CampaignSetup.defenderAt(ready, site)
       .contains(CampaignDefender.Player(defender))

@@ -49,7 +49,7 @@ case object GrandScepterPlan extends BattlePlan:
   def plan(context: PlanContext): Option[CampaignPlanOffer] = for
     user <- context.user
     if Imperials.isImperial(context.ready, user)
-    enemy <- playerOf(context.enemy)
+    enemy <- context.enemy.player
     if citizen(context.ready, enemy)
     source <- context.relic(relic)
   yield CampaignPlanOffer(source,
@@ -91,12 +91,8 @@ case object GrandScepterPlan extends BattlePlan:
   private def citizen(ready: ReadyGame, player: PlayerId): Boolean =
     Imperials.role(ready, player).contains(Role.Citizen)
 
-  private def playerOf(side: CampaignDefender): Option[PlayerId] = side match
-    case CampaignDefender.Player(player) => Some(player)
-    case CampaignDefender.Bandits => None
-
   /** The player on the other side of the plan's user. */
   private def opponent(side: CampaignPlanSide, result: CampaignResult)
       : Option[PlayerId] = side match
-    case CampaignPlanSide.Attacker => playerOf(result.defender)
+    case CampaignPlanSide.Attacker => result.defender.player
     case CampaignPlanSide.Defender => Some(result.attacker)
