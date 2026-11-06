@@ -15,11 +15,6 @@ object AuthenticationFailure:
   final case class StorageFailure(message: String)
       extends AuthenticationFailure
 
-trait Authenticator[-Credential]:
-  def authenticate(
-      credential: Credential
-  ): Either[AuthenticationFailure, AuthenticatedPrincipal]
-
 sealed trait GameAccessContext extends Product with Serializable:
   def gameId: String
   def userId: UserId

@@ -103,7 +103,7 @@ failures are not an idempotency protocol and must not be blindly replayed.
 ## Authentication and membership boundary
 
 `AuthenticatedPrincipal` is the provider-neutral identity presented to server
-application code by a pluggable `Authenticator`. It contains only Oath's
+application code by `SessionCookieAuthenticator`. It contains only Oath's
 internal `UserId`; raw OIDC claims, development headers, and caller-selected
 player IDs do not cross this boundary.
 

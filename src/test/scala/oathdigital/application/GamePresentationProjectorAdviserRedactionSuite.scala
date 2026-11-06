@@ -39,18 +39,6 @@ class GamePresentationProjectorAdviserRedactionSuite extends munit.FunSuite:
     val board = boardOf(projector.playerBoards(ready, Some(p2)), p1)
     assertRedacted(board.advisers)
 
-  test("setupPlayerBoards tells every viewer the adviser's kind, not its identity"):
-    val ready = Table.start
-      .adviser(p1, MagiciansCodeCard, facedown = true)
-      .adviser(p1, visionId, facedown = true)
-      .ready
-    val material = FirstGameSetupMaterial(ready.game.current.players,
-      ready.game.current.map, ready.game.current.commonCards,
-      ready.game.current.banners, ready.game.current.tracks, ready.banks.favor,
-      ready.game.current.temporaryHands)
-    val board = boardOf(projector.setupPlayerBoards(material), p1)
-    assertRedacted(board.advisers)
-
   test("playerBoards shows the tokens resting on the owner's faceup adviser"):
     val ready = Table.start.adviser(p1, MagiciansCodeCard)
       .tokens(MagiciansCodeCard, favor = 1, secrets = 2).ready

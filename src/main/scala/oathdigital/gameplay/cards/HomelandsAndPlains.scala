@@ -1,7 +1,6 @@
 package oathdigital.gameplay.cards
 
 import oathdigital.catalog.Site
-import oathdigital.gameplay.actions.RuleNotes
 import oathdigital.model.{PowerId, Suit, SiteId, Tokens}
 
 /** The eleven sites whose power no power object runs. The six Homelands'
@@ -17,8 +16,6 @@ object HomelandsAndPlains:
     GreatSlumSite, PaintedTowersSite, StandingStonesSite, SteppeSite)
   val plains: Vector[Site] = Vector(BuriedGiantSite, DunesSite,
     SaltFlatsSite, ShroudedWoodsSite, SolitaryPillarSite)
-  /** The rule that runs every Homeland handler. */
-  val homelandRule: PowerId = RuleNotes.homelandDiscard
   val handlers: Set[PowerId] = (homelands ++ plains).flatMap(_.handlers).toSet
 
 object BuriedGiantSite extends Site(SiteId("site:buried-giant"), "Buried Giant",

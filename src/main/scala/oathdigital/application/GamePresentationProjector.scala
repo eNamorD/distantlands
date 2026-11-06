@@ -212,16 +212,6 @@ private[application] final class GamePresentationProjector(
       tokens: Tokens): CardDetailsProjection =
     details.copy(favor = tokens.favor, secrets = tokens.secrets)
 
-  def setupPlayerBoards(material: FirstGameSetupMaterial): Vector[PlayerBoardProjection] =
-    material.players.map(player => PlayerBoardProjection(player.player.value,
-      player.board.warbands, player.board.favor, player.board.faceUpSecrets,
-      player.board.faceDownSecrets, 0,
-      player.board.faceUpSecrets + player.board.faceDownSecrets,
-      player.board.supply.supply,
-      player.pawnSite.map(_.value),
-      player.advisers.map(card => hiddenCard(cardKind(card.id))), Vector.empty, None,
-      supplyBands = Vector.empty))
-
   def banners(ready: ReadyGame): Vector[BannerProjection] =
     val current = ready.game.current
     Vector(
