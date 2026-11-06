@@ -27,9 +27,8 @@ object MilitaryParadeCard extends Denizen(DenizenId("109"), "Military Parade", S
   * the favor moves from the banks to the shared bank. The gains write the
   * generic gain lines, so it writes no line of its own.
   */
-case object MilitaryParade extends BattlePlan:
-  val id: PowerId = MilitaryParadeCard.power.id
-
+case object MilitaryParade extends DenizenPlan(MilitaryParadeCard,
+    MilitaryParadeCard.power):
   /** The enemy of the plan's user: the attacker for a defender, and the
     * defending player for an attacker. */
   private def enemy(use: PlanUse): Option[PlayerId] = use.side match
@@ -44,8 +43,6 @@ case object MilitaryParade extends BattlePlan:
         case DenizenState(held, Orientation.FaceUp, _) => held })
       .flatMap(held => Vector.fill(EffectiveSuit.weight(held))(held))
 
-  val cardId: DenizenId = MilitaryParadeCard.id
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] =
     Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
 

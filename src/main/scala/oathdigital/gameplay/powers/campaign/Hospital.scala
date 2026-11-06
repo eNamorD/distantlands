@@ -45,10 +45,7 @@ object HospitalCard extends Denizen(DenizenId("149"), "Hospital", Suit.Hearth) w
   * longer and nothing comes back. Nor does it for a holder of Vow of
   * Wandering: their dead stay killed, and Hospital writes no line.
   */
-case object Hospital extends BattlePlan:
-  val cardId: DenizenId = HospitalCard.id
-  val id: PowerId = HospitalCard.power.id
-
+case object Hospital extends DenizenPlan(HospitalCard, HospitalCard.power):
   /** Folds after Billowing Fog and Traveling Doctor (priority 1), which
     * change the losses, and after every plan at the default priority 0, so
     * its count sees what still dies: the kills Sticky Fire and Shield Wall
@@ -73,7 +70,6 @@ case object Hospital extends BattlePlan:
   private def at(ready: ReadyGame, site: SiteId, kind: ForceKind): Int =
     ready.game.current.map.sites.get(site).fold(0)(_.forces.count(kind))
 
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] =
     Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
   override def priority: Int = Hospital.Priority

@@ -24,8 +24,8 @@ object MercenariesCard extends Denizen(DenizenId("12"), "Mercenaries", Suit.Disc
   * The discard writes "Discarded after {Red} lost.", read from the discard's
   * step.
   */
-case object Mercenaries extends BattlePlan:
-  val id: PowerId = MercenariesCard.power.id
+case object Mercenaries extends DenizenPlan(MercenariesCard,
+    MercenariesCard.power):
   val Dice: Int = 3
   private val notes = NoteSet(id)
   override def noteKeys: Vector[NoteKey] = notes.declared
@@ -33,8 +33,6 @@ case object Mercenaries extends BattlePlan:
   val discarded: NoteKey = notes.key("discarded", Vector(
     NotePart.Text("Discarded after "), NotePart.Arg(0), NotePart.Text(" lost.")))
 
-  val cardId: DenizenId = MercenariesCard.id
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] =
     Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
 
@@ -48,7 +46,6 @@ case object Mercenaries extends BattlePlan:
       CampaignPlanOffer(source, label, Vector(CampaignPlanCost.Favor(1)),
         Vector(effect))
     }
-
 
   override def later: Map[PowerWindow, PlanUse => Vector[Operation]] = Map(
     PowerWindow.CampaignActionEligibility -> (use =>

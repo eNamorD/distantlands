@@ -21,11 +21,8 @@ object NatureWorshipCard extends Denizen(DenizenId("175"), "Nature Worship", Sui
   * the plan reveals it. At a site it is not an adviser and counts only the
   * others. A plan that would add no die is not offered.
   */
-case object NatureWorship extends BattlePlan:
-  val id: PowerId = NatureWorshipCard.power.id
-
-  val cardId: DenizenId = NatureWorshipCard.id
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
+case object NatureWorship extends DenizenPlan(NatureWorshipCard,
+    NatureWorshipCard.power):
   def sides: Set[CampaignPlanSide] =
     Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
 

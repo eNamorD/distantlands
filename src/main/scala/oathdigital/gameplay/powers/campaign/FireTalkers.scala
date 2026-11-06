@@ -17,12 +17,10 @@ object FireTalkersCard extends Denizen(DenizenId("31"), "Fire Talkers", Suit.Arc
   * defender removes three. It is offered only while its user holds the
   * Darkest Secret, so a bandit defender never uses it.
   */
-case object FireTalkers extends BattlePlan:
-  val cardId: DenizenId = FireTalkersCard.id
-  val id: PowerId = FireTalkersCard.power.id
+case object FireTalkers extends DenizenPlan(FireTalkersCard,
+    FireTalkersCard.power):
   val Dice: Int = 3
 
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] =
     Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
 

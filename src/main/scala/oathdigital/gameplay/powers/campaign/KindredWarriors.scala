@@ -23,9 +23,8 @@ object KindredWarriorsCard extends Denizen(DenizenId("60"), "Kindred Warriors", 
   * X = 0 it would do nothing and is not offered. Bandits pay nothing, so a
   * bandit defender never applies it.
   */
-case object KindredWarriors extends BattlePlan:
-  val id: PowerId = KindredWarriorsCard.power.id
-
+case object KindredWarriors extends DenizenPlan(KindredWarriorsCard,
+    KindredWarriorsCard.power):
   /** "Kindred Warriors: add 2 attack dice and ignore all attack skulls", or
     * without the dice at X = 0; "Kindred Warriors: remove 2 attack dice"
     * for a defender. */
@@ -38,8 +37,6 @@ case object KindredWarriors extends BattlePlan:
     case CampaignPlanSide.Defender =>
       PlanDice.label("Kindred Warriors", side, dice)
 
-  val cardId: DenizenId = KindredWarriorsCard.id
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] =
     Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
   private val notes = NoteSet(id)

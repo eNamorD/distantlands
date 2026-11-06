@@ -43,9 +43,8 @@ object PeaceEnvoyCard extends Denizen(DenizenId("125"), "Peace Envoy", Suit.Orde
   * The gift writes "Gave {2 favor} to {Blue}.", or, for a defender, "{Blue}
   * gave {2 favor} to {Red}.".
   */
-case object PeaceEnvoy extends BattlePlan:
-  val cardId: DenizenId = PeaceEnvoyCard.id
-  val id: PowerId = PeaceEnvoyCard.power.id
+case object PeaceEnvoy extends DenizenPlan(PeaceEnvoyCard,
+    PeaceEnvoyCard.power):
   /** The favor placed onto the card. */
   val Favor: Int = 1
   /** Why the plan is shown but not offered. */
@@ -75,7 +74,6 @@ case object PeaceEnvoy extends BattlePlan:
   val wonOffTurn: NoteKey = notes.key("won-off-turn", Vector(NotePart.Arg(0),
     NotePart.Text(" won the battle without a roll.")))
 
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] =
     Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
   override def noteKeys: Vector[NoteKey] = notes.declared

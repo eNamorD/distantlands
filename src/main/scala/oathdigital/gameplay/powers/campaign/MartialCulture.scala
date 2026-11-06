@@ -27,9 +27,8 @@ object MartialCultureCard extends Denizen(DenizenId("10"), "Martial Culture", Su
   * Lines: "Became a Citizen.", "Became the Chancellor." and "Declined
   * Citizenship." It narrates its question.
   */
-case object MartialCulture extends BattlePlan:
-  val cardId: DenizenId = MartialCultureCard.id
-  val id: PowerId = MartialCultureCard.power.id
+case object MartialCulture extends DenizenPlan(MartialCultureCard,
+    MartialCultureCard.power):
   val decisionId: String =
     CampaignProcedure.decisionPrefix + "martial-culture"
   val become: DecisionOptionRef.Button = DecisionOptionRef.Button("become")
@@ -42,11 +41,10 @@ case object MartialCulture extends BattlePlan:
   override def noteKeys: Vector[NoteKey] = notes.declared
   override def narratedDecisions: Set[String] = Set(decisionId)
 
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] =
     Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
 
-  private def card: PowerSourceRef = PowerSourceRef.Card(cardId)
+  private def cardSource: PowerSourceRef = PowerSourceRef.Card(cardId)
 
   def plan(context: PlanContext): Option[CampaignPlanOffer] = for
     user <- context.user
@@ -81,8 +79,8 @@ case object MartialCulture extends BattlePlan:
     Branch((_, pending) =>
       if PowerAnswers.one(pending, decisionId).contains(become) then
         Vector(Citizenship.become(user),
-          Note(id, roleNotes.became(_, user, card)))
-      else Vector(Note(id, _ => Some(declined(card))))))
+          Note(id, roleNotes.became(_, user, cardSource)))
+      else Vector(Note(id, _ => Some(declined(cardSource))))))
 
   private def exile(ready: ReadyGame, player: PlayerId): Boolean =
     Imperials.role(ready, player).contains(Role.Exile)

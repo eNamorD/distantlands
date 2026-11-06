@@ -21,9 +21,7 @@ object OutridersCard extends Denizen(DenizenId("104"), "Outriders", Suit.Order):
   *
   * When the attack rolled a skull it writes "Skulls ignored."
   */
-case object Outriders extends BattlePlan:
-  val cardId: DenizenId = OutridersCard.id
-  val id: PowerId = OutridersCard.power.id
+case object Outriders extends DenizenPlan(OutridersCard, OutridersCard.power):
   /** Exposed: other powers write this power's lines and include this
     * set to declare them. */
   val notes: NoteSet = NoteSet(id)
@@ -41,7 +39,6 @@ case object Outriders extends BattlePlan:
     Note(power, states => Option.when(AttackScore.skullRolled(states.now))(
       ignored(source))))
 
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Attacker)
 
   def plan(context: PlanContext): Option[CampaignPlanOffer] =

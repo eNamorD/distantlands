@@ -21,14 +21,11 @@ object RangersCard extends Denizen(DenizenId("45"), "Rangers", Suit.Beast):
   * chosen; the defender's window comes later, so dice the defender adds do
   * not count. It is offered when the condition fails too, for the skulls.
   */
-case object Rangers extends BattlePlan:
-  val cardId: DenizenId = RangersCard.id
-  val id: PowerId = RangersCard.power.id
+case object Rangers extends DenizenPlan(RangersCard, RangersCard.power):
   val Dice: Int = 2
   /** The defense dice that earn the extra attack dice. */
   val Pool: Int = 4
 
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Attacker)
   private val notes = NoteSet(id)
   notes.include(Outriders.notes)

@@ -21,9 +21,8 @@ object FieldPromotionCard extends Denizen(DenizenId("106"), "Field Promotion", S
   *
   * When a warband was gained it writes "{Red} gained {n warbands}."
   */
-case object FieldPromotion extends BattlePlan:
-  val cardId: DenizenId = FieldPromotionCard.id
-  val id: PowerId = FieldPromotionCard.power.id
+case object FieldPromotion extends DenizenPlan(FieldPromotionCard,
+    FieldPromotionCard.power):
   /** The favor placed to choose it. */
   val Favor: Int = 1
   val Warbands: Int = 3
@@ -31,7 +30,6 @@ case object FieldPromotion extends BattlePlan:
   /** "{Red} gained {n warbands}." */
   val gained: NoteKey = NoteSupport.gainedKey(notes, "gained")
 
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] =
     Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
   override def noteKeys: Vector[NoteKey] = notes.declared

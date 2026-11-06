@@ -28,8 +28,8 @@ object MasterAtArmsCard extends Denizen(DenizenId("249"), "Master at Arms",
   *
   * It writes "Rerolled {n} hollow swords.".
   */
-case object MasterAtArms extends BattlePlan:
-  val id: PowerId = MasterAtArmsCard.power.id
+case object MasterAtArms extends DenizenPlan(MasterAtArmsCard,
+    MasterAtArmsCard.power):
   /** Its "how many" question on the `number`th attack throw. */
   def decisionId(number: Int): String =
     RerollChoice.followUpId(CampaignIds.attackPool, number, "master-at-arms")
@@ -57,8 +57,6 @@ case object MasterAtArms extends BattlePlan:
           if id == decisionId(number) => n
     }
 
-  val cardId: DenizenId = MasterAtArmsCard.id
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Attacker)
 
   def plan(context: PlanContext): Option[CampaignPlanOffer] =

@@ -36,9 +36,7 @@ object GlamorCard extends Denizen(DenizenId("207"), "Glamor", Suit.Arcane):
   * Lines: "Targeted {2} secrets for {2} defense dice." when the secrets
   * are chosen, and "Took {2 secrets} from {Blue}." when they are taken.
   */
-case object Glamor extends BattlePlan:
-  val cardId: DenizenId = GlamorCard.id
-  val id: PowerId = GlamorCard.power.id
+case object Glamor extends DenizenPlan(GlamorCard, GlamorCard.power):
   /** Under the Campaign's prefix, so a parked question is a Campaign
     * decision. */
   val decisionId: String = CampaignProcedure.decisionPrefix + "glamor"
@@ -59,7 +57,6 @@ case object Glamor extends BattlePlan:
   override def noteKeys: Vector[NoteKey] = notes.declared
   override def narratedDecisions: Set[String] = Set(decisionId)
 
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Attacker)
 
   /** Every secret on `player`'s board, faceup and facedown. */

@@ -16,12 +16,9 @@ object LongbowsCard extends Denizen(DenizenId("4"), "Longbows", Suit.Order):
   * bandit defender applies it when it stands faceup at a site the bandits
   * rule, as it applies every free plan.
   */
-case object Longbows extends BattlePlan:
-  val cardId: DenizenId = LongbowsCard.id
-  val id: PowerId = LongbowsCard.power.id
+case object Longbows extends DenizenPlan(LongbowsCard, LongbowsCard.power):
   val Dice: Int = 1
 
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] =
     Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
 

@@ -23,9 +23,8 @@ object TheGreatLevyCard extends Denizen(DenizenId("137"), "The Great Levy", Suit
   * attack dice, so for a defender it only removes three. Bandits pay nothing,
   * so a bandit defender never applies it.
   */
-case object GreatLevy extends BattlePlan:
-  val cardId: DenizenId = TheGreatLevyCard.id
-  val id: PowerId = TheGreatLevyCard.power.id
+case object GreatLevy extends DenizenPlan(TheGreatLevyCard,
+    TheGreatLevyCard.power):
   val Dice: Int = 3
 
   /** "The Great Levy: add 3 attack dice and ignore all attack skulls" for an
@@ -36,7 +35,6 @@ case object GreatLevy extends BattlePlan:
       case CampaignPlanSide.Attacker => s"$dice and ignore all attack skulls"
       case CampaignPlanSide.Defender => dice
 
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] =
     Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
   private val notes = NoteSet(id)

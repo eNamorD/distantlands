@@ -44,9 +44,8 @@ object RelicHunterCard extends Denizen(DenizenId("126"), "Relic Hunter", Suit.Or
   * relics are chosen; "Took {relics}." and "Put {relics} on the bottom of
   * the relic deck." when the takes run.
   */
-case object RelicHunter extends BattlePlan:
-  val cardId: DenizenId = RelicHunterCard.id
-  val id: PowerId = RelicHunterCard.power.id
+case object RelicHunter extends DenizenPlan(RelicHunterCard,
+    RelicHunterCard.power):
   /** Under the Campaign's prefix, so a parked question is a Campaign
     * decision. */
   val decisionId: String = CampaignProcedure.decisionPrefix + "relic-hunter"
@@ -76,7 +75,6 @@ case object RelicHunter extends BattlePlan:
   override def narratedDecisions: Set[String] =
     Set(decisionId, bottomDecisionId)
 
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Attacker)
 
   /** A facedown relic at a targeted site, by its slot there. */

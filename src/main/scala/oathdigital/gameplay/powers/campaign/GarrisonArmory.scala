@@ -25,17 +25,14 @@ object GarrisonArmoryCard extends Denizen(DenizenId("255"), "Garrison Armory", S
   * When the targets held a warband it writes "Warbands on the targets added
   * {n} more defense."
   */
-case object GarrisonArmory extends BattlePlan:
-  val cardId: DenizenId = GarrisonArmoryCard.id
-  val id: PowerId = GarrisonArmoryCard.power.id
-
+case object GarrisonArmory extends DenizenPlan(GarrisonArmoryCard,
+    GarrisonArmoryCard.power):
   private val notes = NoteSet(id)
   /** "Warbands on the targets added {n} more defense." */
   val added: NoteKey = notes.key("added", Vector(
     NotePart.Text("Warbands on the targets added "), NotePart.Arg(0),
     NotePart.Text(" more defense.")))
 
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Defender)
   override def noteKeys: Vector[NoteKey] = notes.declared
 
