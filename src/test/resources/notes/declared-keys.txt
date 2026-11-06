@@ -414,6 +414,7 @@ edifice.e09.ruined used = Buried {0} at {1}; Giant's Rampage and {2} now stand t
 edifice.e09.ruined used.none = No denizen could be buried.
 edifice.e10.intact used = {0} drew {1} from the bottom of the world deck.
 edifice.e10.intact used.none = The world deck was empty.
+edifice.e11.intact used = Swapped {0}{0? card| cards} between the Dispossessed and the {1}.
 edifice.e12.intact used = Advanced the round marker to round {0}.
 edifice.e12.ruined advanced = Advanced the round marker to round {0}.
 edifice.e13.intact used = Swapped {0} for {1} at {2}.

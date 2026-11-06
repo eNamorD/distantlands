@@ -46,6 +46,23 @@ object GreatClockCard extends Edifice(EdificeId("E12"), Suit.Arcane):
         "end the game._")
     val powers: Vector[PrintedPower] = Vector(power)
 
+object GreatSpireCard extends Edifice(EdificeId("E11"), Suit.Arcane):
+  object intact extends EdificeFace("Great Spire") with Locked:
+    val power = PrintedPower(PowerId("edifice.e11.intact"),
+      persistent = false, cost = Cost(secret = 1),
+      text = "**ACTION:** Add 3 random cards from the Dispossessed to " +
+        "this region's discard pile, then add the bottom 3 denizens " +
+        "from that pile to the Dispossessed.")
+    val powers: Vector[PrintedPower] = Vector(power)
+  object ruined extends EdificeFace("Fallen Spire"):
+    val power = PrintedPower(PowerId("edifice.e11.ruined"),
+      persistent = false, cost = Cost.free,
+      text = "SETUP (END) / **WHEN EXPLORED:** Swap denizens in this " +
+        "region's discard pile with the same number of random cards " +
+        "from the Dispossessed. Then, shuffle these cards with any " +
+        "Visions in this pile.")
+    val powers: Vector[PrintedPower] = Vector(power)
+
 /** The round marker's advance that both Great Clock faces make "if
   * possible" (catalog batch 10, slice 2): none on round 8, the last space.
   */

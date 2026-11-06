@@ -50,23 +50,6 @@ object WildPasturesCard extends Edifice(EdificeId("E07"), Suit.Nomad):
         "cards on the map unless the winner rules this card.")
     val powers: Vector[PrintedPower] = Vector(power)
 
-object GreatSpireCard extends Edifice(EdificeId("E11"), Suit.Arcane):
-  object intact extends EdificeFace("Great Spire") with Locked:
-    val power = PrintedPower(PowerId("edifice.e11.intact"),
-      persistent = false, cost = Cost(secret = 1),
-      text = "**ACTION:** Add 3 random cards from the Dispossessed to " +
-        "this region's discard pile, then add the bottom 3 denizens " +
-        "from that pile to the Dispossessed.")
-    val powers: Vector[PrintedPower] = Vector(power)
-  object ruined extends EdificeFace("Fallen Spire"):
-    val power = PrintedPower(PowerId("edifice.e11.ruined"),
-      persistent = false, cost = Cost.free,
-      text = "SETUP (END) / **WHEN EXPLORED:** Swap denizens in this " +
-        "region's discard pile with the same number of random cards " +
-        "from the Dispossessed. Then, shuffle these cards with any " +
-        "Visions in this pile.")
-    val powers: Vector[PrintedPower] = Vector(power)
-
 object TheTribunalCard extends Edifice(EdificeId("E19"), Suit.Order):
   object intact extends EdificeFace("The Tribunal") with Locked:
     val power = PrintedPower(PowerId("edifice.e19.intact"),
