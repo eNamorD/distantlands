@@ -11,10 +11,6 @@ private[frontend] object ServerUiSupport:
     Vector(s"$available/$total secrets available",
       s"$facedown facedown on board, $committed committed to cards")
 
-  private[frontend] def siteLabel(value: GameProjection, siteId: String): String =
-    value.world.flatMap(_.sites).find(_.siteId == siteId)
-      .fold(siteId)(_.label)
-
   /** Name row and the two upper corners: what a site holds on the left, what
     * it costs to walk into on the right.
     */
