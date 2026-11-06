@@ -77,7 +77,7 @@ private[serialization] trait WalkerValueCodec extends PositionWire:
     */
   protected final def encodePiece(piece: Piece): ujson.Value = piece match
     case Piece.Card(id) => ujson.Obj("kind" -> "card",
-      "card" -> encodeCardRef(id))
+      "card" -> encodeCardId(id))
     case Piece.Banner(banner) => ujson.Obj("kind" -> "banner",
       "banner" -> banner.key)
     case Piece.Pawn(player) => ujson.Obj("kind" -> "pawn",
@@ -156,7 +156,7 @@ private[serialization] trait WalkerValueCodec extends PositionWire:
     case Location.Hand(player) => ujson.Obj("kind" -> "hand",
       "playerId" -> player.value)
     case Location.OnCard(card) => ujson.Obj("kind" -> "on-card",
-      "card" -> encodeCardRef(card))
+      "card" -> encodeCardId(card))
     case Location.OnBanner(banner) => ujson.Obj("kind" -> "on-banner",
       "banner" -> banner.key)
     case Location.FavorBank(suit) => ujson.Obj("kind" -> "favor-bank",

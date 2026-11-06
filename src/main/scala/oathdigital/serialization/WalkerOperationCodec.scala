@@ -82,10 +82,10 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
   private def encodeCardOperation(operation: CardOperation): ujson.Value =
     operation match
       case Peek(viewer, card, at) => ujson.Obj("kind" -> "peek",
-        "viewerPlayerId" -> viewer.value, "card" -> encodeCardRef(card),
+        "viewerPlayerId" -> viewer.value, "card" -> encodeCardId(card),
         "at" -> encodeLocation(at))
       case Flip(card, at, orientation) => ujson.Obj("kind" -> "flip",
-        "card" -> encodeCardRef(card), "at" -> encodeLocation(at),
+        "card" -> encodeCardId(card), "at" -> encodeLocation(at),
         "orientation" -> orientationKey(orientation))
       case bury: Bury => ujson.Obj("kind" -> "bury",
         "card" -> encodeBuryableCard(bury.card),
@@ -112,29 +112,29 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
         "from" -> encodePositionedLocation(from), "secrets" -> secrets,
         "actingPlayerId" -> actingPlayer.value)
       case RemoveFromMap(card, from, to, suit, favor, secrets, actingPlayer) =>
-        ujson.Obj("kind" -> "remove-from-map", "card" -> encodeCardRef(card),
+        ujson.Obj("kind" -> "remove-from-map", "card" -> encodeCardId(card),
           "from" -> encodePositionedLocation(from),
           "to" -> encodePositionedLocation(to), "suit" -> suit.key,
           "favor" -> favor, "secrets" -> secrets,
           "actingPlayerId" -> actingPlayer.value)
       case Draw(player, cards, source, destination, position) => ujson.Obj(
         "kind" -> "draw", "playerId" -> player.value,
-        "cards" -> ujson.Arr.from(cards.map(encodeCardRef)),
+        "cards" -> ujson.Arr.from(cards.map(encodeCardId)),
         "source" -> encodeLocation(source),
         "destination" -> encodeLocation(destination),
         "position" -> encodeStackPosition(position))
       case Play(card, from, destination, orientation, _) => ujson.Obj(
-        "kind" -> "play", "card" -> encodeCardRef(card),
+        "kind" -> "play", "card" -> encodeCardId(card),
         "from" -> encodePositionedLocation(from),
         "destination" -> encodeLocation(destination),
         "orientation" -> orientationKey(orientation))
       case Reveal(card, at) => ujson.Obj("kind" -> "reveal",
-        "card" -> encodeCardRef(card), "at" -> encodeLocation(at))
+        "card" -> encodeCardId(card), "at" -> encodeLocation(at))
       case Swap(firstCard, firstLocation, secondCard, secondLocation, by) =>
         withMover(ujson.Obj("kind" -> "swap",
-          "firstCard" -> encodeCardRef(firstCard),
+          "firstCard" -> encodeCardId(firstCard),
           "firstLocation" -> encodePositionedLocation(firstLocation),
-          "secondCard" -> encodeCardRef(secondCard),
+          "secondCard" -> encodeCardId(secondCard),
           "secondLocation" -> encodePositionedLocation(secondLocation)), by)
       case Shuffle(pile, order) =>
         val shuffled = ujson.Obj("kind" -> "shuffle",
@@ -314,15 +314,6 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
     case "act" => Right(PowerTiming.Act)
     case "rest" => Right(PowerTiming.Rest)
     case other => Left(InvalidValue(path, s"unknown power timing '$other'"))
-
-  private def decodePowerCard(kind: String, id: String,
-      path: String): Either[WireError, CardId] = kind match
-    case "denizen" => Right(DenizenId(id))
-    case "relic" => Right(RelicId(id))
-    case "edifice" => Right(EdificeId(id))
-    case "vision" => Right(VisionId(id))
-    case "legacy" => Right(LegacyId(id))
-    case other => Left(InvalidValue(path, s"unknown power source card '$other'"))
 
   private type DecodedOperation = PartialFunction[String, Either[WireError, CoreOperation]]
 
@@ -631,8 +622,8 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
         else if value.obj.contains("bannerKey") then
           Banner.fromKey(value("bannerKey").str).map(PowerSourceRef.Banner(_))
             .toRight(InvalidValue(s"$path.bannerKey", "unknown banner"))
-        else decodePowerCard(value("cardKind").str, value("cardId").str,
-          s"$path.cardKind").map(PowerSourceRef.Card.apply)
+        else GameEventJsonSupport.cardIdOfKind(value("cardKind").str,
+          value("cardId").str, s"$path.cardKind").map(PowerSourceRef.Card.apply)
         ): Either[WireError, PowerSourceRef]
     yield RecordPowerUse(PowerUseRef(timing, source,
       PowerId(value("powerId").str)))

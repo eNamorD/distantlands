@@ -8,7 +8,7 @@ import oathdigital.serialization.WireError.InvalidValue
   * answer codec writes and reads.
   */
 private[serialization] object NegotiationTermsCodec:
-  import GameEventJsonSupport.traverse
+  import GameEventJsonSupport.{decodeWorldCardId, encodeCardId, traverse}
   def encode(terms: NegotiationTerms): ujson.Value = ujson.Obj(
     "transfers" -> ujson.Arr.from(terms.transfers.map(transfer => ujson.Obj(
       "recipientPlayerId" -> transfer.recipient.value,
@@ -18,7 +18,7 @@ private[serialization] object NegotiationTermsCodec:
       val information = disclosure.information match {
         case NegotiationDisclosureRef.Adviser(owner, card) => ujson.Obj(
           "kind" -> "adviser", "ownerPlayerId" -> owner.value,
-          "card" -> encodeWorldCard(card))
+          "card" -> encodeCardId(card))
         case NegotiationDisclosureRef.HeldRelic(owner, relic) => ujson.Obj(
           "kind" -> "held-relic", "ownerPlayerId" -> owner.value,
           "relicId" -> relic.value)
@@ -46,7 +46,7 @@ private[serialization] object NegotiationTermsCodec:
         val info = row("information")
         val decoded: Either[WireError, NegotiationDisclosureRef] =
           info("kind").str match
-            case "adviser" => decodeWorldCard(info("card"),
+            case "adviser" => decodeWorldCardId(info("card"),
               s"$path.disclosures.card").map(card =>
               NegotiationDisclosureRef.Adviser(
                 PlayerId(info("ownerPlayerId").str), card))
@@ -63,14 +63,3 @@ private[serialization] object NegotiationTermsCodec:
       value("citizenship").arr.toVector.map(v => PlayerId(v.str)))
   catch { case NonFatal(error) => Left(InvalidValue(path,
     Option(error.getMessage).getOrElse("invalid Negotiation terms"))) }
-
-  private def encodeWorldCard(id: WorldCardId): ujson.Value = id match
-    case value: DenizenId => ujson.Obj("kind" -> "denizen", "id" -> value.value)
-    case value: VisionId => ujson.Obj("kind" -> "vision", "id" -> value.value)
-
-  private def decodeWorldCard(value: ujson.Value, path: String)
-      : Either[WireError, WorldCardId] = value("kind").str match
-    case "denizen" => Right(DenizenId(value("id").str))
-    case "vision" => Right(VisionId(value("id").str))
-    case other => Left(InvalidValue(s"$path.kind",
-      s"unknown world card kind '$other'"))

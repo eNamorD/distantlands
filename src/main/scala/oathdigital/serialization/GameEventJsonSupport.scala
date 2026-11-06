@@ -10,35 +10,25 @@ private[serialization] trait GameEventJsonSupport:
   protected final def decodeBanner(value: String, path: String): Either[WireError, Banner] =
     Banner.fromKey(value).toRight(InvalidValue(path, s"unknown banner '$value'"))
 
-  /** A `CardId`, kind-tagged so a heterogeneous vector (a Chronicle's stored
-    * site items, a dealt world-deck order) round-trips through one shape
-    * instead of five ad hoc ones (2026-09-21 Chronicle design, slice 2).
-    */
-  protected final def encodeCardId(id: CardId): ujson.Value = id match
-    case id: DenizenId => ujson.Obj("kind" -> "denizen", "id" -> id.value)
-    case id: VisionId => ujson.Obj("kind" -> "vision", "id" -> id.value)
-    case id: RelicId => ujson.Obj("kind" -> "relic", "id" -> id.value)
-    case id: EdificeId => ujson.Obj("kind" -> "edifice", "id" -> id.value)
-    case id: LegacyId => ujson.Obj("kind" -> "legacy", "id" -> id.value)
+  /** The one `{"kind","id"}` card spelling; see the companion. */
+  protected final def encodeCardId(id: CardId): ujson.Value =
+    GameEventJsonSupport.encodeCardId(id)
 
   protected final def decodeCardId(value: ujson.Value, path: String)
-      : Either[WireError, CardId] = value("kind").str match
-    case "denizen" => Right(DenizenId(value("id").str))
-    case "vision" => Right(VisionId(value("id").str))
-    case "relic" => Right(RelicId(value("id").str))
-    case "edifice" => Right(EdificeId(value("id").str))
-    case "legacy" => Right(LegacyId(value("id").str))
-    case kind => Left(InvalidValue(s"$path.kind", s"unknown card kind '$kind'"))
-
-  protected final def encodeWorldCardId(id: WorldCardId): ujson.Value = id match
-    case id: DenizenId => ujson.Obj("kind" -> "denizen", "id" -> id.value)
-    case id: VisionId => ujson.Obj("kind" -> "vision", "id" -> id.value)
+      : Either[WireError, CardId] = GameEventJsonSupport.decodeCardId(value, path)
 
   protected final def decodeWorldCardId(value: ujson.Value, path: String)
-      : Either[WireError, WorldCardId] = value("kind").str match
-    case "denizen" => Right(DenizenId(value("id").str))
-    case "vision" => Right(VisionId(value("id").str))
-    case kind => Left(InvalidValue(s"$path.kind", s"unknown card kind '$kind'"))
+      : Either[WireError, WorldCardId] =
+    GameEventJsonSupport.decodeWorldCardId(value, path)
+
+  /** [[decodeCardId]] with a malformed object reported as a [[WireError]]
+    * rather than thrown, for the walker spellings that decode card by card.
+    */
+  protected final def decodeCardRef(value: ujson.Value, path: String)
+      : Either[WireError, CardId] =
+    try decodeCardId(value, path)
+    catch { case NonFatal(error) => Left(InvalidValue(path,
+      Option(error.getMessage).getOrElse("invalid card reference"))) }
 
   protected final def encodeStoredSite(site: StoredSite): ujson.Value =
     ujson.Obj("site" -> site.site.value,
@@ -243,7 +233,7 @@ private[serialization] trait GameEventJsonSupport:
       }),
       "firstPlayer" -> orders.firstPlayer.value,
       "denizenOrder" -> stringArray(orders.denizenOrder.map(_.value)),
-      "worldDeckOrder" -> ujson.Arr.from(orders.worldDeckOrder.map(encodeWorldCardId)),
+      "worldDeckOrder" -> ujson.Arr.from(orders.worldDeckOrder.map(encodeCardId)),
       "relicOrder" -> stringArray(orders.relicOrder.map(_.value))
     )
 
@@ -405,10 +395,6 @@ private[serialization] trait GameEventJsonSupport:
     case "doubler" => Right(DefenseDieFace.Doubler)
     case other => Left(InvalidValue(path, s"unknown defense die face '$other'"))
 
-  protected final def encodeWorldCard(id: WorldCardId): ujson.Value = id match
-    case value: DenizenId => ujson.Obj("kind" -> "denizen", "id" -> value.value)
-    case value: VisionId => ujson.Obj("kind" -> "vision", "id" -> value.value)
-
   protected final def decodeCampaignKind(value: ujson.Value, path: String)
       : Either[WireError, CampaignKind] = value.str match
     case "conquest" => Right(CampaignKind.Conquest)
@@ -439,14 +425,6 @@ private[serialization] trait GameEventJsonSupport:
   catch { case error: Exception => Left(InvalidValue(path,
     Option(error.getMessage).getOrElse("invalid Campaign Raid target"))) }
 
-  protected final def decodeWorldCard(value: ujson.Value, path: String)
-      : Either[WireError, WorldCardId] = try value("kind").str match
-    case "denizen" => Right(DenizenId(value("id").str))
-    case "vision" => Right(VisionId(value("id").str))
-    case other => Left(InvalidValue(s"$path.kind", s"unknown world card kind '$other'"))
-  catch { case NonFatal(error) => Left(InvalidValue(path,
-    Option(error.getMessage).getOrElse("invalid world card"))) }
-
   protected final def encodeSearchSource(source: SearchSource): ujson.Value = source match
     case SearchSource.WorldDeck => ujson.Obj("kind" -> "world")
     case SearchSource.RegionalDiscard(region) =>
@@ -467,30 +445,48 @@ private[serialization] trait GameEventJsonSupport:
   protected final def decodeSuit(value: String, path: String): Either[WireError, Suit] =
     Suit.fromKey(value).toRight(InvalidValue(path, s"unknown suit '$value'"))
 
-  protected final def encodeCardRef(id: CardId): ujson.Value = id match
-    case value: DenizenId => encodeWorldCard(value)
-    case value: VisionId => encodeWorldCard(value)
-    case value: EdificeId => ujson.Obj("kind" -> "edifice", "id" -> value.value)
-    case value: RelicId => ujson.Obj("kind" -> "relic", "id" -> value.value)
-    case value: LegacyId => ujson.Obj("kind" -> "legacy", "id" -> value.value)
-
-  protected final def decodeCardRef(value: ujson.Value, path: String): Either[WireError, CardId] =
-    try value("kind").str match
-      case "denizen" => Right(DenizenId(value("id").str))
-      case "vision" => Right(VisionId(value("id").str))
-      case "edifice" => Right(EdificeId(value("id").str))
-      case "relic" => Right(RelicId(value("id").str))
-      case "legacy" => Right(LegacyId(value("id").str))
-      case other => Left(InvalidValue(s"$path.kind", s"unknown card kind '$other'"))
-    catch { case NonFatal(error) => Left(InvalidValue(path,
-      Option(error.getMessage).getOrElse("invalid card reference"))) }
-
   protected final def traverse[A, B](
       values: Vector[A]
   )(f: A => Either[WireError, B]): Either[WireError, Vector[B]] =
     GameEventJsonSupport.traverse(values)(f)
 
 private[serialization] object GameEventJsonSupport:
+  import WireError.InvalidValue
+
+  /** A `CardId`, kind-tagged so a heterogeneous vector (a Chronicle's stored
+    * site items, a dealt world-deck order) round-trips through one shape
+    * instead of five ad hoc ones (2026-09-21 Chronicle design, slice 2).
+    * Every card spelling on the wire goes through this pair.
+    */
+  def encodeCardId(id: CardId): ujson.Value = id match
+    case id: DenizenId => ujson.Obj("kind" -> "denizen", "id" -> id.value)
+    case id: VisionId => ujson.Obj("kind" -> "vision", "id" -> id.value)
+    case id: RelicId => ujson.Obj("kind" -> "relic", "id" -> id.value)
+    case id: EdificeId => ujson.Obj("kind" -> "edifice", "id" -> id.value)
+    case id: LegacyId => ujson.Obj("kind" -> "legacy", "id" -> id.value)
+
+  def decodeCardId(value: ujson.Value, path: String): Either[WireError, CardId] =
+    cardIdOfKind(value("kind").str, value("id").str, s"$path.kind")
+
+  /** The kind table on its own, for spellings that carry `kind` and `id`
+    * under their own field names.
+    */
+  def cardIdOfKind(kind: String, id: String, path: String): Either[WireError, CardId] =
+    kind match
+      case "denizen" => Right(DenizenId(id))
+      case "vision" => Right(VisionId(id))
+      case "relic" => Right(RelicId(id))
+      case "edifice" => Right(EdificeId(id))
+      case "legacy" => Right(LegacyId(id))
+      case other => Left(InvalidValue(path, s"unknown card kind '$other'"))
+
+  /** [[decodeCardId]] narrowed to the cards a world deck holds. */
+  def decodeWorldCardId(value: ujson.Value, path: String): Either[WireError, WorldCardId] =
+    decodeCardId(value, path).flatMap:
+      case id: WorldCardId => Right(id)
+      case _ => Left(InvalidValue(s"$path.kind",
+        s"unknown world card kind '${value("kind").str}'"))
+
   /** Decodes every element, stopping at the first failure. */
   def traverse[A, B](values: Vector[A])(
       f: A => Either[WireError, B]): Either[WireError, Vector[B]] =
