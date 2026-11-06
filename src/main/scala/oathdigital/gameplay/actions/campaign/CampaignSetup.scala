@@ -99,8 +99,7 @@ object CampaignSetup:
     * The mandatory Conquest site, and where a Raid's defender must stand.
     * For any other player it is their pawn site. */
   def originOf(ready: ReadyGame, actor: PlayerId): Option[SiteId] =
-    queuedOrigin(ready, actor).orElse(ready.game.current.player(actor)
-      .flatMap(_.pawnSite))
+    queuedOrigin(ready, actor).orElse(ready.game.current.pawnSite(actor))
 
   /** The actor's warbands at a queued origin, which join the force. A
     * Campaign from the pawn site adds none. */
@@ -160,7 +159,7 @@ object CampaignSetup:
     * In Conquest order, then Raid. */
   def kindsAgainst(ready: ReadyGame, actor: PlayerId, defender: PlayerId)
       : Vector[CampaignKind] =
-    val site = ready.game.current.player(actor).flatMap(_.pawnSite)
+    val site = ready.game.current.pawnSite(actor)
     Vector(
       Option.when(site.flatMap(defenderAt(ready, _))
           .contains(CampaignDefender.Player(defender)))(

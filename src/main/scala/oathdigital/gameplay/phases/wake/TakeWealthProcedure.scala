@@ -50,8 +50,8 @@ object TakeWealthProcedure:
   def build(catalog: ExecutableCatalog, state: ReadyGame, actor: PlayerId,
       args: Vector[DecisionOptionRef]): Either[OathViolation, Operation] = for
     resource <- resourceOf(args)
-    site <- state.game.current.player(actor)
-      .flatMap(_.pawnSite).toRight(OathViolation.PawnSiteMissing(actor))
+    site <- state.game.current.pawnSite(actor)
+      .toRight(OathViolation.PawnSiteMissing(actor))
     tokens <- state.game.current.map.sites.get(site).map(_.tokens)
       .toRight(OathViolation.SiteNotInPlay(site))
     _ <- noEnemyPawn(state, actor, site)

@@ -271,8 +271,8 @@ object SetupProcedure:
     (ready, pending) => for
       selection <- adviserSelection(pending, decisionId)
       (chosen, rejected) = selection
-      pawnSite <- ready.game.current.player(player)
-        .flatMap(_.pawnSite).toRight(PawnSiteMissing(player))
+      pawnSite <- ready.game.current.pawnSite(player)
+        .toRight(PawnSiteMissing(player))
       region <- ready.game.current.map.regionOf(pawnSite)
         .toRight(InvalidEventOrder(s"${pawnSite.value} is not in play"))
     yield Move(Piece.Card(chosen), PositionedLocation(Location.Hand(player)),

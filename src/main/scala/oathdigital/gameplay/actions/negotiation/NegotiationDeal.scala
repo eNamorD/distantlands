@@ -34,7 +34,7 @@ object NegotiationDeal:
     */
   def eligible(state: ReadyGame, actor: PlayerId): Vector[PlayerId] =
     val players = state.game.current.players
-    state.game.current.player(actor).flatMap(_.pawnSite).toVector.flatMap(site =>
+    state.game.current.pawnSite(actor).toVector.flatMap(site =>
       players.collect {
         case other if other.player != actor && other.pawnSite.contains(site) =>
           other.player

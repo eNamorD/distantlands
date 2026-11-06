@@ -278,14 +278,12 @@ object MinorActionProcedures:
   /** The actor's pawn site and its state, when the pawn stands on one. */
   private def sitedPawn(ready: ReadyGame, actor: PlayerId)
       : Option[(SiteId, SiteState)] =
-    ready.game.current.player(actor)
-      .flatMap(_.pawnSite).flatMap(id =>
-        ready.game.current.map.sites.get(id).map(id -> _))
+    ready.game.current.pawnSite(actor).flatMap(id =>
+      ready.game.current.map.sites.get(id).map(id -> _))
 
   private def pawnSite(ready: ReadyGame, actor: PlayerId)
       : Either[OathViolation, SiteState] =
-    ready.game.current.player(actor)
-      .flatMap(_.pawnSite).toRight(PawnSiteMissing(actor))
+    ready.game.current.pawnSite(actor).toRight(PawnSiteMissing(actor))
       .flatMap(_ => sitedPawn(ready, actor).map(_._2).toRight(
         MinorActionUnavailable("pawn site is not in play")))
 

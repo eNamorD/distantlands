@@ -43,8 +43,7 @@ class SituationSuite extends munit.FunSuite:
     assertEquals(ready, inAct(FirstGameSetupFixture.initialReady))
     assertEquals((current.turn.phase, current.turn.activePlayer),
       (Phase.Act, orders.firstPlayer))
-    assertEquals(current.player(orders.firstPlayer)
-      .flatMap(_.pawnSite), Some(sites.head))
+    assertEquals(current.pawnSite(orders.firstPlayer), Some(sites.head))
     assertEquals(current.players.flatMap(_.pawnSite).toSet,
       sites.take(orders.participants.size).toSet)
     assert(current.players.forall(_.advisers.size == 1), current.players)

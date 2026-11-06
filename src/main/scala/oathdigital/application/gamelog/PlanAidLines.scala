@@ -51,8 +51,8 @@ private[gamelog] final class PlanAidLines(words: LogWords):
       case DecisionOptionRef.Banner(banner) =>
         Vector(Text("the "), words.banner(banner))
       case DecisionOptionRef.Player(player) if player == ally =>
-        after.game.current.player(ally)
-          .flatMap(_.pawnSite).fold(Vector[LogSpan](Text("their pawn")))(
+        after.game.current.pawnSite(ally)
+          .fold(Vector[LogSpan](Text("their pawn")))(
             site => Vector(Text("their pawn at "), words.site(site)))
       case other => Vector(Text(other.wireId))
 
