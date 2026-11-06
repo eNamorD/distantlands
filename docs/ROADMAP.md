@@ -22,6 +22,27 @@ Left behind by earlier phases:
   proportions are deliberate (DESIGN.md), so the fix is a visible scroll
   cue or a smaller decision header rather than new proportions. Observed in
   the browser during the clean-up run of 2026-10-23.
+- [ ] **Call the pane "Actions" on the desktop too.** The desktop heading
+  says "Action Selection" (`GameTableShell`); the phone tab, DESIGN.md and
+  CONTEXT.md say "Actions" or "action pane". Only the 2026-09-08 Arcs spec
+  uses the long form. Needs the owner's word before the string changes.
+- [ ] **Name the last unnamed design tokens.** DESIGN.md quotes `#e8d9bb`
+  (Control-face text), `#a98b58` (badge border), `#282117` (Action fill),
+  `#bca780` and the 7px control radius as literals with no token name, so
+  the Impeccable detector keeps reporting them (55 advisory findings at
+  `a992ea30`), and it flags 11px as off the type ramp although DESIGN.md
+  sets an 11px floor. Name them in DESIGN.md and its sidecar, then make the
+  stylesheet reference the names.
+- [ ] **Check Plan Aid's steppers at a live Campaign decision.** The
+  2026-11-06 clean-up gave `.plan-aid-step` the Control face and verified
+  the computed style on a synthetic button, but no browser session reached
+  a Plan Aid decision. Confirm the −/+ pair sits level with the amount
+  between them.
+- [ ] **Count a site's warbands of every kind once.** `SiteForces.count(kind)`
+  landed on 2026-11-06; six sites still sum every kind by hand
+  (`TerrorSpells`, `KillWholeForce`, `PeaceEnvoy`, `StickyFire`,
+  `CampaignBattle`, `ResourceOperations`). A `total` beside `count` would
+  take them.
 
 Left behind by the
 [consent work](superpowers/specs/2026-10-08-consent-system-design.md):
@@ -341,6 +362,15 @@ as current.
   procedure objects rather than function references loads them while the
   registry loads: the initialisation cycle that already bit the notes
   table. Catalog batch 10 slices 8 and 13 edit this area first.
+- [ ] **A denizen battle plan names its card once.** 61 plans write
+  `def cardRef = DecisionOptionRef.Denizen(cardId)` and 68 write
+  `val id = XCard.power.id`; `DiscardedAtEnd` already derives `cardId` from
+  `card`, and `PaidAction(power)` is the precedent on the action side. An
+  `abstract class DenizenPlan(card, power)` supplying `id`, `cardId` and
+  `cardRef` would remove about 180 lines over 62 files. `NoteSet(id)` runs
+  in each object's body, so `id` must come from a constructor parameter, not
+  an abstract `def` a `val` overrides; the note-key snapshot test is what
+  would catch a slip. Measured 2026-11-06.
 - [ ] **Route Recover through the generic surfaces.** The client still holds
   three Recover decision ids and the `recover.reroll.` prefix, a
   `RecoverStep` enum and `renderRecoverPanel`, whose Choice arm computes
