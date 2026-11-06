@@ -327,32 +327,37 @@ one.
 ### Architecture candidates
 
 Found by the two architecture scans of 2026-10-23, after every candidate of
-the 2026-10-13 review had a record. Each is measured, not designed: take one
-through a design conversation, and re-measure it at the current commit first,
-before treating the numbers below as current.
+the 2026-10-13 review had a record, and re-measured on 2026-11-06. Each is
+measured, not designed: take one through a design conversation, and
+re-measure it at the current commit first, before treating the numbers below
+as current.
 
 - [ ] **A walker procedure is its own registry adapter.**
-  `WalkerProcedureRegistry.Entry` has nine columns; of twenty entries one sets
-  `startFacts`, two `optionPricing`, two `rollFeedback`, four
-  `requiresPlayableOption`. Travel's `queuedAnswers` is a hand match outside
-  the table, and `isRegistered` re-enumerates the refs `lookup` enumerates.
-  A procedure object with defaults for the rare members would carry them.
-  Weigh it against the initialisation cycle that made the registry hold
-  function references, which already bit the notes table.
-- [ ] **Narrow `ContributingPower` to capability traits.** The trait has 22
-  members, six of them overridden by one power, and every new engine hook has
-  landed as another defaulted member. Attach the rare ones as traits the way
-  `OfferHost`, `RerollHost` and `SelectedModifier` already work.
+  `WalkerProcedureRegistry.Entry` has nine columns; of 29 fixed entries one
+  sets `startFacts`, two `optionPricing`, two `rollFeedback`, one `status`,
+  four `requiresPlayableOption`, and 13 use `Entry.withoutStartGates`.
+  Travel's `queuedAnswers` is a hand match outside the table. A procedure
+  object filling its own slot would carry the rare members, but holding
+  procedure objects rather than function references loads them while the
+  registry loads: the initialisation cycle that already bit the notes
+  table. Catalog batch 10 slices 8 and 13 edit this area first.
 - [ ] **Route Recover through the generic surfaces.** The client still holds
-  three Recover decision ids, a `RecoverStep` enum and `renderRecoverPanel`,
-  whose Choice arm computes whether the player has Supply, a legality fact
-  only gameplay should own. Recover would declare Continue unavailable
-  without Supply, with a hover reason, and word its two buttons. Named open
-  by the 2026-09-24 parked-decision route design.
+  three Recover decision ids and the `recover.reroll.` prefix, a
+  `RecoverStep` enum and `renderRecoverPanel`, whose Choice arm computes
+  whether the player has Supply, a legality fact only gameplay should own.
+  Recover would declare Continue unavailable without Supply, with a hover
+  reason, and word its two buttons; its relic step draws card faces with
+  "Take facedown", which no generic panel draws. Named open by the
+  2026-09-24 parked-decision route design. Wait for catalog batch 10 slices
+  8 (rewrites `RecoverProcedure`) and 13 (makes Recover askable).
 - [ ] **Declare a decision's subject card.** `WalkerDecisionProjector`
-  re-spells four `cardplay.*` prefixes that `CardPlayProcedure` keeps private,
-  to recover the subject card that CONTEXT.md defines and no model field
-  carries. The procedure would declare it on the `Decide`.
+  re-spells four `cardplay.*` prefixes that `CardPlayProcedure` keeps
+  private, and the game log spells them again in `LogWords.subjectCard`, to
+  recover the subject card that CONTEXT.md defines and no model field
+  carries. The log reads journaled decision ids and never sees the `Decide`,
+  so a field on the `Decide` cannot retire the log's parser; one parser
+  exported by `CardPlayProcedure`, shared by both, can. Catalog batch 10
+  slice 12 edits `CardPlayProcedure.Origin` first.
 - [ ] **Derive the wire codecs, with a defaults macro.** The probe of
   2026-11-03 stopped on the design note's own condition: no Mirror-only
   deriver reproduces today's wire, because a field's presence follows its
@@ -367,10 +372,10 @@ before treating the numbers below as current.
   `HttpGameClient`; mounting the dev API at `/games/{gameId}/api` with the
   query-parameter resolution would retire the second client. Slice 5 of the
   [one HTTP gateway](superpowers/specs/2026-11-02-one-http-gateway-design.md)
-  note, left for a frontend session.
-- [ ] **`ConsentDesk` settles a batch.** Its seven verbs have one caller,
-  which owns their order at nine sites; the last five consent commits all
-  edited the service. The desk could take a batch and return it settled.
+  note, left for a frontend session. Both transports already share
+  `GameApiRoutes`; what would remain is the dev-only raw-events route and
+  the `development: HttpGameClient` arm of `TableSession`, and the move
+  crosses `DevelopmentTrustBoundary`'s loopback-only rule.
 
 ## Later
 
