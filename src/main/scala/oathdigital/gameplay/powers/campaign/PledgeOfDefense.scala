@@ -20,11 +20,8 @@ object PledgeOfDefenseCard extends Denizen(DenizenId("243"), "Pledge of Defense"
   * discarded through the standard discard once the Campaign has resolved,
   * whoever won, as Horse Archers is.
   */
-case object PledgeOfDefense extends BattlePlan with DiscardedAtEnd:
-  val id: PowerId = PledgeOfDefenseCard.power.id
-
-  val card: Denizen = PledgeOfDefenseCard
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
+case object PledgeOfDefense extends DenizenPlan(PledgeOfDefenseCard,
+    PledgeOfDefenseCard.power) with DiscardedAtEnd:
   def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Defender)
 
   def plan(context: PlanContext): Option[CampaignPlanOffer] =

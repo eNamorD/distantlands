@@ -17,11 +17,8 @@ object CrackingGroundCard extends Denizen(DenizenId("71"), "Cracking Ground", Su
   * a defender removes as many. A Raid targets no site, so it is not offered in
   * one. A bandit defender applies it at a site it rules.
   */
-case object CrackingGround extends BattlePlan:
-  val cardId: DenizenId = CrackingGroundCard.id
-  val id: PowerId = CrackingGroundCard.power.id
-
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
+case object CrackingGround extends DenizenPlan(CrackingGroundCard,
+    CrackingGroundCard.power):
   def sides: Set[CampaignPlanSide] =
     Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
 

@@ -18,12 +18,10 @@ object HorseArchersCard extends Denizen(DenizenId("24"), "Horse Archers", Suit.N
   * resolved, whoever won, as Warning Signals is. A bandit defender applies it
   * at a site it rules, and it is discarded then too.
   */
-case object HorseArchers extends BattlePlan with DiscardedAtEnd:
-  val id: PowerId = HorseArchersCard.power.id
+case object HorseArchers extends DenizenPlan(HorseArchersCard,
+    HorseArchersCard.power) with DiscardedAtEnd:
   val Dice: Int = 3
 
-  val card: Denizen = HorseArchersCard
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] =
     Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
 

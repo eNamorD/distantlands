@@ -27,10 +27,8 @@ object BookBurningCard extends Denizen(DenizenId("22"), "Book Burning", Suit.Dis
   * When the attacker won it writes "Burned {n secrets} from {Blue}'s board.",
   * or "{Blue} had no secret to burn." when nothing was burnt.
   */
-case object BookBurning extends BattlePlan:
-  val cardId: DenizenId = BookBurningCard.id
-  val id: PowerId = BookBurningCard.power.id
-
+case object BookBurning extends DenizenPlan(BookBurningCard,
+    BookBurningCard.power):
   private val notes = NoteSet(id)
   /** "Burned {n secrets} from {Blue}'s board." */
   val burned: NoteKey = notes.key("burned", Vector(NotePart.Text("Burned "),
@@ -47,7 +45,6 @@ case object BookBurning extends BattlePlan:
     ready.game.current.player(defender).toVector
       .flatMap(SecretBurns.keeping(_, 1, attacker))
 
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Attacker)
   override def noteKeys: Vector[NoteKey] = notes.declared
 

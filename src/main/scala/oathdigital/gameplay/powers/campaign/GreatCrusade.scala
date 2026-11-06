@@ -21,9 +21,8 @@ object GreatCrusadeCard extends Denizen(DenizenId("164"), "Great Crusade", Suit.
   * bandits rule. The card is discarded through the standard discard once the
   * Campaign has resolved, whoever won, as Horse Archers is.
   */
-case object GreatCrusade extends BattlePlan with DiscardedAtEnd:
-  val id: PowerId = GreatCrusadeCard.power.id
-
+case object GreatCrusade extends DenizenPlan(GreatCrusadeCard,
+    GreatCrusadeCard.power) with DiscardedAtEnd:
   /** The nomad cards the plan's user rules, counting `card` once whatever its
     * orientation: choosing a plan reveals a facedown adviser, so it is faceup
     * and ruled once chosen. A bandit defender counts the nomad cards at every
@@ -47,8 +46,6 @@ case object GreatCrusade extends BattlePlan with DiscardedAtEnd:
         case _ => false
       })
 
-  val card: Denizen = GreatCrusadeCard
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] =
     Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
 

@@ -25,15 +25,13 @@ object EncirclementCard extends Denizen(DenizenId("124"), "Encirclement", Suit.O
   * the same window, such as a Wrestlers sacrifice, counts. Bandits pay nothing,
   * so a bandit defender never applies it.
   */
-case object Encirclement extends BattlePlan:
-  val cardId: DenizenId = EncirclementCard.id
-  val id: PowerId = EncirclementCard.power.id
+case object Encirclement extends DenizenPlan(EncirclementCard,
+    EncirclementCard.power):
   val Dice: Int = 2
 
   /** Why the plan is shown but not offered. */
   val SmallerForce: String = "Your force must be larger than your enemy's"
 
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] =
     Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
 

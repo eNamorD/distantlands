@@ -19,12 +19,10 @@ object BannerBreakersCard extends Denizen(DenizenId("222"), "Banner Breakers", S
   * dice, and is offered only while the defender holds either banner, so never
   * against bandits.
   */
-case object BannerBreakers extends BattlePlan:
-  val cardId: DenizenId = BannerBreakersCard.id
-  val id: PowerId = BannerBreakersCard.power.id
+case object BannerBreakers extends DenizenPlan(BannerBreakersCard,
+    BannerBreakersCard.power):
   val Dice: Int = 3
 
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Attacker)
 
   def plan(context: PlanContext): Option[CampaignPlanOffer] =

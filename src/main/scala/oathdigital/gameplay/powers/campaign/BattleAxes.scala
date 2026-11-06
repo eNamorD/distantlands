@@ -19,12 +19,10 @@ object BattleAxesCard extends Denizen(DenizenId("256"), "Battle Axes", Suit.Orde
   * bandit defender applies it at a site it rules when the attacker rules a
   * beast card.
   */
-case object BattleAxes extends BattlePlan:
-  val id: PowerId = BattleAxesCard.power.id
+case object BattleAxes extends DenizenPlan(BattleAxesCard,
+    BattleAxesCard.power):
   val Dice: Int = 2
 
-  val cardId: DenizenId = BattleAxesCard.id
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] =
     Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
 

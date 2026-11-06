@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.Denizen
-import oathdigital.model.{DenizenId, NoteKey, Operation, PowerWindow}
+import oathdigital.model.{NoteKey, Operation, PowerWindow}
 
 /** A battle plan whose card says "At end, discard": the card goes to a
   * discard pile once the Campaign has resolved, whoever won, and the plan
@@ -12,10 +11,7 @@ import oathdigital.model.{DenizenId, NoteKey, Operation, PowerWindow}
   * `planNoteKeys`, any window other than the end discard in `otherWindows`,
   * and a narrower discard in `endDiscard`.
   */
-private[campaign] trait DiscardedAtEnd extends BattlePlan:
-  def card: Denizen
-  final def cardId: DenizenId = card.id
-
+private[campaign] trait DiscardedAtEnd extends DenizenPlan:
   /** This plan's own keys, beside the end-of-Campaign discard line. */
   def planNoteKeys: Vector[NoteKey] = Vector.empty
 

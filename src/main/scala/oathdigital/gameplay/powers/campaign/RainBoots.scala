@@ -22,11 +22,8 @@ object RainBootsCard extends Denizen(DenizenId("14"), "Rain Boots", Suit.Nomad):
   * standard discard once the Campaign has resolved, whoever won, as Horse
   * Archers is.
   */
-case object RainBoots extends BattlePlan with DiscardedAtEnd:
-  val id: PowerId = RainBootsCard.power.id
-
-  val card: Denizen = RainBootsCard
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
+case object RainBoots extends DenizenPlan(RainBootsCard,
+    RainBootsCard.power) with DiscardedAtEnd:
   def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Attacker)
   private val notes = NoteSet(id)
   notes.include(SingleShields.notes)

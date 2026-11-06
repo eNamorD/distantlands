@@ -25,8 +25,8 @@ object MountedPatrolCard extends Denizen(DenizenId("163"), "Mounted Patrol", Sui
   *
   * It writes "The attack pool was halved to {n} dice.", with the dice left.
   */
-case object MountedPatrol extends BattlePlan with DiscardedAtEnd:
-  val id: PowerId = MountedPatrolCard.power.id
+case object MountedPatrol extends DenizenPlan(MountedPatrolCard,
+    MountedPatrolCard.power) with DiscardedAtEnd:
   private val notes = NoteSet(id)
   /** This plan's own keys. Its `noteKeys` adds the discard's
     * line, which `DiscardedAtEnd` owns, not this object. */
@@ -48,8 +48,6 @@ case object MountedPatrol extends BattlePlan with DiscardedAtEnd:
       ModifyDicePool(CampaignIds.attackPool, -cut)).toVector)
   })
 
-  val card: Denizen = MountedPatrolCard
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Defender)
   override def planNoteKeys: Vector[NoteKey] = MountedPatrol.ownNoteKeys
 

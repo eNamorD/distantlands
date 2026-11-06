@@ -23,12 +23,10 @@ object DisgracedCaptainCard extends Denizen(DenizenId("20"), "Disgraced Captain"
   * site bandits rule. Bandits pay nothing, so a bandit defender never applies
   * it.
   */
-case object DisgracedCaptain extends BattlePlan:
-  val id: PowerId = DisgracedCaptainCard.power.id
+case object DisgracedCaptain extends DenizenPlan(DisgracedCaptainCard,
+    DisgracedCaptainCard.power):
   val Dice: Int = 4
 
-  val cardId: DenizenId = DisgracedCaptainCard.id
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] =
     Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
 

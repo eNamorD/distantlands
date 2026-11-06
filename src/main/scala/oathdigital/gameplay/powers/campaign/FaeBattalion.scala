@@ -21,15 +21,13 @@ object FaeBattalionCard extends Denizen(DenizenId("215"), "Fae Battalion", Suit.
   * When the attack rolled a hollow sword it writes "Hollow swords counted as
   * swords."
   */
-case object FaeBattalion extends BattlePlan:
-  val cardId: DenizenId = FaeBattalionCard.id
-  val id: PowerId = FaeBattalionCard.power.id
+case object FaeBattalion extends DenizenPlan(FaeBattalionCard,
+    FaeBattalionCard.power):
   private val notes = NoteSet(id)
   /** "Hollow swords counted as swords." */
   val counted: NoteKey = notes.key("counted",
     Vector(NotePart.Text("Hollow swords counted as swords.")))
 
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Attacker)
   override def noteKeys: Vector[NoteKey] = notes.declared
 

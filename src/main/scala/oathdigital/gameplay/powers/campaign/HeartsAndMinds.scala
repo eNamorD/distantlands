@@ -31,11 +31,8 @@ object HeartsAndMindsCard extends Denizen(DenizenId("138"),
   * It writes no line of its own, only the discard's "Discarded after the
   * Campaign.".
   */
-case object HeartsAndMinds extends BattlePlan with DiscardedAtEnd:
-  val id: PowerId = HeartsAndMindsCard.power.id
-
-  val card: Denizen = HeartsAndMindsCard
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
+case object HeartsAndMinds extends DenizenPlan(HeartsAndMindsCard,
+    HeartsAndMindsCard.power) with DiscardedAtEnd:
   def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Defender)
 
   def plan(context: PlanContext): Option[CampaignPlanOffer] =

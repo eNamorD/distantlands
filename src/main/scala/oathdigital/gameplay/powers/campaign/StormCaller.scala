@@ -17,12 +17,10 @@ object StormCallerCard extends Denizen(DenizenId("167"), "Storm Caller", Suit.No
   * standard discard once the Campaign has resolved, whoever won. A bandit
   * defender applies it at a site it rules, and it is discarded then too.
   */
-case object StormCaller extends BattlePlan with DiscardedAtEnd:
-  val id: PowerId = StormCallerCard.power.id
+case object StormCaller extends DenizenPlan(StormCallerCard,
+    StormCallerCard.power) with DiscardedAtEnd:
   val Dice: Int = 2
 
-  val card: Denizen = StormCallerCard
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Defender)
 
   def plan(context: PlanContext): Option[CampaignPlanOffer] =

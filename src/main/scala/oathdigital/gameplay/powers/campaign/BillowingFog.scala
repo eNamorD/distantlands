@@ -20,13 +20,11 @@ object BillowingFogCard extends Denizen(DenizenId("59"), "Billowing Fog", Suit.A
   * rule, its ignore and its line are `SparedForce`'s, shared with Traveling
   * Doctor.
   */
-case object BillowingFog extends BattlePlan:
-  val cardId: DenizenId = BillowingFogCard.id
-  val id: PowerId = BillowingFogCard.power.id
+case object BillowingFog extends DenizenPlan(BillowingFogCard,
+    BillowingFogCard.power):
   /** The secret placed to choose it. */
   val Secret: Int = 1
 
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] =
     Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
   override def priority: Int = SparedForce.Priority

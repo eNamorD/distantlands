@@ -18,12 +18,10 @@ object CrackedSageCard extends Denizen(DenizenId("83"), "Cracked Sage", Suit.Dis
   * enemy, the other side's player, has a faceup arcane adviser. Bandits hold
   * no advisers, so an attacker is never offered it against them.
   */
-case object CrackedSage extends BattlePlan:
-  val id: PowerId = CrackedSageCard.power.id
+case object CrackedSage extends DenizenPlan(CrackedSageCard,
+    CrackedSageCard.power):
   val Dice: Int = 4
 
-  val cardId: DenizenId = CrackedSageCard.id
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] =
     Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
 

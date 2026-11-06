@@ -22,8 +22,8 @@ object LancersCard extends Denizen(DenizenId("154"), "Lancers", Suit.Nomad):
   *
   * When the attack rolled a die it writes "The attack roll was doubled."
   */
-case object Lancers extends BattlePlan with DiscardedAtEnd:
-  val id: PowerId = LancersCard.power.id
+case object Lancers extends DenizenPlan(LancersCard,
+    LancersCard.power) with DiscardedAtEnd:
   private val notes = NoteSet(id)
   /** This plan's own keys. Its `noteKeys` adds the discard's
     * line, which `DiscardedAtEnd` owns, not this object. */
@@ -32,8 +32,6 @@ case object Lancers extends BattlePlan with DiscardedAtEnd:
   val doubled: NoteKey = notes.key("doubled",
     Vector(NotePart.Text("The attack roll was doubled.")))
 
-  val card: Denizen = LancersCard
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Attacker)
   override def planNoteKeys: Vector[NoteKey] = Lancers.ownNoteKeys
 

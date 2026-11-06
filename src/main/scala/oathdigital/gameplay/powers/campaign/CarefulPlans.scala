@@ -34,9 +34,8 @@ object CarefulPlansCard extends Denizen(DenizenId("254"), "Careful Plans",
   *
   * It writes no line of its own.
   */
-case object CarefulPlans extends BattlePlan:
-  val cardId: DenizenId = CarefulPlansCard.id
-  val id: PowerId = CarefulPlansCard.power.id
+case object CarefulPlans extends DenizenPlan(CarefulPlansCard,
+    CarefulPlansCard.power):
   /** The attack roll, the attack result, the Campaign's attack line, the
     * skull losses, the sacrifice and the sacrifice losses, which come
     * before the defense roll and its result. The note leaf counts: this
@@ -44,7 +43,6 @@ case object CarefulPlans extends BattlePlan:
     * two result windows is added here too. */
   private val AttackSteps = 6
 
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Attacker)
 
   def plan(context: PlanContext): Option[CampaignPlanOffer] =

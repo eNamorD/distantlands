@@ -23,16 +23,14 @@ object FearsomeGeneralCard extends Denizen(DenizenId("253"), "Fearsome General",
   * When it added swords it writes "Skulls added {n} more swords.", with the
   * swords it added: the score with it, less the score without it.
   */
-case object FearsomeGeneral extends BattlePlan:
-  val cardId: DenizenId = FearsomeGeneralCard.id
-  val id: PowerId = FearsomeGeneralCard.power.id
+case object FearsomeGeneral extends DenizenPlan(FearsomeGeneralCard,
+    FearsomeGeneralCard.power):
   private val notes = NoteSet(id)
   /** "Skulls added {n} more swords." */
   val added: NoteKey = notes.key("added", Vector(
     NotePart.Text("Skulls added "), NotePart.Arg(0),
     NotePart.Text(" more swords.")))
 
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Attacker)
   override def noteKeys: Vector[NoteKey] = notes.declared
 

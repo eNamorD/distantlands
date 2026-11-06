@@ -21,12 +21,10 @@ object BattleHonorsCard extends Denizen(DenizenId("2"), "Battle Honors", Suit.Or
   * gains it too, settled into the shared bank, because bandits hold no board of
   * their own. It applies the plan by itself, since the plan is free.
   */
-case object BattleHonors extends BattlePlan:
-  val cardId: DenizenId = BattleHonorsCard.id
-  val id: PowerId = BattleHonorsCard.power.id
+case object BattleHonors extends DenizenPlan(BattleHonorsCard,
+    BattleHonorsCard.power):
   val Favor: Int = 2
 
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] =
     Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
 

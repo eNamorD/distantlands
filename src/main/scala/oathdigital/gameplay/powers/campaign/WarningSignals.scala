@@ -34,8 +34,8 @@ object WarningSignalsCard extends Denizen(DenizenId("25"), "Warning Signals", Su
   * where it was. The discard writes "Discarded after the Campaign.", as every
   * plan that says "At end, discard" does.
   */
-case object WarningSignals extends BattlePlan with DiscardedAtEnd:
-  val id: PowerId = WarningSignalsCard.power.id
+case object WarningSignals extends DenizenPlan(WarningSignalsCard,
+    WarningSignalsCard.power) with DiscardedAtEnd:
   /** Under the Campaign's prefix, so a parked question is a Campaign decision. */
   val decisionId: String = CampaignProcedure.decisionPrefix + "warning-signals"
   private val notes = NoteSet(id)
@@ -47,8 +47,6 @@ case object WarningSignals extends BattlePlan with DiscardedAtEnd:
     * line, which `DiscardedAtEnd` owns, not this object. */
   def ownNoteKeys: Vector[NoteKey] = notes.declared
 
-  val card: Denizen = WarningSignalsCard
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Defender)
   override def planNoteKeys: Vector[NoteKey] = WarningSignals.ownNoteKeys
 

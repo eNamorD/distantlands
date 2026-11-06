@@ -16,11 +16,8 @@ object ExtraProvisionsCard extends Denizen(DenizenId("48"), "Extra Provisions", 
   * A favor is placed onto the card for one defense die. Bandits pay nothing,
   * so a bandit defender never applies it.
   */
-case object ExtraProvisions extends BattlePlan:
-  val cardId: DenizenId = ExtraProvisionsCard.id
-  val id: PowerId = ExtraProvisionsCard.power.id
-
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
+case object ExtraProvisions extends DenizenPlan(ExtraProvisionsCard,
+    ExtraProvisionsCard.power):
   def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Defender)
 
   def plan(context: PlanContext): Option[CampaignPlanOffer] =

@@ -33,9 +33,8 @@ object ArcaneArmorCard extends Denizen(DenizenId("206"), "Arcane Armor",
   *
   * It writes "Set {n} defense dice to double shields." at the roll.
   */
-case object ArcaneArmor extends BattlePlan:
-  val cardId: DenizenId = ArcaneArmorCard.id
-  val id: PowerId = ArcaneArmorCard.power.id
+case object ArcaneArmor extends DenizenPlan(ArcaneArmorCard,
+    ArcaneArmorCard.power):
   /** Under the Campaign's prefix, so a parked question is a Campaign
     * decision. */
   val decisionId: String = CampaignProcedure.decisionPrefix + "arcane-armor"
@@ -50,7 +49,6 @@ case object ArcaneArmor extends BattlePlan:
     NotePart.Arg(0), NotePart.Plural(0, " defense die to double shields.",
       " defense dice to double shields.")))
 
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Defender)
   override def noteKeys: Vector[NoteKey] = notes.declared
 

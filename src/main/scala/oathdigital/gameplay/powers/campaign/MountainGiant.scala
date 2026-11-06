@@ -26,8 +26,8 @@ object MountainGiantCard extends Denizen(DenizenId("155"), "Mountain Giant",
   * It writes "Added {n} attack dice." ("Removed" for a defender), and the
   * discard line when it is discarded.
   */
-case object MountainGiant extends BattlePlan with DiscardedAtEnd:
-  val id: PowerId = MountainGiantCard.power.id
+case object MountainGiant extends DenizenPlan(MountainGiantCard,
+    MountainGiantCard.power) with DiscardedAtEnd:
   /** The dice that discard the card after the Campaign. */
   val Three: Int = 3
   /** Under the Campaign's prefix, so a parked question is a Campaign
@@ -66,8 +66,6 @@ case object MountainGiant extends BattlePlan with DiscardedAtEnd:
     case CampaignPlanSide.Attacker => "add"
     case CampaignPlanSide.Defender => "remove"
 
-  val card: Denizen = MountainGiantCard
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] =
     Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
   override def planNoteKeys: Vector[NoteKey] = MountainGiant.ownNoteKeys

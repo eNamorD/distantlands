@@ -19,12 +19,10 @@ object RivalKhanCard extends Denizen(DenizenId("156"), "Rival Khan", Suit.Nomad)
   * bandits. The card is discarded through the standard discard once the
   * Campaign has resolved, whoever won, as Horse Archers is.
   */
-case object RivalKhan extends BattlePlan with DiscardedAtEnd:
-  val id: PowerId = RivalKhanCard.power.id
+case object RivalKhan extends DenizenPlan(RivalKhanCard,
+    RivalKhanCard.power) with DiscardedAtEnd:
   val Dice: Int = 4
 
-  val card: Denizen = RivalKhanCard
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] =
     Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
 

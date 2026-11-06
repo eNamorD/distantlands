@@ -24,16 +24,13 @@ object BearTrapsCard extends Denizen(DenizenId("3"), "Bear Traps", Suit.Order):
   *
   * When a warband died it writes "Killed 1 warband on {Red}'s board.".
   */
-case object BearTraps extends BattlePlan:
-  val cardId: DenizenId = BearTrapsCard.id
-  val id: PowerId = BearTrapsCard.power.id
+case object BearTraps extends DenizenPlan(BearTrapsCard, BearTrapsCard.power):
   private val notes = NoteSet(id)
   /** "Killed {1 warband} on {Red}'s board." */
   val killed: NoteKey = notes.key("killed", Vector(NotePart.Text("Killed "),
     NotePart.Arg(0), NotePart.Text(" on "), NotePart.Arg(1),
     NotePart.Text("'s board.")))
 
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Defender)
   override def noteKeys: Vector[NoteKey] = notes.declared
 

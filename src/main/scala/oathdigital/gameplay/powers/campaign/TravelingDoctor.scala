@@ -23,12 +23,8 @@ object TravelingDoctorCard extends Denizen(DenizenId("51"), "Traveling Doctor", 
   * bandit defender applies it too: bandits are no player, so the rule spares
   * nothing and every targeted bandit still dies, and the card is discarded.
   */
-case object TravelingDoctor extends BattlePlan with DiscardedAtEnd:
-  val id: PowerId = TravelingDoctorCard.power.id
-
-  val card: Denizen = TravelingDoctorCard
-
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
+case object TravelingDoctor extends DenizenPlan(TravelingDoctorCard,
+    TravelingDoctorCard.power) with DiscardedAtEnd:
   def sides: Set[CampaignPlanSide] =
     Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
   override def priority: Int = SparedForce.Priority

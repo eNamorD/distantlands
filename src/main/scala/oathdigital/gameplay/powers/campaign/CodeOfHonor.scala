@@ -21,9 +21,8 @@ object CodeOfHonorCard extends Denizen(DenizenId("103"), "Code of Honor", Suit.O
   * other battle plans." (`SolePlan`). A bandit defender that would apply it
   * applies it and no other plan (FAQ).
   */
-case object CodeOfHonor extends BattlePlan:
-  val cardId: DenizenId = CodeOfHonorCard.id
-  val id: PowerId = CodeOfHonorCard.power.id
+case object CodeOfHonor extends DenizenPlan(CodeOfHonorCard,
+    CodeOfHonorCard.power):
   val Dice: Int = 2
   private val notes = NoteSet(id)
   /** "Cannot be used with other battle plans." */
@@ -33,7 +32,6 @@ case object CodeOfHonor extends BattlePlan:
   val noOthers: NoteKey = notes.key("no-others",
     Vector(NotePart.Text("No other battle plans.")))
 
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] =
     Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
   override def noteKeys: Vector[NoteKey] = notes.declared
