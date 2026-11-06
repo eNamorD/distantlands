@@ -219,7 +219,7 @@ private[serialization] trait GameEventJsonSupport:
   private def decodeOathkeeperGoal(value: ujson.Value, path: String)
       : Either[WireError, OathkeeperGoal] =
     value.strOpt.toRight(WrongType(path, "expected a string")).flatMap(key =>
-      OathkeeperGoal.all.find(_.key == key).toRight(
+      OathkeeperGoal.fromKey(key).toRight(
         InvalidValue(path, s"unknown Oathkeeper goal '$key'")))
 
   protected final def encodeSetupOrders(orders: SetupOrders): ujson.Value =

@@ -218,7 +218,7 @@ private[serialization] trait WalkerEventCodec extends WalkerOperationCodec:
       .map(NoteArg.RegionName.apply)
     case "suit" => decodeSuit(value("suit").str, s"$path.suit")
       .map(NoteArg.SuitName.apply)
-    case "goal" => OathkeeperGoal.all.find(_.key == value("goal").str)
+    case "goal" => OathkeeperGoal.fromKey(value("goal").str)
       .toRight(InvalidValue(s"$path.goal", "unknown Oathkeeper goal"))
       .map(NoteArg.Goal.apply)
     case "players" => Right(NoteArg.Players(

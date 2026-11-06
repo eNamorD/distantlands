@@ -27,6 +27,6 @@ private[serialization] trait OathkeeperWire:
   protected final def decodeSetOathkeeperGoal(value: ujson.Value,
       path: String): Either[WireError, SetOathkeeperGoal] =
     val key = value("goal").str
-    OathkeeperGoal.all.find(_.key == key).toRight(
+    OathkeeperGoal.fromKey(key).toRight(
       InvalidValue(s"$path.goal", s"unknown Oathkeeper goal '$key'"))
       .map(SetOathkeeperGoal.apply)

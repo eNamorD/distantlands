@@ -186,6 +186,7 @@ enum OathkeeperGoal(val key: String):
 object OathkeeperGoal:
   val all: Vector[OathkeeperGoal] =
     Vector(Supremacy, Protection, ThePeople, Devotion)
+  def fromKey(key: String): Option[OathkeeperGoal] = all.find(_.key == key)
 
 enum TitleSide { case Oathkeeper, Usurper }
 
