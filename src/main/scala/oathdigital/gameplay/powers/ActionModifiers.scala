@@ -11,7 +11,7 @@ import oathdigital.gameplay.powers.recover.{RelicWorship, SilverCharm}
 import oathdigital.gameplay.powers.search.{Augury, Baron, CropRotation,
   Disciples, ErrandBoy, ForcedLabor, ForestWarden, HuntingParty, LandWarden,
   Mushrooms, NewGrowth, NewsFromAfar, Observatory, PaintedTrumpet,
-  SpinningBee, TruthfulHarp, WineOfWelcome}
+  RingOfDevotion, SpinningBee, TruthfulHarp, WineOfWelcome}
 
 /** The Search, Trade, Muster and Recover modifiers, registered together with
   * the rules that change those actions: Initiation Rite's Muster cost, the
@@ -24,7 +24,7 @@ object ActionModifiers:
     Vector[ContributingPower](Augury, TruthfulHarp, Disciples, CropRotation,
       Baron, NewGrowth, ForestWarden,
       NewsFromAfar, HuntingParty, Observatory, ErrandBoy, Mushrooms,
-      WineOfWelcome, PaintedTrumpet, SpinningBee,
+      WineOfWelcome, PaintedTrumpet, SpinningBee, RingOfDevotion,
       LandWarden, CupOfPlenty,
       AnimalPlaymates, Birdsong,
       TheOldOak, RowdyPub, VillageIdiot, Downtrodden,

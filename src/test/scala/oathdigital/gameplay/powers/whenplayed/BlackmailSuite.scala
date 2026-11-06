@@ -1,9 +1,10 @@
 package oathdigital.gameplay.powers.whenplayed
 
-import oathdigital.catalog.holding.{CrackedHornCard, RingOfDevotionCard}
+import oathdigital.catalog.holding.CrackedHornCard
 import oathdigital.gameplay.cards.BuriedGiantSite
 import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.search.PaintedTrumpetCard
+import oathdigital.gameplay.powers.search.{PaintedTrumpetCard,
+  RingOfDevotionCard}
 import oathdigital.gameplay.powers.targeting.LostTongueCard
 import oathdigital.model._
 import oathdigital.testkit.{Look, Outcomes, Table}

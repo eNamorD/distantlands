@@ -3771,7 +3771,7 @@
       "defense": 1,
       "powers": [
         {
-          "id": "relic.king-of-devotion",
+          "id": "relic.ring-of-devotion",
           "persistent": false,
           "rulesText": "You may discard cards to your region's discard pile instead of the next region out."
         }

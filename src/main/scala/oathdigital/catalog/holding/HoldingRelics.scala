@@ -27,13 +27,6 @@ object BanditCrownCard extends Relic(RelicId("R11"), "Bandit Crown", value = 56,
       "them. _You may use these battle plans against bandits._")
   val powers: Vector[PrintedPower] = Vector(power)
 
-object RingOfDevotionCard extends Relic(RelicId("R12"), "Ring of Devotion", value = 90, defense = 1):
-  val power = PrintedPower(PowerId("relic.king-of-devotion"),
-    persistent = false, cost = Cost.free,
-    text = "You may discard cards to your region's discard pile instead " +
-      "of the next region out.")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object AncientWritCard extends Relic(RelicId("R22"), "Ancient Writ", value = 81, defense = 1):
   val power = PrintedPower(PowerId("relic.ancient-grit"),
     persistent = false, cost = Cost.free,
