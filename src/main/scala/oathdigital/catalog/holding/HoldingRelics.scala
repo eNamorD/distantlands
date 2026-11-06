@@ -13,13 +13,6 @@ object GrandMaskCard extends Relic(RelicId("R05"), "Grand Mask", value = 36, def
       "battle plans at Imperial sites, and Imperial players do not.")
   val powers: Vector[PrintedPower] = Vector(power)
 
-object CrackedHornCard extends Relic(RelicId("R10"), "Cracked Horn", value = 21, defense = 1):
-  val power = PrintedPower(PowerId("relic.cracked-horn"),
-    persistent = false, cost = Cost.free,
-    text = "You may put all of the cards you discard on the bottom of " +
-      "the world deck.")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object BanditCrownCard extends Relic(RelicId("R11"), "Bandit Crown", value = 56, defense = 3):
   val power = PrintedPower(PowerId("relic.bandit-crown"),
     persistent = true, cost = Cost.free,

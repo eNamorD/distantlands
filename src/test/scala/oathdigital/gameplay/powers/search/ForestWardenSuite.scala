@@ -1,6 +1,5 @@
 package oathdigital.gameplay.powers.search
 
-import oathdigital.catalog.holding.CrackedHornCard
 import oathdigital.gameplay.{PlacementFixture, PowerAccess}
 import oathdigital.gameplay.actions.{CardPlayRules, RuleNotes}
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure

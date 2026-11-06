@@ -68,4 +68,4 @@ object SearchDiscards:
     PowerWindow.SearchActionEligibility, PowerWindow.SearchPlayAdviser)
 
   /** The three cards' ids. */
-  def cards: Set[CardId] = Set(RingOfDevotionCard.id)
+  def cards: Set[CardId] = Set(CrackedHornCard.id, RingOfDevotionCard.id)

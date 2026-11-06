@@ -1,6 +1,6 @@
 package oathdigital.gameplay
 
-import oathdigital.catalog.holding.CrackedHornCard
+import oathdigital.gameplay.powers.search.CrackedHornCard
 import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.operations.TheGrandScepterCard
 import oathdigital.gameplay.powers.action.DowsingSticksCard

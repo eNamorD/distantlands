@@ -1,6 +1,7 @@
 package oathdigital.gameplay
 
-import oathdigital.catalog.holding.{BanditCrownCard, CrackedHornCard}
+import oathdigital.catalog.holding.BanditCrownCard
+import oathdigital.gameplay.powers.search.CrackedHornCard
 import oathdigital.gameplay.actions.RecoverRules
 import oathdigital.gameplay.actions.recover.{RecoverProcedure,
   UndergroundLibraryCard}

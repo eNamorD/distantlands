@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.whenplayed
 
-import oathdigital.catalog.holding.CrackedHornCard
+import oathdigital.gameplay.powers.search.CrackedHornCard
 import oathdigital.gameplay.cards.BuriedGiantSite
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.search.{PaintedTrumpetCard,

@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.holding.CrackedHornCard
+import oathdigital.gameplay.powers.search.CrackedHornCard
 import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
 import oathdigital.model._

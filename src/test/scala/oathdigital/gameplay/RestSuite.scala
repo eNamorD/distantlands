@@ -1,7 +1,7 @@
 package oathdigital.gameplay
 
-import oathdigital.catalog.holding.{ArbiterCard, BanditCrownCard,
-  CrackedHornCard}
+import oathdigital.catalog.holding.{ArbiterCard, BanditCrownCard}
+import oathdigital.gameplay.powers.search.CrackedHornCard
 import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite, DunesSite, GoldenValleySite}
 import oathdigital.gameplay.phases.{PhaseMenu, RestCleanupPlan}

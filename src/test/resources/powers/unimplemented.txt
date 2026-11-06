@@ -64,7 +64,6 @@ legacy.wealthy
 legacy.world-crafter
 relic.ancient-grit
 relic.bandit-crown
-relic.cracked-horn
 relic.grand-mask
 relic.sigil-of-the-eye
 relic.sigil-of-the-heart

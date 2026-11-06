@@ -1,6 +1,6 @@
 package oathdigital.gameplay
 
-import oathdigital.catalog.holding.CrackedHornCard
+import oathdigital.gameplay.powers.search.CrackedHornCard
 import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite, DunesSite,
   FairIsleSite}
 import oathdigital.gameplay.powers.action.{BrassHorseCard, DowsingSticksCard}

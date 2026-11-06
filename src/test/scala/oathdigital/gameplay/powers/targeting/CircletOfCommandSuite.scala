@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.targeting
 
-import oathdigital.catalog.holding.CrackedHornCard
+import oathdigital.gameplay.powers.search.CrackedHornCard
 import oathdigital.gameplay.CampaignFixture.{RaidBoard, raidBoard}
 import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.actions.campaign.CampaignIds

@@ -1,6 +1,6 @@
 package oathdigital.application
 
-import oathdigital.catalog.holding.CrackedHornCard
+import oathdigital.gameplay.powers.search.CrackedHornCard
 import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.powers.campaign.WrestlersCard

@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.holding.{CrackedHornCard, GrandMaskCard}
+import oathdigital.catalog.holding.GrandMaskCard
+import oathdigital.gameplay.powers.search.CrackedHornCard
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.NoteText
