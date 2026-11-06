@@ -109,19 +109,6 @@ sealed abstract class FortressRule extends ContributingPower:
   private def blocked(detail: String): OathViolation =
     OathViolation.CampaignUnavailable(detail)
 
-  /** The sites where this face of the Fortress stands. */
-  protected final def sites(ready: ReadyGame): Vector[SiteId] =
-    ready.game.current.map.sites.collect {
-      case (id, site) if site.denizens.exists {
-        case card: EdificeState => card.id == fortress && card.side == side
-        case _ => false
-      } => id
-    }.toVector
-
-  protected final def pawnSite(ready: ReadyGame, player: PlayerId)
-      : Option[SiteId] = ready.game.current.players.find(_.player == player)
-    .flatMap(_.pawnSite)
-
   private def raidBlocked(catalog: ExecutableCatalog,
       ready: ReadyGame, attacker: PlayerId): Boolean =
     val defenders = CampaignSetup.raidDefenders(ready, attacker)
@@ -191,8 +178,9 @@ case object OakenFortress extends FortressRule:
 
   protected def shields(catalog: ExecutableCatalog, ready: ReadyGame,
       attacker: PlayerId, defender: PlayerId): Boolean = defender != attacker &&
-    sites(ready).exists(site => pawnSite(ready, defender).contains(site) &&
-      SiteRulers.protectedAt(ready, site).contains(defender))
+    ready.game.current.edificeSite(fortress, side).exists(site =>
+      ready.game.current.pawnSite(defender).contains(site) &&
+        SiteRulers.protectedAt(ready, site).contains(defender))
 
 /** The Rotting Fortress (E28, ruined): players at this site cannot be targeted
   * by a Challenge or a Raid, unless the targeting player has a faceup beast
@@ -207,7 +195,8 @@ case object RottingFortress extends FortressRule:
 
   protected def shields(catalog: ExecutableCatalog, ready: ReadyGame,
       attacker: PlayerId, defender: PlayerId): Boolean = defender != attacker &&
-    sites(ready).exists(site => pawnSite(ready, defender).contains(site)) &&
+    ready.game.current.edificeSite(fortress, side).exists(site =>
+      ready.game.current.pawnSite(defender).contains(site)) &&
     !holdsBeastAdviser(catalog, ready, attacker)
 
   private def holdsBeastAdviser(catalog: ExecutableCatalog,

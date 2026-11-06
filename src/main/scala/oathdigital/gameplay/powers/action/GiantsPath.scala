@@ -4,7 +4,6 @@ import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.PowerAccess
 import oathdigital.gameplay.powerresolver.{IgnoresOwnLock, QueuedStarts}
 import oathdigital.gameplay.powers.{PowerAnswers, SiteRoom}
-import oathdigital.gameplay.powers.setup.EdificeSetupSupport
 import oathdigital.model._
 
 /** Giant's Path (E09, intact), ACTION: place 1 secret on this card, move it
@@ -35,7 +34,7 @@ case object GiantsPath extends PaidAction(GiantsPathCard.intact.power)
     NotePart.Text(" now stand at "), NotePart.Arg(1), NotePart.Text(".")))
 
   private def pathSite(ready: ReadyGame): Option[SiteId] =
-    EdificeSetupSupport.siteOf(ready, GiantsPathCard.id, EdificeSide.Intact)
+    ready.game.current.edificeSite(GiantsPathCard.id, EdificeSide.Intact)
 
   /** The sites in play with room for the Path, less its own, in map
     * order. */

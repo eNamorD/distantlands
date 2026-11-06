@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.economy
 
 import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
-import oathdigital.gameplay.{PowerAccess, SiteRulers}
+import oathdigital.gameplay.PowerAccess
 import oathdigital.gameplay.powerresolver.{Contribution, Transform}
 import oathdigital.gameplay.powers.SelectedModifier
 import oathdigital.model._
@@ -42,4 +42,4 @@ case object MapLibrary extends SelectedModifier:
   override def selectable(ready: ReadyGame, actor: PlayerId): Boolean =
     super.selectable(ready, actor) &&
       PowerAccess.presentSite(ready, actor).exists(site =>
-        SiteRulers.siteOf(ready, card.id).contains(site))
+        ready.game.current.faceUpDenizenSite(card.id).contains(site))

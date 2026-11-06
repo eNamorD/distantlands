@@ -60,8 +60,9 @@ case object ForgottenVault extends ContributingPower:
     * ruler, or every Imperial player while the Empire rules it, when they
     * are enemies of the actor. */
   private def owners(ctx: PowerCtx): Set[PlayerId] =
-    SiteRulers.siteOf(ctx.state, cardId).fold(Set.empty[PlayerId])(site =>
-      SiteRulers.protectedAt(ctx.state, site)).filter(owner =>
+    ctx.state.game.current.faceUpDenizenSite(cardId)
+      .fold(Set.empty[PlayerId])(SiteRulers.protectedAt(ctx.state, _))
+      .filter(owner =>
       SiteRule.enemies(SiteRuler.Player(owner), SiteRuler.Player(ctx.actor)))
 
   /** The protected player holding the relic `ref` names. */

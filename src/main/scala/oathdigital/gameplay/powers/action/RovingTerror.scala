@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
-import oathdigital.gameplay.{NoteSupport, SiteRulers}
+import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.powers.PowerAnswers
 import oathdigital.model._
 
@@ -84,7 +84,7 @@ case object RovingTerror extends PaidAction(RovingTerrorCard.power):
       (before, _) <- states.previous
       move <- slots.chosen(catalog, before, ref)
       replacedCard <- move.replaced
-      if SiteRulers.siteOf(states.now, RovingTerrorCard.id)
+      if states.now.game.current.faceUpDenizenSite(RovingTerrorCard.id)
         .contains(move.site)
     yield replaced(card, NoteArg.Card(replacedCard._1.id),
       NoteArg.Site(move.site))).getOrElse(nothing(card)))

@@ -114,7 +114,7 @@ case object Hospital extends BattlePlan:
     * than their supply holds. Cursed Cauldron reads it to leave out the
     * warbands that did not stay dead. */
   def placeable(ready: ReadyGame, user: PlayerId): Int = (for
-    site <- SiteRulers.siteOf(ready, cardId)
+    site <- ready.game.current.faceUpDenizenSite(cardId)
     if SiteRulers.rulerOf(ready, site).contains(SiteRuler.Player(user))
     if !VowOfWandering.holds(ready, user)
     kind <- PlayerFacts.forceKind(ready, user).toOption
@@ -139,7 +139,7 @@ case object Hospital extends BattlePlan:
     * user rules it now. */
   private def placement(ready: ReadyGame, user: PlayerId)
       : Option[CoreOperation] = for
-    site <- SiteRulers.siteOf(ready, cardId)
+    site <- ready.game.current.faceUpDenizenSite(cardId)
     kind <- PlayerFacts.forceKind(ready, user).toOption
     count = placeable(ready, user)
     if count > 0
@@ -151,7 +151,7 @@ case object Hospital extends BattlePlan:
   private def placedNote(states: NoteStates, user: PlayerId)
       : Option[LogNote] = for
     (before, after) <- states.previous
-    site <- SiteRulers.siteOf(after, cardId)
+    site <- after.game.current.faceUpDenizenSite(cardId)
     kind <- PlayerFacts.forceKind(after, user).toOption
     count = Hospital.at(after, site, kind) - Hospital.at(before, site, kind)
     if count > 0

@@ -2,7 +2,7 @@ package oathdigital.gameplay.powers.whenplayed
 
 import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower,
   SiteOnly}
-import oathdigital.gameplay.{NoteSupport, SiteRulers}
+import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.powerresolver.PowerCtx
 import oathdigital.gameplay.powers.PowerAnswers
 import oathdigital.model._
@@ -67,8 +67,8 @@ case object GreatHerd extends WhenPlayedPower:
   private def candidates(catalog: ExecutableCatalog,
       ready: ReadyGame): Vector[Candidate] =
     val map = ready.game.current.map
-    SiteRulers.siteOf(ready, cardId).toVector.flatMap(here => map.inPlay
-      .filter(_ != here).flatMap(site => map.sites.get(site).toVector
+    ready.game.current.faceUpDenizenSite(cardId).toVector.flatMap(here =>
+      map.inPlay.filter(_ != here).flatMap(site => map.sites.get(site).toVector
         .flatMap(_.denizens.collect {
           case DenizenState(card, Orientation.FaceUp, _)
               if nomad(catalog, card) =>
@@ -98,7 +98,7 @@ case object GreatHerd extends WhenPlayedPower:
       ready: ReadyGame, actor: PlayerId,
       ref: DecisionOptionRef)
       : Option[Vector[CoreOperation]] = for
-    here <- SiteRulers.siteOf(ready, cardId)
+    here <- ready.game.current.faceUpDenizenSite(cardId)
     chosen <- candidates(catalog, ready).find(_.option.ref == ref)
   yield Vector(Swap(cardId, PositionedLocation(Location.Site(here)),
     chosen.card, PositionedLocation(Location.Site(chosen.site)),
@@ -110,7 +110,7 @@ case object GreatHerd extends WhenPlayedPower:
       : Option[LogNote] = for
     ref <- NoteSupport.answer(states, decisionId)
     (before, after) <- states.previous
-    here <- SiteRulers.siteOf(before, cardId)
+    here <- before.game.current.faceUpDenizenSite(cardId)
     chosen <- candidates(catalog, before).find(_.option.ref == ref)
     if after.game.current.map.sites.get(here)
       .exists(_.denizens.exists(_.id == chosen.card))

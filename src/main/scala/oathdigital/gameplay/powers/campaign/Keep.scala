@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
 import oathdigital.catalog.{Denizen, PrintedPower, SiteOnly}
-import oathdigital.gameplay.SiteRulers
 import oathdigital.gameplay.actions.campaign.CampaignSetup
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerCtx, PowerUse, Transform}
@@ -68,7 +67,7 @@ case object KeepRule extends ContributingPower:
     result <- ready.game.current.lastCampaignResult
     defender <- Some(result.defender).collect {
       case CampaignDefender.Player(player) => player }
-    site <- SiteRulers.siteOf(ready, cardId)
+    site <- ready.game.current.faceUpDenizenSite(cardId)
     if CampaignSetup.defenderAt(ready, site)
       .contains(CampaignDefender.Player(defender))
   yield (defender, site)

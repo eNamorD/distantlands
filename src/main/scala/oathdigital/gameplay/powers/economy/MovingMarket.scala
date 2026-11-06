@@ -2,7 +2,7 @@ package oathdigital.gameplay.powers.economy
 
 import oathdigital.catalog.{Denizen, ExecutableCatalog, ModifierMark,
   PrintedPower, SiteOnly}
-import oathdigital.gameplay.{NoteSupport, SiteRulers}
+import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.actions.economy.TradeProcedure
 import oathdigital.gameplay.powerresolver.{Contribution, Transform}
 import oathdigital.gameplay.powers.{PowerAnswers, SelectedModifier, SiteRoom}
@@ -85,7 +85,7 @@ case object MovingMarket extends SelectedModifier:
   /** Every empty slot at the other sites in play, in map then slot order. */
   private def openSlots(catalog: ExecutableCatalog,
       ready: ReadyGame): Vector[DecisionOptionRef.SiteSlot] =
-    SiteRulers.siteOf(ready, card.id).toVector.flatMap(here =>
+    ready.game.current.faceUpDenizenSite(card.id).toVector.flatMap(here =>
       ready.game.current.map.inPlay.filter(_ != here).flatMap(site =>
         SiteRoom.emptySlots(catalog, ready, site)
           .map(DecisionOptionRef.SiteSlot(site, _))))
@@ -96,7 +96,7 @@ case object MovingMarket extends SelectedModifier:
     PowerAnswers.one(pending, decisionId) match
       case Some(`skip`) => Right(Vector.empty)
       case Some(slot: DecisionOptionRef.SiteSlot) => (for
-          here <- SiteRulers.siteOf(ready, card.id)
+          here <- ready.game.current.faceUpDenizenSite(card.id)
           if openSlots(catalog, ready).contains(slot)
         yield Vector[CoreOperation](Move(Piece.Card(cardId),
           PositionedLocation(Location.Site(here)),
@@ -113,7 +113,8 @@ case object MovingMarket extends SelectedModifier:
       : Either[OathViolation, Vector[CoreOperation]] =
     Right(PowerAnswers.one(pending, decisionId).toVector.collect {
       case slot: DecisionOptionRef.SiteSlot
-          if SiteRulers.siteOf(ready, card.id).contains(slot.site) =>
+          if ready.game.current.faceUpDenizenSite(card.id)
+            .contains(slot.site) =>
         Gain.Favor(actor, Suit.Nomad, Gained)
     }.flatMap(gain => TradeFavor.record(ready, gain) :+ gain))
 
@@ -123,7 +124,7 @@ case object MovingMarket extends SelectedModifier:
       : Option[LogNote] = for
     case slot: DecisionOptionRef.SiteSlot <-
       NoteSupport.answer(states, decisionId)
-    if SiteRulers.siteOf(states.now, card.id).contains(slot.site)
+    if states.now.game.current.faceUpDenizenSite(card.id).contains(slot.site)
   yield
     val card = PowerSourceRef.Card(cardId)
     val gained = states.previous.fold(0)(NoteSupport.favor(_, actor))

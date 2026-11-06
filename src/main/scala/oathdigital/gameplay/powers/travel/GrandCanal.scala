@@ -4,7 +4,6 @@ import oathdigital.catalog.{Edifice, EdificeFace, Locked, ModifierMark,
   PrintedPower}
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerCtx, Transform}
-import oathdigital.gameplay.powers.setup.EdificeSetupSupport
 import oathdigital.model._
 
 object GrandCanalCard extends Edifice(EdificeId("E03"), Suit.Discord):
@@ -37,7 +36,7 @@ sealed trait LiveTerrain extends ContributingPower:
 
   /** The site this face stands at, if it is in play. */
   final def site(ready: ReadyGame): Option[SiteId] =
-    EdificeSetupSupport.siteOf(ready, GrandCanalCard.id, side)
+    ready.game.current.edificeSite(GrandCanalCard.id, side)
 
 /** Grand Canal (E03, intact): "Act as if this site is a Coast along with
   * its other powers." Its site joins the live Coast set

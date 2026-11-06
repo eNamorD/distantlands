@@ -2,7 +2,7 @@ package oathdigital.gameplay.powers.poweruse
 
 import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower,
   SiteOnly}
-import oathdigital.gameplay.{PowerAccess, SiteRulers}
+import oathdigital.gameplay.PowerAccess
 import oathdigital.gameplay.actions.campaign.CampaignSetup
 import oathdigital.gameplay.operations.PowerUseRules
 import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,
@@ -70,7 +70,7 @@ case object CityWall extends ContributingPower with PowerUseRestriction:
   private def walledIn(ready: ReadyGame, player: PlayerId)
       : Option[SiteRuler] =
     for
-      site <- SiteRulers.siteOf(ready, CityWallCard.id)
+      site <- ready.game.current.faceUpDenizenSite(CityWallCard.id)
       if PowerAccess.asIfSite(ready, player)
         .orElse(CampaignSetup.originOf(ready, player)).contains(site)
       ruler <- RulerBans.ruler(ready, CityWallCard.id)

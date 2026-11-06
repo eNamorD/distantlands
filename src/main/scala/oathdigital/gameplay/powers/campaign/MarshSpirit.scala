@@ -42,13 +42,5 @@ case object MarshSpirit extends ContributingPower:
   /** Whether the Campaign the window `ctx` is gathered for targets the site
     * this card stands faceup at. */
   private def targeted(ctx: PowerCtx): Boolean = PlanContext.of(ctx)
-    .exists(context => siteOf(ctx.state).exists(context.targets))
-
-  private def siteOf(ready: ReadyGame): Option[SiteId] =
-    ready.game.current.map.sites.collectFirst {
-      case (site, state) if state.denizens.exists {
-        case card: DenizenState =>
-          card.id == cardId && card.orientation == Orientation.FaceUp
-        case _ => false
-      } => site
-    }
+    .exists(context =>
+      ctx.state.game.current.faceUpDenizenSite(cardId).exists(context.targets))

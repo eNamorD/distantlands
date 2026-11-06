@@ -302,6 +302,26 @@ final case class CurrentGameState(
   def pawnSite(player: PlayerId): Option[SiteId] =
     players.find(_.player == player).flatMap(_.pawnSite)
 
+  /** Where `edifice` stands showing `side`, if it is on the map at all: a
+    * Homeland outside the first 8 Chronicle sites keeps its edifice in
+    * storage, so a game may not place it anywhere (design spec, "The
+    * first-game generator"), and the other side answers `None`. */
+  def edificeSite(edifice: EdificeId, side: EdificeSide): Option[SiteId] =
+    map.sites.collectFirst:
+      case (site, state) if state.denizens.exists {
+        case card: EdificeState => card.id == edifice && card.side == side
+        case _ => false
+      } => site
+
+  /** The site holding `card` faceup: `None` while it is facedown, an
+    * adviser, or off the map. */
+  def faceUpDenizenSite(card: DenizenId): Option[SiteId] =
+    map.sites.collectFirst:
+      case (site, state) if state.denizens.exists {
+        case DenizenState(`card`, Orientation.FaceUp, _) => true
+        case _ => false
+      } => site
+
 final case class OathGame(
     campaign: CampaignState,
     current: CurrentGameState

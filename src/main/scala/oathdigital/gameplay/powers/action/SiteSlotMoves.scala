@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.SiteRulers
 import oathdigital.gameplay.actions.cardplay.CardSlots
 import oathdigital.model._
 
@@ -28,7 +27,7 @@ private[powers] final class SiteSlotMoves(mover: DenizenId, empty: Boolean):
 
   /** Every slot the mover may take, in map order then slot order. */
   def moves(catalog: ExecutableCatalog, ready: ReadyGame): Vector[SlotMove] =
-    SiteRulers.siteOf(ready, mover).toVector.flatMap(here =>
+    ready.game.current.faceUpDenizenSite(mover).toVector.flatMap(here =>
       ready.game.current.map.inPlay.filter(_ != here).flatMap(site =>
         movesAt(catalog, ready, site)))
 
@@ -65,7 +64,7 @@ private[powers] final class SiteSlotMoves(mover: DenizenId, empty: Boolean):
   def operations(ready: ReadyGame, actor: PlayerId, move: SlotMove)
       : Either[OathViolation, Vector[CoreOperation]] =
     for
-      here <- SiteRulers.siteOf(ready, mover).toRight(
+      here <- ready.game.current.faceUpDenizenSite(mover).toRight(
         OathViolation.InvalidEventOrder(s"${mover.value} is not at a site"))
       discard <- move.replaced.fold[Either[OathViolation,
           Vector[CoreOperation]]](Right(Vector.empty))(replaced =>

@@ -4,7 +4,6 @@ import oathdigital.catalog.{Edifice, EdificeFace, ExecutableCatalog, Locked,
   PrintedPower}
 import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.gameplay.powers.setup.EdificeSetupSupport
 import oathdigital.model._
 
 object UndergroundLibraryCard extends Edifice(EdificeId("E13"), Suit.Arcane):
@@ -73,7 +72,7 @@ case object UndergroundLibrary
       DecisionOptionRef.RelicSlot(owner, slot)
 
   def region(ready: ReadyGame): Option[Region] =
-    EdificeSetupSupport.siteOf(ready, edifice, EdificeSide.Intact)
+    ready.game.current.edificeSite(edifice, EdificeSide.Intact)
       .flatMap(ready.game.current.map.regionOf)
 
   /** Every relic at a site of the region, in map then slot order. */

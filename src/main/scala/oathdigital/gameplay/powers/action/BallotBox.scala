@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
-import oathdigital.gameplay.{EffectiveSuit, SiteRulers}
+import oathdigital.gameplay.EffectiveSuit
 import oathdigital.gameplay.powers.PlayerFacts
 import oathdigital.gameplay.powers.economy.VowOfWandering
 import oathdigital.model._
@@ -78,7 +78,8 @@ case object BallotBox extends PaidAction(BallotBoxCard.power):
   def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
       source: DecisionOptionRef)
       : Either[OathViolation, Operation] = source match
-    case DecisionOptionRef.Denizen(card) => SiteRulers.siteOf(ready, card)
+    case DecisionOptionRef.Denizen(card) =>
+      ready.game.current.faceUpDenizenSite(card)
       .toRight(OathViolation.InvalidEventOrder(
         s"${card.value} is not at a site"))
       .map(site => Sequence(Vector[Operation](

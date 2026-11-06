@@ -32,7 +32,7 @@ sealed abstract class MarketRule extends ContributingPower:
   final def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
 
   private def at(ready: ReadyGame): Option[SiteId] =
-    EdificeSetupSupport.siteOf(ready, edifice, side)
+    ready.game.current.edificeSite(edifice, side)
 
   override def applicable(ctx: PowerCtx): Boolean = at(ctx.state).isDefined
 

@@ -90,7 +90,8 @@ case object KeyToTheCity extends WhenPlayedPower:
   def effect(ctx: PowerCtx): Vector[Operation] =
     val actor = ctx.actor
     Vector(Branch((live, _) =>
-      SiteRulers.siteOf(live, cardId).toVector.flatMap(steps(live, actor, _))))
+      live.game.current.faceUpDenizenSite(cardId).toVector
+        .flatMap(steps(live, actor, _))))
 
   private def steps(ready: ReadyGame, actor: PlayerId, site: SiteId)
       : Vector[Operation] = guard(ready, site) match

@@ -30,7 +30,7 @@ sealed abstract class ForgeRule extends ContributingPower:
 
   private def at(ctx: PowerCtx): Option[(PlayerId, SiteId)] =
     for
-      edificeSite <- EdificeSetupSupport.siteOf(ctx.state, edifice, side)
+      edificeSite <- ctx.state.game.current.edificeSite(edifice, side)
       placement <- EdificeSetupSupport.pawnPlacement(ctx)
       if placement._2 == edificeSite
     yield placement

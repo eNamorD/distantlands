@@ -37,7 +37,8 @@ case object ProvingGrounds extends ContributingPower:
 
   private def at(ctx: PowerCtx): Option[(PlayerId, SiteId)] =
     for
-      edificeSite <- EdificeSetupSupport.siteOf(ctx.state, edifice, EdificeSide.Intact)
+      edificeSite <- ctx.state.game.current.edificeSite(edifice,
+        EdificeSide.Intact)
       placement <- EdificeSetupSupport.pawnPlacement(ctx)
       if placement._2 == edificeSite
     yield placement
@@ -74,7 +75,7 @@ case object EmptyGrounds extends ContributingPower:
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
 
   private def at(ready: ReadyGame): Option[SiteId] =
-    EdificeSetupSupport.siteOf(ready, edifice, EdificeSide.Ruined)
+    ready.game.current.edificeSite(edifice, EdificeSide.Ruined)
 
   override def applicable(ctx: PowerCtx): Boolean = at(ctx.state).isDefined
 

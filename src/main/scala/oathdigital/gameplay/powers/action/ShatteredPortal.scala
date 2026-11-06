@@ -4,7 +4,6 @@ import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.PowerAccess
 import oathdigital.gameplay.actions.dice.RollStep
 import oathdigital.gameplay.powerresolver.QueuedStarts
-import oathdigital.gameplay.powers.setup.EdificeSetupSupport
 import oathdigital.model._
 
 /** Shattered Portal (E14, ruined), ACTION: with the user's pawn at its site,
@@ -32,7 +31,7 @@ case object ShatteredPortal extends PaidAction(StonePortalCard.ruined.power):
     NotePart.Text(".")))
 
   private def portalSite(ready: ReadyGame): Option[SiteId] =
-    EdificeSetupSupport.siteOf(ready, StonePortalCard.id, EdificeSide.Ruined)
+    ready.game.current.edificeSite(StonePortalCard.id, EdificeSide.Ruined)
 
   private def pawnHere(ready: ReadyGame, player: PlayerId): Boolean =
     portalSite(ready).exists(PowerAccess.pawnSite(ready, player).contains)

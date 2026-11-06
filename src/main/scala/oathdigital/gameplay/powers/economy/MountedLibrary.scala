@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.economy
 
 import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
-import oathdigital.gameplay.{NoteSupport, SiteRulers}
+import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.actions.economy.TradeProcedure
 import oathdigital.gameplay.powerresolver.{Contribution, Deferred,
   DiscardsItself, FoldPhase, OperationRewrite, Transform}
@@ -95,7 +95,7 @@ case object MountedLibrary extends SelectedModifier, DiscardsItself:
   /** The standard discard of the card from the site it stands at. */
   private def discard(actor: PlayerId): Operation = BuildOps((ready, _) =>
     (for
-      site <- SiteRulers.siteOf(ready, card.id)
+      site <- ready.game.current.faceUpDenizenSite(card.id)
       card <- ready.game.current.map.sites.get(site)
         .flatMap(_.denizens.find(_.id == cardId))
     yield nomadCards.discard(ready, site, card, Suit.Nomad, actor,
@@ -106,6 +106,6 @@ case object MountedLibrary extends SelectedModifier, DiscardsItself:
   /** Written when the step before took the card off its site. */
   private def discardedNote(states: NoteStates): Option[LogNote] = for
     (before, after) <- states.previous
-    if SiteRulers.siteOf(before, card.id).nonEmpty &&
-      SiteRulers.siteOf(after, card.id).isEmpty
+    if before.game.current.faceUpDenizenSite(card.id).nonEmpty &&
+      after.game.current.faceUpDenizenSite(card.id).isEmpty
   yield discarded(PowerSourceRef.Card(cardId))

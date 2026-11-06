@@ -43,12 +43,7 @@ case object StillBoilingLake extends BatchRestriction with PrintedRule:
 
   /** The site the ruined face stands at, if it is on the map. */
   def lakeSite(ready: ReadyGame): Option[SiteId] =
-    ready.game.current.map.sites.collectFirst:
-      case (site, state) if state.denizens.exists {
-        case card: EdificeState =>
-          card.id == BoilingLakeCard.id && card.side == EdificeSide.Ruined
-        case _ => false
-      } => site
+    ready.game.current.edificeSite(BoilingLakeCard.id, EdificeSide.Ruined)
 
   /** Nothing, once the batch takes the Lake from its site. */
   def inBatch(operations: Vector[CoreOperation]): OperationRestriction =

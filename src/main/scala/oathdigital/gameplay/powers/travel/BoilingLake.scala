@@ -5,7 +5,6 @@ import oathdigital.gameplay.operations.BoilingLakeCard
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerCtx, Transform}
 import oathdigital.gameplay.powers.PlayerFacts
-import oathdigital.gameplay.powers.setup.EdificeSetupSupport
 import oathdigital.model._
 
 
@@ -50,7 +49,7 @@ case object BoilingLakeTravel extends ContributingPower:
     * rule it. */
   override def applicable(ctx: PowerCtx): Boolean =
     TravelRoute.pawnMove(ctx.operation).exists(route =>
-      EdificeSetupSupport.siteOf(ctx.state, edifice, EdificeSide.Intact)
+      ctx.state.game.current.edificeSite(edifice, EdificeSide.Intact)
         .exists(site => route.destination == site &&
           !SiteRulers.rulerOf(ctx.state, site)
             .contains(SiteRuler.Player(route.player))))

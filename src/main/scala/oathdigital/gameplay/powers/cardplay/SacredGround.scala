@@ -4,7 +4,6 @@ import oathdigital.catalog.{Edifice, EdificeFace, Locked, ModifierMark,
   PrintedPower}
 import oathdigital.gameplay.PowerAccess
 import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.powers.setup.EdificeSetupSupport
 import oathdigital.gameplay.powerresolver._
 import oathdigital.model._
 
@@ -50,7 +49,7 @@ case object SacredGround extends ContributingPower:
   private def blocked(ctx: PowerCtx): Option[OathViolation] = for
     vision <- VisionPlay.pending(ctx)
     if vision != VisionRules.Conspiracy
-    site <- EdificeSetupSupport.siteOf(ctx.state, edifice, EdificeSide.Intact)
+    site <- ctx.state.game.current.edificeSite(edifice, EdificeSide.Intact)
     if ctx.state.game.current.map.inPlay.contains(site)
     if !PowerAccess.pawnSite(ctx.state, ctx.actor).contains(site)
   yield VisionPlay.forbidden("Sacred Ground")

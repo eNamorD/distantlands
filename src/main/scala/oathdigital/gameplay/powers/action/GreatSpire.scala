@@ -2,7 +2,7 @@ package oathdigital.gameplay.powers.action
 
 import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.powers.DispossessedDraws
-import oathdigital.gameplay.powers.setup.{EdificeSetupSupport, GreatSpireCard}
+import oathdigital.gameplay.powers.setup.GreatSpireCard
 import oathdigital.model._
 
 /** Great Spire (E11, intact), ACTION: place 1 secret on this card, add 3
@@ -55,5 +55,5 @@ case object GreatSpire extends PaidAction(GreatSpireCard.intact.power):
 
   /** The region of the site where the intact Spire stands. */
   private def spireRegion(ready: ReadyGame): Option[Region] =
-    EdificeSetupSupport.siteOf(ready, GreatSpireCard.id, EdificeSide.Intact)
+    ready.game.current.edificeSite(GreatSpireCard.id, EdificeSide.Intact)
       .flatMap(ready.game.current.map.regionOf)

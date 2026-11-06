@@ -73,7 +73,7 @@ case object WayStation extends ContributingPower:
   /** The traveller and Way Station's ruler, on a Travel to its site. */
   private def arriving(ctx: PowerCtx): Option[(PlayerId, SiteRuler)] = for
     route <- TravelRoute.pawnMove(ctx.operation)
-    site <- SiteRulers.siteOf(ctx.state, cardId)
+    site <- ctx.state.game.current.faceUpDenizenSite(cardId)
     if route.destination == site
     ruler <- SiteRulers.rulerOfCard(ctx.state, cardId)
   yield (route.player, ruler)

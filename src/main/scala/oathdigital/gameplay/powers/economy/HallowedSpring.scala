@@ -4,7 +4,6 @@ import oathdigital.catalog.{Edifice, EdificeFace, Locked, ModifierMark,
   PrintedPower}
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   OperationRewrite, PowerCtx, Transform}
-import oathdigital.gameplay.powers.setup.EdificeSetupSupport
 import oathdigital.model._
 
 object HallowedSpringCard extends Edifice(EdificeId("E26"), Suit.Beast):
@@ -56,7 +55,7 @@ case object HallowedSpring extends ContributingPower:
     springSite(ctx.state).isDefined
 
   def springSite(ready: ReadyGame): Option[SiteId] =
-    EdificeSetupSupport.siteOf(ready, edifice, EdificeSide.Intact)
+    ready.game.current.edificeSite(edifice, EdificeSide.Intact)
 
   /** Whether `card` stands at the Spring's site. */
   private def atSpring(ready: ReadyGame, card: CardId): Boolean =

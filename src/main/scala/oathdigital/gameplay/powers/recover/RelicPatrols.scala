@@ -6,7 +6,6 @@ import oathdigital.gameplay.SiteRulers
 import oathdigital.gameplay.actions.recover.RecoverProcedure
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerCtx, Restriction}
-import oathdigital.gameplay.powers.setup.EdificeSetupSupport
 import oathdigital.model._
 
 object RelicPatrolsCard extends Edifice(EdificeId("E17"), Suit.Order):
@@ -58,11 +57,11 @@ sealed abstract class PatrolRule extends ContributingPower:
       Vector(Restriction((ctx, _) => blocked(ctx))))
 
   override def applicable(ctx: PowerCtx): Boolean =
-    EdificeSetupSupport.siteOf(ctx.state, edifice, side).isDefined
+    ctx.state.game.current.edificeSite(edifice, side).isDefined
 
   private def blocked(ctx: PowerCtx): Option[OathViolation] =
     val refused = for
-      patrolsSite <- EdificeSetupSupport.siteOf(ctx.state, edifice, side)
+      patrolsSite <- ctx.state.game.current.edificeSite(edifice, side)
       patrolsRuler <- SiteRulers.rulerOf(ctx.state, patrolsSite)
       if SiteRule.enemies(patrolsRuler, SiteRuler.Player(ctx.actor))
       recoverSite <- RecoverProcedure.actorSite(ctx.state, ctx.actor)

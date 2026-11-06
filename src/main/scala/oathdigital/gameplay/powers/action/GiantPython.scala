@@ -2,7 +2,7 @@ package oathdigital.gameplay.powers.action
 
 import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower,
   SiteOnly}
-import oathdigital.gameplay.{NoteSupport, SiteRulers}
+import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.powers.PowerAnswers
 import oathdigital.gameplay.powers.banner.CardPowerBanners
 import oathdigital.model._
@@ -89,7 +89,7 @@ case object GiantPython extends PaidAction(GiantPythonCard.action):
       ref <- NoteSupport.answer(states, decisionId)
       (before, _) <- states.previous
       chosen <- slots.chosen(catalog, before, ref)
-      if SiteRulers.siteOf(states.now, GiantPythonCard.id)
+      if states.now.game.current.faceUpDenizenSite(GiantPythonCard.id)
         .contains(chosen.site)
     yield chosen.replaced.fold(moved(card,
       NoteArg.Card(GiantPythonCard.id), NoteArg.Site(chosen.site)))(

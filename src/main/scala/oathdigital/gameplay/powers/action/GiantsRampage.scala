@@ -4,7 +4,6 @@ import oathdigital.catalog.{Edifice, EdificeFace, ExecutableCatalog, Locked,
   PrintedPower}
 import oathdigital.gameplay.{NoteSupport, PowerAccess}
 import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.gameplay.powers.setup.EdificeSetupSupport
 import oathdigital.model._
 
 object GiantsPathCard extends Edifice(EdificeId("E09"), Suit.Nomad):
@@ -56,7 +55,7 @@ case object GiantsRampage extends PaidAction(GiantsPathCard.ruined.power):
     NotePart.Text("No denizen could be buried.")))
 
   def rampageSite(ready: ReadyGame): Option[SiteId] =
-    EdificeSetupSupport.siteOf(ready, edifice, EdificeSide.Ruined)
+    ready.game.current.edificeSite(edifice, EdificeSide.Ruined)
 
   /** Every faceup denizen at a site in play, with its site, in map order. */
   def denizens(ready: ReadyGame): Vector[(SiteId, DenizenState)] =

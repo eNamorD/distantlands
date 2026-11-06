@@ -92,17 +92,10 @@ case object SpiralCastle extends BattlePlan:
         result <- use.result if result.attackerWins
         defender <- Some(result.defender).collect {
           case CampaignDefender.Player(player) => player }
-        site <- castleSite(use.ready)
+        site <- use.ready.game.current.edificeSite(edifice,
+          EdificeSide.Intact)
       yield SpiralSteps.steps(id, PowerSourceRef.Card(edifice), sent,
         defender, site)).getOrElse(children)))
-
-  private def castleSite(ready: ReadyGame): Option[SiteId] =
-    ready.game.current.map.sites.collectFirst:
-      case (site, state) if state.denizens.exists {
-        case card: EdificeState =>
-          card.id == edifice && card.side == EdificeSide.Intact
-        case _ => false
-      } => site
 
 /** Spiral Dungeons (E23, ruined), a defender's battle plan: "If you're
   * victorious, place the attacker's pawn on this site, and they lose 2
@@ -133,14 +126,7 @@ case object SpiralDungeons extends BattlePlan:
   override def later: Map[PowerWindow, PlanUse => Vector[Operation]] = Map(
     PowerWindow.CampaignActionEligibility -> (use =>
       if !use.won.contains(true) then Vector.empty
-      else dungeonsSite(use.ready).toVector.flatMap(site =>
+      else use.ready.game.current.edificeSite(edifice, EdificeSide.Ruined)
+        .toVector.flatMap(site =>
         SpiralSteps.steps(id, PowerSourceRef.Card(edifice), sent, use.actor,
           site))))
-
-  private def dungeonsSite(ready: ReadyGame): Option[SiteId] =
-    ready.game.current.map.sites.collectFirst:
-      case (site, state) if state.denizens.exists {
-        case card: EdificeState =>
-          card.id == edifice && card.side == EdificeSide.Ruined
-        case _ => false
-      } => site

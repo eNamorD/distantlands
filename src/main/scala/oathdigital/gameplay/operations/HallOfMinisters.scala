@@ -76,18 +76,11 @@ case object HallOfMinisters extends OperationRestriction with WaivableRule:
 
   /** The ruler of the site where the intact Hall stands. */
   private def hallRuler(ready: ReadyGame): Option[SiteRuler] =
-    ready.game.current.map.sites.collectFirst {
-      case (site, state) if state.denizens.exists(intactHall) => site
-    }.flatMap(siteRuler(ready, _))
+    ready.game.current.edificeSite(HallOfMinistersCard.id, EdificeSide.Intact)
+      .flatMap(siteRuler(ready, _))
 
   private def siteRuler(ready: ReadyGame, site: SiteId): Option[SiteRuler] =
     SiteRule.rulingPlayer(ready, site)
-
-  private def intactHall(card: SiteDenizenState): Boolean = card match
-    case edifice: EdificeState =>
-      edifice.side == EdificeSide.Intact &&
-        edifice.id == HallOfMinistersCard.id
-    case _ => false
 
   /** The site a discard takes a card from, who discards it, and the card. */
   private def discardAt(ready: ReadyGame, operation: CoreOperation)

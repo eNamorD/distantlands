@@ -4,7 +4,6 @@ import oathdigital.catalog.{Edifice, EdificeFace, Locked, PrintedPower}
 import oathdigital.gameplay.{EffectiveSuit, SiteRulers}
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerCtx, Restriction, Waiver}
-import oathdigital.gameplay.powers.setup.EdificeSetupSupport
 import oathdigital.model._
 
 object ForbiddenForestCard extends Edifice(EdificeId("E29"), Suit.Beast):
@@ -55,7 +54,7 @@ case object ForbiddenForest extends ContributingPower:
       "consent.")))
 
   def forestSite(ready: ReadyGame): Option[SiteId] =
-    EdificeSetupSupport.siteOf(ready, ForbiddenForestCard.id,
+    ready.game.current.edificeSite(ForbiddenForestCard.id,
       EdificeSide.Intact)
 
   /** The player who rules the Forest's site, who may consent. */

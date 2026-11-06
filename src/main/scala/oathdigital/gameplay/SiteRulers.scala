@@ -10,14 +10,6 @@ import oathdigital.model._
   */
 private[gameplay] object SiteRulers:
 
-  /** The site holding `card` faceup. */
-  def siteOf(ready: ReadyGame, card: DenizenId): Option[SiteId] =
-    ready.game.current.map.sites.collectFirst:
-      case (id, site) if site.denizens.exists {
-        case DenizenState(`card`, Orientation.FaceUp, _) => true
-        case _ => false
-      } => id
-
   def rulerOf(ready: ReadyGame, site: SiteId): Option[SiteRuler] =
     SiteRule.rulingPlayer(ready, site)
 
@@ -26,7 +18,8 @@ private[gameplay] object SiteRulers:
     * Chancellor, which rules nothing.
     */
   def rulerOfCard(ready: ReadyGame, card: DenizenId): Option[SiteRuler] =
-    siteOf(ready, card).flatMap(rulerOf(ready, _)).filter:
+    ready.game.current.faceUpDenizenSite(card).flatMap(rulerOf(ready, _))
+      .filter:
       case SiteRuler.Player(_) | SiteRuler.Bandits => true
       case _ => false
 

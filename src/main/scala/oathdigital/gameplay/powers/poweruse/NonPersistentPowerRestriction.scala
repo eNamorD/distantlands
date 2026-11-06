@@ -5,7 +5,6 @@ import oathdigital.gameplay.SiteRulers
 import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,
   PowerUse, PowerUseRefusal, PowerUseRestriction}
 import oathdigital.gameplay.powers.action.GiantPythonCard
-import oathdigital.gameplay.powers.setup.EdificeSetupSupport
 import oathdigital.gameplay.powers.travel.ForbiddenForestCard
 import oathdigital.model._
 
@@ -84,7 +83,7 @@ object NonPersistentPowerRestriction:
       "Cards at its site cannot be used for non-persistent powers.",
       "Cannot place favor or secrets on cards at its site.",
       guarded = (ready, card) => card != GiantPythonCard.id &&
-        SiteRulers.siteOf(ready, GiantPythonCard.id).exists(
+        ready.game.current.faceUpDenizenSite(GiantPythonCard.id).exists(
           standsAt(ready, _, card)),
       binds = (_, _) => true)
 
@@ -96,7 +95,7 @@ object NonPersistentPowerRestriction:
       "Imperials cannot use the non-persistent powers of cards ruled by " +
         "bandits.",
       "Imperials cannot place favor or secrets on cards ruled by bandits.",
-      guarded = (ready, card) => EdificeSetupSupport.siteOf(ready,
+      guarded = (ready, card) => ready.game.current.edificeSite(
         ForbiddenForestCard.id, EdificeSide.Ruined).isDefined &&
         ready.game.current.map.inPlay.exists(site =>
           SiteRulers.rulerOf(ready, site).contains(SiteRuler.Bandits) &&

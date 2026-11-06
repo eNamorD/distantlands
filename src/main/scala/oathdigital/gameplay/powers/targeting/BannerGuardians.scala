@@ -4,8 +4,8 @@ import oathdigital.gameplay.SiteRulers
 import oathdigital.gameplay.actions.BannerRules
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   OptionRestriction, PowerCtx}
-import oathdigital.gameplay.powers.setup.{EdificeSetupSupport,
-  HallOfDebateCard, TomeGuardiansCard}
+import oathdigital.gameplay.powers.setup.{HallOfDebateCard,
+  TomeGuardiansCard}
 import oathdigital.model._
 
 /** A persistent rule of an intact edifice face that keeps a banner its
@@ -46,7 +46,7 @@ sealed abstract class BannerGuardian extends ContributingPower:
   /** The face's ruler, when they hold the banner and the acting player is
     * their enemy. */
   private def protectedRuler(ctx: PowerCtx): Option[PlayerId] = for
-    site <- EdificeSetupSupport.siteOf(ctx.state, edifice, EdificeSide.Intact)
+    site <- ctx.state.game.current.edificeSite(edifice, EdificeSide.Intact)
     ruler <- SiteRulers.rulerOf(ctx.state, site)
     owner <- Some(ruler).collect { case SiteRuler.Player(owner) => owner }
     if SiteRule.enemies(ruler, SiteRuler.Player(ctx.actor))

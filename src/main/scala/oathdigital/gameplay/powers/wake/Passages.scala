@@ -7,7 +7,6 @@ import oathdigital.gameplay.operations.PowerUseRules
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   PhasePower, PowerUse, PowerUseRefusal, PowerUseRestriction, Waiver}
 import oathdigital.gameplay.powers.action.PawnMoves
-import oathdigital.gameplay.powers.setup.EdificeSetupSupport
 import oathdigital.model._
 
 object HiddenPassagesCard extends Edifice(EdificeId("E25"), Suit.Hearth):
@@ -42,7 +41,7 @@ sealed abstract class PassagesPower extends PhasePower:
 
   /** Where the face stands. */
   final def passagesSite(ready: ReadyGame): Option[SiteId] =
-    EdificeSetupSupport.siteOf(ready, edifice, side)
+    ready.game.current.edificeSite(edifice, side)
 
   final def usable(catalog: ExecutableCatalog, ready: ReadyGame,
       player: PlayerId, source: DecisionOptionRef): Boolean =

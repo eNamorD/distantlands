@@ -3,7 +3,6 @@ package oathdigital.gameplay.powers.action
 import oathdigital.catalog.{Edifice, EdificeFace, ExecutableCatalog, Locked,
   PrintedPower}
 import oathdigital.gameplay.PowerAccess
-import oathdigital.gameplay.powers.setup.EdificeSetupSupport
 import oathdigital.model._
 
 object StonePortalCard extends Edifice(EdificeId("E14"), Suit.Arcane):
@@ -42,7 +41,7 @@ case object StonePortal extends PaidAction(StonePortalCard.intact.power):
 
   /** Where the intact Portal stands. */
   def portalSite(ready: ReadyGame): Option[SiteId] =
-    EdificeSetupSupport.siteOf(ready, edifice, EdificeSide.Intact)
+    ready.game.current.edificeSite(edifice, EdificeSide.Intact)
 
   private def pawnHere(ready: ReadyGame, player: PlayerId): Boolean =
     portalSite(ready).exists(PowerAccess.pawnSite(ready, player).contains)
