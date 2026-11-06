@@ -103,9 +103,7 @@ case object SiegeEngines extends PaidAction(SiegeEnginesCard.power):
   yield note
 
   private def remaining(ready: ReadyGame, site: SiteId, kind: ForceKind): Int =
-    forces(ready, site) match
-      case Some(SiteForces.Occupied(`kind`, count)) => count
-      case _ => 0
+    forces(ready, site).fold(0)(_.count(kind))
 
   /** The player whose warbands are of `kind`: an Exile kind has one owner.
     * Purple warbands have none and take their own line. */

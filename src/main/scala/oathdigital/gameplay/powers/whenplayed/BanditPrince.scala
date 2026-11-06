@@ -51,9 +51,7 @@ case object BanditPrince extends WhenPlayedPower:
     held(ready, site, ForceKind.Bandit)
 
   private def held(ready: ReadyGame, site: SiteId, kind: ForceKind): Int =
-    ready.game.current.map.sites.get(site).map(_.forces) match
-      case Some(SiteForces.Occupied(`kind`, count)) => count
-      case _ => 0
+    ready.game.current.map.sites.get(site).fold(0)(_.forces.count(kind))
 
   /** The warbands in the actor's bank: what the replacement can draw on. */
   private def bank(ready: ReadyGame, actor: PlayerId): Int =

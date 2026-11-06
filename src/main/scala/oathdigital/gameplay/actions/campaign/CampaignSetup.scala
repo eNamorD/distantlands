@@ -112,9 +112,7 @@ object CampaignSetup:
     player <- playerOf(ready, actor)
     kind <- PlayerForceKind.of(ready, player)
     state <- ready.game.current.map.sites.get(site)
-  yield state.forces match
-    case SiteForces.Occupied(`kind`, count) => count
-    case _ => 0).getOrElse(0)
+  yield state.forces.count(kind)).getOrElse(0)
 
   /** The origin's warbands and the board's as they stand, when a queued
     * origin's warbands joined the force: what each early kill splits over,

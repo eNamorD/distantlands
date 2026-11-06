@@ -60,9 +60,7 @@ case object BanditChief extends WhenPlayedPower:
         Note(id, killedNote(_, site, kind))) }
 
   private def held(ready: ReadyGame, site: SiteId, kind: ForceKind): Int =
-    ready.game.current.map.sites.get(site).map(_.forces) match
-      case Some(SiteForces.Occupied(`kind`, count)) => count
-      case _ => 0
+    ready.game.current.map.sites.get(site).fold(0)(_.forces.count(kind))
 
   /** The warbands of `kind` the step before killed at `site`, and whose. */
   private def killedNote(states: NoteStates, site: SiteId, kind: ForceKind)

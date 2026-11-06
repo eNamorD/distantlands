@@ -42,7 +42,4 @@ case object BanditStandard extends BattlePlan:
     val map = context.ready.game.current.map
     map.regionOf(context.setup.origin).toVector.flatMap(region =>
       map.inPlay.filter(site => map.regionOf(site).contains(region)))
-      .flatMap(map.sites.get).map(_.forces match {
-        case SiteForces.Occupied(ForceKind.Bandit, count) => count
-        case _ => 0
-      }).sum
+      .flatMap(map.sites.get).map(_.forces.count(ForceKind.Bandit)).sum

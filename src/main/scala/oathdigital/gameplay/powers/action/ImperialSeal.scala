@@ -50,9 +50,8 @@ case object ImperialSeal extends PaidAction(ImperialSealCard.power):
 
   /** The Imperial warbands at `site`. */
   def imperialAt(ready: ReadyGame, site: SiteId): Int =
-    ready.game.current.map.sites.get(site).map(_.forces) match
-      case Some(SiteForces.Occupied(ForceKind.Imperial, n)) => n
-      case _ => 0
+    ready.game.current.map.sites.get(site)
+      .fold(0)(_.forces.count(ForceKind.Imperial))
 
   private def imperialPawnAt(ready: ReadyGame, site: SiteId): Boolean =
     ready.game.current.players.exists(state =>

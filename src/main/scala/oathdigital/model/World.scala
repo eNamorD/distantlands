@@ -15,7 +15,13 @@ object ForceKind:
   case object Imperial extends ForceKind
   case object Bandit extends ForceKind
 
-sealed trait SiteForces extends Product with Serializable
+sealed trait SiteForces extends Product with Serializable:
+  /** The warbands of `kind` standing here: 0 when the site is empty or
+    * another kind holds it. */
+  def count(kind: ForceKind): Int = this match
+    case SiteForces.Occupied(`kind`, held) => held
+    case _ => 0
+
 object SiteForces:
   case object Empty extends SiteForces
 

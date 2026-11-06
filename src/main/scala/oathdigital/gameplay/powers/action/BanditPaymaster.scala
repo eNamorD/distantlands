@@ -43,9 +43,8 @@ case object BanditPaymaster extends PaidAction(BanditPaymasterCard.power):
     Note(id, paidNote(_, player, source)))))
 
   private def bandits(ready: ReadyGame, site: SiteId): Int =
-    ready.game.current.map.sites.get(site).map(_.forces) match
-      case Some(SiteForces.Occupied(ForceKind.Bandit, count)) => count
-      case _ => 0
+    ready.game.current.map.sites.get(site)
+      .fold(0)(_.forces.count(ForceKind.Bandit))
 
   private def pay(ready: ReadyGame, player: PlayerId)
       : Either[OathViolation, Vector[CoreOperation]] =

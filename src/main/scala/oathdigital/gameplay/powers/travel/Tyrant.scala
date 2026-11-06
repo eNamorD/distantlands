@@ -76,9 +76,7 @@ case object Tyrant extends ContributingPower:
       case SiteForces.Empty => Vector.empty))
 
   private def held(ready: ReadyGame, site: SiteId, kind: ForceKind): Int =
-    forcesAt(ready, site) match
-      case SiteForces.Occupied(`kind`, count) => count
-      case _ => 0
+    forcesAt(ready, site).count(kind)
 
   /** The warbands the step before killed at `site`, and whose. */
   private def killedNote(states: NoteStates, site: SiteId)

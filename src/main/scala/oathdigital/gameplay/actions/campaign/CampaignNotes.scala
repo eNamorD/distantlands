@@ -328,13 +328,11 @@ object CampaignNotes:
       kind: ForceKind): Int =
     val onBoard = owner.flatMap(player => ready.game.current.players
       .find(_.player == player)).fold(0)(_.board.warbands)
-    onBoard + ready.game.current.map.sites.valuesIterator.map(_.forces)
-      .collect { case SiteForces.Occupied(`kind`, count) => count }.sum
+    onBoard + ready.game.current.map.sites.valuesIterator
+      .map(_.forces.count(kind)).sum
 
   private def atSite(ready: ReadyGame, site: SiteId, kind: ForceKind): Int =
-    ready.game.current.map.sites.get(site).map(_.forces).collect {
-      case SiteForces.Occupied(`kind`, count) => count
-    }.getOrElse(0)
+    ready.game.current.map.sites.get(site).fold(0)(_.forces.count(kind))
 
   private def scoreOf(ready: ReadyGame, pool: PoolKey): Int =
     ready.game.current.rollOutcomes.get(pool).fold(0)(_.score)

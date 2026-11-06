@@ -71,9 +71,7 @@ case object Hospital extends BattlePlan:
 
   /** The warbands of force `kind` at `site`. */
   private def at(ready: ReadyGame, site: SiteId, kind: ForceKind): Int =
-    ready.game.current.map.sites.get(site).map(_.forces).collect {
-      case SiteForces.Occupied(`kind`, count) => count
-    }.getOrElse(0)
+    ready.game.current.map.sites.get(site).fold(0)(_.forces.count(kind))
 
   def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] =

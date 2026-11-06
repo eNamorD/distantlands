@@ -105,10 +105,7 @@ object OperationStateAdapter:
       Either.cond(playerForceKind(ready, state).contains(kind),
         state.board.warbands, IncompatibleLocation(Piece.Warbands(kind, 1), at))
     }
-    case Location.Site(site) => siteState(ready, site).map:
-      _.forces match
-        case SiteForces.Occupied(`kind`, count) => count
-        case _ => 0
+    case Location.Site(site) => siteState(ready, site).map(_.forces.count(kind))
     case Location.WarbandBank(`kind`) => warbandsInBank(ready, kind)
     case Location.OnCard(id) => cardTokens(ready, id).map(_ =>
       ready.game.current.warbandsOn(id, kind))
@@ -143,11 +140,8 @@ object OperationStateAdapter:
       if playerForceKind(ready, player).contains(kind) then player.board.warbands
       else 0
     }.sum
-    val atSites = ready.game.current.map.sites.valuesIterator.map {
-      _.forces match
-        case SiteForces.Occupied(`kind`, count) => count
-        case _ => 0
-    }.sum
+    val atSites = ready.game.current.map.sites.valuesIterator
+      .map(_.forces.count(kind)).sum
     val inPlay = onBoards + atSites +
       ready.game.current.warbandsOnCardsOf(kind)
 

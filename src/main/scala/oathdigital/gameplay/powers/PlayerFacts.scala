@@ -24,8 +24,7 @@ object PlayerFacts:
 
   /** The warbands of `kind` standing at sites. */
   def atSites(ready: ReadyGame, kind: ForceKind): Int =
-    ready.game.current.map.sites.values.map(_.forces).collect {
-      case SiteForces.Occupied(`kind`, count) => count }.sum
+    ready.game.current.map.sites.values.map(_.forces.count(kind)).sum
 
   /** The warbands of `kind` left in their bank: the printed supply less
     * those on boards, at sites and on cards (Obsidian Cage). The one count Rest's Supply band and the

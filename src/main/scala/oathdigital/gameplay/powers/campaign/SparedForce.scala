@@ -108,8 +108,7 @@ private[campaign] object SparedForce:
   private def targetForce(ready: ReadyGame, result: CampaignResult,
       kind: ForceKind): Int =
     result.defendedSites.flatMap(ready.game.current.map.sites.get)
-      .map(_.forces).collect {
-        case SiteForces.Occupied(`kind`, count) => count }.sum
+      .map(_.forces.count(kind)).sum
 
   private def board(ready: ReadyGame, player: PlayerId): Int =
     ready.game.current.players.find(_.player == player)
