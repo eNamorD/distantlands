@@ -37,7 +37,7 @@ class WorldTaskSuite extends munit.FunSuite:
     Outcomes.ready(transition.state).game.current.chronicleGathering
 
   private def lineageOf(ready: ReadyGame, player: PlayerId): LineageId =
-    ready.game.current.players.find(_.player == player).get.lineage
+    ready.game.current.player(player).get.lineage
 
   test("every Vision in play leaves it"):
     val table = tasksAssigned.revealedVision(p1, VisionRules.Conquest)
@@ -127,5 +127,5 @@ class WorldTaskSuite extends munit.FunSuite:
     assertEquals(after.banks.favor.getOrElse(suit, 0),
       before.banks.favor.getOrElse(suit, 0) + 2)
     val board = (ready: ReadyGame) =>
-      ready.game.current.players.find(_.player == p1).get.board
+      ready.game.current.player(p1).get.board
     assertEquals(board(after).faceDownSecrets, board(before).faceDownSecrets + 1)

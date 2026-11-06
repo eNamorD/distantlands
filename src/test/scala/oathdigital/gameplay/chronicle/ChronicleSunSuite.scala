@@ -68,13 +68,13 @@ class ChronicleSunSuite extends munit.FunSuite:
         state.flatMap(rules.evolve(_, event)))))
 
   private def lineageOf(ready: ReadyGame, player: PlayerId): LineageId =
-    ready.game.current.players.find(_.player == player).get.lineage
+    ready.game.current.player(player).get.lineage
 
   private def roleOf(ready: ReadyGame, player: PlayerId): Role =
     ready.game.campaign.lineages(lineageOf(ready, player)).role
 
   private def relicsOf(ready: ReadyGame, player: PlayerId): Vector[RelicState] =
-    ready.game.current.players.find(_.player == player).get.relics
+    ready.game.current.player(player).get.relics
 
   /** The table with `lineage` in the baseline only, nobody seated, as
     * `role`. */
@@ -100,7 +100,7 @@ class ChronicleSunSuite extends munit.FunSuite:
     assertEquals(roleOf(after, p1), Role.Chancellor)
     assertEquals(after.game.current.map.sites(ancientCity).forces,
       SiteForces.Occupied(ForceKind.Imperial, 1))
-    assertEquals(after.game.current.players.find(_.player == p1).get
+    assertEquals(after.game.current.player(p1).get
       .board.warbands, 0)
     assertEquals(after.banks.warbandSupply.get(ForceKind.Imperial),
       Some(after.game.current.map.inPlay.size))
@@ -186,7 +186,7 @@ class ChronicleSunSuite extends munit.FunSuite:
     val after = sunEnded(table)
     assertEquals(roleOf(after, p1), Role.Chancellor)
     assertEquals(after.game.campaign.boxRoles, Map(boxed -> Role.Citizen))
-    assertEquals(after.game.current.players.find(_.player == p1).get
+    assertEquals(after.game.current.player(p1).get
       .board.warbands, 3)
 
   test("the winner takes the Throne; unheld banners park the winner's " +

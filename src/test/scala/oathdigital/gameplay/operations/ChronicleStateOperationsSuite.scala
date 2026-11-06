@@ -15,7 +15,7 @@ class ChronicleStateOperationsSuite extends munit.FunSuite:
     executor.executeAll(ready, ops.toVector)
 
   private def lineageOf(ready: ReadyGame, player: PlayerId): LineageId =
-    ready.game.current.players.find(_.player == player).get.lineage
+    ready.game.current.player(player).get.lineage
 
   private val boxed = LineageId("lineage:boxed")
 
@@ -54,7 +54,7 @@ class ChronicleStateOperationsSuite extends munit.FunSuite:
 
   test("the Grand Scepter comes from the box faceup, once"):
     val after = accepted(run(Table.start.ready, GrandScepterFromBox(p1)))
-    assertEquals(after.game.current.players.find(_.player == p1).get.relics
+    assertEquals(after.game.current.player(p1).get.relics
       .last, RelicState(TheGrandScepterCard.id, Orientation.FaceUp,
         Tokens.empty))
     rejected(run(after, GrandScepterFromBox(p2)))

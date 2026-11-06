@@ -40,7 +40,7 @@ class ReliquaryAndRelicsSuite extends munit.FunSuite:
     relics.foldLeft(table)((next, relic) => next.relic(player, relic))
 
   private def relicsOf(ready: ReadyGame, player: PlayerId): Vector[RelicId] =
-    ready.game.current.players.find(_.player == player).get.relics.map(_.id)
+    ready.game.current.player(player).get.relics.map(_.id)
 
   /** `table` with `relics` taken from the relic deck into the Reliquary. */
   private def inReliquary(table: Table, relics: Vector[RelicId]): Table =
@@ -116,7 +116,7 @@ class ReliquaryAndRelicsSuite extends munit.FunSuite:
     val table = empire.relic(p2, cage).boardWarbands(p2, 1)
       .warbandsOnCard(cage, p2, 2).warbandsOnCard(cage, p1, 1)
     val board = (ready: ReadyGame, player: PlayerId) =>
-      ready.game.current.players.find(_.player == player).get.board.warbands
+      ready.game.current.player(player).get.board.warbands
     val before = table.ready
     val kinds = before.game.current.warbandsOnCards(cage).keys
     val supply = (ready: ReadyGame) =>

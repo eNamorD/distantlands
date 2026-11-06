@@ -34,7 +34,7 @@ class LineageScoringSuite extends munit.FunSuite:
 
   private def scoreOf(ready: ReadyGame, player: PlayerId): Int =
     ready.game.campaign.era.score(
-      ready.game.current.players.find(_.player == player).get.lineage)
+      ready.game.current.player(player).get.lineage)
 
   test("the winner may give the other seated players one point for two"):
     val parked = ChronicleWalk.parked(atGifts.state).get

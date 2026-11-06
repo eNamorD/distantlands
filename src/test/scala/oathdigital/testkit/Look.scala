@@ -11,7 +11,7 @@ import oathdigital.testkit.CardRefs.{CardRef, SiteRef}
 final class Look private (ready: ReadyGame):
   private def current = ready.game.current
 
-  def player(p: PlayerId): PlayerState = current.players.find(_.player == p)
+  def player(p: PlayerId): PlayerState = current.player(p)
     .getOrElse(throw AssertionError(s"no player $p"))
   def supply(p: PlayerId): Int = player(p).board.supply.supply
   def favor(p: PlayerId): Int = player(p).board.favor

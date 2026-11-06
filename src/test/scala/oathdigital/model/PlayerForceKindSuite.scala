@@ -6,7 +6,7 @@ import oathdigital.testkit.Unwrap.present
 class PlayerForceKindSuite extends munit.FunSuite:
   private val ready = Table.start.ready
   private val actor = present(
-    ready.game.current.players.find(_.player == Table.p1), "player p1")
+    ready.game.current.player(Table.p1), "player p1")
 
   // No Table step sets a lineage role or drops a lineage, so the lineage is
   // patched by hand.

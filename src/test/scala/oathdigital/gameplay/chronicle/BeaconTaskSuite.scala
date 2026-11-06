@@ -139,7 +139,7 @@ class BeaconTaskSuite extends munit.FunSuite:
       Vector(Suit.Beast, Suit.Arcane, Suit.Order))
     val after = Outcomes.ready(
       ChronicleWalk.answeringEverything(rules, drawn).state)
-    val lineage = after.game.current.players.find(_.player == p3).get.lineage
+    val lineage = after.game.current.player(p3).get.lineage
     assertEquals(after.game.campaign.lineages(lineage).startingAdvisers
       .map(_.id), Vector(hand(drawn).head))
     assertEquals(after.game.current.commonCards.worldDeck.takeRight(5),

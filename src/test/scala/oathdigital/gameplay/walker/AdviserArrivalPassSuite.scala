@@ -46,7 +46,7 @@ class AdviserArrivalPassSuite extends munit.FunSuite:
 
   /** Each time it is asked, gives p1 the first adviser p2 still holds. */
   private val passesP2AdviserOn = HearsArrivals("test.pass-on", arrived =>
-    arrived.after.game.current.players.find(_.player == p2).toVector
+    arrived.after.game.current.player(p2).toVector
       .flatMap(_.advisers.headOption).map(next => Give(Piece.Card(next.id),
         p2, Location.PlayArea(p2), Location.PlayArea(p1), required = true)))
 

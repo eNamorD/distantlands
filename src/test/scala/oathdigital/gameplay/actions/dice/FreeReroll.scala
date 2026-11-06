@@ -15,7 +15,7 @@ object FreeReroll extends ContributingPower:
   def contributions: Map[PowerWindow, Vector[Contribution]] = Map(
     PowerWindow.Reroll -> Vector(OfferReroll(ctx =>
       RerollChoice.throwOf(ctx).filter(rolled =>
-        ctx.state.game.current.players.find(_.player == rolled.roller)
+        ctx.state.game.current.player(rolled.roller)
           .exists(_.advisers.exists {
             case DenizenState(`bracken`, Orientation.FaceUp, _) => true
             case _ => false

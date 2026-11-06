@@ -119,7 +119,7 @@ class LaterGameSetupSuite extends munit.FunSuite:
         Vector(faceDown(relic)), Some(edifice))))
 
   private def player(ready: ReadyGame, id: PlayerId): PlayerState =
-    ready.game.current.players.find(_.player == id).get
+    ready.game.current.player(id).get
 
   /** Six seats, l1 the Chancellor and l2 to l6 Citizens, and all 8 sites
     * the Empire's; the Hintermost keeps `shortSiteRelic`. */

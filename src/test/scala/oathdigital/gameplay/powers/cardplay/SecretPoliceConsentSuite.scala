@@ -104,8 +104,8 @@ class SecretPoliceConsentSuite extends munit.FunSuite:
     val parked = searched(remembering(board(), ConsentAnswer.Granted), faith)
     assert(faceup(parked).available)
     val placed = accepted(SearchFixture.place(parked, faith, PlayedAs.Faceup))
-    assertEquals(SearchFixture.after(placed).game.current.players
-      .find(_.player == actor).flatMap(_.revealedVision).map(_.id),
+    assertEquals(SearchFixture.after(placed).game.current.player(actor)
+      .flatMap(_.revealedVision).map(_.id),
       Some(faith))
 
   test("a refusal remembered this turn leaves the ordinary reason, and the " +

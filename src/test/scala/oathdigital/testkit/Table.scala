@@ -465,7 +465,7 @@ final case class Table private (private val game: ReadyGame,
       if n == 0 then SiteForces.Empty else SiteForces.Occupied(kind, n)))
 
   private def playerOf(player: PlayerId)(using munit.Location): PlayerState =
-    game.game.current.players.find(_.player == player).getOrElse(
+    game.game.current.player(player).getOrElse(
       munit.Assertions.fail(s"no player $player at the table"))
 
 object Table:

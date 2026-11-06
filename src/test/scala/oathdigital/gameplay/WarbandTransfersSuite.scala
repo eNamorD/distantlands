@@ -77,7 +77,7 @@ class WarbandTransfersSuite extends munit.FunSuite:
     at.nextSequence, Commands.answerConsent(p2, ConsentChoice.Yes)))
 
   private def boardWarbands(at: GameAccepted, player: PlayerId): Int =
-    Outcomes.ready(at.state).game.current.players.find(_.player == player)
+    Outcomes.ready(at.state).game.current.player(player)
       .map(_.board.warbands).getOrElse(-1)
 
   test("an Exile cannot start a transfer"):

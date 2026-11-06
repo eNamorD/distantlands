@@ -25,7 +25,7 @@ class ChronicleWindowsSuite extends munit.FunSuite:
           Right(Vector(LineagePointsScored(lineage, 1))))))).toMap
 
   private def lineageOf(state: OathState, player: PlayerId): LineageId =
-    Outcomes.ready(state).game.current.players.find(_.player == player)
+    Outcomes.ready(state).game.current.player(player)
       .get.lineage
 
   test("a power folded into every Chronicle window runs once per window"):

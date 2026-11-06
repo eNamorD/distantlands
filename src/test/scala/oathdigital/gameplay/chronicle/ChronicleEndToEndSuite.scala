@@ -21,7 +21,7 @@ class ChronicleEndToEndSuite extends munit.FunSuite:
       WalkerCompleted(TriggeredProcedureRef.ChronicleFinish)), done.events)
     val ready = Outcomes.ready(done.state)
     assertEquals(record.name, ready.game.campaign.baseline.name)
-    val lineage = ready.game.current.players.find(_.player == p1).get.lineage
+    val lineage = ready.game.current.player(p1).get.lineage
     assertEquals(record.lineages.find(_.id == lineage).map(_.role),
       Some(Role.Chancellor))
     assertEquals(record.era.score(lineage), 3)
@@ -33,7 +33,7 @@ class ChronicleEndToEndSuite extends munit.FunSuite:
     val holders = Vector(ChronicleTask.World, ChronicleTask.Beacon)
       .map(ready.game.current.chronicleTasks)
     val kept = holders.distinct.map(player =>
-      val lineage = ready.game.current.players.find(_.player == player)
+      val lineage = ready.game.current.player(player)
         .get.lineage
       ready.game.campaign.lineages(lineage).startingAdvisers.size).sum
     // One starting adviser per task, whoever holds it.

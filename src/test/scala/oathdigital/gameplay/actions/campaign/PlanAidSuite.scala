@@ -131,7 +131,7 @@ class PlanAidSuite extends munit.FunSuite:
 
   test("an ally lends a pawn only at the site it stands on"):
     val ready = Table.start.imperial(p2, p1, p3).ready
-    val at = ready.game.current.players.find(_.player == p2)
+    val at = ready.game.current.player(p2)
       .flatMap(_.pawnSite).get
     assertEquals(PlanAid.lentNeed(ready, defending, PlanNeed.PawnAt(at),
       full = true), Some(p2 -> DecisionOptionRef.Player(p2)))

@@ -20,7 +20,7 @@ class ChroniclePilesSuite extends munit.FunSuite:
       case id: DenizenId => id }.get
 
   private def lineageOf(ready: ReadyGame, player: PlayerId): LineageId =
-    ready.game.current.players.find(_.player == player).get.lineage
+    ready.game.current.player(player).get.lineage
 
   private def moved(card: CardId, from: Location, to: Location,
       facing: Option[Orientation] = None): Move =

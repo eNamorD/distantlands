@@ -15,7 +15,7 @@ class ChronicleRecordSuite extends munit.FunSuite:
   private val legacy = LegacyState(LegacyId("legacy:any"), active = true)
 
   private def lineageOf(ready: ReadyGame, player: PlayerId): LineageId =
-    ready.game.current.players.find(_.player == player).get.lineage
+    ready.game.current.player(player).get.lineage
 
   test("the record keeps the live era scores and Oathkeeper goal"):
     val ready = Table.start.oathkeeperGoal(OathkeeperGoal.Devotion)

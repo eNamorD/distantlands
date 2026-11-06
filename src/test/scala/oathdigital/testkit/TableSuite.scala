@@ -361,7 +361,7 @@ class TableSuite extends munit.FunSuite:
   test("revealedVision reveals the Vision faceup and takes it from the deck"):
     val current = Table.start.revealedVision(p1, VisionRules.Faith).ready
       .game.current
-    assertEquals(current.players.find(_.player == p1).flatMap(_.revealedVision),
+    assertEquals(current.player(p1).flatMap(_.revealedVision),
       Some(VisionState(VisionRules.Faith, Orientation.FaceUp)))
     assert(!current.commonCards.worldDeck.contains(VisionRules.Faith))
 

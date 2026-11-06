@@ -24,7 +24,7 @@ object ChronicleWalk:
     * Imperial warbands but no site yet. The driver's step after
     * `ChronicleSun` starts the Throne. */
   def throneHeldByChancellorP1: Table = chronicleWonByP1.update(state =>
-    val lineage = state.game.current.players.find(_.player == p1).get.lineage
+    val lineage = state.game.current.player(p1).get.lineage
     state.updateCampaign(campaign => campaign.copy(lineages =
       campaign.lineages.updatedWith(lineage)(_.map(_.copy(
         role = Role.Chancellor)))))
