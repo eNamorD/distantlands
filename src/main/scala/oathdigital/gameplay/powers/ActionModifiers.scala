@@ -1,10 +1,10 @@
 package oathdigital.gameplay.powers
 
 import oathdigital.gameplay.powerresolver.ContributingPower
-import oathdigital.gameplay.powers.economy.{AnimalPlaymates, AwaitedReturn,
-  Birdsong, CupOfPlenty, Curfew, Defame, Downtrodden, FriendlyFamiliar,
-  GolemLegions, InitiationRite, MapLibrary, MountedLibrary, MovingMarket,
-  OldSongs, Pressgangs, RowdyPub, SecretSignal, SkilledMerchants,
+import oathdigital.gameplay.powers.economy.{ActingTroupe, AnimalPlaymates,
+  AwaitedReturn, Birdsong, CupOfPlenty, Curfew, Defame, Downtrodden,
+  FriendlyFamiliar, GolemLegions, InitiationRite, MapLibrary, MountedLibrary,
+  MovingMarket, OldSongs, Pressgangs, RowdyPub, SecretSignal, SkilledMerchants,
   SmallFriends, SpitefulMirror, TheOldOak, VillageIdiot, VowOfBeastkin,
   VowOfPoverty, VowOfWandering, VowOfWanderingMuster}
 import oathdigital.gameplay.powers.recover.{RelicWorship, SilverCharm}
@@ -28,7 +28,7 @@ object ActionModifiers:
       LandWarden, CupOfPlenty,
       AnimalPlaymates, Birdsong,
       TheOldOak, RowdyPub, VillageIdiot, Downtrodden,
-      SpitefulMirror, MovingMarket, AwaitedReturn,
+      SpitefulMirror, ActingTroupe, MovingMarket, AwaitedReturn,
       MountedLibrary, Defame,
       GolemLegions, MapLibrary,
       SkilledMerchants, SmallFriends,

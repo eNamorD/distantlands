@@ -1,6 +1,6 @@
 # Catalog Batch 10: Engine Seams
 
-**Status:** designed 2026-11-03. Slices 1 to 6 landed.
+**Status:** designed 2026-11-03. Slices 1 to 7 landed.
 
 **Builds on** [Catalog batch 9](2026-11-02-catalog-batch-9-design.md) and
 [batch 8](2026-10-12-catalog-batch-8-design.md), whose vocabulary, cost
@@ -142,6 +142,10 @@ Taken with the owner on 2026-11-03, except where another source is named.
     Narrow Pass.
 13. **One Island at a time** (owner, 2026-11-05). Lost Lagoon at a printed
     Island leaves it one Island: reaching it adds 2 Supply once, not twice.
+14. **Acting Troupe and Pledge to Discord** (owner, 2026-11-05). A picked
+    Troupe counts as the picked suit for that Trade, even beside a faceup
+    Pledge to Discord. Unpicked, or outside the Trade, Pledge makes it
+    Discord as usual.
 
 ### Readings
 
@@ -181,7 +185,12 @@ The owner accepted these without a separate ruling:
 - **School of Vines and the Sigils** lift only the pawn-site requirement.
   Magician's Code is selectable only when its 2 secrets make the Darkest
   Secret challengeable.
-- **Acting Troupe:** the user picks Beast or Order each Trade.
+- **Acting Troupe:** the user picks Beast or Order each Trade. Every
+  reader of the Trade's matching advisers sees the pick, so with the Cup
+  of Plenty a Troupe acting as a Beast card no longer matches an Arcane
+  card. Beloved lets a Trade draw on another player's adviser, which may
+  be the Troupe. Its suit is then read as usual (Arcane, or Discord under
+  its holder's Pledge), since only the Troupe's holder can pick it.
 - **Naysayers** takes 1 favor; "any Exile" includes the user (Naysayers
   FAQ). Nothing happens with no Chancellor or a Chancellor with no favor.
 - **Bandit Forest** refuses an Imperial player's use of bandit-ruled
@@ -352,10 +361,14 @@ short Dispossessed; replay.
 
 **Acting Troupe.** A Trade modifier, a `SelectedModifier`, usable while the
 Troupe is the user's faceup adviser. Its `selectionQuestions` ask Beast or
-Order once, at the Trade's start. `EffectiveSuit.count` and `traded`
-receive `answered`, so a picked Troupe counts as the chosen suit when Trade
-counts matching advisers, as Spiteful Mirror's pick is read
-(`EffectiveSuit.mirrored`). Line: "Acting Troupe acted as a Beast card."
+Order once, at the Trade's start. The card moves beside
+`SpitefulMirrorCard`, since `EffectiveSuit` reads its question.
+`EffectiveSuit.count` receives `answered`, as Spiteful Mirror's pick is
+read (`EffectiveSuit.mirrored`), so a picked Troupe counts as the chosen
+suit when Trade counts matching advisers. `MusterSource.matching`
+and `SuitSupplyWaiver` pass the answers on, which reaches the Cup of
+Plenty. Lines: "Acting Troupe acted as a Beast card." and "Acting Troupe
+acted as an Order card."
 
 Tests: the gain with each answer; unpicked, the Troupe counts as Arcane;
 other actions unaffected.

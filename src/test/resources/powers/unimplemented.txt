@@ -1,4 +1,3 @@
-denizen.acting-troupe
 denizen.autumn-wind
 denizen.bracken
 denizen.council-arbiter

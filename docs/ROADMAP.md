@@ -77,8 +77,8 @@ section describes each seam below in a paragraph.
 - **Unchanged from batch 8:** Search Party (recorded in the
   [catalog batch 4 rulings](superpowers/specs/2026-10-05-catalog-batch-4-rulings.md#moved-out-of-the-batch)),
   Bracken, Cracked Horn and Ring of Devotion (a discard destination),
-  Master of Disguise and Acting Troupe (acting as another card), Autumn
-  Wind, Tracker and False Prophet (a player-aware off-turn card play).
+  Master of Disguise (acting as another player's advisers), Autumn Wind,
+  Tracker and False Prophet (a player-aware off-turn card play).
 
 ### Phase - All-Exile alpha readiness
 
