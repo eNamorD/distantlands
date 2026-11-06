@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.setup
 
 import oathdigital.catalog.{Edifice, EdificeFace, Locked, PrintedPower}
+import oathdigital.gameplay.powers.DispossessedDraws
 import oathdigital.model._
 
 object SchoolOfVinesCard extends Edifice(EdificeId("E27"), Suit.Beast):
@@ -190,3 +191,59 @@ case object BrokenClock extends RuinedSetupRule:
   protected def note(at: SiteId): Note = Note(id, states =>
     RoundMarker.reached(states).map(round =>
       advanced(PowerSourceRef.Card(edifice), NoteArg.Number(round))))
+
+/** Fallen Spire (E11, ruined): "SETUP (END): Swap denizens in this region's
+  * discard pile with the same number of random cards from the Dispossessed.
+  * Then, shuffle these cards with any Visions in this pile."
+  *
+  * The swap counts the pile's denizens, skipping Visions. When the
+  * Dispossessed holds fewer, both directions move that smaller count
+  * (ruling 7), and the pile's bottom-most denizens are the ones that leave.
+  * The draw is [[DispossessedDraws]]'s: the Dispossessed is shuffled, and
+  * its first cards go to the pile in the same step as the pile's denizens
+  * go to the Dispossessed, so no card comes straight back. Then the whole
+  * pile is shuffled, which mixes the new cards with its Visions. Nobody
+  * learns a card. A pile with no denizen changes nothing and writes no
+  * line.
+  *
+  * Its line: "Swapped 2 cards between the Dispossessed and the Cradle
+  * discard pile, then shuffled the pile." The WHEN EXPLORED half waits for
+  * an Explore procedure. Great Spire, the intact face, is an action.
+  */
+case object FallenSpire extends RuinedSetupSteps:
+  val edifice: EdificeId = GreatSpireCard.id
+  val id: PowerId = GreatSpireCard.ruined.power.id
+  private val notes = NoteSet(id)
+  /** "Swapped {2} {cards} between the Dispossessed and the {Cradle discard
+    * pile}, then shuffled the pile." */
+  val swapped: NoteKey = notes.key("swapped", Vector(
+    NotePart.Text("Swapped "), NotePart.Arg(0),
+    NotePart.Plural(0, " card", " cards"),
+    NotePart.Text(" between the Dispossessed and the "), NotePart.Arg(1),
+    NotePart.Text(", then shuffled the pile.")))
+  override def noteKeys: Vector[NoteKey] = notes.declared
+
+  protected def steps(site: SiteId): Vector[Operation] = Vector(Branch(
+    (live, _) => live.game.current.map.regionOf(site).toVector.flatMap {
+      region =>
+        val denizens = live.game.current.commonCards.discard(region)
+          .count { case _: DenizenId => true; case _ => false }
+        val count = math.min(denizens, live.game.campaign.dispossessed.size)
+        if count == 0 then Vector.empty
+        else swap(region, count)
+    }))
+
+  private def swap(region: Region, count: Int): Vector[Operation] =
+    val pile = SearchSource.RegionalDiscard(region)
+    Vector(
+      DispossessedDraws.shuffle,
+      // Both reads come from the state before the step, so the leaving
+      // denizens are the pile's own and never the arriving cards.
+      BuildOps((ready, _) => Right(
+        DispossessedDraws.toPile(ready, region, count, by = None) ++
+          DispossessedDraws.bottomDenizens(ready, region, count).map(
+            DispossessedDraws.intoDispossessed(_, region, by = None))),
+        required = true),
+      Shuffle(ShufflePile.Search(pile)),
+      Note(id, _ => Some(swapped(PowerSourceRef.Card(edifice),
+        NoteArg.Number(count), NoteArg.Pile(pile)))))

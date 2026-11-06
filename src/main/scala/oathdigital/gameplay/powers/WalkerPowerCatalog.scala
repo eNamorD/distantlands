@@ -115,7 +115,8 @@ object WalkerPowerCatalog:
         BanditMarket, GreatForge,
         BrokenForge, ProvingGrounds,
         EmptyGrounds, HallOfMockery, LostGuardians,
-        RuinedSchool, BrokenHorn, BrokenClock, TakeWealthLimit,
+        RuinedSchool, BrokenHorn, BrokenClock, FallenSpire,
+        TakeWealthLimit,
         ConspiracyWhenPlayed)
 
   /** The power-use restrictions the walker powers declare, for the phase

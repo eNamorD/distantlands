@@ -41,12 +41,17 @@ object TomeGuardiansCard extends Edifice(EdificeId("E18"), Suit.Order):
         "bank. Players **cannot** start with it.")
     val powers: Vector[PrintedPower] = Vector(power)
 
-/** A SETUP (END) rule of a ruined edifice face, in the shape of E02's
-  * `MarketRule` (catalog batch 9, slice 1). It names `WhenExplored` beside
-  * `SetupEnd` so the same contribution serves an explore procedure once one
-  * folds that window. It applies only while its face stands on the map.
+/** A ruined edifice face that adds steps at SETUP (END), in the shape of
+  * E02's `MarketRule` (catalog batch 9, slice 1). It names `WhenExplored`
+  * beside `SetupEnd`, so the same contribution serves an explore procedure
+  * once one folds that window. It applies only while its face stands on the
+  * map.
+  *
+  * Most faces are a [[RuinedSetupRule]]: one batch, then a line. Fallen
+  * Spire returns its own steps, since its shuffles are tree nodes the
+  * walker orders, never batch members (catalog batch 10, slice 6).
   */
-abstract class RuinedSetupRule extends ContributingPower:
+abstract class RuinedSetupSteps extends ContributingPower:
   def edifice: EdificeId
 
   final def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
@@ -56,18 +61,25 @@ abstract class RuinedSetupRule extends ContributingPower:
 
   override def applicable(ctx: PowerCtx): Boolean = at(ctx.state).isDefined
 
+  /** The steps this face adds at its window, for the face at `site`. */
+  protected def steps(site: SiteId): Vector[Operation]
+
+  final def contributions: Map[PowerWindow, Vector[Contribution]] =
+    val effect = Vector(Transform((ctx, ops) => at(ctx.state) match {
+      case Some(site) => ops ++ steps(site)
+      case None => ops
+    }))
+    Map(PowerWindow.SetupEnd -> effect, PowerWindow.WhenExplored -> effect)
+
+/** A ruined face whose SETUP (END) effect is one batch, then its line. */
+abstract class RuinedSetupRule extends RuinedSetupSteps:
   protected def build(ready: ReadyGame, at: SiteId): Vector[CoreOperation]
 
   /** The line this face writes after its effect, read from that step. */
   protected def note(at: SiteId): Note
 
-  final def contributions: Map[PowerWindow, Vector[Contribution]] =
-    val effect = Vector(Transform((ctx, ops) => at(ctx.state) match {
-      case Some(site) =>
-        ops :+ BuildOps((ready, _) => Right(build(ready, site))) :+ note(site)
-      case None => ops
-    }))
-    Map(PowerWindow.SetupEnd -> effect, PowerWindow.WhenExplored -> effect)
+  protected final def steps(site: SiteId): Vector[Operation] =
+    Vector(BuildOps((ready, _) => Right(build(ready, site))), note(site))
 
 /** Hall of Mockery (E01, ruined): "SETUP (END): Place 4 favor on the
   * People's Favor and move it to the shared bank; players cannot start with

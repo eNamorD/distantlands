@@ -1,16 +1,21 @@
 package oathdigital.gameplay.powers.setup
 
+import oathdigital.gameplay.WalkerDiceFixture
 import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.action.{EldersCard, MessengerCard}
+import oathdigital.gameplay.powers.action.{EldersCard, MessengerCard,
+  ScryerCard}
+import oathdigital.gameplay.powers.whenplayed.{BewitchCard, DazzleCard,
+  ThreateningRoarCard}
 import oathdigital.gameplay.setup.{FirstGameSetupFixture, SetupProcedure,
   SetupWalkDriver}
-import oathdigital.gameplay.walker.WalkerPowers
+import oathdigital.gameplay.walker.{WalkerDice, WalkerPowers}
 import oathdigital.model._
 import oathdigital.testkit.{Look, Table}
 import oathdigital.testkit.Unwrap.accepted
 
-/** The SETUP (END) rules of catalog batch 9, slice 1: Hall of Mockery, Lost
-  * Guardians, Ruined School and Broken Horn. Each runs once at Setup's end
+/** The SETUP (END) rules of catalog batch 9, slice 1 (Hall of Mockery, Lost
+  * Guardians, Ruined School and Broken Horn) and of batch 10 (Broken Clock
+  * and Fallen Spire). Each runs once at Setup's end
   * when its ruined face stands on the map, and not otherwise. The driver
   * folds the recorded operations as replay does, so the finished game is
   * the replayed one. */
@@ -34,13 +39,14 @@ class RuinedSetupRulesSuite extends munit.FunSuite:
     FirstGameSetupFixture.sites.foldLeft(table)((staged, s) =>
       staged.bandits(s, if bandited.contains(s) then 1 else 0))
 
-  private def finish(ready: ReadyGame): SetupWalkDriver.SetupWalked =
+  private def finish(ready: ReadyGame,
+      dice: WalkerDice = WalkerDice.unavailable): SetupWalkDriver.SetupWalked =
     val tree = accepted(SetupProcedure.build(catalog, ready,
       ready.game.current.turn.activePlayer, Vector.empty))
     SetupWalkDriver.driveWithEvents(ready, tree, TriggeredProcedureRef.Setup,
-      powers)
+      powers, dice)
 
-  private def said(rule: RuinedSetupRule, events: Vector[OathEvent])
+  private def said(rule: RuinedSetupSteps, events: Vector[OathEvent])
       : Vector[NoteText.Said] = NoteText.said(rule.id, rule.noteKeys, events)
 
   // ---- Hall of Mockery ----
@@ -180,3 +186,71 @@ class RuinedSetupRulesSuite extends munit.FunSuite:
     assertEquals(walked.ready.game.current.tracks.round,
       staged.game.current.tracks.round)
     assertEquals(said(BrokenClock, walked.events), Vector.empty)
+
+  // ---- Fallen Spire ----
+
+  private val reversing = WalkerDiceFixture.reversingShuffle
+  private val fourDispossessed = Vector[WorldCardId](DazzleCard.id,
+    ScryerCard.id, BewitchCard.id, ThreateningRoarCard.id)
+
+  /** The Spire on `side` at the Cradle site, with Elders, Messenger and the
+    * Conspiracy in the Cradle's pile beside what Setup's reveals discard
+    * there, and exactly `dispossessed` in the Dispossessed. */
+  private def spireWithPile(side: EdificeSide,
+      dispossessed: Vector[WorldCardId]): ReadyGame =
+    stagedWith(GreatSpireCard.id, side).discarded(Region.Cradle, staged*)
+      .dispossessed(dispossessed*).ready
+
+  /** The Cradle's pile as Setup leaves it under the intact Spire, which
+    * swaps nothing. */
+  private def pileLeftByIntactSpire(dispossessed: Vector[WorldCardId])
+      : Vector[WorldCardId] =
+    Look(finish(spireWithPile(EdificeSide.Intact, dispossessed), reversing)
+      .ready).discardPile(Region.Cradle)
+
+  private def denizensOf(pile: Vector[WorldCardId]): Vector[DenizenId] =
+    pile.collect { case denizen: DenizenId => denizen }
+
+  private def swappedLine(count: Int, noun: String): Vector[NoteText.Said] =
+    Vector(NoteText.Said("swapped", s"Swapped $count $noun between the " +
+      "Dispossessed and the Cradle discard pile, then shuffled the pile.",
+      covers = false))
+
+  test("Fallen Spire swaps the pile's denizens for as many shuffled " +
+      "Dispossessed cards, then shuffles the pile with its Vision"):
+    val pile = pileLeftByIntactSpire(fourDispossessed)
+    val count = math.min(denizensOf(pile).size, fourDispossessed.size)
+    // Elders and Messenger at least.
+    assert(count >= 2, pile.toString)
+    val leaving = denizensOf(pile).take(count)
+    // The reversing source reverses the Dispossessed, then the pile.
+    val arriving = fourDispossessed.reverse.take(count)
+    val walked = finish(spireWithPile(EdificeSide.Ruined, fourDispossessed),
+      reversing)
+    val after = Look(walked.ready).discardPile(Region.Cradle)
+    assertEquals(after, (pile.filterNot(leaving.contains) ++ arriving).reverse)
+    assert(after.contains(conspiracy))
+    assertEquals(walked.ready.game.campaign.dispossessed,
+      fourDispossessed.reverse.drop(count) ++ leaving)
+    Vector(Table.p1, Table.p2, Table.p3).foreach(player =>
+      arriving.foreach(card =>
+        assert(!Look(walked.ready).knowsAdviser(player, card))))
+    assertEquals(said(FallenSpire, walked.events), swappedLine(count, "cards"))
+
+  test("with one Dispossessed card, Fallen Spire swaps it for the pile's " +
+      "bottom denizen"):
+    val one = Vector[WorldCardId](DazzleCard.id)
+    val pile = pileLeftByIntactSpire(one)
+    val leaving = denizensOf(pile).head
+    val walked = finish(spireWithPile(EdificeSide.Ruined, one), reversing)
+    assertEquals(walked.ready.game.campaign.dispossessed,
+      Vector[WorldCardId](leaving))
+    assertEquals(Look(walked.ready).discardPile(Region.Cradle),
+      (pile.filterNot(_ == leaving) :+ DazzleCard.id).reverse)
+    assertEquals(said(FallenSpire, walked.events), swappedLine(1, "card"))
+
+  test("the intact Great Spire swaps nothing at Setup's end"):
+    val walked = finish(spireWithPile(EdificeSide.Intact, fourDispossessed),
+      reversing)
+    assertEquals(walked.ready.game.campaign.dispossessed, fourDispossessed)
+    assertEquals(said(FallenSpire, walked.events), Vector.empty)

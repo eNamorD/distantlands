@@ -1,7 +1,8 @@
 package oathdigital.gameplay.setup
 
 import oathdigital.gameplay.WalkerRecordedOpsReducer
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers}
+import oathdigital.gameplay.walker.{ProcedureWalker, WalkerDice, WalkerOutcome,
+  WalkerPowers}
 import oathdigital.model._
 import oathdigital.testkit.{Park, Situation}
 import oathdigital.testkit.Unwrap.{accepted, present}
@@ -27,7 +28,8 @@ object SetupWalkDriver extends WalkerRecordedOpsReducer with munit.Assertions:
   /** `driveToCompletion`, also returning every event the walk journaled, in
     * walk order, for the suites that read a rule's notes. */
   def driveWithEvents(ready: ReadyGame, tree: Operation,
-      procedure: ProcedureRef, powers: WalkerPowers)(
+      procedure: ProcedureRef, powers: WalkerPowers,
+      dice: WalkerDice = WalkerDice.unavailable)(
       using munit.Location): SetupWalked =
     @annotation.tailrec
     def walk(state: ReadyGame, outcome: WalkerOutcome,
@@ -46,7 +48,7 @@ object SetupWalkDriver extends WalkerRecordedOpsReducer with munit.Assertions:
               _ => fail(s"SetupWalkDriver cannot auto-answer ${decide.query}")),
             decide.owner)
           val resolved = accepted(
-            ProcedureWalker.resolve(next, tree, pending, answer, powers))
+            ProcedureWalker.resolve(next, tree, pending, answer, powers, dice))
           walk(next, resolved, journaled ++ events)
-    walk(ready, accepted(ProcedureWalker.advance(ready, tree, None, powers)),
+    walk(ready, accepted(ProcedureWalker.advance(ready, tree, None, powers, dice)),
       Vector.empty)
