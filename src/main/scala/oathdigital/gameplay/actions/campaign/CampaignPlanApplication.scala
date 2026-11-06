@@ -180,10 +180,8 @@ final class CampaignPlanApplication(catalog: ExecutableCatalog,
         setup.actor, setup.targetSites).filter(site =>
       CampaignSetup.defenderAt(ready, site).contains(
         CampaignDefender.Player(player)) &&
-        ready.game.current.map.sites.get(site).exists(_.forces match {
-          case SiteForces.Occupied(_, count) => count > 0
-          case SiteForces.Empty => false
-        })).map(site => Location.Site(site): Location)
+        ready.game.current.map.sites.get(site).exists(_.forces.total > 0))
+      .map(site => Location.Site(site): Location)
 
   private def sacrifice(ready: ReadyGame): Vector[Operation] =
     if !offered.offer.costs.contains(CampaignPlanCost.SacrificeWarband) then

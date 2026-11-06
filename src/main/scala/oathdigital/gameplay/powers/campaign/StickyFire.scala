@@ -104,9 +104,7 @@ case object StickyFire extends BattlePlan:
   private def atOrigin(step: (ReadyGame, ReadyGame), result: CampaignResult)
       : Int = result.originForce.fold(0) { origin =>
     def count(ready: ReadyGame) = ready.game.current.map.sites
-      .get(origin.site).fold(0)(_.forces match
-        case SiteForces.Occupied(_, n) => n
-        case SiteForces.Empty => 0)
+      .get(origin.site).fold(0)(_.forces.total)
     count(step._1) - count(step._2)
   }
 

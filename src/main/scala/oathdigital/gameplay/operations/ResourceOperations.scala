@@ -271,10 +271,7 @@ private[operations] object ResourceOperations:
         case SiteForces.Occupied(other, _) if other != kind =>
           Left(ConflictingDeltas("site cannot contain multiple force kinds"))
         case forces =>
-          val current = forces match
-            case SiteForces.Empty => 0
-            case SiteForces.Occupied(_, count) => count
-          val next = current + delta
+          val next = forces.total + delta
           updateSite(ready, site)(_.copy(forces =
             if next == 0 then SiteForces.Empty
             else SiteForces.Occupied(kind, next)))

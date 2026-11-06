@@ -125,8 +125,7 @@ case object PeaceEnvoy extends DenizenPlan(PeaceEnvoyCard,
   private def spared(ctx: PowerCtx, use: PlanUse,
       losses: Vector[Operation]): Vector[Operation] =
     val atTargets = use.result.fold(0)(result => result.defendedSites
-      .flatMap(use.ready.game.current.map.sites.get).map(_.forces).collect {
-        case SiteForces.Occupied(_, count) => count }.sum)
+      .flatMap(use.ready.game.current.map.sites.get).map(_.forces.total).sum)
     LossRewrite(ctx, losses) {
       case Kill(Piece.Warbands(_, _),
           PositionedLocation(Location.PlayArea(_), _, _)) => Vector.empty

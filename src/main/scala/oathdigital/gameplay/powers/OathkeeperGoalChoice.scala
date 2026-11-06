@@ -42,8 +42,7 @@ object OathkeeperGoalChoice:
   def chosen(pending: PendingTree, decisionId: String)
       : Option[OathkeeperGoal] =
     PowerAnswers.one(pending, decisionId).flatMap {
-      case DecisionOptionRef.Button(key) =>
-        OathkeeperGoal.all.find(_.key == key)
+      case DecisionOptionRef.Button(key) => OathkeeperGoal.fromKey(key)
       case _ => None
     }
 

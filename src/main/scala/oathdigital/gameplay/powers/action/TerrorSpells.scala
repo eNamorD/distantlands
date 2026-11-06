@@ -138,5 +138,4 @@ case object TerrorSpells extends PaidAction(TerrorSpellsCard.power):
   private def inPlay(ready: ReadyGame): Int =
     val current = ready.game.current
     current.players.map(_.board.warbands).sum +
-      current.map.sites.values.map(_.forces).collect {
-        case SiteForces.Occupied(_, count) => count }.sum
+      current.map.sites.values.map(_.forces.total).sum

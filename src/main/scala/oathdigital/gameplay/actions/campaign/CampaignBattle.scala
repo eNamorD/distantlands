@@ -103,10 +103,8 @@ object CampaignBattle:
   def forceOf(ready: ReadyGame, target: DecisionOptionRef): Int =
     val current = ready.game.current
     target match
-      case DecisionOptionRef.Site(site) => current.map.sites.get(site)
-        .fold(0)(_.forces match
-          case SiteForces.Occupied(_, count) => count
-          case SiteForces.Empty => 0)
+      case DecisionOptionRef.Site(site) =>
+        current.map.sites.get(site).fold(0)(_.forces.total)
       case DecisionOptionRef.Player(player) =>
         current.player(player).fold(0)(_.board.warbands)
       case _ => 0
@@ -276,7 +274,7 @@ object CampaignBattle:
         Piece.Warbands(force, count), PositionedLocation(Location.Site(site)))
     val returned: Vector[CoreOperation] = result.defender match
       case CampaignDefender.Player(player) =>
-        val total = sites.collect { case (_, SiteForces.Occupied(_, n)) => n }.sum
+        val total = sites.map(_._2.total).sum
         val back = total - total / 2
         sites.collectFirst { case (_, SiteForces.Occupied(force, _)) => force }
           .filter(_ => back > 0).toVector.map(force => Move(

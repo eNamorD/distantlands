@@ -22,6 +22,12 @@ sealed trait SiteForces extends Product with Serializable:
     case SiteForces.Occupied(`kind`, held) => held
     case _ => 0
 
+  /** The warbands standing here of whatever kind: 0 when the site is
+    * empty. */
+  def total: Int = this match
+    case SiteForces.Occupied(_, held) => held
+    case SiteForces.Empty => 0
+
 object SiteForces:
   case object Empty extends SiteForces
 
