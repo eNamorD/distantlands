@@ -229,12 +229,8 @@ class RuinedSetupRulesSuite extends munit.FunSuite:
       reversing)
     val after = Look(walked.ready).discardPile(Region.Cradle)
     assertEquals(after, (pile.filterNot(leaving.contains) ++ arriving).reverse)
-    assert(after.contains(conspiracy))
     assertEquals(walked.ready.game.campaign.dispossessed,
       fourDispossessed.reverse.drop(count) ++ leaving)
-    Vector(Table.p1, Table.p2, Table.p3).foreach(player =>
-      arriving.foreach(card =>
-        assert(!Look(walked.ready).knowsAdviser(player, card))))
     assertEquals(said(FallenSpire, walked.events), swappedLine(count, "cards"))
 
   test("with one Dispossessed card, Fallen Spire swaps it for the pile's " +
@@ -249,8 +245,24 @@ class RuinedSetupRulesSuite extends munit.FunSuite:
       (pile.filterNot(_ == leaving) :+ DazzleCard.id).reverse)
     assertEquals(said(FallenSpire, walked.events), swappedLine(1, "card"))
 
+  /** `ready` with p1 knowing the Conspiracy in the Cradle's pile, as after
+    * a peek. */
+  private def p1KnowingConspiracy(ready: ReadyGame): ReadyGame =
+    ready.copy(knowledge = ready.knowledge.copy(advisers =
+      ready.knowledge.advisers.updated(Table.p1, Vector(conspiracy))))
+
+  test("Fallen Spire's shuffle forgets what a player knew of the pile, " +
+      "which the intact face keeps"):
+    def knowsAfter(side: EdificeSide): Boolean = Look(finish(
+      p1KnowingConspiracy(spireWithPile(side, fourDispossessed)), reversing)
+      .ready).knowsAdviser(Table.p1, conspiracy)
+    assert(knowsAfter(EdificeSide.Intact))
+    assert(!knowsAfter(EdificeSide.Ruined))
+
   test("the intact Great Spire swaps nothing at Setup's end"):
     val walked = finish(spireWithPile(EdificeSide.Intact, fourDispossessed),
       reversing)
     assertEquals(walked.ready.game.campaign.dispossessed, fourDispossessed)
+    assert(staged.forall(Look(walked.ready).discardPile(Region.Cradle)
+      .contains))
     assertEquals(said(FallenSpire, walked.events), Vector.empty)
