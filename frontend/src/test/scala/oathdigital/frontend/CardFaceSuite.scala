@@ -54,7 +54,7 @@ class CardFaceSuite extends munit.FunSuite:
         "Blue Warbands")))
     val node = CardFace.render(cage)
     val group = firstMatch(node, ".card-tokens .card-warbands.force-blue")
-    assertEquals(group.map(_.getAttribute("title")), Some("Blue Warbands x2"))
+    assertEquals(group.map(_.getAttribute("data-tip")), Some("Blue Warbands x2"))
     assertEquals(all(node, ".card-warbands .token-glyph")
       .map(_.getAttribute("aria-label")), Vector("warband"))
     assertEquals(all(node, ".card-warbands .card-token-count")

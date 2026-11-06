@@ -157,7 +157,7 @@ private[frontend] object CardFace:
     card.warbands.foreach { forces =>
       val group = element("span",
         s"card-warbands ${ServerUiSupport.forceCssClass(forces)}")
-      group.setAttribute("title", ServerUiSupport.forceText(forces))
+      HoverTip.set(group, ServerUiSupport.forceText(forces))
       counted("warband", forces.count).foreach(group.appendChild)
       tokens.appendChild(group)
     }

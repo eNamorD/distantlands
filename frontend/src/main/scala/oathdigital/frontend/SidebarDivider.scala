@@ -25,7 +25,7 @@ private[frontend] final class SidebarDivider(table: dom.html.Element,
   handle.setAttribute("aria-orientation", "vertical")
   handle.setAttribute("aria-label", "Resize the Actions and Log column")
   handle.setAttribute("aria-valuemin", MinWidth.toInt.toString)
-  handle.title = "Drag to resize; double-click to reset"
+  HoverTip.set(handle, "Drag to resize; double-click to reset")
   table.appendChild(handle)
   private val capture = handle.asInstanceOf[PointerCapture]
 
