@@ -1,6 +1,6 @@
 # Catalog Batch 10: Engine Seams
 
-**Status:** designed 2026-11-03. Slices 1 to 7 landed.
+**Status:** designed 2026-11-03. Slices 1 to 8 landed.
 
 **Builds on** [Catalog batch 9](2026-11-02-catalog-batch-9-design.md) and
 [batch 8](2026-10-12-catalog-batch-8-design.md), whose vocabulary, cost
@@ -146,6 +146,12 @@ Taken with the owner on 2026-11-03, except where another source is named.
     Troupe counts as the picked suit for that Trade, even beside a faceup
     Pledge to Discord. Unpicked, or outside the Trade, Pledge makes it
     Discord as usual.
+15. **No scratch primitive for Drowned Library** (owner, 2026-11-06). The
+    Recover reads Drowned Library's pick from the walk's answers instead
+    of a recorded `RecoverFromRelicDeck`. The pick is already recorded,
+    so the Recover names the card, as `EffectiveSuit` names Acting
+    Troupe. A general seam waits for a second card that sets a Recover's
+    source.
 
 ### Readings
 
@@ -178,7 +184,10 @@ The owner accepted these without a separate ruling:
 - **Pile names in lines** read "the Cradle discard pile", as Scryer's and
   Broken Horn's lines do.
 - **Drowned Library** needs the user's pawn at its site. The relic is the
-  relic deck's top card, at difficulty 5, unseen until recovered.
+  relic deck's top card, at difficulty 5, unseen until recovered: the
+  relic decision offers the deck, and the Recover's line names the relic
+  only to a viewer who may identify it. Relic Patrols and Bandit Patrols
+  still refuse the Recover at their sites, whatever its source.
 - **Favored Son:** if the user already holds the People's Favor, nothing
   happens. Otherwise they take it from its holder or the shared bank, and
   the People's Favor's left ribbon applies.
@@ -375,24 +384,36 @@ other actions unaffected.
 
 ## Slice 8: Recover source
 
-**Drowned Library.** A Recover modifier, usable with the user's pawn at its
-site; its secret is placed on the card. Picking it records a new scratch
-primitive, `RecoverFromRelicDeck`, with a codec entry and a clear when the
-walk ends, as `ActAsIf` is recorded and cleared.
+**Drowned Library.** A Recover modifier for 1 secret, placed on the card,
+usable with the user's pawn at its site. A selected modifier's card is a
+denizen or a relic, so the power is written as Catacombs is. The pick is
+its whole effect (ruling 15): the card moves beside `RecoverProcedure`,
+which reads the pick from the walk's answers with
+`ModifierPicks.isPicked`.
 
-`RecoverProcedure` reads both start facts from live state: `succeeded` and
-`rollFeedback` use difficulty 5 when the scratch is set, else the site's;
-`afterLoop` offers the relic deck's head and `relicMove` moves it from
-`Location.Deck(CardDeck.Relic)`. The relic stays unseen until recovered.
-With an empty relic deck, the modifier is unavailable with a hover reason.
+`RecoverProcedure` reads its difficulty live: 5 once the Library is
+picked, else the site's. `succeeded`, the `Repeat` guard and
+`rollFeedback` read it; `rollFeedback` reads the parked walk's answers.
+With the pick, the relic decision offers the relic deck, and the move
+takes its top card from `Location.Deck(CardDeck.Relic)`. The relic stays
+unseen until recovered. With an empty relic deck, the modifier is
+unavailable with a hover reason.
 
-If Recover refuses at its start when the site holds no relic, before the
-modifier loop, this slice moves that refusal after the loop, as slice 11
-does for Challenge: the relic options are judged once the picks are known.
+Recover refused a site with no Recover difficulty when its tree was built,
+before the modifier loop. The refusal moves after the loop: with no
+difficulty the `Repeat` runs no round and the last branch refuses. "Start"
+and the Act menu judge the tree after the picks, so Drowned Library makes
+such a site recoverable. Recover never refused a site with no relic; a
+Recover with nothing to take is a legal wasted action.
+
+One edifice id names both faces, so a new capability trait,
+`OnEdificeFace`, names the face a power is printed on. The modifier
+decision lists such a power only while its face is up.
 
 Tests: success and failure against difficulty 5; the relic moved from the
-deck; the pick unavailable away from the site or with an empty deck; a
-Recover at a site with no relic; replay.
+deck; the pick unavailable away from the site or with an empty deck, and
+unlisted on the intact face; a Recover at a site with no difficulty,
+refused without the pick and allowed with it; replay.
 
 ## Slice 9: Search discard destination
 
@@ -554,7 +575,7 @@ lost before Wake; codec; replay.
 | Live terrain sets | 5 | Grand Canal, Lost Lagoon, Narrow Pass |
 | `ShufflePile.Dispossessed`, `RemoveFromMap` | 6 | both Spires, Pilgrimage |
 | `answered` in `EffectiveSuit` | 7 | Acting Troupe |
-| `RecoverFromRelicDeck` | 8 | Drowned Library |
+| Drowned Library's pick read by Recover, `OnEdificeFace` | 8 | Drowned Library |
 | `Discard` position | 9 | Bracken |
 | `CardGathering` rename | 10 | Autumn Wind, the Chronicle |
 | Challenge judged after modifiers | 11 | four Challenge modifiers |

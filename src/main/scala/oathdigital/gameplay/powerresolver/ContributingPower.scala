@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powerresolver
 
 import oathdigital.catalog.ExecutableCatalog
-import oathdigital.model.{Answered, CampaignPlanOffer, CardId, CoreOperation, Decide, DecisionOptionRef, NoteKey, OathViolation, OfferedPlan, OfferedReroll, Operation, OperationRestriction, OptionReason, PlayerId, PowerId, LogNote, PowerResolution, PowerSourceRef, PowerWindow, ProcedureRef, ReadyGame, RerollOffer, RuleSourceRef}
+import oathdigital.model.{Answered, CampaignPlanOffer, CardId, CoreOperation, Decide, DecisionOptionRef, EdificeId, EdificeSide, NoteKey, OathViolation, OfferedPlan, OfferedReroll, Operation, OperationRestriction, OptionReason, PlayerId, PowerId, LogNote, PowerResolution, PowerSourceRef, PowerWindow, ProcedureRef, ReadyGame, RerollOffer, RuleSourceRef}
 
 /** Everything a contribution may read at the node it hooks. Carries no
   * mutable state: `catalog` is the card catalog the walk runs, for a power
@@ -270,6 +270,18 @@ trait AsksOnSelection extends ContributingPower:
     * power and paid for it. */
   def selectionQuestions(catalog: ExecutableCatalog, ready: ReadyGame,
       actor: PlayerId): Vector[Operation]
+
+/** A power printed on one face of an edifice. One edifice id names both
+  * faces, so the card is found whichever face is up; the modifier decision
+  * lists such a power only while its face is up, as `RuleSourceIndex`
+  * lists an edifice's powers by its side (catalog batch 10, slice 8). */
+trait OnEdificeFace extends ContributingPower:
+  def edifice: EdificeId
+  def side: EdificeSide
+  /** Whether the face this power is printed on is up somewhere on the
+    * map. */
+  final def faceUp(ready: ReadyGame): Boolean =
+    ready.game.current.edificeSite(edifice, side).nonEmpty
 
 /** A power with a follow-up after a walker leaf in which advisers arrived
   * (catalog batch 5, "The arrival pass"). */

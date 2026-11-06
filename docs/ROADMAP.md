@@ -81,7 +81,6 @@ Cards that need an engine change first, grouped by the missing mechanism.
 engine had; its [Out of scope](superpowers/specs/2026-11-02-catalog-batch-9-design.md#out-of-scope)
 section describes each seam below in a paragraph.
 
-- **Recover source:** Drowned Library.
 - **Discard replacement with a question:** Wild Pastures.
 - **Vision collection:** Desecrated Ground.
 - **As-if ruler:** Bandit Crown, Grand Mask.

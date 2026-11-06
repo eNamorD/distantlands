@@ -3,8 +3,7 @@ package oathdigital.gameplay.walker
 import oathdigital.gameplay.PowerAccess
 import oathdigital.gameplay.operations.PowerUseRules
 import oathdigital.gameplay.powerresolver.{AsksOnSelection, ContributingPower,
-  ModifierHost,
-  ModifierPicks, OfferReason, PowerCtx}
+  ModifierHost, ModifierPicks, OfferReason, OnEdificeFace, PowerCtx}
 import oathdigital.model._
 
 /** One pass of an action's modifier decision (modifier walker design): the
@@ -13,8 +12,8 @@ import oathdigital.model._
   *
   * A pass lists "Start" first, worded with how many modifiers are picked
   * (`startWith`), then every player-selected power that may be
-  * picked at the window and whose card the actor may use, less those
-  * already picked. Each is judged by its own `offerReason`, then by a dry
+  * picked at the window and whose card the actor may use, on its face for
+  * an edifice, less those already picked. Each is judged by its own `offerReason`, then by a dry
   * run of its payment, then by whether it applies now. A pick pays at once,
   * as the pass's second child, so the next pass is priced after it.
   *
@@ -56,7 +55,10 @@ final class ModifierChoice(val actor: PlayerId, modifierWindow: PowerWindow,
     power.resolution == PowerResolution.PlayerSelected &&
       power.selectionWindows(modifierWindow) &&
       power.selectionCard.exists(card =>
-        PowerAccess.locate(pass.state, actor, card).isDefined))
+        PowerAccess.locate(pass.state, actor, card).isDefined) &&
+      (power match
+        case faced: OnEdificeFace => faced.faceUp(pass.state)
+        case _ => true))
     .sortBy(ContributingPower.sortKey)
 
   private def option(pass: ModifierChoice.Pass, power: ContributingPower)

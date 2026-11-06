@@ -5,6 +5,7 @@ import oathdigital.catalog.{AdviserOnly, ExecutableCatalog, Locked,
 import oathdigital.gameplay.powers.{PhasePowerCatalog,
   PowerImplementationStatus, SelectedModifier, WalkerPowerCatalog}
 import oathdigital.gameplay.powers.campaign.BattlePlan
+import oathdigital.gameplay.powers.recover.DrownedLibrary
 import oathdigital.model.{MajorActionType, PowerId}
 
 /** The printed-corpus checks `validate-component-catalog.py` ran on the JSON,
@@ -93,6 +94,10 @@ class CardCatalogSuite extends munit.FunSuite:
         plan.sides.toVector.sortBy(_.ordinal)*)
       case modifier: SelectedModifier => modifier.id -> ModifierMark.Action(
         modifier.actions.toVector.sortBy(_.ordinal)*)
+      // Written as Catacombs is, not as a `SelectedModifier`, and picked in
+      // the Recover's modifier decision only.
+      case DrownedLibrary => DrownedLibrary.id ->
+        ModifierMark.Action(MajorActionType.Recover)
     }.filter((id, _) => powers.exists(_.id == id)).toMap
     // Spiteful Mirror is picked in the Muster and Trade modifier decisions,
     // but its card prints no modifier icon.

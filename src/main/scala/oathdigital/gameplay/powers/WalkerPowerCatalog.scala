@@ -62,7 +62,7 @@ object WalkerPowerCatalog:
     * `WalkerPowers` carries, so it is taken separately from `default`: a
     * union built from `default` would build a union to build a union. */
   private[powers] val contributing: Vector[ContributingPower] =
-    Vector(CatacombsContribution, RelicPatrols, BanditPatrols,
+    Vector(CatacombsContribution, DrownedLibrary, RelicPatrols, BanditPatrols,
       VowOfPeaceContribution, VowOfSilence, VowOfDivision, BrassArmyMoves,
       SecretTestament, YewStaff, SpellBreaker, ForestCouncil, CityWall,
       NonPersistentPowerRestriction.giantPython,
