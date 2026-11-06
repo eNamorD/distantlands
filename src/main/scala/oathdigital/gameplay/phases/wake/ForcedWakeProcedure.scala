@@ -70,13 +70,8 @@ object ForcedWakeProcedure:
     trees <- found.foldLeft[Either[OathViolation, Vector[Operation]]](
       Right(Vector.empty)) { case (built, (power, source)) =>
       built.flatMap(done => power.build(catalog, ready, player, source)
-        .map(tree => done :+ cardOf(source).fold(tree)(card =>
-          AutomaticUse(player, power.id, card, (_, _) => Vector(tree)))))
+        .map(tree => done :+ DecisionOptionRef.cardOf(source).fold(tree)(
+          card => AutomaticUse(player, power.id, card,
+            (_, _) => Vector(tree)))))
     }
   yield Sequence(trees)
-
-  private def cardOf(ref: DecisionOptionRef): Option[CardId] = ref match
-    case DecisionOptionRef.Denizen(id) => Some(id)
-    case DecisionOptionRef.Relic(id) => Some(id)
-    case DecisionOptionRef.Edifice(id) => Some(id)
-    case _ => None

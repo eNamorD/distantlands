@@ -66,15 +66,9 @@ case object AncientBloodline extends AsIfLocked with WaivableRule:
       holder <- granter(ready)
       if mover != holder
       if PowerAccess.ruledSites(ready, holder).contains(site)
-      ref <- cardRef(card)
+      ref <- DecisionOptionRef.ofCard(card)
     yield OperationReason("bloodline-locked",
       s"${card.value} is locked for ${mover.value}",
       OperationReasonKind.Impossible, Some(OperationWaiver(id, Some(holder),
         ConsentKey(id, mover, moveKey, ref), lockedConsent(source),
         locked(source))))
-
-  private def cardRef(card: CardId): Option[DecisionOptionRef] = card match
-    case denizen: DenizenId => Some(DecisionOptionRef.Denizen(denizen))
-    case relic: RelicId => Some(DecisionOptionRef.Relic(relic))
-    case edifice: EdificeId => Some(DecisionOptionRef.Edifice(edifice))
-    case _ => None

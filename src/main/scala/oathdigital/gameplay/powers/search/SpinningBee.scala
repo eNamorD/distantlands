@@ -124,7 +124,7 @@ case object SpinningBee extends SelectedModifier:
   private def excludes(ctx: PowerCtx, ref: DecisionOptionRef): Boolean =
     ModifierPicks.isPicked(ctx.answered, ctx.window, cardId) &&
       ref != ModifierPicks.start &&
-      !ModifierPicks.cardRef(cardId).contains(ref)
+      !DecisionOptionRef.ofCard(cardId).contains(ref)
 
   private def matches(catalog: ExecutableCatalog,
       suit: Suit)(card: WorldCardId): Boolean =

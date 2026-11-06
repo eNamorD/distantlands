@@ -55,12 +55,6 @@ private[powers] final class SiteCards(suits: Set[Suit]):
 
   def refOf(card: SiteDenizenState): DecisionOptionRef = option(card).ref
 
-  /** The card an answer names. */
-  def cardOf(ref: DecisionOptionRef): Option[CardId] = ref match
-    case DecisionOptionRef.Denizen(id) => Some(id)
-    case DecisionOptionRef.Edifice(id) => Some(id)
-    case _ => None
-
   /** `card`'s option as the printed restrictions judge `actor`'s discard of
     * it from `site` (consent design, slice 3). It is kept as it is when
     * nothing refuses, askable when only waivable refusals stop it, shown

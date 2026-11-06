@@ -73,7 +73,8 @@ case object GreatFeast extends PaidAction(GreatFeastCard.power):
       states: NoteStates, player: PlayerId,
       source: DecisionOptionRef): Option[LogNote] =
     PowerSourceRef.of(source).flatMap(card =>
-      NoteSupport.answer(states, decisionId).flatMap(cards.cardOf) match
+      NoteSupport.answer(states, decisionId)
+        .flatMap(DecisionOptionRef.cardOf) match
         case Some(chosen) => Some(feasted(card, NoteArg.Player(player),
           NoteArg.Card(chosen), NoteArg.Amount(
             states.previous.fold(0)(NoteSupport.supply(_, player)),

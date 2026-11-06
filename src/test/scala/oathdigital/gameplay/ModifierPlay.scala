@@ -16,7 +16,7 @@ object ModifierPlay:
   def pick(power: PowerId, powers: WalkerPowers = production)
       : DecisionAnswer =
     powers.powers.find(_.id == power).flatMap(_.selectionCard)
-      .flatMap(ModifierPicks.cardRef)
+      .flatMap(DecisionOptionRef.ofCard)
       .fold(throw new IllegalArgumentException(
         s"${power.value} is not a player-selected power"))(
         DecisionAnswer.ChooseOneAnswer(_))

@@ -22,19 +22,6 @@ object ModifierPicks:
 
   def isDecision(decisionId: String): Boolean = decisionId.endsWith(suffix)
 
-  /** What a modifier's option names it by: its card. */
-  def cardRef(card: CardId): Option[DecisionOptionRef] = card match
-    case id: DenizenId => Some(DecisionOptionRef.Denizen(id))
-    case id: RelicId => Some(DecisionOptionRef.Relic(id))
-    case id: EdificeId => Some(DecisionOptionRef.Edifice(id))
-    case _ => None
-
-  private def cardOf(ref: DecisionOptionRef): Option[CardId] = ref match
-    case DecisionOptionRef.Denizen(id) => Some(id)
-    case DecisionOptionRef.Relic(id) => Some(id)
-    case DecisionOptionRef.Edifice(id) => Some(id)
-    case _ => None
-
   /** Each pick as its decision id and the card it names, in pick order. */
   private def answers(answered: Vector[Answered])
       : Vector[(String, DecisionOptionRef)] = answered.collect {
@@ -44,11 +31,11 @@ object ModifierPicks:
 
   /** The cards picked, in pick order. */
   def cards(answered: Vector[Answered]): Vector[CardId] =
-    answers(answered).flatMap((_, ref) => cardOf(ref))
+    answers(answered).flatMap((_, ref) => DecisionOptionRef.cardOf(ref))
 
   private def pickable(power: ContributingPower, ref: DecisionOptionRef)
       : Boolean = power.resolution == PowerResolution.PlayerSelected &&
-    power.selectionCard.flatMap(cardRef).contains(ref)
+    power.selectionCard.flatMap(DecisionOptionRef.ofCard).contains(ref)
 
   /** The power in `pool` an answer naming `ref` picks at `window`. */
   def powerFor(pool: Vector[ContributingPower], window: PowerWindow,
@@ -78,6 +65,6 @@ object ModifierPicks:
 
   /** Whether `card` has been picked at `window`. */
   def isPicked(answered: Vector[Answered], window: PowerWindow,
-      card: CardId): Boolean = cardRef(card).exists(ref =>
+      card: CardId): Boolean = DecisionOptionRef.ofCard(card).exists(ref =>
     answered.exists(answer => answer.decisionId == decisionId(window) &&
       answer.answer == DecisionAnswer.ChooseOneAnswer(ref)))

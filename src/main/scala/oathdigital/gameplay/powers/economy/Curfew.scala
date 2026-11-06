@@ -104,10 +104,9 @@ case object Curfew extends ContributingPower:
     PowerAnswers.one(pending, TradeProcedure.decisionId).filter(ref =>
       cardOf(ref).exists(ruled(catalog, ready, ruler, _)))
 
-  private def cardOf(ref: DecisionOptionRef): Option[CardId] = ref match
-    case DecisionOptionRef.Denizen(card) => Some(card)
-    case DecisionOptionRef.Edifice(card) => Some(card)
-    case _ => None
+  /** The denizen or edifice `ref` names; a relic is no Trade source. */
+  private def cardOf(ref: DecisionOptionRef): Option[CardId] =
+    DecisionOptionRef.cardOf(ref).filterNot(_.isInstanceOf[RelicId])
 
   /** Whether `ruler` rules `card`: one of its faceup advisers, or a card at
     * a site it rules. */

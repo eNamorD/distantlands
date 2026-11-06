@@ -19,19 +19,14 @@ object PowerUseRules:
   /** The target of a grant's key: the card, or the power's own button
     * when it has no card or its card has no option ref. */
   def target(use: PowerUse): DecisionOptionRef =
-    use.card.flatMap(optionOf)
+    use.card.flatMap(DecisionOptionRef.ofCard)
       .getOrElse(DecisionOptionRef.Button(use.power.value))
 
   /** The option reference of `card`, the target of a grant's key; the
     * card's own button when it has no option ref. */
   def cardRef(card: CardId): DecisionOptionRef =
-    optionOf(card).getOrElse(DecisionOptionRef.Button(card.value))
-
-  private def optionOf(card: CardId): Option[DecisionOptionRef] = card match
-    case id: DenizenId => Some(DecisionOptionRef.Denizen(id))
-    case id: RelicId => Some(DecisionOptionRef.Relic(id))
-    case id: EdificeId => Some(DecisionOptionRef.Edifice(id))
-    case _ => None
+    DecisionOptionRef.ofCard(card)
+      .getOrElse(DecisionOptionRef.Button(card.value))
 
   /** Every refusal `restrictions` give `use`, whatever consent was given:
     * what an automatic use is shaped by, so a grant or a refusal never

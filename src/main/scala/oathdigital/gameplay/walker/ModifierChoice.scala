@@ -62,7 +62,7 @@ final class ModifierChoice(val actor: PlayerId, modifierWindow: PowerWindow,
   private def option(pass: ModifierChoice.Pass, power: ContributingPower)
       : Option[DecisionOption] = for
     card <- power.selectionCard
-    ref <- ModifierPicks.cardRef(card)
+    ref <- DecisionOptionRef.ofCard(card)
     shown <- DecisionOption.forRef(ref)
   yield
     val ctx = PowerCtx(pass.powers.catalog, pass.state, actor, power.source,

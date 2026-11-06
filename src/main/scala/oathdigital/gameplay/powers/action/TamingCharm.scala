@@ -76,7 +76,7 @@ case object TamingCharm extends PaidAction(TamingCharmCard.power):
       ready: ReadyGame, player: PlayerId, pending: PendingTree)
       : Vector[CoreOperation] = (for
     answer <- PowerAnswers.one(pending, decisionId)
-    card <- cards.cardOf(answer)
+    card <- DecisionOptionRef.cardOf(answer)
     suit <- catalog.suitOf(card)
     take = Gained.min(ready.banks.favor.getOrElse(suit, 0))
     if take > 0
@@ -86,7 +86,8 @@ case object TamingCharm extends PaidAction(TamingCharmCard.power):
       states: NoteStates, player: PlayerId,
       source: DecisionOptionRef): Option[LogNote] =
     PowerSourceRef.of(source).flatMap(card =>
-      NoteSupport.answer(states, decisionId).flatMap(cards.cardOf) match
+      NoteSupport.answer(states, decisionId)
+        .flatMap(DecisionOptionRef.cardOf) match
         case Some(chosen) => Some(line(catalog, states, card, player, chosen))
         case None => PowerAccess.pawnSite(states.now, player).map(site =>
           // A card was there, but a refusal kept it: it was not discarded.
