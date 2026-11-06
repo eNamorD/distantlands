@@ -28,7 +28,8 @@ private[application] final class ConsentNames(
   * preferences leave the server. */
 private[application] final class ConsentProjector(
     presentation: GamePresentationProjector,
-    decisions: WalkerDecisionProjector, powers: ConsentPowers):
+    decisions: WalkerDecisionProjector, rows: DecisionOptionRows,
+    powers: ConsentPowers):
   private val names = new ConsentNames(presentation, powers)
 
   def applied(context: ScopedProjectionContext, projection: GameProjection)
@@ -77,9 +78,10 @@ private[application] final class ConsentProjector(
       powers.source(power).collect { case PowerSourceRef.Card(card) =>
         card.value }))
 
-  /** The option asked about, named as its decision row names it. A button
-    * has no name of its own, so its label is read from the parked
-    * decision the request is about. */
+  /** The option asked about, named as its decision row names it
+    * ([[DecisionOptionRows]]). A button has no name of its own, so its
+    * label is read from the parked decision the request is about, which is
+    * the one thing this still needs the walker projector for. */
   private def target(context: ScopedProjectionContext,
       request: ConsentRequest): String =
     val ref = request.target
@@ -89,7 +91,7 @@ private[application] final class ConsentProjector(
         .filter(_.decisionId == request.decisionId)
         .flatMap(offered).find(_.ref == button)
       case _ => DecisionOption.forRef(ref)
-    option.flatMap(decisions.optionProjection(context.ready, context.viewer,
+    option.flatMap(rows.project(context.ready, context.viewer,
         context.ready.game.cardIndex.toOption, _))
       .fold(ref.wireId)(_.label)
 

@@ -31,9 +31,8 @@ class PresentationLabelsSuite extends munit.FunSuite:
       assertEquals(presentation.playerLabel(PlayerId(id)), id))
 
   test("a player option in a decision is labelled with the ID as typed"):
-    val projector = new WalkerDecisionProjector(catalog, presentation,
-      oathdigital.gameplay.walker.WalkerPowers(Vector.empty))
-    assertEquals(projector.optionProjection(board, None, None,
+    val rows = new DecisionOptionRows(catalog, presentation)
+    assertEquals(rows.project(board, None, None,
       DecisionOption.Player(DecisionOptionRef.Player(p1))).map(_.label),
       Some(p1.value))
 

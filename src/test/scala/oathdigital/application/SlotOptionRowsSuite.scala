@@ -7,6 +7,7 @@ import oathdigital.gameplay.powers.campaign.WrestlersCard
 import oathdigital.gameplay.powers.setup.GreatForgeCard
 import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
+import oathdigital.gameplay.powerresolver.PhasePowers
 import oathdigital.gameplay.walker.WalkerPowers
 import oathdigital.model._
 import oathdigital.protocol.projection.{CardDetailsProjection, DecisionOptionProjection, DecisionQueryProjection}
@@ -19,8 +20,12 @@ import oathdigital.testkit.Unwrap.present
   */
 class SlotOptionRowsSuite extends munit.FunSuite:
   private val presentation = new GamePresentationProjector(catalog)
+  private val rows = new DecisionOptionRows(catalog, presentation)
+  /** The walker projector words a card play's confirm button over the
+    * rows (`replacing`); it is built over the same rows the tests read. */
   private val projector = new WalkerDecisionProjector(catalog, presentation,
-    WalkerPowers(Vector.empty))
+    WalkerPowers(Vector.empty), WalkerDecisionProjector.declaredTree,
+    PhasePowers.empty, rows)
   /** Cradle, room for three, no Homeland. */
   private val home = AncientCitySite.id
   private val wrestlers = WrestlersCard.id
@@ -34,7 +39,7 @@ class SlotOptionRowsSuite extends munit.FunSuite:
 
   private def rowOf(option: DecisionOption, viewer: PlayerId = p1)(
       using munit.Location): DecisionOptionProjection =
-    present(projector.optionProjection(board, Some(viewer),
+    present(rows.project(board, Some(viewer),
       CardIndex.from(board.game).toOption, option), "a projected row")
 
   private def site: String = presentation.siteLabel(home)
@@ -58,7 +63,7 @@ class SlotOptionRowsSuite extends munit.FunSuite:
       (Some(wrestlers.value), true))
 
   test("a site slot past the site's capacity is not presentable"):
-    assertEquals(projector.optionProjection(board, Some(p1), None,
+    assertEquals(rows.project(board, Some(p1), None,
       DecisionOption.SiteSlot(DecisionOptionRef.SiteSlot(home, 3))), None)
 
   private val horn = CrackedHornCard.id
@@ -73,10 +78,10 @@ class SlotOptionRowsSuite extends munit.FunSuite:
     val option = DecisionOption.SiteRelicSlot(
       DecisionOptionRef.SiteRelicSlot(peaks, 0))
     val index = CardIndex.from(relicBoard.game).toOption
-    val near = present(projector.optionProjection(relicBoard, Some(p2),
+    val near = present(rows.project(relicBoard, Some(p2),
       index, option), "p2's row")
     assertEquals(near.card.map(_.cardId), Some(horn.value))
-    val far = present(projector.optionProjection(relicBoard, Some(p1),
+    val far = present(rows.project(relicBoard, Some(p1),
       index, option), "p1's row")
     assert(far.card.exists(_.hidden), far.toString)
     assertEquals(far.label,
@@ -84,7 +89,7 @@ class SlotOptionRowsSuite extends munit.FunSuite:
     assert(!far.label.contains("Horn"), far.label)
 
   test("a site relic slot past the site's relics is not presentable"):
-    assertEquals(projector.optionProjection(relicBoard, Some(p1), None,
+    assertEquals(rows.project(relicBoard, Some(p1), None,
       DecisionOption.SiteRelicSlot(DecisionOptionRef.SiteRelicSlot(peaks,
         1))), None)
 
@@ -160,7 +165,7 @@ class SlotOptionRowsSuite extends munit.FunSuite:
     val forge = GreatForgeCard.id
     val withEdifice = Table.start.edifice(forge, EdificeSide.Ruined, at = home)
       .ready
-    val row = present(projector.optionProjection(withEdifice, Some(p1),
+    val row = present(rows.project(withEdifice, Some(p1),
       CardIndex.from(withEdifice.game).toOption, DecisionOption.Replacing(
         DecisionOption.SiteSlot(DecisionOptionRef.SiteSlot(home, 0)), forge)),
       "a projected row")

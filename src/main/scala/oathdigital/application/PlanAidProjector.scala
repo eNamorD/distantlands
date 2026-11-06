@@ -11,16 +11,17 @@ import oathdigital.protocol.projection.{PlanAidOfferProjection,
   * panel"). Offerable plans are the user's own options the ally lends,
   * which the window already lists, available or awaiting the offer, and
   * each is shown available to the ally, who can offer it; requirements are
-  * what the ally meets now. */
+  * what the ally meets now. Each row is worded by [[DecisionOptionRows]],
+  * the same module the parked window's own rows come from. */
 private[application] final class PlanAidProjector(rules: OathRules,
-    decisions: WalkerDecisionProjector):
+    rows: DecisionOptionRows):
   def prompt(context: ScopedProjectionContext)
       : Option[PlanAidPromptProjection] =
     val ready = context.ready
     val state = OathState.Ready(ready)
     val index = ready.game.cardIndex.toOption
     def row(option: DecisionOption) =
-      decisions.optionProjection(ready, context.viewer, index, option)
+      rows.project(ready, context.viewer, index, option)
     for
       ally <- context.viewer
       (window, plans, requirements) <- rules.planAidOfferable(state, ally)

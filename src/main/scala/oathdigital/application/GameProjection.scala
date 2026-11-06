@@ -18,16 +18,20 @@ final class GameProjector(catalog: ExecutableCatalog, phasePowers: PhasePowers,
     this(catalog, PhasePowerCatalog.default)
 
   private val presentation = new GamePresentationProjector(catalog)
+  // One row module for the three projectors that label an option, so a
+  // row is worded once.
+  private val rows = new DecisionOptionRows(catalog, presentation,
+    ConsentPowers.default)
   private val walkerDecisions = new WalkerDecisionProjector(catalog,
     presentation, WalkerPowerCatalog.default(catalog),
-    WalkerDecisionProjector.declaredTree, phasePowers)
+    WalkerDecisionProjector.declaredTree, phasePowers, rows)
   private val pendingProjector =
     new PendingProjector(presentation, walkerDecisions)
   private val consent = new ConsentProjector(presentation, walkerDecisions,
-    ConsentPowers.default)
+    rows, ConsentPowers.default)
   private val aid = new PlanAidProjector(new OathRules(catalog,
     walkerPowerCatalog = WalkerPowerCatalog.default(catalog),
-    phasePowerCatalog = phasePowers), walkerDecisions)
+    phasePowerCatalog = phasePowers), rows)
 
   private val logs = new gamelog.GameLogProjector(catalog, presentation)
 
