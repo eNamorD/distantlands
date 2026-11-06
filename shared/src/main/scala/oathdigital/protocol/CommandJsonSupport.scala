@@ -1,10 +1,13 @@
 package oathdigital.protocol
 
+/** Command-side JSON primitives. `obj`, `field` and `array` are the
+  * projection codecs' primitives; `exact` and `string` differ on purpose:
+  * `exact` classes an unexpected actor field as [[ProtocolDecodeFailure.ActorInjection]]
+  * and `string` rejects blank text.
+  */
 private[protocol] object CommandJsonSupport:
   import ProtocolDecodeFailure._
-
-  def obj(value: ujson.Value, path: String): Either[ProtocolDecodeFailure, ujson.Obj] =
-    value match { case value: ujson.Obj => Right(value); case _ => Left(ExpectedObject(path)) }
+  export projection.ProjectionCodecSupport.{obj, field, array}
 
   def exact(value: ujson.Obj, fields: Set[String], path: String)
       : Either[ProtocolDecodeFailure, Unit] =
@@ -13,10 +16,6 @@ private[protocol] object CommandJsonSupport:
         Left(ActorInjection(s"$path.$name"))
       else Left(UnexpectedField(s"$path.$name"))
     }.getOrElse(Right(()))
-
-  def field(value: ujson.Obj, name: String, path: String)
-      : Either[ProtocolDecodeFailure, ujson.Value] =
-    value.value.get(name).toRight(MissingField(s"$path.$name"))
 
   def string(value: ujson.Obj, name: String, path: String)
       : Either[ProtocolDecodeFailure, String] = field(value, name, path).flatMap:
@@ -31,9 +30,6 @@ private[protocol] object CommandJsonSupport:
 
   def boolean(value: ujson.Value, path: String): Either[ProtocolDecodeFailure, Boolean] =
     value match { case ujson.Bool(v) => Right(v); case _ => Left(InvalidValue(path, "expected boolean")) }
-
-  def array(value: ujson.Value, path: String): Either[ProtocolDecodeFailure, Vector[ujson.Value]] =
-    value match { case a: ujson.Arr => Right(a.value.toVector); case _ => Left(InvalidValue(path, "expected array")) }
 
   def strings(value: ujson.Value, path: String): Either[ProtocolDecodeFailure, Vector[String]] =
     array(value, path).flatMap(values => traverse(values.zipWithIndex) {
