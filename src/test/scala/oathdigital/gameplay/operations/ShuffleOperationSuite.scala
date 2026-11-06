@@ -113,3 +113,21 @@ class ShuffleOperationSuite extends munit.FunSuite:
     val done = accepted(executor.execute(stocked,
       Shuffle(ShufflePile.Reliquary, Some(three.reverse))))
     assertEquals(done.game.campaign.reliquary, three.reverse)
+
+  /** The quiet table with exactly Fae Merchant, Second Chance and
+    * Threatening Roar in the Dispossessed, in that order. */
+  private val threeDispossessed = Table.start.dispossessed(FaeMerchantCard,
+    SecondChanceCard, ThreateningRoarCard).ready
+
+  test("a shuffle writes the Dispossessed's new order"):
+    val three = threeDispossessed.game.campaign.dispossessed
+    val done = accepted(executor.execute(threeDispossessed,
+      Shuffle(ShufflePile.Dispossessed, Some(three.reverse))))
+    assertEquals(done.game.campaign.dispossessed, three.reverse)
+
+  test("an order that drops a Dispossessed card is refused"):
+    val three = threeDispossessed.game.campaign.dispossessed
+    assertEquals(executor.execute(threeDispossessed,
+      Shuffle(ShufflePile.Dispossessed, Some(three.tail))).left.toOption,
+      Some(OperationError.InvalidDescription(
+        "a shuffle of the Dispossessed must hold exactly its cards")))

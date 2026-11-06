@@ -10,11 +10,12 @@ import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite, DunesSite, FairIsleSite}
 import oathdigital.gameplay.phases.rest.FinishRestProcedure
 import oathdigital.gameplay.powers.action.{AlchemistCard, BrassHorseCard,
-  DowsingSticksCard, EldersCard, WolvesCard}
+  DowsingSticksCard, EldersCard, ScryerCard, WolvesCard}
 import oathdigital.gameplay.powers.campaign.StickyFireCard
 import oathdigital.gameplay.powers.search.ForcedLaborCard
 import oathdigital.gameplay.powers.targeting.CircletOfCommandCard
-import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
+import oathdigital.gameplay.powers.whenplayed.{DazzleCard,
+  ThreateningRoarCard}
 import oathdigital.gameplay.setup.{FirstGameSetupFixture, GameStartRules}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
@@ -392,3 +393,13 @@ class TableSuite extends munit.FunSuite:
     // The quiet table deals no denizen to a site or a player.
     intercept[munit.FailException](
       Look(Table.start.ready).tokensOn(AlchemistCard))
+
+  test("dispossessed holds exactly the named cards, and moves the cards it " +
+      "held to the bottom of the world deck"):
+    val before = Table.start.ready.game.campaign.dispossessed
+    val named = Vector[WorldCardId](DazzleCard.id, ScryerCard.id)
+    val ready = Table.start.dispossessed(DazzleCard, ScryerCard).ready
+    assertEquals(ready.game.campaign.dispossessed, named)
+    val earlier = before.filterNot(named.contains)
+    assertEquals(ready.game.current.commonCards.worldDeck
+      .takeRight(earlier.size), earlier)

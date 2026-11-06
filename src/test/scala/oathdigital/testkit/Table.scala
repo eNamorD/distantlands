@@ -142,6 +142,16 @@ final case class Table private (private val game: ReadyGame,
       commonCards = c.commonCards.copy(worldDeck =
         c.commonCards.worldDeck ++ ids))))
 
+  /** The Dispossessed holds exactly `cards`, first named at its head: the
+    * card a draw takes first when the shuffle keeps the order. Any card it
+    * held before goes to the bottom of the world deck, so the inventory
+    * stays whole. */
+  def dispossessed(cards: WorldCardRef*): Table =
+    val ids = cards.toVector.map(CardRefs.worldCardId)
+    val earlier = game.game.campaign.dispossessed.filterNot(ids.contains)
+    ids.foldLeft(worldDeckBottom(earlier*))(_.moving(_)).update(
+      _.updateCampaign(_.copy(dispossessed = ids)))
+
   /** These relics on top of the relic deck, first named on top. */
   def relicDeckTop(cards: RelicRef*): Table =
     val ids = cards.toVector.map(CardRefs.relicId)

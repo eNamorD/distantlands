@@ -453,6 +453,7 @@ class WalkerOperationWireSuite extends munit.FunSuite:
         Some(Vector(RelicId("R1")))),
       Shuffle(ShufflePile.ChronicleGathering, Some(Vector(denizen))),
       Shuffle(ShufflePile.Reliquary),
+      Shuffle(ShufflePile.Dispossessed, Some(Vector(denizen))),
       Shuffle(ShufflePile.SuitedReserve(Suit.Beast),
         Some(Vector(FaeMerchantCard.id))),
       SetOathkeeper(Some(PlayerId("red"))),

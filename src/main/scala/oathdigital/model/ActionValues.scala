@@ -75,7 +75,8 @@ object SearchPlacement:
 
 /** A pile the walker can shuffle with a recorded order: a pile Search draws
   * from, the edifice deck (Build Edifice draws a random edifice per suit),
-  * or the set-aside relics (Scatter Relics deals them out). */
+  * the set-aside relics (Scatter Relics deals them out), or a campaign pile:
+  * a suited reserve, the Reliquary or the Dispossessed. */
 sealed trait ShufflePile extends Product with Serializable
 object ShufflePile:
   final case class Search(source: SearchSource) extends ShufflePile
@@ -86,6 +87,9 @@ object ShufflePile:
   /** The Reliquary, for a random relic (Bewitch, Ancient Pact, Royal
     * Ambitions). */
   case object Reliquary extends ShufflePile
+  /** The Dispossessed, for the random cards of Great Spire, Fallen Spire
+    * and Pilgrimage (catalog batch 10, slice 6). */
+  case object Dispossessed extends ShufflePile
 
   /** The pile's cards in stored order. */
   def cards(pile: ShufflePile, game: OathGame): Vector[CardId] =
@@ -97,6 +101,7 @@ object ShufflePile:
       case SuitedReserve(suit) =>
         game.campaign.suitedReserves.getOrElse(suit, Vector.empty)
       case Reliquary => game.campaign.reliquary
+      case Dispossessed => game.campaign.dispossessed
 
   /** How a failure names the pile. */
   def name(pile: ShufflePile): String = pile match
@@ -106,3 +111,4 @@ object ShufflePile:
     case ChronicleGathering => "gathered denizens"
     case SuitedReserve(suit) => s"${suit.key} reserve"
     case Reliquary => "Reliquary"
+    case Dispossessed => "Dispossessed"
