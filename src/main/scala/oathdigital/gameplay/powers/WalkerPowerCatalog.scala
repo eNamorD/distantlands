@@ -62,48 +62,24 @@ object WalkerPowerCatalog:
     * `WalkerPowers` carries, so it is taken separately from `default`: a
     * union built from `default` would build a union to build a union. */
   private[powers] val contributing: Vector[ContributingPower] =
-    Vector(CatacombsContribution) ++
-      Vector(RelicPatrols, BanditPatrols) ++
-      Vector(VowOfPeaceContribution) ++
-      Vector(VowOfSilence, VowOfDivision) ++
-      Vector(BrassArmyMoves) ++
-      Vector(SecretTestament) ++
-      Vector(YewStaff) ++
-      Vector(SpellBreaker) ++
-      Vector(ForestCouncil) ++
-      Vector(CityWall) ++
-      Vector(NonPersistentPowerRestriction.giantPython,
-        NonPersistentPowerRestriction.banditForest) ++
-      Vector(CouncilSeat) ++
-      Vector(HiddenPassages) ++
-      Vector(TempleOfAncestors) ++
+    Vector(CatacombsContribution, RelicPatrols, BanditPatrols,
+      VowOfPeaceContribution, VowOfSilence, VowOfDivision, BrassArmyMoves,
+      SecretTestament, YewStaff, SpellBreaker, ForestCouncil, CityWall,
+      NonPersistentPowerRestriction.giantPython,
+      NonPersistentPowerRestriction.banditForest, CouncilSeat,
+      HiddenPassages, TempleOfAncestors) ++
       TravelSitePowers.all ++
-      Vector(GrandCanal, LostLagoon) ++
-      Vector(BoilingLakeTravel, ForbiddenForest) ++
-      Vector(HallowedSpring) ++
+      Vector(GrandCanal, LostLagoon, BoilingLakeTravel, ForbiddenForest,
+        HallowedSpring) ++
       TravelModifiers.all ++
-      Vector(LeagueTreatyContribution) ++
-      Vector(SilverTongue) ++
-      Vector(Insomnia) ++
-      Vector(Assassin) ++
-      Vector(LostTapestry) ++
-      Vector(PiedPiper) ++
-      Vector(FamilyWagon) ++
-      Vector(VowOfUnionAdvisers) ++
-      Vector(ASmallFavor) ++
-      Vector(FaithfulFriend) ++
-      Vector(Garrison) ++
-      Vector(FamilyHeirloom) ++
-      Vector(ShiftingFog) ++
-      Vector(TwinBrother) ++
+      Vector(LeagueTreatyContribution, SilverTongue, Insomnia, Assassin,
+        LostTapestry, PiedPiper, FamilyWagon, VowOfUnionAdvisers, ASmallFavor,
+        FaithfulFriend, Garrison, FamilyHeirloom, ShiftingFog, TwinBrother) ++
       WhenPlayedPowers.all ++
       Vector(ChaosCult) ++
       ActionModifiers.all ++
       TargetProtections.all ++
-      Vector(KnightsErrant) ++
-      Vector(Marriage) ++
-      Vector(PledgeToDiscord) ++
-      Vector(Jinx) ++
+      Vector(KnightsErrant, Marriage, PledgeToDiscord, Jinx) ++
       BattlePlans.all ++
       PlanRules.all ++
       SimplePlans.all ++
@@ -111,12 +87,9 @@ object WalkerPowerCatalog:
       PlanRewrites.all ++
       CardPlayTriggers.all ++
       BannerFacePowers.contributions ++
-      Vector(Dazzle, GreatMarket,
-        BanditMarket, GreatForge,
-        BrokenForge, ProvingGrounds,
-        EmptyGrounds, HallOfMockery, LostGuardians,
-        RuinedSchool, BrokenHorn, BrokenClock, FallenSpire,
-        TakeWealthLimit,
+      Vector(Dazzle, GreatMarket, BanditMarket, GreatForge, BrokenForge,
+        ProvingGrounds, EmptyGrounds, HallOfMockery, LostGuardians,
+        RuinedSchool, BrokenHorn, BrokenClock, FallenSpire, TakeWealthLimit,
         ConspiracyWhenPlayed)
 
   /** The power-use restrictions the walker powers declare, for the phase
