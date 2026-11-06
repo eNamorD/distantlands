@@ -95,6 +95,32 @@ class WalkerOperationWireSuite extends munit.FunSuite:
     val encoded = accepted(GameEventWire.encodeEvent("walker", 0, event))
     assertEquals(GameEventWire.decode(encoded).map(_.event), Right(event))
 
+  test("a discard's pile position round trips, and a discard that names " +
+      "none, or names neither end, is refused"):
+    val inHand = PositionedLocation(Location.Hand(Table.p1))
+    Vector[CoreOperation](
+      Discard.Denizen(DenizenId("D1"), inHand, Region.Hinterland,
+        Suit.Beast, 0, 0, Table.p1, position = StackPosition.Bottom),
+      Discard.Vision(VisionId("vision:v1"), inHand, Region.Cradle,
+        position = StackPosition.Bottom)
+    ).foreach { discard =>
+      val encoded = encodedStream("walker", Vector(recordedOperation(discard)))
+      def withPosition(edit: ujson.Value => Unit): String =
+        val stream = ujson.read(encoded).arr
+        edit(stream(0)("payload")("step")("ops")(0))
+        ujson.write(stream)
+      assertEquals(accepted(GameEventWire.decodeStream(encoded))
+        .map(_.event), Vector(recordedOperation(discard)))
+      assertEquals(GameEventWire.decodeStream(withPosition(
+        _.obj.remove("position"))), Left(WireError.InvalidValue(
+          "$[0].payload.step.ops[0].position",
+          "a discard names the top or the bottom of its pile")))
+      assertEquals(GameEventWire.decodeStream(withPosition(
+        _("position") = "unspecified")), Left(WireError.InvalidValue(
+          "$[0].payload.step.ops[0].position",
+          "a discard goes to the top or the bottom of its pile")))
+    }
+
   test("a replace names its performer on the wire, and one nobody " +
       "performs writes none (R20)"):
     val replace = Replace(Piece.Warbands(ForceKind.Bandit, 1),

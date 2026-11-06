@@ -128,27 +128,36 @@ object Discard:
     * unless the discard is `actorless`: an effect no player performs, as
     * Empty Grounds'. Its secrets still go to `actingPlayer`, the active
     * player, since secrets reach a card only on a player's turn.
+    * `position` is the end of the pile it goes to: the top, unless a power
+    * says otherwise (Bracken, catalog batch 10, slice 9).
     */
   final case class Denizen(card: DenizenId, from: PositionedLocation,
       to: Region, suit: Suit, favor: Int,
       secrets: Int, actingPlayer: PlayerId,
-      override val required: Boolean = false, actorless: Boolean = false)
+      override val required: Boolean = false, actorless: Boolean = false,
+      position: StackPosition = StackPosition.Top)
       extends Discard:
     require(favor >= 0, "discarded favor must be non-negative")
     require(secrets >= 0, "discarded secrets must be non-negative")
+    require(position != StackPosition.Unspecified,
+      "a discard goes to the top or the bottom of its pile")
 
     /** The player who discards it, if any. */
     def by: Option[PlayerId] = Option.unless(actorless)(actingPlayer)
 
     override val children: Vector[Operation] =
-      discardWorld(card, from, to, by) ++
+      discardWorld(card, from, to, by, position) ++
         returnedResources(card, suit, favor, secrets, actingPlayer)
 
-  /** Visions carry no resources but otherwise use world-card discard rules. */
+  /** Visions carry no resources but otherwise use world-card discard rules,
+    * `position` included. */
   final case class Vision(card: VisionId, from: PositionedLocation,
-      to: Region, override val required: Boolean = false) extends Discard:
+      to: Region, override val required: Boolean = false,
+      position: StackPosition = StackPosition.Top) extends Discard:
+    require(position != StackPosition.Unspecified,
+      "a discard goes to the top or the bottom of its pile")
     override val children: Vector[Operation] =
-      discardWorld(card, from, to, None)
+      discardWorld(card, from, to, None, position)
 
   /** Only a ruined edifice can be discarded; intact edifices are locked.
     * `actingPlayer` and `actorless` are as for `Denizen`. A discarded
@@ -181,11 +190,11 @@ object Discard:
       returnedSecrets(card, secrets, actingPlayer)
 
   private def discardWorld(card: WorldCardId, from: PositionedLocation,
-      destination: Region, by: Option[PlayerId]): Vector[Operation] =
+      destination: Region, by: Option[PlayerId],
+      position: StackPosition): Vector[Operation] =
     Vector(Move(Piece.Card(card), from,
-      PositionedLocation(Location.RegionalDiscard(destination),
-        StackPosition.Top), resultingOrientation = Some(Orientation.FaceDown),
-      by = by))
+      PositionedLocation(Location.RegionalDiscard(destination), position),
+      resultingOrientation = Some(Orientation.FaceDown), by = by))
 
   // The suit fallback is never reached with a positive favor: positiveMove
   // returns empty for zero and Bury.standard requires the suit.

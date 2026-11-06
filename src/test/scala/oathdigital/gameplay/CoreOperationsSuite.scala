@@ -152,6 +152,31 @@ class CoreOperationsSuite extends munit.FunSuite:
       red, source, destination, StackPosition.Top)))
     assertEquals(Operation.flatten(draw), draw.takes.flatMap(Operation.flatten))
 
+  test("a discard goes to the top of its pile unless it names the bottom"):
+    val inHand = PositionedLocation(Location.Hand(red))
+    def pileMove(discard: Discard): Option[PositionedLocation] =
+      discard.children.collectFirst {
+        case Move(Piece.Card(_), _, to @ PositionedLocation(
+            Location.RegionalDiscard(_), _, _), _, _) => to
+      }
+    val card = DenizenId("denizen:discarded")
+    val vision = VisionId("vision:discarded")
+    assertEquals(pileMove(Discard.Denizen(card, inHand, Region.Hinterland,
+      Suit.Beast, 0, 0, red)), Some(PositionedLocation(
+      Location.RegionalDiscard(Region.Hinterland), StackPosition.Top)))
+    assertEquals(pileMove(Discard.Denizen(card, inHand, Region.Hinterland,
+      Suit.Beast, 0, 0, red, position = StackPosition.Bottom)),
+      Some(PositionedLocation(Location.RegionalDiscard(Region.Hinterland),
+        StackPosition.Bottom)))
+    assertEquals(pileMove(Discard.Vision(vision, inHand, Region.Cradle,
+      position = StackPosition.Bottom)), Some(PositionedLocation(
+      Location.RegionalDiscard(Region.Cradle), StackPosition.Bottom)))
+    intercept[IllegalArgumentException](Discard.Vision(vision, inHand,
+      Region.Cradle, position = StackPosition.Unspecified))
+    intercept[IllegalArgumentException](Discard.Denizen(card, inHand,
+      Region.Cradle, Suit.Beast, 0, 0, red,
+      position = StackPosition.Unspecified))
+
   test("every glossary composite retains its semantic root and primitive order"):
     val card = DenizenId("denizen:root")
     val relic = RelicId("relic:root")

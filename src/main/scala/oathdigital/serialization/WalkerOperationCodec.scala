@@ -88,15 +88,17 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
         "card" -> encodeBuryableCard(bury.card),
         "from" -> encodePositionedLocation(bury.from))
       case Discard.Denizen(card, from, to, suit, favor, secrets, actingPlayer,
-          _, actorless) =>
+          _, actorless, position) =>
         withActorless(ujson.Obj("kind" -> "discard-denizen",
           "card" -> card.value,
           "from" -> encodePositionedLocation(from), "to" -> to.key,
+          "position" -> encodeStackPosition(position),
           "suit" -> suit.key, "favor" -> favor, "secrets" -> secrets,
           "actingPlayerId" -> actingPlayer.value), actorless)
-      case Discard.Vision(card, from, to, _) => ujson.Obj(
+      case Discard.Vision(card, from, to, _, position) => ujson.Obj(
         "kind" -> "discard-vision", "card" -> card.value,
-        "from" -> encodePositionedLocation(from), "to" -> to.key)
+        "from" -> encodePositionedLocation(from), "to" -> to.key,
+        "position" -> encodeStackPosition(position))
       case Discard.RuinedEdifice(card, from, suit, favor, secrets,
           actingPlayer, _, actorless) =>
         withActorless(ujson.Obj("kind" -> "discard-ruined-edifice",
@@ -156,6 +158,18 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
   /** Whether a discard says nobody performs it. */
   private def decodeActorless(value: ujson.Value): Boolean =
     value.obj.get("actorless").exists(_.bool)
+
+  /** A discard's end of its pile. Required: a journal written before the
+    * field existed need not decode. */
+  private def discardPosition(value: ujson.Value, path: String)
+      : Either[WireError, StackPosition] = for
+    found <- value.obj.get("position").toRight(InvalidValue(
+      s"$path.position", "a discard names the top or the bottom of its pile"))
+    position <- decodeStackPosition(found.str, s"$path.position")
+    _ <- Either.cond(position != StackPosition.Unspecified, (),
+      InvalidValue(s"$path.position",
+        "a discard goes to the top or the bottom of its pile"))
+  yield position
 
   /** The mover a move or swap names, if any. */
   private def decodeMover(value: ujson.Value): Option[PlayerId] =
@@ -343,16 +357,19 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
     case "discard-denizen" => for
       from <- decodePositionedLocation(value("from"), s"$path.from")
       to <- decodeRegion(value("to").str, s"$path.to")
+      position <- discardPosition(value, path)
       suit <- decodeSuit(value("suit").str, s"$path.suit")
       favor <- safeIntField(value.obj, "favor", path)
       secrets <- safeIntField(value.obj, "secrets", path)
     yield Discard.Denizen(DenizenId(value("card").str), from, to, suit,
       favor, secrets, PlayerId(value("actingPlayerId").str),
-      actorless = decodeActorless(value))
+      actorless = decodeActorless(value), position = position)
     case "discard-vision" => for
       from <- decodePositionedLocation(value("from"), s"$path.from")
       to <- decodeRegion(value("to").str, s"$path.to")
-    yield Discard.Vision(VisionId(value("card").str), from, to)
+      position <- discardPosition(value, path)
+    yield Discard.Vision(VisionId(value("card").str), from, to,
+      position = position)
     case "discard-ruined-edifice" => for
       from <- decodePositionedLocation(value("from"), s"$path.from")
       suit <- decodeSuit(value("suit").str, s"$path.suit")
