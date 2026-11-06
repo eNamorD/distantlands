@@ -59,7 +59,7 @@ case object BearTraps extends BattlePlan:
           PositionedLocation(Location.PlayArea(setup.actor))))))
 
   private def warbands(ready: ReadyGame, player: PlayerId): Int =
-    ready.game.current.players.find(_.player == player)
+    ready.game.current.player(player)
       .fold(0)(_.board.warbands)
 
   /** The line, when the step before killed `attacker`'s warbands. */

@@ -102,7 +102,7 @@ case object WardOfSilence extends PaidAction(WardOfSilenceCard.power):
 
   /** The most X can be: the smaller of the two faceup counts. */
   private def most(ready: ReadyGame, actor: PlayerId, target: PlayerState)
-      : Int = ready.game.current.players.find(_.player == actor)
+      : Int = ready.game.current.player(actor)
     .fold(0)(user => math.min(faceUp(user), faceUp(target)))
 
   private def askAmount(ready: ReadyGame, actor: PlayerId,

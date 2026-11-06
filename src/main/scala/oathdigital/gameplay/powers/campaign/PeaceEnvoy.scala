@@ -166,7 +166,7 @@ case object PeaceEnvoy extends BattlePlan:
       : Option[SiteId] = CampaignSetup.originOf(ready, player)
 
   private def favor(ready: ReadyGame, player: PlayerId): Int =
-    ready.game.current.players.find(_.player == player).fold(0)(_.board.favor)
+    ready.game.current.player(player).fold(0)(_.board.favor)
 
   /** One favor per die in the defense pool, from `user` to `enemy`, given
     * first by an Imperial user's allies from what they offered (Imperial

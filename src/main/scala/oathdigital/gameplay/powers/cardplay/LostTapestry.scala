@@ -45,7 +45,7 @@ case object LostTapestry extends ContributingPower:
 
   /** Whether `player` has Lost Tapestry faceup. */
   def holds(ready: ReadyGame, player: PlayerId): Boolean =
-    ready.game.current.players.find(_.player == player)
+    ready.game.current.player(player)
       .exists(_.relics.exists {
         case RelicState(card, Orientation.FaceUp, _) =>
           card == LostTapestryCard.id
@@ -56,7 +56,7 @@ case object LostTapestry extends ContributingPower:
     * facedown Visions, while they have it faceup. */
   def ignored(ready: ReadyGame, player: PlayerId): Vector[AdviserFace] =
     if !holds(ready, player) then Vector.empty
-    else ready.game.current.players.find(_.player == player).toVector
+    else ready.game.current.player(player).toVector
       .flatMap(_.advisers.collect {
         case VisionState(vision, Orientation.FaceDown) =>
           AdviserFace(vision, Orientation.FaceDown)

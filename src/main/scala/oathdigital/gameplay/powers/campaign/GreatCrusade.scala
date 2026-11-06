@@ -40,8 +40,7 @@ case object GreatCrusade extends BattlePlan with DiscardedAtEnd:
   /** Whether `card` is an adviser of the plan's user, who has Pledge to
     * Discord faceup. */
   private def pledged(context: PlanContext, card: DenizenId): Boolean =
-    context.user.flatMap(user => context.ready.game.current.players
-      .find(_.player == user)).exists(player =>
+    context.user.flatMap(context.ready.game.current.player).exists(player =>
       player.advisers.exists(_.id == card) && player.advisers.exists {
         case DenizenState(held, Orientation.FaceUp, _) =>
           held == PledgeToDiscordCard.id

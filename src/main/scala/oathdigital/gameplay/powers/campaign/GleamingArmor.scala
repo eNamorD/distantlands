@@ -42,7 +42,7 @@ case object GleamingArmor extends PlanSurcharge:
   // title's plan is checked here rather than left to a best-effort flip.
   override protected def onTitle(ready: ReadyGame, user: PlayerId)
       : Either[OathViolation, Vector[CoreOperation]] =
-    val faceUp = ready.game.current.players.find(_.player == user)
+    val faceUp = ready.game.current.player(user)
       .fold(0)(_.board.faceUpSecrets)
     if faceUp >= GleamingArmor.Secret then Right(Vector[CoreOperation](
       FlipSecrets(user, GleamingArmor.Secret, SecretSide.FaceUp,

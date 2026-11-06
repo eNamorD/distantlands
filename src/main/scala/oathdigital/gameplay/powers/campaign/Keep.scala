@@ -75,7 +75,7 @@ case object KeepRule extends ContributingPower:
     * line. The line covers the move it restates. */
   private def placed(defender: PlayerId, site: SiteId): Operation =
     Branch((ready, _) => {
-      val from = ready.game.current.players.find(_.player == defender)
+      val from = ready.game.current.player(defender)
         .flatMap(_.pawnSite).filter(_ != site)
       from.fold(Vector[Operation](line(defender, site, covers = false)))(
         origin => Vector[Operation](

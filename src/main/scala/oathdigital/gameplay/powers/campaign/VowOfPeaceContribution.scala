@@ -59,7 +59,7 @@ case object VowOfPeaceContribution extends ContributingPower:
     case None => children
 
   private def holds(ready: ReadyGame, player: PlayerId): Boolean =
-    ready.game.current.players.find(_.player == player).exists(_.advisers.exists {
+    ready.game.current.player(player).exists(_.advisers.exists {
       case card: DenizenState =>
         card.id == cardId && card.orientation == Orientation.FaceUp
       case _ => false

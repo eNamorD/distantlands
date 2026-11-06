@@ -84,7 +84,7 @@ case object PiedPiper extends PaidAction(PiedPiperCard.power)
 
   private def advisers(ready: ReadyGame, player: PlayerId)
       : Vector[AdviserState] =
-    ready.game.current.players.find(_.player == player).toVector
+    ready.game.current.player(player).toVector
       .flatMap(_.advisers)
 
   private def holds(ready: ReadyGame, player: PlayerId): Boolean =

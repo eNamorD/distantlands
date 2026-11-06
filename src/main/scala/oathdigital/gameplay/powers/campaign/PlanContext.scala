@@ -39,10 +39,8 @@ final case class PlanContext(catalog: ExecutableCatalog, ready: ReadyGame,
   def rules(site: SiteId): Boolean =
     CampaignSetup.defenderAt(ready, site).contains(ruler)
 
-  private def playerState(id: PlayerId): Option[PlayerState] =
-    ready.game.current.players.find(_.player == id)
-
-  private def held: Option[PlayerState] = user.flatMap(playerState)
+  private def held: Option[PlayerState] =
+    user.flatMap(ready.game.current.player)
 
   private def sitesRuled: Vector[(SiteId, SiteState)] =
     sitesOf(ruler)
@@ -123,7 +121,7 @@ final case class PlanContext(catalog: ExecutableCatalog, ready: ReadyGame,
       case (site, state) if faceUpAt(state, id) =>
         CampaignPlanSource.SiteCard(site, id): CampaignPlanSource
     }).orElse(lenders.filter(lends(_, ref)).iterator.flatMap { ally =>
-      playerState(ally).flatMap(_.advisers.collectFirst {
+      ready.game.current.player(ally).flatMap(_.advisers.collectFirst {
         case DenizenState(`id`, Orientation.FaceUp, _) =>
           CampaignPlanSource.Adviser(ally, id): CampaignPlanSource
       }).orElse(sitesOf(CampaignDefender.Player(ally)).collectFirst {
@@ -142,7 +140,8 @@ final case class PlanContext(catalog: ExecutableCatalog, ready: ReadyGame,
     }
     held.flatMap(faceUp).orElse(lenders
       .filter(lends(_, DecisionOptionRef.Relic(id)))
-      .iterator.flatMap(ally => playerState(ally).flatMap(faceUp))
+      .iterator.flatMap(ally => ready.game.current.player(ally)
+        .flatMap(faceUp))
       .nextOption())
 
   /** An edifice on the given face at a site the user rules, else at a site
@@ -180,7 +179,7 @@ final case class PlanContext(catalog: ExecutableCatalog, ready: ReadyGame,
 
   private def enemyPlayer: Option[PlayerState] = enemy match
     case CampaignDefender.Player(player) =>
-      ready.game.current.players.find(_.player == player)
+      ready.game.current.player(player)
     case CampaignDefender.Bandits => None
 
   /** Whether the enemy has a faceup adviser of `suit`, as the rules see it

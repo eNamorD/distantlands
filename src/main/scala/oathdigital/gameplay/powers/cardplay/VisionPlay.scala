@@ -42,5 +42,5 @@ private[cardplay] object VisionPlay:
   private def held(ready: ReadyGame, player: PlayerId, card: VisionId): Boolean =
     val current = ready.game.current
     current.temporaryHands.getOrElse(player, Vector.empty).contains(card) ||
-      current.players.find(_.player == player).exists(
+      current.player(player).exists(
         _.advisers.contains(VisionState(card, Orientation.FaceDown)))

@@ -28,7 +28,7 @@ case object YewStaff extends ContributingPower
 
   def actsAsDarkestSecretHolder(ready: ReadyGame, player: PlayerId)
       : Boolean =
-    ready.game.current.players.find(_.player == player)
+    ready.game.current.player(player)
       .exists(_.relics.exists {
         case RelicState(card, Orientation.FaceUp, _) =>
           card == YewStaffCard.id

@@ -61,7 +61,7 @@ case object TrueNames extends ContributingPower:
   /** The suits of `holder`'s faceup advisers. */
   private def suits(catalog: ExecutableCatalog,
       ready: ReadyGame, holder: PlayerId): Set[Suit] =
-    ready.game.current.players.find(_.player == holder).toVector
+    ready.game.current.player(holder).toVector
       .flatMap(_.advisers.collect {
         case DenizenState(held, Orientation.FaceUp, _) =>
           EffectiveSuit.of(catalog, ready, held)

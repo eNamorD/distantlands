@@ -254,5 +254,5 @@ object SuitOnlyAdvisers:
 
   private[cardplay] def advisers(ready: ReadyGame, player: PlayerId)
       : Vector[AdviserState] =
-    ready.game.current.players.find(_.player == player).toVector
+    ready.game.current.player(player).toVector
       .flatMap(_.advisers)

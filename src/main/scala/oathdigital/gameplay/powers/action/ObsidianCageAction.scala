@@ -109,5 +109,5 @@ case object ObsidianCageAction extends PaidAction(ObsidianCageCard.action):
     else returned(card, NoteArg.Number(gained), NoteArg.Player(owner))
 
   private def boardOf(ready: ReadyGame, player: PlayerId): Int =
-    ready.game.current.players.find(_.player == player)
+    ready.game.current.player(player)
       .fold(0)(_.board.warbands)

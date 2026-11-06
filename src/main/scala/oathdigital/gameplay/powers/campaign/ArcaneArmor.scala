@@ -85,7 +85,7 @@ case object ArcaneArmor extends BattlePlan:
     else Right(1 -> math.min(secrets, pool(ready)))
 
   private def faceUpSecrets(ready: ReadyGame, user: PlayerId): Int =
-    ready.game.current.players.find(_.player == user)
+    ready.game.current.player(user)
       .fold(0)(_.board.faceUpSecrets)
 
   override def wrapping: Map[PowerWindow, BattlePlan.Wrap] = Map(

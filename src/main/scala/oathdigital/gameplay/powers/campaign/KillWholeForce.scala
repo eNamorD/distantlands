@@ -80,7 +80,7 @@ private[campaign] object KillWholeForce:
             Stack(Location.Site(origin.site), kind, count) }))
 
   private def board(ready: ReadyGame, player: PlayerId): Int =
-    ready.game.current.players.find(_.player == player)
+    ready.game.current.player(player)
       .fold(0)(_.board.warbands)
 
   private def onBoard(ready: ReadyGame, player: PlayerId, amount: Int)

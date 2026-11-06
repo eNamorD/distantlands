@@ -84,7 +84,7 @@ case object UndergroundLibrary
           (relic, index) => SiteRelic(site, index, relic.id))))
 
   def heldRelics(ready: ReadyGame, player: PlayerId): Vector[HeldRelic] =
-    ready.game.current.players.find(_.player == player).toVector
+    ready.game.current.player(player).toVector
       .flatMap(_.relics.zipWithIndex).map((relic, slot) =>
         HeldRelic(slot, relic))
 

@@ -39,7 +39,7 @@ case object MilitaryParade extends BattlePlan:
   /** `player`'s faceup advisers, a Marriage listed twice since it counts as
     * two (`EffectiveSuit.weight`). */
   private def advisers(ready: ReadyGame, player: PlayerId): Vector[CardId] =
-    ready.game.current.players.find(_.player == player).toVector
+    ready.game.current.player(player).toVector
       .flatMap(_.advisers.collect {
         case DenizenState(held, Orientation.FaceUp, _) => held })
       .flatMap(held => Vector.fill(EffectiveSuit.weight(held))(held))

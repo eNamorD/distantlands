@@ -44,7 +44,7 @@ case object WanderingFlamePlace extends PaidAction(
   yield placed(card, NoteArg.Player(player), NoteArg.Site(site))
 
   private def faceUpSecrets(ready: ReadyGame, player: PlayerId): Int =
-    ready.game.current.players.find(_.player == player)
+    ready.game.current.player(player)
       .fold(0)(_.board.faceUpSecrets)
 
   private def place(ready: ReadyGame, player: PlayerId)

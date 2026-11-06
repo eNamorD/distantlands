@@ -60,7 +60,7 @@ case object SqualidDistrict
 
   /** The user's facedown advisers, in adviser order. */
   def facedown(ready: ReadyGame, player: PlayerId): Vector[Facedown] =
-    ready.game.current.players.find(_.player == player).toVector
+    ready.game.current.player(player).toVector
       .flatMap(_.advisers.zipWithIndex).collect {
         case (DenizenState(card, Orientation.FaceDown, _), slot) =>
           Facedown(slot, card)

@@ -53,7 +53,7 @@ private[campaign] object SpiralSteps:
       NoteArg.Amount(lost, NoteUnit.Supply)), covers = true))
 
   private def supplyOf(ready: ReadyGame, player: PlayerId): Int =
-    ready.game.current.players.find(_.player == player)
+    ready.game.current.player(player)
       .fold(0)(_.board.supply.supply)
 
 /** Spiral Castle (E23, intact), an attacker's battle plan: "If you're

@@ -59,7 +59,7 @@ object PlanDiscard:
       printedSuit: Option[Suit])
       : Either[OathViolation, Vector[CoreOperation]] =
     val current = ready.game.current
-    val player = current.players.find(_.player == user)
+    val player = current.player(user)
     val pawnRegion = CampaignSetup.originOf(ready, user)
       .flatMap(current.map.regionOf)
     val asAdviser = player.toVector.flatMap(_.advisers.collect {

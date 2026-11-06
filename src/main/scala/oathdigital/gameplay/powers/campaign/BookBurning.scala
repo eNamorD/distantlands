@@ -44,7 +44,7 @@ case object BookBurning extends BattlePlan:
   /** Every secret on `defender`'s board but one ([[SecretBurns]]). */
   private def burn(ready: ReadyGame, defender: PlayerId, attacker: PlayerId)
       : Vector[CoreOperation] =
-    ready.game.current.players.find(_.player == defender).toVector
+    ready.game.current.player(defender).toVector
       .flatMap(SecretBurns.keeping(_, 1, attacker))
 
   def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)

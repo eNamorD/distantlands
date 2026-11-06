@@ -64,7 +64,7 @@ case object Glamor extends BattlePlan:
 
   /** Every secret on `player`'s board, faceup and facedown. */
   private def secretsOf(ready: ReadyGame, player: PlayerId): Int =
-    ready.game.current.players.find(_.player == player)
+    ready.game.current.player(player)
       .fold(0)(held => held.board.faceUpSecrets + held.board.faceDownSecrets)
 
   def plan(context: PlanContext): Option[CampaignPlanOffer] =
@@ -108,7 +108,7 @@ case object Glamor extends BattlePlan:
     * each keeping its side. */
   private def takes(ready: ReadyGame, attacker: PlayerId, defender: PlayerId,
       pending: PendingTree): Vector[CoreOperation] =
-    val board = ready.game.current.players.find(_.player == defender)
+    val board = ready.game.current.player(defender)
       .map(_.board)
     (for
       held <- board

@@ -68,9 +68,6 @@ final case class CampaignSetup(actor: PlayerId, kind: CampaignKind,
     raidTargets: Vector[CampaignRaidTarget], force: Int)
 
 object CampaignSetup:
-  private def playerOf(ready: ReadyGame, id: PlayerId): Option[PlayerState] =
-    ready.game.current.player(id)
-
   /** The `Run` entry a power queued for this Campaign's walk, while it
     * runs for `actor`. A menu Campaign has none. */
   private def queuedRun(ready: ReadyGame, actor: PlayerId)
@@ -102,14 +99,14 @@ object CampaignSetup:
     * The mandatory Conquest site, and where a Raid's defender must stand.
     * For any other player it is their pawn site. */
   def originOf(ready: ReadyGame, actor: PlayerId): Option[SiteId] =
-    queuedOrigin(ready, actor).orElse(playerOf(ready, actor)
+    queuedOrigin(ready, actor).orElse(ready.game.current.player(actor)
       .flatMap(_.pawnSite))
 
   /** The actor's warbands at a queued origin, which join the force. A
     * Campaign from the pawn site adds none. */
   def atOrigin(ready: ReadyGame, actor: PlayerId): Int = (for
     site <- queuedOrigin(ready, actor)
-    player <- playerOf(ready, actor)
+    player <- ready.game.current.player(actor)
     kind <- PlayerForceKind.of(ready, player)
     state <- ready.game.current.map.sites.get(site)
   yield state.forces.count(kind)).getOrElse(0)
@@ -122,7 +119,7 @@ object CampaignSetup:
       site <- queuedOrigin(ready, actor)
       atSite = atOrigin(ready, actor)
       if atSite > 0
-      player <- playerOf(ready, actor)
+      player <- ready.game.current.player(actor)
     yield OriginForce(site, atSite, player.board.warbands)
 
   /** Who defends `site` in a Campaign: its ruling player, the bandits, or
@@ -163,12 +160,12 @@ object CampaignSetup:
     * In Conquest order, then Raid. */
   def kindsAgainst(ready: ReadyGame, actor: PlayerId, defender: PlayerId)
       : Vector[CampaignKind] =
-    val site = playerOf(ready, actor).flatMap(_.pawnSite)
+    val site = ready.game.current.player(actor).flatMap(_.pawnSite)
     Vector(
       Option.when(site.flatMap(defenderAt(ready, _))
           .contains(CampaignDefender.Player(defender)))(
         CampaignKind.Conquest: CampaignKind),
-      Option.when(site.exists(at => playerOf(ready, defender)
+      Option.when(site.exists(at => ready.game.current.player(defender)
           .exists(_.pawnSite.contains(at))))(
         CampaignKind.Raid: CampaignKind)).flatten
 
@@ -203,7 +200,7 @@ object CampaignSetup:
           defenderAt(ready, site).contains(defender)).map(site =>
           DecisionOption.Site(DecisionOptionRef.Site(site)))
       case (CampaignKind.Raid, CampaignDefender.Player(id)) =>
-        playerOf(ready, id).toVector.flatMap { held =>
+        ready.game.current.player(id).toVector.flatMap { held =>
           held.relics.filter(_.orientation == Orientation.FaceUp).map(relic =>
             DecisionOption.Relic(DecisionOptionRef.Relic(relic.id)): DecisionOption) ++
             Banner.all.filter(banner => BannerRules.holder(current, banner)
