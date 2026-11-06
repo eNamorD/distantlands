@@ -362,15 +362,15 @@ as current.
   procedure objects rather than function references loads them while the
   registry loads: the initialisation cycle that already bit the notes
   table. Catalog batch 10 slices 8 and 13 edit this area first.
-- [ ] **A denizen battle plan names its card once.** 61 plans write
-  `def cardRef = DecisionOptionRef.Denizen(cardId)` and 68 write
-  `val id = XCard.power.id`; `DiscardedAtEnd` already derives `cardId` from
-  `card`, and `PaidAction(power)` is the precedent on the action side. An
-  `abstract class DenizenPlan(card, power)` supplying `id`, `cardId` and
-  `cardRef` would remove about 180 lines over 62 files. `NoteSet(id)` runs
-  in each object's body, so `id` must come from a constructor parameter, not
-  an abstract `def` a `val` overrides; the note-key snapshot test is what
-  would catch a slip. Measured 2026-11-06.
+- [ ] **Relic and edifice battle plans name their card once.** The 61
+  denizen plans extend `DenizenPlan(card, power)` since 2026-11-06; ten
+  relic plans (`BanditStandard`, `BagOfSiegeworks`, `BlackSword`,
+  `CursedCauldron`, `BrassArmy`, `FearsomeShield`, `GrandScepterPlan`,
+  `ObsidianCage`, `StickyFire`, `WeepingBanner`) and three edifice plans
+  (`CrackedRampart`, `SpiralCastle`, `ToweringRampart`) still spell `id`,
+  `cardId` and `cardRef` themselves. A `RelicPlan` and an `EdificePlan`
+  sibling, built the same way (constructor parameters, so `NoteSet(id)` in
+  the body sees an initialised `id`), would take them.
 - [ ] **Route Recover through the generic surfaces.** The client still holds
   three Recover decision ids and the `recover.reroll.` prefix, a
   `RecoverStep` enum and `renderRecoverPanel`, whose Choice arm computes
