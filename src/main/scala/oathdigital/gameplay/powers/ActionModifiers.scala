@@ -8,10 +8,10 @@ import oathdigital.gameplay.powers.economy.{ActingTroupe, AnimalPlaymates,
   SmallFriends, SpitefulMirror, TheOldOak, VillageIdiot, VowOfBeastkin,
   VowOfPoverty, VowOfWandering, VowOfWanderingMuster}
 import oathdigital.gameplay.powers.recover.{RelicWorship, SilverCharm}
-import oathdigital.gameplay.powers.search.{Augury, Baron, CrackedHorn,
-  CropRotation, Disciples, ErrandBoy, ForcedLabor, ForestWarden, HuntingParty,
-  LandWarden, Mushrooms, NewGrowth, NewsFromAfar, Observatory, PaintedTrumpet,
-  RingOfDevotion, SpinningBee, TruthfulHarp, WineOfWelcome}
+import oathdigital.gameplay.powers.search.{Augury, Baron, Bracken,
+  CrackedHorn, CropRotation, Disciples, ErrandBoy, ForcedLabor, ForestWarden,
+  HuntingParty, LandWarden, Mushrooms, NewGrowth, NewsFromAfar, Observatory,
+  PaintedTrumpet, RingOfDevotion, SpinningBee, TruthfulHarp, WineOfWelcome}
 
 /** The Search, Trade, Muster and Recover modifiers, registered together with
   * the rules that change those actions: Initiation Rite's Muster cost, the
@@ -25,7 +25,7 @@ object ActionModifiers:
       Baron, NewGrowth, ForestWarden,
       NewsFromAfar, HuntingParty, Observatory, ErrandBoy, Mushrooms,
       WineOfWelcome, PaintedTrumpet, SpinningBee, RingOfDevotion,
-      CrackedHorn,
+      CrackedHorn, Bracken,
       LandWarden, CupOfPlenty,
       AnimalPlaymates, Birdsong,
       TheOldOak, RowdyPub, VillageIdiot, Downtrodden,

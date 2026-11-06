@@ -91,7 +91,6 @@ section describes each seam below in a paragraph.
   Code.
 - **Unchanged from batch 8:** Search Party (recorded in the
   [catalog batch 4 rulings](superpowers/specs/2026-10-05-catalog-batch-4-rulings.md#moved-out-of-the-batch)),
-  Bracken, Cracked Horn and Ring of Devotion (a discard destination),
   Master of Disguise (acting as another player's advisers), Autumn Wind,
   Tracker and False Prophet (a player-aware off-turn card play).
 
@@ -275,6 +274,13 @@ one.
   the panel shows as a player name, and Sticky Fire asks its question even when a yes
   changes nothing (against bandits it only costs the favor). A board option, and skipping a
   question whose answers are the same, need a small change to the option vocabulary.
+- [ ] **The kept card's discard option under a discard modifier.** With
+  Ring of Devotion, Bracken or Cracked Horn picked, a Search's placement
+  still offers "discard" as the next region out's pile (`CardSlots`
+  `discardPile`), and the "Chose" line repeats it, while the card goes where
+  the modifier sends it. The card-moved line is right. The option should
+  name the real destination, which needs the modifier to reach the
+  placement's options and not only its operations.
 
 ### Engine deferred items
 

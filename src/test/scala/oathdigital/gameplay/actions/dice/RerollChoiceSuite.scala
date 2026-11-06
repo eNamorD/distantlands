@@ -1,6 +1,6 @@
 package oathdigital.gameplay.actions.dice
 
-import oathdigital.catalog.holding.BrackenCard
+import oathdigital.gameplay.powers.search.BrackenCard
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.WalkerDiceFixture.scripted
 import oathdigital.gameplay.actions.campaign.CampaignIds

@@ -1,6 +1,6 @@
 package oathdigital.gameplay.actions.dice
 
-import oathdigital.catalog.holding.BrackenCard
+import oathdigital.gameplay.powers.search.BrackenCard
 import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,
   OfferReroll}
 import oathdigital.model._

@@ -1,6 +1,6 @@
 # Catalog Batch 10: Engine Seams
 
-**Status:** designed 2026-11-03. Slices 1 to 8 landed.
+**Status:** designed 2026-11-03. Slices 1 to 9 landed.
 
 **Builds on** [Catalog batch 9](2026-11-02-catalog-batch-9-design.md) and
 [batch 8](2026-10-12-catalog-batch-8-design.md), whose vocabulary, cost
@@ -417,15 +417,19 @@ refused without the pick and allowed with it; replay.
 
 ## Slice 9: Search discard destination
 
-`Discard.Denizen` and `Discard.Vision` gain a required `position:
-StackPosition` (Top or Bottom), with the codec. Every existing builder
-passes Top.
+`Discard.Denizen` and `Discard.Vision` gain `position: StackPosition` (Top
+or Bottom), defaulted to Top as `Draw.position` is, so no existing builder
+changes. The wire field is required.
 
-Each card becomes a Search modifier, a `SelectedModifier`, whose
-`Transform`s at `SearchActionEligibility`, `SearchPlayAdviser` (the card
-play, including the People's Favor's site discard) and Spinning Bee's
-window rewrite the user's own discards with `OperationRewrite.ops`. A
-ruined edifice still goes to the edifice deck.
+Each card becomes a Search modifier, a `SelectedModifier` sharing the
+`SearchDiscards` trait. Its `Transform`s at `SearchActionEligibility` (the
+cards not kept) and `SearchPlayAdviser` (the card play, including an
+adviser bumped over the limit and the People's Favor's site discard)
+rewrite the user's own discards with `OperationRewrite.ops`. A ruined
+edifice still goes to the edifice deck. A WHEN PLAYED power's discard sits
+under the card-play hook's own window, which the rewrite does not enter,
+so Dazzle's discard is untouched. Spinning Bee's no-match discard needs no
+rewrite: Bee and every other Search modifier exclude each other.
 
 - **Ring of Devotion:** `to` becomes the region of the user's pawn. Its id
   becomes `relic.ring-of-devotion`.
@@ -434,9 +438,10 @@ ruined edifice still goes to the edifice deck.
 - **Cracked Horn:** each discard becomes `Bury.standard` to the bottom of
   the world deck; a buried Vision leaves the Visions Drawn track alone.
 
-Picking one makes the other two unavailable (see Readings). Lines name the
-destination once per Search: "Discarded 2 cards to the bottom of the
-Hinterland's discard pile."
+Picking one makes the other two unavailable (see Readings). The generic
+discard and bury lines name where each card went. Bracken also names the
+end of the pile once per Search, at its pick: "This Search's discards go
+to the bottom of the Hinterland discard pile."
 
 Tests: each destination for unkept draws, an adviser over the limit and the
 People's Favor's discard; Dazzle's discard untouched; exclusivity; a Vision
@@ -514,6 +519,11 @@ peeks at its bottom 3 (`Peek`). They must play one, through
 as an adviser, or discarded to the next region (ruling 5). The rest never
 moved, so they stay at the bottom in order. With every pile empty, nothing
 happens. Line: "Peeked at the bottom of the Provinces' discard pile."
+
+The nested play's `SearchPlayAdviser` fold sees the outer Search's
+answers, so a picked Bracken, Cracked Horn or Ring of Devotion would
+rewrite its discards. Ruling 5 says Search modifiers do not apply, so this
+slice keeps them out of the nested play.
 
 Tests: the nested play firing its own WHEN PLAYED and a card-play trigger;
 each placement; a Vision; the outer Search's kept card unchanged; empty

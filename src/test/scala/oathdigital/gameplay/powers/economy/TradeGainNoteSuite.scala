@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.economy
 
-import oathdigital.catalog.holding.BrackenCard
+import oathdigital.gameplay.powers.search.BrackenCard
 import oathdigital.gameplay.actions.ProcedureNotes
 import oathdigital.gameplay.actions.economy.TradeProcedure
 import oathdigital.gameplay.cards.AncientCitySite

@@ -6,13 +6,6 @@ import oathdigital.model.{Cost, DenizenId, PowerId, Suit}
 // Generated from the retired runtime JSON (card classes slice 1).
 // Hand-edited from here on; a card moves out when it is implemented.
 
-object BrackenCard extends Denizen(DenizenId("197"), "Bracken", Suit.Beast):
-  val power = PrintedPower(PowerId("denizen.bracken"),
-    persistent = false, cost = Cost(secret = 1),
-    text = "You may put all of the cards you discard on the top or " +
-      "bottom of any one discard pile _(even your region's)_.")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object AutumnWindCard extends Denizen(DenizenId("213"), "Autumn Wind", Suit.Beast):
   val power = PrintedPower(PowerId("denizen.autumn-wind"),
     persistent = false, cost = Cost.free,

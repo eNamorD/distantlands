@@ -1,8 +1,8 @@
 package oathdigital.gameplay.powers.campaign
 
 import oathdigital.gameplay.powers.economy.HallowedSpringCard
-import oathdigital.catalog.holding.{AutumnWindCard, BrackenCard,
-  MagiciansCodeCard}
+import oathdigital.catalog.holding.{AutumnWindCard, MagiciansCodeCard}
+import oathdigital.gameplay.powers.search.BrackenCard
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignPlans}
 import oathdigital.gameplay.cards.{BrokenPeaksSite, BuriedGiantSite,
