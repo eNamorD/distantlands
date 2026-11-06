@@ -88,7 +88,7 @@ private[gameplay] object OperationApplication:
     val impossible = error match
       case _: InsufficientSupply => true
       case InsufficientPieces(piece, _, _) => operation match
-        case _: Discard | _: PayCost => false
+        case _: Discard | _: RemoveFromMap | _: PayCost => false
         case _ => piece.isInstanceOf[Piece.Counted]
       case _ => false
     OperationReason(error.code, error.detail,

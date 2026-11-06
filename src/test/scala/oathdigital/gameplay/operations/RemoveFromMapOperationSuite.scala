@@ -57,9 +57,9 @@ class RemoveFromMapOperationSuite extends munit.FunSuite:
       Some(OperationError.InvalidDescription(
         s"discard resources on ${homesteaders.value} do not match the card")))
 
-  test("a lock refuses the whole removal, returns included"):
-    // The returns are the removal's children, so the lock judges them with
-    // the card's move and the card keeps its tokens.
+  test("a lock on the card refuses its removal"):
+    // That the card then keeps its tokens is pinned by PilgrimageSuite's
+    // lock tests, which run the removal through the walker.
     assert(LockedCards(Set(homesteaders))
       .reason(homesteadersWithTokens, homesteadersRemoved(favor = 1))
       .isDefined)
