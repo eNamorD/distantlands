@@ -404,10 +404,10 @@ private[application] final class WalkerDecisionProjector(
     * it offers, its locked card among them. */
   private def followUpSite(ready: ReadyGame,
       query: DecisionQueryProjection): Option[SiteId] =
-    val rows = query match
+    val options = query match
       case many: DecisionQueryProjection.ChooseMany => many.options
       case _ => Vector.empty
-    rows.iterator.flatMap(row =>
+    options.iterator.flatMap(row =>
       DecisionOptionRef.fromWire(row.kind, row.id).flatMap {
         case DecisionOptionRef.SiteRelicSlot(site, _) => Some(site)
         case _ => ready.game.current.map.sites.collectFirst {
