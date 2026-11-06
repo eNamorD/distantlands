@@ -1,10 +1,14 @@
 package oathdigital.gameplay.powers.search
 
 import oathdigital.catalog.ModifierMark
+import oathdigital.gameplay.FacedownAdviserPlay
+import oathdigital.gameplay.actions.VisionRules
+import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.{PowerFixture, SearchFixture}
 import oathdigital.gameplay.powers.whenplayed.DazzleCard
 import oathdigital.model._
+import oathdigital.model.OathState.Ready
 import oathdigital.testkit.{Look, Table}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -68,3 +72,27 @@ class RingOfDevotionSuite extends munit.FunSuite:
     val done = keptAtSite(searched(ready), dazzle)
     assertEquals(provinces(done).last, siteCard)
     assertEquals(cradle(done).takeRight(2), unkept)
+
+  test("picked, a Vision not kept goes to the Cradle pile too"):
+    // A Vision ends the draw, so it is drawn third.
+    val vision = VisionRules.Faith
+    val done = keptFacedown(searched(searchAtAncientCity(holdingTheRing,
+      top = Vector[WorldCardId](kept, unkept.head, vision))))
+    assertEquals(cradle(done).takeRight(2),
+      Vector[WorldCardId](unkept.head, vision))
+    assert(!provinces(done).contains(vision), provinces(done))
+
+  test("picked for a facedown adviser's play, the People's Favor's site " +
+      "discard goes to the Cradle pile"):
+    // Playing a facedown adviser offers the Search modifiers too.
+    val adviser = heldAdvisers.head
+    val ready = searchAtAncientCity(table => withPeoplesFavorAndSiteCard(
+      holdingTheRing(table)).adviser(actor, adviser, facedown = true))
+    val done = accepted(for
+      parked <- FacedownAdviserPlay.parkedOnPlacement(SearchFixture.rules,
+        Ready(ready), actor, adviser, picked)
+      placed <- SearchFixture.placeReplacing(parked, adviser,
+        PlayedAs.AtSite, siteCard)
+    yield placed)
+    assertEquals(cradle(done).last, siteCard)
+    assert(!provinces(done).contains(siteCard), provinces(done))
