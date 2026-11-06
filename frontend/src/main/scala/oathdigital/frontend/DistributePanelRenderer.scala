@@ -46,18 +46,24 @@ private[frontend] object DistributePanelRenderer:
     node.setAttribute("data-option-id", item)
     node.appendChild(slot.option.card.fold[dom.Element](
       text("span", "distribute-label", slot.option.label))(CardFace.render))
-    node.appendChild(stepper("−", "distribute-decrement", canControl, controls,
+    node.appendChild(stepper("−", s"Less ${slot.option.label}",
+      "distribute-decrement", canControl, controls,
       shift => if shift then draft.drain(item) else draft.decrement(item)))
     node.appendChild(text("span", "distribute-amount",
       draft.state.amount(item).toString))
-    node.appendChild(stepper("+", "distribute-increment", canControl, controls,
+    node.appendChild(stepper("+", s"More ${slot.option.label}",
+      "distribute-increment", canControl, controls,
       shift => if shift then draft.fill(item) else draft.increment(item)))
     node.appendChild(text("span", "distribute-maximum", s"max ${slot.maximum}"))
     node
 
-  private def stepper(label: String, className: String, canControl: Boolean,
-      controls: TableControls, next: Boolean => WalkerDistributeDraft): dom.Element =
+  /** A `−` or `+` is a glyph, not a name: `name` says what it steps, as
+    * the Plan Aid steppers name theirs. */
+  private def stepper(label: String, name: String, className: String,
+      canControl: Boolean, controls: TableControls,
+      next: Boolean => WalkerDistributeDraft): dom.Element =
     val control = button(label, className)
+    control.setAttribute("aria-label", name)
     HoverTip.set(control, AllTooltip)
     control.disabled = !canControl
     control.onclick = (event: dom.MouseEvent) =>

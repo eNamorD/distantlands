@@ -46,6 +46,13 @@ class DistributePanelRenderSuite extends munit.FunSuite:
     assertEquals(one(panel, """[data-option-id="favor-bank:nomad"] .distribute-decrement""")
       .getAttribute("data-tip"), "Shift+click: all")
 
+  test("the steppers name what they step, since a glyph is no name"):
+    val panel = render(new RecordingControls(), opened())
+    assertEquals(one(panel, """[data-option-id="favor-bank:nomad"] .distribute-decrement""")
+      .getAttribute("aria-label"), "Less Nomad")
+    assertEquals(one(panel, """[data-option-id="favor-bank:nomad"] .distribute-increment""")
+      .getAttribute("aria-label"), "More Nomad")
+
   test("a plain click steps by one and a Shift+click drains or fills"):
     val ui = new RecordingControls()
     def staged(): dom.Element = render(ui, ui.drafts.distribute)
