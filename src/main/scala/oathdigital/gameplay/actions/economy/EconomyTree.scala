@@ -115,7 +115,7 @@ private[economy] object EconomyTree:
       answered: Vector[Answered])
       : Either[OathViolation, Vector[Operation]] = for
     source <- MusterSource.resolve(catalog, ready, actor, ref, answered)
-    player <- ready.game.current.players.find(_.player == actor)
+    player <- ready.game.current.player(actor)
       .toRight(OathViolation.PawnSiteMissing(actor))
     force <- PlayerForceKind.of(ready, player).toRight(
       OathViolation.UnsupportedEconomyState(

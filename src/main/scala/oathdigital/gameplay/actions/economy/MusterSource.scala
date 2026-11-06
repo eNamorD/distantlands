@@ -59,7 +59,7 @@ object MusterSource:
   def resolve(catalog: ExecutableCatalog, state: ReadyGame, actor: PlayerId,
       ref: DecisionOptionRef, answered: Vector[Answered] = Vector.empty)
       : Either[OathViolation, MusterSource] = for
-    id <- cardIdOf(ref).toRight(OathViolation.InvalidEventOrder(
+    id <- DecisionOptionRef.denizenOrEdificeOf(ref).toRight(OathViolation.InvalidEventOrder(
       s"${ref.kind}/${ref.wireId} is not a card a Muster or Trade can draw on"))
     siteId <- state.game.current.pawnSite(actor).toRight(OathViolation.PawnSiteMissing(actor))
     found <- locate(state, actor, id)
@@ -73,7 +73,8 @@ object MusterSource:
     */
   def cardOf(state: ReadyGame, actor: PlayerId, ref: DecisionOptionRef)
       : Option[SiteDenizenState] =
-    cardIdOf(ref).flatMap(locate(state, actor, _)).map(_.card)
+    DecisionOptionRef.denizenOrEdificeOf(ref).flatMap(locate(state, actor, _))
+      .map(_.card)
 
   /** The actor's faceup advisers of `suit`, a Marriage counting as two
     * (`EffectiveSuit`): how many warbands, favor or secrets a Muster or Trade
@@ -97,7 +98,7 @@ object MusterSource:
       current.map.sites.get(siteId).iterator.flatMap(_.denizens).collect {
         case card if card.id == id => Located(card, originAt(siteId, card))
       })
-    val held = current.players.find(_.player == actor).iterator
+    val held = current.player(actor).iterator
       .flatMap(_.advisers).collect {
         case card: DenizenState if card.id == id =>
           Located(card, RuleSourceRef.Adviser(actor, card.id))
@@ -108,9 +109,4 @@ object MusterSource:
       : RuleSourceRef = card match
     case value: DenizenState => RuleSourceRef.SiteCard(siteId, value.id)
     case value: EdificeState => RuleSourceRef.Edifice(siteId, value.id)
-
-  private def cardIdOf(ref: DecisionOptionRef): Option[CardId] = ref match
-    case DecisionOptionRef.Denizen(id) => Some(id)
-    case DecisionOptionRef.Edifice(id) => Some(id)
-    case _ => None
 

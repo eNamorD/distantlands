@@ -56,14 +56,9 @@ case object VowOfBeastkin extends ContributingPower:
     * advisers. */
   private def refused(ctx: PowerCtx, ref: DecisionOptionRef)
       : Option[OathViolation] = for
-    card <- cardOf(ref)
+    card <- DecisionOptionRef.denizenOrEdificeOf(ref)
     suit <- EffectiveSuit.traded(ctx.catalog, ctx.state, ctx.answered, ref)
     if MusterSource.matching(ctx.catalog, ctx.state, ctx.actor, suit,
       ctx.answered) == 0
-    site <- PowerAccess.pawnSite(ctx.state, ctx.actor)
+    site <- ctx.state.game.current.pawnSite(ctx.actor)
   yield OathViolation.EconomyCardUnavailable(site, card)
-
-  private def cardOf(ref: DecisionOptionRef): Option[CardId] = ref match
-    case DecisionOptionRef.Denizen(card) => Some(card)
-    case DecisionOptionRef.Edifice(card) => Some(card)
-    case _ => None

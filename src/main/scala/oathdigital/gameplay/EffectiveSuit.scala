@@ -86,8 +86,7 @@ object EffectiveSuit:
     * answered suit ([[troupe]]); a reader outside a Trade passes none. */
   def count(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
       suit: Suit, answered: Vector[Answered] = Vector.empty): Int =
-    ready.game.current.players.find(_.player == player).toVector
-      .flatMap(_.advisers).collect {
+    ready.game.current.player(player).toVector.flatMap(_.advisers).collect {
         case DenizenState(id, Orientation.FaceUp, _)
             if acted(catalog, ready, answered, id).contains(suit) =>
           weight(id)
@@ -117,7 +116,7 @@ object EffectiveSuit:
     * [[of]]. `None` for a reference that names no card. */
   def traded(catalog: ExecutableCatalog, ready: ReadyGame,
       answered: Vector[Answered], ref: DecisionOptionRef): Option[Suit] =
-    cardOf(ref).flatMap(card =>
+    DecisionOptionRef.denizenOrEdificeOf(ref).flatMap(card =>
       if mirrored(answered) then Some(Suit.Discord)
       else of(catalog, ready, card))
 
@@ -128,11 +127,6 @@ object EffectiveSuit:
     if card == ActingTroupeCard.id then
       troupe(answered).orElse(of(catalog, ready, card))
     else of(catalog, ready, card)
-
-  private def cardOf(ref: DecisionOptionRef): Option[CardId] = ref match
-    case DecisionOptionRef.Denizen(id) => Some(id)
-    case DecisionOptionRef.Edifice(id) => Some(id)
-    case _ => None
 
   private def faceUp(player: PlayerState, card: CardId): Boolean =
     player.advisers.exists {

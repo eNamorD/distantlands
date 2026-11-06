@@ -166,6 +166,13 @@ object DecisionOptionRef:
     case Edifice(id) => Some(id)
     case _ => None
 
+  /** The denizen or edifice `ref` names: the card an economy action can
+    * draw on, which a relic never is. */
+  def denizenOrEdificeOf(ref: DecisionOptionRef): Option[CardId] = ref match
+    case Denizen(id) => Some(id)
+    case Edifice(id) => Some(id)
+    case _ => None
+
   /** Safe parse of the [[DecisionOptionRef.kind]]/[[DecisionOptionRef.wireId]]
     * pair from untrusted input: `None` for an unknown kind or an id that
     * variant cannot carry, never a thrown `require`.

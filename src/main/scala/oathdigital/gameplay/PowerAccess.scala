@@ -27,11 +27,6 @@ private[gameplay] object PowerAccess:
     final case class AtSite(site: SiteId) extends Held
     case object InPlayArea extends Held
 
-  /** Kept only for VowOfBeastkin; every other caller reads
-    * `CurrentGameState.pawnSite` directly. */
-  def pawnSite(ready: ReadyGame, actor: PlayerId): Option[SiteId] =
-    ready.game.current.pawnSite(actor)
-
   /** The player holding `card` faceup among their advisers, if any. */
   def faceupAdviserHolder(ready: ReadyGame, card: DenizenId): Option[PlayerId] =
     ready.game.current.players.find(hasFaceupAdviser(_, card)).map(_.player)
