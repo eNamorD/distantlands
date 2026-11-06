@@ -207,7 +207,6 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
       lines = ActionLineSource.Notes(),
       narrated = Vector(Told(ChallengeProcedure.bannerDecisionId),
         Told(ChallengeProcedure.amountDecisionId)))
-    // Every Campaign line tells its own decision.
     // Every Campaign line tells its own decision. The kinds are the ones
     // the rules posted at: the targets, the plan activations and the
     // sacrifice are decisions, the two totals are rolls, and what the
