@@ -15,4 +15,5 @@ object WhenPlayedPowers:
       Dissent, WizardsConclave,
       BanditChief, ARoundOfAle,
       CallForHelp, TrueOath,
-      LongLostHeir, Bewitch, AncientPact, RoyalAmbitions)
+      LongLostHeir, Bewitch, AncientPact, RoyalAmbitions,
+      Pilgrimage)

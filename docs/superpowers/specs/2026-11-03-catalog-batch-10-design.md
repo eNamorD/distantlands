@@ -1,6 +1,6 @@
 # Catalog Batch 10: Engine Seams
 
-**Status:** designed 2026-11-03. Slices 1 to 5 landed.
+**Status:** designed 2026-11-03. Slices 1 to 6 landed.
 
 **Builds on** [Catalog batch 9](2026-11-02-catalog-batch-9-design.md) and
 [batch 8](2026-10-12-catalog-batch-8-design.md), whose vocabulary, cost
@@ -162,6 +162,17 @@ The owner accepted these without a separate ruling:
   not divide by 3, the user picks which piles take the extra cards.
 - **Pilgrimage:** the shuffle includes the denizens just moved, so they can
   come back. Only the user peeks.
+- **Fallen Spire with a short Dispossessed** moves ruling 7's smaller
+  count, and the pile's bottom-most denizens are the ones that leave. The
+  whole pile is then shuffled, so any denizens left in it mix with the new
+  cards and the Visions. With no denizen in the pile, nothing moves,
+  nothing is shuffled, and no line is written.
+- **Pilgrimage and locks:** ruling 9 keeps intact edifices because locked
+  cards cannot be moved, so every card a lock keeps stays with its tokens
+  and is not counted: a lock-icon denizen, or one Ancient Bloodline locks
+  for the user.
+- **Pile names in lines** read "the Cradle discard pile", as Scryer's and
+  Broken Horn's lines do.
 - **Drowned Library** needs the user's pawn at its site. The relic is the
   relic deck's top card, at difficulty 5, unseen until recovered.
 - **Favored Son:** if the user already holds the People's Favor, nothing
@@ -304,24 +315,33 @@ game switching terrain.
 ## Slice 6: Dispossessed draws
 
 `ShufflePile.Dispossessed`, whose cards are `campaign.dispossessed`, with a
-codec kind. A draw shuffles the pile and takes from its head, as
-`ReliquaryDraws` does. Moves into and out of `Location.Dispossessed` are
-already legal; the projection never identifies its cards.
+codec kind. `DispossessedDraws` holds the shared steps: a draw shuffles the
+pile and takes from its head, as `ReliquaryDraws` does. Moves into and out
+of `Location.Dispossessed` are already legal; the projection never
+identifies its cards.
 
 - **Great Spire.** A paid Action costing 1 secret. Up to 3 Dispossessed
   cards go to the top of the region's discard pile, then as many of the
   pile's bottom denizens, skipping Visions, go to the Dispossessed (ruling
-  7). Nobody peeks. Line: "Swapped 3 cards between the Dispossessed and the
-  Cradle's discard pile."
-- **Fallen Spire.** A `RuinedSetupRule` at SETUP (END). The denizens in its
+  7). Nobody peeks. Line: "Swapped 3 cards between the Dispossessed and
+  the Cradle discard pile."
+- **Fallen Spire.** A ruined face at SETUP (END). The denizens in its
   region's discard pile swap with as many random Dispossessed cards; then
-  those cards are shuffled with the pile's Visions. WHEN EXPLORED stays
-  inert.
-- **Pilgrimage.** WHEN PLAYED. Every denizen at the user's site goes to the
-  Dispossessed, its tokens back to their banks. A ruined edifice goes to the
-  bottom of the edifice deck, intact side up, and is not counted; an intact
-  edifice stays (ruling 9). Then as many cards as denizens moved are drawn,
-  `Peek`ed by the user, and put on the region's discard pile. Line: "Sent 2
+  the pile is shuffled, which mixes those cards with its Visions. A
+  `Shuffle` is a tree node, so `RuinedSetupRule` splits: the new base
+  `RuinedSetupSteps` adds a face's own steps, and Fallen Spire extends it.
+  Line: "Swapped 2 cards between the Dispossessed and the Cradle discard
+  pile, then shuffled the pile." WHEN EXPLORED stays inert.
+- **Pilgrimage.** WHEN PLAYED. Each card at the user's site leaves in one
+  `RemoveFromMap`, a new composite whose children are the token returns
+  and the move, so a lock refuses all of them and the card keeps its
+  tokens. A denizen goes to the Dispossessed. A ruined edifice goes to the
+  bottom of the edifice deck, intact side up, and is not counted; an
+  intact edifice stays (ruling 9). Then as many cards as denizens moved
+  are drawn and put on the region's discard pile, `Peek`ed by the user,
+  and shown in an `Inspect`. Each peek is also held with `Defer`, because a
+  resumed walk selects its `Branch`es again and the state no longer says
+  how many were drawn; the `Inspect` reads the held peeks. Line: "Sent 2
   denizens on Pilgrimage and drew 2 from the Dispossessed."
 
 Tests: each card's moves and counts; hidden information (no other player
@@ -519,7 +539,7 @@ lost before Wake; codec; replay.
 | `DiceKind.Round` | 3 | Shattered Portal |
 | `IgnoresOwnLock` | 4 | Giant's Path |
 | Live terrain sets | 5 | Grand Canal, Lost Lagoon, Narrow Pass |
-| `ShufflePile.Dispossessed` | 6 | both Spires, Pilgrimage |
+| `ShufflePile.Dispossessed`, `RemoveFromMap` | 6 | both Spires, Pilgrimage |
 | `answered` in `EffectiveSuit` | 7 | Acting Troupe |
 | `RecoverFromRelicDeck` | 8 | Drowned Library |
 | `Discard` position | 9 | Bracken |

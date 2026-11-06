@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.holding.PilgrimageCard
+import oathdigital.gameplay.powers.whenplayed.PilgrimageCard
 import oathdigital.gameplay.MarriageCard
 import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.NoteText

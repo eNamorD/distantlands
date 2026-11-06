@@ -67,7 +67,6 @@ section describes each seam below in a paragraph.
 
 - **Recover source:** Drowned Library.
 - **Discard replacement with a question:** Wild Pastures.
-- **Dispossessed shuffles:** Great Spire, Fallen Spire, Pilgrimage.
 - **Vision collection:** Desecrated Ground.
 - **As-if ruler:** Bandit Crown, Grand Mask.
 - **Favor source redirection:** Vow of Kinship.
