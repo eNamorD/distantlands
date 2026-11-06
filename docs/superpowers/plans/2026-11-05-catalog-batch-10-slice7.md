@@ -7,7 +7,7 @@
 **Architecture:**
 - `EffectiveSuit` already reads Spiteful Mirror's pick from the walk's answers (`mirrored`). It learns a second pick the same way: the answer to Acting Troupe's suit question.
 - The card moves from holding into `EffectiveSuit.scala`, beside `SpitefulMirrorCard`, because `EffectiveSuit` lives below `powers` and reads the card's question. The card also holds the question's id and its two buttons.
-- `EffectiveSuit.count` takes the walk's answers. A faceup Troupe counts as the answered suit instead of Arcane. `MusterSource.matching` passes the answers, so every reader of a Trade's matching advisers sees the pick: the Trade's own gain, the Cup of Plenty (through `SuitSupplyWaiver`) and Vow of Beastkin.
+- `EffectiveSuit.count` takes the walk's answers. A faceup Troupe counts as the answered suit instead of Arcane. `MusterSource.matching` passes the answers, so every reader of a Trade's matching advisers sees the pick: the Trade's own gain and the Cup of Plenty (through `SuitSupplyWaiver`). Vow of Beastkin passes its answers too, since the parameter is required, but it restricts only a Muster, where the Troupe is never picked.
 - **Acting Troupe** is a free `SelectedModifier` for Trade, offered while the Troupe is the user's faceup adviser. Its `selectionQuestions` ask Beast or Order and write the line, as `ActingSite` asks its site. It hooks no window: the answer is the whole effect.
 
 **Tech Stack:** Scala 3, munit, sbt via `./sbtw`.

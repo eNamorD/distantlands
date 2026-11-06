@@ -101,9 +101,12 @@ object EffectiveSuit:
       ModifierPicks.isPicked(answered, window, SpitefulMirrorCard.id))
 
   /** The suit a picked Acting Troupe acts as: the walk's answer to its
-    * question, which is asked only once it is picked. */
+    * question, while the Trade's modifier decision picks it. */
   def troupe(answered: Vector[Answered]): Option[Suit] =
-    answered.reverseIterator.collectFirst {
+    val picked = ModifierPicks.isPicked(answered,
+      PowerWindow.TradeModifierSelection, ActingTroupeCard.id)
+    if !picked then None
+    else answered.reverseIterator.collectFirst {
       case Answered(ActingTroupeCard.suitDecision,
           DecisionAnswer.ChooseOneAnswer(DecisionOptionRef.Button(key)), _) =>
         key

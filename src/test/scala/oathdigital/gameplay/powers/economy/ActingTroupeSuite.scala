@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.economy
 
-import oathdigital.gameplay.ActingTroupeCard
+import oathdigital.gameplay.{ActingTroupeCard, PledgeToDiscordCard}
 import oathdigital.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
 import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powerresolver.ModifierPicks
@@ -105,6 +105,19 @@ class ActingTroupeSuite extends munit.FunSuite:
     assertEquals(Look(done.state).faceUpSecrets(p1), 2)
     assertEquals(said(done.events), Vector(NoteText.Said("acted-order",
       s"${troupe.value} acted as an Order card.", covers = false)))
+    val unpicked = tradedWith(startedUnpicked(tradeBegun(ready, "secret")),
+      wrestlers)
+    assertEquals(Look(unpicked.state).faceUpSecrets(p1), 1)
+
+  test("acting as an Order card beside a faceup Pledge to Discord, it " +
+      "still counts as Order for the Trade"):
+    // Owner ruling, 2026-11-05.
+    val ready = troupeBeside(wrestlers).adviser(p1, PledgeToDiscordCard.id)
+      .ready
+    val done = tradedWith(troupeActingAs(tradeBegun(ready, "secret"),
+      Suit.Order), wrestlers)
+    assertEquals(Look(done.state).faceUpSecrets(p1), 2)
+    // Unpicked, Pledge makes it Discord, so it matches nothing.
     val unpicked = tradedWith(startedUnpicked(tradeBegun(ready, "secret")),
       wrestlers)
     assertEquals(Look(unpicked.state).faceUpSecrets(p1), 1)
