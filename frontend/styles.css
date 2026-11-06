@@ -436,9 +436,9 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   width: 20px; height: 20px; border-radius: 50%;
   background: var(--selection); color: var(--base); font-size: 12px; font-weight: 800; }
 .card-face.board-option-selected::before,
-.site.board-option-selected::before { content: "✓"; }
+.site.board-option-selected::before { content: "✓"; content: "✓" / ""; }
 .card-face.board-option-locked::before,
-.site.board-option-locked::before { content: "🔒"; }
+.site.board-option-locked::before { content: "🔒"; content: "🔒" / ""; }
 /* A played pick is numbered in play order, not locked: the player chose it. */
 .card-face.board-option-played::before,
 .site.board-option-played::before { content: attr(data-played-order); }
@@ -468,9 +468,9 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    button rises to sit above the badge rather than over its word. */
 .board-option-badge { position: absolute; left: 3px; bottom: 3px; z-index: 1;
   padding: 1px 5px; border-radius: 3px; background: var(--brass);
-  color: var(--base); font-size: 10px; font-weight: 800; line-height: 1.3; }
+  color: var(--base); font-size: 11px; font-weight: 800; line-height: 1.3; }
 .board-option-card:has(> .board-option-replace) > .board-option-inspect {
-  bottom: calc(3px + 2px + 10px * 1.3 + 3px); }
+  bottom: calc(3px + 2px + 11px * 1.3 + 3px); }
 /* Three cells so the name is centred on the box, not on what is left over
    after the tokens: equal side columns put it in the middle whether a site
    holds six favor or nothing at all. */
@@ -763,7 +763,7 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    at its foot, worked out in the card's own font, so the restriction above
    it never runs under it. */
 .card-unimplemented-badge { position: absolute; right: 0; bottom: 0; left: 0;
-  padding: 0 0.2em; background: var(--unimplemented); color: var(--cream);
+  padding: 0 0.2em; background: var(--unimplemented); color: var(--cream-bright);
   font-size: max(0.62em, 0.7rem); line-height: 1.35; text-align: center;
   white-space: nowrap; }
 .card-face:has(> .card-unimplemented-badge) {
@@ -812,7 +812,7 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .walker-many-options { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
 .walker-many-option[aria-pressed="true"] { border-color: var(--cream-bright);
   background: var(--pressed); color: var(--cream-bright); font-weight: 700; }
-.walker-many-option[aria-pressed="true"]::before { content: "✓ "; }
+.walker-many-option[aria-pressed="true"]::before { content: "✓ "; content: "✓ " / ""; }
 .board-decision-summary { margin: 0 0 8px; color: var(--cream-bright); font-weight: 700; }
 .board-decision-summary-empty { color: var(--ink-dim); font-size: .82rem;
   font-weight: 400; }
@@ -936,7 +936,7 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   gap: 0.15em; }
 .supply-range-figures { font-size: 1.1em; font-weight: 700;
   white-space: nowrap; }
-.supply-range-to { margin: 0 0.15em; font-size: 0.6em; font-style: italic; }
+.supply-range-to { margin: 0 0.15em; font-size: max(0.6em, 11px); font-style: italic; }
 .supply-range .token-glyph { width: 1.15em; height: 1.15em; color: inherit; }
 .supply-space > :not(.supply-marker) { position: relative; }
 .supply-marker { position: absolute; inset: 0; box-sizing: border-box;
