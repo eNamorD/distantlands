@@ -459,6 +459,9 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   border: 1px solid var(--brass); border-radius: 50%; background: var(--panel);
   color: var(--cream-bright); font: inherit; font-size: 12px; font-weight: 800;
   line-height: 1; cursor: pointer; }
+/* The button stays 22px so it covers no card text; its hit area reaches
+   out to 44px on every side, the touch minimum. */
+.board-option-inspect::after { content: ""; position: absolute; inset: -11px; }
 .board-option-inspect:hover, .board-option-inspect:focus-visible {
   outline: 2px solid var(--cream-bright); outline-offset: 1px; }
 /* A Replace option: the play discards this card. Bottom-left, the one
@@ -566,7 +569,10 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   background: var(--base);
   color: #fff;
 }
-.load-game, .adviser {
+/* The Action face on the dev panel's load button and the Chronicle save
+   dialog's choices: the dialog mounts outside the table's panes, so the
+   pane rule below does not reach it. */
+.load-game, .chronicle-save-panel button {
   min-height: 44px;
   padding: 8px 12px;
   border: var(--option-ring) solid var(--option-line);
@@ -575,7 +581,8 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   color: #fff;
   cursor: pointer;
 }
-.adviser { margin: 0 8px 8px 0; }
+.chronicle-save-panel button:focus-visible {
+  outline: 2px solid var(--cream-focus); outline-offset: -3px; }
 /* Undo and Redo (undo design, "Controls"): the Action face like every
    Actions-pane button, side by side under the status line, set apart from
    the controls below them. */
@@ -1820,6 +1827,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
    the 44px minimum wherever the main pointer is coarse, desktop or not. */
 @media (pointer: coarse) {
   .map-control, .dev-toggle, .dev-close, .log-new, .log-overlay-close,
-  .card-overlay-close, .pane-switch-option { min-width: 44px; min-height: 44px; }
+  .card-overlay-close, .pane-switch-option, .overlay-confirm button,
+  .consent-grid-choice { min-width: 44px; min-height: 44px; }
   .pane-header { min-height: 52px; }
 }
