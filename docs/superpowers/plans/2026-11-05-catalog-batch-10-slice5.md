@@ -641,3 +641,13 @@ EOF
 ```
 
 **Review checkpoint:** a review subagent reads the Task 2 diff against this plan and the spec.
+
+---
+
+### Review additions
+
+Taken after the task reviews, and committed with the review fixes:
+- **Task 1:** a test that a Canal at a Mountain is still behind the Narrow Pass from a plain site, and still pays the Mountain's Supply once the Pass is ruled.
+- **Task 2:**
+  - A gather-level test that a Coast power drops `LostLagoon` on a Coast route into it. Without it, the fold order hid a missing ignore: the Lagoon's `game:` key sorts before every `site:` key, so its +2 folded first and the Coast power then set 1.
+  - **Ruling 13 (owner, 2026-11-05):** Lost Lagoon at a printed Island adds nothing more on arrival, so the site costs +2 once. `LostLagoon.applicable` skips the arrival case at a `printedIslandSites` destination, with a test.

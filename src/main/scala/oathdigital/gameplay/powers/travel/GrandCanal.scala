@@ -69,8 +69,9 @@ case object GrandCanal extends LiveTerrain:
   * "has the Coast power" (ruling 12), so the site joins the live Coast
   * set, and a Coast route from it costs 1 Supply and ignores the terrain
   * adds. Arriving adds 2; leaving by a Coast route sets 1. A route never
-  * does both, since it cannot leave and reach the same site. It writes no
-  * line.
+  * does both, since it cannot leave and reach the same site. At a printed
+  * Island the site is still one Island, so arriving adds nothing more
+  * (ruling 13). It writes no line.
   */
 case object LostLagoon extends LiveTerrain:
   val id: PowerId = GrandCanalCard.ruined.power.id
@@ -86,7 +87,9 @@ case object LostLagoon extends LiveTerrain:
 
   override def applicable(ctx: PowerCtx): Boolean =
     TravelRoute.pawnMove(ctx.operation).exists(route =>
-      site(ctx.state).contains(route.destination)) || leavesByCoastRoute(ctx)
+      site(ctx.state).contains(route.destination) &&
+        !TravelSitePowers.printedIslandSites.contains(route.destination)) ||
+      leavesByCoastRoute(ctx)
 
   /** The other terrain adds, only while it is the Coast power. It never
     * ignores itself. */

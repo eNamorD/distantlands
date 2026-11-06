@@ -2,6 +2,7 @@ package oathdigital.gameplay.powers.travel
 
 import oathdigital.gameplay.powerresolver.{ContributingPower,
   ContributionCollector, PowerCtx, PowerWindowIndex}
+import oathdigital.gameplay.cards.DesolateShoreSite
 import oathdigital.gameplay.powers.PowerFixture
 import oathdigital.gameplay.powers.search.ErrandBoyCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
@@ -109,6 +110,17 @@ class GrandCanalSuite extends munit.FunSuite:
     val fromCoast = boardWithE03(EdificeSide.Ruined, at = hinterlandPlains,
       from = coast)
     assertEquals(candidates(fromCoast).get(hinterlandPlains), Some(1))
+    // The Coast power drops the add, whatever order the transforms fold in.
+    assert(!travelCostPowersGathered(fromCoast, coast, hinterlandPlains,
+      Vector(LostLagoon, CoastSitePower(DesolateShoreSite.coast, coast)))
+      .contains(LostLagoon.id))
+
+  test("a Lagoon at a printed Island adds the Island's 2 Supply once " +
+      "(ruling 13)"):
+    val costs = candidates(boardWithE03(EdificeSide.Ruined, at = island,
+      from = hinterlandPlains))
+    // The printed 3 and one Island's 2.
+    assertEquals(costs.get(island), Some(5))
 
   test("Lost Lagoon has the Coast power: its site reaches a Coast or an " +
       "Island for 1 Supply (ruling 12)"):

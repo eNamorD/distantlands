@@ -140,6 +140,8 @@ Taken with the owner on 2026-11-03, except where another source is named.
     Island "has the Coast power", so the Lagoon's site joins both live
     sets: Lagoon-to-Coast costs 1 Supply and counts as a Coast route for
     Narrow Pass.
+13. **One Island at a time** (owner, 2026-11-05). Lost Lagoon at a printed
+    Island leaves it one Island: reaching it adds 2 Supply once, not twice.
 
 ### Readings
 

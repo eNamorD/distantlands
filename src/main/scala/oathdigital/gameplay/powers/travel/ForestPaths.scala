@@ -25,8 +25,9 @@ object ForestPathsCard extends Denizen(DenizenId("43"), "Forest Paths", Suit.Bea
   * Ignoring a power is a named ignore, decided per Travel (`ignores` reads the
   * route from the context): while the destination qualifies, every power whose
   * source is a site is dropped from the fold. So is a `LiveTerrain` (Grand
-  * Canal, Lost Lagoon), which gives a site its terrain from an edifice. The terrain adds and the Narrow
-  * Pass restriction both hook a Travel window, so Forest Paths hooks both
+  * Canal, Lost Lagoon), which gives a site its terrain from an edifice. The
+  * terrain adds and the Narrow Pass restriction both hook a Travel window,
+  * so Forest Paths hooks both
   * windows too (the second with a transform that changes nothing), because the
   * collector only lets a power ignore what is gathered beside it.
   *
