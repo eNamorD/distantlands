@@ -659,14 +659,14 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    baseline. */
 .partition-zone .decision-option { display: flex; flex-direction: column;
   justify-content: flex-end; align-items: center; margin: 0; padding: 0;
-  border: 0; border-radius: 0; width: var(--card-w); }
+  border: 0; border-radius: 0; width: var(--card-w);
+  /* A card is taken by pressing it, so a press neither selects its text
+     nor asks a phone for its callout. */
+  cursor: grab; user-select: none; -webkit-user-select: none;
+  -webkit-touch-callout: none; }
 /* The held card stays in the row at the place a drop would put it, faded,
    so the row reads as the answer it would become. */
 .partition-zone .decision-option.dragging { opacity: 0.4; }
-/* A card is taken by pressing it, so a press neither selects its text nor
-   asks a phone for its callout. */
-.partition-zone .decision-option { cursor: grab; user-select: none;
-  -webkit-user-select: none; -webkit-touch-callout: none; }
 /* A finger that has rested long enough sees the card ringed: moving now
    carries it rather than scrolling the pane. */
 .partition-zone .decision-option.partition-pressed > .card-face {
@@ -759,12 +759,12 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .card-face:has(> .card-unimplemented-badge) {
   padding-bottom: calc(max(0.62em, 0.7rem) * 1.35 + 0.3em); }
 .card-face-down { align-items: center; justify-content: center;
-  border-style: solid; background: #2a2333; }
+  border-style: solid; background: #2a2333; container-type: inline-size; }
 /* The letter and the pip are sized off the card as well as the type, so a
    back stays a back wherever the card is small for its font: on the
    zoomed-out map a site's card carries text counter-scaled for reading, and
-   at 1.9em the letter was wider than the card. */
-.card-face-down { container-type: inline-size; }
+   at 1.9em the letter was wider than the card; the back is the container
+   (`container-type` above). */
 .card-back-letter { font-size: min(1.9em, 62cqi); font-weight: 700;
   line-height: 1; color: #cbb7dd; }
 .card-knowable-pip { position: absolute; top: min(0.3em, 7cqi);
@@ -898,10 +898,10 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    A button resets the text it inherits, so the colour and font are given
    back. The pile keeps the deck body's frame (below). */
 .pile-open, .supply-open { color: inherit; font: inherit; cursor: pointer; }
-.supply-open { border: 0; padding: 0; background: none; }
 /* The figure keeps its place in the row; the hover fill takes the pill's
    shape around it. */
-.supply-open { margin: 0 -0.35em; padding: 0 0.35em; border-radius: 999px; }
+.supply-open { margin: 0 -0.35em; padding: 0 0.35em; border: 0;
+  border-radius: 999px; background: none; }
 .pile-open:disabled { cursor: default; }
 /* The Supply track (SupplyTracker), as the physical board prints it: dark
    spaces on a tan rail, the bands in Georgia over the warband banner. The
@@ -946,17 +946,16 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    it, and the caption under that, outside the ring the decision draws. The
    body's padding is taken back by its margin, so the card, not the ring,
    is flush with the figure's top and sides. */
-.deck-figure { display: flex; flex: 0 0 auto; flex-direction: column;
-  align-items: center; gap: 3px; }
+.deck-figure { --deck-h: 92px; display: flex; flex: 0 0 auto;
+  flex-direction: column; align-items: center; gap: 3px; }
 .deck-body { display: flex; flex-direction: column; align-items: center;
   gap: 4px; margin: -5px -5px 0; padding: 4px; border-radius: 8px; }
 /* Paint without weight, so a board option's border, ring and fill win. */
 :where(.deck-body) { border: 1px solid transparent; background: none; }
 .deck-body > .target-detail-badge { margin: 0; }
-/* The card's height is named once: the inspect button is placed from it,
-   since a cost badge under the card moves the bottom of the box they
-   share. */
-.deck-figure { --deck-h: 92px; }
+/* The card's height (`--deck-h`) is named once on the figure: the inspect
+   button is placed from it, since a cost badge under the card moves the
+   bottom of the box they share. */
 /* The card's own edge is a quiet Line-mid: brass is the option ring's. The
    letter and count sit a little above the middle, so a two-digit count
    clears the inspect button in the lower right. */
@@ -1320,7 +1319,8 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
    corner glyph is 1.5em, so the face is padded at the top for the name to
    start under it, not behind it. */
 .map-compact .site .card-face { padding: 1.7em 0.25em 0.25em;
-  justify-content: center; align-items: center; text-align: center; }
+  justify-content: center; align-items: center; text-align: center;
+  container-type: inline-size; }
 /* A back has no corner glyph to clear, and at the counter-scaled size any
    padding in em is wider than the card, so a face-down card keeps its
    type's box with none. */
@@ -1338,8 +1338,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
   right: 0.2em; }
 /* A compact card too narrow for the glyph and the banner side by side, as
    a phone's whole-map view makes it, keeps the suit glyph alone; the banner
-   is read on a zoom or in the overlay. */
-.map-compact .site .card-face { container-type: inline-size; }
+   is read on a zoom or in the overlay. The face is the container (above). */
 @container (max-width: 3.6em) {
   .map-compact .card-header .restriction-mark { display: none; } }
 /* A compact banner shows its name alone, held at the glance size as a
