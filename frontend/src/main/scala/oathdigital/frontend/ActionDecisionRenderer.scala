@@ -25,21 +25,28 @@ private[frontend] object ActionDecisionRenderer:
        node.textContent = value.walkerDecision.flatMap(_.query).flatMap(_.heading)
          .getOrElse("Your decision.")
      case _ if value.phase == "game-over" =>
-       node.textContent = value.oathkeeper.flatMap(_.winnerPlayerId)
-         .fold("Game over.") { winner =>
+       value.oathkeeper.flatMap(_.winnerPlayerId) match
+         case Some(winner) =>
            val victory = VictoryWords.of(
              value.oathkeeper.flatMap(_.winnerVictoryKind))
-           s"Game over — $winner wins ($victory)."
-         }
+           node.appendChild(dom.document.createTextNode("Game over — "))
+           node.appendChild(playerReference(value, winner))
+           node.appendChild(dom.document.createTextNode(s" wins ($victory)."))
+         case None => node.textContent = "Game over."
      case _ =>
-       node.appendChild(dom.document.createTextNode(
-         s"${value.phase}; active participant: "
-       ))
+       // Nothing is parked and no one is waited on: the active player's
+       // own turn in a named phase, as "Red's turn · Act".
        value.activeParticipantId match
          case Some(playerId) =>
            node.appendChild(playerReference(value, playerId))
-         case None => node.appendChild(dom.document.createTextNode("none"))
+           node.appendChild(dom.document.createTextNode(
+             s"'s turn · ${phaseName(value.phase)}"))
+         case None => node.textContent = phaseName(value.phase)
    node
+
+ /** The phase key as a word: "act" reads "Act", "game-over" "Game over". */
+ private def phaseName(phase: String): String =
+   phase.replace('-', ' ').capitalize
  def actionsPanel(value: GameProjection, presentation: ViewerPresentation,
      routed: ParkedDecision.Routed, canControl: Boolean,
      drafts: SessionDrafts, controls: TableControls): dom.Element =

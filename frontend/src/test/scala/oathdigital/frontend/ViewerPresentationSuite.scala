@@ -54,6 +54,20 @@ class ViewerPresentationSuite extends FunSuite:
     assert(!presentation.showGameplayControls)
     assertEquals(presentation.waitingForPlayerIds, Vector.empty)
 
+  test("the game-over line names the winner as a player, not by id"):
+    val status = ActionDecisionRenderer.status(wonByBlue,
+      ServerUiSupport.viewerPresentation(wonByBlue, "red-exile"))
+    assertEquals(status.textContent,
+      "Game over — Blue Exile wins (Usurper victory).")
+    assertEquals(status.querySelector(".player-ref").textContent, "Blue Exile")
+
+  test("the active player's own turn reads as their turn in the phase"):
+    val value = twoSeatProjection(phase = "act")
+    val status = ActionDecisionRenderer.status(value,
+      ServerUiSupport.viewerPresentation(value, "red-exile"))
+    assertEquals(status.textContent, "Red Exile's turn · Act")
+    assertEquals(status.querySelector(".player-ref").textContent, "Red Exile")
+
   test("inactive Wake viewer waits and receives no gameplay controls"):
     val value = twoSeatProjection(
       phase = "wake",
