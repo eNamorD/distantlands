@@ -17,14 +17,15 @@ import oathdigital.model.DecisionAnswer.ChooseOneAnswer
   *                                            // pass, then "Start Recover"
   *   Sequence(                                // window = RecoverActionEligibility
   *     ModifyDicePool("recover", +2),         // window = RecoverBeforeFirstRoll
-  *     Repeat(guard = not succeeded && lastChoice != Stop,
+  *     Repeat(guard = has difficulty && not succeeded && lastChoice != Stop,
   *       Sequence(
   *         SpendSupply(actor, 1),            // window = RecoverCost
   *         Roll("recover", Defense, Automatic), // window = RecoverRoll;
   *                                              // rolls in the same command
   *         Branch(choice when not yet success) // -> Decide("recover.choice") or nothing
   *       )),
-  *     Branch(if success ->
+  *     Branch(if no difficulty -> Vector(BuildOps(refuse)),
+  *       else if success ->
   *       Vector(Decide("recover.relic"),
   *         Sequence(BuildOps(move chosen relic facedown),
   *           Note(recovered))),              // window = RecoverAfterRelic
@@ -47,18 +48,25 @@ import oathdigital.model.DecisionAnswer.ChooseOneAnswer
   *    and carries on to the first thing that is a question.
   *  - Success = `DefenseDieFace.score` over the combined faces from every roll
   *    of the "recover" pool (the walker accumulates roll outcomes per pool)
-  *    reaching `RecoverRules.difficulty(catalog, site)`; site = the actor's
-  *    pawn site. Thus a Doubler on a later roll multiplies earlier shields.
+  *    reaching [[difficulty]]: 5 once Drowned Library is picked
+  *    ([[fromRelicDeck]]), else the site's. The site is the actor's pawn
+  *    site. Thus a Doubler on a later roll multiplies earlier shields.
   *  - A FAILED roll parks the continue/stop choice: Continue rolls again,
   *    Stop abandons with no relic. The choice is only reachable while the
   *    recovery has not yet succeeded, because the `Branch` carrying it
   *    declares nothing once it has.
   *  - A successful roll parks a relic decision only when a facedown relic is
   *    available. Otherwise Recover finishes as a legal wasted action.
+  *  - With Drowned Library picked, the relic decision offers the relic deck
+  *    instead of the site's relics, and the move takes its top card, unseen
+  *    until recovered.
   *
-  * `build` validates the action-specific necessity: the actor's
-  * current site has a Recover difficulty. Generic supply feasibility belongs
-  * to `OperationPipeline`; role, foundation state, and relic availability do
+  * A Recover with no difficulty is refused after its modifier decision,
+  * not when the tree is built, since Drowned Library makes any site
+  * recoverable: with no difficulty the `Repeat` runs no round, and the
+  * last branch refuses. "Start" and the Act menu judge the tree after the
+  * picks, so they refuse it too. Generic supply feasibility belongs to
+  * `OperationPipeline`; role, foundation state, and relic availability do
   * not gate Recover.
   */
 object RecoverProcedure:
@@ -94,16 +102,19 @@ object RecoverProcedure:
   def noteKeys: Vector[NoteKey] = notes.declared
 
   /** Every park of a Recover but its modifier decision shows the same
-    * thing: the pool rolled so far and the site's difficulty, which is worth
-    * showing before the first roll too. A question a Recover modifier asks
+    * thing: the pool rolled so far and the Recover's difficulty, read with
+    * the parked walk's answers, which is worth showing before the first
+    * roll too. A question a Recover modifier asks
     * shows it as well, since its id starts with [[decisionPrefix]]. */
   def rollFeedback(catalog: ExecutableCatalog, ready: ReadyGame,
       actor: PlayerId, decisionId: String): Option[WalkerRollFeedback] =
     Option.when(decisionId == rollDecisionId ||
         (decisionId.startsWith(decisionPrefix) &&
           !ModifierPicks.isDecision(decisionId)))(
-      WalkerRollFeedback(recoverPool, target = actorSite(ready, actor)
-        .flatMap(RecoverRules.difficulty(catalog, _)))).filter(_.target.nonEmpty)
+      WalkerRollFeedback(recoverPool,
+        target = difficulty(catalog, ready, actor,
+          ready.game.current.walkerPending.fold(Vector.empty[Answered])(
+            _.answered)))).filter(_.target.nonEmpty)
 
   /** The actor's current pawn site -- the single definition `build`,
     * `rebuild`, and [[actorFacedownRelics]] all read, so nothing in this
@@ -130,6 +141,32 @@ object RecoverProcedure:
   /** "Start Recover": the modifier decision's button. */
   val startLabel: String = "Start Recover"
 
+  /** Why a Recover with no difficulty is refused. */
+  val noDifficulty: String = "site has no Recover Difficulty"
+
+  /** Drowned Library's difficulty: "Its recover difficulty is 5." */
+  val relicDeckDifficulty: Int = 5
+
+  /** Whether the walk's modifier decision picked Drowned Library (E13,
+    * ruined), whose Recover takes the relic deck's top card. Read from the
+    * answers, which a park keeps and replay rebuilds, as `EffectiveSuit`
+    * reads Acting Troupe's pick. */
+  def fromRelicDeck(answered: Vector[Answered]): Boolean =
+    ModifierPicks.isPicked(answered, PowerWindow.RecoverModifierSelection,
+      UndergroundLibraryCard.id)
+
+  /** The relic decision's one option with Drowned Library picked: the deck,
+    * so the relic stays unseen until recovered. */
+  val relicDeckOption: DecisionOptionRef.Deck =
+    DecisionOptionRef.Deck(CardDeck.Relic)
+
+  /** The difficulty of the actor's Recover: Drowned Library's once it is
+    * picked, else the actor's pawn site's, if it has one. */
+  def difficulty(catalog: ExecutableCatalog, ready: ReadyGame,
+      actor: PlayerId, answered: Vector[Answered]): Option[Int] =
+    if fromRelicDeck(answered) then Some(relicDeckDifficulty)
+    else actorSite(ready, actor).flatMap(RecoverRules.difficulty(catalog, _))
+
   def build(catalog: ExecutableCatalog, state: ReadyGame,
       actor: PlayerId)
       : Either[OathViolation, Operation] = for
@@ -151,23 +188,25 @@ object RecoverProcedure:
       Sequence(Vector(ModifierChoice.loop(actor,
         PowerWindow.RecoverModifierSelection, rest, startLabel), rest)))
 
-  /** The Recover at the actor's site, which must have a Recover
-    * difficulty. */
+  /** The Recover at the actor's site. */
   private def recoveryAt(catalog: ExecutableCatalog, state: ReadyGame,
       actor: PlayerId): Either[OathViolation, Operation] = for
     siteId <- actorSite(state, actor).toRight(
       OathViolation.PawnSiteMissing(actor))
-    difficulty <- RecoverRules.difficulty(catalog, siteId).toRight(
-      OathViolation.RecoverUnavailable("site has no Recover Difficulty"))
-  yield recovery(catalog, actor, siteId, difficulty)
+  yield recovery(catalog, actor, siteId)
 
-  /** Tree closes only over command-stable actor, site, and difficulty. */
+  /** Tree closes only over command-stable actor and site; the difficulty
+    * and the relic source are read live, with the walk's answers. */
   private def recovery(catalog: ExecutableCatalog, actor: PlayerId,
-      siteId: SiteId, difficulty: Int): Operation =
+      siteId: SiteId): Operation =
     def scoreOf(ready: ReadyGame): Int =
       ready.game.current.rollOutcomes.get(recoverPool).fold(0)(_.score)
 
-    def succeeded(ready: ReadyGame): Boolean = scoreOf(ready) >= difficulty
+    def target(ready: ReadyGame, answered: Vector[Answered]): Option[Int] =
+      difficulty(catalog, ready, actor, answered)
+
+    def succeeded(ready: ReadyGame, answered: Vector[Answered]): Boolean =
+      target(ready, answered).exists(scoreOf(ready) >= _)
 
     // The two buttons the continue/stop decision offers, declared once: the
     // query the player is shown, the set the walker accepts an answer from,
@@ -204,22 +243,49 @@ object RecoverProcedure:
       PositionedLocation(Location.PlayArea(actor)),
       resultingOrientation = Some(Orientation.FaceDown), by = Some(actor))
 
+    /** The relic deck's top card's move to the actor, facedown. */
+    def deckMove(relicId: RelicId): Move = Move(Piece.Card(relicId),
+      PositionedLocation(Location.Deck(CardDeck.Relic), StackPosition.Top),
+      PositionedLocation(Location.PlayArea(actor)),
+      resultingOrientation = Some(Orientation.FaceDown), by = Some(actor))
+
+    /** What a successful Recover may take, each with the move that takes
+      * it: the relic deck's top card, shown as the deck, with Drowned
+      * Library picked; else each facedown relic at the actor's live site. */
+    def takeable(ready: ReadyGame, answered: Vector[Answered])
+        : Vector[(DecisionOption, Move)] =
+      if fromRelicDeck(answered) then
+        ready.game.current.commonCards.relicDeck.headOption.toVector.map(
+          top => DecisionOption.Deck(relicDeckOption) -> deckMove(top))
+      else actorFacedownRelics(ready, actor).map(relic =>
+        DecisionOption.Relic(DecisionOptionRef.Relic(relic.id)) ->
+          relicMove(relic.id))
+
     val moveRelic = BuildOps((ready, pending) =>
       pending.answered.lastOption match {
-        case Some(Answered(_, ChooseOneAnswer(
-            DecisionOptionRef.Relic(relicId)), _)) =>
-          Right(Vector[CoreOperation](relicMove(relicId)))
+        case Some(Answered(_, ChooseOneAnswer(ref), _)) =>
+          takeable(ready, pending.answered).collectFirst {
+            case (option, move) if option.ref == ref =>
+              Vector[CoreOperation](move)
+          }.toRight(OathViolation.InvalidEventOrder(
+            s"${ref.wireId} is not a relic this Recover may take"))
         case _ => Left(OathViolation.InvalidEventOrder(
           "no recovered relic answer is recorded"))
       })
 
-    /** The relic taken and the site it came from. Reads the relic decision's
-      * answer and the site this tree closed over, never `previous`, so a
-      * leaf a power appends into the window cannot move what it reads. */
+    /** The relic taken and the site it was recovered at. A site relic is
+      * read from the relic decision's answer; the relic deck's top card from
+      * the state before the move, the note's previous step, since a power
+      * hooked at `RecoverAfterRelic` appends its leaves after the note. The
+      * site is the one this tree closed over. */
     val recoveredNote = Note(ProcedureNotes.id(ActionRef.Recover), states =>
       states.answered.reverse.collectFirst {
-        case Answered(`relicDecisionId`,
-            ChooseOneAnswer(DecisionOptionRef.Relic(relicId)), _) => relicId
+        case Answered(`relicDecisionId`, ChooseOneAnswer(ref), _) => ref
+      }.flatMap {
+        case DecisionOptionRef.Relic(relic) => Some(relic)
+        case `relicDeckOption` => states.previous.flatMap(
+          _._1.game.current.commonCards.relicDeck.headOption)
+        case _ => None
       }.map(relic => recovered.sourceless(NoteArg.Card(relic),
         NoteArg.Site(siteId))))
 
@@ -236,11 +302,13 @@ object RecoverProcedure:
         Some(PowerWindow.RecoverCost)),
       RollStep(recoverPool, DiceSpec(DiceKind.Defense), Some(actor),
         Some(PowerWindow.RecoverRoll)),
-      Branch((ready, _) =>
-        if succeeded(ready) then Vector.empty else Vector(choiceDecide)))
+      Branch((ready, pending) =>
+        if succeeded(ready, pending.answered) then Vector.empty
+        else Vector(choiceDecide)))
 
     val repeatGuard: (ReadyGame, PendingTree) => Boolean =
-      (ready, pending) => !succeeded(ready) && !stopped(pending)
+      (ready, pending) => target(ready, pending.answered).nonEmpty &&
+        !succeeded(ready, pending.answered) && !stopped(pending)
 
     // Empty-site success is legal and finishes without a decision.
     //
@@ -256,16 +324,22 @@ object RecoverProcedure:
     // Bloodline locks is askable of its holder.
     // A Recover the player stopped declares its own line in the third
     // branch, which is the only place the abandoned Recover is named.
+    //
+    // With no difficulty the `Repeat` ran no round, and this branch refuses,
+    // so the refusal is judged after the modifier decision.
+    val refused = BuildOps((_, _) =>
+      Left(OathViolation.RecoverUnavailable(noDifficulty)))
+
     val afterLoop = Branch((ready, pending) => {
-      val relics = actorFacedownRelics(ready, actor)
-      if succeeded(ready) && relics.nonEmpty then
+      val options = takeable(ready, pending.answered)
+      if target(ready, pending.answered).isEmpty then Vector(refused)
+      else if succeeded(ready, pending.answered) && options.nonEmpty then
         Vector(Decide(
           decisionId = relicDecisionId,
           owner = actor,
-          query = DecisionQuery.ChooseOne(relics.flatMap(relic =>
-            CardSlots.judge(catalog, ready, actor,
-              DecisionOption.Relic(DecisionOptionRef.Relic(relic.id)),
-              Right(Vector(relicMove(relic.id))))),
+          query = DecisionQuery.ChooseOne(options.flatMap((option, move) =>
+            CardSlots.judge(catalog, ready, actor, option,
+              Right(Vector(move)))),
             heading = Some("Take a relic"), confirmVerb = Some("Take"))),
           // The move and its line in one windowed node: a power hooked at
           // `RecoverAfterRelic` appends to the node the window names, so a

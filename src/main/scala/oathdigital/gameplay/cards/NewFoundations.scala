@@ -4,6 +4,7 @@ import oathdigital.catalog.{Denizen, Edifice, ExecutableCatalog, Legacy, Relic, 
 import oathdigital.catalog.holding._
 import oathdigital.gameplay.{ActingTroupeCard, MarriageCard,
   PledgeToDiscordCard, SpitefulMirrorCard}
+import oathdigital.gameplay.actions.recover.UndergroundLibraryCard
 import oathdigital.gameplay.operations.{AncientBloodlineCard, BoilingLakeCard,
   HallOfMinistersCard, TheGrandScepterCard}
 import oathdigital.gameplay.powers.action._

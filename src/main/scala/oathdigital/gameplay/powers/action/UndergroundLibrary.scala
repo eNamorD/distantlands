@@ -1,24 +1,10 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.catalog.{Edifice, EdificeFace, ExecutableCatalog, Locked,
-  PrintedPower}
+import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.NoteSupport
+import oathdigital.gameplay.actions.recover.UndergroundLibraryCard
 import oathdigital.gameplay.powers.PowerAnswers
 import oathdigital.model._
-
-object UndergroundLibraryCard extends Edifice(EdificeId("E13"), Suit.Arcane):
-  object intact extends EdificeFace("Underground Library") with Locked:
-    val power = PrintedPower(PowerId("edifice.e13.intact"),
-      persistent = false, cost = Cost(favor = 1),
-      text = "**ACTION:** Peek at all relics in this region, then swap " +
-        "one with a relic you have, placing it facedown.")
-    val powers: Vector[PrintedPower] = Vector(power)
-  object ruined extends EdificeFace("Drowned Library"):
-    val power = PrintedPower(PowerId("edifice.e13.ruined"),
-      persistent = false, cost = Cost(secret = 1),
-      text = "If your pawn is at this site, you may recover the top card " +
-        "of the relic deck instead. Its recover difficulty is 5.")
-    val powers: Vector[PrintedPower] = Vector(power)
 
 /** Underground Library (E13, intact), ACTION: place 1 favor on this card,
   * peek at every relic at the sites of the Library's region, then swap one
@@ -37,8 +23,8 @@ object UndergroundLibraryCard extends Edifice(EdificeId("E13"), Suit.Arcane):
   *
   * Lines: "{Blue} peeked at the relics in the Cradle: {relics}.", covering
   * the peeks, then "Swapped {given} for {taken} at {site}.", covering the
-  * swap, or "No relic could be swapped." The ruined face, Drowned Library,
-  * needs a Recover whose source a power sets and is not implemented.
+  * swap, or "No relic could be swapped." The ruined face is
+  * [[oathdigital.gameplay.powers.recover.DrownedLibrary]].
   */
 case object UndergroundLibrary
     extends PaidAction(UndergroundLibraryCard.intact.power):

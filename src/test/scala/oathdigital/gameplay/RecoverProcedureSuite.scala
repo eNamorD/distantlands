@@ -2,8 +2,9 @@ package oathdigital.gameplay
 
 import oathdigital.catalog.holding.{BanditCrownCard, CrackedHornCard}
 import oathdigital.gameplay.actions.RecoverRules
-import oathdigital.gameplay.actions.recover.RecoverProcedure
-import oathdigital.gameplay.cards.FairIsleSite
+import oathdigital.gameplay.actions.recover.{RecoverProcedure,
+  UndergroundLibraryCard}
+import oathdigital.gameplay.cards.{DeepWoodsSite, FairIsleSite}
 import oathdigital.gameplay.powers.action.DowsingSticksCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.gameplay.WalkerDiceFixture.scripted
@@ -41,6 +42,18 @@ class RecoverProcedureSuite extends munit.FunSuite
     * Sticks facedown and nothing else. */
   private def recoverBoard: Table = Table.start.pawn(actor, at = recoverSite)
     .relicAt(relic, at = recoverSite)
+
+  /** The modifier decision's answer that picked Drowned Library. */
+  private val pickedDrownedLibrary: Answered = Answered("recover.modifiers",
+    ChooseOneAnswer(DecisionOptionRef.Edifice(UndergroundLibraryCard.id)),
+    actor)
+
+  /** One shield and a blank: with a two-shield roll before it, 5. */
+  private val oneShield: Vector[DieFace] =
+    Vector(DefenseDieFace.OneShield, DefenseDieFace.Blank)
+
+  /** Deep Woods has no Recover difficulty. */
+  private val noDifficultySite = DeepWoodsSite.id
 
   /** The steps a walk recorded, without the `LogNoted` events its `Note`
     * leaves journal: a note changes no state and is the Game Log's
@@ -349,6 +362,101 @@ class RecoverProcedureSuite extends munit.FunSuite
     recordedSteps(finalEvents, notes = 0)
     assertEquals(RecoverProcedure.actorFacedownRelics(finalState, actor),
       Vector.empty)
+
+  test("Deep Woods has no Recover difficulty, as the tests assume"):
+    assertEquals(RecoverRules.difficulty(catalog, noDifficultySite), None)
+
+  test("a Recover at a site with no Recover difficulty is refused after " +
+      "its modifiers, before any Supply is spent"):
+    val ready = Table.start.pawn(actor, at = noDifficultySite).ready
+    val tree = accepted(RecoverProcedure.afterModifiers(catalog, ready, actor))
+    assertEquals(ProcedureWalker.advance(ready, tree, None, noPowers,
+        scripted(highRoll)).left.toOption,
+      Some(OathViolation.RecoverUnavailable(RecoverProcedure.noDifficulty)))
+
+  test("with Drowned Library picked, a Recover needs 5 and takes the relic " +
+      "deck's top card facedown"):
+    val ready = recoverBoard.ready
+    val top = ready.game.current.commonCards.relicDeck.head
+    val tree = accepted(RecoverProcedure.afterModifiers(catalog, ready, actor))
+    assertEquals(RecoverProcedure.difficulty(catalog, ready, actor,
+      Vector(pickedDrownedLibrary)), Some(RecoverProcedure.relicDeckDifficulty))
+
+    // Four shields reach Fair Isle's 3 but not 5: the choice is asked.
+    val choiceWalk = expectParked(
+      ProcedureWalker.advance(ready, tree, None, noPowers,
+        scripted(highRoll), seed = Vector(pickedDrownedLibrary)),
+      Vector("1", "0", "2", "0"))
+    val stateAtChoice = applyRecorded(ready, choiceWalk.events)
+    val continue = Answered(RecoverProcedure.choiceDecisionId,
+      ChooseOneAnswer(DecisionOptionRef.Button("continue")), actor)
+    val relicWalk = expectParked(
+      ProcedureWalker.resolve(stateAtChoice, tree, choiceWalk.tree, continue,
+        noPowers, scripted(oneShield)),
+      Vector("2", "0"))
+    val stateAtRelic = applyRecorded(stateAtChoice, relicWalk.events)
+
+    // The deck is offered, never the relic, and the site's relic is not.
+    val decide = present(ProcedureWalker.parkedDecide(stateAtRelic, tree,
+      relicWalk.tree, noPowers), "the relic decision")
+    assertEquals(decide.query, DecisionQuery.ChooseOne(Vector(
+      DecisionOption.Deck(RecoverProcedure.relicDeckOption)),
+      heading = Some("Take a relic"), confirmVerb = Some("Take")))
+
+    val taking = Outcomes.finished(ProcedureWalker.resolve(stateAtRelic,
+      tree, relicWalk.tree, Answered(RecoverProcedure.relicDecisionId,
+        ChooseOneAnswer(RecoverProcedure.relicDeckOption), actor),
+      noPowers))
+    assertEquals(RecordedOps.of(recordedSteps(taking.events, notes = 1)(1)),
+      Vector[CoreOperation](Move(Piece.Card(top),
+        PositionedLocation(Location.Deck(CardDeck.Relic), StackPosition.Top),
+        PositionedLocation(Location.PlayArea(actor)),
+        resultingOrientation = Some(Orientation.FaceDown),
+        by = Some(actor))))
+    // The recovered line names the deck's top card and the pawn's site.
+    assertEquals(taking.events.collect { case LogNoted(_, note, _) =>
+      note.args }, Vector(Vector(NoteArg.Card(top), NoteArg.Site(recoverSite))))
+    val finalState = taking.treeless
+    assertEquals(Look(finalState).player(actor).relics
+      .map(held => held.id -> held.orientation),
+      Vector(top -> Orientation.FaceDown))
+    assertEquals(finalState.game.current.commonCards.relicDeck,
+      ready.game.current.commonCards.relicDeck.tail)
+    assertEquals(finalState.game.current.map.sites(recoverSite).relics,
+      Vector(siteRelic))
+
+  test("with Drowned Library picked, a site with no Recover difficulty is " +
+      "not refused"):
+    val ready = Table.start.pawn(actor, at = noDifficultySite).ready
+    val tree = accepted(RecoverProcedure.afterModifiers(catalog, ready, actor))
+    expectParked(ProcedureWalker.advance(ready, tree, None, noPowers,
+      scripted(highRoll), seed = Vector(pickedDrownedLibrary)),
+      Vector("1", "0", "2", "0"))
+
+  test("with Drowned Library picked and the relic deck empty, a successful " +
+      "Recover finishes without a relic decision"):
+    val ready = recoverBoard.relicDeckEmptied.ready
+    val tree = accepted(RecoverProcedure.afterModifiers(catalog, ready, actor))
+    val choiceWalk = expectParked(ProcedureWalker.advance(ready, tree, None,
+      noPowers, scripted(highRoll), seed = Vector(pickedDrownedLibrary)),
+      Vector("1", "0", "2", "0"))
+    val stateAtChoice = applyRecorded(ready, choiceWalk.events)
+    val done = Outcomes.finished(ProcedureWalker.resolve(stateAtChoice, tree,
+      choiceWalk.tree, Answered(RecoverProcedure.choiceDecisionId,
+        ChooseOneAnswer(DecisionOptionRef.Button("continue")), actor),
+      noPowers, scripted(oneShield)))
+    assertEquals(Look(done.treeless).player(actor).relics, Vector.empty)
+
+  test("the roll feedback shows 5 while a walk that picked Drowned Library " +
+      "is parked"):
+    def target(ready: ReadyGame) = RecoverProcedure.rollFeedback(catalog,
+      ready, actor, RecoverProcedure.choiceDecisionId).flatMap(_.target)
+    val parkedWith: Vector[Answered] => ReadyGame = answered =>
+      recoverBoard.ready.updateCurrent(_.copy(walkerPending =
+        Some(PendingTree(Vector("1", "0", "2", "0"), answered))))
+    assertEquals(target(parkedWith(Vector.empty)), Some(difficulty))
+    assertEquals(target(parkedWith(Vector(pickedDrownedLibrary))),
+      Some(RecoverProcedure.relicDeckDifficulty))
 
   /** Every node reachable from `node`, including `node` itself: a `Branch`
     * is resolved by evaluating `select(state, ...)` against `state` (the

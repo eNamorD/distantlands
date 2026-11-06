@@ -1,7 +1,7 @@
 package oathdigital.gameplay
 
 import oathdigital.gameplay.actions.RecoverRules
-import oathdigital.gameplay.cards.BrokenPeaksSite
+import oathdigital.gameplay.cards.{BrokenPeaksSite, DeepWoodsSite}
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.model._
 import oathdigital.testkit.{MenuPlay, Table}
@@ -29,3 +29,7 @@ class RecoverEligibilitySuite extends munit.FunSuite:
     def withSupply(supply: Int) = atRecoverSite.supply(p1, supply).ready
     assert(recoverAvailable(withSupply(1)))
     assert(!recoverAvailable(withSupply(0)))
+
+  test("Recover is not available at a site with no Recover difficulty"):
+    assertEquals(RecoverRules.difficulty(catalog, DeepWoodsSite.id), None)
+    assert(!recoverAvailable(Table.start.pawn(p1, at = DeepWoodsSite).ready))

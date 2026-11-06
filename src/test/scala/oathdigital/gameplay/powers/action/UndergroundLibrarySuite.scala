@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.catalog.holding.CrackedHornCard
+import oathdigital.gameplay.actions.recover.UndergroundLibraryCard
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
 import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
