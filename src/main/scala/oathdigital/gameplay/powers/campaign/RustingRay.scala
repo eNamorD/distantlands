@@ -22,15 +22,13 @@ object RustingRayCard extends Denizen(DenizenId("57"), "Rusting Ray", Suit.Arcan
   *
   * When the attack rolled a hollow sword it writes "Hollow swords ignored."
   */
-case object RustingRay extends BattlePlan:
-  val cardId: DenizenId = RustingRayCard.id
-  val id: PowerId = RustingRayCard.power.id
+case object RustingRay extends DenizenPlan(RustingRayCard,
+    RustingRayCard.power):
   private val notes = NoteSet(id)
   /** "Hollow swords ignored." */
   val ignored: NoteKey = notes.key("ignored",
     Vector(NotePart.Text("Hollow swords ignored.")))
 
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Defender)
   override def noteKeys: Vector[NoteKey] = notes.declared
 

@@ -34,8 +34,8 @@ object SignalTreesCard extends Denizen(DenizenId("217"), "Signal Trees",
   * ("removed" for a defender), "Revealed and discarded {cards}." when no
   * Beast is revealed, and "Nothing was revealed." for an empty pile.
   */
-case object SignalTrees extends BattlePlan:
-  val id: PowerId = SignalTreesCard.power.id
+case object SignalTrees extends DenizenPlan(SignalTreesCard,
+    SignalTreesCard.power):
   /** The most cards revealed. */
   val Revealed: Int = 3
   /** The attack dice each Beast revealed adds or removes. */
@@ -60,8 +60,6 @@ case object SignalTrees extends BattlePlan:
   val none: NoteKey = notes.key("none", Vector(
     NotePart.Text("Nothing was revealed.")))
 
-  val cardId: DenizenId = SignalTreesCard.id
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] =
     Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
 

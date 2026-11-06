@@ -23,8 +23,8 @@ object TributeSpoilsCard extends Denizen(DenizenId("239"), "Tribute Spoils", Sui
   * pay nothing, so a bandit defender never applies it. The gains write the
   * generic gain lines, so it writes no line of its own.
   */
-case object TributeSpoils extends BattlePlan:
-  val id: PowerId = TributeSpoilsCard.power.id
+case object TributeSpoils extends DenizenPlan(TributeSpoilsCard,
+    TributeSpoilsCard.power):
   /** The favor placed to choose it. */
   val Favor: Int = 1
 
@@ -35,8 +35,6 @@ case object TributeSpoils extends BattlePlan:
       case edifice: EdificeState => edifice.id
     }
 
-  val cardId: DenizenId = TributeSpoilsCard.id
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] =
     Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
 

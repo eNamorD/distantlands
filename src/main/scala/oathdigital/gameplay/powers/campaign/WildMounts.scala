@@ -45,8 +45,8 @@ object WildMountsCard extends Denizen(DenizenId("153"), "Wild Mounts", Suit.Noma
   * The swap writes "Discarded {card} instead of the battle plans.", or,
   * for a defender, "{Blue} discarded {card} instead of the battle plans.".
   */
-case object WildMounts extends BattlePlan:
-  val id: PowerId = WildMountsCard.power.id
+case object WildMounts extends DenizenPlan(WildMountsCard,
+    WildMountsCard.power):
   /** Where the held discards wait for the step that resolves them. */
   val deferred: DeferralKey = DeferralKey("wild-mounts")
   /** Bandits swap only when they would discard this many Nomad plans
@@ -70,8 +70,6 @@ case object WildMounts extends BattlePlan:
     NotePart.Arg(0), NotePart.Text(" discarded "), NotePart.Arg(1),
     NotePart.Text(" instead of the battle plans.")))
 
-  val cardId: DenizenId = WildMountsCard.id
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] =
     Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
 

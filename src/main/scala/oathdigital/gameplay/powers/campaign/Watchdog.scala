@@ -17,11 +17,7 @@ object WatchdogCard extends Denizen(DenizenId("234"), "Watchdog", Suit.Hearth):
   * bandit defender uses it from a site Bandits rule, without choosing. A Raid
   * targets no site, so it never applies to one.
   */
-case object Watchdog extends BattlePlan:
-  val cardId: DenizenId = WatchdogCard.id
-  val id: PowerId = WatchdogCard.power.id
-
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
+case object Watchdog extends DenizenPlan(WatchdogCard, WatchdogCard.power):
   def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Defender)
 
   def plan(context: PlanContext): Option[CampaignPlanOffer] =

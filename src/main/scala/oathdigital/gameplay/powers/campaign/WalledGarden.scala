@@ -21,11 +21,8 @@ object WalledGardenCard extends Denizen(DenizenId("195"), "Walled Garden", Suit.
   * counts itself, so it adds at least one. A bandit defender applies it at a
   * site it rules.
   */
-case object WalledGarden extends BattlePlan:
-  val id: PowerId = WalledGardenCard.power.id
-
-  val cardId: DenizenId = WalledGardenCard.id
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
+case object WalledGarden extends DenizenPlan(WalledGardenCard,
+    WalledGardenCard.power):
   def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Defender)
 
   def plan(context: PlanContext): Option[CampaignPlanOffer] =

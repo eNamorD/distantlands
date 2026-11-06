@@ -27,9 +27,8 @@ object WarTortoiseCard extends Denizen(DenizenId("187"), "War Tortoise", Suit.Be
   * against it, and "Double shields added no defense." when a double shield
   * was.
   */
-case object WarTortoise extends BattlePlan:
-  val cardId: DenizenId = WarTortoiseCard.id
-  val id: PowerId = WarTortoiseCard.power.id
+case object WarTortoise extends DenizenPlan(WarTortoiseCard,
+    WarTortoiseCard.power):
   private val notes = NoteSet(id)
   /** "Double swords added no attack." */
   val attack: NoteKey = notes.key("attack",
@@ -38,7 +37,6 @@ case object WarTortoise extends BattlePlan:
   val defense: NoteKey = notes.key("defense",
     Vector(NotePart.Text("Double shields added no defense.")))
 
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] =
     Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
   override def noteKeys: Vector[NoteKey] = notes.declared

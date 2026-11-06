@@ -28,11 +28,8 @@ object SecondWindCard extends Denizen(DenizenId("16"), "Second Wind", Suit.Disco
   * as their actor, so they are walked off turn after the attacker's
   * follow-ups, and the defender pays the plan's cost off turn.
   */
-case object SecondWind extends BattlePlan:
-  val cardId: DenizenId = SecondWindCard.id
-  val id: PowerId = SecondWindCard.power.id
-
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
+case object SecondWind extends DenizenPlan(SecondWindCard,
+    SecondWindCard.power):
   def sides: Set[CampaignPlanSide] =
     Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
 

@@ -19,11 +19,7 @@ object WrestlersCard extends Denizen(DenizenId("1"), "Wrestlers", Suit.Order):
   * so it lowers the recorded force by one. A defender with no warband in their
   * force cannot pay, and the plan is not offered.
   */
-case object Wrestlers extends BattlePlan:
-  val cardId: DenizenId = WrestlersCard.id
-  val id: PowerId = WrestlersCard.power.id
-
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
+case object Wrestlers extends DenizenPlan(WrestlersCard, WrestlersCard.power):
   def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Defender)
 
   def plan(context: PlanContext): Option[CampaignPlanOffer] =

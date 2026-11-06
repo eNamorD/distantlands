@@ -24,9 +24,8 @@ object ShieldWallCard extends Denizen(DenizenId("108"), "Shield Wall", Suit.Orde
   * Its line names its user, the defender, who acts off turn: "{Blue}'s whole
   * force was killed.", when the kill killed a warband. The dice write no line.
   */
-case object ShieldWall extends BattlePlan:
-  val cardId: DenizenId = ShieldWallCard.id
-  val id: PowerId = ShieldWallCard.power.id
+case object ShieldWall extends DenizenPlan(ShieldWallCard,
+    ShieldWallCard.power):
   /** The favor placed to choose it. */
   val Favor: Int = 1
   /** The defense dice it adds. */
@@ -37,7 +36,6 @@ case object ShieldWall extends BattlePlan:
   val killed: NoteKey = notes.key("killed", Vector(NotePart.Arg(0),
     NotePart.Text("'s whole force was killed.")))
 
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Defender)
   override def noteKeys: Vector[NoteKey] = notes.declared
 

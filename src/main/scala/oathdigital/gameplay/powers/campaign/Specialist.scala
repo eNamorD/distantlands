@@ -21,16 +21,14 @@ object SpecialistCard extends Denizen(DenizenId("114"), "Specialist", Suit.Order
   * bandit defender applies nothing. The restriction reads the attacker's
   * answered plan picks, so it holds only in a Campaign that chose it.
   */
-case object Specialist extends BattlePlan:
-  val cardId: DenizenId = SpecialistCard.id
-  val id: PowerId = SpecialistCard.power.id
+case object Specialist extends DenizenPlan(SpecialistCard,
+    SpecialistCard.power):
   val Favor: Int = 2
   private val notes = NoteSet(id)
   /** "The defender cannot use battle plans." */
   val silenced: NoteKey = notes.key("silenced",
     Vector(NotePart.Text("The defender cannot use battle plans.")))
 
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Attacker)
   override def noteKeys: Vector[NoteKey] = notes.declared
 

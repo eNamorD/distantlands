@@ -28,9 +28,7 @@ object ZealotsCard extends Denizen(DenizenId("87"), "Zealots", Suit.Discord):
   *
   * It writes no line of its own.
   */
-case object Zealots extends BattlePlan:
-  val cardId: DenizenId = ZealotsCard.id
-  val id: PowerId = ZealotsCard.power.id
+case object Zealots extends DenizenPlan(ZealotsCard, ZealotsCard.power):
   /** What each sacrificed warband adds while the plan holds. */
   val Worth: Int = 3
   private val notes = NoteSet(id)
@@ -39,7 +37,6 @@ case object Zealots extends BattlePlan:
   val noEffect: NoteKey = notes.key("no-effect", Vector(NotePart.Text(
     "Has no effect unless defending force is larger than yours")))
 
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Attacker)
   override def noteKeys: Vector[NoteKey] = notes.declared
 

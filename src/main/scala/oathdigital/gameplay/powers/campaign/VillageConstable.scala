@@ -18,12 +18,10 @@ object VillageConstableCard extends Denizen(DenizenId("132"), "Village Constable
   * holds the People's Favor. Bandits hold no banner, so it is always offered
   * against them, and a bandit defender applies it at a site it rules.
   */
-case object VillageConstable extends BattlePlan:
-  val cardId: DenizenId = VillageConstableCard.id
-  val id: PowerId = VillageConstableCard.power.id
+case object VillageConstable extends DenizenPlan(VillageConstableCard,
+    VillageConstableCard.power):
   val Dice: Int = 2
 
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] =
     Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
 

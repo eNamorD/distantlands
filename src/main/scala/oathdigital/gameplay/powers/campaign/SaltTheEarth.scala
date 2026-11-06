@@ -31,8 +31,8 @@ object SaltTheEarthCard extends Denizen(DenizenId("89"), "Salt the Earth", Suit.
   * Its line names the cards and the site, "Buried Tinker, the Great Clock and
   * a relic from Ancient City.", and covers the generic "Buried" lines.
   */
-case object SaltTheEarth extends BattlePlan:
-  val id: PowerId = SaltTheEarthCard.power.id
+case object SaltTheEarth extends DenizenPlan(SaltTheEarthCard,
+    SaltTheEarthCard.power):
   /** Under the Campaign's prefix, so a parked question is a Campaign
     * decision. */
   val decisionId: String = CampaignProcedure.decisionPrefix + "salt-the-earth"
@@ -48,9 +48,6 @@ case object SaltTheEarth extends BattlePlan:
     ready.game.current.map.sites.get(site).toVector.flatMap(state =>
       state.denizens.map[CardId](_.id) ++ state.relics.map[CardId](_.id))
 
-  val cardId: DenizenId = SaltTheEarthCard.id
-
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Attacker)
 
   def plan(context: PlanContext): Option[CampaignPlanOffer] =

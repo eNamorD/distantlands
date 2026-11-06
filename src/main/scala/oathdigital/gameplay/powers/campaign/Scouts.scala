@@ -19,16 +19,13 @@ object ScoutsCard extends Denizen(DenizenId("8"), "Scouts", Suit.Order):
   * Supply track's maximum (`GainSupply`). It writes "Gained {n} Supply." with
   * the Supply gained, and nothing when none was.
   */
-case object Scouts extends BattlePlan:
-  val cardId: DenizenId = ScoutsCard.id
-  val id: PowerId = ScoutsCard.power.id
+case object Scouts extends DenizenPlan(ScoutsCard, ScoutsCard.power):
   val Supply: Int = 1
   private val notes = NoteSet(id)
   /** "Gained {n} Supply." */
   val gained: NoteKey = notes.key("gained", Vector(NotePart.Text("Gained "),
     NotePart.Arg(0), NotePart.Text(".")))
 
-  def cardRef: DecisionOptionRef = DecisionOptionRef.Denizen(cardId)
   def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Attacker)
   override def noteKeys: Vector[NoteKey] = notes.declared
 
