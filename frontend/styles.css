@@ -608,6 +608,9 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .card-link:hover { color: var(--cream-bright); text-decoration-color: var(--brass); }
 .card-link:focus-visible { outline: 2px solid var(--cream-focus); outline-offset: 1px; }
 .negotiation-item input[type=number] { width: 5em; }
+/* A withheld checkbox (aria-disabled, its reason in the hover note) looks
+   disabled but still takes the tap that shows the reason. */
+.negotiation-item input[aria-disabled="true"] { opacity: 0.5; cursor: not-allowed; }
 .decision-zones { display: grid; grid-template-columns: 1fr 2fr; gap: 16px; }
 .decision-zone { min-height: 180px; padding: 12px; border: 1px solid var(--line); border-radius: 9px; }
 .decision-zone-helper { margin: 0.25rem 0 0.65rem; color: var(--ink-dim);

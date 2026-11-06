@@ -287,9 +287,16 @@ class NegotiationDealPanelSuite extends munit.FunSuite:
         Vector(NegotiationTransfer("blue", 0, Vector.empty)), Vector.empty,
         Vector("blue"))))))
 
-  test("under the first-game option the offer is disabled with its reason"):
+  test("under the first-game option the offer is withheld with its reason"):
     val reason = "Citizenship is ignored due to setup option"
     val panel = render(owner(scepterDeal(Some(reason))),
       new RecordingControls())
-    assert(citizenshipBox(panel).disabled)
-    assertEquals(citizenshipBox(panel).title, reason)
+    val box = citizenshipBox(panel)
+    assertEquals(box.getAttribute("aria-disabled"), "true")
+    assertEquals(box.getAttribute("data-tip"), reason)
+    assert(!box.hasAttribute("title"))
+    // The box keeps its offer: a click neither flips it nor is swallowed
+    // by `disabled`, so a tap can still show the reason.
+    assert(box.checked)
+    box.click()
+    assert(box.checked)

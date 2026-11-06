@@ -106,7 +106,11 @@ private[frontend] object NegotiationDealPanel:
     row
 
   /** The Grand Scepter's offer of Citizenship to `recipient`, an Exile: a
-    * checkbox, disabled with its reason under the first-game option. */
+    * checkbox, withheld with its reason under the first-game option. A
+    * withheld box is not `disabled`: a disabled input takes no pointer
+    * event, so a tap could not show the reason (HoverTip); instead it is
+    * `aria-disabled`, carries the note, and its click is prevented so it
+    * cannot flip. */
   private def citizenshipItem(deal: NegotiationDealState,
       editing: NegotiationEditingState, me: String, recipient: String,
       panel: dom.Element): dom.html.Input =
@@ -114,15 +118,18 @@ private[frontend] object NegotiationDealPanel:
     check.setAttribute("aria-label", s"Offer Citizenship to $recipient")
     check.checked = deal.citizenship.exists(offer =>
       offer.authorPlayerId == me && offer.recipientPlayerId == recipient)
-    editing.citizenshipRefused.foreach { reason =>
-      check.disabled = true
-      check.title = reason
-    }
     val row = dom.document.createElement("label").asInstanceOf[dom.html.Label]
     row.className = "negotiation-item"
     row.appendChild(check)
     row.appendChild(text("span", "negotiation-item-label", "Offer Citizenship"))
-    editing.citizenshipRefused.foreach(reason => row.title = reason)
+    editing.citizenshipRefused.foreach { reason =>
+      check.setAttribute("aria-disabled", "true")
+      HoverTip.set(check, reason)
+      // The label's text hovers the same note; a click on it reaches the
+      // box as a click and is prevented there.
+      HoverTip.set(row, reason)
+      check.onclick = (event: dom.MouseEvent) => event.preventDefault()
+    }
     panel.appendChild(row)
     check
 
