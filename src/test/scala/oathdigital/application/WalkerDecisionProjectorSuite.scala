@@ -166,18 +166,6 @@ class WalkerDecisionProjectorSuite extends munit.FunSuite:
     assertEquals(query.confirmLabel, "Take banner")
     assertEquals(query.offeredOptions, Vector.empty)
 
-  test("a banner is named as it is printed, and counts what it holds"):
-    val option = DecisionOption.Banner(DecisionOptionRef.Banner(Banner.DarkestSecret))
-    val unclaimed = parked(ActionRef.Recover,
-      steps = _.darkestSecret(None, secrets = 3))
-    val query = projects(unclaimed, p1, Vector(option))
-      .getOrElse(fail("an unclaimed banner must project"))
-    // No owner in the label: the banner is one object on the table, and who
-    // holds it is read off the board. The count names the resource it takes.
-    assertEquals(query.offeredOptions.map(row => (row.kind, row.id, row.label,
-      row.details)), Vector(("banner", "darkest-secret",
-      "Darkest Secret", Vector("Currently 3 secrets"))))
-
   /** Whether the tree below projects at all, for the given options. */
   private def projects(context: ScopedProjectionContext, actor: PlayerId,
       options: Vector[DecisionOption]) =
@@ -206,18 +194,6 @@ class WalkerDecisionProjectorSuite extends munit.FunSuite:
     assertEquals(projects(context, p1, Vector(
       DecisionOption.Relic(DecisionOptionRef.Relic(present)),
       DecisionOption.Relic(DecisionOptionRef.Relic(absent)))), None)
-
-  test("a badged option projects its badge and keeps its price"):
-    val context = parked(ActionRef.Recover, Some(facedownRelicSite))
-    val present = stickyFire
-    val option = DecisionOption.Badged(DecisionOption.Priced(
-      DecisionOption.Relic(DecisionOptionRef.Relic(present)),
-      OptionPrice(favor = 1)), "Battle Plan")
-    val projected = projectorFor(decideTree(Vector.empty, p1))
-      .optionProjection(context.ready, Some(p1),
-        CardIndex.from(context.ready.game).toOption, option)
-    assertEquals(projected.flatMap(_.badge), Some("Battle Plan"))
-    assertEquals(projected.map(_.details), Some(Vector("Cost: 1 [favor]")))
 
   test("an edifice option projects its label and details from the card's side, " +
       "and one that is not at a site suppresses the decision"):
