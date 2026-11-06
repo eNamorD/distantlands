@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
-import oathdigital.gameplay.{EffectiveSuit, NoteSupport, PowerAccess}
+import oathdigital.gameplay.{EffectiveSuit, NoteSupport}
 import oathdigital.gameplay.actions.{BannerRules, CardPlay}
 import oathdigital.gameplay.powers.{PlayerFacts, PowerAnswers}
 import oathdigital.gameplay.powers.banner.CardPowerBanners
@@ -157,7 +157,7 @@ case object ArmedMob extends PaidAction(ArmedMobCard.power):
           s"${ref.wireId} is not an adviser Armed Mob can discard"))
       suit <- EffectiveSuit.of(catalog, ready, chosen.id)
         .toRight(OathViolation.UnknownWorldCard(chosen.id))
-      region <- PowerAccess.pawnSite(ready, actor)
+      region <- ready.game.current.pawnSite(actor)
         .flatMap(ready.game.current.map.regionOf).map(CardPlay.nextRegion)
         .toRight(OathViolation.PawnSiteMissing(actor))
     yield Vector[CoreOperation](Discard.Denizen(chosen.id,

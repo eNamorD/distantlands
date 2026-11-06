@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.PowerAccess
 import oathdigital.model._
 
 object TavernSongsCard extends Denizen(DenizenId("54"), "Tavern Songs", Suit.Hearth):
@@ -64,7 +63,7 @@ case object TavernSongs extends PaidAction(TavernSongsCard.power):
 
   /** The region of the player's pawn site. */
   private def region(ready: ReadyGame, player: PlayerId): Option[Region] =
-    PowerAccess.pawnSite(ready, player).flatMap(ready.game.current.map.regionOf)
+    ready.game.current.pawnSite(player).flatMap(ready.game.current.map.regionOf)
 
   /** The pile's top cards, top first. */
   private def top(ready: ReadyGame, at: Region): Vector[WorldCardId] =

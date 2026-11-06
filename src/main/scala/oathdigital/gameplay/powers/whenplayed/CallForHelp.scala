@@ -2,7 +2,7 @@ package oathdigital.gameplay.powers.whenplayed
 
 import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
   Locked, PrintedPower}
-import oathdigital.gameplay.{NoteSupport, PowerAccess}
+import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.actions.CardPlay
 import oathdigital.gameplay.powerresolver.PowerCtx
 import oathdigital.gameplay.powers.{PlayerFacts, PowerAnswers}
@@ -86,7 +86,7 @@ case object CallForHelp extends WhenPlayedPower:
         PowerAnswers.last(answered, continueDecisionId).contains(keep))
 
   private def home(ready: ReadyGame, actor: PlayerId): Option[Region] =
-    PowerAccess.pawnSite(ready, actor).flatMap(ready.game.current.map.regionOf)
+    ready.game.current.pawnSite(actor).flatMap(ready.game.current.map.regionOf)
 
   private def pile(ready: ReadyGame, actor: PlayerId): Vector[WorldCardId] =
     home(ready, actor).fold(Vector.empty[WorldCardId])(

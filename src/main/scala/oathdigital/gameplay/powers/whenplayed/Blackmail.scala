@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.whenplayed
 
 import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.{NoteSupport, PowerAccess}
+import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.powerresolver.PowerCtx
 import oathdigital.gameplay.powers.PowerAnswers
 import oathdigital.gameplay.powers.targeting.LostTongue
@@ -85,7 +85,7 @@ case object Blackmail extends WhenPlayedPower:
     * leaves takeable, in seat then relic order. */
   private def targets(catalog: ExecutableCatalog,
       ready: ReadyGame, actor: PlayerId): Vector[Target] =
-    PowerAccess.pawnSite(ready, actor).toVector.flatMap(site => for
+    ready.game.current.pawnSite(actor).toVector.flatMap(site => for
       other <- ready.game.current.players
       if other.player != actor && other.pawnSite.contains(site) &&
         !lostTongue.protects(catalog, ready, actor, other.player)

@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.{NoteSupport, PowerAccess}
+import oathdigital.gameplay.NoteSupport
 import oathdigital.model._
 
 object SpoiledSuppliesCard extends Denizen(DenizenId("228"), "Spoiled Supplies", Suit.Discord):
@@ -51,6 +51,6 @@ case object SpoiledSupplies extends PaidAction(SpoiledSuppliesCard.power):
     NoteUnit.Supply))
 
   private def enemies(ready: ReadyGame, actor: PlayerId): Vector[PlayerState] =
-    PowerAccess.pawnSite(ready, actor).toVector.flatMap(site =>
+    ready.game.current.pawnSite(actor).toVector.flatMap(site =>
       ready.game.current.players.filter(p => p.player != actor &&
         p.pawnSite.contains(site)))

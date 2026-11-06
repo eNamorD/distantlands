@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.{NoteSupport, PowerAccess}
+import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.powers.PowerAnswers
 import oathdigital.model._
 
@@ -63,7 +63,7 @@ case object SiegeEngines extends PaidAction(SiegeEnginesCard.power):
   /** The sites in the region of the player's pawn, in map order. */
   def sites(ready: ReadyGame, player: PlayerId): Vector[SiteId] =
     val map = ready.game.current.map
-    PowerAccess.pawnSite(ready, player).flatMap(map.regionOf).toVector
+    ready.game.current.pawnSite(player).flatMap(map.regionOf).toVector
       .flatMap(region => map.inPlay.filter(map.regionOf(_).contains(region)))
 
   private def forces(ready: ReadyGame, site: SiteId): Option[SiteForces] =

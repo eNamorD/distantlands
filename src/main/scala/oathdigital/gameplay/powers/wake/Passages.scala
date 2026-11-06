@@ -2,7 +2,7 @@ package oathdigital.gameplay.powers.wake
 
 import oathdigital.catalog.{Edifice, EdificeFace, ExecutableCatalog, Locked,
   PrintedPower}
-import oathdigital.gameplay.{PowerAccess, SiteRulers}
+import oathdigital.gameplay.SiteRulers
 import oathdigital.gameplay.operations.PowerUseRules
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   PhasePower, PowerUse, PowerUseRefusal, PowerUseRestriction, Waiver}
@@ -45,7 +45,7 @@ sealed abstract class PassagesPower extends PhasePower:
 
   final def usable(catalog: ExecutableCatalog, ready: ReadyGame,
       player: PlayerId, source: DecisionOptionRef): Boolean =
-    passagesSite(ready).exists(PowerAccess.pawnSite(ready, player).contains)
+    passagesSite(ready).exists(ready.game.current.pawnSite(player).contains)
 
   final def build(catalog: ExecutableCatalog, ready: ReadyGame,
       player: PlayerId, source: DecisionOptionRef)

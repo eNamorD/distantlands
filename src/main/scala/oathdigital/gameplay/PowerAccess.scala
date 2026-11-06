@@ -27,6 +27,8 @@ private[gameplay] object PowerAccess:
     final case class AtSite(site: SiteId) extends Held
     case object InPlayArea extends Held
 
+  /** Kept only for VowOfBeastkin; every other caller reads
+    * `CurrentGameState.pawnSite` directly. */
   def pawnSite(ready: ReadyGame, actor: PlayerId): Option[SiteId] =
     ready.game.current.pawnSite(actor)
 
@@ -72,7 +74,7 @@ private[gameplay] object PowerAccess:
 
   /** Where the actor acts from: the as-if site, else the pawn site. */
   def presentSite(ready: ReadyGame, actor: PlayerId): Option[SiteId] =
-    asIfSite(ready, actor).orElse(pawnSite(ready, actor))
+    asIfSite(ready, actor).orElse(ready.game.current.pawnSite(actor))
 
   private def usableSites(ready: ReadyGame, actor: PlayerId): Set[SiteId] =
     ruledSites(ready, actor) ++ presentSite(ready, actor)
@@ -81,7 +83,8 @@ private[gameplay] object PowerAccess:
       actor: PlayerId, facedownAdviser: Boolean = false): Boolean =
     lazy val sites = usableSites(ready, actor)
     ref match
-      case RuleSourceRef.Site(id) => pawnSite(ready, actor).contains(id)
+      case RuleSourceRef.Site(id) =>
+        ready.game.current.pawnSite(actor).contains(id)
       case RuleSourceRef.SiteCard(id, _) =>
         face == RuleSourceFace.FaceUp && sites(id)
       case RuleSourceRef.SiteRelic(_, _) => false
@@ -126,4 +129,4 @@ private[gameplay] object PowerAccess:
   def siteOf(ready: ReadyGame, actor: PlayerId, card: CardId): Option[SiteId] =
     locate(ready, actor, card).flatMap:
       case Held.AtSite(site) => Some(site)
-      case Held.InPlayArea => pawnSite(ready, actor)
+      case Held.InPlayArea => ready.game.current.pawnSite(actor)

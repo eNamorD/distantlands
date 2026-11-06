@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.cardplay
 
 import oathdigital.catalog.{Denizen, PrintedPower, SiteOnly}
-import oathdigital.gameplay.{PowerAccess, SiteRulers}
+import oathdigital.gameplay.SiteRulers
 import oathdigital.gameplay.powerresolver._
 import oathdigital.model._
 
@@ -60,6 +60,6 @@ case object SecretPolice extends ContributingPower:
     _ <- VisionPlay.pending(ctx)
     ruler <- SiteRulers.rulerOfCard(ctx.state, cardId)
     if SiteRule.enemies(ruler, SiteRuler.Player(ctx.actor))
-    pawn <- PowerAccess.pawnSite(ctx.state, ctx.actor)
+    pawn <- ctx.state.game.current.pawnSite(ctx.actor)
     if SiteRulers.rulerOf(ctx.state, pawn).contains(ruler)
   yield VisionPlay.forbidden("Secret Police")

@@ -2,7 +2,7 @@ package oathdigital.gameplay.powers.action
 
 import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
   PrintedPower}
-import oathdigital.gameplay.{EffectiveSuit, NoteSupport, PowerAccess}
+import oathdigital.gameplay.{EffectiveSuit, NoteSupport}
 import oathdigital.gameplay.powers.PowerAnswers
 import oathdigital.model._
 
@@ -60,7 +60,7 @@ case object HonorGuard extends PaidAction(HonorGuardCard.power):
 
   private def candidates(catalog: ExecutableCatalog,
       ready: ReadyGame, actor: PlayerId): Vector[Candidate] =
-    val site = PowerAccess.pawnSite(ready, actor)
+    val site = ready.game.current.pawnSite(actor)
     for
       owner <- ready.game.current.players
       if site.nonEmpty && owner.pawnSite == site &&

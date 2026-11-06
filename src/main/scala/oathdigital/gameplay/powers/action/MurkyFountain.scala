@@ -59,7 +59,7 @@ case object MurkyFountain extends PaidAction(MarbleFountainsCard.ruined.power):
 
   private def atPawnSite(ready: ReadyGame, player: PlayerId, id: EdificeId)
       : Boolean = PowerAccess.siteOf(ready, player, id)
-    .exists(PowerAccess.pawnSite(ready, player).contains)
+    .exists(ready.game.current.pawnSite(player).contains)
 
   private def outcome(state: ReadyGame, player: PlayerId)
       : Vector[CoreOperation] =

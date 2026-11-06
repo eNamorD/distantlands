@@ -2,7 +2,7 @@ package oathdigital.gameplay.powers.action
 
 import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog, Locked,
   PrintedPower}
-import oathdigital.gameplay.{EffectiveSuit, NoteSupport, PowerAccess}
+import oathdigital.gameplay.{EffectiveSuit, NoteSupport}
 import oathdigital.gameplay.actions.CardPlay
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution}
 import oathdigital.gameplay.powers.PowerAnswers
@@ -75,7 +75,7 @@ case object Assassin extends PaidAction(AssassinCard.power)
   /** The faceup denizen advisers of the players at the player's site, the
     * player's own included, in seat then adviser order. */
   private def candidates(ready: ReadyGame, actor: PlayerId): Vector[Candidate] =
-    PowerAccess.pawnSite(ready, actor).toVector.flatMap(site => for
+    ready.game.current.pawnSite(actor).toVector.flatMap(site => for
       held <- ready.game.current.players if held.pawnSite.contains(site)
       card <- held.advisers.collect {
         case faceup @ DenizenState(_, Orientation.FaceUp, _) => faceup }
@@ -102,7 +102,7 @@ case object Assassin extends PaidAction(AssassinCard.power)
               s"${ref.wireId} is not an adviser Assassin can discard"))
           suit <- EffectiveSuit.of(catalog, ready, chosen.card.id)
             .toRight(OathViolation.UnknownWorldCard(chosen.card.id))
-          region <- PowerAccess.pawnSite(ready, actor)
+          region <- ready.game.current.pawnSite(actor)
             .flatMap(ready.game.current.map.regionOf).map(CardPlay.nextRegion)
             .toRight(OathViolation.PawnSiteMissing(actor))
         yield Vector[CoreOperation](Discard.Denizen(chosen.card.id,

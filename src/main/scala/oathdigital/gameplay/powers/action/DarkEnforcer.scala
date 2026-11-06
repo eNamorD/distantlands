@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.PowerAccess
 import oathdigital.model._
 
 object DarkEnforcerCard extends Denizen(DenizenId("227"), "Dark Enforcer", Suit.Discord):
@@ -43,7 +42,7 @@ case object DarkEnforcer extends PaidAction(DarkEnforcerCard.power):
   private def discards(catalog: ExecutableCatalog,
       ready: ReadyGame, player: PlayerId)
       : Either[OathViolation, Vector[CoreOperation]] =
-    PowerAccess.pawnSite(ready, player).toVector.flatMap(here =>
+    ready.game.current.pawnSite(player).toVector.flatMap(here =>
       cards.at(catalog, ready, here).map((card, suit) =>
         cards.discard(ready, here, card, suit, player, required = false)))
       .foldLeft[Either[OathViolation, Vector[CoreOperation]]](
@@ -56,7 +55,7 @@ case object DarkEnforcer extends PaidAction(DarkEnforcerCard.power):
       states: NoteStates, player: PlayerId,
       source: DecisionOptionRef): Option[LogNote] = for
     card <- PowerSourceRef.of(source)
-    site <- PowerAccess.pawnSite(states.now, player)
+    site <- states.now.game.current.pawnSite(player)
   yield
     val gone: Vector[CardId] = states.previous.toVector.flatMap(
       (before, after) => cards.at(catalog, before, site).map(_._1.id)

@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.PowerAccess
 import oathdigital.gameplay.powerresolver.{IgnoresOwnLock, QueuedStarts}
 import oathdigital.gameplay.powers.{PowerAnswers, SiteRoom}
 import oathdigital.model._
@@ -76,6 +75,6 @@ case object GiantsPath extends PaidAction(GiantsPathCard.intact.power)
       PositionedLocation(Location.Site(to)), by = Some(player)) +: placed
 
   private def line(states: NoteStates, player: PlayerId): Option[LogNote] =
-    PowerAccess.pawnSite(states.now, player).map(site =>
+    states.now.game.current.pawnSite(player).map(site =>
       used(PowerSourceRef.Card(GiantsPathCard.id), NoteArg.Player(player),
         NoteArg.Site(site)))

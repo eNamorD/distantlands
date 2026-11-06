@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
-import oathdigital.gameplay.PowerAccess
 import oathdigital.model._
 
 object BarbedNetCard extends Relic(RelicId("R36"), "Barbed Net", value = 33, defense = 1):
@@ -22,7 +21,8 @@ object BarbedNetCard extends Relic(RelicId("R36"), "Barbed Net", value = 33, def
 case object BarbedNet extends PaidAction(BarbedNetCard.power):
   val decisionId: String = "power.barbed-net.relic"
   private val take = new SiteRelicTake(id, decisionId,
-    "Barbed Net: take a relic from your site", PowerAccess.pawnSite)
+    "Barbed Net: take a relic from your site",
+    (ready, player) => ready.game.current.pawnSite(player))
   /** "{Red} peeked at the relics at {site}: {relics}." */
   val peeked: NoteKey = take.peeked
   /** "{Red} took {relic} facedown from {site}." */

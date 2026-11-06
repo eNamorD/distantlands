@@ -2,7 +2,7 @@ package oathdigital.gameplay.powers.action
 
 import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
   PrintedPower}
-import oathdigital.gameplay.{NoteSupport, PowerAccess}
+import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.powerresolver.QueuedStarts
 import oathdigital.gameplay.powers.PowerAnswers
 import oathdigital.gameplay.powers.travel.{TollRoads, TollRoadsCard}
@@ -225,14 +225,14 @@ case object Palanquin extends PaidAction(PalanquinCard.power):
     case other => other.available
 
   private def targets(ready: ReadyGame, user: PlayerId): Vector[PlayerId] =
-    PowerAccess.pawnSite(ready, user).toVector.flatMap(site =>
+    ready.game.current.pawnSite(user).toVector.flatMap(site =>
       ready.game.current.players.collect {
         case other if other.player != user &&
             other.pawnSite.contains(site) => other.player
       })
 
   private def destinations(ready: ReadyGame, user: PlayerId)
-      : Vector[SiteId] = PowerAccess.pawnSite(ready, user).toVector
+      : Vector[SiteId] = ready.game.current.pawnSite(user).toVector
     .flatMap(PawnMoves.sitesOtherThan(ready, _))
 
   private def chosenTarget(pending: PendingTree): Option[PlayerId] =

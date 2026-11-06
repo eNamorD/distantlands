@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.PowerAccess
 import oathdigital.gameplay.powers.banner.CardPowerBanners
 import oathdigital.gameplay.powers.PowerAnswers
 import oathdigital.model._
@@ -69,7 +68,7 @@ case object TerrorSpells extends PaidAction(TerrorSpellsCard.power):
     val current = ready.game.current
     val map = current.map
     if !holds(ready, player) then Vector.empty
-    else PowerAccess.pawnSite(ready, player).flatMap(map.regionOf).toVector
+    else ready.game.current.pawnSite(player).flatMap(map.regionOf).toVector
       .flatMap { region =>
         val sites = map.inPlay.filter(map.regionOf(_).contains(region))
         val atSites = sites.flatMap(site =>

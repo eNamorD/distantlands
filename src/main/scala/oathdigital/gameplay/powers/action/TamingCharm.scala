@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.{NoteSupport, PowerAccess}
+import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.powers.PowerAnswers
 import oathdigital.model._
 
@@ -89,7 +89,7 @@ case object TamingCharm extends PaidAction(TamingCharmCard.power):
       NoteSupport.answer(states, decisionId)
         .flatMap(DecisionOptionRef.cardOf) match
         case Some(chosen) => Some(line(catalog, states, card, player, chosen))
-        case None => PowerAccess.pawnSite(states.now, player).map(site =>
+        case None => states.now.game.current.pawnSite(player).map(site =>
           // A card was there, but a refusal kept it: it was not discarded.
           if cards.at(catalog, states.now, site).nonEmpty then
             kept(card, NoteArg.Site(site))

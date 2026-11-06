@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
-import oathdigital.gameplay.PowerAccess
 import oathdigital.model._
 
 object SkeletonKeyCard extends Relic(RelicId("R13"), "Skeleton Key", value = 18, defense = 2):
@@ -42,5 +41,5 @@ case object SkeletonKey extends PaidAction(SkeletonKeyCard.power):
 
   /** The player's pawn site, when it is in the Hinterland. */
   private def hinterland(ready: ReadyGame, player: PlayerId): Option[SiteId] =
-    PowerAccess.pawnSite(ready, player).filter(site =>
+    ready.game.current.pawnSite(player).filter(site =>
       ready.game.current.map.regionOf(site).contains(Region.Hinterland))

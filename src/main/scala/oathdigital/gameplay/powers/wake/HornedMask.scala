@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.wake
 
 import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
-import oathdigital.gameplay.{EffectiveSuit, NoteSupport, PowerAccess}
+import oathdigital.gameplay.{EffectiveSuit, NoteSupport}
 import oathdigital.gameplay.actions.{AdviserFace, CardPlay, CardPlayRules}
 import oathdigital.gameplay.powerresolver.PhasePower
 import oathdigital.gameplay.powers.{AdviserLimit, PlayerFacts, PowerAnswers}
@@ -80,7 +80,7 @@ case object HornedMask extends PhasePower:
     key(card, NoteArg.Player(actor), NoteArg.Card(denizen))
 
   private def site(ready: ReadyGame, actor: PlayerId)
-      : Option[(SiteId, SiteState)] = PowerAccess.pawnSite(ready, actor)
+      : Option[(SiteId, SiteState)] = ready.game.current.pawnSite(actor)
     .flatMap(id => ready.game.current.map.sites.get(id).map(id -> _))
 
   private def advisers(ready: ReadyGame, actor: PlayerId): Vector[AdviserState] =
@@ -172,7 +172,7 @@ case object HornedMask extends PhasePower:
     chosen <- advisers(ready, actor).find(ref(_) == answered)
       .toRight(OathViolation.InvalidEventOrder(
         s"${answered.wireId} is not an adviser Horned Mask can discard"))
-    region <- PowerAccess.pawnSite(ready, actor)
+    region <- ready.game.current.pawnSite(actor)
       .flatMap(ready.game.current.map.regionOf).map(CardPlay.nextRegion)
       .toRight(OathViolation.PawnSiteMissing(actor))
     from = PositionedLocation(Location.PlayArea(actor))

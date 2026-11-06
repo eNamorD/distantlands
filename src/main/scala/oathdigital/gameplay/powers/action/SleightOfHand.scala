@@ -2,7 +2,7 @@ package oathdigital.gameplay.powers.action
 
 import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
   PrintedPower}
-import oathdigital.gameplay.{NoteSupport, PowerAccess}
+import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.powers.PowerAnswers
 import oathdigital.model._
 
@@ -60,7 +60,7 @@ case object SleightOfHand extends PaidAction(SleightOfHandCard.power):
     player.board.faceUpSecrets + player.board.faceDownSecrets
 
   private def targets(ready: ReadyGame, actor: PlayerId): Vector[PlayerState] =
-    PowerAccess.pawnSite(ready, actor).toVector.flatMap(site =>
+    ready.game.current.pawnSite(actor).toVector.flatMap(site =>
       ready.game.current.players.filter(p => p.player != actor &&
         p.pawnSite.contains(site) && secretsOf(p) >= MinimumSecrets))
 

@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.{NoteSupport, PowerAccess}
+import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.powers.PlayerFacts
 import oathdigital.model._
 
@@ -79,7 +79,7 @@ case object GreatFeast extends PaidAction(GreatFeastCard.power):
           NoteArg.Card(chosen), NoteArg.Amount(
             states.previous.fold(0)(NoteSupport.supply(_, player)),
             NoteUnit.Supply)))
-        case None => PowerAccess.pawnSite(states.now, player).map(site =>
+        case None => states.now.game.current.pawnSite(player).map(site =>
           // A card was there, but a refusal kept it: it was not discarded.
           if cards.at(catalog, states.now, site).nonEmpty then
             kept(card, NoteArg.Site(site))

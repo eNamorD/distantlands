@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.{NoteSupport, PowerAccess}
+import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.powers.PowerAnswers
 import oathdigital.model._
 
@@ -48,7 +48,7 @@ case object QuickExit extends PaidAction(QuickExitCard.power):
 
   /** The other players whose pawn stands at `actor`'s site, in seat order. */
   private def targets(ready: ReadyGame, actor: PlayerId): Vector[PlayerId] =
-    PowerAccess.pawnSite(ready, actor).toVector.flatMap(site =>
+    ready.game.current.pawnSite(actor).toVector.flatMap(site =>
       ready.game.current.players.collect {
         case other if other.player != actor && other.pawnSite.contains(site) =>
           other.player
@@ -71,14 +71,14 @@ case object QuickExit extends PaidAction(QuickExitCard.power):
   private def nobodyNote(ready: ReadyGame, actor: PlayerId,
       source: DecisionOptionRef): Option[LogNote] = for
     card <- PowerSourceRef.of(source)
-    site <- PowerAccess.pawnSite(ready, actor)
+    site <- ready.game.current.pawnSite(actor)
   yield nobody(card, NoteArg.Site(site))
 
   /** The sites in play other than the chosen pawn's, once it is chosen. */
   private def askSite(ready: ReadyGame, actor: PlayerId,
       pending: PendingTree): Vector[Operation] =
     chosen(pending).toVector.flatMap(target =>
-      PowerAccess.pawnSite(ready, target).toVector.map(from =>
+      ready.game.current.pawnSite(target).toVector.map(from =>
         PawnMoves.siteChoice(siteDecisionId, actor,
           PawnMoves.sitesOtherThan(ready, from),
           "Quick Exit: choose the site to place the pawn on")))
@@ -106,5 +106,5 @@ case object QuickExit extends PaidAction(QuickExitCard.power):
     card <- PowerSourceRef.of(source)
     case DecisionOptionRef.Player(target) <-
       NoteSupport.answer(states, targetDecisionId)
-    site <- PowerAccess.pawnSite(states.now, target)
+    site <- states.now.game.current.pawnSite(target)
   yield placed(card, NoteArg.Player(target), NoteArg.Site(site))

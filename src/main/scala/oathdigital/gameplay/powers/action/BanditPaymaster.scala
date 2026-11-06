@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.{NoteSupport, PowerAccess}
+import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.powers.PlayerFacts
 import oathdigital.model._
 
@@ -48,7 +48,7 @@ case object BanditPaymaster extends PaidAction(BanditPaymasterCard.power):
 
   private def pay(ready: ReadyGame, player: PlayerId)
       : Either[OathViolation, Vector[CoreOperation]] =
-    PowerAccess.pawnSite(ready, player)
+    ready.game.current.pawnSite(player)
       .filter(bandits(ready, _) > Removed) match
       case None => Right(Vector.empty)
       case Some(site) => PlayerFacts.forceKind(ready, player).map(kind =>
@@ -58,7 +58,7 @@ case object BanditPaymaster extends PaidAction(BanditPaymasterCard.power):
 
   private def paidNote(states: NoteStates, player: PlayerId,
       source: DecisionOptionRef): Option[LogNote] =
-    PowerSourceRef.of(source).zip(PowerAccess.pawnSite(states.now, player))
+    PowerSourceRef.of(source).zip(states.now.game.current.pawnSite(player))
       .map((card, site) => line(states, card, site, player))
 
   /** The bandits the site lost and the warbands the player gained in the

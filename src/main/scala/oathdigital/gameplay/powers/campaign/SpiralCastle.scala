@@ -2,7 +2,6 @@ package oathdigital.gameplay.powers.campaign
 
 import oathdigital.catalog.{Edifice, EdificeFace, Locked, ModifierMark,
   PrintedPower}
-import oathdigital.gameplay.PowerAccess
 import oathdigital.model._
 
 object SpiralCastleCard extends Edifice(EdificeId("E23"), Suit.Hearth):
@@ -40,7 +39,7 @@ private[campaign] object SpiralSteps:
   def steps(power: PowerId, card: PowerSourceRef, key: NoteKey,
       loser: PlayerId, site: SiteId): Vector[Operation] = Vector(
     BuildOps((ready, _) => Right(
-      PowerAccess.pawnSite(ready, loser).filter(_ != site).toVector
+      ready.game.current.pawnSite(loser).filter(_ != site).toVector
         .map[CoreOperation](from => Move(Piece.Pawn(loser),
           PositionedLocation(Location.Site(from)),
           PositionedLocation(Location.Site(site)))) ++

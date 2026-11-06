@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
-import oathdigital.gameplay.{NoteSupport, PowerAccess}
+import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.actions.BannerRules
 import oathdigital.gameplay.powers.PowerAnswers
 import oathdigital.model._
@@ -53,7 +53,7 @@ case object BookOfRecords extends PaidAction(BookOfRecordsCard.power):
     * actor included. Amber Flame reads the same banners. */
   def banners(ready: ReadyGame, actor: PlayerId): Vector[Banner] =
     val current = ready.game.current
-    PowerAccess.pawnSite(ready, actor).toVector.flatMap(site =>
+    ready.game.current.pawnSite(actor).toVector.flatMap(site =>
       Banner.all.filter(banner => BannerRules.holder(current, banner)
         .exists(holder => current.players.exists(p =>
           p.player == holder && p.pawnSite.contains(site)))))

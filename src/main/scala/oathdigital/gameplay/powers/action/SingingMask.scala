@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
-import oathdigital.gameplay.{NoteSupport, PowerAccess}
+import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.powers.PowerAnswers
 import oathdigital.model._
 
@@ -75,7 +75,7 @@ case object SingingMask extends PaidAction(SingingMaskCard.power):
   private def cards(catalog: ExecutableCatalog,
       ready: ReadyGame, actor: PlayerId)
       : Vector[(SiteDenizenState, Suit)] =
-    PowerAccess.pawnSite(ready, actor).toVector
+    ready.game.current.pawnSite(actor).toVector
       .flatMap(siteCards.at(catalog, ready, _))
       .filter((_, suit) => stock(ready, suit) > 0 || onBanner(ready) > 0)
 

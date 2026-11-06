@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.PowerAccess
 import oathdigital.gameplay.actions.dice.RollStep
 import oathdigital.gameplay.powerresolver.QueuedStarts
 import oathdigital.model._
@@ -34,7 +33,7 @@ case object ShatteredPortal extends PaidAction(StonePortalCard.ruined.power):
     ready.game.current.edificeSite(StonePortalCard.id, EdificeSide.Ruined)
 
   private def pawnHere(ready: ReadyGame, player: PlayerId): Boolean =
-    portalSite(ready).exists(PowerAccess.pawnSite(ready, player).contains)
+    portalSite(ready).exists(ready.game.current.pawnSite(player).contains)
 
   /** The site `steps` sites Hinterward of `from`, wrapping from the last
     * site in play to the first. */
@@ -66,7 +65,7 @@ case object ShatteredPortal extends PaidAction(StonePortalCard.ruined.power):
   yield ops
 
   private def line(states: NoteStates, player: PlayerId): Option[LogNote] =
-    for site <- PowerAccess.pawnSite(states.now, player)
+    for site <- states.now.game.current.pawnSite(player)
     yield used(PowerSourceRef.Card(StonePortalCard.id),
       NoteArg.Number(RollResults.score(states.now, pool)),
       NoteArg.Player(player), NoteArg.Site(site))

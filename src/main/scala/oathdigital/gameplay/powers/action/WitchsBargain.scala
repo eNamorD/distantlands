@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.{NoteSupport, PowerAccess}
+import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.powers.{PlayerFacts, PowerAnswers}
 import oathdigital.model._
 
@@ -92,7 +92,7 @@ case object WitchsBargain extends PaidAction(WitchsBargainCard.power):
 
   /** The other players whose pawn is at the player's site, in seat order. */
   private def others(ready: ReadyGame, actor: PlayerId): Vector[PlayerId] =
-    PowerAccess.pawnSite(ready, actor).toVector.flatMap(site =>
+    ready.game.current.pawnSite(actor).toVector.flatMap(site =>
       ready.game.current.players.collect {
         case other if other.player != actor && other.pawnSite.contains(site) =>
           other.player })

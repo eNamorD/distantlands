@@ -1,7 +1,6 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.PowerAccess
 import oathdigital.gameplay.actions.CardPlay
 import oathdigital.gameplay.actions.cardplay.CardSlots
 import oathdigital.gameplay.powers.PowerAnswers
@@ -72,7 +71,7 @@ private[powers] final class SiteCards(suits: Set[Suit]):
   def ask(catalog: ExecutableCatalog,
       ready: ReadyGame, player: PlayerId, decisionId: String,
       heading: String): Vector[Operation] =
-    val found = PowerAccess.pawnSite(ready, player).toVector.flatMap(site =>
+    val found = ready.game.current.pawnSite(player).toVector.flatMap(site =>
       at(catalog, ready, site).flatMap((card, suit) =>
         judged(catalog, ready, player, site, card, suit)))
     Vector(Decide(decisionId, player, DecisionQuery.ChooseOne(found,
@@ -84,7 +83,7 @@ private[powers] final class SiteCards(suits: Set[Suit]):
       ready: ReadyGame, player: PlayerId, pending: PendingTree,
       decisionId: String): Option[(SiteId, SiteDenizenState, Suit)] = for
     answer <- PowerAnswers.one(pending, decisionId)
-    site <- PowerAccess.pawnSite(ready, player)
+    site <- ready.game.current.pawnSite(player)
     (card, suit) <- at(catalog, ready, site)
       .find((card, _) => refOf(card) == answer)
   yield (site, card, suit)

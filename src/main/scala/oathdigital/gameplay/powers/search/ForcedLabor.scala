@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.search
 
 import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
-import oathdigital.gameplay.{PowerAccess, SiteRulers}
+import oathdigital.gameplay.SiteRulers
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerCtx, Transform}
 import oathdigital.gameplay.powers.{CatalogResolution, PayOrAsk, RulerToll}
@@ -68,7 +68,7 @@ case object ForcedLabor extends ContributingPower:
   private def charged(ctx: PowerCtx, operations: Vector[Operation])
       : Option[Vector[Operation]] = for
     ruler <- RulerToll.enemyRuler(ctx.state, cardId, ctx.actor)
-    site <- PowerAccess.pawnSite(ctx.state, ctx.actor)
+    site <- ctx.state.game.current.pawnSite(ctx.actor)
     if SiteRulers.rulerOf(ctx.state, site).contains(ruler)
   yield RulerToll.owed(ForcedLabor.step, ctx.state, ctx.actor, ruler,
     operations, site.value, "Forced Labor: give 1 favor to search here?",

@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
-import oathdigital.gameplay.{EffectiveSuit, NoteSupport, PowerAccess}
+import oathdigital.gameplay.{EffectiveSuit, NoteSupport}
 import oathdigital.gameplay.powers.PowerAnswers
 import oathdigital.model._
 
@@ -60,7 +60,7 @@ case object CrystalVial extends PaidAction(CrystalVialCard.power):
         case v: VisionState => Candidate(DecisionOptionRef.Vision(v.id),
           BuryableCard.Vision(v.id), Location.PlayArea(actor), Tokens.empty)
       })
-    val here = PowerAccess.pawnSite(ready, actor).toVector.flatMap(site =>
+    val here = ready.game.current.pawnSite(actor).toVector.flatMap(site =>
       current.map.sites.get(site).toVector.flatMap(_.denizens.map {
         case d: DenizenState => Candidate(DecisionOptionRef.Denizen(d.id),
           BuryableCard.Denizen(d.id), Location.Site(site), d.tokens)

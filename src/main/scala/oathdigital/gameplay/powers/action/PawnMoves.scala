@@ -1,6 +1,5 @@
 package oathdigital.gameplay.powers.action
 
-import oathdigital.gameplay.PowerAccess
 import oathdigital.gameplay.powers.PowerAnswers
 import oathdigital.model._
 
@@ -15,7 +14,7 @@ import oathdigital.model._
 object PawnMoves:
   def pawnSite(ready: ReadyGame, player: PlayerId)
       : Either[OathViolation, SiteId] =
-    PowerAccess.pawnSite(ready, player).toRight(OathViolation.InvalidEventOrder(
+    ready.game.current.pawnSite(player).toRight(OathViolation.InvalidEventOrder(
       s"${player.value} has no pawn on the map"))
 
   /** The menu's reason when no other player at the site is a valid target
@@ -28,7 +27,7 @@ object PawnMoves:
 
   /** Other players whose pawn is at a site other than `player`'s. */
   def atOtherSites(ready: ReadyGame, player: PlayerId): Vector[PlayerId] =
-    PowerAccess.pawnSite(ready, player).toVector.flatMap(here =>
+    ready.game.current.pawnSite(player).toVector.flatMap(here =>
       ready.game.current.players.collect {
         case other if other.player != player &&
             other.pawnSite.exists(_ != here) => other.player
@@ -66,5 +65,5 @@ object PawnMoves:
   def placedNote(key: NoteKey, source: DecisionOptionRef, player: PlayerId)(
       states: NoteStates): Option[LogNote] = for
     card <- PowerSourceRef.of(source)
-    site <- PowerAccess.pawnSite(states.now, player)
+    site <- states.now.game.current.pawnSite(player)
   yield key(card, NoteArg.Player(player), NoteArg.Site(site))

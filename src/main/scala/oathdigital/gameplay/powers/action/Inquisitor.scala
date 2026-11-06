@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.{NoteSupport, PowerAccess}
+import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.actions.{CardPlay, VisionRules}
 import oathdigital.gameplay.powers.PowerAnswers
 import oathdigital.model._
@@ -83,7 +83,7 @@ case object Inquisitor extends PaidAction(InquisitorCard.power):
   /** The facedown Visions held by players whose pawn is at the player's
     * site, the player's own included, in seat then adviser order. */
   private def targets(ready: ReadyGame, actor: PlayerId): Vector[Target] =
-    PowerAccess.pawnSite(ready, actor).toVector.flatMap(site => for
+    ready.game.current.pawnSite(actor).toVector.flatMap(site => for
       held <- ready.game.current.players if held.pawnSite.contains(site)
       (adviser, slot) <- held.advisers.zipWithIndex
       vision <- adviser match
@@ -125,7 +125,7 @@ case object Inquisitor extends PaidAction(InquisitorCard.power):
             case (vision, _) if guess(vision) == answer => vision }
             .toRight(OathViolation.InvalidEventOrder(
               s"${answer.wireId} names no Vision"))
-          region <- PowerAccess.pawnSite(ready, actor)
+          region <- ready.game.current.pawnSite(actor)
             .flatMap(ready.game.current.map.regionOf).map(CardPlay.nextRegion)
             .toRight(OathViolation.PawnSiteMissing(actor))
         yield

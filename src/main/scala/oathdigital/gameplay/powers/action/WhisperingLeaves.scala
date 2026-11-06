@@ -2,7 +2,7 @@ package oathdigital.gameplay.powers.action
 
 import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
   PrintedPower}
-import oathdigital.gameplay.{NoteSupport, PowerAccess}
+import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.powers.{PlayerFacts, PowerAnswers}
 import oathdigital.model._
 
@@ -54,7 +54,7 @@ case object WhisperingLeaves extends PaidAction(WhisperingLeavesCard.power):
 
   /** Every player whose pawn is at `actor`'s site, in seat order. */
   private def targets(ready: ReadyGame, actor: PlayerId): Vector[PlayerId] =
-    PowerAccess.pawnSite(ready, actor).toVector.flatMap(site =>
+    ready.game.current.pawnSite(actor).toVector.flatMap(site =>
       ready.game.current.players.filter(_.pawnSite.contains(site))
         .map(_.player))
 

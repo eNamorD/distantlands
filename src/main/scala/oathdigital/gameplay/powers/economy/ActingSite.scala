@@ -77,7 +77,7 @@ trait ActingSite extends SelectedModifier, AsksOnSelection:
   private def pickedAtPawnSite(ctx: PowerCtx): Boolean =
     val ready = ctx.state
     val picked = ModifierPicks.cards(ctx.answered).toSet
-    PowerAccess.pawnSite(ready, ctx.actor)
+    ready.game.current.pawnSite(ctx.actor)
       .filterNot(PowerAccess.ruledSites(ready, ctx.actor))
       .flatMap(ready.game.current.map.sites.get)
       .exists(_.denizens.exists(card => picked(card.id)))
@@ -103,6 +103,6 @@ object ActingSite:
   def otherSites(ready: ReadyGame, actor: PlayerId)(
       admits: SiteDenizenState => Boolean): Vector[SiteId] =
     val current = ready.game.current
-    val pawn = PowerAccess.pawnSite(ready, actor)
+    val pawn = ready.game.current.pawnSite(actor)
     current.map.inPlay.filter(site => !pawn.contains(site) &&
       current.map.sites.get(site).exists(_.denizens.exists(admits)))

@@ -2,7 +2,7 @@ package oathdigital.gameplay.powers.action
 
 import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower,
   SiteOnly}
-import oathdigital.gameplay.{NoteSupport, PowerAccess}
+import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.powers.PowerAnswers
 import oathdigital.model._
 
@@ -47,7 +47,7 @@ case object Convoys extends PaidAction(ConvoysCard.power):
     Note(id, movedNote(_, player, source)))))
 
   private def home(ready: ReadyGame, actor: PlayerId): Option[Region] =
-    PowerAccess.pawnSite(ready, actor).flatMap(ready.game.current.map.regionOf)
+    ready.game.current.pawnSite(actor).flatMap(ready.game.current.map.regionOf)
 
   /** The other regions, in region order. */
   private def others(ready: ReadyGame, actor: PlayerId): Vector[Region] =

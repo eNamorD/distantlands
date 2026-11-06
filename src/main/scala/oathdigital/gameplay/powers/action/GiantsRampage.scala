@@ -2,7 +2,7 @@ package oathdigital.gameplay.powers.action
 
 import oathdigital.catalog.{Edifice, EdificeFace, ExecutableCatalog, Locked,
   PrintedPower}
-import oathdigital.gameplay.{NoteSupport, PowerAccess}
+import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.powers.PowerAnswers
 import oathdigital.model._
 
@@ -70,7 +70,7 @@ case object GiantsRampage extends PaidAction(GiantsPathCard.ruined.power):
     val card = PowerSourceRef.Card(edifice)
     NoteSupport.answer(states, decisionId) match
       case Some(DecisionOptionRef.Denizen(buried)) =>
-        PowerAccess.pawnSite(states.now, player).map(site =>
+        states.now.game.current.pawnSite(player).map(site =>
           rampaged(card, NoteArg.Card(buried), NoteArg.Site(site),
             NoteArg.Player(player)))
       case _ => Some(nothing(card))

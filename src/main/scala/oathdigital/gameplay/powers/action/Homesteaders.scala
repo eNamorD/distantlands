@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.{NoteSupport, PowerAccess}
+import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.powers.{PlayerFacts, PowerAnswers, SiteRoom}
 import oathdigital.model._
 
@@ -49,7 +49,7 @@ case object Homesteaders extends PaidAction(HomesteadersCard.power):
   private def candidates(catalog: ExecutableCatalog,
       ready: ReadyGame, actor: PlayerId)
       : Vector[DenizenId] =
-    val room = PowerAccess.pawnSite(ready, actor)
+    val room = ready.game.current.pawnSite(actor)
       .exists(SiteRoom.hasRoom(catalog, ready, _))
     if !room then Vector.empty
     else PlayerFacts.player(ready, actor).toOption.toVector
@@ -71,7 +71,7 @@ case object Homesteaders extends PaidAction(HomesteadersCard.power):
     PowerAnswers.one(pending, decisionId) match
       case None => Right(Vector.empty)
       case Some(ref) => (for
-        site <- PowerAccess.pawnSite(ready, actor)
+        site <- ready.game.current.pawnSite(actor)
         card <- candidates(catalog, ready, actor)
           .find(card => DecisionOptionRef.Denizen(card) == ref)
       yield Vector[CoreOperation](Move(Piece.Card(card),
@@ -86,7 +86,7 @@ case object Homesteaders extends PaidAction(HomesteadersCard.power):
     PowerSourceRef.of(source).map(card => (for
       case DecisionOptionRef.Denizen(chosen) <-
         NoteSupport.answer(states, decisionId)
-      site <- PowerAccess.pawnSite(states.now, actor)
+      site <- states.now.game.current.pawnSite(actor)
       if states.now.game.current.map.sites.get(site)
         .exists(_.denizens.exists(_.id == chosen))
     yield moved(card, NoteArg.Card(chosen), NoteArg.Site(site)))

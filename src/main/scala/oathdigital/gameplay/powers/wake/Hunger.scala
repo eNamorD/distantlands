@@ -2,7 +2,7 @@ package oathdigital.gameplay.powers.wake
 
 import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog, Locked,
   PrintedPower}
-import oathdigital.gameplay.{EffectiveSuit, NoteSupport, PowerAccess}
+import oathdigital.gameplay.{EffectiveSuit, NoteSupport}
 import oathdigital.gameplay.powerresolver.PhasePower
 import oathdigital.gameplay.powers.PowerAnswers
 import oathdigital.model._
@@ -69,7 +69,7 @@ case object Hunger extends PhasePower:
     Note(id, buriedNote(_, player), covers = true))))
 
   private def candidates(ready: ReadyGame, holder: PlayerId): Vector[Candidate] =
-    val site = PowerAccess.pawnSite(ready, holder)
+    val site = ready.game.current.pawnSite(holder)
     for
       owner <- ready.game.current.players
       if site.nonEmpty && owner.pawnSite == site
