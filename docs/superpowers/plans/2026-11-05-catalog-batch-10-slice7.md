@@ -7,7 +7,7 @@
 **Architecture:**
 - `EffectiveSuit` already reads Spiteful Mirror's pick from the walk's answers (`mirrored`). It learns a second pick the same way: the answer to Acting Troupe's suit question.
 - The card moves from holding into `EffectiveSuit.scala`, beside `SpitefulMirrorCard`, because `EffectiveSuit` lives below `powers` and reads the card's question. The card also holds the question's id and its two buttons.
-- `EffectiveSuit.count` and `traded` take the walk's answers. A faceup Troupe counts as the answered suit instead of Arcane. `MusterSource.matching` passes the answers, so every reader of a Trade's matching advisers sees the pick: the Trade's own gain, the Cup of Plenty (through `SuitSupplyWaiver`) and Vow of Beastkin.
+- `EffectiveSuit.count` takes the walk's answers. A faceup Troupe counts as the answered suit instead of Arcane. `MusterSource.matching` passes the answers, so every reader of a Trade's matching advisers sees the pick: the Trade's own gain, the Cup of Plenty (through `SuitSupplyWaiver`) and Vow of Beastkin.
 - **Acting Troupe** is a free `SelectedModifier` for Trade, offered while the Troupe is the user's faceup adviser. Its `selectionQuestions` ask Beast or Order and write the line, as `ActingSite` asks its site. It hooks no window: the answer is the whole effect.
 
 **Tech Stack:** Scala 3, munit, sbt via `./sbtw`.
@@ -26,7 +26,7 @@ Card text (`HoldingArcaneDenizens.scala`): "Act as if Acting Troupe is a [suit-b
 
 **Readings this plan takes** (each also goes into the spec's "Readings" in Task 2):
 - **Every reader of the Trade's matching advisers sees the pick.** With the Cup of Plenty, a Troupe acting as a Beast card no longer matches an Arcane card, so a Trade with an Arcane card is free of Supply.
-- **The Troupe as the Trade's own card.** A power that lets a Trade draw on an adviser could draw on the Troupe. `traded` then reads the picked suit too. Spiteful Mirror's Discord still wins, since it speaks of every card used to trade.
+- **The Troupe as the Trade's own card.** Beloved (Legacy L33) lets a Trade draw on another player's adviser, which may be the Troupe. Its suit is then read as usual (Arcane, or Discord under its holder's Pledge), since only the Troupe's holder can pick it. So `EffectiveSuit.traded` is unchanged.
 - **Line wording.** Two keys, so the article reads right: "Acting Troupe acted as a Beast card." and "Acting Troupe acted as an Order card."
 
 This is the seventh of 14 slice plans, written against `0.2.0-alpha` at `73d7d094`.
@@ -122,20 +122,6 @@ Then add these tests after "the traded suit is Discord once Spiteful Mirror is p
       1)
     assertEquals(EffectiveSuit.count(catalog, ready, p1, Suit.Discord), 2)
 
-  test("the traded suit of the Troupe itself is the answered suit, and " +
-      "Spiteful Mirror's Discord wins over it"):
-    val ready = Table.start.adviser(p1, troupe).ready
-    val source = DecisionOptionRef.Denizen(troupe)
-    val beast = troupeActingAs(Suit.Beast)
-    assertEquals(EffectiveSuit.traded(catalog, ready, beast, source),
-      Some(Suit.Beast))
-    assertEquals(EffectiveSuit.traded(catalog, ready, Vector.empty, source),
-      Some(Suit.Arcane))
-    val mirrored = beast :+ Answered(
-      ModifierPicks.decisionId(PowerWindow.TradeModifierSelection),
-      ChooseOneAnswer(DecisionOptionRef.Relic(mirror)), p1)
-    assertEquals(EffectiveSuit.traded(catalog, ready, mirrored, source),
-      Some(Suit.Discord))
 ```
 
 Update the suite's doc comment to end: "..., and a picked Acting Troupe counts as the suit its user named (catalog batch 10, slice 7)."
@@ -216,15 +202,7 @@ After `mirrored`, add:
     }.flatMap(key => ActingTroupeCard.suits.find(_.key == key))
 ```
 
-Replace the body of `traded`:
-
-```scala
-    cardOf(ref).flatMap(card =>
-      if mirrored(answered) then Some(Suit.Discord)
-      else acted(catalog, ready, answered, card))
-```
-
-and add to its doc comment, after "otherwise [[of]]": "or, for Acting Troupe, its picked suit". Add the private helper before `cardOf`:
+Leave `traded` as it is: only the Troupe's holder can pick it, so a Trade drawing on the Troupe never carries its pick. Add the private helper before `cardOf`:
 
 ```scala
   /** `card`'s suit for the walk with `answered`: a picked Acting Troupe's
@@ -599,8 +577,9 @@ In the spec:
 - **Acting Troupe:** the user picks Beast or Order each Trade. Every
   reader of the Trade's matching advisers sees the pick, so with the Cup
   of Plenty a Troupe acting as a Beast card no longer matches an Arcane
-  card. If a power lets the Trade draw on the Troupe itself, its suit is
-  the picked one, unless Spiteful Mirror makes it Discord.
+  card. Beloved lets a Trade draw on another player's adviser, which may
+  be the Troupe. Its suit is then read as usual (Arcane, or Discord under
+  its holder's Pledge), since only the Troupe's holder can pick it.
 ```
 
 - Replace the "Slice 7: Trade suit" body above "Tests:" with:
@@ -610,9 +589,9 @@ In the spec:
 Troupe is the user's faceup adviser. Its `selectionQuestions` ask Beast or
 Order once, at the Trade's start. The card moves beside
 `SpitefulMirrorCard`, since `EffectiveSuit` reads its question.
-`EffectiveSuit.count` and `traded` receive `answered`, as Spiteful Mirror's
-pick is read (`EffectiveSuit.mirrored`), so a picked Troupe counts as the
-chosen suit when Trade counts matching advisers. `MusterSource.matching`
+`EffectiveSuit.count` receives `answered`, as Spiteful Mirror's pick is
+read (`EffectiveSuit.mirrored`), so a picked Troupe counts as the chosen
+suit when Trade counts matching advisers. `MusterSource.matching`
 and `SuitSupplyWaiver` pass the answers on, which reaches the Cup of
 Plenty. Lines: "Acting Troupe acted as a Beast card." and "Acting Troupe
 acted as an Order card."
