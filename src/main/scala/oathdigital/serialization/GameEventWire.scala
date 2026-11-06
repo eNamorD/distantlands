@@ -88,9 +88,9 @@ object GameEventWire extends GameEventJsonSupport with LifecycleEventCodec
     }
 
   /** Encoders in this vocabulary are total for every event this build knows
-    * how to construct (I8: `WalkerEventCodec.encodeOperation`/`encodePiece`
-    * are now total over `CoreOperation`/`Piece` too, matching
-    * `encodeLocation`), so an unencodable value reaching this append path
+    * how to construct (`WalkerOperationCodec.encodeOperation` and
+    * `WalkerValueCodec.encodePiece` are total over `CoreOperation`/`Piece`,
+    * matching `encodeLocation`), so an unencodable value reaching this append path
     * must surface as a typed [[WireError]] rather than escape as a raw
     * exception (matches the decode side's `NonFatal` boundary in
     * `decodePayload`). There is no longer a special case ahead of the

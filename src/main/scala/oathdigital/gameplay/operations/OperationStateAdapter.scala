@@ -12,7 +12,7 @@ final case class SecretInventory(faceUp: Int, faceDown: Int):
   require(faceDown >= 0, "facedown secrets must be non-negative")
 
 /** Read-only bridge between semantic operation locations and nested game state.
-  * Mutation and transactional preflight belong to migration phase 3.
+  * Mutation lives in the operation families behind [[OperationApplication]].
   */
 object OperationStateAdapter:
   import AvailableQuantity._

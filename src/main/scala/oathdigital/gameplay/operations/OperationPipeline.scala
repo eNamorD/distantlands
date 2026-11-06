@@ -7,7 +7,7 @@ final case class SkippedOperation(requested: CoreOperation,
 
 final case class OperationRun(state: ReadyGame,
     executed: Vector[CoreOperation], skipped: Vector[SkippedOperation]):
-  /** Legacy event reducers must not accept a different effect than recorded. */
+  /** A replayed event must not accept a different effect than it recorded. */
   def expectEffects(requested: Vector[CoreOperation],
       detail: String): Either[OathViolation, ReadyGame] =
     if executed == requested.map(OperationRun.canonical) then Right(state)
@@ -62,9 +62,9 @@ object OperationRun:
   * be satisfiable only after earlier operations ran (for example a Campaign
   * losing-force return that moves warbands out of a bank which
   * in-batch `Kill`s replenish). Validating every operation against the initial
-  * state would reject those trajectory batches the retired executor accepted,
-  * so the authoritative rejection is the staged per-operation resolution —
-  * the same first-fail, atomic behavior the executor performed.
+  * state would reject those trajectory batches, so the authoritative
+  * rejection is the staged per-operation resolution: first fail, and the
+  * whole batch is rejected.
   *
   * A card may leave the game only through a `Move` to `Location.SharedBank`
   * that the batch declares; its id is then removed from the expected card
@@ -117,7 +117,7 @@ object OperationPipeline:
           .left.map(_.toViolation).flatMap(identity)
         // Decision 5: the invariant runs once after the module update, not
         // between operations — intermediate states within a legal batch are
-        // not invariant-checked (matching the retired post-`update` check).
+        // not invariant-checked.
         _ <- OperationStateInvariant.validate(updated,
           OperationRun.expectedAfter(expected, staged.executed))
           .left.map(_.toViolation)

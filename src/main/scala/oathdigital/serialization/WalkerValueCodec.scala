@@ -71,7 +71,7 @@ private[serialization] trait WalkerValueCodec extends PositionWire:
     case ujson.Null => Right(None)
     case other => decodeSignedInt(other, path).map(Some(_))
 
-  /** Total over `Piece` (I8), matching `encodeLocation`'s pattern: every
+  /** Total over `Piece`, matching `encodeLocation`'s pattern: every
     * case is real data with a direct encoding, so there is no throwing arm
     * here at all.
     */

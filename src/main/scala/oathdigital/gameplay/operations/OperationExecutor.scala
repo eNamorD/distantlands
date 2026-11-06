@@ -10,8 +10,8 @@ trait OperationPolicy:
 
 object OperationPolicy:
   /** For tests and paths whose owning procedure has already enforced every
-    * semantic restriction. Production migrations should prefer a contextual
-    * policy rather than treating this as a legality check.
+    * semantic restriction. It is not a legality check: a production path
+    * passes a contextual policy.
     */
   case object Permissive extends OperationPolicy:
     override def validate(

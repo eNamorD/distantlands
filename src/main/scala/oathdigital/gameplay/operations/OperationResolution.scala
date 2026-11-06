@@ -9,9 +9,8 @@ object OperationResolution:
   final case class Skip(reasons: Vector[OperationReason]) extends Result
 
   /** Every reason for `requested`: allowlist first, then shape, then the
-    * contextual restrictions. Allowlist reasons come first because the
-    * retired executor ran the per-action policy before any shape or mutation
-    * check, so a both-fail operation rejects with `RestrictedOperation`.
+    * contextual restrictions. Allowlist reasons come first, so a both-fail
+    * operation rejects with `RestrictedOperation`.
     */
   private[gameplay] def reasons(ready: ReadyGame, requested: CoreOperation,
       allowlist: OperationPolicy, restrictions: Vector[OperationRestriction])

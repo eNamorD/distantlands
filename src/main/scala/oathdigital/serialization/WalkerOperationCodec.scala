@@ -2,18 +2,15 @@ package oathdigital.serialization
 
 import oathdigital.model._
 
-/** Operation spellings for recorded walker steps, split out of
-  * `WalkerEventCodec` to give it headroom under the 800-line bound.
+/** Operation spellings for recorded walker steps. `WalkerOperationWireSuite`
+  * pins every spelling.
   *
-  * A pure move: every spelling is byte-identical to the version before the
-  * split, which `WalkerOperationWireSuite` pins.
-  *
-  * `encodeOperation`/`encodePiece` (I8) are total over `CoreOperation`/
+  * `encodeOperation`/`encodePiece` are total over `CoreOperation`/
   * `Piece`, exactly like [[encodeLocation]] in [[WalkerValueCodec]] (added
   * for the same reason: a bounded operation set is what let Catacombs'
   * recorded `Move` out of `Location.Deck` reach an append-time throw with no
   * test to catch it -- that lesson generalises to every recorded shape, not
-  * just `Location`). Totality is now exceptionless: the walker's control
+  * just `Location`). Totality is exceptionless: the walker's control
   * vocabulary lives under the unsealed `Operation`, not under
   * `CoreOperation`, so a control node is not a member of the encoded family
   * and cannot reach this method. A NEW `CoreOperation` case still fails to

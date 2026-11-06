@@ -12,9 +12,9 @@ import oathdigital.model._
   * written once beside its mutation is a guard on both paths.
   *
   * The mutation runs families in the order counted resources, pawn and
-  * banner, cards, then everything else; the guard checks in the order the
-  * old shape layer used, which is what keeps every rejection code and detail
-  * the same as before the families were split.
+  * banner, cards, then everything else; the guard checks in its own fixed
+  * order, which decides the rejection code and detail a both-fail operation
+  * reports.
   *
   * The family objects' `apply*` and mutation members are package-visible
   * only because this dispatcher is their sole caller. Call [[mutate]], never
