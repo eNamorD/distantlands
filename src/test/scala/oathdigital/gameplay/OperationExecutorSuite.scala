@@ -3,7 +3,7 @@ package oathdigital.gameplay
 import oathdigital.gameplay.operations._
 import oathdigital.model._
 import oathdigital.model.TestGameFixtures._
-import oathdigital.testkit.{Look, Table}
+import oathdigital.testkit.{Look, RawOperationBatch, Table}
 import oathdigital.testkit.Unwrap.{accepted, as, rejected}
 
 class OperationExecutorSuite extends munit.FunSuite:
@@ -99,7 +99,7 @@ class OperationExecutorSuite extends munit.FunSuite:
       PositionedLocation(Location.PlayArea(playerId)),
       PositionedLocation(Location.Site(sites.head))
     )
-    val result = accepted(executor.executeAll(ready, Vector(gain, place)))
+    val result = accepted(RawOperationBatch.executeAll(ready, Vector(gain, place)))
     val actor = Look(result).player(playerId)
 
     // 1 favor, 2 gained, 3 placed.
@@ -115,10 +115,10 @@ class OperationExecutorSuite extends munit.FunSuite:
     )
 
     // The first operation is staged (1 + 1 favor) before the second fails.
-    assertEquals(executor.executeAll(ready, Vector(valid, invalid)),
+    assertEquals(RawOperationBatch.executeAll(ready, Vector(valid, invalid)),
       Left(OperationError.InsufficientPieces(Piece.Favor(99),
         Location.PlayArea(playerId), 2)))
-    assertEquals(executor.executeAll(ready, Vector.empty),
+    assertEquals(RawOperationBatch.executeAll(ready, Vector.empty),
       Left(OperationError.EmptyOperationBatch))
 
   test("Draw removes a top prefix and preserves top-first hand order"):
@@ -157,7 +157,7 @@ class OperationExecutorSuite extends munit.FunSuite:
       PositionedLocation(Location.RegionalDiscard(Region.Cradle),
         StackPosition.Top)
     )
-    val result = accepted(executor.executeAll(source,
+    val result = accepted(RawOperationBatch.executeAll(source,
       Vector(discard(worldDenizen), discard(extraDenizen))))
 
     assertEquals(result.game.current.commonCards.discard(Region.Cradle),
@@ -276,7 +276,7 @@ class OperationExecutorSuite extends munit.FunSuite:
         AtlasEntry.EmpireDivider
       ))))
 
-    val changed = accepted(executor.executeAll(source, Vector(
+    val changed = accepted(RawOperationBatch.executeAll(source, Vector(
       Burn.favor(1, PositionedLocation(Location.OnCard(atlasDenizen.id)),
         None),
       Flip(atlasDenizen.id, Location.Atlas, Orientation.FaceUp)
@@ -449,7 +449,7 @@ class OperationExecutorSuite extends munit.FunSuite:
         PositionedLocation(Location.Site(sites(2))))
     )
     // Red's pawn leaves S1, and 2 of red's 3 warbands go to S3.
-    val result = accepted(executor.executeAll(movable, moves))
+    val result = accepted(RawOperationBatch.executeAll(movable, moves))
 
     assertEquals(Look(result).player(playerId).pawnSite,
       Some(sites(2)))
@@ -462,7 +462,7 @@ class OperationExecutorSuite extends munit.FunSuite:
     val claim = Move(Piece.Banner(Banner.PeoplesFavor),
       PositionedLocation(Location.SharedBank),
       PositionedLocation(Location.PlayArea(blueId)))
-    val result = accepted(executor.executeAll(unheld, Vector(claim)))
+    val result = accepted(RawOperationBatch.executeAll(unheld, Vector(claim)))
     assertEquals(result.game.current.banners.peoplesFavor.holder, Some(blueId))
     // Claiming moves custody only; resources already on the unheld banner stay
     // tracked on the banner.

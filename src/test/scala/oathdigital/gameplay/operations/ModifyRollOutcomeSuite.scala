@@ -1,6 +1,7 @@
 package oathdigital.gameplay.operations
 
 import oathdigital.model._
+import oathdigital.testkit.RawOperationBatch
 import oathdigital.testkit.Unwrap.accepted
 
 class ModifyRollOutcomeSuite extends munit.FunSuite:
@@ -12,7 +13,7 @@ class ModifyRollOutcomeSuite extends munit.FunSuite:
       skulls = 1, score = 3))))
 
   private def run(ready: ReadyGame, operation: CoreOperation) =
-    accepted(new OperationExecutor().executeAll(ready, Vector(operation)))
+    accepted(RawOperationBatch.executeAll(ready, Vector(operation)))
       .game.current.rollOutcomes
 
   test("modifying an outcome rewrites only the fields it names"):

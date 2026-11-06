@@ -6,14 +6,14 @@ import oathdigital.model._
 import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
+import oathdigital.testkit.RawOperationBatch
 
 /** The Chronicle's card piles: the gathering pile, the newly Dispossessed,
   * the suited reserves and a lineage's starting advisers. */
 class ChroniclePilesSuite extends munit.FunSuite:
-  private val executor = new OperationExecutor()
   private def applied(ready: ReadyGame, ops: CoreOperation*)(
       using munit.Location): ReadyGame =
-    accepted(executor.executeAll(ready, ops.toVector))
+    accepted(RawOperationBatch.executeAll(ready, ops.toVector))
 
   private def topDenizenOfWorldDeck(ready: ReadyGame): DenizenId =
     ready.game.current.commonCards.worldDeck.collectFirst {
@@ -78,7 +78,7 @@ class ChroniclePilesSuite extends munit.FunSuite:
   private def relicRefusedAt(to: Location): Boolean =
     val start = Table.start.ready
     val relic = start.game.current.commonCards.relicDeck.head
-    executor.executeAll(start, Vector(moved(relic,
+    RawOperationBatch.executeAll(start, Vector(moved(relic,
       Location.Deck(CardDeck.Relic), to))).left.toOption
       .exists(_.isInstanceOf[OperationError.InvalidDestination])
 
@@ -91,6 +91,6 @@ class ChroniclePilesSuite extends munit.FunSuite:
 
   test("a Vision is a world card but no denizen, so no reserve takes it"):
     val ready = Table.start.revealedVision(p1, VisionRules.Conquest).ready
-    assert(executor.executeAll(ready, Vector(moved(VisionRules.Conquest,
+    assert(RawOperationBatch.executeAll(ready, Vector(moved(VisionRules.Conquest,
       Location.PlayArea(p1), Location.SuitedReserve(Suit.Beast)))).left.toOption
       .exists(_.isInstanceOf[OperationError.InvalidDestination]))

@@ -5,7 +5,7 @@ import oathdigital.gameplay.powers.action.{FaeMerchantCard, SecondChanceCard}
 import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.model._
 import oathdigital.model.TestGameFixtures._
-import oathdigital.testkit.Table
+import oathdigital.testkit.{RawOperationBatch, Table}
 import oathdigital.testkit.Unwrap.accepted
 
 /** The shape guard through the two interfaces that cross it: the resolver's
@@ -114,7 +114,7 @@ class OperationApplicationSuite extends munit.FunSuite:
     assertEquals(codes(OperationApplication.validate(ready, claim)),
       Vector("insufficient-pieces"))
     // The executor refuses the same claim.
-    assertEquals(new OperationExecutor().executeAll(ready, Vector(claim)).left.toOption,
+    assertEquals(RawOperationBatch.executeAll(ready, Vector(claim)).left.toOption,
       Some(OperationError.InsufficientPieces(Piece.Banner(Banner.PeoplesFavor),
         Location.SharedBank, 0)))
 

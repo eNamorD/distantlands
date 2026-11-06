@@ -2,23 +2,23 @@ package oathdigital.gameplay.roles
 
 import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.operations.{OperationExecutor, TheGrandScepterCard}
+import oathdigital.gameplay.operations.TheGrandScepterCard
 import oathdigital.gameplay.powers.PlayerFacts
 import oathdigital.model._
 import oathdigital.testkit.{Look, Table}
 import oathdigital.testkit.Table.{p1, p2, p3}
 import oathdigital.testkit.Unwrap.{accepted, present}
+import oathdigital.testkit.RawOperationBatch
 
 /** Becoming a Citizen or the Chancellor, and exile (CR p. 34; Empire phase
   * design, "Slice 3"). */
 class RoleChangesSuite extends munit.FunSuite:
-  private val executor = new OperationExecutor()
   private val peaks = BrokenPeaksSite.id
 
   private def applied(ready: ReadyGame,
       ops: Either[OathViolation, Vector[CoreOperation]])(
       using munit.Location): ReadyGame =
-    accepted(executor.executeAll(ready, present(ops.toOption, "the ops")))
+    accepted(RawOperationBatch.executeAll(ready, present(ops.toOption, "the ops")))
 
   private def everyPlaceKept(ready: ReadyGame, player: PlayerId)(
       using munit.Location): RoleChanges.Kept =

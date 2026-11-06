@@ -3,7 +3,7 @@ package oathdigital.gameplay.operations
 import oathdigital.gameplay.powers.rest.SilverTongueCard
 import oathdigital.model._
 import oathdigital.model.TestGameFixtures._
-import oathdigital.testkit.{Look, Table}
+import oathdigital.testkit.{Look, RawOperationBatch, Table}
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.accepted
 
@@ -39,7 +39,7 @@ class OperationMutationSuite extends munit.FunSuite:
   private def titled(holder: Option[PlayerId], side: TitleSide): ReadyGame =
     Table.start.oathkeeper(holder, side).ready
   private def set(ready: ReadyGame, holder: Option[PlayerId]) =
-    new OperationExecutor().executeAll(ready, Vector(SetOathkeeper(holder)))
+    RawOperationBatch.executeAll(ready, Vector(SetOathkeeper(holder)))
       .map(_.game.current.title)
 
   test("SetOathkeeper moves the title and always resets it to the Oathkeeper side"):
@@ -62,7 +62,7 @@ class OperationMutationSuite extends munit.FunSuite:
       Right(OathkeeperState(Some(p1), TitleSide.Oathkeeper)))
 
   private def setGoal(from: OathkeeperGoal, to: OathkeeperGoal) =
-    new OperationExecutor().executeAll(
+    RawOperationBatch.executeAll(
       Table.start.oathkeeperGoal(from).ready, Vector(SetOathkeeperGoal(to)))
       .map(_.game.campaign.oathkeeperGoal)
 
@@ -75,7 +75,7 @@ class OperationMutationSuite extends munit.FunSuite:
       .left.map(_.code), Left("oathkeeper-goal-unchanged"))
 
   private def begin(ready: ReadyGame, operation: BeginTurn) =
-    new OperationExecutor().executeAll(ready, Vector(operation))
+    RawOperationBatch.executeAll(ready, Vector(operation))
       .map(_.game.current.turn)
 
   test("BeginTurn hands the turn to a seated player and clears used powers"):
@@ -98,7 +98,7 @@ class OperationMutationSuite extends munit.FunSuite:
     }
 
   test("favor moves from the shared bank to a site without touching any suit bank"):
-    val result = new OperationExecutor().executeAll(ready, Vector(
+    val result = RawOperationBatch.executeAll(ready, Vector(
       Move(Piece.Favor(3), PositionedLocation(Location.SharedBank),
         PositionedLocation(Location.Site(sites.head)))))
     val moved = accepted(result)
@@ -111,7 +111,7 @@ class OperationMutationSuite extends munit.FunSuite:
     val unplaced = ready.updateCurrent(_.copy(players = ready.game.current.players.map {
       player => if player.player == playerId then player.copy(pawnSite = None) else player
     }))
-    val result = new OperationExecutor().executeAll(unplaced, Vector(
+    val result = RawOperationBatch.executeAll(unplaced, Vector(
       Move(Piece.Pawn(playerId),
         PositionedLocation(Location.PlayArea(playerId)),
         PositionedLocation(Location.Site(sites.head)))))
@@ -119,7 +119,7 @@ class OperationMutationSuite extends munit.FunSuite:
       Some(sites.head))
 
   test("a pawn already on a site cannot move from the player area again"):
-    val result = new OperationExecutor().executeAll(ready, Vector(
+    val result = RawOperationBatch.executeAll(ready, Vector(
       Move(Piece.Pawn(playerId),
         PositionedLocation(Location.PlayArea(playerId)),
         PositionedLocation(Location.Site(sites.head)))))

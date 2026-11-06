@@ -1,6 +1,7 @@
 package oathdigital.gameplay.operations
 
 import oathdigital.model._
+import oathdigital.testkit.RawOperationBatch
 import oathdigital.testkit.Unwrap.accepted
 
 class RecordCampaignResultSuite extends munit.FunSuite:
@@ -12,7 +13,7 @@ class RecordCampaignResultSuite extends munit.FunSuite:
     attackerWins = false)
 
   private def record(ready: ReadyGame, result: CampaignResult) =
-    accepted(new OperationExecutor().executeAll(ready,
+    accepted(RawOperationBatch.executeAll(ready,
       Vector(RecordCampaignResult(result)))).game.current.lastCampaignResult
 
   test("recording a result writes it into state"):

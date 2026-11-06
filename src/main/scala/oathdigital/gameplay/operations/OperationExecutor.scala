@@ -35,7 +35,7 @@ object OperationPolicy:
       OperationError.RestrictedOperation(rejectionDetail)
     )
 
-/** Applies one operation (or a raw fold of several) through
+/** Applies one operation through
   * [[OperationApplication.mutate]], which runs the shape guard before any
   * family mutation. [[OperationPipeline]] owns best-effort resolution and the
   * post-state invariant; replay reaches the same guard by calling this class
@@ -50,15 +50,6 @@ final class OperationExecutor:
     OperationError
       .describe(OperationApplication.mutate(ready, operation))
       .flatMap(identity)
-
-  def executeAll(
-      ready: ReadyGame,
-      operations: Vector[CoreOperation]
-  ): Either[OperationError, ReadyGame] =
-    if operations.isEmpty then Left(OperationError.EmptyOperationBatch)
-    else
-      operations.foldLeft[Either[OperationError, ReadyGame]](Right(ready)):
-        (result, operation) => result.flatMap(staged => execute(staged, operation))
 
 private[operations] object OperationStateInvariant:
   import OperationError._

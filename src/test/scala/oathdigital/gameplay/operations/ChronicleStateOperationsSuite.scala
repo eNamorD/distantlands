@@ -7,12 +7,12 @@ import oathdigital.model._
 import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2}
 import oathdigital.testkit.Unwrap.{accepted, rejected}
+import oathdigital.testkit.RawOperationBatch
 
 /** The Chronicle's own primitives (Chronicle Sun and Throne plan, Task 3). */
 class ChronicleStateOperationsSuite extends munit.FunSuite:
-  private val executor = new OperationExecutor()
   private def run(ready: ReadyGame, ops: CoreOperation*) =
-    executor.executeAll(ready, ops.toVector)
+    RawOperationBatch.executeAll(ready, ops.toVector)
 
   private def lineageOf(ready: ReadyGame, player: PlayerId): LineageId =
     ready.game.current.player(player).get.lineage

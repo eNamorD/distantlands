@@ -3,12 +3,12 @@ package oathdigital.gameplay.operations
 import oathdigital.model._
 import oathdigital.testkit.Table
 import oathdigital.testkit.Unwrap.{accepted, rejected}
+import oathdigital.testkit.RawOperationBatch
 
 /** The Usurper Limiter (Empire slice 3a, ruling R5). */
 class UsurperLimiterSuite extends munit.FunSuite:
-  private val executor = new OperationExecutor()
   private def run(ready: ReadyGame, ops: CoreOperation*) =
-    executor.executeAll(ready, ops.toVector)
+    RawOperationBatch.executeAll(ready, ops.toVector)
 
   test("removing the Usurper Limiter ends its limit"):
     val after = accepted(run(Table.start.ready, UsurperLimiterRemoved))
