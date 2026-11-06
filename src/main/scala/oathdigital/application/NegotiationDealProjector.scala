@@ -18,7 +18,7 @@ private[application] final class NegotiationDealProjector(
       query: DecisionQuery.Negotiate): NegotiationDealProjection =
     val current = ready.game.current
     val transfers = query.participants.flatMap { author =>
-      val owner = current.players.find(_.player == author).get
+      val owner = current.player(author).get
       query.terms(author).transfers.map { transfer =>
         NegotiationTransferProjection(author.value, transfer.recipient.value,
           transfer.favor, transfer.relics.size,
@@ -54,7 +54,7 @@ private[application] final class NegotiationDealProjector(
   private def editing(ready: ReadyGame, query: DecisionQuery.Negotiate,
       viewer: PlayerId): NegotiationEditingProjection =
     val current = ready.game.current
-    val player = current.players.find(_.player == viewer).get
+    val player = current.player(viewer).get
     val own = query.bounds(viewer)
     NegotiationEditingProjection(own.maxFavor,
       own.relics.flatMap(id => player.relics.find(_.id == id)).map(relic =>

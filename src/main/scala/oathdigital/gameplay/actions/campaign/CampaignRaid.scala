@@ -35,7 +35,7 @@ private[campaign] object CampaignRaid:
     * the decision is selected again after the transfer.
     */
   def relocationSites(ready: ReadyGame, defender: PlayerId): Vector[SiteId] =
-    val origin = ready.game.current.players.find(_.player == defender)
+    val origin = ready.game.current.player(defender)
       .flatMap(_.pawnSite)
     ready.game.current.map.inPlay.filterNot(site => origin.contains(site))
 
@@ -49,7 +49,7 @@ private[campaign] object CampaignRaid:
         case CampaignDefender.Player(player) => Right(player)
         case CampaignDefender.Bandits => Left(OathViolation.InvalidEventOrder(
           "a Raid requires a player defender"))
-      defender <- current.players.find(_.player == defenderId).toRight(
+      defender <- current.player(defenderId).toRight(
         OathViolation.InvalidEventOrder("the Raid's defender is not in the game"))
       origin <- CampaignSetup.originOf(ready, result.attacker).toRight(
         OathViolation.PawnSiteMissing(result.attacker))
@@ -130,7 +130,7 @@ private[campaign] object CampaignRaid:
 
   private def relocate(ready: ReadyGame, defender: PlayerId, pending: PendingTree)
       : Either[OathViolation, Vector[CoreOperation]] = for
-    origin <- ready.game.current.players.find(_.player == defender)
+    origin <- ready.game.current.player(defender)
       .flatMap(_.pawnSite).toRight(OathViolation.PawnSiteMissing(defender))
     destination <- CampaignAnswers.relocation(pending).toRight(
       OathViolation.InvalidEventOrder("the Raid's relocation was not answered"))

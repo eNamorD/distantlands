@@ -107,8 +107,8 @@ object CampaignBattle:
         .fold(0)(_.forces match
           case SiteForces.Occupied(_, count) => count
           case SiteForces.Empty => 0)
-      case DecisionOptionRef.Player(player) => current.players
-        .find(_.player == player).fold(0)(_.board.warbands)
+      case DecisionOptionRef.Player(player) =>
+        current.player(player).fold(0)(_.board.warbands)
       case _ => 0
 
   /** The defense is the dice score plus the defender's force. It is written
@@ -211,7 +211,7 @@ object CampaignBattle:
   def attackerKills(ready: ReadyGame, attacker: PlayerId, id: String,
       origin: Option[OriginForce], deaths: Int, pending: PendingTree)
       : Either[OathViolation, Vector[CoreOperation]] =
-    ready.game.current.players.find(_.player == attacker)
+    ready.game.current.player(attacker)
       .flatMap(PlayerForceKind.of(ready, _)).toRight(
       OathViolation.InvalidEventOrder(
         "the Campaign's attacker is not in the game")).map { kind =>
@@ -289,7 +289,7 @@ object CampaignBattle:
   private def raidBoardLosses(ready: ReadyGame, result: CampaignResult)
       : Vector[CoreOperation] = result.defender match
     case CampaignDefender.Player(player) =>
-      ready.game.current.players.find(_.player == player).toVector.flatMap:
+      ready.game.current.player(player).toVector.flatMap:
         defender =>
           val killed = defender.board.warbands / 2
           PlayerForceKind.of(ready, defender).filter(_ => killed > 0)

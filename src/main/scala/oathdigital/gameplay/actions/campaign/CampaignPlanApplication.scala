@@ -135,8 +135,8 @@ final class CampaignPlanApplication(catalog: ExecutableCatalog,
       CampaignPlans.refOf(source)), 1))
 
   private def reveal(ready: ReadyGame): Vector[Operation] = source match
-    case CampaignPlanSource.Adviser(player, id) if ready.game.current.players
-        .find(_.player == player).exists(_.advisers.exists {
+    case CampaignPlanSource.Adviser(player, id)
+        if ready.game.current.player(player).exists(_.advisers.exists {
           case held: DenizenState =>
             held.id == id && held.orientation == Orientation.FaceDown
           case _ => false }) =>
@@ -173,8 +173,8 @@ final class CampaignPlanApplication(catalog: ExecutableCatalog,
     */
   private def sacrificeFrom(ready: ReadyGame, player: PlayerId)
       : Vector[Location] = setup.kind match
-    case CampaignKind.Raid => ready.game.current.players
-      .find(_.player == player).filter(_.board.warbands > 0)
+    case CampaignKind.Raid => ready.game.current.player(player)
+      .filter(_.board.warbands > 0)
       .map(_ => Location.PlayArea(player): Location).toVector
     case CampaignKind.Conquest => CampaignBattle.defendedSites(ready,
         setup.actor, setup.targetSites).filter(site =>
@@ -215,7 +215,7 @@ final class CampaignPlanApplication(catalog: ExecutableCatalog,
     val kind = from match
       case Location.Site(site) => ready.game.current.map.sites.get(site)
         .map(_.forces).collect { case SiteForces.Occupied(force, _) => force }
-      case _ => ready.game.current.players.find(_.player == player)
+      case _ => ready.game.current.player(player)
         .flatMap(PlayerForceKind.of(ready, _))
     kind.toRight(OathViolation.InvalidEventOrder(
       "the plan's sacrifice has no warband to kill")).map(force =>

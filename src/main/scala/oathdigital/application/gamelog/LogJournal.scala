@@ -115,7 +115,7 @@ private[gamelog] object LogJournal:
     case _ => None
 
   def supply(ready: ReadyGame, player: PlayerId): Int =
-    ready.game.current.players.find(_.player == player)
+    ready.game.current.player(player)
       .fold(0)(_.board.supply.supply)
 
   /** A step's batch applied one operation at a time from the state before

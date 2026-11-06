@@ -4,5 +4,5 @@ import oathdigital.model._
 
 object PlayerResourceSources:
   def player(ready: ReadyGame, playerId: PlayerId): Either[String, PlayerState] =
-    ready.game.current.players.find(_.player == playerId).toRight(
+    ready.game.current.player(playerId).toRight(
       s"unknown player ${playerId.value}")

@@ -71,7 +71,7 @@ private[application] final class PlanAidDesk(rules: OathRules):
   /** What is left to spend fits what the ally holds now. */
   private def fits(ready: ReadyGame, ally: PlayerId, left: AidAmounts)
       : Either[OathViolation, Unit] =
-    ready.game.current.players.find(_.player == ally).toRight(
+    ready.game.current.player(ally).toRight(
       unavailable(s"${ally.value} is not seated")).flatMap(held =>
       Either.cond(left.favor + left.favorBurnt <= held.board.favor &&
         left.secrets + left.secretsBurnt <= held.board.faceUpSecrets, (),

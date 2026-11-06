@@ -8,8 +8,7 @@ private[application] final case class ScopedProjectionContext(
     viewer: Option[PlayerId]
 ):
   val current = ready.game.current
-  val active: PlayerState = current.players.find(
-    _.player == current.turn.activePlayer).get
+  val active: PlayerState = current.player(current.turn.activePlayer).get
   val activeSite: Option[SiteState] = active.pawnSite.flatMap(current.map.sites.get)
 
 private[application] final case class PendingProjection(

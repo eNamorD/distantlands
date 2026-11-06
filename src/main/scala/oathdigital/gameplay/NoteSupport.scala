@@ -13,7 +13,7 @@ object NoteSupport:
   type Step = (ReadyGame, ReadyGame)
 
   def board(ready: ReadyGame, player: PlayerId): Option[PlayerBoardState] =
-    ready.game.current.players.find(_.player == player).map(_.board)
+    ready.game.current.player(player).map(_.board)
 
   def favor(step: Step, player: PlayerId): Int = change(step, player)(_.favor)
   def supply(step: Step, player: PlayerId): Int =
@@ -123,5 +123,5 @@ object NoteSupport:
     board(step._2, player).fold(0)(read) - board(step._1, player).fold(0)(read)
 
   private def relics(ready: ReadyGame, player: PlayerId): Vector[RelicId] =
-    ready.game.current.players.find(_.player == player).toVector
+    ready.game.current.player(player).toVector
       .flatMap(_.relics.map(_.id))

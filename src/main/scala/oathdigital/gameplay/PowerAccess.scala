@@ -37,7 +37,7 @@ private[gameplay] object PowerAccess:
   /** Whether `player` holds `card` faceup among their advisers. */
   def holdsFaceupAdviser(ready: ReadyGame, player: PlayerId, card: DenizenId)
       : Boolean =
-    ready.game.current.players.find(_.player == player)
+    ready.game.current.player(player)
       .exists(hasFaceupAdviser(_, card))
 
   private def hasFaceupAdviser(player: PlayerState, card: DenizenId): Boolean =
@@ -97,7 +97,7 @@ private[gameplay] object PowerAccess:
         BannerRules.holder(ready.game.current, banner).contains(actor))
       case RuleSourceRef.Foundation(_) => true
       case RuleSourceRef.Legacy(lineage, _) =>
-        ready.game.current.players.find(_.player == actor)
+        ready.game.current.player(actor)
           .exists(_.lineage == lineage) && face == RuleSourceFace.Active
       case _ => false
 
@@ -115,7 +115,7 @@ private[gameplay] object PowerAccess:
         case d: DenizenState => d.id == card && d.orientation == Orientation.FaceUp
         case e: EdificeState => e.id == card
       }) => Held.AtSite(id)
-    lazy val inPlay = current.players.find(_.player == actor).exists(player =>
+    lazy val inPlay = current.player(actor).exists(player =>
       player.advisers.exists {
         case d: DenizenState => d.id == card && d.orientation == Orientation.FaceUp
         case _ => false

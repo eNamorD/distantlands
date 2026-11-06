@@ -27,7 +27,7 @@ private[gamelog] final class ChoiceWords(words: LogWords,
     case DecisionOptionRef.RelicSlot(owner, slot) =>
       Vector(words.player(owner), Text(s"'s facedown relic (slot ${slot + 1})"))
     case DecisionOptionRef.AdviserSlot(owner, slot) =>
-      before.game.current.players.find(_.player == owner)
+      before.game.current.player(owner)
         .flatMap(_.advisers.lift(slot)).fold(Vector[LogSpan](
           words.player(owner), Text(s"'s adviser (slot ${slot + 1})")))(held =>
           // A card the viewer may not identify is counted, never placed:

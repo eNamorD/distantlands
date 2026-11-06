@@ -33,7 +33,7 @@ private[campaign] object CampaignConquest:
 
   private def placements(ready: ReadyGame, actor: PlayerId, result: CampaignResult,
       pending: PendingTree): Either[OathViolation, Vector[CoreOperation]] =
-    ready.game.current.players.find(_.player == actor)
+    ready.game.current.player(actor)
       .flatMap(PlayerForceKind.of(ready, _)).toRight(
       OathViolation.InvalidEventOrder("the Campaign's attacker is not in the game"))
       .map(kind => CampaignAnswers.placements(pending, result.targetSites)

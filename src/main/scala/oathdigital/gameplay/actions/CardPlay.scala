@@ -42,7 +42,7 @@ object CardPlay:
       origin: Origin, more: Vector[CardId] = Vector.empty,
       buried: Option[CardId] = None)
       : Either[OathViolation, Vector[CoreOperation]] = for
-    player <- ready.game.current.players.find(_.player == playerId)
+    player <- ready.game.current.player(playerId)
       .toRight(InvalidSearchPlacement("player is not in the game"))
     _ <- validateOrigin(player, card, origin)
     plan <- plan(catalog, ready, player, card, placement, origin)
@@ -318,7 +318,7 @@ object CardPlay:
       // The replaced adviser is read before it leaves.
       val suit = EffectiveSuit.of(catalog, ready, id)
         .toRight(UnknownWorldCard(id))
-      val held = ready.game.current.players.find(_.player == actor)
+      val held = ready.game.current.player(actor)
         .toVector.flatMap(_.advisers).collectFirst:
           case value: DenizenState if value.id == id => value.tokens
       val tokens = held.getOrElse(Tokens.empty)

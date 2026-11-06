@@ -140,7 +140,7 @@ private[application] final class DecisionOptionRows(
         }.flatMap(state => row(presentation.edificeLabel(state.id, state.side),
           Some(presentation.edificeCardDetails(state))))
       case DecisionOption.RelicSlot(slot) =>
-        if ready.game.current.players.find(_.player == slot.owner)
+        if ready.game.current.player(slot.owner)
             .exists(_.relics.isDefinedAt(slot.slot)) then
           row(s"${presentation.playerLabel(slot.owner)} facedown relic")
         else None
@@ -157,7 +157,7 @@ private[application] final class DecisionOptionRows(
       // The card when the viewer may identify it, else its back: a slot
       // never discloses a facedown adviser, but the panel still draws a card.
       case DecisionOption.AdviserSlot(slot) =>
-        ready.game.current.players.find(_.player == slot.owner)
+        ready.game.current.player(slot.owner)
           .flatMap(_.advisers.lift(slot.slot)).flatMap { held =>
             val owner = presentation.playerLabel(slot.owner)
             card(ready, viewer, index, held.id) match

@@ -25,7 +25,7 @@ private[application] final class PlanAidProjector(rules: OathRules,
     for
       ally <- context.viewer
       (window, plans, requirements) <- rules.planAidOfferable(state, ally)
-      held <- ready.game.current.players.find(_.player == ally)
+      held <- ready.game.current.player(ally)
     yield
       val saved = if ready.planAid.window.contains(window) then
         ready.planAid.offerOf(ally) else AidOffer()

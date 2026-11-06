@@ -172,7 +172,7 @@ object CardPlayProcedure:
   /** The cards `actor` holds as facedown advisers, in board order. */
   private def facedownAdvisers(ready: ReadyGame, actor: PlayerId)
       : Vector[WorldCardId] =
-    ready.game.current.players.find(_.player == actor).toVector
+    ready.game.current.player(actor).toVector
       .flatMap(_.advisers.collect[WorldCardId] {
         case DenizenState(id, Orientation.FaceDown, _) => id
         case VisionState(id, Orientation.FaceDown) => id

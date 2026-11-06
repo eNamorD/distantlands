@@ -69,7 +69,7 @@ final case class CampaignSetup(actor: PlayerId, kind: CampaignKind,
 
 object CampaignSetup:
   private def playerOf(ready: ReadyGame, id: PlayerId): Option[PlayerState] =
-    ready.game.current.players.find(_.player == id)
+    ready.game.current.player(id)
 
   /** The `Run` entry a power queued for this Campaign's walk, while it
     * runs for `actor`. A menu Campaign has none. */

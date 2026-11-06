@@ -298,9 +298,14 @@ final case class CurrentGameState(
     * defender's Second Wind). */
   def walkActor: PlayerId = walkerEntry.fold(turn.activePlayer)(_.actor)
 
+  /** The state of `id`'s seat: board, pawn, advisers, relics and banners.
+    * `None` for a player who is not in this game. */
+  def player(id: PlayerId): Option[PlayerState] =
+    players.find(_.player == id)
+
   /** Where `player`'s pawn stands, if they are in the game and on the map. */
   def pawnSite(player: PlayerId): Option[SiteId] =
-    players.find(_.player == player).flatMap(_.pawnSite)
+    this.player(player).flatMap(_.pawnSite)
 
   /** Where `edifice` stands showing `side`, if it is on the map at all: a
     * Homeland outside the first 8 Chronicle sites keeps its edifice in

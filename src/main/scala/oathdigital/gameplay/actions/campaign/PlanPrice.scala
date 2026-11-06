@@ -67,7 +67,7 @@ private[campaign] object PlanPrice:
       val secrets = offer.costs.collect {
         case CampaignPlanCost.Secret(count) => count
         case CampaignPlanCost.SecretBurnt(count) => count }.sum
-      ready.game.current.players.find(_.player == user).map(_.board)
+      ready.game.current.player(user).map(_.board)
         .flatMap(board =>
           if board.favor < favor then
             Some(needs(favor, "favor", board.favor))

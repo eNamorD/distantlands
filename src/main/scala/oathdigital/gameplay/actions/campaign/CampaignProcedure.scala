@@ -314,7 +314,7 @@ object CampaignProcedure:
     */
   private def forceStep(catalog: ExecutableCatalog, state: ReadyGame,
       actor: PlayerId): Operation =
-    val board = state.game.current.players.find(_.player == actor)
+    val board = state.game.current.player(actor)
       .fold(0)(_.board.warbands)
     val atSite = CampaignSetup.atOrigin(state, actor)
     val warbands = board + atSite

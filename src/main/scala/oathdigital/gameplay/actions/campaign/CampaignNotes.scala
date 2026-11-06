@@ -312,8 +312,8 @@ object CampaignNotes:
   private def forceKindOf(ready: ReadyGame, owner: Option[PlayerId])
       : Option[ForceKind] = owner match
     case None => Some(ForceKind.Bandit)
-    case Some(player) => ready.game.current.players
-      .find(_.player == player).flatMap(PlayerForceKind.of(ready, _))
+    case Some(player) => ready.game.current.player(player)
+      .flatMap(PlayerForceKind.of(ready, _))
 
   /** Every warband of `kind` the owner holds: their board, and every site.
     * The warband bank is not counted, so a warband returned from the
@@ -322,8 +322,8 @@ object CampaignNotes:
     * sites holding the same number into one. */
   private def forceHeld(ready: ReadyGame, owner: Option[PlayerId],
       kind: ForceKind): Int =
-    val onBoard = owner.flatMap(player => ready.game.current.players
-      .find(_.player == player)).fold(0)(_.board.warbands)
+    val onBoard = owner.flatMap(ready.game.current.player)
+      .fold(0)(_.board.warbands)
     onBoard + ready.game.current.map.sites.valuesIterator
       .map(_.forces.count(kind)).sum
 
@@ -334,7 +334,7 @@ object CampaignNotes:
     ready.game.current.rollOutcomes.get(pool).fold(0)(_.score)
 
   private def held(ready: ReadyGame, player: PlayerId): Vector[CardId] =
-    ready.game.current.players.find(_.player == player).toVector.flatMap(
+    ready.game.current.player(player).toVector.flatMap(
       state => state.advisers.map(_.id: CardId) ++
         state.relics.map(_.id: CardId))
 

@@ -89,7 +89,7 @@ object CardSlots:
   def slots(catalog: ExecutableCatalog, ready: ReadyGame, actor: PlayerId,
       card: WorldCardId, origin: CardPlay.Origin, rules: CardPlayRules,
       picked: Vector[CardId] = Vector.empty): Vector[CardSlot] =
-    ready.game.current.players.find(_.player == actor).toVector.flatMap {
+    ready.game.current.player(actor).toVector.flatMap {
       player =>
         def judged(candidates: Vector[(DecisionOption, SearchPlacement)])
             : Vector[CardSlot] = candidates.flatMap { (option, placement) =>

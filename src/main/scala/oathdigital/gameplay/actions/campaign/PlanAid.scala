@@ -44,7 +44,7 @@ object PlanAid:
       ready.planAid.offers.get(ally).map(ally -> _))
 
   private def player(ready: ReadyGame, id: PlayerId): Option[PlayerState] =
-    ready.game.current.players.find(_.player == id)
+    ready.game.current.player(id)
 
   /** Whether `ally` meets `requirement` now. */
   def meets(ready: ReadyGame, ally: PlayerId,

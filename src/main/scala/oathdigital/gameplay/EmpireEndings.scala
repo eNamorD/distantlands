@@ -62,7 +62,7 @@ object EmpireEndings:
     val citizens =
       imperials.filter(Imperials.role(ready, _).contains(Role.Citizen))
     def relics(player: PlayerId): Int =
-      current.players.find(_.player == player).fold(0)(_.relics.size)
+      current.player(player).fold(0)(_.relics.size)
     def holdsScepter(player: PlayerId): Boolean =
       current.players.exists(state => state.player == player &&
         state.relics.exists(_.id == TheGrandScepterCard.id))

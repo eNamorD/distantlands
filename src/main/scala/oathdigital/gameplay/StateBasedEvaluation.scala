@@ -63,7 +63,7 @@ object StateBasedEvaluation:
   def visionAtWake(state: OathState): Either[OathViolation, Option[OathEvent]] =
     supported(state).map { ready =>
       val current = ready.game.current
-      current.players.find(_.player == current.turn.activePlayer)
+      current.player(current.turn.activePlayer)
         .filterNot(actor => Imperials.isImperial(ready, actor.player))
         .flatMap { actor =>
         actor.revealedVision.flatMap(v => Option.when(
