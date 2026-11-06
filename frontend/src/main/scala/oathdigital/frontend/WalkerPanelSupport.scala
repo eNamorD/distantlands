@@ -3,9 +3,8 @@ package oathdigital.frontend
 import oathdigital.protocol.{GameIntent => GameCommand, _}
 import org.scalajs.dom
 
-/** The client half of the generic walker decision contract, extracted from
-  * `ServerUiSupport` (which sat at its line bound) when Task 4 re-sourced
-  * both panels from the projected query.
+/** The client half of the generic walker decision contract. Both panels
+  * are sourced from the projected query.
   *
   * Everything here reads `WalkerDecisionState.query` -- the projected,
   * power-transformed `Decide` -- rather than deriving what to offer. So the
@@ -299,7 +298,7 @@ private[frontend] object WalkerPanelSupport:
   /** What a parked decision's panel calls itself, and what the control that
     * submits a partition is called.
     *
-    * Task 5b: both come off the query. They used to branch on
+    * Both come off the query. They used to branch on
     * `decision.action` to produce Forge's copy, which was the last
     * action-shaped string in a panel whose interaction had already stopped
     * being Forge-specific -- so the panel recognised the decisions it had

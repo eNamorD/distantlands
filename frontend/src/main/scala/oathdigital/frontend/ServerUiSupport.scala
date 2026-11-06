@@ -283,7 +283,7 @@ private[frontend] object ServerUiSupport:
       return ViewerPresentation(showGameplayControls = false,
         waitingForPlayerIds = Vector.empty, waitingForDisplayNames = Vector.empty,
         playerId = playerId)
-    // Task 5 fix: a parked walker `Decide`'s owner is projected `walkerDecision`
+    // A parked walker `Decide`'s owner is projected `walkerDecision`
     // regardless of whose turn it is, and everyone else is projected
     // `walkerWaiting` naming every player who may answer (see
     // WalkerDecisionProjector.project/waiting). Reading `activeParticipantId` below instead of these two

@@ -6,10 +6,11 @@ import oathdigital.model.OathViolation._
 
 /**
  * Builds the initial `ReadyGame` a `GameStarted` event evolves into
- * (2026-09-21 Chronicle design, slice 2, "Setup from a Chronicle").
- * Replaces the application-layer `ChronicleFirstGamePlan` bridge into the
- * old `FirstGameSetupPlan` command and the setup half of the deleted
- * `FirstGameSetupRules`.
+ * (2026-09-21 Chronicle design, slice 2, "Setup from a Chronicle"). The
+ * application layer still derives the per-game deal order
+ * (`ChronicleFirstGamePlan.dealOrder`, called by
+ * `GeneratedFirstGamePlanFactory`); this object turns the Chronicle and
+ * the orders into the `FirstGameSetupPlan` and the game state.
  *
  * Validation here is only what Setup itself needs: known and unique ids
  * across every Chronicle field (`ChronicleAccounting`), a later game's
