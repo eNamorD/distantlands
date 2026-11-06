@@ -27,7 +27,7 @@ object ShapeEmpire:
 
   private def removal(state: ReadyGame, holder: PlayerId): Vector[Operation] =
     val current = state.game.current
-    current.players.find(_.player == holder)
+    current.player(holder)
       .flatMap(PlayerForceKind.of(state, _)) match
       case None => Vector(ChronicleTasks.failing(OathViolation
         .InvalidEventOrder(s"${holder.value} has no warbands")))

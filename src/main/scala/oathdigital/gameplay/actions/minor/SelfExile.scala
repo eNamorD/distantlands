@@ -24,7 +24,7 @@ object SelfExile:
   def keys: Vector[NoteKey] = notes.declared
 
   def price(ready: ReadyGame, actor: PlayerId): Int =
-    math.max(Minimum, ready.game.current.players.find(_.player == actor)
+    math.max(Minimum, ready.game.current.player(actor)
       .fold(0)(_.board.warbands))
 
   val build: MinorActionProcedures.Build = (_, ready, actor, args) => for
@@ -34,7 +34,7 @@ object SelfExile:
       MinorActionUnavailable("Only a Citizen exiles themself"))
     chancellor <- Imperials.chancellor(ready).toRight(
       MinorActionUnavailable("There is no Chancellor to pay"))
-    state <- ready.game.current.players.find(_.player == actor)
+    state <- ready.game.current.player(actor)
       .toRight(WrongPlayer(ready.game.current.turn.activePlayer, actor))
     cost = price(ready, actor)
     _ <- Either.cond(state.board.favor >= cost, (), MinorActionUnavailable(

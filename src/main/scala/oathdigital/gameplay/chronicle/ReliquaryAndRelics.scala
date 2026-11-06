@@ -38,7 +38,7 @@ object ReliquaryAndRelics:
           PositionedLocation(Location.WarbandBank(kind)))))
 
   private def held(state: ReadyGame, player: PlayerId): Vector[RelicState] =
-    state.game.current.players.find(_.player == player).toVector
+    state.game.current.player(player).toVector
       .flatMap(_.relics.filterNot(_.id == scepter))
 
   private def discardDown(reliquary: Vector[RelicId], holder: PlayerId)

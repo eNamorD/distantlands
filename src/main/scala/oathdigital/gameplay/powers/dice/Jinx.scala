@@ -60,7 +60,7 @@ case object Jinx extends ContributingPower:
   /** Whether `player` rules Jinx: a faceup adviser of theirs, or faceup at a
     * site they rule. */
   def rules(ready: ReadyGame, player: PlayerId): Boolean =
-    ready.game.current.players.find(_.player == player).exists(_.advisers
+    ready.game.current.player(player).exists(_.advisers
       .exists {
         case DenizenState(`card`, Orientation.FaceUp, _) => true
         case _ => false

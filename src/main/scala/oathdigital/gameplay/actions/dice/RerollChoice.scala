@@ -182,7 +182,7 @@ object RerollChoice:
         needs(required, secrets(required), available)
       case OathViolation.InsufficientFavor(required, available) =>
         needs(required, "favor", available)
-      case _ => ready.game.current.players.find(_.player == roller)
+      case _ => ready.game.current.player(roller)
         .map(_.board).flatMap(board =>
           if board.faceUpSecrets < cost.secret then Some(needs(cost.secret,
             secrets(cost.secret), board.faceUpSecrets))

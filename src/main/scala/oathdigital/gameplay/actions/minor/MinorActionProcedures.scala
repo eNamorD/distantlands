@@ -147,7 +147,7 @@ object MinorActionProcedures:
 
   private def faceup(ready: ReadyGame, actor: PlayerId,
       relic: RelicId): Boolean =
-    ready.game.current.players.find(_.player == actor).exists(
+    ready.game.current.player(actor).exists(
       _.relics.exists(held => held.id == relic &&
         held.orientation == Orientation.FaceUp))
 
@@ -238,7 +238,7 @@ object MinorActionProcedures:
   private def most(ready: ReadyGame, actor: PlayerId,
       way: DecisionOptionRef.Button): Either[String, Int] =
     val current = ready.game.current
-    current.players.find(_.player == actor).zip(sitedPawn(ready, actor)) match
+    current.player(actor).zip(sitedPawn(ready, actor)) match
       case None => Left("Your pawn is not at a site")
       case Some((player, (siteId, site))) =>
         if way == toSite then
@@ -259,7 +259,7 @@ object MinorActionProcedures:
   private def move(ready: ReadyGame, actor: PlayerId,
       way: DecisionOptionRef.Button, amount: Int): Option[CoreOperation] =
     for
-      player <- ready.game.current.players.find(_.player == actor)
+      player <- ready.game.current.player(actor)
       siteId <- player.pawnSite
       kind <- PlayerForceKind.of(ready, player)
     yield
@@ -271,20 +271,20 @@ object MinorActionProcedures:
 
   private def facedownRelics(ready: ReadyGame, actor: PlayerId)
       : Vector[RelicId] =
-    ready.game.current.players.find(_.player == actor).toVector
+    ready.game.current.player(actor).toVector
       .flatMap(_.relics.filter(_.orientation == Orientation.FaceDown)
         .map(_.id))
 
   /** The actor's pawn site and its state, when the pawn stands on one. */
   private def sitedPawn(ready: ReadyGame, actor: PlayerId)
       : Option[(SiteId, SiteState)] =
-    ready.game.current.players.find(_.player == actor)
+    ready.game.current.player(actor)
       .flatMap(_.pawnSite).flatMap(id =>
         ready.game.current.map.sites.get(id).map(id -> _))
 
   private def pawnSite(ready: ReadyGame, actor: PlayerId)
       : Either[OathViolation, SiteState] =
-    ready.game.current.players.find(_.player == actor)
+    ready.game.current.player(actor)
       .flatMap(_.pawnSite).toRight(PawnSiteMissing(actor))
       .flatMap(_ => sitedPawn(ready, actor).map(_._2).toRight(
         MinorActionUnavailable("pawn site is not in play")))

@@ -67,7 +67,7 @@ object RestCleanup:
       resting: PlayerId): Either[OathViolation, Vector[CoreOperation]] = for
     plan <- RestCleanupPlan.derive(catalog, ready, resting)
       .left.map(OathViolation.UnsupportedRestState.apply)
-    player <- ready.game.current.players.find(_.player == resting)
+    player <- ready.game.current.player(resting)
       .toRight(OathViolation.UnsupportedRestState(
         s"unknown resting player $resting"))
   yield

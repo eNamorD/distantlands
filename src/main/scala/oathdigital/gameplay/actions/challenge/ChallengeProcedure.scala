@@ -78,7 +78,7 @@ object ChallengeProcedure:
     */
   def legalBanners(state: ReadyGame, actor: PlayerId): Vector[Banner] =
     val current = state.game.current
-    current.players.find(_.player == actor).toVector.flatMap { player =>
+    current.player(actor).toVector.flatMap { player =>
       Banner.all.filter { banner =>
         val holder = BannerRules.holder(current, banner)
         !holder.contains(actor) &&
@@ -122,7 +122,7 @@ object ChallengeProcedure:
       banner: Banner): Operation =
     val current = ready.game.current
     val prior = BannerRules.resources(current, banner)
-    val own = current.players.find(_.player == actor)
+    val own = current.player(actor)
       .fold(0)(BannerRules.playerResources(_, banner))
     val unit = banner match
       case Banner.PeoplesFavor => "favor"

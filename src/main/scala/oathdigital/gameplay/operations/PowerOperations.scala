@@ -21,7 +21,7 @@ object Costs:
     if cost == Cost.free then Right(PayCost(actor, placedAt, cost))
     else
       for
-        player <- ready.game.current.players.find(_.player == actor)
+        player <- ready.game.current.player(actor)
           .toRight(WrongPlayer(ready.game.current.turn.activePlayer, actor))
         favor = cost.favor + cost.favorBurnt
         secrets = cost.secret + cost.secretBurnt

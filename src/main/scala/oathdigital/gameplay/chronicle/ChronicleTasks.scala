@@ -18,7 +18,7 @@ object ChronicleTasks:
     ready.game.current.players.map(_.player)
 
   def lineageOf(ready: ReadyGame, player: PlayerId): Option[LineageId] =
-    ready.game.current.players.find(_.player == player).map(_.lineage)
+    ready.game.current.player(player).map(_.lineage)
 
   def playerOptions(players: Vector[PlayerId]): Vector[DecisionOption] =
     players.map(player => DecisionOption.Player(DecisionOptionRef.Player(player)))

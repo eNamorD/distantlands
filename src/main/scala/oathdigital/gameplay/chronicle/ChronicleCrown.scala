@@ -10,7 +10,7 @@ object ChronicleCrown:
   def operations(ready: ReadyGame, winner: PlayerId)
       : Either[OathViolation, Vector[CoreOperation]] =
     for
-      player <- ready.game.current.players.find(_.player == winner).toRight(
+      player <- ready.game.current.player(winner).toRight(
         OathViolation.InvalidEventOrder(s"${winner.value} is not seated"))
       lineage <- ready.game.campaign.lineages.get(player.lineage).toRight(
         OathViolation.InvalidEventOrder(

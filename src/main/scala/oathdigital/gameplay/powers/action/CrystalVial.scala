@@ -53,7 +53,7 @@ case object CrystalVial extends PaidAction(CrystalVialCard.power):
 
   private def candidates(ready: ReadyGame, actor: PlayerId): Vector[Candidate] =
     val current = ready.game.current
-    val advisers = current.players.find(_.player == actor).toVector
+    val advisers = current.player(actor).toVector
       .flatMap(_.advisers.map {
         case d: DenizenState => Candidate(DecisionOptionRef.Denizen(d.id),
           BuryableCard.Denizen(d.id), Location.PlayArea(actor), d.tokens)

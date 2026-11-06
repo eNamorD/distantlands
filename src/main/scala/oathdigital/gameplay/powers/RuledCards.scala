@@ -20,7 +20,7 @@ object RuledCards:
       suit: Suit): Vector[CardId] =
     val current = ready.game.current
     val advisers: Vector[CardId] = ruler match
-      case SiteRuler.Player(player) => current.players.find(_.player == player)
+      case SiteRuler.Player(player) => current.player(player)
         .toVector.flatMap(_.advisers.collect {
           case DenizenState(held, Orientation.FaceUp, _) => held })
       case _ => Vector.empty

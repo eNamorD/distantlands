@@ -142,7 +142,7 @@ object WarbandTransfers:
   private def available(ready: ReadyGame, actor: PlayerId, other: PlayerId,
       ref: DecisionOptionRef.Button): Int =
     val from = if ref == give then actor else other
-    ready.game.current.players.find(_.player == from)
+    ready.game.current.player(from)
       .fold(0)(_.board.warbands)
 
   private def transfer(actor: PlayerId, other: PlayerId,

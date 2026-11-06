@@ -113,14 +113,13 @@ object FinishRestProcedure:
         rules.baseSupplyFor(banked).toRight(UnsupportedRestState(
           s"no Supply band for $banked banked warbands")))
     case None => Imperials.chancellor(ready)
-      .flatMap(chancellor => ready.game.current.players
-        .find(_.player == chancellor))
+      .flatMap(chancellor => ready.game.current.player(chancellor))
       .map(_.board.supply.supply)
       .toRight(UnsupportedRestState("a Citizen's Supply needs a Chancellor"))
 
   private def restingPlayer(ready: ReadyGame, resting: PlayerId)
       : Either[OathViolation, PlayerState] =
-    ready.game.current.players.find(_.player == resting)
+    ready.game.current.player(resting)
       .toRight(UnsupportedRestState(s"unknown resting player $resting"))
 
   /** The Supply the resting player would end Rest holding, from the warbands

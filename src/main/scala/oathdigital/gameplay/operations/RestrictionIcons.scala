@@ -50,8 +50,8 @@ final case class RestrictionIcons(adviserOnly: Set[CardId],
       : Option[Orientation] =
     val current = ready.game.current
     from match
-      case Location.PlayArea(owner) => current.players
-        .find(_.player == owner).flatMap(_.advisers.collectFirst {
+      case Location.PlayArea(owner) => current.player(owner)
+        .flatMap(_.advisers.collectFirst {
           case DenizenState(`card`, orientation, _) => orientation })
       case Location.Site(site) => current.map.sites.get(site)
         .flatMap(_.denizens.collectFirst {

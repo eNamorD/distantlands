@@ -40,7 +40,7 @@ object AdviserLimit:
   /** How many of `player`'s advisers count toward the limit. Marriage counts
     * once, as any adviser does. */
   def towardLimit(ready: ReadyGame, player: PlayerId): Int =
-    ready.game.current.players.find(_.player == player)
+    ready.game.current.player(player)
       .fold(0)(_.advisers.size) - ignored(ready, player).size
 
   /** How many adviser slots `player`'s board draws: the limit and one more
@@ -50,6 +50,6 @@ object AdviserLimit:
       player: PlayerId): Int =
     val limit = of(catalog, ready, player)
     if limit == CardPlayRules.Unbounded then
-      ready.game.current.players.find(_.player == player)
+      ready.game.current.player(player)
         .fold(0)(_.advisers.size) + 1
     else limit + ignored(ready, player).size

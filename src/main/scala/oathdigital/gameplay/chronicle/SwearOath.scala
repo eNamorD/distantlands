@@ -36,7 +36,7 @@ object SwearOath:
   /** The winning Vision's goal, set only when it is not already the goal. */
   private def visionGoal(state: ReadyGame, winner: PlayerId)
       : Vector[Operation] =
-    state.game.current.players.find(_.player == winner)
+    state.game.current.player(winner)
       .flatMap(_.revealedVision).flatMap(vision =>
         VisionRules.trueGoal(vision.id)) match
       case None => Vector(ChronicleTasks.failing(OathViolation

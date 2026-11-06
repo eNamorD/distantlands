@@ -67,7 +67,7 @@ private[powers] object RulerToll:
       taken: Int = 0): DecisionOption =
     val option = DecisionOption.Button(PayOrAsk.pay,
       s"Give $Favor favor to ${owner.value}")
-    val held = ready.game.current.players.find(_.player == payer)
+    val held = ready.game.current.player(payer)
       .fold(0)(_.board.favor)
     val needed = Favor + taken
     if held >= needed then option

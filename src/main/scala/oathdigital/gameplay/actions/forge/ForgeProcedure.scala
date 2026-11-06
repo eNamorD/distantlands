@@ -185,7 +185,7 @@ object ForgeProcedure:
 
   private def actorState(state: ReadyGame,
       actor: PlayerId): Either[OathViolation, PlayerState] =
-    state.game.current.players.find(_.player == actor)
+    state.game.current.player(actor)
       .toRight(OathViolation.PawnSiteMissing(actor))
 
   /** The site's printed Forge cost, worded exactly as `ForgeRules.validate`

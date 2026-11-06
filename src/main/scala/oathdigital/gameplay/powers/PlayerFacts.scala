@@ -6,7 +6,7 @@ import oathdigital.model._
 object PlayerFacts:
   def player(ready: ReadyGame, actor: PlayerId)
       : Either[OathViolation, PlayerState] =
-    ready.game.current.players.find(_.player == actor).toRight(
+    ready.game.current.player(actor).toRight(
       OathViolation.WrongPlayer(ready.game.current.turn.activePlayer, actor))
 
   /** The kind of warband the player's own warbands are. */

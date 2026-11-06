@@ -14,7 +14,7 @@ object WarbandArrangement:
   def holdings(ready: ReadyGame, user: PlayerId, sites: Vector[SiteId])
       : (Int, Vector[(SiteId, Int)]) =
     val current = ready.game.current
-    val board = current.players.find(_.player == user).fold(0)(_.board.warbands)
+    val board = current.player(user).fold(0)(_.board.warbands)
     (board, sites.flatMap(site => current.map.sites(site).forces match {
       case SiteForces.Occupied(_, count) if count > 0 => Some(site -> count)
       case _ => None

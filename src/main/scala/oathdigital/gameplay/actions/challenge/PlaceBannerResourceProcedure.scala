@@ -45,7 +45,7 @@ object PlaceBannerResourceProcedure:
   /** Banners the actor holds and could put at least one resource on. */
   def heldBanners(state: ReadyGame, actor: PlayerId): Vector[Banner] =
     val current = state.game.current
-    current.players.find(_.player == actor).toVector.flatMap(player =>
+    current.player(actor).toVector.flatMap(player =>
       Banner.all.filter(banner => BannerRules.holder(current, banner)
         .contains(actor) && BannerRules.playerResources(player, banner) > 0))
 
@@ -104,7 +104,7 @@ object PlaceBannerResourceProcedure:
 
   private def amountDecision(ready: ReadyGame, actor: PlayerId,
       banner: Banner): Operation =
-    val own = ready.game.current.players.find(_.player == actor)
+    val own = ready.game.current.player(actor)
       .fold(0)(BannerRules.playerResources(_, banner))
     Decide(amountDecisionId, actor, DecisionQuery.ChooseAmount(1,
       math.max(1, own), Some(amountHeading(banner)),

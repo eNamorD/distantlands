@@ -34,7 +34,7 @@ object NegotiationDeal:
     */
   def eligible(state: ReadyGame, actor: PlayerId): Vector[PlayerId] =
     val players = state.game.current.players
-    players.find(_.player == actor).flatMap(_.pawnSite).toVector.flatMap(site =>
+    state.game.current.player(actor).flatMap(_.pawnSite).toVector.flatMap(site =>
       players.collect {
         case other if other.player != actor && other.pawnSite.contains(site) =>
           other.player
@@ -89,7 +89,7 @@ object NegotiationDeal:
 
   private def bounds(state: ReadyGame, author: PlayerId,
       participants: Vector[PlayerId]): NegotiationBounds =
-    val player = state.game.current.players.find(_.player == author).get
+    val player = state.game.current.player(author).get
     val exiles = offerable(state, author, participants)
     val ignored = Citizenship.ignored(state)
     NegotiationBounds(participants.filter(_ != author), player.board.favor,
@@ -103,7 +103,7 @@ object NegotiationDeal:
     * themself; the Scepter's Action is theirs for that. */
   private def offerable(state: ReadyGame, author: PlayerId,
       participants: Vector[PlayerId]): Vector[PlayerId] =
-    val holder = state.game.current.players.find(_.player == author)
+    val holder = state.game.current.player(author)
       .exists(_.relics.exists(_.id == TheGrandScepterCard.id))
     if !holder then Vector.empty
     else participants.filter(other => other != author &&
@@ -144,7 +144,7 @@ object NegotiationDeal:
 
   private def affordable(state: ReadyGame, author: PlayerId,
       terms: NegotiationTerms): Either[OathViolation, Unit] =
-    val player = state.game.current.players.find(_.player == author).get
+    val player = state.game.current.player(author).get
     val favor = terms.transfers.map(_.favor).sum
     for
       _ <- Either.cond(favor <= player.board.favor, (),

@@ -124,7 +124,7 @@ object OperationStateAdapter:
 
   private[operations] def playerState(ready: ReadyGame,
       player: PlayerId): Either[OperationError, PlayerState] =
-    ready.game.current.players.find(_.player == player)
+    ready.game.current.player(player)
       .toRight(UnknownPlayer(player))
 
   private[operations] def siteState(ready: ReadyGame,

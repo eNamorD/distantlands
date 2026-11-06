@@ -71,8 +71,8 @@ object OperationResolution:
         else Right(Skip(reasons))
       case Some((maximum, rebuild)) =>
         val capped = requested match
-          case GainSupply(player, _) => ready.game.current.players
-            .find(_.player == player).fold(0)(p =>
+          case GainSupply(player, _) => ready.game.current.player(player)
+            .fold(0)(p =>
               math.max(0, SupplyTrack.Maximum - p.board.supply.supply))
           case ModifyDicePool(pool, delta, _) =>
             val current = ready.game.current.rollPools.get(pool).fold(0)(_.count)
