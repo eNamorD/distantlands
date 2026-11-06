@@ -9,8 +9,7 @@ import oathdigital.model.DecisionAnswer.PartitionAnswer
 
 /** Declared Forge procedure tree for the walker (batch 1, Task 2).
   *
-  * Reproduces the legacy `Forge.handle`/`Forge.evolve` observable flow on the
-  * generic walker:
+  * The Forge action's flow on the generic walker:
   *
   * {{{
   * Sequence(

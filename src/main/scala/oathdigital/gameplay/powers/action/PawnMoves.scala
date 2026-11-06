@@ -4,9 +4,13 @@ import oathdigital.gameplay.PowerAccess
 import oathdigital.gameplay.powers.PowerAnswers
 import oathdigital.model._
 
-/** Reads and writes shared by the movement relics (Whistle, Brass Horse,
-  * Magic Carpet). A pawn relocation that is not Travel is a plain `Move`, and
-  * nothing here runs a Travel window.
+/** Reads and writes shared by the powers that relocate or target a pawn:
+  * the movement relics (Whistle, Brass Horse, Magic Carpet), the portals
+  * and paths (Shattered Portal, Stone Portal, Giant's Path, Giant's
+  * Rampage, Quick Exit), Palanquin, Ward of Silence, the Wandering Flame's
+  * place and move, and the wake powers Passages and the River sites. A
+  * pawn relocation that is not Travel is a plain `Move`, and nothing here
+  * runs a Travel window.
   */
 object PawnMoves:
   def pawnSite(ready: ReadyGame, player: PlayerId)

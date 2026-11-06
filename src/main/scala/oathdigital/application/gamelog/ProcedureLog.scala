@@ -129,12 +129,11 @@ private[gamelog] final case class ProcedureLog(
   * by a test and answers a miss at runtime.
   *
   * `ActionRef.UsePower` is parameterized, so `ProcedureRef.all` does not list
-  * it and `of` builds its entry from the same match on demand.
+  * it and `of` builds its entry from the same match on demand. That arm is
+  * the only one that reads `notes`, which is by-name because `NoteLines` is
+  * built from this table's own `noteKind`; building `entries` never forces
+  * it.
   */
-/** `notes` is by-name because `NoteLines` is built from this table's own
-  * `noteKind`. Nothing forces it during construction: `entries` is built
-  * from `ProcedureRef.all`, which does not list the parameterized
-  * `ActionRef.UsePower`, and that is the only arm that reads it. */
 private[gamelog] final class ProcedureLogs(starts: StartLines,
     notes: => NoteLines):
   private val entries: Map[ProcedureRef, ProcedureLog] =

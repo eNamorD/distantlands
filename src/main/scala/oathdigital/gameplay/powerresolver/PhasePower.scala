@@ -79,8 +79,10 @@ trait PhasePower extends NotingPower:
     build(catalog, ready, player, source)
 
   /** Why the power cannot be used now, in the player's words, beyond
-    * `usable`: for a power whose use only queues a procedure that would
-    * not start. `None` by default. */
+    * `usable`: no valid target, nowhere to go, a marker at its last
+    * space. A power that queues a procedure asks `starts` whether it
+    * would start, as Palanquin and Campaign From Site do. `None` by
+    * default. */
   def refusal(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
       source: DecisionOptionRef, starts: QueuedStarts)
       : Option[String] = None
