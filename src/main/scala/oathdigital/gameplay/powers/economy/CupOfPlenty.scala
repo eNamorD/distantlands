@@ -17,7 +17,8 @@ object CupOfPlentyCard extends Relic(RelicId("R07"), "Cup of Plenty", value = 96
 /** The Cup of Plenty (relic R07), a selected Trade modifier: trading with a
   * card whose suit differs from every faceup adviser the player holds costs no
   * Supply. A facedown adviser does not count, and a player with no faceup
-  * adviser trades free. The waiver is [[SuitSupplyWaiver]].
+  * adviser trades free. A picked Acting Troupe counts as its picked suit.
+  * The waiver is [[SuitSupplyWaiver]].
   */
 case object CupOfPlenty extends SelectedModifier:
   val id: PowerId = CupOfPlentyCard.power.id
@@ -27,5 +28,5 @@ case object CupOfPlenty extends SelectedModifier:
 
   def effects: Map[PowerWindow, Vector[Contribution]] = SuitSupplyWaiver.effects(
     PowerWindow.TradeCost, TradeProcedure.decisionId)(
-    (catalog, ready, actor, suit) =>
-      MusterSource.matching(catalog, ready, actor, suit) == 0)
+    (catalog, ready, actor, answered, suit) =>
+      MusterSource.matching(catalog, ready, actor, suit, answered) == 0)

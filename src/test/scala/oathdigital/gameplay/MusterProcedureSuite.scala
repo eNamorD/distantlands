@@ -162,13 +162,15 @@ class MusterProcedureSuite extends munit.FunSuite:
 
   test("matching counts the actor's faceup advisers of the source's suit"):
     assertEquals(MusterSource.matching(catalog,
-      atAlchemist.adviser(p1, magiciansCode).ready, p1, Suit.Arcane), 1)
+      atAlchemist.adviser(p1, magiciansCode).ready, p1, Suit.Arcane,
+      Vector.empty), 1)
     assertEquals(MusterSource.matching(catalog, atAlchemist.ready, p1,
-      Suit.Arcane), 0)
+      Suit.Arcane, Vector.empty), 0)
 
   test("matching counts a faceup Marriage as two Hearth advisers"):
     assertEquals(MusterSource.matching(catalog,
-      atAlchemist.adviser(p1, MarriageCard).ready, p1, Suit.Hearth), 2)
+      atAlchemist.adviser(p1, MarriageCard).ready, p1, Suit.Hearth,
+      Vector.empty), 2)
 
   test("a power that adds the actor's adviser to the source decision has " +
       "it accepted, and the favor is placed on the adviser"):

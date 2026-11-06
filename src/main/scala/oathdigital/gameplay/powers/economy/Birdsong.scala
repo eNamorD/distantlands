@@ -28,4 +28,4 @@ case object Birdsong extends SelectedModifier:
 
   def effects: Map[PowerWindow, Vector[Contribution]] = SuitSupplyWaiver.effects(
     PowerWindow.TradeCost, TradeProcedure.decisionId)(
-    (_, _, _, suit) => Birdsong.Suits(suit))
+    (_, _, _, _, suit) => Birdsong.Suits(suit))

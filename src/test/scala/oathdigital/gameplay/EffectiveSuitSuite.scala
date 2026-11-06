@@ -15,14 +15,24 @@ import oathdigital.testkit.Table.{p1, p2}
 
 /** `EffectiveSuit`: a card's suit as the rules see it. A faceup Marriage
   * counts as two advisers of its suit (catalog batch 5 rulings, "Counts as
-  * applies everywhere"), and Pledge to Discord makes its holder's faceup
-  * advisers Discord (catalog batch 8 rulings, slice 8). */
+  * applies everywhere"), Pledge to Discord makes its holder's faceup
+  * advisers Discord (catalog batch 8 rulings, slice 8), and a picked Acting
+  * Troupe counts as the suit its user named (catalog batch 10, slice 7). */
 class EffectiveSuitSuite extends munit.FunSuite:
   private val marriage = MarriageCard.id
   private val homesteaders = HomesteadersCard.id
   private val wrestlers = WrestlersCard.id
   private val pledge = PledgeToDiscordCard.id
   private val mirror = SpitefulMirrorCard.id
+  private val troupe = ActingTroupeCard.id
+
+  /** The walk's answers once Acting Troupe is picked for a Trade and acts
+    * as `suit`. */
+  private def troupeActingAs(suit: Suit): Vector[Answered] = Vector(
+    Answered(ModifierPicks.decisionId(PowerWindow.TradeModifierSelection),
+      ChooseOneAnswer(DecisionOptionRef.Denizen(troupe)), p1),
+    Answered(ActingTroupeCard.suitDecision,
+      ChooseOneAnswer(ActingTroupeCard.button(suit)), p1))
 
   test("a faceup Marriage counts as two Hearth advisers, and facedown as " +
       "none"):
@@ -86,6 +96,36 @@ class EffectiveSuitSuite extends munit.FunSuite:
       Some(Suit.Order))
     assertEquals(EffectiveSuit.traded(catalog, ready, picked, source),
       Some(Suit.Discord))
+
+  test("a picked Acting Troupe counts as the answered suit instead of " +
+      "Arcane, and unpicked as Arcane"):
+    val ready = Table.start.adviser(p1, troupe).adviser(p1, wrestlers).ready
+    val beast = troupeActingAs(Suit.Beast)
+    assertEquals(EffectiveSuit.troupe(beast), Some(Suit.Beast))
+    assertEquals(EffectiveSuit.count(catalog, ready, p1, Suit.Beast, beast), 1)
+    assertEquals(EffectiveSuit.count(catalog, ready, p1, Suit.Arcane, beast),
+      0)
+    // Wrestlers is Order and counts either way.
+    assertEquals(EffectiveSuit.count(catalog, ready, p1, Suit.Order,
+      troupeActingAs(Suit.Order)), 2)
+    assertEquals(EffectiveSuit.troupe(Vector.empty), None)
+    assertEquals(EffectiveSuit.count(catalog, ready, p1, Suit.Arcane), 1)
+    assertEquals(EffectiveSuit.count(catalog, ready, p1, Suit.Beast), 0)
+
+  test("a facedown Acting Troupe counts for no suit, picked or not"):
+    val ready = Table.start.adviser(p1, troupe, facedown = true).ready
+    assertEquals(EffectiveSuit.count(catalog, ready, p1, Suit.Beast,
+      troupeActingAs(Suit.Beast)), 0)
+
+  test("a picked Acting Troupe beats Pledge to Discord for the Trade"):
+    // Owner ruling, 2026-11-05.
+    val ready = Table.start.adviser(p1, pledge).adviser(p1, troupe).ready
+    val order = troupeActingAs(Suit.Order)
+    assertEquals(EffectiveSuit.count(catalog, ready, p1, Suit.Order, order), 1)
+    // Only Pledge itself is Discord now.
+    assertEquals(EffectiveSuit.count(catalog, ready, p1, Suit.Discord, order),
+      1)
+    assertEquals(EffectiveSuit.count(catalog, ready, p1, Suit.Discord), 2)
 
   test("an off-turn payment onto a Pledge holder's adviser settles to the " +
       "Discord bank"):

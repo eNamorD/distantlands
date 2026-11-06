@@ -17,7 +17,9 @@ import oathdigital.model._
   * The suit is read off the answered card, as the action reads it
   * (`EffectiveSuit.traded`), not resolved as a source: this node
   * runs after the payment that placed a token on the card, which a source must
-  * not yet hold. A card whose suit cannot be read pays.
+  * not yet hold. A card whose suit cannot be read pays. `free` also
+  * receives the walk's answers, for a rule that counts the actor's advisers
+  * as the action reads them.
   *
   * The payment is replaced through `OperationRewrite.nodes`, because its
   * replacement is a node, not a core op. A later `ops` rewrite, such as
@@ -25,7 +27,8 @@ import oathdigital.model._
   */
 private[economy] object SuitSupplyWaiver:
   def effects(window: PowerWindow, decisionId: String)(
-      free: (ExecutableCatalog, ReadyGame, PlayerId, Suit) => Boolean)
+      free: (ExecutableCatalog, ReadyGame, PlayerId, Vector[Answered], Suit)
+        => Boolean)
       : Map[PowerWindow, Vector[Contribution]] = Map(
     window -> Vector(Transform((ctx, operations) =>
       OperationRewrite.nodes(ctx, operations)((_, _) => {
@@ -35,10 +38,11 @@ private[economy] object SuitSupplyWaiver:
 
   private def unlessFree(pay: SpendSupply, decisionId: String,
       catalog: ExecutableCatalog,
-      free: (ExecutableCatalog, ReadyGame, PlayerId, Suit) => Boolean)
+      free: (ExecutableCatalog, ReadyGame, PlayerId, Vector[Answered], Suit)
+        => Boolean)
       : Operation = BuildOps((ready, pending) => Right(
     if suitOf(ready, pending, decisionId, catalog)
-      .exists(free(catalog, ready, pay.player, _))
+      .exists(free(catalog, ready, pay.player, pending.answered, _))
     then Vector.empty
     else Vector[CoreOperation](pay)))
 

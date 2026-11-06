@@ -58,7 +58,8 @@ case object VowOfBeastkin extends ContributingPower:
       : Option[OathViolation] = for
     card <- cardOf(ref)
     suit <- EffectiveSuit.traded(ctx.catalog, ctx.state, ctx.answered, ref)
-    if MusterSource.matching(ctx.catalog, ctx.state, ctx.actor, suit) == 0
+    if MusterSource.matching(ctx.catalog, ctx.state, ctx.actor, suit,
+      ctx.answered) == 0
     site <- PowerAccess.pawnSite(ctx.state, ctx.actor)
   yield OathViolation.EconomyCardUnavailable(site, card)
 

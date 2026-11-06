@@ -26,4 +26,4 @@ case object AnimalPlaymates extends SelectedModifier:
 
   def effects: Map[PowerWindow, Vector[Contribution]] = SuitSupplyWaiver.effects(
     PowerWindow.MusterCost, MusterProcedure.decisionId)(
-    (_, _, _, suit) => suit == Suit.Beast)
+    (_, _, _, _, suit) => suit == Suit.Beast)

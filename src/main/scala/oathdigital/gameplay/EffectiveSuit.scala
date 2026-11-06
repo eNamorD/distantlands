@@ -1,7 +1,7 @@
 package oathdigital.gameplay
 
 import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog, Locked,
-  PrintedPower, Relic}
+  ModifierMark, PrintedPower, Relic}
 import oathdigital.gameplay.powerresolver.ModifierPicks
 import oathdigital.model._
 
@@ -26,6 +26,21 @@ object SpitefulMirrorCard extends Relic(RelicId("R41"), "Spiteful Mirror", value
       "muster are [suit-discord] cards.")
   val powers: Vector[PrintedPower] = Vector(power)
 
+object ActingTroupeCard extends Denizen(DenizenId("36"), "Acting Troupe", Suit.Arcane) with AdviserOnly:
+  val power = PrintedPower(PowerId("denizen.acting-troupe"),
+    persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Trade)),
+    text = "Act as if Acting Troupe is a [suit-beast] or [suit-order] " +
+      "card instead.")
+  val powers: Vector[PrintedPower] = Vector(power)
+  /** The question its pick asks: which suit it acts as. */
+  val suitDecision: String = "acting-troupe.suit"
+  /** The suits it may act as, in the order the question offers them. */
+  val suits: Vector[Suit] = Vector(Suit.Beast, Suit.Order)
+  /** The question's answer that names `suit`. */
+  def button(suit: Suit): DecisionOptionRef.Button =
+    DecisionOptionRef.Button(suit.key)
+
 /** A card's suit as the rules see it (catalog batch 8, slice 8).
   *
   * Pledge to Discord makes every faceup adviser of its holder Discord, while
@@ -40,7 +55,9 @@ object SpitefulMirrorCard extends Relic(RelicId("R41"), "Spiteful Mirror", value
   * It lives in `gameplay`, below `actions` and `powers`, because the
   * operation pipeline reads `pledged` too. It holds the cards its rules
   * read: Marriage and Pledge to Discord, whose registered powers add
-  * nothing, and Spiteful Mirror, whose pick it reads.
+  * nothing, and Spiteful Mirror and Acting Troupe, whose picks it reads.
+  * A picked Troupe counts as the suit its question was answered with,
+  * beside a faceup Pledge too (catalog batch 10, slice 7).
   */
 object EffectiveSuit:
   /** How many advisers of its suit `card` counts as, faceup. */
@@ -64,13 +81,16 @@ object EffectiveSuit:
   def of(ready: ReadyGame, card: Denizen): Suit =
     if pledged(ready, card.id) then Suit.Discord else card.suit
 
-  /** `player`'s faceup advisers of `suit`, each by its weight. */
+  /** `player`'s faceup advisers of `suit`, each by its weight. `answered`
+    * is the walk's answers, so a picked Acting Troupe counts as its
+    * answered suit ([[troupe]]); a reader outside a Trade passes none. */
   def count(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
-      suit: Suit): Int =
+      suit: Suit, answered: Vector[Answered] = Vector.empty): Int =
     ready.game.current.players.find(_.player == player).toVector
       .flatMap(_.advisers).collect {
         case DenizenState(id, Orientation.FaceUp, _)
-            if of(catalog, ready, id).contains(suit) => weight(id)
+            if acted(catalog, ready, answered, id).contains(suit) =>
+          weight(id)
       }.sum
 
   /** Whether the walk's answers pick Spiteful Mirror, for a Trade or a
@@ -80,6 +100,15 @@ object EffectiveSuit:
       PowerWindow.MusterModifierSelection).exists(window =>
       ModifierPicks.isPicked(answered, window, SpitefulMirrorCard.id))
 
+  /** The suit a picked Acting Troupe acts as: the walk's answer to its
+    * question, which is asked only once it is picked. */
+  def troupe(answered: Vector[Answered]): Option[Suit] =
+    answered.reverseIterator.collectFirst {
+      case Answered(ActingTroupeCard.suitDecision,
+          DecisionAnswer.ChooseOneAnswer(DecisionOptionRef.Button(key)), _) =>
+        key
+    }.flatMap(key => ActingTroupeCard.suits.find(_.key == key))
+
   /** The suit of the card `ref` names, as the Trade or Muster that draws on
     * it reads it: Discord once Spiteful Mirror is picked, otherwise
     * [[of]]. `None` for a reference that names no card. */
@@ -88,6 +117,14 @@ object EffectiveSuit:
     cardOf(ref).flatMap(card =>
       if mirrored(answered) then Some(Suit.Discord)
       else of(catalog, ready, card))
+
+  /** `card`'s suit for the walk with `answered`: a picked Acting Troupe's
+    * answered suit, otherwise [[of]]. */
+  private def acted(catalog: ExecutableCatalog, ready: ReadyGame,
+      answered: Vector[Answered], card: CardId): Option[Suit] =
+    if card == ActingTroupeCard.id then
+      troupe(answered).orElse(of(catalog, ready, card))
+    else of(catalog, ready, card)
 
   private def cardOf(ref: DecisionOptionRef): Option[CardId] = ref match
     case DecisionOptionRef.Denizen(id) => Some(id)

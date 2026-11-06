@@ -22,13 +22,6 @@ object MagiciansCodeCard extends Denizen(DenizenId("32"), "Magician's Code", Sui
       "[secret] you're placing _(even none)_.")
   val powers: Vector[PrintedPower] = Vector(power)
 
-object ActingTroupeCard extends Denizen(DenizenId("36"), "Acting Troupe", Suit.Arcane) with AdviserOnly:
-  val power = PrintedPower(PowerId("denizen.acting-troupe"),
-    persistent = false, cost = Cost.free,
-    text = "Act as if Acting Troupe is a [suit-beast] or [suit-order] " +
-      "card instead.")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object MasterOfDisguiseCard extends Denizen(DenizenId("78"), "Master of Disguise", Suit.Arcane) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.master-of-disguise"),
     persistent = false, cost = Cost(secret = 1),

@@ -77,10 +77,12 @@ object MusterSource:
 
   /** The actor's faceup advisers of `suit`, a Marriage counting as two
     * (`EffectiveSuit`): how many warbands, favor or secrets a Muster or Trade
-    * adds to its base yield.
+    * adds to its base yield. `answered` is the walk's answers, so a picked
+    * Acting Troupe counts as its picked suit.
     */
   def matching(catalog: ExecutableCatalog, state: ReadyGame, actor: PlayerId,
-      suit: Suit): Int = EffectiveSuit.count(catalog, state, actor, suit)
+      suit: Suit, answered: Vector[Answered]): Int =
+    EffectiveSuit.count(catalog, state, actor, suit, answered)
 
   /** A card and where it stands. */
   private final case class Located(card: SiteDenizenState,

@@ -129,8 +129,8 @@ private[economy] object EconomyTree:
       PayCost(actor, Location.OnCard(source.card), kind.payment),
       SpendSupply(actor, 1)), Some(kind.cost)),
     Sequence(kind.yields(actor, source,
-      MusterSource.matching(catalog, ready, actor, source.suit), force)
-        .toVector ++
+      MusterSource.matching(catalog, ready, actor, source.suit, answered),
+      force).toVector ++
       // Last in the window, so the note's `previous` is the gain. Every
       // `MusterGain` power appends, so this holds; a power that prepended
       // would make the note read another operation's delta, and nothing
