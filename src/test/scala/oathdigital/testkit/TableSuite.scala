@@ -396,10 +396,10 @@ class TableSuite extends munit.FunSuite:
 
   test("dispossessed holds exactly the named cards, and moves the cards it " +
       "held to the bottom of the world deck"):
-    val before = Table.start.ready.game.campaign.dispossessed
-    val named = Vector[WorldCardId](DazzleCard.id, ScryerCard.id)
-    val ready = Table.start.dispossessed(DazzleCard, ScryerCard).ready
-    assertEquals(ready.game.campaign.dispossessed, named)
-    val earlier = before.filterNot(named.contains)
-    assertEquals(ready.game.current.commonCards.worldDeck
-      .takeRight(earlier.size), earlier)
+    // The quiet table's Dispossessed is empty, so Elders is put there first.
+    val ready = Table.start.dispossessed(EldersCard)
+      .dispossessed(DazzleCard, ScryerCard).ready
+    assertEquals(ready.game.campaign.dispossessed,
+      Vector[WorldCardId](DazzleCard.id, ScryerCard.id))
+    assertEquals(ready.game.current.commonCards.worldDeck.lastOption,
+      Some(EldersCard.id))
