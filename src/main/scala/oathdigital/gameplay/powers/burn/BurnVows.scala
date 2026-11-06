@@ -31,7 +31,7 @@ object VowOfDivisionCard extends Denizen(DenizenId("86"), "Vow of Division", Sui
   * (`BurnTakes`). Every other player is an enemy, and the holder's own
   * burns go to the bank. Its Challenge half is each Vow's own.
   */
-sealed abstract class BurnVow extends ContributingPower:
+sealed abstract class BurnVow extends TakesBurns:
   def cardId: DenizenId
   /** "Took {Red}'s 2 burned secrets." */
   def taken: NoteKey
@@ -50,7 +50,7 @@ sealed abstract class BurnVow extends ContributingPower:
       case _ => false
     }).map(_.player)
 
-  final override def takesBurn(ready: ReadyGame, burnt: Burnt)
+  final def takesBurn(ready: ReadyGame, burnt: Burnt)
       : Option[BurnTake] =
     holderOf(ready).filter(holder =>
       holder != burnt.by && takes(burnt.resource)).map(holder =>

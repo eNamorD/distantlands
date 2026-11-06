@@ -3,7 +3,8 @@ package oathdigital.gameplay.walker
 import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.cards.NewFoundations
 import oathdigital.gameplay.operations.OperationRestrictions
-import oathdigital.gameplay.powerresolver.{ContributingPower, ModifierPicks,
+import oathdigital.gameplay.powerresolver.{ContributingPower, DiscardsItself,
+  ModifierPicks,
   PowerUseRestriction, PowerWindowIndex}
 import oathdigital.model.{ActionRef, Answered, CardId, OperationRestriction,
   PowerId, PowerResolution, ProcedureRef}
@@ -88,8 +89,10 @@ final case class WalkerPowers(powers: Vector[ContributingPower],
   private def restrictionsUnlocking(unlocked: Set[CardId])
       : Vector[OperationRestriction] =
     restrictionSet.active(powers.flatMap(_.operationRestrictions(catalog)),
-      modifiers.filterNot(id => powers.exists(power =>
-        power.id == id && power.discardsItself)), unlocked = unlocked)
+      modifiers.filterNot(id => powers.exists {
+        case power: DiscardsItself => power.id == id
+        case _ => false
+      }), unlocked = unlocked)
 
   /** The power-use restrictions these powers declare (catalog batch 8,
     * slice 10). */

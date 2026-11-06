@@ -3,7 +3,7 @@ package oathdigital.gameplay.walker
 import oathdigital.gameplay.operations.{OperationPipeline, OperationPolicy,
   OperationRun}
 import oathdigital.gameplay.powerresolver.{AdviserArrivals, ArrivalFollowUp,
-  ContributingPower}
+  ContributingPower, FollowsArrivals}
 import oathdigital.model.{NoteStates, OathViolation, PowerId, ReadyGame}
 
 /** The adviser arrival pass (catalog batch 5, "The arrival pass"). After a
@@ -26,6 +26,7 @@ private[walker] object AdviserArrivalPass:
       before, ran.state)
     if arrived.arrivals.isEmpty then Right(ran)
     else ran.powers.powers.sortBy(ContributingPower.sortKey)
+      .collect { case power: FollowsArrivals => power }
       .foldLeft[Either[OathViolation, WalkCtx]](Right(ran)) {
         (walked, power) => walked.flatMap(ctx =>
           power.onArrival(arrived.copy(after = ctx.state))

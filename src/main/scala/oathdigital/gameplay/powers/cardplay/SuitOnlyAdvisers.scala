@@ -6,7 +6,7 @@ import oathdigital.gameplay.actions.{AdviserFace, AdviserPlayNote,
   CardPlayRules}
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
 import oathdigital.gameplay.powerresolver.{AdviserArrivals, ArrivalFollowUp,
-  Contribution, ExecutedBatch, ExecutedTrigger, Transform}
+  Contribution, ExecutedBatch, ExecutedTrigger, FollowsArrivals, Transform}
 import oathdigital.model._
 
 /** A rule that its holder may have only faceup advisers of one suit, and
@@ -39,7 +39,7 @@ import oathdigital.model._
   * those, then Pledge, and the rest revert. Its question posts no "Chose"
   * line, and each bury posts its "Buried" line.
   */
-trait SuitOnlyAdvisers extends ExecutedTrigger:
+trait SuitOnlyAdvisers extends ExecutedTrigger, FollowsArrivals:
   /** The card that sets the rule, held as an adviser. */
   def cardId: DenizenId
   /** The suit of the advisers its holder keeps. */
@@ -72,7 +72,7 @@ trait SuitOnlyAdvisers extends ExecutedTrigger:
         case _ => children
       })))
 
-  override def onArrival(arrived: AdviserArrivals): Option[ArrivalFollowUp] =
+  def onArrival(arrived: AdviserArrivals): Option[ArrivalFollowUp] =
     for
       holder <- holderOf(arrived.after)
       if arrived.arrivals.exists(_.player == holder)

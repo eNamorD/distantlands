@@ -211,10 +211,6 @@ trait ContributingPower extends NotingPower:
     * at its pick. An automatic one is judged where its effect runs, in
     * part 2's `AutomaticUse` node, and Keep where its window folds. */
   def use(ctx: PowerCtx): Option[PowerUse] = None
-  /** Whether this selected power discards its own card before its action
-    * ends, so the active-modifier rule must not hold that card in play. No by
-    * default. */
-  def discardsItself: Boolean = false
   /** What selecting this power pays: the operations the modifier decision
     * runs when the player picks it. Free by default.
     */
@@ -226,11 +222,6 @@ trait ContributingPower extends NotingPower:
   /** The modifier-selection windows at which the player may pick this
     * power. Empty for any power that is not player-selected. */
   def selectionWindows: Set[PowerWindow] = Set.empty
-  /** What the modifier decision asks once the player has picked this power
-    * and paid for it, in the same pass, before the next pass (catalog
-    * batch 8, "An as-if pawn site for Trade"). Nothing by default. */
-  def selectionQuestions(catalog: ExecutableCatalog, ready: ReadyGame,
-      actor: PlayerId): Vector[Operation] = Vector.empty
   /** Why this power's option in the modifier decision is unavailable or
     * deserves a warning, given the picks so far in `ctx.answered`. A rule
     * that one modifier states about another lives on the card that states
@@ -256,14 +247,6 @@ trait ContributingPower extends NotingPower:
   def warning(decide: Decide, option: DecisionOptionRef): Option[OptionReason] =
     None
 
-  /** The follow-up this power adds after a walker leaf in which advisers
-    * arrived (catalog batch 5, "The arrival pass"). None by default. */
-  def onArrival(arrived: AdviserArrivals): Option[ArrivalFollowUp] = None
-
-  /** Who takes `burnt` instead of the bank, when this power claims it
-    * (catalog batch 8, "A burn's actor"). None by default. */
-  def takesBurn(ready: ReadyGame, burnt: Burnt): Option[BurnTake] = None
-
 object ContributingPower:
 
   /** The single deterministic ordering used everywhere contributions are
@@ -271,6 +254,34 @@ object ContributingPower:
     */
   def sortKey(power: ContributingPower): (Int, String, String) =
     (power.priority, power.source.stableKey, power.id.value)
+
+/** A selected modifier that discards its own card before its action ends,
+  * so the active-modifier rule must not hold that card in play. A rare
+  * hook is a trait a power mixes in, not a defaulted member of
+  * `ContributingPower`; the engine finds the powers that have it by type.
+  */
+trait DiscardsItself extends ContributingPower
+
+/** A modifier with questions of its own once picked and paid for, asked in
+  * the same pass, before the next (catalog batch 8, "An as-if pawn site for
+  * Trade"). */
+trait AsksOnSelection extends ContributingPower:
+  /** What the modifier decision asks once the player has picked this
+    * power and paid for it. */
+  def selectionQuestions(catalog: ExecutableCatalog, ready: ReadyGame,
+      actor: PlayerId): Vector[Operation]
+
+/** A power with a follow-up after a walker leaf in which advisers arrived
+  * (catalog batch 5, "The arrival pass"). */
+trait FollowsArrivals extends ContributingPower:
+  /** The follow-up this power adds, or none for these arrivals. */
+  def onArrival(arrived: AdviserArrivals): Option[ArrivalFollowUp]
+
+/** A power that takes a burn instead of the bank (catalog batch 8, "A
+  * burn's actor"). */
+trait TakesBurns extends ContributingPower:
+  /** Who takes `burnt`, with the line to post, when this power claims it. */
+  def takesBurn(ready: ReadyGame, burnt: Burnt): Option[BurnTake]
 
 /** The Game Log lines a power can write (power log lines design). A note it
   * builds must come from one of these keys, and a phase power's

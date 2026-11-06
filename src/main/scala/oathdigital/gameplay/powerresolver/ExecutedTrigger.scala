@@ -11,7 +11,7 @@ final case class ExecutedBatch(catalog: ExecutableCatalog, actor: PlayerId,
 
 /** A power that starts a follow-up after a walker batch executes
   * operations it watches (catalog batch 8, slice 6), beside the arrival
-  * rule `ContributingPower.onArrival`.
+  * rule `FollowsArrivals`.
   *
   * The walker walks the follow-up right after the batch, before the walk
   * goes on, and asks each trigger when it reaches it: after the follow-ups

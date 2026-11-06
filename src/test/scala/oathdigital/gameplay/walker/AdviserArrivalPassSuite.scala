@@ -1,7 +1,7 @@
 package oathdigital.gameplay.walker
 
 import oathdigital.gameplay.powerresolver.{AdviserArrival, AdviserArrivals,
-  ArrivalFollowUp, ContributingPower, Contribution}
+  ArrivalFollowUp, ContributingPower, Contribution, FollowsArrivals}
 import oathdigital.gameplay.powers.action.EldersCard
 import oathdigital.gameplay.powers.campaign.{RainBootsCard, WrestlersCard}
 import oathdigital.model._
@@ -25,12 +25,11 @@ class AdviserArrivalPassSuite extends munit.FunSuite:
     */
   private final case class HearsArrivals(name: String,
       follow: AdviserArrivals => Vector[CoreOperation])
-      extends ContributingPower:
+      extends FollowsArrivals:
     def id: PowerId = PowerId(name)
     def source: RuleSourceRef = RuleSourceRef.GameRule(name)
     def contributions: Map[PowerWindow, Vector[Contribution]] = Map.empty
-    override def onArrival(arrived: AdviserArrivals)
-        : Option[ArrivalFollowUp] =
+    def onArrival(arrived: AdviserArrivals): Option[ArrivalFollowUp] =
       val cards = arrived.arrivals.map(_.card)
       Some(ArrivalFollowUp(follow(arrived), Note(id, _ => Some(heard(
         PowerSourceRef.Card(wrestlers), NoteArg.Cards(cards))))))

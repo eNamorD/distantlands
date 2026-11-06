@@ -1,7 +1,7 @@
 package oathdigital.gameplay.walker
 
 import oathdigital.gameplay.powerresolver.{BurnTake, Burnt,
-  ContributingPower}
+  ContributingPower, TakesBurns}
 import oathdigital.gameplay.powers.DeclaredNotes
 import oathdigital.model.{Burn, CoreOperation, Location, PayCost, Piece,
   PlayerId, PositionedLocation, PowerId, ReadyGame, SecretSide, Take}
@@ -88,8 +88,9 @@ private[walker] object BurnTakes:
   /** The first power's claim on `burnt`. */
   private def claim(ready: ReadyGame, powers: Vector[ContributingPower],
       burnt: Burnt): Option[Taken] =
-    powers.iterator.flatMap(power =>
-      power.takesBurn(ready, burnt).map(Taken(power.id, burnt, _)))
+    powers.iterator.collect { case power: TakesBurns => power }
+      .flatMap(power =>
+        power.takesBurn(ready, burnt).map(Taken(power.id, burnt, _)))
       .nextOption()
 
   /** The `Take` in place of a claimed burn, or nothing when the tokens are

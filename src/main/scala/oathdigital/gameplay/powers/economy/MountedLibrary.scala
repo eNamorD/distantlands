@@ -4,7 +4,7 @@ import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
 import oathdigital.gameplay.{NoteSupport, SiteRulers}
 import oathdigital.gameplay.actions.economy.TradeProcedure
 import oathdigital.gameplay.powerresolver.{Contribution, Deferred,
-  FoldPhase, OperationRewrite, Transform}
+  DiscardsItself, FoldPhase, OperationRewrite, Transform}
 import oathdigital.gameplay.powers.{PowerAnswers, SelectedModifier}
 import oathdigital.gameplay.powers.action.SiteCards
 import oathdigital.model._
@@ -38,7 +38,7 @@ object MountedLibraryCard extends Denizen(DenizenId("248"), "Mounted Library", S
   * A selected modifier is held in play until its action ends, so it declares
   * `discardsItself` to be exempt from the active-modifier rule.
   */
-case object MountedLibrary extends SelectedModifier:
+case object MountedLibrary extends SelectedModifier, DiscardsItself:
   val id: PowerId = MountedLibraryCard.power.id
   /** The Trade's secret gain, recorded as it runs. */
   val deferred: DeferralKey = DeferralKey("mounted-library")
@@ -53,7 +53,6 @@ case object MountedLibrary extends SelectedModifier:
 
   val card: Denizen = MountedLibraryCard
   def actions: Set[MajorActionType] = Set(MajorActionType.Trade)
-  override def discardsItself: Boolean = true
 
   private val nomadCards = new SiteCards(Set(Suit.Nomad))
 

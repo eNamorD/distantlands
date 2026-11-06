@@ -2,7 +2,8 @@ package oathdigital.gameplay.powers.economy
 
 import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.{NoteSupport, PowerAccess}
-import oathdigital.gameplay.powerresolver.{Contribution, ModifierPicks,
+import oathdigital.gameplay.powerresolver.{AsksOnSelection, Contribution,
+  ModifierPicks,
   OfferReason, PowerCtx, Transform}
 import oathdigital.gameplay.powers.{PowerAnswers, SelectedModifier}
 import oathdigital.model._
@@ -26,7 +27,7 @@ import oathdigital.model._
   * player is not in two places at once; and with no site to offer. Its line
   * names the site: "Acted as if at {the Shrine}."
   */
-trait ActingSite extends SelectedModifier:
+trait ActingSite extends SelectedModifier, AsksOnSelection:
   /** The sites the player may act as if at: never the pawn site. */
   def sites(catalog: ExecutableCatalog, ready: ReadyGame, actor: PlayerId)
       : Vector[SiteId]
@@ -59,7 +60,7 @@ trait ActingSite extends SelectedModifier:
   /** The site question, then the answer recorded as state, then the line.
     * The pick and its payment come before the question, so they are judged
     * at the pawn site. */
-  final override def selectionQuestions(catalog: ExecutableCatalog,
+  final def selectionQuestions(catalog: ExecutableCatalog,
       ready: ReadyGame, actor: PlayerId): Vector[Operation] = Vector(
     Decide(PowerAccess.asIfDecision, actor, DecisionQuery.ChooseOne(
       sites(catalog, ready, actor).map(site =>

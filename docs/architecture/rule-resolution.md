@@ -78,8 +78,8 @@ A contribution is one of:
 
 A power may also declare `operationRestrictions`, which hook no window and
 hold on every walker step, and `powerUseRestrictions`, which judge other
-powers' uses. `ExecutedTrigger`, `onArrival` and `takesBurn` let a power react
-to executed operations, arriving advisers and burns. `Deferred` lets a power
+powers' uses. The traits `ExecutedTrigger`, `FollowsArrivals` and `TakesBurns`
+let a power react to executed operations, arriving advisers and burns. `Deferred` lets a power
 hold an operation and resolve it later in the same action.
 
 Contribution functions must be pure functions of the state they are handed.
@@ -95,7 +95,8 @@ A power with `PowerResolution.PlayerSelected` is a modifier. Each action that
 takes modifiers starts with a `ModifierChoice` loop at its modifier-selection
 window, such as `SearchModifierSelection`. The power declares
 `selectionWindows`, `selectionPayments` (paid at the pick), `offerReason`
-(unavailable or warned, given the picks so far) and `selectionQuestions`.
+(unavailable or warned, given the picks so far), and `AsksOnSelection` adds
+questions of its own once picked.
 Picked modifiers join the walk's `WalkerPowers`.
 
 ## Restriction look-ahead

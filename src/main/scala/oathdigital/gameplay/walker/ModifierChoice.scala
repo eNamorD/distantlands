@@ -2,7 +2,8 @@ package oathdigital.gameplay.walker
 
 import oathdigital.gameplay.PowerAccess
 import oathdigital.gameplay.operations.PowerUseRules
-import oathdigital.gameplay.powerresolver.{ContributingPower, ModifierHost,
+import oathdigital.gameplay.powerresolver.{AsksOnSelection, ContributingPower,
+  ModifierHost,
   ModifierPicks, OfferReason, PowerCtx}
 import oathdigital.model._
 
@@ -115,8 +116,13 @@ final class ModifierChoice(val actor: PlayerId, modifierWindow: PowerWindow,
     }.flatMap(ref => ModifierPicks.powerFor(powers.pool, modifierWindow, ref)
       .map(ref -> _)).toVector.flatMap((ref, power) =>
         (OpenPick(decisionId, ref) +: paying(power) +:
-          power.selectionQuestions(powers.catalog, ready, actor)) :+
-          ClosePick()))
+          questions(power, powers, ready)) :+ ClosePick()))
+
+  private def questions(power: ContributingPower, powers: WalkerPowers,
+      ready: ReadyGame): Vector[Operation] = power match
+    case asks: AsksOnSelection =>
+      asks.selectionQuestions(powers.catalog, ready, actor)
+    case _ => Vector.empty
 
   private def price(shown: DecisionOption, operations: Vector[CoreOperation])
       : DecisionOption =

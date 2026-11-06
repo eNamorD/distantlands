@@ -1,7 +1,7 @@
 package oathdigital.gameplay.walker
 
 import oathdigital.gameplay.powerresolver.{BurnTake, Burnt,
-  ContributingPower, Contribution}
+  Contribution, TakesBurns}
 import oathdigital.model._
 import oathdigital.testkit.{Look, Table}
 import oathdigital.testkit.Table.{p1, p2}
@@ -10,12 +10,11 @@ import oathdigital.testkit.Unwrap.accepted
 class BurnTakesSuite extends munit.FunSuite:
   /** A test power: claims for p1 every burn another player makes. Its line
     * names the burner and the count. */
-  private object TakesOthersBurnsForP1 extends ContributingPower:
+  private object TakesOthersBurnsForP1 extends TakesBurns:
     val id: PowerId = PowerId("test.takes-others-burns")
     def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
     def contributions: Map[PowerWindow, Vector[Contribution]] = Map.empty
-    override def takesBurn(ready: ReadyGame, burnt: Burnt)
-        : Option[BurnTake] =
+    def takesBurn(ready: ReadyGame, burnt: Burnt): Option[BurnTake] =
       Option.when(burnt.by != p1)(BurnTake(p1, (burner, amount, _) =>
         line(burner, amount)))
 
