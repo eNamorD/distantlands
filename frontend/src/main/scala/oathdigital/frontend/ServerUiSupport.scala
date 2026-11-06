@@ -316,17 +316,10 @@ private[frontend] object ServerUiSupport:
         playerId = playerId
       )
 
-  private[frontend] def actionLabel(kind: String): String = kind match
-    case "travel" => "Travel"
-    case "challenge" => "Challenge"
+  /** A banner's printed name from its key. */
+  private[frontend] def bannerLabel(key: String): String = key match
     case "peoples-favor" => "People's Favor"
     case "darkest-secret" => "Darkest Secret"
-    case "search" => "Search"
-    case "campaign" => "Campaign"
-    case "muster" => "Muster"
-    case "trade" => "Trade"
-    case "forge" => "Forge"
-    case "recover" => "Recover"
     case other => other
 
   private[frontend] def winnerColorClass(value: GameProjection,

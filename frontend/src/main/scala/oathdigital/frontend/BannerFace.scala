@@ -16,7 +16,7 @@ private[frontend] object BannerFace:
 
   /** "Banner of the People's Favor". */
   def title(banner: BannerState): String =
-    s"Banner of the ${actionLabel(banner.key)}"
+    s"Banner of the ${bannerLabel(banner.key)}"
 
   /** The side as printed across its top: "grand-council" reads Grand
     * Council. */
@@ -62,7 +62,7 @@ private[frontend] object BannerFace:
         lines, origin)))
 
   def render(banner: BannerState): dom.html.Button =
-    val name = actionLabel(banner.key)
+    val name = bannerLabel(banner.key)
     val node = dom.document.createElement("button").asInstanceOf[dom.html.Button]
     node.`type` = "button"
     node.className =

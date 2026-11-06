@@ -34,9 +34,9 @@ class ServerUiSupportSuite extends FunSuite:
     assertEquals(banner.textContent,
       "Blue Exile wins — Successor to the Chancellor")
 
-  test("banner and Challenge action labels are presentable"):
-    assertEquals(ServerUiSupport.actionLabel("challenge"), "Challenge")
-    assertEquals(ServerUiSupport.actionLabel("peoples-favor"), "People's Favor")
+  test("banner labels are presentable"):
+    assertEquals(ServerUiSupport.bannerLabel("peoples-favor"), "People's Favor")
+    assertEquals(ServerUiSupport.bannerLabel("darkest-secret"), "Darkest Secret")
 
   test("site forces retain accessible labels counts and stable color classes"):
     val cases = Vector(
