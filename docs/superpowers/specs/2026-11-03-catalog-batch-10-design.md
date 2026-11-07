@@ -1,6 +1,8 @@
 # Catalog Batch 10: Engine Seams
 
-**Status:** designed 2026-11-03. Slices 1 to 14 landed.
+**Status:** landed. Designed 2026-11-03; slices 1 to 14 landed between
+2026-11-04 and 2026-11-07. [Deferred](#deferred) is the engine-blocked list
+the roadmap keeps.
 
 **Builds on** [Catalog batch 9](2026-11-02-catalog-batch-9-design.md) and
 [batch 8](2026-10-12-catalog-batch-8-design.md), whose vocabulary, cost
@@ -675,4 +677,4 @@ menu and Wake) before landing.
 ## Out of scope
 
 The roadmap's engine-blocked item keeps the deferred faces above, grouped
-by seam, and drops every card this batch implements as each slice lands.
+by seam. Every card this batch implemented has left it.

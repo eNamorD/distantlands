@@ -39,6 +39,19 @@ Left behind by earlier phases:
   a Plan Aid decision. Confirm the −/+ pair sits level with the amount
   between them.
 
+Left behind by
+[catalog batch 10](superpowers/specs/2026-11-03-catalog-batch-10-design.md):
+
+- [ ] **Make room in `CoreOperations.scala`.** Slice 14's
+  `TrackPawn` and `ClearTrackedPawn` brought it to 787 lines, 13 under the
+  800-line cap that `scripts/check-architecture.py` enforces, so a primitive
+  or two more fails the check. Scala 3 keeps every direct subtype of a
+  sealed trait in the trait's file, and `CoreOperation`, `Burn`, `Discard`
+  and `Gain` are all sealed there, so the cases cannot move. What can is
+  the code that builds their children (`discardWorld`, `returnedResources`
+  and the other companion helpers), into a sibling file of `model`.
+  `WalkerOperationCodec.scala` (704 lines) grows with every primitive too.
+
 Left behind by the
 [consent work](superpowers/specs/2026-10-08-consent-system-design.md):
 
@@ -76,18 +89,18 @@ did":
 ### Phase - Catalog batch - engine-blocked
 
 Cards that need an engine change first, grouped by the missing mechanism.
-[Catalog batch 9](superpowers/specs/2026-11-02-catalog-batch-9-design.md)
-(landed 2026-11-02) implemented every edifice face whose mechanisms the
-engine had; its [Out of scope](superpowers/specs/2026-11-02-catalog-batch-9-design.md#out-of-scope)
-section describes each seam below in a paragraph.
+[Catalog batch 10](superpowers/specs/2026-11-03-catalog-batch-10-design.md)
+(landed 2026-11-07) opened every minor or moderate seam and implemented the
+cards behind them. Each seam below cuts across the whole engine; the
+batch's [Deferred](superpowers/specs/2026-11-03-catalog-batch-10-design.md#deferred)
+section says why in a paragraph.
 
-- **Discard replacement with a question:** Wild Pastures.
-- **Vision collection:** Desecrated Ground.
 - **As-if ruler:** Bandit Crown, Grand Mask.
 - **Favor source redirection:** Vow of Kinship.
-- **Unchanged from batch 8:** Master of Disguise (acting as another
-  player's advisers) and False Prophet (a player-aware off-turn card
-  play).
+- **Acting as another player's advisers:** Master of Disguise.
+- **Off-turn actor and a warband on a Vision:** False Prophet.
+- **Vision collection:** Desecrated Ground.
+- **Discard replacement with a question:** Wild Pastures.
 
 ### Phase - All-Exile alpha readiness
 
@@ -356,7 +369,8 @@ as current.
   object filling its own slot would carry the rare members, but holding
   procedure objects rather than function references loads them while the
   registry loads: the initialisation cycle that already bit the notes
-  table. Catalog batch 10 slices 8 and 13 edit this area first.
+  table. Catalog batch 10 slices 8 and 13 changed this area after the
+  2026-11-06 measure.
 - [ ] **Relic and edifice battle plans name their card once.** The 61
   denizen plans extend `DenizenPlan(card, power)` since 2026-11-06; ten
   relic plans (`BanditStandard`, `BagOfSiegeworks`, `BlackSword`,
@@ -381,7 +395,8 @@ as current.
   carries. The log reads journaled decision ids and never sees the `Decide`,
   so a field on the `Decide` cannot retire the log's parser; one parser
   exported by `CardPlayProcedure`, shared by both, can. Catalog batch 10
-  slice 12 edits `CardPlayProcedure.Origin` first.
+  slice 12 changed `CardPlayProcedure.Origin` after the 2026-11-06
+  measure; the four prefixes are still re-spelled at `e44077f7`.
 - [ ] **Derive the wire codecs, with a defaults macro.** The probe of
   2026-11-03 stopped on the design note's own condition: no Mirror-only
   deriver reproduces today's wire, because a field's presence follows its
