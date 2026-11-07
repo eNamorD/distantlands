@@ -27,6 +27,7 @@ denizen.armed-mob used.empty-both = Neither target had a faceup adviser to disca
 denizen.armed-mob used.none = No player held the Darkest Secret without the People's Favor.
 denizen.assassin used = Discarded {0} from {1}'s advisers.
 denizen.assassin used.none = No faceup adviser could be discarded.
+denizen.autumn-wind dealt = Shuffled the discard piles together and dealt {0} to the Cradle, {1} to the Provinces and {2} to the Hinterland.
 denizen.awaited-return sacrificed = Spent no Supply after sacrificing {0}{0? warband.| warbands.}
 denizen.ballot-box removed = Removed {0} {1}{0? warband at | warbands at }{2}.
 denizen.ballot-box removed.bandits = Removed {0}{0? bandit warband at | bandit warbands at }{1}.

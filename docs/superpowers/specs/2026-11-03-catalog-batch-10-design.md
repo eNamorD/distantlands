@@ -1,6 +1,6 @@
 # Catalog Batch 10: Engine Seams
 
-**Status:** designed 2026-11-03. Slices 1 to 9 landed.
+**Status:** designed 2026-11-03. Slices 1 to 10 landed.
 
 **Builds on** [Catalog batch 9](2026-11-02-catalog-batch-9-design.md) and
 [batch 8](2026-10-12-catalog-batch-8-design.md), whose vocabulary, cost
@@ -452,23 +452,30 @@ buried by the Horn; codec.
 
 ## Slice 10: Shuffle every discard pile
 
-`Location.ChronicleGathering` and `ShufflePile.ChronicleGathering` are
-renamed `CardGathering`, since a play-time power now uses them. It holds
-cards gathered for a shuffle, Visions included, so `DenizenGathering` would
-misname it. The wire names
-change; old journals need not decode.
+The gathering pile is renamed `CardGathering` wherever it is named:
+`Location`, `ShufflePile`, `CardContainer` and the state field
+`cardGathering`. A play-time power now uses it, and it holds cards gathered
+for a shuffle, Visions included, so `DenizenGathering` would misname it. The
+wire kind becomes `card-gathering`; old journals need not decode.
 
 **Autumn Wind.** WHEN PLAYED, with no new primitive. When the cards across
-the three piles do not divide by 3, a `ChooseMany` asks for exactly the
-remainder's count of piles to take the extra cards; otherwise nothing is
-asked. Then every discard pile, Visions included, moves to the gathering
-pile, which is shuffled (`WalkerShuffles` records the order), and a
-`BuildOps` deals it round-robin per the answer, as `GatherDenizens` deals.
-The question is asked before the shuffle, which `HiddenOutcomes` hides.
-Line: "Shuffled the discard piles together and dealt 4, 4 and 3."
+the three piles do not divide by 3, a `ChooseMany` of the three discard
+piles asks for exactly the remainder's count of piles to take the extra
+cards; otherwise nothing is asked. Then every discard pile, Visions
+included, moves to the gathering pile, which is shuffled (`WalkerShuffles`
+records the order), and a `BuildOps` deals it from its head, round-robin in
+region order: each round gives one card to every pile still short of its
+share. The question is asked before the shuffle, which `HiddenOutcomes`
+hides. Nothing parks between the gathering and the deal, so no viewer sees
+the gathering pile. A searched Autumn Wind also deals the Search's own
+discards, which the Search makes before the play. Line: "Shuffled the
+discard piles together and dealt 4 to the Cradle, 4 to the Provinces and 3
+to the Hinterland." It names the answer, so the question posts no "Chose"
+line.
 
 Tests: even and uneven totals; the answer honoured; empty piles; the
-Chronicle's gathering unchanged after the rename; replay.
+Chronicle's gathering unchanged after the rename; a searched Autumn Wind;
+replay.
 
 ## Slice 11: Challenge reach
 

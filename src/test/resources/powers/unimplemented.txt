@@ -1,4 +1,3 @@
-denizen.autumn-wind
 denizen.council-arbiter
 denizen.deed-writer
 denizen.false-prophet

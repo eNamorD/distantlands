@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.holding.AutumnWindCard
 import oathdigital.gameplay.powers.search.BrackenCard
+import oathdigital.gameplay.powers.whenplayed.AutumnWindCard
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.OathRules
 import oathdigital.gameplay.actions.campaign.CampaignIds
