@@ -110,6 +110,8 @@ class TrackerSuite extends munit.FunSuite:
     // spent record as the Act phase begins.
     assertEquals(Look(after).phase, Phase.Act)
     assertEquals(after.game.current.trackedPawns, Map.empty)
+    assertEquals(PhasePowerHarness.ops(done.events).collect {
+      case op: ClearTrackedPawn => op }, Vector(ClearTrackedPawn(p1)))
     assertEquals(NoteText.said(TrackerWake, done.events), Vector(
       NoteText.Said(NoteKey.Used, s"${p1.value} placed at ${peaks.value}.",
         covers = false)))

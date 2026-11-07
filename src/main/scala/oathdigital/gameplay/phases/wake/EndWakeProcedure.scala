@@ -34,9 +34,9 @@ import oathdigital.model._
   */
 object EndWakeProcedure:
 
-  /** Fresh start and resume build the same tree. End Wake declares at most two leaves,
-    * so it finishes inside the command that starts it and a resume never
-    * reaches this.
+  /** Fresh start and resume build the same tree. End Wake declares at most
+    * two leaves, so it finishes inside the command that starts it and a
+    * resume never reaches this.
     */
   def build(catalog: ExecutableCatalog, state: ReadyGame, actor: PlayerId,
       args: Vector[DecisionOptionRef]): Either[OathViolation, Operation] = for
