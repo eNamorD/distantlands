@@ -72,8 +72,9 @@ object ChallengeProcedure:
     * picks so far, in the banners' declared order: not already held by the
     * actor, the holder (if any) at the actor's pawn site unless a pick lifts
     * that ([[ChallengeReach.unbound]]), and strictly more relevant faceup
-    * resources than the banner holds. Supply is a cost owned by
-    * `SpendSupply`, not a fact about a banner.
+    * resources than the banner holds. Magician's Code's 2 secrets count
+    * toward the Darkest Secret (`ChallengeReach.bonus`). Supply is a cost
+    * owned by `SpendSupply`, not a fact about a banner.
     */
   def legalBanners(state: ReadyGame, actor: PlayerId,
       picks: Vector[CardId] = Vector.empty): Vector[Banner] =
@@ -85,7 +86,8 @@ object ChallengeProcedure:
           holder.forall(rival => (player.pawnSite.nonEmpty &&
             player.pawnSite == current.pawnSite(rival)) ||
             ChallengeReach.unbound(state, actor, picks, banner, rival)) &&
-          BannerRules.playerResources(player, banner) >
+          BannerRules.playerResources(player, banner) +
+            ChallengeReach.bonus(picks, banner) >
             BannerRules.resources(current, banner)
       }
     }
@@ -111,7 +113,8 @@ object ChallengeProcedure:
     Branch((ready, pending) => Vector(bannerQuestion(ready, actor,
       picks(pending)))),
     Branch((ready, pending) => bannerOf(pending).toVector.map(banner =>
-      amountDecision(ready, actor, banner))),
+      amountDecision(ready, actor, banner,
+        ChallengeReach.bonus(picks(pending), banner)))),
     Branch((ready, pending) => effects(ready, actor, pending))),
     Some(PowerWindow.ChallengeActionEligibility))
 
@@ -142,19 +145,25 @@ object ChallengeProcedure:
   private def picks(pending: PendingTree): Vector[CardId] =
     ModifierPicks.cards(pending.answered)
 
+  /** How many of the actor's own resources go on the banner: strictly more
+    * than it holds, counting `bonus`, the secrets Magician's Code adds, so
+    * the least amount is 2 lower with the Code, and never below 0. */
   private def amountDecision(ready: ReadyGame, actor: PlayerId,
-      banner: Banner): Operation =
+      banner: Banner, bonus: Int): Operation =
     val current = ready.game.current
     val prior = BannerRules.resources(current, banner)
     val own = current.player(actor)
       .fold(0)(BannerRules.playerResources(_, banner))
+    val least = math.max(0, prior + 1 - bonus)
     val unit = banner match
       case Banner.PeoplesFavor => "favor"
       case Banner.DarkestSecret => "secrets"
-    Decide(amountDecisionId, actor, DecisionQuery.ChooseAmount(prior + 1,
-      math.max(prior + 1, own),
-      Some(s"Place more than $prior $unit to take ${banner.key}"),
-      "Take banner"),
+    val heading =
+      if bonus == 0 then s"Place more than $prior $unit to take ${banner.key}"
+      else s"Place more than $prior $unit, counting Magician's Code's " +
+        s"$bonus, to take ${banner.key}"
+    Decide(amountDecisionId, actor, DecisionQuery.ChooseAmount(least,
+      math.max(least, own), Some(heading), "Take banner"),
       window = Some(PowerWindow.ChallengeAmountSelection))
 
   /** Reached only after both answers exist. Selecting reads the two answers
@@ -166,21 +175,25 @@ object ChallengeProcedure:
     (for
       banner <- bannerOf(pending)
       amount <- amountOf(pending)
-    yield Vector[Operation](
-      Sequence(ChallengeRibbon.steps(actor, banner),
-        Some(PowerWindow.ChallengeRibbon)),
-      Sequence(Vector[Operation](payment(actor, banner, amount),
-        // Directly after the payment, so `previous` is the payment and the
-        // note reads what actually left the play area rather than the
-        // amount answered. The holder is read here, before the take moves
-        // the banner, which is the holder the deleted rule read off the
-        // recorded `Take`. No power contributes at `ChallengePlacement`; a
-        // first one that inserted a leaf between the payment and the note
-        // would leave the note reading its step instead, so it must append
-        // or the note must read the state as Travel's does.
-        Note(ProcedureNotes.id(ActionRef.Challenge), tookNote(actor, banner,
-          BannerRules.holder(ready.game.current, banner))),
-        custody(ready, actor, banner)), Some(PowerWindow.ChallengePlacement))))
+    yield
+      val bonus = ChallengeReach.bonus(picks(pending), banner)
+      Vector[Operation](
+        Sequence(ChallengeRibbon.steps(actor, banner),
+          Some(PowerWindow.ChallengeRibbon)),
+        Sequence(gained(actor, bonus) ++ Vector[Operation](
+          payment(actor, banner, amount + bonus),
+          // Directly after the payment, so `previous` is the payment and the
+          // note reads what actually left the play area rather than the
+          // amount answered. The holder is read here, before the take moves
+          // the banner, which is the holder the deleted rule read off the
+          // recorded `Take`. No power contributes at `ChallengePlacement`; a
+          // first one that inserted a leaf between the payment and the note
+          // would leave the note reading its step instead, so it must append
+          // or the note must read the state as Travel's does.
+          Note(ProcedureNotes.id(ActionRef.Challenge), tookNote(actor,
+            banner, BannerRules.holder(ready.game.current, banner))),
+          custody(ready, actor, banner)),
+          Some(PowerWindow.ChallengePlacement))))
       .getOrElse(Vector[Operation](BuildOps((_, _) => Left(
         OathViolation.InvalidEventOrder(
           "Challenge reached its effects without a banner and an amount")))))
@@ -212,6 +225,14 @@ object ChallengeProcedure:
       case Banner.DarkestSecret => Piece.Secrets(amount)
     }, PositionedLocation(Location.PlayArea(actor)),
       PositionedLocation(Location.OnBanner(banner)))
+
+  /** Magician's Code's secrets, from the shared bank to the actor's board
+    * just before the payment, which places them with the rest: the
+    * Challenge's line then counts them. None without the Code. */
+  private def gained(actor: PlayerId, bonus: Int): Vector[Operation] =
+    Option.when(bonus > 0)(Move(Piece.Secrets(bonus),
+      PositionedLocation(Location.SharedBank),
+      PositionedLocation(Location.PlayArea(actor))): Operation).toVector
 
   /** The banner moves to the challenger by a required `Take`: the payment
     * buys it, so a refused custody fails the path and the search hides that

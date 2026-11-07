@@ -4,8 +4,8 @@ import oathdigital.catalog.{Denizen, Edifice, ExecutableCatalog, Legacy, Relic, 
 import oathdigital.catalog.holding._
 import oathdigital.gameplay.{ActingTroupeCard, MarriageCard,
   PledgeToDiscordCard, SpitefulMirrorCard}
-import oathdigital.gameplay.actions.challenge.{SchoolOfVinesCard,
-  SigilOfTheEyeCard, SigilOfTheHeartCard}
+import oathdigital.gameplay.actions.challenge.{MagiciansCodeCard,
+  SchoolOfVinesCard, SigilOfTheEyeCard, SigilOfTheHeartCard}
 import oathdigital.gameplay.actions.recover.UndergroundLibraryCard
 import oathdigital.gameplay.operations.{AncientBloodlineCard, BoilingLakeCard,
   HallOfMinistersCard, TheGrandScepterCard}

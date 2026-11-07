@@ -156,7 +156,7 @@ class ChallengeReachSuite extends munit.FunSuite:
     val ready = schoolAtP1sSite.imperial(p2, p1).turn(p1, Phase.Act).ready
     assert(!Imperials.enemies(ready, p1, p2))
     assert(!ChallengeReach.widens(ready, p1, Vector.empty,
-      SchoolOfVinesCard.id))
+      SchoolOfVinesCard.id, Vector.empty))
     assert(!MenuPlay.availableInMenu(catalog, ready, ActionRef.Challenge))
 
   test("a Challenge a Sigil opened takes the banner and replays"):

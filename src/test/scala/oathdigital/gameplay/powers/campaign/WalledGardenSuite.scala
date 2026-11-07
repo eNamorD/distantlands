@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.campaign
 
 import oathdigital.gameplay.powers.economy.HallowedSpringCard
-import oathdigital.catalog.holding.MagiciansCodeCard
+import oathdigital.gameplay.actions.challenge.MagiciansCodeCard
 import oathdigital.gameplay.powers.search.BrackenCard
 import oathdigital.gameplay.powers.whenplayed.AutumnWindCard
 import oathdigital.gameplay.CampaignFixture._

@@ -1,6 +1,6 @@
 package oathdigital.application
 
-import oathdigital.catalog.holding.MagiciansCodeCard
+import oathdigital.gameplay.actions.challenge.MagiciansCodeCard
 import oathdigital.gameplay.{EconomyFixture, OathRules}
 import oathdigital.gameplay.actions.economy.TradeProcedure
 import oathdigital.gameplay.cards.AncientCitySite

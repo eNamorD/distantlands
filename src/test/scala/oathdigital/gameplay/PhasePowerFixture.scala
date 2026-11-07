@@ -1,7 +1,7 @@
 package oathdigital.gameplay
 
 import oathdigital.catalog.ExecutableCatalog
-import oathdigital.catalog.holding.MagiciansCodeCard
+import oathdigital.gameplay.actions.challenge.MagiciansCodeCard
 import oathdigital.gameplay.powerresolver.PhasePower
 import oathdigital.gameplay.setup.FirstGameSetupFixture
 import oathdigital.model._

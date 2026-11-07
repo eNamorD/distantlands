@@ -1,6 +1,6 @@
 package oathdigital.application
 
-import oathdigital.catalog.holding.MagiciansCodeCard
+import oathdigital.gameplay.actions.challenge.MagiciansCodeCard
 import oathdigital.gameplay.powers.action.ScryerCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
 import oathdigital.model._

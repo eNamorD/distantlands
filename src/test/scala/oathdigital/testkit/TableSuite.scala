@@ -3,7 +3,7 @@ package oathdigital.testkit
 import oathdigital.gameplay.powers.economy.HallowedSpringCard
 import oathdigital.application.{GameApplicationService, 
   InMemoryEventStreamRepository, ParkedServiceFixture}
-import oathdigital.catalog.holding.MagiciansCodeCard
+import oathdigital.gameplay.actions.challenge.MagiciansCodeCard
 import oathdigital.gameplay.StateBasedEvaluation
 import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,

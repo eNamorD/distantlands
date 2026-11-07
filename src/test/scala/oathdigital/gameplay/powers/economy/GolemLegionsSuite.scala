@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.economy
 
-import oathdigital.catalog.holding.MagiciansCodeCard
+import oathdigital.gameplay.actions.challenge.MagiciansCodeCard
 import oathdigital.gameplay.ModifierPlay
 import oathdigital.gameplay.actions.economy.MusterProcedure
 import oathdigital.gameplay.cards.AncientCitySite

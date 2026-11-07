@@ -2,7 +2,7 @@ package oathdigital.gameplay
 
 import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.economy.HallowedSpringCard
-import oathdigital.catalog.holding.MagiciansCodeCard
+import oathdigital.gameplay.actions.challenge.MagiciansCodeCard
 import oathdigital.gameplay.actions.economy.TradeProcedure
 import oathdigital.gameplay.powers.action.AlchemistCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog

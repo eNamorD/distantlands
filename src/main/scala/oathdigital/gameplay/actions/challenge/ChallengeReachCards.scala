@@ -1,7 +1,7 @@
 package oathdigital.gameplay.actions.challenge
 
-import oathdigital.catalog.{Edifice, EdificeFace, Locked, ModifierMark,
-  PrintedPower, Relic}
+import oathdigital.catalog.{Denizen, Edifice, EdificeFace, Locked,
+  ModifierMark, PrintedPower, Relic}
 import oathdigital.model._
 
 /** The cards whose picks widen a Challenge (catalog batch 10, slice 11).
@@ -36,4 +36,13 @@ object SigilOfTheHeartCard extends Relic(RelicId("R44"), "Sigil of the Heart", v
     persistent = false, cost = Cost.free,
     modifier = Some(ModifierMark.Action(MajorActionType.Challenge)),
     text = "You may challenge the People's Favor from any site.")
+  val powers: Vector[PrintedPower] = Vector(power)
+
+object MagiciansCodeCard extends Denizen(DenizenId("32"), "Magician's Code", Suit.Arcane):
+  val power = PrintedPower(PowerId("denizen.magicians-code"),
+    persistent = false, cost = Cost(favor = 2),
+    modifier = Some(ModifierMark.Action(MajorActionType.Challenge)),
+    text = "If you're challenging the Darkest Secret, gain [secret] " +
+      "[secret] and place them on the banner along with any other " +
+      "[secret] you're placing _(even none)_.")
   val powers: Vector[PrintedPower] = Vector(power)

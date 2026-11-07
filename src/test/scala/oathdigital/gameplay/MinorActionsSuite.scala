@@ -1,6 +1,6 @@
 package oathdigital.gameplay
 
-import oathdigital.catalog.holding.MagiciansCodeCard
+import oathdigital.gameplay.actions.challenge.MagiciansCodeCard
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import oathdigital.gameplay.actions.minor.MinorActionProcedures
 import oathdigital.gameplay.actions.minor.MinorActionProcedures.{toBoard,
