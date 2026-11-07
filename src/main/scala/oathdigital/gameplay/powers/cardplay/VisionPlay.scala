@@ -15,8 +15,9 @@ private[cardplay] object VisionPlay:
     case _ => None
 
   /** The Vision the hook plays faceup, while the play is still to be made:
-    * the card is in the player's temporary hand or among their facedown
-    * advisers. The hook stays in the tree after the card has moved, and a
+    * the card is in the player's temporary hand, among their facedown
+    * advisers, or in a discard pile (Search Party, catalog batch 10, slice
+    * 12). The hook stays in the tree after the card has moved, and a
     * restriction must not refuse a play that was legal when it was made
     * because the state has changed since.
     */
@@ -43,4 +44,5 @@ private[cardplay] object VisionPlay:
     val current = ready.game.current
     current.temporaryHands.getOrElse(player, Vector.empty).contains(card) ||
       current.player(player).exists(
-        _.advisers.contains(VisionState(card, Orientation.FaceDown)))
+        _.advisers.contains(VisionState(card, Orientation.FaceDown))) ||
+      Region.all.exists(current.commonCards.discard(_).contains(card))

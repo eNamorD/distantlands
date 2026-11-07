@@ -244,6 +244,9 @@ object CardPlayProcedure:
 
   /** Whether `card` is still at the origin the play started from. Once it is
     * not, the play has been made and the tree is settled from the answers.
+    * A card played from a discard pile and discarded back to that pile reads
+    * as unplayed again. The rebuilt shape has the same positions, and a
+    * discard emits no hook, so nothing parks inside the play after it.
     */
   private def heldAtOrigin(ready: ReadyGame, actor: PlayerId,
       card: WorldCardId, origin: Origin): Boolean = origin match

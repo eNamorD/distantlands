@@ -142,11 +142,16 @@ case object ConspiracyWhenPlayed extends ContributingPower:
         }
       case _ => Vector.empty
 
-  /** The card leaves the game from wherever the actor holds it. */
+  /** The card leaves the game from where it is played from: the actor's
+    * temporary hand, a discard pile (Search Party, catalog batch 10, slice
+    * 12) or the actor's play area. */
   private def removal(ready: ReadyGame, actor: PlayerId): CoreOperation =
-    val inHand = ready.game.current.temporaryHands
-      .getOrElse(actor, Vector.empty).contains(VisionRules.Conspiracy)
-    Move(Piece.Card(VisionRules.Conspiracy),
-      PositionedLocation(if inHand then Location.Hand(actor)
-        else Location.PlayArea(actor)),
+    val current = ready.game.current
+    val conspiracy = VisionRules.Conspiracy
+    val from =
+      if current.temporaryHands.getOrElse(actor, Vector.empty)
+          .contains(conspiracy) then Location.Hand(actor)
+      else Region.all.find(current.commonCards.discard(_).contains(conspiracy))
+        .fold(Location.PlayArea(actor))(Location.RegionalDiscard(_))
+    Move(Piece.Card(conspiracy), PositionedLocation(from),
       PositionedLocation(Location.SharedBank))

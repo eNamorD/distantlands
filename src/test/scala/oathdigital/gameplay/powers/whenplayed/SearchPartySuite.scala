@@ -3,9 +3,11 @@ package oathdigital.gameplay.powers.whenplayed
 import oathdigital.gameplay.SearchPlay
 import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.{NoteText, PowerFixture, SearchFixture}
-import oathdigital.gameplay.powers.cardplay.GossipCard
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import oathdigital.gameplay.powers.{NoteText, PowerFixture, SearchFixture,
+  WalkerPowerCatalog}
+import oathdigital.gameplay.powers.cardplay.{GossipCard, VowOfObedienceCard}
+import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
 import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look, MenuPlay,
@@ -23,15 +25,13 @@ class SearchPartySuite extends munit.FunSuite:
   import SearchFixture.{after, rules}
   import SearchPartyFixture._
 
-  private val plain = plainHearth
-
-  private def said(events: Vector[OathEvent]): Vector[NoteText.Said] =
+  private def searchPartyLines(events: Vector[OathEvent]): Vector[NoteText.Said] =
     NoteText.said(SearchParty.id, SearchParty.noteKeys, events)
 
   test("it peeks at the bottom 3 of the chosen pile and asks which to " +
       "play; the rest stay in order, and the line names the pile"):
     val ready = p1HoldsSearchPartyFacedown(_.discarded(Region.Hinterland,
-      plain*))
+      plainHearth*))
     val played = playedFaceupFromFacedown(ready)
     assertEquals(EconomyActions.parkedDecision(played.state).decisionId,
       SearchParty.pileDecisionId)
@@ -39,20 +39,20 @@ class SearchPartySuite extends munit.FunSuite:
     val asked = EconomyActions.parkedDecision(piled.state)
     assertEquals(asked.decisionId, SearchParty.cardDecisionId)
     assertEquals(WhenPlayedHarness.chooseOneOptions(asked).map(_.ref),
-      plain.take(3).map(PlacementPicks.optionNaming))
+      plainHearth.take(3).map(PlacementPicks.optionNaming))
     val peeked = after(piled)
-    plain.take(3).foreach(card => assert(Look(peeked).knowsAdviser(actor,
+    plainHearth.take(3).foreach(card => assert(Look(peeked).knowsAdviser(actor,
       card), s"p1 should know $card"))
-    assert(!Look(peeked).knowsAdviser(actor, plain(3)))
-    plain.foreach(card => assert(!Look(peeked).knowsAdviser(p2, card)))
-    val done = placedAs(cardPicked(piled, plain(1)), plain(1),
+    assert(!Look(peeked).knowsAdviser(actor, plainHearth(3)))
+    plainHearth.foreach(card => assert(!Look(peeked).knowsAdviser(p2, card)))
+    val done = placedAs(cardPicked(piled, plainHearth(1)), plainHearth(1),
       PlayedAs.Faceup)
     val end = after(done)
     assertEquals(Look(end).advisers(actor),
-      Vector[CardId](SearchPartyCard.id, plain(1)))
+      Vector[CardId](SearchPartyCard.id, plainHearth(1)))
     assertEquals(Look(end).discardPile(Region.Hinterland),
-      Vector[WorldCardId](plain(0), plain(2), plain(3)))
-    assertEquals(said(done.events), Vector(NoteText.Said(NoteKey.Used,
+      Vector[WorldCardId](plainHearth(0), plainHearth(2), plainHearth(3)))
+    assertEquals(searchPartyLines(done.events), Vector(NoteText.Said(NoteKey.Used,
       "Peeked at the bottom of the Hinterland discard pile.",
       covers = true)))
 
@@ -66,20 +66,20 @@ class SearchPartySuite extends munit.FunSuite:
 
   test("the card it plays facedown fires an enemy's Gossip"):
     val ready = p1HoldsSearchPartyFacedown(_.adviser(p2, GossipCard)
-      .discarded(Region.Hinterland, plain(0)))
+      .discarded(Region.Hinterland, plainHearth(0)))
     val before = Look(ready).favor(p2)
     val done = placedAs(peekedAndPicked(playedFaceupFromFacedown(ready),
-      Region.Hinterland, plain(0)), plain(0), PlayedAs.Facedown)
+      Region.Hinterland, plainHearth(0)), plainHearth(0), PlayedAs.Facedown)
     assertEquals(Look(after(done)).favor(p2), before + 1)
     assertEquals(Look(after(done)).advisers(actor),
-      Vector[CardId](SearchPartyCard.id, plain(0)))
+      Vector[CardId](SearchPartyCard.id, plainHearth(0)))
 
   test("the card may go to p1's site"):
     val ready = p1HoldsSearchPartyFacedown(_.discarded(Region.Hinterland,
-      plain(0)))
+      plainHearth(0)))
     val done = placedAs(peekedAndPicked(playedFaceupFromFacedown(ready),
-      Region.Hinterland, plain(0)), plain(0), PlayedAs.AtSite)
-    assert(Look(after(done)).cardsAt(AncientCitySite).contains(plain(0)))
+      Region.Hinterland, plainHearth(0)), plainHearth(0), PlayedAs.AtSite)
+    assert(Look(after(done)).cardsAt(AncientCitySite).contains(plainHearth(0)))
     assertEquals(Look(after(done)).discardPile(Region.Hinterland),
       Vector.empty[WorldCardId])
 
@@ -87,11 +87,11 @@ class SearchPartySuite extends munit.FunSuite:
       "the pile it came from"):
     // p1 is in the Cradle, so the discard goes to the Provinces pile.
     val ready = p1HoldsSearchPartyFacedown(_.discarded(Region.Provinces,
-      plain.take(3)*))
+      plainHearth.take(3)*))
     val done = placedAs(peekedAndPicked(playedFaceupFromFacedown(ready),
-      Region.Provinces, plain(0)), plain(0), PlayedAs.Discarded)
+      Region.Provinces, plainHearth(0)), plainHearth(0), PlayedAs.Discarded)
     assertEquals(Look(after(done)).discardPile(Region.Provinces),
-      Vector[WorldCardId](plain(1), plain(2), plain(0)))
+      Vector[WorldCardId](plainHearth(1), plainHearth(2), plainHearth(0)))
 
   test("a Vision is revealed as from a Search, and the Visions Drawn " +
       "track stays"):
@@ -105,9 +105,31 @@ class SearchPartySuite extends munit.FunSuite:
     assertEquals(after(done).game.current.tracks.visionsDrawn,
       ready.game.current.tracks.visionsDrawn)
 
+  test("a Conspiracy it plays faceup leaves the game from the pile"):
+    // p2 stands away from p1 and no banner has a holder: nothing to seize.
+    val conspiracy = VisionRules.Conspiracy
+    val ready = p1HoldsSearchPartyFacedown(_.pawn(p2, BrokenPeaksSite)
+      .discarded(Region.Hinterland, conspiracy))
+    val done = placedAs(peekedAndPicked(playedFaceupFromFacedown(ready),
+      Region.Hinterland, conspiracy), conspiracy, PlayedAs.Faceup)
+    assertEquals(Look(after(done)).discardPile(Region.Hinterland),
+      Vector.empty[WorldCardId])
+    assert(!accepted(CardIndex.from(after(done).game)).ids.contains(conspiracy))
+
+  test("a faceup Vow of Obedience forbids playing the pile's Vision faceup"):
+    val faith = VisionRules.Faith
+    val ready = p1HoldsSearchPartyFacedown(_.adviser(actor, VowOfObedienceCard)
+      .discarded(Region.Hinterland, faith))
+    val asked = peekedAndPicked(playedFaceupFromFacedown(ready),
+      Region.Hinterland, faith)
+    val offered = PlacementPicks.offered(PlacementPicks.parkedOptions(
+      asked.state, WalkerPowerCatalog.default(catalog)))
+    assert(!offered.contains(PlayedAs.Faceup), clue(offered))
+    assert(offered.contains(PlayedAs.Facedown), clue(offered))
+
   test("an empty pile shows unavailable"):
     val played = playedFaceupFromFacedown(p1HoldsSearchPartyFacedown(
-      _.discarded(Region.Hinterland, plain(0))))
+      _.discarded(Region.Hinterland, plainHearth(0))))
     val options = WhenPlayedHarness.chooseOneOptions(
       EconomyActions.parkedDecision(played.state))
     val empty = OptionReason.Written(SearchParty.emptyPile)
@@ -122,26 +144,26 @@ class SearchPartySuite extends munit.FunSuite:
     val done = playedFaceupFromFacedown(p1HoldsSearchPartyFacedown(identity))
     assertNotEquals(EconomyActions.parkedDecision(done.state).decisionId,
       SearchParty.pileDecisionId)
-    assertEquals(said(done.events), Vector(NoteText.Said("used.none",
+    assertEquals(searchPartyLines(done.events), Vector(NoteText.Said("used.none",
       "Every discard pile was empty.", covers = false)))
 
   test("kept from a one-card Search, it plays its card from the pile and " +
       "the Search still keeps Search Party; replay and the wire agree"):
     val ready = Table.start.pawn(actor, AncientCitySite)
       .discarded(Region.Cradle, SearchPartyCard)
-      .discarded(Region.Hinterland, plain.take(2)*).ready
+      .discarded(Region.Hinterland, plainHearth.take(2)*).ready
     val searched = accepted(SearchPlay.searched(rules, Ready(ready), actor,
       SearchSource.RegionalDiscard(Region.Cradle)))
     val kept = placedAs(searched, SearchPartyCard.id, PlayedAs.Faceup)
-    val done = placedAs(peekedAndPicked(kept, Region.Hinterland, plain(1)),
-      plain(1), PlayedAs.Faceup)
+    val done = placedAs(peekedAndPicked(kept, Region.Hinterland, plainHearth(1)),
+      plainHearth(1), PlayedAs.Faceup)
     val end = after(done)
     assertEquals(Look(end).advisers(actor),
-      Vector[CardId](SearchPartyCard.id, plain(1)))
+      Vector[CardId](SearchPartyCard.id, plainHearth(1)))
     assert(end.game.current.temporaryHands.getOrElse(actor, Vector.empty)
       .isEmpty)
     assertEquals(Look(end).discardPile(Region.Hinterland),
-      Vector[WorldCardId](plain(0)))
+      Vector[WorldCardId](plainHearth(0)))
     assertEquals(MenuPlay.procedureBeyondMenu(end), None)
     assertEquals(ActPowerHarness.replayed(rules, ready, done.events), end)
     assertWireRoundTrips(done.events)
