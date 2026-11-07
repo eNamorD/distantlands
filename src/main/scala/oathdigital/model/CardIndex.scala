@@ -20,7 +20,7 @@ object CardContainer:
   case object SetAsideRelics extends CardContainer
   case object SetAsideEdifices extends CardContainer
   case object Dispossessed extends CardContainer
-  case object ChronicleGathering extends CardContainer
+  case object CardGathering extends CardContainer
   case object NewlyDispossessed extends CardContainer
   final case class SuitedReserve(suit: Suit) extends CardContainer
   final case class AtlasSite(
@@ -203,7 +203,7 @@ object CardIndex:
     addIds(game.current.setAsideRelics, CardContainer.SetAsideRelics)
     addIds(game.current.setAsideEdifices, CardContainer.SetAsideEdifices)
     addIds(game.campaign.dispossessed, CardContainer.Dispossessed)
-    addIds(game.current.chronicleGathering, CardContainer.ChronicleGathering)
+    addIds(game.current.cardGathering, CardContainer.CardGathering)
     addIds(game.current.newlyDispossessed, CardContainer.NewlyDispossessed)
 
     Suit.all.foreach { suit =>

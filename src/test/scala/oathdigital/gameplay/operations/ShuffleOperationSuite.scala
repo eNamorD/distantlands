@@ -86,10 +86,10 @@ class ShuffleOperationSuite extends munit.FunSuite:
     val gathered = discarded.updateCurrent(current => current.copy(
       commonCards = current.commonCards.copy(
         worldDeck = current.commonCards.worldDeck.drop(3)),
-      chronicleGathering = three))
+      cardGathering = three))
     val done = accepted(executor.execute(gathered,
-      Shuffle(ShufflePile.ChronicleGathering, Some(three.reverse))))
-    assertEquals(done.game.current.chronicleGathering, three.reverse)
+      Shuffle(ShufflePile.CardGathering, Some(three.reverse))))
+    assertEquals(done.game.current.cardGathering, three.reverse)
 
   test("a shuffle writes a suited reserve's new order"):
     val denizens = zones(discarded).worldDeck.collect { case id: DenizenId => id }

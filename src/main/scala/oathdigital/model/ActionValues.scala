@@ -75,14 +75,15 @@ object SearchPlacement:
 
 /** A pile the walker can shuffle with a recorded order: a pile Search draws
   * from, the edifice deck (Build Edifice draws a random edifice per suit),
-  * the set-aside relics (Scatter Relics deals them out), or a campaign pile:
-  * a suited reserve, the Reliquary or the Dispossessed. */
+  * the set-aside relics (Scatter Relics deals them out), the gathering pile
+  * (the World task, Autumn Wind), or a campaign pile: a suited reserve, the
+  * Reliquary or the Dispossessed. */
 sealed trait ShufflePile extends Product with Serializable
 object ShufflePile:
   final case class Search(source: SearchSource) extends ShufflePile
   case object EdificeDeck extends ShufflePile
   case object SetAsideRelics extends ShufflePile
-  case object ChronicleGathering extends ShufflePile
+  case object CardGathering extends ShufflePile
   final case class SuitedReserve(suit: Suit) extends ShufflePile
   /** The Reliquary, for a random relic (Bewitch, Ancient Pact, Royal
     * Ambitions). */
@@ -97,7 +98,7 @@ object ShufflePile:
       case Search(source) => game.current.commonCards.pile(source)
       case EdificeDeck => game.current.commonCards.edificeDeck
       case SetAsideRelics => game.current.setAsideRelics
-      case ChronicleGathering => game.current.chronicleGathering
+      case CardGathering => game.current.cardGathering
       case SuitedReserve(suit) =>
         game.campaign.suitedReserves.getOrElse(suit, Vector.empty)
       case Reliquary => game.campaign.reliquary
@@ -108,7 +109,7 @@ object ShufflePile:
     case Search(source) => SearchSource.name(source)
     case EdificeDeck => "edifice deck"
     case SetAsideRelics => "set-aside relics"
-    case ChronicleGathering => "gathered denizens"
+    case CardGathering => "gathered cards"
     case SuitedReserve(suit) => s"${suit.key} reserve"
     case Reliquary => "Reliquary"
     case Dispossessed => "Dispossessed"

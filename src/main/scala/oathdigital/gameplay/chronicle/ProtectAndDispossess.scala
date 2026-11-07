@@ -37,16 +37,16 @@ object ProtectAndDispossess:
     // The note reads the pile before the move, while the faceup cards are
     // still identifiable where they lie.
     Note(noteId, states => Option.when(
-      states.now.game.current.chronicleGathering.nonEmpty)(
+      states.now.game.current.cardGathering.nonEmpty)(
       dispossessed.sourceless(NoteArg.Cards(
-        states.now.game.current.chronicleGathering)))),
-    BuildOps((state, _) => Right(state.game.current.chronicleGathering.map(
+        states.now.game.current.cardGathering)))),
+    BuildOps((state, _) => Right(state.game.current.cardGathering.map(
       card => Move(Piece.Card(card),
-        PositionedLocation(Location.ChronicleGathering),
+        PositionedLocation(Location.CardGathering),
         PositionedLocation(Location.NewlyDispossessed)))), required = true))
 
   private def faceup(state: ReadyGame): Vector[DenizenId] =
-    val pile = state.game.current.chronicleGathering
+    val pile = state.game.current.cardGathering
     pile.take(pile.size - stackSize).collect { case id: DenizenId => id }
 
   private def protect(state: ReadyGame, holder: PlayerId): Vector[Operation] =
@@ -73,10 +73,10 @@ object ProtectAndDispossess:
     * gathering pile, the facedown stack still last. */
   private def split(state: ReadyGame, holder: PlayerId, card: DenizenId)
       : Vector[CoreOperation] =
-    val pile = state.game.current.chronicleGathering
+    val pile = state.game.current.cardGathering
     val stack = pile.indexOf(card) / stackSize
     pile.zipWithIndex.collect { case (id, at) if at / stackSize == stack =>
-      Move(Piece.Card(id), PositionedLocation(Location.ChronicleGathering),
+      Move(Piece.Card(id), PositionedLocation(Location.CardGathering),
         PositionedLocation(Location.Hand(holder)))
     }
 

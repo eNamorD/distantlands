@@ -14,7 +14,7 @@ object GatherDenizens:
     BuildOps((state, _) => Right(gatherAdvisers(catalog, state)),
       required = true),
     BuildOps((state, _) => Right(gatherDiscards(state)), required = true),
-    Shuffle(ShufflePile.ChronicleGathering),
+    Shuffle(ShufflePile.CardGathering),
     BuildOps((state, _) => Right(deal(state)), required = true))
 
   /** Each adviser's tokens back to their banks (favor to its suit's bank,
@@ -37,7 +37,7 @@ object GatherDenizens:
               SecretSide.FaceDown))
         favor.toVector ++ secrets ++ Vector(Move(Piece.Card(id),
           PositionedLocation(Location.PlayArea(player.player)),
-          PositionedLocation(Location.ChronicleGathering)))
+          PositionedLocation(Location.CardGathering)))
     }.flatten)
 
   private def gatherDiscards(state: ReadyGame): Vector[CoreOperation] =
@@ -45,15 +45,15 @@ object GatherDenizens:
       state.game.current.commonCards.discard(region).map(card =>
         Move(Piece.Card(card),
           PositionedLocation(Location.RegionalDiscard(region)),
-          PositionedLocation(Location.ChronicleGathering))))
+          PositionedLocation(Location.CardGathering))))
 
   private def deal(state: ReadyGame): Vector[CoreOperation] =
-    val pile = state.game.current.chronicleGathering
+    val pile = state.game.current.cardGathering
     val surplus = pile.drop(dealt).map(card => Move(Piece.Card(card),
-      PositionedLocation(Location.ChronicleGathering),
+      PositionedLocation(Location.CardGathering),
       PositionedLocation(Location.Deck(CardDeck.World), StackPosition.Bottom)))
     val shortfall = state.game.current.commonCards.worldDeck
       .take(dealt - pile.size.min(dealt)).map(card => Move(Piece.Card(card),
         PositionedLocation(Location.Deck(CardDeck.World), StackPosition.Top),
-        PositionedLocation(Location.ChronicleGathering)))
+        PositionedLocation(Location.CardGathering)))
     surplus ++ shortfall

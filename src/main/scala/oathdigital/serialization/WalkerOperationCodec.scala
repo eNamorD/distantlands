@@ -463,8 +463,8 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
     case ShufflePile.Search(source) => encodeSearchSource(source)
     case ShufflePile.EdificeDeck => ujson.Obj("kind" -> "edifice-deck")
     case ShufflePile.SetAsideRelics => ujson.Obj("kind" -> "set-aside-relics")
-    case ShufflePile.ChronicleGathering =>
-      ujson.Obj("kind" -> "chronicle-gathering")
+    case ShufflePile.CardGathering =>
+      ujson.Obj("kind" -> "card-gathering")
     case ShufflePile.SuitedReserve(suit) =>
       ujson.Obj("kind" -> "suited-reserve", "suit" -> suit.key)
     case ShufflePile.Reliquary => ujson.Obj("kind" -> "reliquary")
@@ -475,7 +475,7 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
     value.objOpt.flatMap(_.get("kind")).flatMap(_.strOpt) match
       case Some("edifice-deck") => Right(ShufflePile.EdificeDeck)
       case Some("set-aside-relics") => Right(ShufflePile.SetAsideRelics)
-      case Some("chronicle-gathering") => Right(ShufflePile.ChronicleGathering)
+      case Some("card-gathering") => Right(ShufflePile.CardGathering)
       case Some("reliquary") => Right(ShufflePile.Reliquary)
       case Some("dispossessed") => Right(ShufflePile.Dispossessed)
       case Some("suited-reserve") => decodeSuit(value("suit").str,

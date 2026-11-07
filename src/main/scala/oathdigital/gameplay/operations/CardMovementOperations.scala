@@ -145,7 +145,7 @@ private[operations] object CardMovementOperations:
       case Location.Dispossessed =>
         if id.isInstanceOf[WorldCardId] then None
         else Some(InvalidDestination(transfer.piece, destination))
-      case Location.ChronicleGathering | Location.NewlyDispossessed =>
+      case Location.CardGathering | Location.NewlyDispossessed =>
         if id.isInstanceOf[WorldCardId] then None
         else Some(InvalidDestination(transfer.piece, destination))
       case _: Location.SuitedReserve | _: Location.StartingAdvisers =>
@@ -266,9 +266,9 @@ private[operations] object CardMovementOperations:
     case CardContainer.Dispossessed => Right(ready.copy(game = ready.game.copy(
       campaign = ready.game.campaign.copy(dispossessed =
         ready.game.campaign.dispossessed.filterNot(_ == located.id)))))
-    case CardContainer.ChronicleGathering => Right(ready.updateCurrent(current =>
-      current.copy(chronicleGathering =
-        current.chronicleGathering.filterNot(_ == located.id))))
+    case CardContainer.CardGathering => Right(ready.updateCurrent(current =>
+      current.copy(cardGathering =
+        current.cardGathering.filterNot(_ == located.id))))
     case CardContainer.NewlyDispossessed => Right(ready.updateCurrent(current =>
       current.copy(newlyDispossessed =
         current.newlyDispossessed.filterNot(_ == located.id))))
@@ -338,9 +338,9 @@ private[operations] object CardMovementOperations:
         ready.copy(game = ready.game.copy(campaign = ready.game.campaign.copy(
           dispossessed = ready.game.campaign.dispossessed :+
             id.asInstanceOf[WorldCardId]))))
-      case Location.ChronicleGathering => ensureEmptyTokens(original.state, id)
+      case Location.CardGathering => ensureEmptyTokens(original.state, id)
         .map(_ => ready.updateCurrent(current => current.copy(
-          chronicleGathering = current.chronicleGathering :+
+          cardGathering = current.cardGathering :+
             id.asInstanceOf[WorldCardId])))
       case Location.NewlyDispossessed => ensureEmptyTokens(original.state, id)
         .map(_ => ready.updateCurrent(current => current.copy(

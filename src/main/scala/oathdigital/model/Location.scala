@@ -18,10 +18,11 @@ object Location:
   case object Reliquary extends Location
   case object Atlas extends Location
   case object Dispossessed extends Location
-  /** The nine denizens the World task deals, stack by stack (CR p. 38).
-    * The facedown stack is always the last three; the cards before it
-    * are faceup. */
-  case object ChronicleGathering extends Location
+  /** Cards gathered for a shuffle, Visions included: the nine denizens the
+    * World task deals, stack by stack (CR p. 38), or every discard pile for
+    * Autumn Wind. In the World task the facedown stack is always the last
+    * three, and the cards before it are faceup. */
+  case object CardGathering extends Location
   /** The six denizens the World task dispossessed, kept apart from the
     * older Dispossessed until the Chronicle is recorded (CR p. 39). */
   case object NewlyDispossessed extends Location

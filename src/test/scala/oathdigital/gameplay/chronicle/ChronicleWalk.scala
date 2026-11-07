@@ -45,7 +45,7 @@ object ChronicleWalk:
     val walked = walkedTo(rules, started,
       ProtectAndDispossess.protectDecisionId)
     val nine = oathdigital.testkit.Outcomes.ready(walked.state).game.current
-      .chronicleGathering
+      .cardGathering
     accepted(rules.resolveWalker(walked.state, Table.p2,
       ProtectAndDispossess.protectDecisionId,
       DecisionAnswer.ChooseOneAnswer(

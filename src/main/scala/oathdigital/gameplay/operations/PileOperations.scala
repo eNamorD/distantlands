@@ -43,7 +43,7 @@ private[operations] object PileOperations:
           edificeDeck = cards.collect { case id: EdificeId => id }))
       case ShufflePile.SetAsideRelics => current.copy(
         setAsideRelics = cards.collect { case id: RelicId => id })
-      case ShufflePile.ChronicleGathering => current.copy(chronicleGathering =
+      case ShufflePile.CardGathering => current.copy(cardGathering =
         cards.collect { case id: WorldCardId => id })
       case ShufflePile.SuitedReserve(_) | ShufflePile.Reliquary |
           ShufflePile.Dispossessed => current)

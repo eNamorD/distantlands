@@ -176,7 +176,7 @@ object OperationStateAdapter:
       case (CardContainer.SetAsideRelics, Location.SetAsideRelics) => true
       case (CardContainer.SetAsideEdifices, Location.SetAsideEdifices) => true
       case (CardContainer.Dispossessed, Location.Dispossessed) => true
-      case (CardContainer.ChronicleGathering, Location.ChronicleGathering) => true
+      case (CardContainer.CardGathering, Location.CardGathering) => true
       case (CardContainer.NewlyDispossessed, Location.NewlyDispossessed) => true
       case (CardContainer.SuitedReserve(left), Location.SuitedReserve(right)) =>
         left == right

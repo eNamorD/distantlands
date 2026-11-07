@@ -228,7 +228,7 @@ class WalkerOperationWireSuite extends munit.FunSuite:
       Location.Reliquary,
       Location.Atlas,
       Location.Dispossessed,
-      Location.ChronicleGathering,
+      Location.CardGathering,
       Location.NewlyDispossessed,
       Location.SuitedReserve(Suit.Beast),
       Location.StartingAdvisers(LineageId("lineage")))
@@ -241,6 +241,19 @@ class WalkerOperationWireSuite extends munit.FunSuite:
     assertEquals(ujson.read(encoded).arr.map(
       _("payload")("step")("ops")(0)("placedAt")("kind").str).toVector.distinct.size,
       locations.map(_.getClass.getSimpleName).distinct.size)
+
+  test("the gathering pile is card-gathering on the wire, as a location " +
+      "and as a shuffled pile"):
+    val events = Vector(
+      recordedOperation(PayCost(PlayerId("red"), Location.CardGathering,
+        Cost(favor = 1))),
+      recordedOperation(Shuffle(ShufflePile.CardGathering,
+        Some(Vector(DenizenId("denizen"))))))
+    val encoded =
+      ujson.read(encodedStreamThatRoundTrips("walker", events)).arr
+    def op(at: Int): ujson.Value = encoded(at)("payload")("step")("ops")(0)
+    assertEquals(op(0)("placedAt")("kind").str, "card-gathering")
+    assertEquals(op(1)("pile")("kind").str, "card-gathering")
 
   test("an unknown walker location kind, deck, operation kind or negative " +
       "cost decodes to a typed WireError"):
@@ -490,7 +503,7 @@ class WalkerOperationWireSuite extends munit.FunSuite:
         Some(Vector(GreatMarketCard.id))),
       Shuffle(ShufflePile.SetAsideRelics,
         Some(Vector(RelicId("R1")))),
-      Shuffle(ShufflePile.ChronicleGathering, Some(Vector(denizen))),
+      Shuffle(ShufflePile.CardGathering, Some(Vector(denizen))),
       Shuffle(ShufflePile.Reliquary),
       Shuffle(ShufflePile.Dispossessed, Some(Vector(denizen))),
       Shuffle(ShufflePile.SuitedReserve(Suit.Beast),

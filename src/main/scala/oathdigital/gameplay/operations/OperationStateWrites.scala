@@ -146,7 +146,7 @@ private[operations] object OperationStateWrites:
     case CardContainer.SetAsideRelics => Location.SetAsideRelics
     case CardContainer.SetAsideEdifices => Location.SetAsideEdifices
     case CardContainer.Dispossessed => Location.Dispossessed
-    case CardContainer.ChronicleGathering => Location.ChronicleGathering
+    case CardContainer.CardGathering => Location.CardGathering
     case CardContainer.NewlyDispossessed => Location.NewlyDispossessed
     case CardContainer.SuitedReserve(suit) => Location.SuitedReserve(suit)
     case CardContainer.Lineage(lineage, LineageCardArea.StartingAdvisers) =>

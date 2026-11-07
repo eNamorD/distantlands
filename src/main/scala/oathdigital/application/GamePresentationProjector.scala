@@ -271,8 +271,10 @@ private[application] final class GamePresentationProjector(
     *    viewer whose knowledge records it: one who peeked at it there
     *    (Scryer, Oracular Pig), or, in a discard pile, one who knew it
     *    before it was discarded.
-    *  - The World task's gathered denizens are named to every viewer except
-    *    the last three, the facedown stack (CR p. 38).
+    *  - The gathering pile's cards are named to every viewer except the
+    *    last three, the World task's facedown stack (CR p. 38). Autumn Wind
+    *    gathers, shuffles and deals in one walk with no question between,
+    *    so no viewer sees its pile.
     *  - A lineage's starting advisers are named only to the player seated
     *    with that lineage.
     *  - The Reliquary is named only to the Chancellor, and only in Setup,
@@ -318,8 +320,8 @@ private[application] final class GamePresentationProjector(
       // The facedown stack is the last three gathered cards, also after
       // the protected stack leaves; every card before it is on the table
       // for all to see.
-      case CardContainer.ChronicleGathering =>
-        val pile = ready.game.current.chronicleGathering
+      case CardContainer.CardGathering =>
+        val pile = ready.game.current.cardGathering
         val at = pile.indexOf(id)
         at >= 0 && at < pile.size - 3
       // A starting adviser is kept facedown for the lineage's next player.

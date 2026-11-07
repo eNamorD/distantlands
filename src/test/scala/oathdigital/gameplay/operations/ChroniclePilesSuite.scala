@@ -31,11 +31,11 @@ class ChroniclePilesSuite extends munit.FunSuite:
     val start = Table.start.ready
     val card = topDenizenOfWorldDeck(start)
     val gathered = applied(start,
-      moved(card, Location.Deck(CardDeck.World), Location.ChronicleGathering))
-    assertEquals(gathered.game.current.chronicleGathering, Vector(card))
+      moved(card, Location.Deck(CardDeck.World), Location.CardGathering))
+    assertEquals(gathered.game.current.cardGathering, Vector(card))
     val out = applied(gathered,
-      moved(card, Location.ChronicleGathering, Location.Dispossessed))
-    assertEquals(out.game.current.chronicleGathering, Vector.empty)
+      moved(card, Location.CardGathering, Location.Dispossessed))
+    assertEquals(out.game.current.cardGathering, Vector.empty)
     assert(out.game.campaign.dispossessed.contains(card))
 
   test("a world card moves into the newly Dispossessed"):
@@ -85,7 +85,7 @@ class ChroniclePilesSuite extends munit.FunSuite:
   test("only world cards enter the gathering pile and the newly " +
       "Dispossessed; only denizens a reserve or starting advisers"):
     val lineage = lineageOf(Table.start.ready, p1)
-    assert(Vector(Location.ChronicleGathering, Location.NewlyDispossessed,
+    assert(Vector(Location.CardGathering, Location.NewlyDispossessed,
       Location.SuitedReserve(Suit.Beast), Location.StartingAdvisers(lineage))
       .forall(relicRefusedAt))
 

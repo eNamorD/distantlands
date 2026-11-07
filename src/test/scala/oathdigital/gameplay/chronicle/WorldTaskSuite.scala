@@ -34,7 +34,7 @@ class WorldTaskSuite extends munit.FunSuite:
     ProtectAndDispossess.protectDecisionId)
 
   private def gathered(transition: OathTransition): Vector[WorldCardId] =
-    Outcomes.ready(transition.state).game.current.chronicleGathering
+    Outcomes.ready(transition.state).game.current.cardGathering
 
   private def lineageOf(ready: ReadyGame, player: PlayerId): LineageId =
     ready.game.current.player(player).get.lineage
@@ -89,7 +89,7 @@ class WorldTaskSuite extends munit.FunSuite:
         DecisionOptionRef.Denizen(second(1).asInstanceOf[DenizenId]))))
     val parked = Outcomes.ready(protectedStep.state)
     assertEquals(parked.game.current.temporaryHands.get(p2), Some(second))
-    assertEquals(parked.game.current.chronicleGathering,
+    assertEquals(parked.game.current.cardGathering,
       nine.take(3) ++ nine.drop(6))
     val kept = second.last
     val done = accepted(rules.resolveWalker(protectedStep.state, p2,
@@ -105,7 +105,7 @@ class WorldTaskSuite extends munit.FunSuite:
       second.init.toSet)
     assertEquals(after.game.current.temporaryHands.getOrElse(p2, Vector.empty),
       Vector.empty)
-    assertEquals(after.game.current.chronicleGathering, Vector.empty)
+    assertEquals(after.game.current.cardGathering, Vector.empty)
     assertEquals(after.game.current.newlyDispossessed,
       nine.take(3) ++ nine.drop(6))
 

@@ -173,7 +173,7 @@ private[serialization] trait WalkerValueCodec extends PositionWire:
     case Location.Reliquary => ujson.Obj("kind" -> "reliquary")
     case Location.Atlas => ujson.Obj("kind" -> "atlas")
     case Location.Dispossessed => ujson.Obj("kind" -> "dispossessed")
-    case Location.ChronicleGathering => ujson.Obj("kind" -> "chronicle-gathering")
+    case Location.CardGathering => ujson.Obj("kind" -> "card-gathering")
     case Location.NewlyDispossessed => ujson.Obj("kind" -> "newly-dispossessed")
     case Location.SuitedReserve(suit) => ujson.Obj("kind" -> "suited-reserve",
       "suit" -> suit.key)
@@ -206,7 +206,7 @@ private[serialization] trait WalkerValueCodec extends PositionWire:
     case "reliquary" => Right(Location.Reliquary)
     case "atlas" => Right(Location.Atlas)
     case "dispossessed" => Right(Location.Dispossessed)
-    case "chronicle-gathering" => Right(Location.ChronicleGathering)
+    case "card-gathering" => Right(Location.CardGathering)
     case "newly-dispossessed" => Right(Location.NewlyDispossessed)
     case "suited-reserve" => decodeSuit(value("suit").str, s"$path.suit")
       .map(Location.SuitedReserve.apply)

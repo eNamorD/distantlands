@@ -51,7 +51,7 @@ class WorldLogLinesSuite extends munit.FunSuite:
 
   test("the dispossessed line names the faceup cards and hides the " +
       "facedown stack"):
-    val six = parkedOnKeep.game.current.chronicleGathering
+    val six = parkedOnKeep.game.current.cardGathering
     val note = ProtectAndDispossess.dispossessed.sourceless(NoteArg.Cards(six))
     val read = spoken(note, p1)
     assert(six.take(3).forall(names(read, _)), read)

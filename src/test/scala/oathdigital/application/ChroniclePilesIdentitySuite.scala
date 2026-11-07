@@ -17,11 +17,11 @@ class ChroniclePilesIdentitySuite extends munit.FunSuite:
     ready.updateCurrent(current => current.copy(
       commonCards = current.commonCards.copy(
         worldDeck = current.commonCards.worldDeck.drop(9)),
-      chronicleGathering = nine)))
+      cardGathering = nine)))
 
   test("every player identifies the two faceup stacks, nobody the third"):
     val ready = nineGathered.ready
-    val gathered = ready.game.current.chronicleGathering
+    val gathered = ready.game.current.cardGathering
     val viewers = Vector(Some(p1), Some(p2), None)
     assert(viewers.forall(viewer => gathered.take(6).forall(card =>
       presentation.identifiesAt(ready, viewer, card))))
@@ -33,9 +33,9 @@ class ChroniclePilesIdentitySuite extends munit.FunSuite:
     // somewhere and the card index stays whole.
     val ready = nineGathered.update(_.updateCurrent(current => current.copy(
       commonCards = current.commonCards.copy(worldDeck =
-        current.commonCards.worldDeck ++ current.chronicleGathering.take(3)),
-      chronicleGathering = current.chronicleGathering.drop(3)))).ready
-    val six = ready.game.current.chronicleGathering
+        current.commonCards.worldDeck ++ current.cardGathering.take(3)),
+      cardGathering = current.cardGathering.drop(3)))).ready
+    val six = ready.game.current.cardGathering
     assert(six.take(3).forall(card =>
       presentation.identifiesAt(ready, Some(p1), card)))
     assert(six.drop(3).forall(card =>
