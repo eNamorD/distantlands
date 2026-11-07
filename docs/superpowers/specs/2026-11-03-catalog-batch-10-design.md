@@ -435,8 +435,11 @@ rewrite: Bee and every other Search modifier exclude each other.
   becomes `relic.ring-of-devotion`.
 - **Bracken** (1 secret): `selectionQuestions` ask a discard pile and Top or
   Bottom, once at the Search's start.
-- **Cracked Horn:** each discard becomes `Bury.standard` to the bottom of
-  the world deck; a buried Vision leaves the Visions Drawn track alone.
+- **Cracked Horn:** each discard becomes a `Discard.Buried`, which buries
+  the card at the bottom of the world deck with a discard's returns. It is
+  still a discard, so the locks, Hall of Ministers and the active-modifier
+  rule judge it (owner ruling, 2026-11-06). A buried Vision leaves the
+  Visions Drawn track alone.
 
 Picking one makes the other two unavailable (see Readings). The generic
 discard and bury lines name where each card went. Bracken also names the

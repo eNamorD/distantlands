@@ -98,6 +98,9 @@ final case class ActiveModifier(catalog: ExecutableCatalog,
     case value: Discard.Relic
         if OperationRestrictions.inPlay(value.from.location) =>
       refused(value.card)
+    case value: Discard.Buried
+        if OperationRestrictions.inPlay(value.from.location) =>
+      refused(value.card.id)
     case _ => None
 
   private def refused(card: CardId): Option[OperationReason] =

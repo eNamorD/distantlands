@@ -15,12 +15,14 @@ object CrackedHornCard extends Relic(RelicId("R10"), "Cracked Horn", value = 21,
   * all of the cards you discard on the bottom of the world deck." (catalog
   * batch 10, slice 9).
   *
-  * Every discard of the Search ([[SearchDiscards]]) becomes a bury to the
-  * bottom of the world deck, with the returns a discard makes: favor to the
-  * card's suit bank and secrets to the user, facedown. A buried Vision
-  * leaves the Visions Drawn track alone (Bury FAQ). The bury keeps the
-  * discard's `required`. The generic "Buried {card}" line tells each one,
-  * so it writes no line of its own.
+  * Every discard of the Search ([[SearchDiscards]]) becomes a
+  * `Discard.Buried`: still a discard, so the locks, Hall of Ministers and
+  * the active-modifier rule judge it (owner ruling, 2026-11-06), but the
+  * card goes to the bottom of the world deck, with the returns a discard
+  * makes: favor to the card's suit bank and secrets to the user, facedown.
+  * A buried Vision leaves the Visions Drawn track alone (Bury FAQ). The
+  * discard's `required` carries over. The generic "Buried {card}" line
+  * tells each one, so it writes no line of its own.
   */
 case object CrackedHorn extends SearchDiscards:
   val id: PowerId = CrackedHornCard.power.id
@@ -30,12 +32,9 @@ case object CrackedHorn extends SearchDiscards:
       actor: PlayerId)(discard: SearchDiscards.UserDiscard)
       : Vector[CoreOperation] = discard match
     case denizen: Discard.Denizen =>
-      Bury.standard(BuryableCard.Denizen(denizen.card), denizen.from,
+      Vector(Discard.Buried(BuryableCard.Denizen(denizen.card), denizen.from,
         Some(denizen.suit), denizen.favor, denizen.secrets,
-        denizen.actingPlayer).map {
-        case bury: Bury => bury.copy(required = denizen.required)
-        case other => other
-      }
+        denizen.actingPlayer, denizen.required))
     case vision: Discard.Vision =>
-      Vector(Bury(BuryableCard.Vision(vision.card), vision.from,
-        required = vision.required))
+      Vector(Discard.Buried(BuryableCard.Vision(vision.card), vision.from,
+        None, 0, 0, actor, vision.required))

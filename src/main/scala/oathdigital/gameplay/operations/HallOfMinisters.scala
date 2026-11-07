@@ -93,6 +93,12 @@ case object HallOfMinisters extends OperationRestriction with WaivableRule:
         DecisionOptionRef.Vision(value.card)))
       case value: Discard.RuinedEdifice => value.by.map(actor => (
         value.from.location, actor, DecisionOptionRef.Edifice(value.card)))
+      case value: Discard.Buried => value.card match
+        case BuryableCard.Denizen(id) => Some((value.from.location,
+          value.actingPlayer, DecisionOptionRef.Denizen(id)))
+        case BuryableCard.Vision(id) => Some((value.from.location,
+          value.actingPlayer, DecisionOptionRef.Vision(id)))
+        case _ => None
       case value: Discard.Relic => Some((value.from.location,
         value.actingPlayer, DecisionOptionRef.Relic(value.card)))
       case _ => None

@@ -2,9 +2,12 @@ package oathdigital.gameplay.powers.search
 
 import oathdigital.catalog.ModifierMark
 import oathdigital.gameplay.actions.VisionRules
+import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import oathdigital.gameplay.powers.{PowerFixture, SearchFixture}
+import oathdigital.gameplay.powers.campaign.SealingWardCard
 import oathdigital.model._
-import oathdigital.testkit.{Look, Table}
+import oathdigital.testkit.{ActPowerHarness, Look, Table}
+import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Unwrap.accepted
 
 /** Cracked Horn (relic R10), a free selected Search modifier: "You may put
@@ -63,3 +66,31 @@ class CrackedHornSuite extends munit.FunSuite:
     // The draw advanced the track once; the bury does nothing to it.
     assertEquals(SearchFixture.after(done).game.current.tracks.visionsDrawn,
       before + 1)
+
+  test("a bumped adviser and a site card it buries replay and round-trip " +
+      "the wire"):
+    Vector(
+      searchAtAncientCity(table =>
+        withThreeFacedownAdvisers(holdingTheHorn(table))) ->
+        (keptFaceupBumpingAnAdviser(_: OathTransition)),
+      searchAtAncientCity(table =>
+        withPeoplesFavorAndSiteCard(holdingTheHorn(table))) ->
+        (keptAtSiteReplacingTheSiteCard(_: OathTransition))
+    ).foreach { (ready, finish) =>
+      val done = finish(searched(ready))
+      assertEquals(ActPowerHarness.replayed(SearchFixture.rules, ready,
+        done.events), SearchFixture.after(done))
+      assertWireRoundTrips(done.events)
+    }
+
+  test("a locked faceup adviser still cannot be bumped and buried"):
+    // Sealing Ward is locked. The placement judges the plain discard before
+    // the Horn rewrites it, and the restrictions judge the rewritten
+    // `Discard.Buried` again when it runs (OperationRestrictionsSuite).
+    val ready = searchAtAncientCity(table => holdingTheHorn(table)
+      .adviser(actor, SealingWardCard.id)
+      .adviser(actor, heldAdvisers(1), facedown = true)
+      .adviser(actor, heldAdvisers(2), facedown = true))
+    val chosen = accepted(SearchFixture.keep(searched(ready), kept))
+    assert(SearchFixture.placeReplacing(chosen, kept, PlayedAs.Faceup,
+      SealingWardCard.id).isLeft)

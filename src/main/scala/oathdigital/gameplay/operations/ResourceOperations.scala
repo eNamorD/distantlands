@@ -26,6 +26,8 @@ private[operations] object ResourceOperations:
       case value: RemoveFromMap =>
         Some((value.card, Some(value.favor), value.secrets))
       case value: Discard.Relic => Some((value.card, None, value.secrets))
+      case value: Discard.Buried =>
+        Some((value.card.id, Some(value.favor), value.secrets))
       case _ => None
     described.toVector.flatMap { case (cardId, favor, secrets) =>
       val at = Location.OnCard(cardId)

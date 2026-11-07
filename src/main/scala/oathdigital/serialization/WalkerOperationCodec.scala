@@ -106,6 +106,14 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
           "from" -> encodePositionedLocation(from), "suit" -> suit.key,
           "favor" -> favor, "secrets" -> secrets,
           "actingPlayerId" -> actingPlayer.value), actorless)
+      case Discard.Buried(card, from, suit, favor, secrets, actingPlayer, _) =>
+        val encoded = ujson.Obj("kind" -> "discard-buried",
+          "card" -> encodeBuryableCard(card),
+          "from" -> encodePositionedLocation(from),
+          "favor" -> favor, "secrets" -> secrets,
+          "actingPlayerId" -> actingPlayer.value)
+        suit.foreach(bank => encoded("suit") = bank.key)
+        encoded
       case Discard.Relic(card, from, secrets, actingPlayer) => ujson.Obj(
         "kind" -> "discard-relic", "card" -> card.value,
         "from" -> encodePositionedLocation(from), "secrets" -> secrets,
@@ -378,6 +386,15 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
     yield Discard.RuinedEdifice(EdificeId(value("card").str), from, suit,
       favor, secrets, PlayerId(value("actingPlayerId").str),
       actorless = decodeActorless(value))
+    case "discard-buried" => for
+      card <- decodeBuryableCard(value("card"), s"$path.card")
+      from <- decodePositionedLocation(value("from"), s"$path.from")
+      suit <- value.obj.get("suit").fold[Either[WireError, Option[Suit]]](
+        Right(None))(found => decodeSuit(found.str, s"$path.suit").map(Some(_)))
+      favor <- safeIntField(value.obj, "favor", path)
+      secrets <- safeIntField(value.obj, "secrets", path)
+    yield Discard.Buried(card, from, suit, favor, secrets,
+      PlayerId(value("actingPlayerId").str))
     case "discard-relic" => for
       from <- decodePositionedLocation(value("from"), s"$path.from")
       secrets <- safeIntField(value.obj, "secrets", path)

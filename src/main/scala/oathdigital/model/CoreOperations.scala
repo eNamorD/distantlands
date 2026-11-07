@@ -159,6 +159,28 @@ object Discard:
     override val children: Vector[Operation] =
       discardWorld(card, from, to, None, position)
 
+  /** A world card discarded to the bottom of the world deck instead of a
+    * pile (Cracked Horn, catalog batch 10, slice 9). It is still a discard,
+    * so the rules that judge discards judge it: the locks, Hall of
+    * Ministers and the active-modifier rule (owner ruling, 2026-11-06). The
+    * card itself is buried, with the returns a discard makes; a buried
+    * Vision leaves the Visions Drawn track alone. `actingPlayer` discards
+    * it. */
+  final case class Buried(card: BuryableCard, from: PositionedLocation,
+      suit: Option[Suit], favor: Int, secrets: Int, actingPlayer: PlayerId,
+      override val required: Boolean = false) extends Discard:
+    require(card.deck == CardDeck.World,
+      "only a denizen or a Vision is discarded under the world deck")
+    require(favor >= 0, "discarded favor must be non-negative")
+    require(secrets >= 0, "discarded secrets must be non-negative")
+    require(favor == 0 || suit.isDefined, "buried favor needs its suit bank")
+
+    /** The player who discards it. */
+    def by: Option[PlayerId] = Some(actingPlayer)
+
+    override val children: Vector[Operation] =
+      returns(card.id, suit, favor, secrets, actingPlayer) :+ Bury(card, from)
+
   /** Only a ruined edifice can be discarded; intact edifices are locked.
     * `actingPlayer` and `actorless` are as for `Denizen`. A discarded
     * edifice is set aside in discard order, not buried, so Build Edifice

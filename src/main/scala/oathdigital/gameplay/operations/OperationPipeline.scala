@@ -17,6 +17,7 @@ object OperationRun:
   def canonical(operation: CoreOperation): CoreOperation = operation match
     case value: SpendSupply => value.copy(required = true)
     case value: Discard.Denizen => value.copy(required = false)
+    case value: Discard.Buried => value.copy(required = false)
     case value: Play => value.copy(required = false)
     case value: Replace => value.copy(required = false)
     case value: Give => value.copy(required = false)

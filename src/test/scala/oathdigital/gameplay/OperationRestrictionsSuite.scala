@@ -97,6 +97,26 @@ class OperationRestrictionsSuite extends munit.FunSuite:
     Table.start.pawn(p1, at = hallSite).edifice(hall, side, at = hallSite)
       .warbandsAt(hallSite, p1, 1).ready
 
+  test("a discard that buries is judged as a discard: the lock, a selected " +
+      "modifier and the Hall of Ministers refuse it"):
+    def buried(card: DenizenId, from: Location,
+        actor: PlayerId = p1): Discard.Buried =
+      Discard.Buried(BuryableCard.Denizen(card), PositionedLocation(from),
+        catalog.suitOf(card), 0, 0, actor)
+    assertEquals(refusal(holding(lockedCard),
+      buried(lockedCard, Location.PlayArea(p1))), Some("locked"))
+    assertEquals(refusal(Table.start.adviser(p1, wildCry).ready,
+      buried(wildCry, Location.PlayArea(p1)), PowerId("denizen.wild-cry")),
+      Some("active-modifier"))
+    val hallReady = Table.start.pawn(p1, at = hallSite)
+      .edifice(hall, EdificeSide.Intact, at = hallSite)
+      .warbandsAt(hallSite, p1, 1).denizen(plainCard, at = hallSite).ready
+    assertEquals(refusal(hallReady,
+      buried(plainCard, Location.Site(hallSite), actor = p2)),
+      Some("discard-immune"))
+    assertEquals(refusal(Table.start.adviser(p1, plainCard).ready,
+      buried(plainCard, Location.PlayArea(p1))), None)
+
   test("an intact edifice is locked, and a ruined one is not"):
     val edificeOps: Vector[CoreOperation] = Vector(
       Discard.RuinedEdifice(hall, PositionedLocation(Location.Site(hallSite)),

@@ -13,7 +13,8 @@ trait AsIfLocked:
 /** The cards with the lock icon cannot be moved or flipped while they show the
   * lock (global operation restrictions design, "Rules"). A discard, a `Take`,
   * a `Give` and a `Swap` all move the card, so each is refused; `Bury`
-  * ignores locked and is never refused. A facedown card has no restrictions,
+  * ignores locked and is never refused. A discard that buries
+  * (`Discard.Buried`) is a discard, so it is refused. A facedown card has no restrictions,
   * and a card in a hand or a deck is not in play.
   *
   * `asIf` are the rules that lock cards for some players only. A lock-icon
@@ -48,7 +49,11 @@ object LockedCards:
     * moves it. A flip names nobody: no rule flips a card at a site. */
   private def touched(operation: CoreOperation)
       : Vector[(CardId, Location, Option[PlayerId])] =
-    Operation.flatten(operation).collect {
+    val discardedUnder = operation match
+      case buried: Discard.Buried =>
+        Vector((buried.card.id, buried.from.location, buried.by))
+      case _ => Vector.empty
+    discardedUnder ++ Operation.flatten(operation).collect {
       case move @ Move(Piece.Card(moved), from, _, _, _) =>
         (moved, from.location, move.by)
       case Flip(flipped, at, _) => (flipped, at, None)
