@@ -68,8 +68,7 @@ class CardFaceSuite extends munit.FunSuite:
     val marker = firstMatch(CardFace.render(tracker),
       ".card-tokens .card-tracking.force-red")
     assertEquals(marker.map(_.getAttribute("data-tip")), Some("Tracking Red"))
-    assertEquals(marker.map(_.getAttribute("aria-label")),
-      Some("Tracking Red"))
+    assertEquals(marker.map(_.getAttribute("aria-hidden")), Some("true"))
 
   test("a face carries its initials for the zoomed-out map, out of the accessible name"):
     val node = CardFace.render(faceUp)

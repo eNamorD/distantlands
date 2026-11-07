@@ -162,10 +162,12 @@ private[frontend] object CardFace:
       tokens.appendChild(group)
     }
     // The pawn a Tracker's holder chose last turn, in its player's colour.
+    // A button's children are presentational, so the marker is hidden from
+    // assistive technology and the overlay's Tracking row carries it.
     card.tracking.foreach { tracked =>
       val node = text("span", s"card-tracking force-${tracked.color.key}",
         "●")
-      node.setAttribute("aria-label", tracked.label)
+      node.setAttribute("aria-hidden", "true")
       HoverTip.set(node, tracked.label)
       tokens.appendChild(node)
     }

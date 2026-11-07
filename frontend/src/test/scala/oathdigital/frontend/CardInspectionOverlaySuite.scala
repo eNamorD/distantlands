@@ -107,6 +107,16 @@ class CardInspectionOverlaySuite extends munit.FunSuite:
     assertEquals(firstMatch(details, ".card-overlay-property dt")
       .map(_.textContent), Some("Suit"))
 
+  test("a Tracker's chosen pawn gets a Tracking row naming its colour"):
+    val MountedOverlay(root, overlay) = mountedOverlay()
+    overlay.show(card.copy(tracking = Some(
+      oathdigital.protocol.projection.TrackedPawnProjection("p2",
+        oathdigital.model.PlayerColor.Red, "Tracking Red"))),
+      focusableOpener())
+    val rows = all(root, ".card-overlay-property").map(row =>
+      (row.querySelector("dt").textContent, row.querySelector("dd").textContent))
+    assert(rows.contains("Tracking" -> "Red"), rows)
+
   test("an unrestricted card gets no Restrictions row"):
     val MountedOverlay(root, overlay) = mountedOverlay()
     overlay.show(card.copy(restrictions = Some("unrestricted")),

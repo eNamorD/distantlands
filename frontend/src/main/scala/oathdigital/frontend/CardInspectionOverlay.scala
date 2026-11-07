@@ -187,7 +187,10 @@ private[frontend] final class CardInspectionOverlay(root: dom.Element):
       Option.when(card.favor > 0)("Favor" -> card.favor.toString),
       Option.when(card.secrets > 0)("Secrets" -> card.secrets.toString),
       card.relicValue.map(v => "Relic value" -> v.toString),
-      card.defense.map(v => "Defense" -> v.toString)).flatten.foreach:
+      card.defense.map(v => "Defense" -> v.toString),
+      // The face's pawn marker is decoration; the record is read here.
+      card.tracking.map(tracked =>
+        "Tracking" -> tracked.color.key.capitalize)).flatten.foreach:
       case (label, value) =>
         val item = element("div", "card-overlay-property")
         item.appendChild(text("dt", "", label))

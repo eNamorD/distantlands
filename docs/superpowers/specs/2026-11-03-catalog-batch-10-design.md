@@ -635,7 +635,8 @@ write it, and are journalled, so replay rebuilds it.
 The projection hangs the record on the Tracker card
 (`CardDetailsProjection.tracking`), for every viewer, since the choice was
 open. The frontend draws it as a pawn marker in the player's colour, with
-"Tracking Red" as its hover. A refusal reason is a plain string and names
+"Tracking Red" as its hover, and the card overlay lists it as a Tracking
+row, which screen readers reach. A refusal reason is a plain string and names
 no player.
 
 Tests: the Action ending Act and its record outliving the turn; enemies
@@ -660,7 +661,7 @@ the record cleared at Act; the primitives, codec, replay and projection.
 | Banner question under the picks, `ChallengeReach` | 11 | four Challenge modifiers |
 | A power's card play: `Origin.DiscardPile`, `byPower` | 12 | Search Party |
 | Askable Act options: `PhaseMenu.menuPick`, `consentAnswers` | 13 | both Patrols |
-| `trackedPawns` | 14 | Tracker |
+| `trackedPawns`, `CardDetailsProjection.tracking` | 14 | Tracker |
 
 ## Testing
 

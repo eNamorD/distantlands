@@ -31,6 +31,14 @@ class TrackerProjectionSuite extends munit.FunSuite:
         Some(TrackedPawnProjection(p2.value, color,
           s"Tracking ${color.key.capitalize}"))))
 
+  test("a facedown Tracker hidden from p2 keeps its record hidden too"):
+    val ready = Table.start.adviser(p1, TrackerCard.id, facedown = true)
+      .trackedPawn(p1, p2).ready
+    val advisers = presentation.playerBoards(ready, Some(p2))
+      .find(_.playerId == p1.value).get.advisers
+    assert(advisers.nonEmpty)
+    assert(advisers.forall(_.tracking.isEmpty), advisers)
+
   test("a Tracker with no record shows none"):
     val ready = Table.start.adviser(p1, TrackerCard.id).ready
     assertEquals(trackerOfP1(ready, p1).tracking, None)
