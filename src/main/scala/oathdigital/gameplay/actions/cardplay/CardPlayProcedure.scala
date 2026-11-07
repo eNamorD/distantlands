@@ -31,7 +31,14 @@ import oathdigital.model._
   * The headings name neither the card nor the site; the projector does.
   */
 object CardPlayProcedure:
-  enum Origin { case TemporaryHand, FacedownAdviser }
+  /** Where the played card is: a Search's temporary hand, the actor's
+    * facedown advisers, or a regional discard pile (Search Party, catalog
+    * batch 10, slice 12). A card played from a pile never passes through
+    * the temporary hand, which an enclosing Search reads on a one-card
+    * draw. */
+  enum Origin:
+    case TemporaryHand, FacedownAdviser
+    case DiscardPile(region: Region)
 
   /** How a placement answer plays the card, for the readers that name a play
     * by what it does rather than by its option: the Game Log, and tests. A
@@ -243,6 +250,8 @@ object CardPlayProcedure:
     case Origin.TemporaryHand =>
       ready.game.current.temporaryHands.getOrElse(actor, Vector.empty).contains(card)
     case Origin.FacedownAdviser => facedownAdvisers(ready, actor).contains(card)
+    case Origin.DiscardPile(region) =>
+      ready.game.current.commonCards.discard(region).contains(card)
 
   def build(catalog: ExecutableCatalog, ready: ReadyGame, actor: PlayerId,
       card: WorldCardId, origin: Origin): Either[OathViolation, Operation] =
@@ -316,6 +325,7 @@ object CardPlayProcedure:
   private def cardPlayOrigin(origin: Origin): CardPlay.Origin = origin match
     case Origin.TemporaryHand => CardPlay.Origin.TemporaryHand
     case Origin.FacedownAdviser => CardPlay.Origin.FacedownAdviser
+    case Origin.DiscardPile(region) => CardPlay.Origin.DiscardPile(region)
 
   private def childrenFor(catalog: ExecutableCatalog, ready: ReadyGame,
       actor: PlayerId, card: WorldCardId, origin: Origin,

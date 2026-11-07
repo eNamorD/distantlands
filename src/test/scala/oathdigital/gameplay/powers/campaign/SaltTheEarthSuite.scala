@@ -1,13 +1,12 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.holding.SearchPartyCard
 import oathdigital.gameplay.powers.setup.GreatClockCard
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.action.DowsingSticksCard
 import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.powers.whenplayed.RoyalTaxCard
+import oathdigital.gameplay.powers.whenplayed.{RoyalTaxCard, SearchPartyCard}
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseAmountAnswer
 import oathdigital.testkit.Look

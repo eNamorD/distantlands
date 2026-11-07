@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.holding.SearchPartyCard
+import oathdigital.gameplay.powers.whenplayed.SearchPartyCard
 import oathdigital.gameplay.actions.challenge.MagiciansCodeCard
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds

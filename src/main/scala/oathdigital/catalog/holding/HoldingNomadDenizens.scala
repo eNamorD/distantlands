@@ -16,13 +16,6 @@ object VowOfKinshipCard extends Denizen(DenizenId("152"), "Vow of Kinship", Suit
       "your board.")
   val powers: Vector[PrintedPower] = Vector(power)
 
-object SearchPartyCard extends Denizen(DenizenId("240"), "Search Party", Suit.Nomad):
-  val power = PrintedPower(PowerId("denizen.search-party"),
-    persistent = false, cost = Cost.free,
-    text = "**WHEN PLAYED,** peek at the bottom 3 cards of a discard " +
-      "pile and play one as if you searched. _Return the rest._")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object TravelingNegotiatorCard extends Denizen(DenizenId("242"), "Traveling Negotiator", Suit.Nomad) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.traveling-negotiator"),
     persistent = false, cost = Cost.free,

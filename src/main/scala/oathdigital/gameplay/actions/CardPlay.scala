@@ -19,7 +19,12 @@ import oathdigital.model._
   * the pile after the pawn's.
   */
 object CardPlay:
-  enum Origin { case FacedownAdviser, TemporaryHand }
+  /** Where a played card comes from: the actor's facedown advisers, a
+    * Search's temporary hand, or a regional discard pile, which Search
+    * Party plays from (catalog batch 10, slice 12). */
+  enum Origin:
+    case FacedownAdviser, TemporaryHand
+    case DiscardPile(region: Region)
 
   /** The suit whose Homeland `site` is, as the site prints it (CR p. 31). */
   def homelandSuit(catalog: ExecutableCatalog, site: SiteId): Option[Suit] =
@@ -77,10 +82,12 @@ object CardPlay:
       case Origin.TemporaryHand =>
         PositionedLocation(Location.Hand(player))
       case Origin.FacedownAdviser => PositionedLocation(Location.PlayArea(player))
+      case Origin.DiscardPile(region) =>
+        PositionedLocation(Location.RegionalDiscard(region))
 
   private def validateOrigin(player: PlayerState, card: WorldCardId,
       origin: Origin): Either[OathViolation, Unit] = origin match
-    case Origin.TemporaryHand => Right(())
+    case Origin.TemporaryHand | _: Origin.DiscardPile => Right(())
     case Origin.FacedownAdviser =>
       player.advisers.find(_.id == card).filter {
         case DenizenState(_, Orientation.FaceDown, _) => true
@@ -176,14 +183,15 @@ object CardPlay:
       Either.cond(orientation == Orientation.FaceUp && replace.isEmpty,
         revealed(player, origin, id), InvalidSearchPlacement(
           "facedown adviser must be played faceup to advisers or the pawn's site"))
-    case Origin.TemporaryHand if orientation == Orientation.FaceUp =>
+    case Origin.TemporaryHand | _: Origin.DiscardPile
+        if orientation == Orientation.FaceUp =>
       // The displacement is forced: a player has at most one revealed Vision.
       // An answer that names it is still accepted.
       val expected = player.revealedVision.map(_.id)
       Either.cond(replace.isEmpty || replace == expected,
         revealed(player, origin, id),
         InvalidSearchPlacement("a Vision replaces only the revealed Vision"))
-    case Origin.TemporaryHand =>
+    case Origin.TemporaryHand | _: Origin.DiscardPile =>
       adviserHeld(player, replace).map(removed => PlacementPlan(
         Some(Play(id, keptSource(origin, player.player),
           Location.PlayArea(player.player), Orientation.FaceDown,

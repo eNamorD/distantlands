@@ -53,11 +53,11 @@ class ConspiracyWhenPlayedSuite extends munit.FunSuite:
     .pawn(p2, BrokenPeaksSite)
 
   private def treeFor(f: Staged): Operation = accepted(f.origin match {
-    case CardPlayProcedure.Origin.TemporaryHand =>
-      CardPlayProcedure.build(catalog, f.ready, p1, conspiracy, f.origin)
     case CardPlayProcedure.Origin.FacedownAdviser =>
       CardPlayProcedure.rebuildFacedown(catalog, f.ready, p1,
         Vector(DecisionOptionRef.Vision(conspiracy)))
+    case _ =>
+      CardPlayProcedure.build(catalog, f.ready, p1, conspiracy, f.origin)
   })
 
   private def answer(f: Staged, tree: Operation, at: PendingTree, id: String,

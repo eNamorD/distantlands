@@ -3,7 +3,6 @@ denizen.deed-writer
 denizen.false-prophet
 denizen.master-of-disguise
 denizen.reliquary-raid
-denizen.search-party
 denizen.the-gathering
 denizen.tracker
 denizen.traveling-negotiator

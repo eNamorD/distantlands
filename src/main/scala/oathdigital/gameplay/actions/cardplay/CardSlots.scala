@@ -342,7 +342,7 @@ object CardSlots:
       origin: CardPlay.Origin, rules: CardPlayRules)
       : Vector[(DecisionOption, SearchPlacement)] = origin match
     case CardPlay.Origin.FacedownAdviser => Vector.empty
-    case CardPlay.Origin.TemporaryHand =>
+    case CardPlay.Origin.TemporaryHand | _: CardPlay.Origin.DiscardPile =>
       adviserSlots(player, card, origin, Orientation.FaceDown, rules)
 
   private def adviserSlots(player: PlayerState, card: WorldCardId,
@@ -368,7 +368,7 @@ object CardSlots:
           if !rules.fits(after) then Vector.empty
           else Vector(noted(slot(own), after) ->
             SearchPlacement.Adviser(orientation, None))
-      case CardPlay.Origin.TemporaryHand =>
+      case CardPlay.Origin.TemporaryHand | _: CardPlay.Origin.DiscardPile =>
         val added = faces :+ played
         if rules.fits(added) then Vector(noted(slot(held.size), added) ->
           SearchPlacement.Adviser(orientation, None))

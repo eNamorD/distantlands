@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.campaign
 
-import oathdigital.catalog.holding.{SearchPartyCard, TheGatheringCard,
-  VowOfKinshipCard}
+import oathdigital.catalog.holding.{TheGatheringCard, VowOfKinshipCard}
+import oathdigital.gameplay.powers.whenplayed.SearchPartyCard
 import oathdigital.gameplay.PledgeToDiscordCard
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.actions.campaign.CampaignIds
