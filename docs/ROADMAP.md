@@ -85,7 +85,6 @@ section describes each seam below in a paragraph.
 - **Vision collection:** Desecrated Ground.
 - **As-if ruler:** Bandit Crown, Grand Mask.
 - **Favor source redirection:** Vow of Kinship.
-- **An askable Act action:** consent for Relic Patrols and Bandit Patrols.
 - **Unchanged from batch 8:** Master of Disguise (acting as another
   player's advisers), Tracker and False Prophet (a player-aware off-turn
   card play).
@@ -374,8 +373,7 @@ as current.
   Recover would declare Continue unavailable without Supply, with a hover
   reason, and word its two buttons; its relic step draws card faces with
   "Take facedown", which no generic panel draws. Named open by the
-  2026-09-24 parked-decision route design. Wait for catalog batch 10 slices
-  8 (rewrites `RecoverProcedure`) and 13 (makes Recover askable).
+  2026-09-24 parked-decision route design.
 - [ ] **Declare a decision's subject card.** `WalkerDecisionProjector`
   re-spells four `cardplay.*` prefixes that `CardPlayProcedure` keeps
   private, and the game log spells them again in `LogWords.subjectCard`, to

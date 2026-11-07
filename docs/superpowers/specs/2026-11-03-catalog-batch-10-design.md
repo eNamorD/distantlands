@@ -1,6 +1,6 @@
 # Catalog Batch 10: Engine Seams
 
-**Status:** designed 2026-11-03. Slices 1 to 12 landed.
+**Status:** designed 2026-11-03. Slices 1 to 13 landed.
 
 **Builds on** [Catalog batch 9](2026-11-02-catalog-batch-9-design.md) and
 [batch 8](2026-10-12-catalog-batch-8-design.md), whose vocabulary, cost
@@ -579,21 +579,32 @@ wire.
 
 ## Slice 13: Askable Act action
 
-`PatrolRule` gets a `Waiver` whose granter is the face's player ruler;
-bandits never consent.
+`PatrolRule`'s restriction gets a `Waiver` whose granter is the player who
+rules the face's site; bandits never consent. Each face declares the
+menu's reason while its ruler may be asked: "Cannot recover relics at its
+ruler's sites without ruler's consent." and "Cannot recover relics at
+bandit sites without ruler's consent."
 
-`PhaseMenu.offers` shows a refused Act
-option as `OptionReason.Askable` when every breach is waivable, through a
-`QueuedStart` helper over `waivableBreaches`, keyed on
-`ConsentKey(power, actor, "phase.menu", offer.ref)`.
-`OathRulesWalker.consentAsk` asks the granter as today, and
-`queuedAnswers` treats a start from the menu as the answered `phase.menu`
-choice, so the started Recover finds the grant, which lasts the turn. Any
-other Act refusal that carries a `Waiver` becomes askable the same way.
+`PhaseMenu.offers` shows a refused Act option as `OptionReason.Askable`
+when `QueuedStart.waiting` finds that grants would let it start, and with
+the plain reason once a granter refused this turn. The grants are keyed on
+`ConsentKey(power, actor, "phase.menu", offer.ref)`: `PhaseMenu.menuPick`
+reads the open walk's entry (no source, no sender, an Act offer's
+procedure and arguments) as its actor's answer to the menu, and
+`WalkerProcedureRegistry.consentAnswers` adds it to the queued answers
+that `waived` and `QueuedStart.waiting` search. `gatesStart` still reads
+`queuedAnswers` alone, so the menu pick leaves the playable-option gate
+on. `walkerEntry` lasts the walk, so the started Recover finds the grant on
+every resume, and the grant lasts the turn. `OathRulesWalker.consentAsk`
+reads an option inside the menu's band, and the consent service then asks
+the granter and, on a grant, answers the menu with the pick. Any other Act
+refusal that carries a `Waiver` becomes askable the same way.
 
 Tests: Recover askable under Relic Patrols and under player-ruled Bandit
-Patrols; granted, refused and remembered for the turn; not askable when
-bandits rule the face; Narrow Pass's travel consent unchanged.
+Patrols; granted, refused and forgotten on another turn; not askable when
+bandits rule the face; the request, its line, Yes and No through the
+service; the menu pick and the start gate; Narrow Pass's travel consent
+unchanged.
 
 ## Slice 14: Memory across turns
 
@@ -638,7 +649,7 @@ lost before Wake; codec; replay.
 | `CardGathering` rename | 10 | Autumn Wind, the Chronicle |
 | Banner question under the picks, `ChallengeReach` | 11 | four Challenge modifiers |
 | A power's card play: `Origin.DiscardPile`, `byPower` | 12 | Search Party |
-| Askable Act options | 13 | both Patrols |
+| Askable Act options: `PhaseMenu.menuPick`, `consentAnswers` | 13 | both Patrols |
 | `trackedPawns` | 14 | Tracker |
 
 ## Testing

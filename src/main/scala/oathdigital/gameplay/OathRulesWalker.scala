@@ -185,7 +185,9 @@ private[gameplay] trait OathRulesWalker:
   /** The ask a consent request for `target` sends (consent design,
     * "Commands"). `target` must be an askable option of the parked
     * `decisionId`, which `requester` owns; the look-ahead decided that, so
-    * nothing here re-derives who may consent. */
+    * nothing here re-derives who may consent. A banded option is read
+    * inside its band, as the phase menu's are (catalog batch 10, slice
+    * 13). */
   def consentAsk(state: OathState, requester: PlayerId, decisionId: String,
       target: DecisionOptionRef)
       : Either[OathViolation, OptionReason.Askable] =
@@ -194,7 +196,7 @@ private[gameplay] trait OathRulesWalker:
         walkerCall(Right(ProcedureWalker.openDecision(ready, tree, pending,
           powers, decisionId))).flatMap(decide => decide
           .filter(_.owner == requester)
-          .flatMap(found => offered(found).collectFirst {
+          .flatMap(found => offered(found).map(unbanded).collectFirst {
             case DecisionOption.Unavailable(option,
                 ask: OptionReason.Askable) if option.ref == target => ask
           })
@@ -288,6 +290,11 @@ private[gameplay] trait OathRulesWalker:
     }
 
   /** The options of a choose-one or a choose-many, as offered. */
+  /** `option` without the band a menu wraps it in. */
+  private def unbanded(option: DecisionOption): DecisionOption = option match
+    case DecisionOption.Grouped(inner, _) => unbanded(inner)
+    case other => other
+
   private def offered(decide: Decide): Vector[DecisionOption] =
     decide.query match
       case one: DecisionQuery.ChooseOne => one.options
