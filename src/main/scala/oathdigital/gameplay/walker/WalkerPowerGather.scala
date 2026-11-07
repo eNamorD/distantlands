@@ -363,10 +363,10 @@ private[walker] object WalkerPowerGather:
     * ledger check"): the restriction is waivable, and a decision of this
     * walk was answered with an option its answerer was granted this turn.
     * A queued entry's start arguments count as answers, by the procedure
-    * that reads them. A walk sent by the restriction's granter is not
-    * blocked by it (catalog batch 8, slice 15). Every caller of the tree
-    * check passes through here, so the walk, the search and the previews
-    * agree. */
+    * that reads them, and so does the menu pick that queued it. A walk sent
+    * by the restriction's granter is not blocked by it (catalog batch 8,
+    * slice 15). Every caller of the tree check passes through here, so the
+    * walk, the search and the previews agree. */
   private def waived(power: PowerId, restriction: Restriction,
       ctx: PowerCtx): Boolean =
     restriction.waiver.exists { waiver =>
@@ -374,7 +374,7 @@ private[walker] object WalkerPowerGather:
       val granter = waiver.granter(ctx.state)
       val sent = granter.exists(by => ctx.state.game.current.walkerEntry
         .exists(_.sender.contains(by)))
-      sent || (ctx.answered ++ WalkerProcedureRegistry.queuedAnswers(
+      sent || (ctx.answered ++ WalkerProcedureRegistry.consentAnswers(
           ctx.state)).exists:
         case Answered(decisionId, DecisionAnswer.ChooseOneAnswer(target),
             by) =>

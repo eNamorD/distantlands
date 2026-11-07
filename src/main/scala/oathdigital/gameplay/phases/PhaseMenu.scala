@@ -4,7 +4,7 @@ import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.phases.rest.FinishRestProcedure
 import oathdigital.gameplay.operations.PowerUseRules
 import oathdigital.gameplay.phases.wake.TakeWealthProcedure
-import oathdigital.gameplay.powerresolver.PhasePowers
+import oathdigital.gameplay.powerresolver.{PhasePowers, QueuedStarts}
 import oathdigital.gameplay.walker.{ProcedureStart, QueuedStart,
   WalkerPowers}
 import oathdigital.model._
@@ -34,7 +34,10 @@ import oathdigital.model._
   * accessible source of each power the player may choose in this phase.
   *
   * Each available option carries what its start costs, and each unavailable
-  * one why it cannot start (slice 4, plan-time rulings 2 and 3).
+  * one why it cannot start (slice 4, plan-time rulings 2 and 3). An Act
+  * action only waivable restrictions refuse is askable of their granters,
+  * and a grant is keyed on its pick (`menuPick`; catalog batch 10, slice
+  * 13).
   */
 object PhaseMenu:
   val decisionId: String = "phase.menu"
@@ -82,6 +85,20 @@ object PhaseMenu:
       .orElse(ActOffers.all.find(offer => offer.procedure == procedure &&
         offer.args == args).map(_.ref))
 
+  /** The menu pick that queued the open walk's entry, as its actor's answer
+    * to the menu (catalog batch 10, slice 13): a grant for an Act action
+    * the menu showed askable is keyed on it, and the started action finds
+    * the grant under it. Only the menu queues an entry with no source and
+    * no sender, and only an Act action's pick counts. */
+  def menuPick(state: ReadyGame): Option[Answered] = for
+    entry <- state.game.current.walkerEntry
+    if entry.source.isEmpty && entry.sender.isEmpty &&
+      entry.kind == QueueKind.Run
+    offer <- ActOffers.all.find(offer => offer.procedure == entry.procedure &&
+      offer.args == entry.startArgs)
+  yield Answered(decisionId, DecisionAnswer.ChooseOneAnswer(offer.ref),
+    entry.actor)
+
   /** One option of a menu: the entry its pick queues, as the player sees
     * it. */
   final case class Offered(entry: QueuedProcedure, option: DecisionOption)
@@ -104,8 +121,10 @@ object PhaseMenu:
           case Right(cost) =>
             cost.words.fold(shown)(DecisionOption.Badged(shown, _))
           case Left(violation) => DecisionOption.Unavailable(shown,
-            OptionReason.Written(QueuedStart.needs(catalog, ready, entry,
-              walking, judging).getOrElse(reason(procedure, violation)))),
+            QueuedStart.waiting(catalog, ready, entry, walking, judging)
+              .flatMap(askFor(ready, _)).getOrElse(OptionReason.Written(
+                QueuedStart.needs(catalog, ready, entry, walking, judging)
+                  .getOrElse(reason(procedure, violation))))),
         group))
     val wealth: Vector[Offered] =
       if menu != Menu.Wake then Vector.empty
@@ -160,6 +179,22 @@ object PhaseMenu:
     (wealth ++ acting ++ used).distinctBy(_.option.ref) :+ offered(
       menu.ending, Vector.empty, DecisionOption.Button(menu.endingOption,
         endingLabel(menu, ready, actor)), OptionGroup.Ending)
+
+  /** The ask for a start only waivable restrictions refuse (catalog batch
+    * 10, slice 13): each granter still to answer, about their powers,
+    * covering the grants the started walk looks up. `None` once a granter
+    * refused this turn, so the option shows its plain reason. */
+  private def askFor(ready: ReadyGame, needed: Vector[QueuedStarts.Needed])
+      : Option[OptionReason.Askable] =
+    val turn = ConsentTurn.of(ready)
+    def answer(one: QueuedStarts.Needed) =
+      ready.consent.answer(one.key, Some(one.granter), turn)
+    val pending = needed.filterNot(answer(_).contains(ConsentAnswer.Granted))
+    if needed.exists(answer(_).contains(ConsentAnswer.Refused)) then None
+    else pending.headOption.map(first => OptionReason.Askable(first.power,
+      first.asked, pending.map(_.granter).distinct.map(granter =>
+        ConsentAsk(granter, pending.filter(_.granter == granter)
+          .map(_.power).distinct)), pending.map(_.key)))
 
   /** "End Act and Rest (+5 Supply)": what Rest would return, as the old
     * button said. Any other ending, or a Rest that cannot price it, is

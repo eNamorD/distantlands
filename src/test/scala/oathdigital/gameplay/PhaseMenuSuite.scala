@@ -17,8 +17,8 @@ import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,
   Transform}
-import oathdigital.gameplay.walker.{ProcedureDequeued, WalkerCompleted,
-  WalkerPowers}
+import oathdigital.gameplay.walker.{ProcedureDequeued, QueuedStart,
+  WalkerCompleted, WalkerPowers, WalkerProcedureRegistry}
 import oathdigital.model._
 import oathdigital.testkit.{Look, MenuPlay, Outcomes, PowerRules, Refusals,
   Table}
@@ -335,3 +335,26 @@ class PhaseMenuSuite extends munit.FunSuite:
     assertEquals(MenuPlay.picked(rules, resting.phaseMenuParked.state, p1,
       act(ActionRef.Search)).left.toOption, refused)
 
+  /** An entry the Act menu queues for `procedure`: no source, no
+    * sender. */
+  private def menuEntry(procedure: ActionRef): QueuedProcedure =
+    QueuedProcedure(p1, procedure, Vector.empty, None, QueueKind.Run)
+
+  test("a menu pick is its actor's answer to the menu, for consent alone"):
+    val ready = Table.start.ready
+    val recover = QueuedStart.startingFrom(ready, menuEntry(ActionRef.Recover))
+    assertEquals(PhaseMenu.menuPick(recover), Some(Answered(
+      PhaseMenu.decisionId, DecisionAnswer.ChooseOneAnswer(
+        DecisionOptionRef.Button(ActionRef.Recover.key)), p1)))
+    assertEquals(WalkerProcedureRegistry.consentAnswers(recover),
+      PhaseMenu.menuPick(recover).toVector)
+    // A power's queued entry is no pick.
+    val sent = QueuedStart.startingFrom(ready, menuEntry(ActionRef.Recover)
+      .copy(source = Some(PowerSourceRef.Card(WrestlersCard.id))))
+    assertEquals(PhaseMenu.menuPick(sent), None)
+
+  test("a menu pick leaves the playable-option gate on"):
+    val search = QueuedStart.startingFrom(Table.start.ready,
+      menuEntry(ActionRef.Search))
+    assert(PhaseMenu.menuPick(search).nonEmpty)
+    assert(WalkerProcedureRegistry.gatesStart(ActionRef.Search, search))

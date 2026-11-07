@@ -500,6 +500,14 @@ object WalkerProcedureRegistry:
       case Some(ActionRef.Travel) => TravelProcedure.queuedAnswers(state)
       case _ => Vector.empty
 
+  /** The answers a grant may be keyed on beyond the walk's own: the queued
+    * entry's (`queuedAnswers`), then the menu pick that queued it
+    * (`PhaseMenu.menuPick`, catalog batch 10, slice 13). Only consent reads
+    * the pick. The start gate reads `queuedAnswers` alone, since a pick
+    * answers no decision the gated walk previews. */
+  def consentAnswers(state: ReadyGame): Vector[Answered] =
+    queuedAnswers(state) ++ PhaseMenu.menuPick(state)
+
   /** The start facts `procedure` derives at a fresh start, empty for one that
     * declares none. */
   def startFacts(procedure: ProcedureRef, catalog: ExecutableCatalog,
