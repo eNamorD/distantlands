@@ -6,7 +6,7 @@ import oathdigital.model._
 /** Declared End Wake procedure tree for the walker (batch 1, Task 7).
   *
   * {{{
-  * Sequence(EnterPhase(Act))                          // no window
+  * Sequence(EnterPhase(Act), ClearTrackedPawn?)       // no window
   * }}}
   *
   * **This is not an action, and the walker does not need it to be.** Ending
@@ -27,10 +27,14 @@ import oathdigital.model._
   * **No window.** A `Sequence` with no window gathers no contributions, which
   * is the honest statement for a tree nothing can modify. Declaring a window
   * here would invite powers to transform a phase change.
+  *
+  * **A Tracker's record ends here** (catalog batch 10, slice 14). The
+  * actor's Act phase begins, so the pawn they chose last turn is
+  * forgotten, used or not. Only the actor's own record is cleared.
   */
 object EndWakeProcedure:
 
-  /** Fresh start and resume build the same tree. End Wake declares one leaf,
+  /** Fresh start and resume build the same tree. End Wake declares at most two leaves,
     * so it finishes inside the command that starts it and a resume never
     * reaches this.
     */
@@ -39,4 +43,6 @@ object EndWakeProcedure:
     _ <- Either.cond(args.isEmpty, (), OathViolation.InvalidEventOrder(
       "ending Wake selects nothing, got " +
         args.map(ref => s"${ref.kind}/${ref.wireId}").mkString(", ")))
-  yield Sequence(Vector(EnterPhase(Phase.Act)))
+  yield Sequence(Vector[Operation](EnterPhase(Phase.Act)) ++
+    Option.when(state.game.current.trackedPawns.contains(actor))(
+      ClearTrackedPawn(actor)))

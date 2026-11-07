@@ -12,14 +12,6 @@ object ReliquaryRaidCard extends Denizen(DenizenId("220"), "Reliquary Raid", Sui
     text = "**WHEN PLAYED,** take a random relic from the Reliquary.")
   val powers: Vector[PrintedPower] = Vector(power)
 
-object TrackerCard extends Denizen(DenizenId("221"), "Tracker", Suit.Discord) with AdviserOnly:
-  val power = PrintedPower(PowerId("denizen.tracker"),
-    persistent = false, cost = Cost.free,
-    text = "**ACTION:** Choose an enemy pawn at your site and end your " +
-      "Act Phase. **WAKE:** If you chose a pawn last turn, you may " +
-      "place your pawn at their site.")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object FalseProphetCard extends Denizen(DenizenId("85"), "False Prophet", Suit.Discord) with Locked with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.false-prophet"),
     persistent = false, cost = Cost.free,

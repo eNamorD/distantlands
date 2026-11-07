@@ -4,7 +4,6 @@ denizen.false-prophet
 denizen.master-of-disguise
 denizen.reliquary-raid
 denizen.the-gathering
-denizen.tracker
 denizen.traveling-negotiator
 denizen.vow-of-kinship
 edifice.e04.intact
