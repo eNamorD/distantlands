@@ -161,6 +161,14 @@ private[frontend] object CardFace:
       counted("warband", forces.count).foreach(group.appendChild)
       tokens.appendChild(group)
     }
+    // The pawn a Tracker's holder chose last turn, in its player's colour.
+    card.tracking.foreach { tracked =>
+      val node = text("span", s"card-tracking force-${tracked.color.key}",
+        "●")
+      node.setAttribute("aria-label", tracked.label)
+      HoverTip.set(node, tracked.label)
+      tokens.appendChild(node)
+    }
     // Defense is rolled against, so it is drawn as the dice that roll it. It
     // rides the header's right end rather than floating over the corner: a
     // name long enough to wrap would otherwise run under the dice. The

@@ -1,6 +1,6 @@
 # Catalog Batch 10: Engine Seams
 
-**Status:** designed 2026-11-03. Slices 1 to 13 landed.
+**Status:** designed 2026-11-03. Slices 1 to 14 landed.
 
 **Builds on** [Catalog batch 9](2026-11-02-catalog-batch-9-design.md) and
 [batch 8](2026-10-12-catalog-batch-8-design.md), whose vocabulary, cost
@@ -615,26 +615,33 @@ Tracker's power ids split into `denizen.tracker.action` and
 `denizen.tracker.wake`, as Obsidian Cage's are.
 
 `CurrentGameState` gains `trackedPawns: Map[PlayerId, PlayerId]`, keyed by
-the Tracker's holder, with primitives `TrackPawn` and `ClearTrackedPawn`,
-their codec entries and replay.
+the Tracker's holder. The primitives `TrackPawn` and `ClearTrackedPawn`
+write it, and are journalled, so replay rebuilds it.
 
-- **Action.** Free. The user picks an enemy pawn at their site (the action
-  is available only when one is there), records `TrackPawn`, then
-  `EnterPhase(Rest)`. Line: "Tracked {Red}."
-- **Wake.** An optional `PhasePower` (`forced = false`, ruling 6), usable
-  while the user holds Tracker faceup and has a record. It places the pawn
-  at the target's current site with `PawnMoves.relocate`, as Passages does;
-  unavailable with a reason when the user is already there. Line: "{Blue}
-  placed at {site}."
-- **Clear.** When the holder enters their Act phase, `ClearTrackedPawn`
-  removes their record, used or not.
+- **Action.** Free. The user picks an enemy pawn at their site
+  (`Imperials.enemies`), records `TrackPawn`, then `EnterPhase(Rest)`.
+  With no enemy pawn there, the menu shows "No valid enemy pawn". Line:
+  "Tracked {Red}." No phase-end line, since log lines name no actor.
+- **Wake.** An optional `PhasePower` (ruling 6), usable while the user
+  holds Tracker faceup and has a record. It places the pawn at the
+  target's current site with `PawnMoves.relocate`, as Passages does. It is
+  unavailable with "No pawn was chosen last turn" or "Already at the
+  chosen pawn's site". Line: "{Blue} placed at {site}."
+- **Clear.** End Wake, the only way into the Act phase, adds
+  `ClearTrackedPawn` for the actor's record, used or not. Once the Wake
+  power is spent and nothing else is offered, the Wake menu ends on its
+  own, so a used record is cleared at once.
 
-The projection shows a record publicly, since the choice was open; the Wake
-power's hover names the tracked player.
+The projection hangs the record on the Tracker card
+(`CardDetailsProjection.tracking`), for every viewer, since the choice was
+open. The frontend draws it as a pawn marker in the player's colour, with
+"Tracking Red" as its hover. A refusal reason is a plain string and names
+no player.
 
-Tests: the Action ending Act; the Wake power offered and optional; the
-pawn placed at a moved target's site; the record cleared at Act; Tracker
-lost before Wake; codec; replay.
+Tests: the Action ending Act and its record outliving the turn; enemies
+only; the Wake power offered, optional and placing the pawn at a moved
+target's site; both Wake reasons; Tracker lost or facedown before Wake;
+the record cleared at Act; the primitives, codec, replay and projection.
 
 ## Seams opened
 

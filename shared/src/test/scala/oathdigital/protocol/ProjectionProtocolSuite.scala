@@ -176,6 +176,12 @@ class ProjectionProtocolSuite extends munit.FunSuite:
     assertRoundTrips(projection.copy(playerBoards = projection.playerBoards
       .map(_.copy(relics = Vector(cage)))))
 
+  test("a Tracker's chosen pawn on a held adviser round-trips"):
+    val tracker = known.copy(tracking = Some(TrackedPawnProjection("p2",
+      PlayerColor.Red, "Tracking Red")))
+    assertRoundTrips(projection.copy(playerBoards = projection.playerBoards
+      .map(_.copy(advisers = Vector(tracker)))))
+
   test("a board's bag figures and the Supply bands round-trip"):
     val withBag = projection.copy(
       playerBoards = projection.playerBoards.map(_.copy(bankedWarbands = 5,

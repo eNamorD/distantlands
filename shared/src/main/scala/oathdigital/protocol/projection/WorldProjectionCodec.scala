@@ -24,12 +24,14 @@ private[protocol] object WorldProjectionCodec:
     "relicValue" -> intOption(value.relicValue), "defense" -> intOption(value.defense),
     "hidden" -> value.hidden, "implemented" -> value.implemented,
     "powers" -> encoded(value.powers)(encodePowerFace),
-    "warbands" -> encoded(value.warbands)(encodeForces))
+    "warbands" -> encoded(value.warbands)(encodeForces),
+    "tracking" -> option(value.tracking)(encodeTracked))
   def decodeCard(raw: ujson.Value, path: String): Result[CardDetailsProjection] = for
     value <- obj(raw, path)
     _ <- exact(value, Set("cardId", "cardKind", "name", "suit", "restrictions",
       "rulesText", "orientation", "side", "favor", "secrets", "relicValue",
-      "defense", "hidden", "implemented", "powers", "warbands"), path)
+      "defense", "hidden", "implemented", "powers", "warbands", "tracking"),
+      path)
     cardId <- string(value, "cardId", path)
     kind <- string(value, "cardKind", path)
     name <- string(value, "name", path)
@@ -49,9 +51,22 @@ private[protocol] object WorldProjectionCodec:
     warbands <- default(value, "warbands", path,
       Vector.empty[SiteForcesProjection])((raw, child) =>
       array(raw, child).flatMap(traverse(_, child)(decodeForces)))
+    tracking <- optionalAbsent(value, "tracking", path)(decodeTracked)
   yield CardDetailsProjection(cardId, kind, name, suit, restrictions, rulesText,
     orientation, side, favor, secrets, relicValue, defense, hidden, implemented,
-    powers, warbands)
+    powers, warbands, tracking)
+
+  private def encodeTracked(value: TrackedPawnProjection): ujson.Value =
+    ujson.Obj("playerId" -> value.playerId, "colorToken" -> value.color.key,
+      "label" -> value.label)
+  private def decodeTracked(raw: ujson.Value, path: String)
+      : Result[TrackedPawnProjection] = for
+    value <- obj(raw, path)
+    _ <- exact(value, Set("playerId", "colorToken", "label"), path)
+    playerId <- string(value, "playerId", path)
+    color <- playerColor(value, "colorToken", path)
+    label <- string(value, "label", path)
+  yield TrackedPawnProjection(playerId, color, label)
 
   private def encodePowerFace(value: PowerFaceProjection): ujson.Value =
     ujson.Obj("text" -> value.text, "cost" -> encoded(value.cost)(ujson.Str(_)),

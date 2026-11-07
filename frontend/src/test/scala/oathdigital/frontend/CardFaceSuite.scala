@@ -1,6 +1,7 @@
 package oathdigital.frontend
 
 import Dom.{all, firstMatch}
+import oathdigital.protocol.projection.TrackedPawnProjection
 import org.scalajs.dom
 
 /** `CardFace` is the one place a projected `CardDetails` becomes DOM, so
@@ -59,6 +60,16 @@ class CardFaceSuite extends munit.FunSuite:
       .map(_.getAttribute("aria-label")), Vector("warband"))
     assertEquals(all(node, ".card-warbands .card-token-count")
       .map(_.textContent), Vector("2"))
+
+  test("a Tracker's chosen pawn shows on the card in its player's colour"):
+    val tracker = knowable.copy(orientation = Some("face-up"), tracking =
+      Some(TrackedPawnProjection("p2", oathdigital.model.PlayerColor.Red,
+        "Tracking Red")))
+    val marker = firstMatch(CardFace.render(tracker),
+      ".card-tokens .card-tracking.force-red")
+    assertEquals(marker.map(_.getAttribute("data-tip")), Some("Tracking Red"))
+    assertEquals(marker.map(_.getAttribute("aria-label")),
+      Some("Tracking Red"))
 
   test("a face carries its initials for the zoomed-out map, out of the accessible name"):
     val node = CardFace.render(faceUp)

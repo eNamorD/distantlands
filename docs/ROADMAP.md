@@ -86,8 +86,8 @@ section describes each seam below in a paragraph.
 - **As-if ruler:** Bandit Crown, Grand Mask.
 - **Favor source redirection:** Vow of Kinship.
 - **Unchanged from batch 8:** Master of Disguise (acting as another
-  player's advisers), Tracker and False Prophet (a player-aware off-turn
-  card play).
+  player's advisers) and False Prophet (a player-aware off-turn card
+  play).
 
 ### Phase - All-Exile alpha readiness
 

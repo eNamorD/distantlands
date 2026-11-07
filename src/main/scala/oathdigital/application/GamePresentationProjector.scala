@@ -5,6 +5,7 @@ import oathdigital.catalog.{AdviserOnly, ExecutableCatalog, Locked, ModifierMark
 import oathdigital.gameplay.PlayerSecretSummary
 import oathdigital.gameplay.phases.rest.FinishRestProcedure
 import oathdigital.gameplay.powers.{AdviserLimit, PlayerFacts, PowerImplementationStatus}
+import oathdigital.gameplay.powers.wake.TrackerWake
 import oathdigital.model._
 import oathdigital.protocol.projection._
 
@@ -172,11 +173,11 @@ private[application] final class GamePresentationProjector(
         player.advisers.map(card =>
           if identifies(card.id, adviserOrientation(card),
               PlayerCardArea.Advisers) then
-            withTokens(cardDetails(card.id, Some(adviserOrientation(card)),
-              hidden = false), card match {
+            withTracking(withTokens(cardDetails(card.id,
+              Some(adviserOrientation(card)), hidden = false), card match {
                 case value: DenizenState => value.tokens
                 case _ => Tokens.empty
-              })
+              }), ready, player.player, card.id)
           else hiddenCard(cardKind(card.id))),
         player.relics.map(card =>
           if identifies(card.id, card.orientation, PlayerCardArea.Relics) then
@@ -207,6 +208,17 @@ private[application] final class GamePresentationProjector(
         case (ForceKind.Bandit, count) =>
           Some(SiteForcesProjection.Bandit(count, "Bandit Warbands"))
       }.sortBy(_.label))
+
+  /** The pawn `holder` chose with the Tracker they hold, on that card
+    * (catalog batch 10, slice 14). The choice was made openly, so every
+    * viewer who sees the card sees it. */
+  private def withTracking(details: CardDetailsProjection, ready: ReadyGame,
+      holder: PlayerId, card: CardId): CardDetailsProjection =
+    TrackerWake.tracked(ready, holder, card).flatMap(target =>
+      ready.playerColors.get(target).map(color => details.copy(tracking =
+        Some(TrackedPawnProjection(target.value, color,
+          s"Tracking ${color.key.capitalize}")))))
+      .getOrElse(details)
 
   private def withTokens(details: CardDetailsProjection,
       tokens: Tokens): CardDetailsProjection =
