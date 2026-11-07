@@ -17,7 +17,7 @@ import oathdigital.model._
   * the choice to pick it, and the next pass of the decision sees what it
   * paid.
   *
-  * `applicable` answers two questions, told apart by the window:
+  * `applicable` answers by the window and the node:
   *
   *  - At a `*ModifierSelection` window it asks "may the player select this
   *    now?": the power belongs to that action, its card is one the player may

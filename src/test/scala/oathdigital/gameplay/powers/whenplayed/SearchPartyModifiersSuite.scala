@@ -1,8 +1,9 @@
 package oathdigital.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.SearchPlay
+import oathdigital.gameplay.{ModifierPlay, SearchPlay}
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import oathdigital.gameplay.actions.search.SearchProcedure
 import oathdigital.gameplay.cards.AncientCitySite
 import oathdigital.gameplay.powers.{PhasePowerCatalog, PowerFixture,
   SearchFixture, WalkerPowerCatalog}
@@ -10,7 +11,8 @@ import oathdigital.gameplay.powers.action.{TempleOfAncestors,
   TempleOfAncestorsCard}
 import oathdigital.gameplay.powers.cardplay.{WelcomingParty,
   WelcomingPartyCard}
-import oathdigital.gameplay.powers.search.{NewGrowth, NewGrowthCard}
+import oathdigital.gameplay.powers.search.{Bracken, BrackenCard, NewGrowth,
+  NewGrowthCard}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.DecisionAnswer.ChooseOneAnswer
@@ -77,6 +79,34 @@ class SearchPartyModifiersSuite extends munit.FunSuite:
       SearchPartyCard.id, PlayedAs.Faceup)
     val asked = peekedAndPicked(kept, Region.Hinterland, hearth(0))
     assertEquals(sitesOffered(asked.state), Set(AncientCitySite.id))
+
+  test("Bracken, picked for the Search, leaves the discard of the card " +
+      "Search Party plays to the next region's pile"):
+    // Bracken sends the Search's discards to the Hinterland top. p1 is in
+    // the Cradle, so the nested discard belongs on the Provinces pile.
+    val ready = cradlePileHolding(SearchPartyCard.id)(_
+      .denizen(BrackenCard, at = AncientCitySite).secrets(actor, faceUp = 1)
+      .discarded(Region.Provinces, hearth.take(2)*))
+    val searched = (for
+      picked <- ModifierPlay.started(rules, Ready(ready), ActionRef.Search,
+        actor, PowerWindow.SearchModifierSelection, Vector(Bracken.id))
+      piled <- rules.resolveWalker(picked.state, actor, Bracken.pileDecision,
+        ChooseOneAnswer(Bracken.pileRef(Region.Hinterland)))
+      ended <- rules.resolveWalker(piled.state, actor,
+        Bracken.positionDecision, ChooseOneAnswer(Bracken.top))
+      started <- ModifierPlay.picking(rules, ended, actor,
+        PowerWindow.SearchModifierSelection, Vector.empty)
+      sourced <- rules.resolveWalker(started.state, actor,
+        SearchProcedure.sourceDecisionId,
+        SearchPlay.source(SearchSource.RegionalDiscard(Region.Cradle)))
+    yield sourced).fold(error => fail(error.toString), identity)
+    val kept = placedAs(searched, SearchPartyCard.id, PlayedAs.Faceup)
+    val done = placedAs(peekedAndPicked(kept, Region.Provinces, hearth(0)),
+      hearth(0), PlayedAs.Discarded)
+    assertEquals(Look(after(done)).discardPile(Region.Provinces),
+      Vector[WorldCardId](hearth(1), hearth(0)))
+    assertEquals(Look(after(done)).discardPile(Region.Hinterland),
+      Vector.empty[WorldCardId])
 
   test("Search Party drawn by Temple of Ancestors may play its card to a " +
       "site"):
