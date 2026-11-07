@@ -1,8 +1,8 @@
 package oathdigital.application.chronicle
 
 import oathdigital.application.FirstGameBootstrapMapper.lineageOf
-import oathdigital.catalog.holding.{ArbiterCard, LightFingersCard,
-  SigilOfTheEyeCard}
+import oathdigital.catalog.holding.{ArbiterCard, LightFingersCard}
+import oathdigital.gameplay.actions.challenge.SigilOfTheEyeCard
 import oathdigital.gameplay.powers.search.CrackedHornCard
 import oathdigital.gameplay.SpitefulMirrorCard
 import oathdigital.gameplay.powers.action.WhistleCard

@@ -2,7 +2,8 @@ package oathdigital.gameplay.powers.action
 
 import oathdigital.gameplay.powers.{NoteText, PowerFixture}
 import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.powers.setup.{ForestHornCard, SchoolOfVinesCard}
+import oathdigital.gameplay.actions.challenge.SchoolOfVinesCard
+import oathdigital.gameplay.powers.setup.ForestHornCard
 import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
 import oathdigital.model._

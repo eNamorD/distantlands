@@ -211,9 +211,9 @@ object WalkerProcedureRegistry:
       requiresPlayableOption = true),
 
     /** Challenge. Its first step after the modifier decision spends the
-      * Supply, so a start runs an operation before its first decision and cannot use the playable-option
-      * preview gate; the banner decision's own option filter is the gate.
-      */
+      * Supply, so a start runs an operation before its first decision and
+      * cannot use the playable-option preview gate. Its banner question
+      * refuses the walk when no banner is in reach under the picks. */
     ActionRef.Challenge -> Entry(
       modifierWindow = Some(PowerWindow.ChallengeModifierSelection),
       build = ChallengeProcedure.build,

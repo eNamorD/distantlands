@@ -1,22 +1,9 @@
 package oathdigital.gameplay.powers.setup
 
 import oathdigital.catalog.{Edifice, EdificeFace, Locked, PrintedPower}
+import oathdigital.gameplay.actions.challenge.SchoolOfVinesCard
 import oathdigital.gameplay.powers.DispossessedDraws
 import oathdigital.model._
-
-object SchoolOfVinesCard extends Edifice(EdificeId("E27"), Suit.Beast):
-  object intact extends EdificeFace("School of Vines") with Locked:
-    val power = PrintedPower(PowerId("edifice.e27.intact"),
-      persistent = false, cost = Cost.free,
-      text = "You may challenge a banner held by an enemy even if your " +
-        "pawn is not at their pawn's site.")
-    val powers: Vector[PrintedPower] = Vector(power)
-  object ruined extends EdificeFace("Ruined School"):
-    val power = PrintedPower(PowerId("edifice.e27.ruined"),
-      persistent = false, cost = Cost.free,
-      text = "**SETUP (END) / WHEN EXPLORED:** Place [secret] on each " +
-        "site ruled by the bandits. _Players may take it in Wake._")
-    val powers: Vector[PrintedPower] = Vector(power)
 
 object ForestHornCard extends Edifice(EdificeId("E30"), Suit.Beast):
   object intact extends EdificeFace("Forest Horn") with Locked:

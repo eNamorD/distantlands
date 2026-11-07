@@ -33,15 +33,3 @@ object WhisperingStoneCard extends Relic(RelicId("R34"), "Whispering Stone", val
     text = "**ACTION:** Negotiate with any one player in private, even " +
       "if their pawn is not at your site.")
   val powers: Vector[PrintedPower] = Vector(power)
-
-object SigilOfTheEyeCard extends Relic(RelicId("R43"), "Sigil of the Eye", value = 66, defense = 1):
-  val power = PrintedPower(PowerId("relic.sigil-of-the-eye"),
-    persistent = false, cost = Cost.free,
-    text = "You may challenge the Darkest Secret from any site.")
-  val powers: Vector[PrintedPower] = Vector(power)
-
-object SigilOfTheHeartCard extends Relic(RelicId("R44"), "Sigil of the Heart", value = 53, defense = 1):
-  val power = PrintedPower(PowerId("relic.sigil-of-the-heart"),
-    persistent = false, cost = Cost.free,
-    text = "You may challenge the People's Favor from any site.")
-  val powers: Vector[PrintedPower] = Vector(power)

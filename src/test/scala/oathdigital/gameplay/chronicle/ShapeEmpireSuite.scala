@@ -4,7 +4,8 @@ import oathdigital.catalog.Site
 import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
 import oathdigital.gameplay.powers.action.FaeMerchantCard
-import oathdigital.gameplay.powers.setup.{GreatMarketCard, SchoolOfVinesCard}
+import oathdigital.gameplay.actions.challenge.SchoolOfVinesCard
+import oathdigital.gameplay.powers.setup.GreatMarketCard
 import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
 import oathdigital.gameplay.{OathRules, WalkerDiceFixture}
 import oathdigital.gameplay.actions.{CardPlay, ProcedureNotes}

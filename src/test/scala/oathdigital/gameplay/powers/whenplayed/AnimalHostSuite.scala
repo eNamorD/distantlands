@@ -4,7 +4,7 @@ import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.action.{FaeMerchantCard, HomesteadersCard,
   SecondChanceCard}
 import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.powers.setup.SchoolOfVinesCard
+import oathdigital.gameplay.actions.challenge.SchoolOfVinesCard
 import oathdigital.gameplay.powers.targeting.OakenFortressCard
 import oathdigital.model._
 import oathdigital.testkit.{Look, Outcomes, Table}

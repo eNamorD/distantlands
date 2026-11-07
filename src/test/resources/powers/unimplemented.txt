@@ -23,7 +23,6 @@ edifice.e19.intact
 edifice.e19.ruined
 edifice.e21.intact
 edifice.e26.ruined
-edifice.e27.intact
 legacy.ancestral-lands
 legacy.arbiter
 legacy.beloved
@@ -63,7 +62,5 @@ legacy.world-crafter
 relic.ancient-grit
 relic.bandit-crown
 relic.grand-mask
-relic.sigil-of-the-eye
-relic.sigil-of-the-heart
 relic.whispering-stone
 site.ancient-city.enduring

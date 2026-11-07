@@ -1,6 +1,7 @@
 package oathdigital.gameplay.powers
 
 import oathdigital.gameplay.powerresolver.ContributingPower
+import oathdigital.gameplay.powers.challenge.ChallengeModifiers
 import oathdigital.gameplay.powers.economy.{ActingTroupe, AnimalPlaymates,
   AwaitedReturn, Birdsong, CupOfPlenty, Curfew, Defame, Downtrodden,
   FriendlyFamiliar, GolemLegions, InitiationRite, MapLibrary, MountedLibrary,
@@ -13,11 +14,11 @@ import oathdigital.gameplay.powers.search.{Augury, Baron, Bracken,
   HuntingParty, LandWarden, Mushrooms, NewGrowth, NewsFromAfar, Observatory,
   PaintedTrumpet, RingOfDevotion, SpinningBee, TruthfulHarp, WineOfWelcome}
 
-/** The Search, Trade, Muster and Recover modifiers, registered together with
-  * the rules that change those actions: Initiation Rite's Muster cost, the
-  * tolls of Curfew and Forced Labor, the Vows' limits and extra warbands,
-  * and Vow of Wandering's ban on placing warbands. Each names its card, so
-  * all are always present.
+/** The Search, Trade, Muster, Recover and Challenge modifiers, registered
+  * together with the rules that change those actions: Initiation Rite's
+  * Muster cost, the tolls of Curfew and Forced Labor, the Vows' limits and
+  * extra warbands, and Vow of Wandering's ban on placing warbands. Each
+  * names its card, so all are always present.
   */
 object ActionModifiers:
   val all: Vector[ContributingPower] =
@@ -36,4 +37,5 @@ object ActionModifiers:
       FriendlyFamiliar, SecretSignal, Pressgangs,
       OldSongs, Curfew, ForcedLabor, InitiationRite,
       VowOfBeastkin, VowOfWanderingMuster,
-      VowOfWandering, VowOfPoverty, RelicWorship, SilverCharm)
+      VowOfWandering, VowOfPoverty, RelicWorship, SilverCharm) ++
+      ChallengeModifiers.all

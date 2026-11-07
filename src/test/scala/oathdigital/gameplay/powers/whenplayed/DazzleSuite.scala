@@ -7,7 +7,8 @@ import oathdigital.gameplay.powers.NoteText
 import oathdigital.gameplay.powers.action.HomesteadersCard
 import oathdigital.gameplay.powers.campaign.WrestlersCard
 import oathdigital.gameplay.powers.search.{ErrandBoyCard, LandWardenCard}
-import oathdigital.gameplay.powers.setup.{ProvingGroundsCard, SchoolOfVinesCard}
+import oathdigital.gameplay.actions.challenge.SchoolOfVinesCard
+import oathdigital.gameplay.powers.setup.ProvingGroundsCard
 import oathdigital.model._
 import oathdigital.testkit.{Look, Outcomes}
 import oathdigital.testkit.Table.{p1, p2}

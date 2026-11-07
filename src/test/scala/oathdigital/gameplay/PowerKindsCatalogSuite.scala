@@ -1,6 +1,7 @@
 package oathdigital.gameplay
 
 import oathdigital.gameplay.powers.{SelectedModifier, WalkerPowerCatalog}
+import oathdigital.gameplay.powers.challenge.SchoolOfVines
 import oathdigital.gameplay.powers.recover.{CatacombsContribution,
   DrownedLibrary}
 import oathdigital.gameplay.setup.FirstGameSetupFixture._
@@ -27,23 +28,24 @@ class PowerKindsCatalogSuite extends munit.FunSuite:
       m.id.value))
 
   /** The player-selected powers that are not `SelectedModifier`s. */
-  private val recoverModifiers: Vector[PowerId] =
-    Vector(CatacombsContribution.id, DrownedLibrary.id)
+  private val unselectedModifiers: Vector[PowerId] =
+    Vector(CatacombsContribution.id, DrownedLibrary.id, SchoolOfVines.id)
 
-  test("Catacombs and Drowned Library are the player-selected powers that " +
-      "are not SelectedModifiers, and are catalogued as not persistent"):
-    // Recover offers them through its own selection window, so they derive
-    // their resolution from the flag without being `SelectedModifier`s.
+  test("Catacombs, Drowned Library and School of Vines are the " +
+      "player-selected powers that are not SelectedModifiers, and are " +
+      "catalogued as not persistent"):
+    // Each is offered at its action's selection window without being a
+    // `SelectedModifier`, so it derives its resolution from the flag.
     val selected = registered.filter(_.resolution ==
       PowerResolution.PlayerSelected).filterNot(_.isInstanceOf[SelectedModifier])
-    assertEquals(selected.map(_.id), recoverModifiers)
-    recoverModifiers.foreach(id => assertEquals(flag(id.value), Some(false),
-      id.value))
+    assertEquals(selected.map(_.id), unselectedModifiers)
+    unselectedModifiers.foreach(id => assertEquals(flag(id.value),
+      Some(false), id.value))
 
   test("every other registered power resolves automatically, so a persistent " +
       "rule catalogued false would show up here"):
     val offered = registered.filterNot(_.isInstanceOf[SelectedModifier])
-      .filterNot(power => recoverModifiers.contains(power.id))
+      .filterNot(power => unselectedModifiers.contains(power.id))
       .filterNot(_.resolution == PowerResolution.Automatic)
     assertEquals(offered.map(_.id.value), Vector.empty)
 

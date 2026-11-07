@@ -12,6 +12,13 @@ object Imperials:
   def isImperial(ready: ReadyGame, player: PlayerId): Boolean =
     role(ready, player).exists(_.isImperial)
 
+  /** Whether `player` and `other` are enemies (rules glossary, "Enemy"):
+    * two different players are, unless both are Imperial. */
+  def enemies(ready: ReadyGame, player: PlayerId, other: PlayerId)
+      : Boolean =
+    player != other && !(isImperial(ready, player) &&
+      isImperial(ready, other))
+
   def chancellor(ready: ReadyGame): Option[PlayerId] =
     ready.game.current.players.map(_.player)
       .find(role(ready, _).contains(Role.Chancellor))

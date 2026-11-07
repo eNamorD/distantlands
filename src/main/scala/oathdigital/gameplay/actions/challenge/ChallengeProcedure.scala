@@ -3,14 +3,15 @@ package oathdigital.gameplay.actions.challenge
 import oathdigital.catalog.ExecutableCatalog
 import oathdigital.gameplay.NoteSupport
 import oathdigital.gameplay.actions.{BannerRules, ProcedureNotes}
+import oathdigital.gameplay.powerresolver.ModifierPicks
 import oathdigital.gameplay.walker.ModifierChoice
 import oathdigital.model._
 
 /** Challenge on the walker: spend one Supply, choose a banner, choose how many
   * resources replace it, return the banner's resources (the ribbon), then pay
   * the replacement and take the banner. Takes no start selection. It opens
-  * with the modifier decision, which asks nothing while no power selects at
-  * its window.
+  * with the modifier decision, whose picks the banner question reads
+  * ([[ChallengeReach]]).
   *
   * The Supply is spent first so no decision reads it. The banner and the
   * amount are decided before any resource moves, so both read the board as
@@ -46,44 +47,44 @@ object ChallengeProcedure:
       NotePart.Text(" "), NotePart.Plural(1, "secret", "secrets")))
   def noteKeys: Vector[NoteKey] = notes.declared
 
+  /** The start checks only the banner faces: whether a banner is in reach
+    * depends on the modifiers the walk picks first, so the banner question
+    * refuses the walk instead (`bannerQuestion`). */
   def build(catalog: ExecutableCatalog, state: ReadyGame, actor: PlayerId,
       args: Vector[DecisionOptionRef]): Either[OathViolation, Operation] = for
     _ <- noStartArgs(args)
-    _ <- afterModifiers(state, actor)
+    _ <- supportedFaces(state)
   yield tree(actor)
 
   def rebuild(catalog: ExecutableCatalog, state: ReadyGame, actor: PlayerId,
       args: Vector[DecisionOptionRef]): Either[OathViolation, Operation] =
     noStartArgs(args).map(_ => tree(actor))
 
-  /** The Challenge itself, behind the start's gates. */
-  private def afterModifiers(state: ReadyGame, actor: PlayerId)
-      : Either[OathViolation, Operation] = for
-    _ <- supportedFaces(state)
-    _ <- Either.cond(legalBanners(state, actor).nonEmpty, (),
-      OathViolation.NoPlayableOption(ActionRef.Challenge.key))
-  yield challenge(actor)
-
-  /** The modifier decision, then the Challenge. No power selects at
-    * `ChallengeModifierSelection` yet, so the decision asks nothing. */
+  /** The modifier decision, then the Challenge. "Start Challenge" previews
+    * the Challenge, so it shows unavailable until the picks bring a banner
+    * into reach. */
   private def tree(actor: PlayerId): Operation =
     val rest = challenge(actor)
     Sequence(Vector(ModifierChoice.loop(actor,
       PowerWindow.ChallengeModifierSelection, rest, startLabel), rest))
 
-  /** The banners the actor could challenge now, in the banners' declared
-    * order: not already held by the actor, the holder (if any) at the actor's
-    * site, and strictly more relevant faceup resources than the banner holds.
-    * Supply is a cost owned by `SpendSupply`, not a fact about a banner.
+  /** The banners the actor could challenge now under `picks`, the modifier
+    * picks so far, in the banners' declared order: not already held by the
+    * actor, the holder (if any) at the actor's pawn site unless a pick lifts
+    * that ([[ChallengeReach.unbound]]), and strictly more relevant faceup
+    * resources than the banner holds. Supply is a cost owned by
+    * `SpendSupply`, not a fact about a banner.
     */
-  def legalBanners(state: ReadyGame, actor: PlayerId): Vector[Banner] =
+  def legalBanners(state: ReadyGame, actor: PlayerId,
+      picks: Vector[CardId] = Vector.empty): Vector[Banner] =
     val current = state.game.current
     current.player(actor).toVector.flatMap { player =>
       Banner.all.filter { banner =>
         val holder = BannerRules.holder(current, banner)
         !holder.contains(actor) &&
-          holder.forall(rival => player.pawnSite.nonEmpty && player.pawnSite ==
-            current.pawnSite(rival)) &&
+          holder.forall(rival => (player.pawnSite.nonEmpty &&
+            player.pawnSite == current.pawnSite(rival)) ||
+            ChallengeReach.unbound(state, actor, picks, banner, rival)) &&
           BannerRules.playerResources(player, banner) >
             BannerRules.resources(current, banner)
       }
@@ -107,16 +108,39 @@ object ChallengeProcedure:
   private def challenge(actor: PlayerId): Operation = Sequence(Vector[Operation](
     Sequence(Vector[Operation](SpendSupply(actor, 1)),
       Some(PowerWindow.ChallengeCost)),
-    Branch((ready, _) => Vector(Decide(bannerDecisionId, actor,
-      DecisionQuery.ChooseOne(legalBanners(ready, actor).map(banner =>
-        DecisionOption.Banner(DecisionOptionRef.Banner(banner))),
-        heading = Some("Choose a banner to Challenge"),
-        confirmVerb = Some("Challenge")),
-      window = Some(PowerWindow.ChallengeBannerSelection)))),
+    Branch((ready, pending) => Vector(bannerQuestion(ready, actor,
+      picks(pending)))),
     Branch((ready, pending) => bannerOf(pending).toVector.map(banner =>
       amountDecision(ready, actor, banner))),
     Branch((ready, pending) => effects(ready, actor, pending))),
     Some(PowerWindow.ChallengeActionEligibility))
+
+  /** The banner question, or, with no banner in reach under `picks`, a step
+    * that refuses the walk. The refusal is the whole walk's, so the Supply
+    * spent before it is never spent: a start with no modifier to pick is
+    * refused, after the Supply check, and "Start Challenge" previews
+    * unavailable until a pick opens a banner. An empty question would park
+    * instead.
+    *
+    * The menu prices a start by walking it to its first park, so this gate
+    * holds only while nothing parks between the modifier decision and here:
+    * a first power to ask at `ChallengeCost` must make the menu's preview
+    * walk on to this question. */
+  private def bannerQuestion(ready: ReadyGame, actor: PlayerId,
+      picks: Vector[CardId]): Operation =
+    legalBanners(ready, actor, picks) match
+      case Vector() => BuildOps((_, _) =>
+        Left(OathViolation.NoPlayableOption(ActionRef.Challenge.key)))
+      case banners => Decide(bannerDecisionId, actor,
+        DecisionQuery.ChooseOne(banners.map(banner =>
+          DecisionOption.Banner(DecisionOptionRef.Banner(banner))),
+          heading = Some("Choose a banner to Challenge"),
+          confirmVerb = Some("Challenge")),
+        window = Some(PowerWindow.ChallengeBannerSelection))
+
+  /** The cards the walk's modifier decision picked. */
+  private def picks(pending: PendingTree): Vector[CardId] =
+    ModifierPicks.cards(pending.answered)
 
   private def amountDecision(ready: ReadyGame, actor: PlayerId,
       banner: Banner): Operation =

@@ -6,6 +6,7 @@ import oathdigital.gameplay.powers.action.{EldersCard, MessengerCard,
   ScryerCard}
 import oathdigital.gameplay.powers.whenplayed.{BewitchCard, DazzleCard,
   ThreateningRoarCard}
+import oathdigital.gameplay.actions.challenge.SchoolOfVinesCard
 import oathdigital.gameplay.setup.{FirstGameSetupFixture, SetupProcedure,
   SetupWalkDriver}
 import oathdigital.gameplay.walker.{WalkerDice, WalkerPowers}
