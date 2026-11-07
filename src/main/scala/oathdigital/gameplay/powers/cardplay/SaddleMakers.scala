@@ -54,7 +54,7 @@ case object SaddleMakers extends ContributingPower:
     * order denizen faceup. */
   private def reward(ctx: PowerCtx): Option[Vector[Operation]] =
     ctx.operation match
-      case CardPlayedFaceup(card: DenizenId, _) =>
+      case CardPlayedFaceup(card: DenizenId, _, _) =>
         for
           suit <- EffectiveSuit.of(ctx.catalog, ctx.state, card)
             .filter(SaddleMakers.Suits)

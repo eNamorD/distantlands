@@ -2,6 +2,7 @@ package oathdigital.gameplay.powers
 
 import oathdigital.catalog.{Denizen, PrintedPower, Relic}
 import oathdigital.gameplay.PowerAccess
+import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
 import oathdigital.gameplay.operations.Costs
 import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,
   ModifierPicks, PowerCtx, PowerUse}
@@ -27,6 +28,9 @@ import oathdigital.model._
   *    power is hooked on. It must not read state the action itself changes,
   *    because the walker folds every window again on each resume and a fold
   *    that differs from the first one moves the parked position.
+  *  - At a node of a card play a power makes, such as Search Party's, no
+  *    selected modifier applies: the play is not the action's (catalog
+  *    batch 10, ruling 5, `CardPlayProcedure.playedByPower`).
   *
   * The selection window is checked by action, so a Travel modifier is never
   * offered for a Search, whichever window a later power hooks.
@@ -90,7 +94,8 @@ trait SelectedModifier extends ContributingPower:
       case Some(action) => actions(action) &&
         (ModifierPicks.isPicked(ctx.answered, ctx.window, cardId) ||
           selectable(ctx.state, ctx.actor))
-      case None => appliesAt(ctx)
+      case None => !CardPlayProcedure.playedByPower(ctx.operation) &&
+        appliesAt(ctx)
 
   /** The player may use the card, from where they act
     * ([[PowerAccess.locate]]), and can pay for it. */

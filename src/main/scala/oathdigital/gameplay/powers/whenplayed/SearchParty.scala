@@ -27,7 +27,9 @@ object SearchPartyCard extends Denizen(DenizenId("240"), "Search Party",
   * the Visions Drawn track alone. The card never enters the temporary
   * hand, which an enclosing Search reads. The rest never moved, so they
   * stay at the bottom in order. The play's hook fires the card's own WHEN
-  * PLAYED and the card-play triggers.
+  * PLAYED and the card-play triggers. The play names Search Party as
+  * `byPower`, so no modifier picked for an enclosing Search applies to it
+  * (ruling 5).
   *
   * The play may empty every pile, so the effect reads the live piles only
   * until the pile question is answered. After that it always builds the
@@ -112,7 +114,7 @@ case object SearchParty extends WhenPlayedPower:
         .flatMap(worldCard)
     yield CardPlayProcedure.unchecked(ctx.catalog, now, ctx.actor, card,
       CardPlayProcedure.Origin.DiscardPile(region),
-      ModifierPicks.cards(pending.answered))).toVector)
+      ModifierPicks.cards(pending.answered), byPower = Some(id))).toVector)
 
   private def chosen(answered: Vector[Answered]): Option[Region] =
     PowerAnswers.last(answered, pileDecisionId)

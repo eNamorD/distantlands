@@ -1,6 +1,6 @@
 # Catalog Batch 10: Engine Seams
 
-**Status:** designed 2026-11-03. Slices 1 to 11 landed.
+**Status:** designed 2026-11-03. Slices 1 to 12 landed.
 
 **Builds on** [Catalog batch 9](2026-11-02-catalog-batch-9-design.md) and
 [batch 8](2026-10-12-catalog-batch-8-design.md), whose vocabulary, cost
@@ -536,32 +536,46 @@ suites unchanged.
 
 ## Slice 12: Nested card play
 
-Today a card played inside a WHEN PLAYED power fires neither its own WHEN
-PLAYED nor the card-play triggers: an `AutomaticUse` is walked with the
-enclosing hooks, and `WalkerHooks.gathered` already holds
-`ActionCardPlayedFaceup` and `ActionCardPlayedFacedown`. The walker's
-`AutomaticUse` case removes those two windows from `gathered`. No loop
-results: the nested play's leaf is a sibling, not under the use.
+A card played inside a WHEN PLAYED power already fires its own WHEN
+PLAYED and the card-play triggers. The card-play hooks are windowed
+composites, which never enter `WalkerHooks.gathered`, so a nested hook
+folds as any other (plan-time probe, 2026-11-06). The walker is
+unchanged. Two seams remain:
 
-`CardPlayProcedure.Origin` gains a discard-pile origin, so a played card
-never enters the temporary hand that the outer Search re-reads on a
-single-card draw.
+- `CardPlay.Origin` and `CardPlayProcedure.Origin` gain
+  `DiscardPile(region)`. The card moves from the pile itself and never
+  enters the temporary hand, which an enclosing Search re-reads on a
+  one-card draw.
+- The placement tree and both card-play hooks carry `byPower`, the power
+  whose effect makes the play (Search Party, Temple of Ancestors, Oracle),
+  `None` for an action's own play. `SelectedModifier` applies at no node
+  of a power's play (ruling 5), so the outer Search's picks, such as
+  Bracken, New Growth or Welcoming Party, leave it alone. The nested
+  play's slots still protect the picked modifiers' cards, which are in
+  use for the Search. Temple of Ancestors limits only its own play to the
+  advisers, so a Search Party it draws plays its card as if searched,
+  site included.
 
-**Search Party.** WHEN PLAYED. The user picks a non-empty discard pile and
-peeks at its bottom 3 (`Peek`). They must play one, through
-`CardPlayProcedure` with Search's placements: faceup to the site, facedown
-as an adviser, or discarded to the next region (ruling 5). The rest never
-moved, so they stay at the bottom in order. With every pile empty, nothing
-happens. Line: "Peeked at the bottom of the Provinces' discard pile."
+**Search Party.** WHEN PLAYED. The user picks a discard pile; an empty one
+shows unavailable: "The pile is empty". The bottom 3 cards are peeked
+(`Peek`), and the user must play one through `CardPlayProcedure` with
+Search's placements: faceup to the site, faceup or facedown as an
+adviser, or discarded to the next region's pile, which may be the pile it
+came from. A Vision follows Search's rules and leaves the Visions Drawn
+track alone: Vow of Obedience, Secret Police and Sacred Ground see a
+faceup Vision from a pile as a play still to be made, and a Conspiracy
+leaves the game from the pile. The rest never moved, so they stay at the
+bottom in order. Persistent card-play rules apply as in a Search. Line:
+"Peeked at the bottom of the Provinces discard pile." With every pile
+empty nothing is asked: "Every discard pile was empty."
 
-The nested play's `SearchPlayAdviser` fold sees the outer Search's
-answers, so a picked Bracken, Cracked Horn or Ring of Devotion would
-rewrite its discards. Ruling 5 says Search modifiers do not apply, so this
-slice keeps them out of the nested play.
-
-Tests: the nested play firing its own WHEN PLAYED and a card-play trigger;
-each placement; a Vision; the outer Search's kept card unchanged; empty
-piles; replay.
+Tests: the peeks, the question and the rest left in order; the nested
+play firing its own WHEN PLAYED and a card-play trigger; each placement,
+including a discard back to its own pile; a Vision, a Conspiracy and Vow
+of Obedience; empty piles; a one-card Search keeping Search Party;
+Welcoming Party and New Growth picked for the Search leaving the nested
+play alone; Temple of Ancestors drawing Search Party; replay and the
+wire.
 
 ## Slice 13: Askable Act action
 
@@ -623,7 +637,7 @@ lost before Wake; codec; replay.
 | `Discard` position | 9 | Bracken |
 | `CardGathering` rename | 10 | Autumn Wind, the Chronicle |
 | Banner question under the picks, `ChallengeReach` | 11 | four Challenge modifiers |
-| Nested WHEN PLAYED | 12 | Search Party |
+| A power's card play: `Origin.DiscardPile`, `byPower` | 12 | Search Party |
 | Askable Act options | 13 | both Patrols |
 | `trackedPawns` | 14 | Tracker |
 

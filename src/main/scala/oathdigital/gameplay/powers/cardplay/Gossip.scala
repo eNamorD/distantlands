@@ -50,6 +50,6 @@ case object Gossip extends ContributingPower:
 
   /** The holder, when the hooked play is another player's facedown play. */
   private def holderOf(ctx: PowerCtx): Option[PlayerId] = ctx.operation match
-    case CardPlayedFacedown(_, player) =>
+    case CardPlayedFacedown(_, player, _) =>
       PowerAccess.faceupAdviserHolder(ctx.state, cardId).filter(_ != player)
     case _ => None

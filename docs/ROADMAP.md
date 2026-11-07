@@ -86,10 +86,9 @@ section describes each seam below in a paragraph.
 - **As-if ruler:** Bandit Crown, Grand Mask.
 - **Favor source redirection:** Vow of Kinship.
 - **An askable Act action:** consent for Relic Patrols and Bandit Patrols.
-- **Unchanged from batch 8:** Search Party (recorded in the
-  [catalog batch 4 rulings](superpowers/specs/2026-10-05-catalog-batch-4-rulings.md#moved-out-of-the-batch)),
-  Master of Disguise (acting as another player's advisers), Tracker and
-  False Prophet (a player-aware off-turn card play).
+- **Unchanged from batch 8:** Master of Disguise (acting as another
+  player's advisers), Tracker and False Prophet (a player-aware off-turn
+  card play).
 
 ### Phase - All-Exile alpha readiness
 

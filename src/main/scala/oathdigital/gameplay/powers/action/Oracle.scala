@@ -61,4 +61,4 @@ case object Oracle extends PaidAction(OracleCard.power):
     Branch((live, pending) => held(live, player)
       .orElse(CardPlayProcedure.placedCard(pending)).toVector.map(vision =>
         CardPlayProcedure.unchecked(catalog, live, player, vision,
-          CardPlayProcedure.Origin.TemporaryHand))))))
+          CardPlayProcedure.Origin.TemporaryHand, byPower = Some(this.id)))))))

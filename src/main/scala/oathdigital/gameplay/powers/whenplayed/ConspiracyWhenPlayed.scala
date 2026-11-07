@@ -38,7 +38,7 @@ case object ConspiracyWhenPlayed extends ContributingPower:
   val decisionId: String = "cardplay.conspiracy.target"
 
   override def applicable(ctx: PowerCtx): Boolean = ctx.operation match
-    case CardPlayedFaceup(card, _) => card == VisionRules.Conspiracy
+    case CardPlayedFaceup(card, _, _) => card == VisionRules.Conspiracy
     case _ => false
 
   override def noteKeys: Vector[NoteKey] = notes.declared

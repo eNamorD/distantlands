@@ -11,7 +11,7 @@ private[cardplay] object VisionPlay:
 
   /** The Vision the hook plays faceup, the Conspiracy included. */
   def played(ctx: PowerCtx): Option[VisionId] = ctx.operation match
-    case CardPlayedFaceup(card: VisionId, _) => Some(card)
+    case CardPlayedFaceup(card: VisionId, _, _) => Some(card)
     case _ => None
 
   /** The Vision the hook plays faceup, while the play is still to be made:

@@ -28,6 +28,11 @@ import oathdigital.model._
   * facedown advisers. Its start names no card, so Undo can take the start
   * back.
   *
+  * A power that plays a card itself (Search Party, Temple of Ancestors,
+  * Oracle) names itself as `byPower`. The placement tree and both hooks
+  * carry it, so no modifier picked for the enclosing action applies to
+  * that play ([[playedByPower]]).
+  *
   * The headings name neither the card nor the site; the projector does.
   */
 object CardPlayProcedure:
@@ -225,6 +230,9 @@ object CardPlayProcedure:
     * appends after the body is kept by the later ones.
     */
   final class PlacementTree private[cardplay](val card: WorldCardId,
+      /** The power whose effect makes this play, `None` for an
+        * action's own play (catalog batch 10, slice 12). */
+      val byPower: Option[PowerId],
       childrenAt: CardPlayRules => Vector[Operation])
       extends Operation:
     override val window: Option[PowerWindow] =
@@ -268,9 +276,21 @@ object CardPlayProcedure:
     */
   def unchecked(catalog: ExecutableCatalog, ready: ReadyGame, actor: PlayerId,
       card: WorldCardId, origin: Origin,
-      picked: Vector[CardId] = Vector.empty): Operation =
-    new PlacementTree(card, rules =>
-      childrenFor(catalog, ready, actor, card, origin, rules, picked))
+      picked: Vector[CardId] = Vector.empty,
+      byPower: Option[PowerId] = None): Operation =
+    new PlacementTree(card, byPower, rules =>
+      childrenFor(catalog, ready, actor, card, origin, rules, picked,
+        byPower))
+
+  /** Whether `operation` is a node of a card play a power makes: its
+    * placement tree or its hook. No modifier picked for an action
+    * applies there, since the play is not the action's (catalog batch
+    * 10, ruling 5). */
+  def playedByPower(operation: Operation): Boolean = operation match
+    case tree: PlacementTree => tree.byPower.nonEmpty
+    case CardPlayedFaceup(_, _, by) => by.nonEmpty
+    case CardPlayedFacedown(_, _, by) => by.nonEmpty
+    case _ => false
 
   private val placementPrefix = "cardplay.place."
   private val discardPrefix = "cardplay.discard."
@@ -332,7 +352,8 @@ object CardPlayProcedure:
 
   private def childrenFor(catalog: ExecutableCatalog, ready: ReadyGame,
       actor: PlayerId, card: WorldCardId, origin: Origin,
-      rules: CardPlayRules, picked: Vector[CardId]): Vector[Operation] =
+      rules: CardPlayRules, picked: Vector[CardId],
+      byPower: Option[PowerId]): Vector[Operation] =
     val from = cardPlayOrigin(origin)
     val held = heldAtOrigin(ready, actor, card, origin)
     val slots = if held then CardSlots.slots(catalog, ready, actor, card, from,
@@ -348,10 +369,10 @@ object CardPlayProcedure:
       // the tree is settled from the answers instead, keeping the shape it
       // had when the decisions were asked.
       if !held then answer.toVector.flatMap(ref =>
-        settled(ready, actor, card, ref))
+        settled(ready, actor, card, ref, byPower))
       else answer.flatMap(ref => slots.find(_.ref == ref)).toVector.flatMap(
         slot => played(catalog, ready, actor, card, from, rules, slot,
-          picked))
+          picked, byPower))
     })
     Vector(choose, selected)
 
@@ -363,8 +384,8 @@ object CardPlayProcedure:
     * recording no answer). */
   private def played(catalog: ExecutableCatalog, ready: ReadyGame,
       actor: PlayerId, card: WorldCardId, from: CardPlay.Origin,
-      rules: CardPlayRules, slot: CardSlot, picked: Vector[CardId])
-      : Vector[Operation] =
+      rules: CardPlayRules, slot: CardSlot, picked: Vector[CardId],
+      byPower: Option[PowerId]): Vector[Operation] =
     val replacedId = replacedDecisionId(card)
     val discardId = discardDecisionId(card)
     val buryId = buryDecisionId(card)
@@ -439,7 +460,8 @@ object CardPlayProcedure:
           Note(ProcedureNotes.id(ActionRef.PlayFacedownAdviser),
             playedNote(card, slot.ref)))
     })
-    Vector(followUp, play) ++ hook(ready, actor, card, slot.placement)
+    Vector(followUp, play) ++ hook(ready, actor, card, slot.placement,
+      byPower)
 
   /** The follow-up's place when nothing is to be asked. */
   private def noFollowUp: Operation = Sequence(Vector.empty)
@@ -459,7 +481,7 @@ object CardPlayProcedure:
     * hook resumes past this node's children, and a park inside the play
     * re-enters at the play leaf, which reaches the line exactly once. */
   private def settled(ready: ReadyGame, actor: PlayerId, card: WorldCardId,
-      ref: DecisionOptionRef): Vector[Operation] =
+      ref: DecisionOptionRef, byPower: Option[PowerId]): Vector[Operation] =
     playedAs(ref).flatMap(way => siteOf(ref)
         .map(SearchPlacement.Site(_, None)).orElse(placementOf(way)))
         .toVector.flatMap { placement =>
@@ -471,7 +493,8 @@ object CardPlayProcedure:
           "the card has already been played"))),
         Note(ProcedureNotes.id(ActionRef.PlayFacedownAdviser),
           playedNote(card, ref))))
-      Vector(noFollowUp, play) ++ hook(ready, actor, card, placement)
+      Vector(noFollowUp, play) ++ hook(ready, actor, card, placement,
+        byPower)
     }
 
   /** The placement a way of playing names on its own. A play at a site
@@ -485,11 +508,12 @@ object CardPlayProcedure:
       Some(SearchPlacement.Adviser(Orientation.FaceDown, None))
 
   private def hook(ready: ReadyGame, actor: PlayerId, card: WorldCardId,
-      placement: SearchPlacement): Vector[Operation] = placement match
+      placement: SearchPlacement, byPower: Option[PowerId])
+      : Vector[Operation] = placement match
     case SearchPlacement.Adviser(Orientation.FaceDown, _) =>
-      Vector(CardPlayedFacedown(card, actor))
+      Vector(CardPlayedFacedown(card, actor, byPower))
     case _ => CardPlay.playedSource(ready, actor, card, placement)
-      .map(CardPlayedFaceup(card, _)).toVector
+      .map(CardPlayedFaceup(card, _, byPower)).toVector
 
   private def siteCard(ref: DecisionOptionRef): Option[CardId] = ref match
     case DecisionOptionRef.Denizen(id) => Some(id)

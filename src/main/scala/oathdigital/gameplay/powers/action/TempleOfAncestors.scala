@@ -34,11 +34,12 @@ object TempleOfAncestorsCard extends Edifice(EdificeId("E10"), Suit.Nomad):
   * draw does. It is then placed through the card-play subtree a Search's
   * kept card goes through, as Oracle's Vision is, so the card-play windows
   * fold: a WHEN PLAYED fires, and the restrictions on a faceup Vision
-  * apply. The power's own `Transform` at `SearchPlayAdviser`, applicable
-  * only inside this power's walk, limits the placements to the advisers
-  * (faceup, facedown, or the revealed Vision slot for a Vision) and the
-  * discard: a site slot shows "Temple of Ancestors: the card goes to your
-  * advisers" (owner question 6). An empty deck draws nothing and asks
+  * apply. The power's own `Transform` at `SearchPlayAdviser` limits the
+  * placements of its own play (`byPower`) to the advisers (faceup,
+  * facedown, or the revealed Vision slot for a Vision) and the discard: a
+  * site slot shows "Temple of Ancestors: the card goes to your advisers"
+  * (owner question 6). A Search Party it draws still plays its own card as
+  * if searched, site included. An empty deck draws nothing and asks
   * nothing. The ruined face is a Chronicle step and is not implemented.
   */
 case object TempleOfAncestors
@@ -87,14 +88,14 @@ case object TempleOfAncestors
     Branch((live, pending) => held(live, player)
       .orElse(CardPlayProcedure.placedCard(pending)).toVector.map(card =>
         CardPlayProcedure.unchecked(catalog, live, player, card,
-          CardPlayProcedure.Origin.TemporaryHand))))))
+          CardPlayProcedure.Origin.TemporaryHand, byPower = Some(this.id)))))))
 
-  /** Inside this power's walk only, the play goes to the advisers or the
-    * discard. */
+  /** This power's own play goes to the advisers or the discard. */
   def contributions: Map[PowerWindow, Vector[Contribution]] = Map(
     PowerWindow.SearchPlayAdviser -> Vector(Transform((ctx, children) =>
       ctx.operation match
-        case tree: CardPlayProcedure.PlacementTree =>
+        case tree: CardPlayProcedure.PlacementTree
+            if tree.byPower.contains(this.id) =>
           tree.adjust(children)(_.limitPlacements(adviserRule))
         case _ => children)))
 
