@@ -740,6 +740,14 @@ final case class TakeDeferred(key: DeferralKey) extends PrimitiveOperation
   */
 final case class ActAsIf(site: SiteId) extends PrimitiveOperation
 
+/** Records the pawn `holder` chose with Tracker's ACTION in
+  * `CurrentGameState.trackedPawns` (catalog batch 10, slice 14). */
+final case class TrackPawn(holder: PlayerId, target: PlayerId)
+    extends PrimitiveOperation
+
+/** Removes `holder`'s Tracker record as their Act phase begins. */
+final case class ClearTrackedPawn(holder: PlayerId) extends PrimitiveOperation
+
 /** Opens the record of a pick a pick-and-pay menu took, in
   * `CurrentGameState.walkerPicks`: every `PayCost` and `Sacrifice` applied
   * until [[ClosePick]] adds to it, so the record holds what the pick really

@@ -525,6 +525,8 @@ class WalkerOperationWireSuite extends munit.FunSuite:
       EdificeBuilt(GreatMarketCard.id, site),
       SuitedReserveFromBox(Suit.Beast,
         Vector(FaeMerchantCard.id)),
+      TrackPawn(PlayerId("red"), PlayerId("blue")),
+      ClearTrackedPawn(PlayerId("red")),
       QueueProcedure(QueuedProcedure(PlayerId("p1"), ActionRef.Campaign,
           Vector.empty,
           Some(PowerSourceRef.Card(KnightsErrantCard.id)),

@@ -215,6 +215,10 @@ private[gameplay] object OperationApplication:
         result.map(TurnStateOperations.takeDeferred(_, key))
       case (result, ActAsIf(site)) =>
         result.map(TurnStateOperations.actAsIf(_, site))
+      case (result, TrackPawn(holder, target)) =>
+        result.flatMap(TurnStateOperations.trackPawn(_, holder, target))
+      case (result, ClearTrackedPawn(holder)) =>
+        result.flatMap(TurnStateOperations.clearTrackedPawn(_, holder))
       case (result, OpenPick(decisionId, option, label)) =>
         result.map(TurnStateOperations.openPick(_, decisionId, option, label))
       case (result, ClosePick()) =>

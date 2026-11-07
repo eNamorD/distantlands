@@ -128,6 +128,26 @@ private[operations] object TurnStateOperations:
   def actAsIf(ready: ReadyGame, site: SiteId): ReadyGame =
     ready.updateCurrent(_.copy(walkerAsIfSite = Some(site)))
 
+  /** Records `target` as the pawn `holder` tracks. Both are seated, and
+    * no player tracks their own pawn. */
+  def trackPawn(ready: ReadyGame, holder: PlayerId, target: PlayerId)
+      : Either[OperationError, ReadyGame] =
+    val seated = ready.game.current.players.map(_.player).toSet
+    if !seated(holder) || !seated(target) then Left(InvalidDescription(
+      s"${holder.value} and ${target.value} must both be seated to track"))
+    else if holder == target then Left(InvalidDescription(
+      s"${holder.value} cannot track their own pawn"))
+    else Right(ready.updateCurrent(current => current.copy(
+      trackedPawns = current.trackedPawns.updated(holder, target))))
+
+  /** Removes `holder`'s record, which must exist. */
+  def clearTrackedPawn(ready: ReadyGame, holder: PlayerId)
+      : Either[OperationError, ReadyGame] =
+    Either.cond(ready.game.current.trackedPawns.contains(holder),
+      ready.updateCurrent(current => current.copy(
+        trackedPawns = current.trackedPawns - holder)),
+      InvalidDescription(s"${holder.value} tracks no pawn"))
+
   /** Opens the record of a pick, closing any still open, so payments from
     * here on are added to it. */
   def openPick(ready: ReadyGame, decisionId: String,

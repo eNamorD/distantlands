@@ -283,7 +283,12 @@ final case class CurrentGameState(
     // Warbands that stand on a card rather than a board or a site, by card
     // and force (Obsidian Cage). They stay on the card wherever it goes,
     // and count as out of their bank. A kind with none is absent.
-    warbandsOnCards: Map[CardId, Map[ForceKind, Int]] = Map.empty
+    warbandsOnCards: Map[CardId, Map[ForceKind, Int]] = Map.empty,
+    // The pawn each Tracker holder chose with its ACTION, by holder
+    // (catalog batch 10, slice 14). Not walker scratch: it outlives the
+    // turn, and the holder's next End Wake clears it. Public, as the choice
+    // was made openly.
+    trackedPawns: Map[PlayerId, PlayerId] = Map.empty
 ):
   /** The warbands of `kind` on `card`. */
   def warbandsOn(card: CardId, kind: ForceKind): Int =

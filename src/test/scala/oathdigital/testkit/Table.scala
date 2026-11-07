@@ -200,6 +200,11 @@ final case class Table private (private val game: ReadyGame,
       warbandsOnCards = current.warbandsOnCards.updated(id,
         current.warbandsOnCards.getOrElse(id, Map.empty).updated(kind, n)))))
 
+  /** `holder` chose `target`'s pawn with Tracker's ACTION last turn. */
+  def trackedPawn(holder: PlayerId, target: PlayerId): Table =
+    update(_.updateCurrent(current => current.copy(
+      trackedPawns = current.trackedPawns.updated(holder, target))))
+
   /** `chancellor` and `citizens` play Imperial, with the purple bank of
     * `MaterialBankState.ImperialWarbands` on the table. Their board warbands
     * become purple ones, since a board's kind follows its role. Seat them
