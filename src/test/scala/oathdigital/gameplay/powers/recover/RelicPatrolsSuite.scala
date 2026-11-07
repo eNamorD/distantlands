@@ -1,12 +1,13 @@
 package oathdigital.gameplay.powers.recover
 
 import oathdigital.gameplay.{OathRules, WalkerDiceFixture}
+import oathdigital.gameplay.actions.recover.RecoverProcedure
 import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.phases.PhaseMenu
 import oathdigital.gameplay.powers.WalkerPowerCatalog
 import oathdigital.gameplay.powers.action.DowsingSticksCard
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.ProcedureDequeued
+import oathdigital.gameplay.walker.{ProcedureDequeued, WalkerCompleted}
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
 import oathdigital.testkit.{MenuPlay, PowerRules, Table}
@@ -151,6 +152,15 @@ class RelicPatrolsSuite extends munit.FunSuite:
     assert(picked.events.exists {
       case ProcedureDequeued(entry) => entry.procedure == ActionRef.Recover
       case _ => false }, picked.events)
+    // The Recover passes the Patrols again when it resumes, to its end.
+    val done = accepted(rolling.resolveWalker(picked.state, p1,
+      RecoverProcedure.relicDecisionId, DecisionAnswer.ChooseOneAnswer(
+        DecisionOptionRef.Relic(DowsingSticksCard.id))))
+    assert(done.events.contains(WalkerCompleted(ActionRef.Recover)),
+      done.events)
+    // A Recover with no menu pick finds no grant.
+    assert(PowerRules.withWalkerPowers.startWalker(
+      Ready(MenuPlay.withoutMenu(granted)), ActionRef.Recover, p1).isLeft)
 
   test("a refusal remembered this turn shows the plain reason"):
     refusedWith(answeredByP2(relicPatrolsRuledByP2, RelicPatrols.id,

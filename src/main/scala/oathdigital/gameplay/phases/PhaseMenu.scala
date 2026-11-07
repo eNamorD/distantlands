@@ -122,7 +122,7 @@ object PhaseMenu:
             cost.words.fold(shown)(DecisionOption.Badged(shown, _))
           case Left(violation) => DecisionOption.Unavailable(shown,
             QueuedStart.waiting(catalog, ready, entry, walking, judging)
-              .flatMap(askFor(ready, _)).getOrElse(OptionReason.Written(
+              .flatMap(askFor(ready, actor, _)).getOrElse(OptionReason.Written(
                 QueuedStart.needs(catalog, ready, entry, walking, judging)
                   .getOrElse(reason(procedure, violation))))),
         group))
@@ -183,14 +183,16 @@ object PhaseMenu:
   /** The ask for a start only waivable restrictions refuse (catalog batch
     * 10, slice 13): each granter still to answer, about their powers,
     * covering the grants the started walk looks up. `None` once a granter
-    * refused this turn, so the option shows its plain reason. */
-  private def askFor(ready: ReadyGame, needed: Vector[QueuedStarts.Needed])
-      : Option[OptionReason.Askable] =
+    * refused this turn, or when `actor` would have to ask themself, so the
+    * option shows its plain reason. */
+  private def askFor(ready: ReadyGame, actor: PlayerId,
+      needed: Vector[QueuedStarts.Needed]): Option[OptionReason.Askable] =
     val turn = ConsentTurn.of(ready)
     def answer(one: QueuedStarts.Needed) =
       ready.consent.answer(one.key, Some(one.granter), turn)
     val pending = needed.filterNot(answer(_).contains(ConsentAnswer.Granted))
-    if needed.exists(answer(_).contains(ConsentAnswer.Refused)) then None
+    if needed.exists(answer(_).contains(ConsentAnswer.Refused)) ||
+        needed.exists(_.granter == actor) then None
     else pending.headOption.map(first => OptionReason.Askable(first.power,
       first.asked, pending.map(_.granter).distinct.map(granter =>
         ConsentAsk(granter, pending.filter(_.granter == granter)
