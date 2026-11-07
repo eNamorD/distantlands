@@ -587,7 +587,8 @@ bandit sites without ruler's consent."
 
 `PhaseMenu.offers` shows a refused Act option as `OptionReason.Askable`
 when `QueuedStart.waiting` finds that grants would let it start, and with
-the plain reason once a granter refused this turn. The grants are keyed on
+the plain reason once a granter refused this turn or when the actor would
+be their own granter. The grants are keyed on
 `ConsentKey(power, actor, "phase.menu", offer.ref)`: `PhaseMenu.menuPick`
 reads the open walk's entry (no source, no sender, an Act offer's
 procedure and arguments) as its actor's answer to the menu, and
@@ -597,7 +598,9 @@ that `waived` and `QueuedStart.waiting` search. `gatesStart` still reads
 on. `walkerEntry` lasts the walk, so the started Recover finds the grant on
 every resume, and the grant lasts the turn. `OathRulesWalker.consentAsk`
 reads an option inside the menu's band, and the consent service then asks
-the granter and, on a grant, answers the menu with the pick. Any other Act
+the granter and, on a grant, answers the menu with the pick. The band had
+also hidden the menu's phase-power asks (Spell Breaker, City Wall, Forest
+Council) from the request since the menu grouped its options. Any other Act
 refusal that carries a `Waiver` becomes askable the same way.
 
 Tests: Recover askable under Relic Patrols and under player-ruled Bandit

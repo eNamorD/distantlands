@@ -86,8 +86,13 @@ class PatrolsConsentServiceSuite extends munit.FunSuite:
       case other => fail(s"the Recover is offered: $other")
 
   test("under bandit-ruled Patrols nobody may be asked"):
-    val (service, _) = patrolled(_.bandits(city, 1).bandits(peaks, 1))
-      .service()
+    val banditRuled = patrolled(_.bandits(city, 1).bandits(peaks, 1))
+    MenuPlay.menuOptionFor(catalog, banditRuled.ready, ActionRef.Recover)
+      match
+      case DecisionOption.Unavailable(_, reason) =>
+        assertEquals(reason, OptionReason.Written(RelicPatrols.reason))
+      case other => fail(s"the Recover is offered: $other")
+    val (service, _) = banditRuled.service()
     assertEquals(service.handle(gameId, 0L, askRecover),
       Left(GameApplicationError.CommandRejected(
         OathViolation.ConsentUnavailable(

@@ -289,12 +289,12 @@ private[gameplay] trait OathRulesWalker:
           .toOption.flatten
     }
 
-  /** The options of a choose-one or a choose-many, as offered. */
   /** `option` without the band a menu wraps it in. */
   private def unbanded(option: DecisionOption): DecisionOption = option match
     case DecisionOption.Grouped(inner, _) => unbanded(inner)
     case other => other
 
+  /** The options of a choose-one or a choose-many, as offered. */
   private def offered(decide: Decide): Vector[DecisionOption] =
     decide.query match
       case one: DecisionQuery.ChooseOne => one.options
