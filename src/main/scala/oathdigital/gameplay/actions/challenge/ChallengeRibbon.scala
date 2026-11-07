@@ -15,22 +15,26 @@ import oathdigital.model._
   * while it can, and when fewer secrets remain than tied sites the player
   * picks which of them, once.
   */
-private[challenge] object ChallengeRibbon:
-  val siteDecisionId = "challenge.ribbon-site"
+private[gameplay] object ChallengeRibbon:
+  private[challenge] val siteDecisionId = "challenge.ribbon-site"
 
   private val secretBanner = PositionedLocation(
     Location.OnBanner(Banner.DarkestSecret))
 
-  def steps(actor: PlayerId, banner: Banner): Vector[Operation] = banner match
+  private[challenge] def steps(actor: PlayerId, banner: Banner)
+      : Vector[Operation] = banner match
     case Banner.PeoplesFavor =>
-      Vector(BuildOps((ready, _) => Right(favorReturns(ready))))
+      Vector(BuildOps((ready, _) => Right(peoplesFavorReturns(ready))))
     case Banner.DarkestSecret => Vector(
       BuildOps((ready, _) => Right(returnedSecrets(ready, actor))),
       Repeat((ready, _) => BannerRules.resources(ready.game.current,
         Banner.DarkestSecret) > 0,
         Branch((ready, _) => pass(ready, actor))))
 
-  private def favorReturns(ready: ReadyGame): Vector[CoreOperation] =
+  /** The People's Favor's ribbon: every favor on it returns to the
+    * least-favor banks, leftmost first, one at a time. Favored Son's take
+    * carries it as its `leaving` (catalog batch 10, slice 11). */
+  def peoplesFavorReturns(ready: ReadyGame): Vector[CoreOperation] =
     val amount = BannerRules.resources(ready.game.current, Banner.PeoplesFavor)
     BannerRules.raidFavorReturn(ready.banks.favor, amount).map(suit =>
       Move(Piece.Favor(1),

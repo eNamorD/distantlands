@@ -16,4 +16,4 @@ object WhenPlayedPowers:
       BanditChief, ARoundOfAle,
       CallForHelp, TrueOath,
       LongLostHeir, Bewitch, AncientPact, RoyalAmbitions,
-      Pilgrimage, AutumnWind)
+      Pilgrimage, AutumnWind, FavoredSon)

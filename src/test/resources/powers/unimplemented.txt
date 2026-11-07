@@ -1,7 +1,6 @@
 denizen.council-arbiter
 denizen.deed-writer
 denizen.false-prophet
-denizen.favored-son
 denizen.master-of-disguise
 denizen.reliquary-raid
 denizen.search-party

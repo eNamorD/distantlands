@@ -1,6 +1,6 @@
 # Catalog Batch 10: Engine Seams
 
-**Status:** designed 2026-11-03. Slices 1 to 10 landed.
+**Status:** designed 2026-11-03. Slices 1 to 11 landed.
 
 **Builds on** [Catalog batch 9](2026-11-02-catalog-batch-9-design.md) and
 [batch 8](2026-10-12-catalog-batch-8-design.md), whose vocabulary, cost
@@ -479,21 +479,41 @@ replay.
 
 ## Slice 11: Challenge reach
 
-`ChallengeProcedure.afterModifiers` stops refusing on an empty
-`legalBanners` and keeps its `supportedFaces` check. An empty banner
-question then refuses the start through `ModifierChoice`'s Start preview and
-`QueuedStart.priced`, as Travel and Trade judge their options after their
-modifiers. `legalBanners` reads the picks with
-`ModifierPicks.cards(answered)`, as `SearchProcedure` does:
+The Challenge's start no longer gates on `legalBanners`; `build` keeps
+only its `supportedFaces` check. The banner question reads the picks with
+`ModifierPicks.cards(answered)`, as `SearchProcedure` does, and with no
+banner in reach under them it refuses the walk with the same
+`NoPlayableOption("challenge")`. An empty question alone would not refuse
+it: the walk would park on it. "Start Challenge" therefore previews
+unavailable until a pick opens a banner, and `QueuedStart.priced` finds
+that pick for the Act menu. The four cards live beside the Challenge in
+`actions/challenge`, as Underground Library lives beside the Recover, and
+`ChallengeReach` reads their picks:
 
-- **School of Vines:** an enemy-held banner no longer needs the user's pawn
-  at its holder's pawn's site.
-- **Sigil of the Eye:** the same for the Darkest Secret; **Sigil of the
-  Heart:** for the People's Favor.
-- **Magician's Code** (2 favor), for the Darkest Secret only: the strictly-
-  more check counts the user's secrets plus 2, the amount's lower bound
-  drops to 0, and the payment places the 2 gained secrets with the rest.
-  It is selectable only when those 2 secrets make the banner reachable.
+- **School of Vines:** a banner an enemy holds no longer needs the user's
+  pawn at its holder's pawn's site. Imperial players are not each other's
+  enemies (rules glossary, "Enemy"), so a Citizen still needs the
+  Chancellor's site.
+- **Sigil of the Eye:** the same for the Darkest Secret, whoever holds it;
+  **Sigil of the Heart:** for the People's Favor.
+- **Magician's Code** (2 favor, placed on the card), for the Darkest Secret
+  only: the strictly-more check counts the user's secrets plus 2, and the
+  amount's lower bound drops by 2, to no less than 0. The 2 secrets are
+  gained to the user's board just before the payment, which places them
+  with the rest, so the Challenge's line counts them: "Took Darkest Secret
+  from the bank with 2 secrets." It is selectable only when the Darkest
+  Secret is then in reach, counting the reach cards the user could still
+  pick. Otherwise it says why: "The Darkest Secret is out of reach, even
+  with 2 more secrets", "The Darkest Secret's holder is not at your
+  site", or "You hold the Darkest Secret".
+
+School of Vines and the Sigils are selectable only when they bring a
+banner into reach that the picks so far leave out, counting Magician's
+Code while the user could still pick and pay for it: "Brings no new
+banner into reach." A pick that opened nothing would leave "Start
+Challenge" unavailable with nothing else to pick. Counting the cards
+still to pick lets the Code and Sigil of the Eye or School of Vines be
+picked in either order when both are needed.
 
 **Favored Son.** WHEN PLAYED: a non-required `Take` of the People's Favor
 from its holder or the shared bank, as Wizard's Conclave takes a banner,
@@ -501,14 +521,18 @@ with the People's Favor branch of `ChallengeRibbon` as its `leaving`.
 `ChallengeRibbon` widens to `private[gameplay]` so the ribbon has one
 source; it is not walked under the `ChallengeRibbon` window, so Secret
 Testament stays out (ruling 11). If the user holds the banner, nothing
-happens. Line: "Took the People's Favor." or "Already held the People's
-Favor."
+happens. Lines: "Took the People's Favor.", "Already held the People's
+Favor.", or, when Lost Tongue refuses the take, "The People's Favor did
+not move."
 
 Tests: each modifier opening a banner that was out of reach, and the
-Challenge refused without it; the Code's amounts and payment; the Code
-unselectable when 2 secrets do not suffice; Favored Son from a player, from
-the shared bank, and when already held; existing Challenge suites
-unchanged.
+Challenge refused without it; a reach modifier that opens nothing shown
+unavailable; School of Vines and an Imperial ally's banner; the Code's
+amounts, payment and line; the Code unselectable when 2 secrets do not
+suffice or the holder is away; the Code and Sigil of the Eye both needed,
+in either order; Favored Son from a player, from the shared bank, when already
+held, under Lost Tongue and beside Secret Testament; existing Challenge
+suites unchanged.
 
 ## Slice 12: Nested card play
 
@@ -598,7 +622,7 @@ lost before Wake; codec; replay.
 | Drowned Library's pick read by Recover, `OnEdificeFace` | 8 | Drowned Library |
 | `Discard` position | 9 | Bracken |
 | `CardGathering` rename | 10 | Autumn Wind, the Chronicle |
-| Challenge judged after modifiers | 11 | four Challenge modifiers |
+| Banner question under the picks, `ChallengeReach` | 11 | four Challenge modifiers |
 | Nested WHEN PLAYED | 12 | Search Party |
 | Askable Act options | 13 | both Patrols |
 | `trackedPawns` | 14 | Tracker |

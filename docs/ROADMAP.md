@@ -86,9 +86,6 @@ section describes each seam below in a paragraph.
 - **As-if ruler:** Bandit Crown, Grand Mask.
 - **Favor source redirection:** Vow of Kinship.
 - **An askable Act action:** consent for Relic Patrols and Bandit Patrols.
-- **Challenge** (`legalBanners` is hard-coded, no ribbon adjustment): School
-  of Vines, Sigil of the Eye, Sigil of the Heart, Favored Son, Magician's
-  Code.
 - **Unchanged from batch 8:** Search Party (recorded in the
   [catalog batch 4 rulings](superpowers/specs/2026-10-05-catalog-batch-4-rulings.md#moved-out-of-the-batch)),
   Master of Disguise (acting as another player's advisers), Tracker and
