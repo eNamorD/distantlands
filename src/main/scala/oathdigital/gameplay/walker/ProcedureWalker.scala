@@ -210,7 +210,8 @@ object ProcedureWalker extends DecideNarrowing:
     ctx.state.copy(game = ctx.state.game.copy(current =
       ctx.state.game.current.copy(walkerPending = None,
         rollPools = Map.empty, walkerDeferred = Map.empty,
-        walkerAsIfSite = None, walkerPicks = Vector.empty,
+        walkerAsIfSite = None, walkerAsIfAdvisers = None,
+        walkerPicks = Vector.empty,
         walkerProcedure = None)))
 
   private def contractViolation(message: String): Left[OathViolation, Nothing] =

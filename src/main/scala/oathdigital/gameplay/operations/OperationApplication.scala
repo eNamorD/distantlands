@@ -215,6 +215,8 @@ private[gameplay] object OperationApplication:
         result.map(TurnStateOperations.takeDeferred(_, key))
       case (result, ActAsIf(site)) =>
         result.map(TurnStateOperations.actAsIf(_, site))
+      case (result, ActAsIfAdvisers(player)) =>
+        result.flatMap(TurnStateOperations.actAsIfAdvisers(_, player))
       case (result, TrackPawn(holder, target)) =>
         result.flatMap(TurnStateOperations.trackPawn(_, holder, target))
       case (result, ClearTrackedPawn(holder)) =>

@@ -275,6 +275,12 @@ final case class CurrentGameState(
     // walker and `WalkerCompleted` clear it with the dice pools. Never
     // projected.
     walkerAsIfSite: Option[SiteId] = None,
+    // The player whose advisers the walk's actor acts as if they held, for
+    // the rest of the walk (Master of Disguise, catalog batch 11, slice 3).
+    // Walker scratch, set by `ActAsIfAdvisers`: replay rebuilds it from
+    // the recorded `ActAsIfAdvisers`, and the walker and `WalkerCompleted`
+    // clear it with the dice pools. Never projected.
+    walkerAsIfAdvisers: Option[PlayerId] = None,
     // The picks the walk's pick-and-pay menus took, in pick order, with what
     // each paid (`PlayedPick`). Walker scratch: replay rebuilds it from the
     // recorded `OpenPick`, payments and `ClosePick`, and the walker and

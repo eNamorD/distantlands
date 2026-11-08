@@ -139,3 +139,42 @@ class PowerAccessSuite extends munit.FunSuite:
     assertEquals(PowerAccess.presentSite(state, actor), Some(far))
     assertEquals(PowerAccess.presentSite(state, other), Some(home))
     assertEquals(PowerAccess.locate(state, other, card), None)
+
+  /** `state` with `actor`, the walk's actor on their own turn, acting as if
+    * holding `chosen`'s advisers, as `ActAsIfAdvisers` leaves it. */
+  private def actingWithAdvisersOf(state: ReadyGame, chosen: PlayerId)
+      : ReadyGame =
+    state.updateCurrent(_.copy(walkerAsIfAdvisers = Some(chosen)))
+
+  /** p1 on their Act holding Wrestlers, and p2 holding Errand Boy, both
+    * faceup advisers. */
+  private val eachHoldingOneAdviser = Table.start.turn(actor, Phase.Act)
+    .adviser(actor, wrestlers).adviser(other, card).ready
+
+  test("acting with another player's advisers, the actor uses theirs and " +
+      "not their own"):
+    val state = actingWithAdvisersOf(eachHoldingOneAdviser, other)
+    val othersAdvisers = state.game.current.player(other).get.advisers
+    assertEquals(PowerAccess.advisersOf(state, actor), othersAdvisers)
+    assertEquals(PowerAccess.locate(state, actor, card),
+      Some(PowerAccess.Held.InPlayArea))
+    assertEquals(PowerAccess.locate(state, actor, wrestlers), None)
+    assert(PowerAccess.holdsFaceupAdviser(state, actor, card))
+    assert(!PowerAccess.holdsFaceupAdviser(state, actor, wrestlers))
+    assert(PowerAccess.accessible(RuleSourceRef.Adviser(other, card),
+      RuleSourceFace.FaceUp, state, actor))
+    assert(!PowerAccess.accessible(RuleSourceRef.Adviser(actor, wrestlers),
+      RuleSourceFace.FaceUp, state, actor))
+
+  test("the chosen player keeps their advisers, and the card keeps its " +
+      "real holder"):
+    val state = actingWithAdvisersOf(eachHoldingOneAdviser, other)
+    assertEquals(PowerAccess.advisersOf(state, other),
+      state.game.current.player(other).get.advisers)
+    assert(PowerAccess.holdsFaceupAdviser(state, other, card))
+    assertEquals(PowerAccess.faceupAdviserHolder(state, card), Some(other))
+
+  test("without the record, each player acts with their own advisers"):
+    assertEquals(PowerAccess.locate(eachHoldingOneAdviser, actor, wrestlers),
+      Some(PowerAccess.Held.InPlayArea))
+    assertEquals(PowerAccess.locate(eachHoldingOneAdviser, actor, card), None)

@@ -691,6 +691,15 @@ final case class TakeDeferred(key: DeferralKey) extends PrimitiveOperation
   */
 final case class ActAsIf(site: SiteId) extends PrimitiveOperation
 
+/** Records that the walk's actor acts as if they held `player`'s advisers
+  * instead of their own for the rest of the walk, in
+  * `CurrentGameState.walkerAsIfAdvisers` (Master of Disguise, catalog
+  * batch 11, slice 3). The walker clears it when the walk ends. The
+  * journal records it, so a game reloaded from its events holds the same
+  * player. It moves no card and writes no Game Log line.
+  */
+final case class ActAsIfAdvisers(player: PlayerId) extends PrimitiveOperation
+
 /** Records the pawn `holder` chose with Tracker's ACTION in
   * `CurrentGameState.trackedPawns` (catalog batch 10, slice 14). */
 final case class TrackPawn(holder: PlayerId, target: PlayerId)

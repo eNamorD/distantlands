@@ -142,3 +142,10 @@ class EffectiveSuitSuite extends munit.FunSuite:
       .tokens(wrestlers, favor = 2).ready
     assertEquals(RestCleanupPlan.derive(catalog, ready, p1)
       .map(_.returnedFavor), Right(Map(Suit.Discord -> 2)))
+
+  test("a player acting with another player's advisers counts theirs"):
+    val state = Table.start.turn(p1, Phase.Act).adviser(p1, wrestlers)
+      .adviser(p2, homesteaders).ready
+      .updateCurrent(_.copy(walkerAsIfAdvisers = Some(p2)))
+    assertEquals(EffectiveSuit.count(catalog, state, p1, Suit.Order), 0)
+    assertEquals(EffectiveSuit.count(catalog, state, p1, Suit.Hearth), 1)

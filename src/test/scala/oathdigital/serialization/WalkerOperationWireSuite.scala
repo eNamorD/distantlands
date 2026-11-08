@@ -683,3 +683,10 @@ class WalkerOperationWireSuite extends munit.FunSuite:
     assertEquals(GameEventWire.decode(encoded).map(_.event), Right(event))
     assertEquals(ujson.read(encoded)("payload")("step")("ops")(0)("kind").str,
       "act-as-if")
+
+  test("an as-if adviser holder round trips"):
+    val event = recordedOperation(ActAsIfAdvisers(PlayerId("p2")))
+    val encoded = accepted(GameEventWire.encodeEvent("walker", 0, event))
+    assertEquals(GameEventWire.decode(encoded).map(_.event), Right(event))
+    assertEquals(ujson.read(encoded)("payload")("step")("ops")(0)("kind").str,
+      "act-as-if-advisers")

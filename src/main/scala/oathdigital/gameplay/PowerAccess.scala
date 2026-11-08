@@ -23,6 +23,13 @@ import oathdigital.model._
   * pawn site's place for `locate` ([[presentSite]]). Ruled sites, the
   * Crown holder's bandit sites and the play area stay usable; the physical
   * pawn site does not, unless it is one of those.
+  *
+  * Master of Disguise makes its user act as if they held another player's
+  * advisers instead of their own for the rest of a Trade. `ActAsIfAdvisers`
+  * records the player as walker scratch
+  * (`CurrentGameState.walkerAsIfAdvisers`), and the walk's end clears it.
+  * For the walk's actor, that player's advisers then replace their own in
+  * `locate`, `accessible` and `holdsFaceupAdviser` ([[advisersOf]]).
   */
 private[gameplay] object PowerAccess:
   sealed trait Held extends Product with Serializable
@@ -30,18 +37,39 @@ private[gameplay] object PowerAccess:
     final case class AtSite(site: SiteId) extends Held
     case object InPlayArea extends Held
 
-  /** The player holding `card` faceup among their advisers, if any. */
-  def faceupAdviserHolder(ready: ReadyGame, card: DenizenId): Option[PlayerId] =
-    ready.game.current.players.find(hasFaceupAdviser(_, card)).map(_.player)
+  /** The player whose advisers `player` acts with: the one Master of
+    * Disguise chose, for the walk's actor while `ActAsIfAdvisers` holds
+    * (`CurrentGameState.walkerAsIfAdvisers`), and `player` otherwise. */
+  def advisingPlayer(ready: ReadyGame, player: PlayerId): PlayerId =
+    val current = ready.game.current
+    current.walkerAsIfAdvisers.filter(_ => current.walkActor == player)
+      .getOrElse(player)
 
-  /** Whether `player` holds `card` faceup among their advisers. */
+  /** The advisers `player` acts with ([[advisingPlayer]]). A reader that
+    * decides whether an adviser's power serves or binds a player reads
+    * these. A physical fact, such as a move, the adviser limit or the
+    * board shown, reads `PlayerState.advisers`. */
+  def advisersOf(ready: ReadyGame, player: PlayerId): Vector[AdviserState] =
+    ready.game.current.player(advisingPlayer(ready, player)).toVector
+      .flatMap(_.advisers)
+
+  /** The player who really holds `card` faceup among their advisers, if
+    * any. It reads no [[advisersOf]]: no Trade reads it, and a card a
+    * Master of Disguise holder acts with would otherwise have two
+    * holders. */
+  def faceupAdviserHolder(ready: ReadyGame, card: DenizenId): Option[PlayerId] =
+    ready.game.current.players.find(player => faceUp(player.advisers, card))
+      .map(_.player)
+
+  /** Whether `player` acts with `card` faceup among their advisers
+    * ([[advisersOf]]). */
   def holdsFaceupAdviser(ready: ReadyGame, player: PlayerId, card: DenizenId)
       : Boolean =
-    ready.game.current.player(player)
-      .exists(hasFaceupAdviser(_, card))
+    faceUp(advisersOf(ready, player), card)
 
-  private def hasFaceupAdviser(player: PlayerState, card: DenizenId): Boolean =
-    player.advisers.exists {
+  private def faceUp(advisers: Vector[AdviserState], card: DenizenId)
+      : Boolean =
+    advisers.exists {
       case DenizenState(held, Orientation.FaceUp, _) => held == card
       case _ => false
     }
@@ -101,7 +129,8 @@ private[gameplay] object PowerAccess:
       case RuleSourceRef.Edifice(id, _) =>
         (face == RuleSourceFace.Intact || face == RuleSourceFace.Ruined) &&
           sites(id)
-      case RuleSourceRef.Adviser(owner, _) => owner == actor &&
+      case RuleSourceRef.Adviser(owner, _) =>
+        owner == advisingPlayer(ready, actor) &&
         (face == RuleSourceFace.FaceUp ||
           (facedownAdviser && face == RuleSourceFace.FaceDown))
       case RuleSourceRef.Relic(owner, _) =>
@@ -117,7 +146,8 @@ private[gameplay] object PowerAccess:
   /** Where `card` is, if `actor` may use it. A site card or edifice at a
     * usable site is `AtSite`: a site whose cards the actor uses as a ruler
     * ([[rulingSites]]), or the one they act from ([[presentSite]]). A faceup
-    * adviser or relic in the actor's play area is `InPlayArea`.
+    * adviser the actor acts with ([[advisersOf]]) or a faceup relic in their
+    * play area is `InPlayArea`.
     */
   def locate(ready: ReadyGame, actor: PlayerId, card: CardId)
       : Option[Held] =
@@ -128,11 +158,10 @@ private[gameplay] object PowerAccess:
         case d: DenizenState => d.id == card && d.orientation == Orientation.FaceUp
         case e: EdificeState => e.id == card
       }) => Held.AtSite(id)
-    lazy val inPlay = current.player(actor).exists(player =>
-      player.advisers.exists {
+    lazy val inPlay = advisersOf(ready, actor).exists {
         case d: DenizenState => d.id == card && d.orientation == Orientation.FaceUp
         case _ => false
-      } || player.relics.exists(relic =>
+      } || current.player(actor).exists(_.relics.exists(relic =>
         relic.id == card && relic.orientation == Orientation.FaceUp))
     atSite.orElse(Option.when(inPlay)(Held.InPlayArea))
 

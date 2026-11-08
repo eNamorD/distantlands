@@ -128,6 +128,18 @@ private[operations] object TurnStateOperations:
   def actAsIf(ready: ReadyGame, site: SiteId): ReadyGame =
     ready.updateCurrent(_.copy(walkerAsIfSite = Some(site)))
 
+  /** Records the player whose advisers the walk's actor acts with; the
+    * walker clears it when the walk ends. The player is seated and is not
+    * the walk's actor. */
+  def actAsIfAdvisers(ready: ReadyGame, player: PlayerId)
+      : Either[OperationError, ReadyGame] =
+    val current = ready.game.current
+    if !current.players.exists(_.player == player) then Left(
+      InvalidDescription(s"${player.value} is not seated"))
+    else if current.walkActor == player then Left(InvalidDescription(
+      s"${player.value} cannot act as if holding their own advisers"))
+    else Right(ready.updateCurrent(_.copy(walkerAsIfAdvisers = Some(player))))
+
   /** Records `target` as the pawn `holder` tracks. Both are seated, and
     * no player tracks their own pawn. */
   def trackPawn(ready: ReadyGame, holder: PlayerId, target: PlayerId)

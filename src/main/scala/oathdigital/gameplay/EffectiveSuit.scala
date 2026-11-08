@@ -81,12 +81,13 @@ object EffectiveSuit:
   def of(ready: ReadyGame, card: Denizen): Suit =
     if pledged(ready, card.id) then Suit.Discord else card.suit
 
-  /** `player`'s faceup advisers of `suit`, each by its weight. `answered`
-    * is the walk's answers, so a picked Acting Troupe counts as its
+  /** `player`'s faceup advisers of `suit`, as they act with them
+    * ([[PowerAccess.advisersOf]]), each by its weight. `answered` is the
+    * walk's answers, so a picked Acting Troupe counts as its
     * answered suit ([[troupe]]); a reader outside a Trade passes none. */
   def count(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
       suit: Suit, answered: Vector[Answered] = Vector.empty): Int =
-    ready.game.current.player(player).toVector.flatMap(_.advisers).collect {
+    PowerAccess.advisersOf(ready, player).collect {
         case DenizenState(id, Orientation.FaceUp, _)
             if acted(catalog, ready, answered, id).contains(suit) =>
           weight(id)

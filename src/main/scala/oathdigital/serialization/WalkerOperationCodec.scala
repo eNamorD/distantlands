@@ -40,8 +40,8 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
     UsurperLimiterRemoved.type | BeginTurn | EnterPhase |
     SetOathkeeper | SetOathkeeperGoal | ChronicleUpdated | RecordPowerUse | RecordCampaignResult |
     ModifyDicePool | Roll | ModifyRollOutcome | Reroll | SetDieFaces |
-    QueueProcedure | Defer | TakeDeferred | ActAsIf | OpenPick | ClosePick |
-    TrackPawn | ClearTrackedPawn
+    QueueProcedure | Defer | TakeDeferred | ActAsIf | ActAsIfAdvisers |
+    OpenPick | ClosePick | TrackPawn | ClearTrackedPawn
   private type ChronicleOperation = RoleChanged | ChronicleTaskAssigned |
     GrandScepterFromBox | ImperialWarbandsTaken | WarbandsAdded |
     LineagePointsScored | EdificeBuilt | SuitedReserveFromBox
@@ -317,6 +317,8 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
         "key" -> key.value)
       case ActAsIf(site) => ujson.Obj("kind" -> "act-as-if",
         "siteId" -> site.value)
+      case ActAsIfAdvisers(player) => ujson.Obj(
+        "kind" -> "act-as-if-advisers", "playerId" -> player.value)
       case TrackPawn(holder, target) => ujson.Obj("kind" -> "track-pawn",
         "holder" -> holder.value, "target" -> target.value)
       case ClearTrackedPawn(holder) => ujson.Obj(
@@ -694,6 +696,8 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
     case "take-deferred" =>
       Right(TakeDeferred(DeferralKey(value("key").str)))
     case "act-as-if" => Right(ActAsIf(SiteId(value("siteId").str)))
+    case "act-as-if-advisers" =>
+      Right(ActAsIfAdvisers(PlayerId(value("playerId").str)))
     case "track-pawn" => Right(TrackPawn(PlayerId(value("holder").str),
       PlayerId(value("target").str)))
     case "clear-tracked-pawn" =>
