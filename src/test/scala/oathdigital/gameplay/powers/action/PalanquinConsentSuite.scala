@@ -1,5 +1,6 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.gameplay.BanditCrownCard
 import oathdigital.gameplay.actions.travel.TravelProcedure
 import oathdigital.gameplay.cards.NarrowPassSite
 import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
@@ -151,6 +152,20 @@ class PalanquinConsentSuite extends munit.FunSuite:
     val ready = on(board())(_.adviser(p1, PalanquinCard.id).favor(p1, 1)
       .pawn(p3, cradlePlains).favor(p3, 1).denizen(toll, at = provincePlains)
       .bandits(provincePlains, 1).bandits(coast, 1))
+    assertEquals(askOf(offered(aimedAtP3(ready).state, coastRef)).asks,
+      Vector(ConsentAsk(p3, Vector(TollRoads.payerId))))
+    val agreed = remembering(ready,
+      TollRoads.payerKey(p3, coast) -> ConsentAnswer.Granted.by(p3))
+    val after = Look(Outcomes.ready(sentToTheCoast(agreed).state))
+    assertEquals(after.pawn(p3), coast)
+    assertEquals(after.favor(p3), 0)
+
+  test("a sent Travel under bandits still burns unasked with a Bandit " +
+      "Crown in play"):
+    val ready = on(board())(_.adviser(p1, PalanquinCard.id).favor(p1, 1)
+      .pawn(p3, cradlePlains).favor(p3, 1).denizen(toll, at = provincePlains)
+      .bandits(provincePlains, 1).bandits(coast, 1)
+      .relic(p2, BanditCrownCard))
     assertEquals(askOf(offered(aimedAtP3(ready).state, coastRef)).asks,
       Vector(ConsentAsk(p3, Vector(TollRoads.payerId))))
     val agreed = remembering(ready,

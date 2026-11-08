@@ -1,5 +1,6 @@
 package oathdigital.gameplay.powers.travel
 
+import oathdigital.gameplay.BanditCrownCard
 import oathdigital.gameplay.powers.{NoteText, PayOrAsk, PowerFixture}
 import oathdigital.model._
 import oathdigital.testkit.{ActPowerHarness, Look, Outcomes, PlacementPicks,
@@ -97,6 +98,28 @@ class GraspingVinesSuite extends munit.FunSuite:
   test("an enemy of a player ruler may ask to travel without killing; once " +
       "granted, no warband dies"):
     val ready = vinesAtHome(Some(rival))
+    val free = GraspingVines.free(cradlePlains)
+    val asked = present(PlacementPicks.parkedOptions(
+      accepted(travel(ready, coast)).state, powers(Vector.empty))
+      .find(_.ref == free), "the free option")
+    assertEquals(asked, DecisionOption.Unavailable(
+      DecisionOption.Button(free, "Travel without killing"),
+      OptionReason.Askable(GraspingVines.id, GraspingVines.mustKillConsent(
+        PowerSourceRef.Card(GraspingVinesCard.id)),
+        Vector(ConsentAsk(rival, Vector(GraspingVines.id))))))
+    val granted = ready.copy(consent = ConsentState().granting(Vector(
+      ConsentKey(GraspingVines.id, actor, GraspingVines.decisionId, free)),
+      ConsentTurn.of(ready)))
+    val done = accepted(travel(granted, coast).flatMap(
+      answeringStep(_, GraspingVines.decisionId, free)))
+    assertEquals(warbands(Outcomes.ready(done.state)), warbands(ready))
+    assertEquals(said(done.events), Vector(NoteText.Said("spared",
+      s"Killed nothing, with ${rival.value}'s consent.", covers = false)))
+
+  test("under bandits the Bandit Crown's holder may let a traveller off, " +
+      "and is named in the line"):
+    val ready = Table.from(vinesAtHome(None)).relic(rival, BanditCrownCard)
+      .ready
     val free = GraspingVines.free(cradlePlains)
     val asked = present(PlacementPicks.parkedOptions(
       accepted(travel(ready, coast)).state, powers(Vector.empty))

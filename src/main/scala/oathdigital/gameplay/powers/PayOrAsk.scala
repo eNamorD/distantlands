@@ -5,12 +5,12 @@ import oathdigital.gameplay.powerresolver.{OptionRestriction, PowerCtx,
   Waiver}
 import oathdigital.model._
 
-/** A toll or penalty a card's ruling player may waive (consent design, "Toll
-  * and penalty steps"). When somebody other than the payer may let them off
-  * ([[PayOrAsk.letOffBy]]), the payer is asked to pay or to go on without
-  * paying. The free option is
-  * barred by the card's waivable restriction: it is askable until the ruler
-  * answers, and choosable once they consent. The step is hooked by
+/** A toll or penalty a card's ruling player, or the Bandit Crown's holder
+  * under bandits, may waive (consent design, "Toll and penalty steps"). When
+  * somebody other than the payer may let them off ([[PayOrAsk.letOffBy]]),
+  * the payer is asked to pay or to go on without paying. The free option is
+  * barred by the card's waivable restriction: it is askable until that
+  * player answers, and choosable once they consent. The step is hooked by
   * [[PowerWindow.PayOrAsk]], where only that restriction speaks.
   *
   * The free option's key names the occasion (the destination, the pawn's

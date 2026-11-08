@@ -1,5 +1,6 @@
 package oathdigital.gameplay.powers.search
 
+import oathdigital.gameplay.BanditCrownCard
 import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.powers.{NoteText, PayOrAsk, SearchFixture,
   WalkerPowerCatalog}
@@ -114,3 +115,20 @@ class ForcedLaborSuite extends munit.FunSuite:
       Look(ready).favor(p1))
     assertEquals(said(done.events), Vector(NoteText.Said("waived",
       s"Gave nothing, with ${p2.value}'s consent.", covers = false)))
+
+  test("under bandits the Bandit Crown's holder may let a searcher off; " +
+      "paying still burns"):
+    val ready = laborTable.bandits(peaks, 1).bandits(home, 1)
+      .relic(p2, BanditCrownCard).ready
+    val free = PayOrAsk.free(home.value)
+    val options = PlacementPicks.parkedOptions(
+      accepted(SearchFixture.start(ready)).state, automatic)
+    assertEquals(options.find(_.ref == PayOrAsk.pay),
+      Some(DecisionOption.Button(PayOrAsk.pay, "Burn 1 favor")))
+    assert(present(options.find(_.ref == free), "the free option").askable)
+    val paid = searchedAnswering(ready, PayOrAsk.pay)
+    val after = Look(SearchFixture.after(paid))
+    assertEquals(after.favor(p1), 0)
+    assertEquals(after.favor(p2), Look(ready).favor(p2))
+    assertEquals(said(paid.events), Vector(NoteText.Said("burned",
+      "Burned 1 favor.", covers = false)))

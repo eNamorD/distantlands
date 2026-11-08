@@ -1,5 +1,6 @@
 package oathdigital.gameplay.powers.travel
 
+import oathdigital.gameplay.BanditCrownCard
 import oathdigital.gameplay.powers.{NoteText, PayOrAsk, PowerFixture}
 import oathdigital.model._
 import oathdigital.testkit.{Look, Outcomes, PlacementPicks, Table}
@@ -85,3 +86,25 @@ class TollRoadsConsentSuite extends munit.FunSuite:
       answeringStep(_, TollRoads.decisionId, free)))
     assertEquals(Look(Outcomes.ready(done.state)).player(actor).pawnSite,
       Some(coast))
+
+  test("under bandits the Bandit Crown's holder may let a traveller off; " +
+      "paying still burns"):
+    val ready = on(board(supply = 7))(_.denizen(TollRoadsCard.id,
+      at = provincePlains).favor(actor, 1).bandits(provincePlains, 1)
+      .bandits(coast, 1).relic(rival, BanditCrownCard))
+    assertEquals(offered(ready, coast, PayOrAsk.pay),
+      DecisionOption.Button(PayOrAsk.pay, "Burn 1 favor"))
+    assertEquals(offered(ready, coast, free), DecisionOption.Unavailable(
+      freeButton, OptionReason.Askable(TollRoads.id,
+        TollRoads.noFreeTravelConsent(card),
+        Vector(ConsentAsk(rival, Vector(TollRoads.id))))))
+    val paid = Outcomes.ready(accepted(travel(ready, coast).flatMap(
+      answeringStep(_, TollRoads.decisionId, PayOrAsk.pay))).state)
+    assertEquals(Look(paid).favor(actor), 0)
+    assertEquals(Look(paid).favor(rival), Look(ready).favor(rival))
+    val waived = accepted(travel(granted(ready), coast).flatMap(
+      answeringStep(_, TollRoads.decisionId, free)))
+    assertEquals(Look(Outcomes.ready(waived.state)).favor(actor), 1)
+    assertEquals(said(waived.events), Vector(NoteText.Said("waived",
+      s"${actor.value} paid nothing, with ${rival.value}'s consent.",
+      covers = false)))
