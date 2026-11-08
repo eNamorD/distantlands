@@ -82,7 +82,6 @@ cards behind them. Each seam below cuts across the whole engine; the
 batch's [Deferred](superpowers/specs/2026-11-03-catalog-batch-10-design.md#deferred)
 section says why in a paragraph.
 
-- **As-if ruler:** Grand Mask.
 - **Favor source redirection:** Vow of Kinship.
 - **Acting as another player's advisers:** Master of Disguise.
 - **Off-turn actor and a warband on a Vision:** False Prophet.
