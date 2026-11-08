@@ -1,7 +1,7 @@
 package oathdigital.gameplay.operations
 
 import oathdigital.catalog.{Edifice, EdificeFace, Locked, PrintedPower}
-import oathdigital.gameplay.SiteRulers
+import oathdigital.gameplay.{CardRule, SiteRulers}
 import oathdigital.model._
 
 object HallOfMinistersCard extends Edifice(EdificeId("E16"), Suit.Order):
@@ -79,7 +79,7 @@ case object HallOfMinisters extends OperationRestriction with WaivableRule:
   /** The ruler of the site where the intact Hall stands. */
   private def hallRuler(ready: ReadyGame): Option[SiteRuler] =
     ready.game.current.edificeSite(HallOfMinistersCard.id, EdificeSide.Intact)
-      .flatMap(siteRuler(ready, _))
+      .flatMap(CardRule.rulerAt(ready, _, HallOfMinistersCard.id))
 
   private def siteRuler(ready: ReadyGame, site: SiteId): Option[SiteRuler] =
     SiteRule.rulingPlayer(ready, site)

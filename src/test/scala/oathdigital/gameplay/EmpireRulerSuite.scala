@@ -1,6 +1,7 @@
 package oathdigital.gameplay
 
 import oathdigital.gameplay.cards.{DunesSite, FairIsleSite}
+import oathdigital.gameplay.powers.targeting.ForgottenVaultCard
 import oathdigital.model._
 import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2, p3}
@@ -32,5 +33,6 @@ class EmpireRulerSuite extends munit.FunSuite:
 
   test("an Empire site protects every Imperial player"):
     val ready = empireAndExileSites.turn(p3, Phase.Act).ready
-    assertEquals(SiteRulers.protectedAt(ready, dunes), Set(p1, p2))
-    assertEquals(SiteRulers.protectedAt(ready, fairIsle), Set(p3))
+    val vault = ForgottenVaultCard.id
+    assertEquals(SiteRulers.protectedBy(ready, dunes, vault), Set(p1, p2))
+    assertEquals(SiteRulers.protectedBy(ready, fairIsle, vault), Set(p3))

@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.travel
 
 import oathdigital.catalog.{Edifice, EdificeFace, Locked, PrintedPower}
-import oathdigital.gameplay.{EffectiveSuit, SiteRulers}
+import oathdigital.gameplay.{CardRule, EffectiveSuit, SiteRulers}
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerCtx, Restriction, Waiver}
 import oathdigital.model._
@@ -76,7 +76,7 @@ case object ForbiddenForest extends ContributingPower:
     route <- TravelRoute.pawnMove(ctx.operation)
     site <- forestSite(ctx.state)
     if route.destination == site
-    ruler <- SiteRulers.rulerOf(ctx.state, site)
+    ruler <- CardRule.rulerAt(ctx.state, site, ForbiddenForestCard.id)
     if SiteRule.enemies(ruler, SiteRuler.Player(route.player))
     if EffectiveSuit.count(ctx.catalog, ctx.state, route.player,
       Suit.Beast) == 0

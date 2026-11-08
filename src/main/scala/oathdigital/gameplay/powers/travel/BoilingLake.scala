@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.travel
 
-import oathdigital.gameplay.SiteRulers
+import oathdigital.gameplay.CardRule
 import oathdigital.gameplay.operations.BoilingLakeCard
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerCtx, Transform}
@@ -51,7 +51,7 @@ case object BoilingLakeTravel extends ContributingPower:
     TravelRoute.pawnMove(ctx.operation).exists(route =>
       ctx.state.game.current.edificeSite(edifice, EdificeSide.Intact)
         .exists(site => route.destination == site &&
-          !SiteRulers.rulerOf(ctx.state, site)
+          !CardRule.rulerAt(ctx.state, site, edifice)
             .contains(SiteRuler.Player(route.player))))
 
   private def boardWarbands(ready: ReadyGame, player: PlayerId): Int =

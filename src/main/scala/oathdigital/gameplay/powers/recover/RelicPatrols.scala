@@ -2,7 +2,7 @@ package oathdigital.gameplay.powers.recover
 
 import oathdigital.catalog.{Edifice, EdificeFace, Locked, ModifierMark,
   PrintedPower}
-import oathdigital.gameplay.SiteRulers
+import oathdigital.gameplay.{CardRule, SiteRulers}
 import oathdigital.gameplay.actions.recover.RecoverProcedure
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerCtx, Restriction, Waiver}
@@ -74,7 +74,7 @@ sealed abstract class PatrolRule extends ContributingPower:
   private def blocked(ctx: PowerCtx): Option[OathViolation] =
     val refused = for
       patrolsSite <- ctx.state.game.current.edificeSite(edifice, side)
-      patrolsRuler <- SiteRulers.rulerOf(ctx.state, patrolsSite)
+      patrolsRuler <- CardRule.rulerAt(ctx.state, patrolsSite, edifice)
       if SiteRule.enemies(patrolsRuler, SiteRuler.Player(ctx.actor))
       recoverSite <- RecoverProcedure.actorSite(ctx.state, ctx.actor)
       if patrolled(SiteRulers.rulerOf(ctx.state, recoverSite), patrolsRuler)

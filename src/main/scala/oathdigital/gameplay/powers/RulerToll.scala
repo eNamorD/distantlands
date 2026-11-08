@@ -1,12 +1,11 @@
 package oathdigital.gameplay.powers
 
-import oathdigital.gameplay.{NoteSupport, SiteRulers}
+import oathdigital.gameplay.{CardRule, NoteSupport}
 import oathdigital.model._
 
 /** The toll Curfew and Forced Labor charge an enemy of their ruler, on top
   * of the action's own cost: 1 favor given to the ruling player, or burnt
-  * when bandits rule. The rule card's ruler is the ruler of the site holding
-  * it faceup.
+  * when bandits rule. The rule card's ruler is `CardRule.rulerOf`'s.
   *
   * The payment is required, so an enemy who cannot pay, and is not let off,
   * is refused. When somebody may let the payer off (a player ruler, or the
@@ -57,11 +56,10 @@ private[powers] object RulerToll:
           step.source, NoteArg.Player(granter))))))
       case None => operations ++ paid
 
-  /** The ruler of the site holding `card` faceup, when `payer` is its
-    * enemy. */
+  /** The ruler of `card`, when `payer` is its enemy. */
   def enemyRuler(ready: ReadyGame, card: DenizenId, payer: PlayerId)
       : Option[SiteRuler] =
-    SiteRulers.rulerOfCard(ready, card).filter(ruler =>
+    CardRule.rulerOf(ready, card).filter(ruler =>
       SiteRule.enemies(ruler, SiteRuler.Player(payer)))
 
   /** The paying option of a toll step, "Give 1 favor to {owner}", or "Burn

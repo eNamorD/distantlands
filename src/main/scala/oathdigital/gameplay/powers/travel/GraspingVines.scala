@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.travel
 
 import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
-import oathdigital.gameplay.{NoteSupport, SiteRulers}
+import oathdigital.gameplay.{CardRule, NoteSupport, SiteRulers}
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution, PowerCtx, Transform}
 import oathdigital.gameplay.powers.{CatalogResolution, PayOrAsk}
 import oathdigital.model._
@@ -80,7 +80,7 @@ case object GraspingVines extends ContributingPower:
   private def charged(ctx: PowerCtx, operations: Vector[Operation])
       : Option[Vector[Operation]] = for
     route <- TravelRoute.pawnMove(ctx.operation)
-    ruler <- SiteRulers.rulerOfCard(ctx.state, cardId)
+    ruler <- CardRule.rulerOf(ctx.state, cardId)
     if SiteRule.enemies(ruler, SiteRuler.Player(route.player))
     if SiteRulers.rulerOf(ctx.state, route.source).contains(ruler)
     if ctx.state.game.current.player(route.player)

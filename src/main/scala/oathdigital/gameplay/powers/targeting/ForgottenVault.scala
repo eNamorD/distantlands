@@ -61,7 +61,8 @@ case object ForgottenVault extends ContributingPower:
     * are enemies of the actor. */
   private def owners(ctx: PowerCtx): Set[PlayerId] =
     ctx.state.game.current.faceUpDenizenSite(cardId)
-      .fold(Set.empty[PlayerId])(SiteRulers.protectedAt(ctx.state, _))
+      .fold(Set.empty[PlayerId])(SiteRulers.protectedBy(ctx.state, _,
+        cardId))
       .filter(owner =>
       SiteRule.enemies(SiteRuler.Player(owner), SiteRuler.Player(ctx.actor)))
 

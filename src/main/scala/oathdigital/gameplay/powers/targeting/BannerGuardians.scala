@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.targeting
 
-import oathdigital.gameplay.SiteRulers
+import oathdigital.gameplay.CardRule
 import oathdigital.gameplay.actions.BannerRules
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   OptionRestriction, PowerCtx}
@@ -47,7 +47,7 @@ sealed abstract class BannerGuardian extends ContributingPower:
     * their enemy. */
   private def protectedRuler(ctx: PowerCtx): Option[PlayerId] = for
     site <- ctx.state.game.current.edificeSite(edifice, EdificeSide.Intact)
-    ruler <- SiteRulers.rulerOf(ctx.state, site)
+    ruler <- CardRule.rulerAt(ctx.state, site, edifice)
     owner <- Some(ruler).collect { case SiteRuler.Player(owner) => owner }
     if SiteRule.enemies(ruler, SiteRuler.Player(ctx.actor))
     if BannerRules.holder(ctx.state.game.current, banner).contains(owner)

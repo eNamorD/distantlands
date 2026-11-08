@@ -180,7 +180,7 @@ case object OakenFortress extends FortressRule:
       attacker: PlayerId, defender: PlayerId): Boolean = defender != attacker &&
     ready.game.current.edificeSite(fortress, side).exists(site =>
       ready.game.current.pawnSite(defender).contains(site) &&
-        SiteRulers.protectedAt(ready, site).contains(defender))
+        SiteRulers.protectedBy(ready, site, fortress).contains(defender))
 
 /** The Rotting Fortress (E28, ruined): players at this site cannot be targeted
   * by a Challenge or a Raid, unless the targeting player has a faceup beast

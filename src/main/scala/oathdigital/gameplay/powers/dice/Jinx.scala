@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.dice
 
 import oathdigital.catalog.{Denizen, PrintedPower}
-import oathdigital.gameplay.SiteRulers
+import oathdigital.gameplay.CardRule
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.actions.dice.{DiceThrow, RerollChoice}
 import oathdigital.gameplay.operations.Costs
@@ -64,7 +64,7 @@ case object Jinx extends ContributingPower:
       .exists {
         case DenizenState(`card`, Orientation.FaceUp, _) => true
         case _ => false
-      }) || SiteRulers.rulerOfCard(ready, card)
+      }) || CardRule.rulerOf(ready, card)
       .contains(SiteRuler.Player(player))
 
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)

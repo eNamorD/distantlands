@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.travel
 
 import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
-import oathdigital.gameplay.{NoteSupport, SiteRulers}
+import oathdigital.gameplay.{CardRule, NoteSupport, SiteRulers}
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerCtx, Transform, Waiver}
 import oathdigital.gameplay.powers.{CatalogResolution, PayOrAsk, RulerToll}
@@ -121,7 +121,7 @@ case object TollRoads extends ContributingPower:
     * rules the destination. */
   def owed(ready: ReadyGame, traveller: PlayerId, destination: SiteId)
       : Option[SiteRuler] = for
-    ruler <- SiteRulers.rulerOfCard(ready, TollRoadsCard.id)
+    ruler <- CardRule.rulerOf(ready, TollRoadsCard.id)
     if SiteRule.enemies(ruler, SiteRuler.Player(traveller))
     if SiteRulers.rulerOf(ready, destination).contains(ruler)
   yield ruler

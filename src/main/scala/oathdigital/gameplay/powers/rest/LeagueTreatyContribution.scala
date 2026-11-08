@@ -2,6 +2,7 @@ package oathdigital.gameplay.powers.rest
 
 import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower,
   SiteOnly}
+import oathdigital.gameplay.CardRule
 import oathdigital.gameplay.powers.CatalogResolution
 import oathdigital.gameplay.powerresolver._
 import oathdigital.model._
@@ -86,7 +87,7 @@ case object LeagueTreatyContribution extends ContributingPower:
           case DenizenState(`cardId`, Orientation.FaceUp, _) => true
           case _ => false
         }))
-      ruler <- SiteRule.rulingPlayer(ready, site)
+      ruler <- CardRule.rulerAt(ready, site, cardId)
         .collect { case SiteRuler.Player(player) => player }
       region <- current.map.regionOf(site)
       holdings = current.map.inPlay.filter(current.map.regionOf(_)

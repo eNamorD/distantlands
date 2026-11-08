@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.travel
 
 import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
-import oathdigital.gameplay.SiteRulers
+import oathdigital.gameplay.CardRule
 import oathdigital.gameplay.operations.SupplyStrip
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   FoldPhase, PowerCtx, Transform}
@@ -75,7 +75,7 @@ case object WayStation extends ContributingPower:
     route <- TravelRoute.pawnMove(ctx.operation)
     site <- ctx.state.game.current.faceUpDenizenSite(cardId)
     if route.destination == site
-    ruler <- SiteRulers.rulerOfCard(ctx.state, cardId)
+    ruler <- CardRule.rulerOf(ctx.state, cardId)
   yield (route.player, ruler)
 
   private def rewrite(ctx: PowerCtx, traveller: PlayerId, ruler: SiteRuler,

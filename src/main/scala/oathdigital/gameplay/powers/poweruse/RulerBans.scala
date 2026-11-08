@@ -1,12 +1,13 @@
 package oathdigital.gameplay.powers.poweruse
 
-import oathdigital.gameplay.SiteRulers
+import oathdigital.gameplay.{CardRule, SiteRulers}
 import oathdigital.gameplay.powerresolver.{PowerUseRefusal, Waiver}
 import oathdigital.model._
 
 /** The ban a site card holds over its ruler's enemies (Spell Breaker,
   * Forest Council, City Wall; catalog batch 8, slice 10). The ruler is the
-  * ruler of the card's site, when that is a player or bandits: nobody is
+  * card's ruler (`CardRule.rulerOf`), when that is a player or bandits:
+  * nobody is
   * restricted at an unruled site. The Empire's sites resolve to its
   * governor. Every player but a player ruler is an enemy, and every player
   * is an enemy of bandits.
@@ -14,7 +15,7 @@ import oathdigital.model._
   * consent (consent design, ruling 4; catalog batch 11, ruling 5). */
 private[powers] object RulerBans:
   def ruler(ready: ReadyGame, card: DenizenId): Option[SiteRuler] =
-    SiteRulers.rulerOfCard(ready, card)
+    CardRule.rulerOf(ready, card)
 
   def enemy(ruler: SiteRuler, player: PlayerId): Boolean =
     ruler != SiteRuler.Player(player)
