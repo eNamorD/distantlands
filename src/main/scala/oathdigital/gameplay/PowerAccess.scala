@@ -29,7 +29,8 @@ import oathdigital.model._
   * records the player as walker scratch
   * (`CurrentGameState.walkerAsIfAdvisers`), and the walk's end clears it.
   * For the walk's actor, that player's advisers then replace their own in
-  * `locate`, `accessible` and `holdsFaceupAdviser` ([[advisersOf]]).
+  * `locate`, `accessible`, `holdsFaceupAdviser` and `EffectiveSuit.count`
+  * ([[advisersOf]]).
   */
 private[gameplay] object PowerAccess:
   sealed trait Held extends Product with Serializable

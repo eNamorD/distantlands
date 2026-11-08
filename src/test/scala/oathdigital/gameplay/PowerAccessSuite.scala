@@ -3,6 +3,7 @@ package oathdigital.gameplay
 import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.operations.HallOfMinistersCard
 import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.powers.economy.CupOfPlentyCard
 import oathdigital.gameplay.powers.search.ErrandBoyCard
 import oathdigital.model._
 import oathdigital.testkit.Table
@@ -178,3 +179,11 @@ class PowerAccessSuite extends munit.FunSuite:
     assertEquals(PowerAccess.locate(eachHoldingOneAdviser, actor, wrestlers),
       Some(PowerAccess.Held.InPlayArea))
     assertEquals(PowerAccess.locate(eachHoldingOneAdviser, actor, card), None)
+
+  test("acting with another player's advisers, the actor keeps their own " +
+      "relics"):
+    // Ruling 19: only the advisers are replaced.
+    val state = actingWithAdvisersOf(Table.start.turn(actor, Phase.Act)
+      .relic(actor, CupOfPlentyCard.id).ready, other)
+    assertEquals(PowerAccess.locate(state, actor, CupOfPlentyCard.id),
+      Some(PowerAccess.Held.InPlayArea))

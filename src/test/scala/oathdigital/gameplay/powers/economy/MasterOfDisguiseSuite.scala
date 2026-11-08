@@ -168,6 +168,14 @@ class MasterOfDisguiseSuite extends munit.FunSuite:
     // restriction look-ahead hides p2, as it hides a refused source.
     assertEquals(PhasePowerHarness.offered(asked, p1),
       Some(Vector("player" -> p3.value)))
+    // The Vow refuses only favor: in a Trade for secrets p2 is offered.
+    // A Trade for secrets costs favor, so p1 holds some.
+    val forSecrets = answeredWith(accepted(MenuPlay.started(rules,
+      Ready(Table.from(ready).favor(p1, 2).ready), p1, ActionRef.Trade,
+      Vector(DecisionOptionRef.Button("secret")))), modifiers,
+      DecisionOptionRef.Denizen(disguise))
+    assertEquals(PhasePowerHarness.offered(forSecrets, p1),
+      Some(Vector("player" -> p2.value, "player" -> p3.value)))
 
   test("the holder's own Vow of Poverty is lifted"):
     val ready = disguiseHolderBesideWrestlers().adviser(p1, poverty).ready
