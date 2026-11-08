@@ -94,7 +94,6 @@ batch's [Deferred](superpowers/specs/2026-11-03-catalog-batch-10-design.md#defer
 section says why in a paragraph.
 
 - **Favor source redirection:** Vow of Kinship.
-- **Acting as another player's advisers:** Master of Disguise.
 - **Off-turn actor and a warband on a Vision:** False Prophet.
 - **Vision collection:** Desecrated Ground.
 - **Discard replacement with a question:** Wild Pastures.
