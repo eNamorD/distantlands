@@ -39,7 +39,7 @@ class BanditForestSuite extends munit.FunSuite:
     val refusal = forest.refusal(catalog, ready, nonPersistentUseOf(terror,
       by = p1))
     assertEquals(refusal.map(_.note), Some(forest.usePlain(source)))
-    assertEquals(refusal.flatMap(_.reason.waiver).flatMap(_.granter), None)
+    assertEquals(refusal.flatMap(_.reason.waiver), None)
 
   test("an Exile may use the card"):
     val ready = terrorUnderBanditsWithForestRuined(p3).ready
@@ -51,7 +51,7 @@ class BanditForestSuite extends munit.FunSuite:
     val ban = forest.operationRestrictions(catalog).head
     val imperialPays = PayCost(p1, Location.OnCard(terror), Cost(favor = 1))
     assert(ban.reason(terrorUnderBanditsWithForestRuined(p1).ready,
-      imperialPays).exists(_.waiver.exists(_.granter.isEmpty)))
+      imperialPays).exists(_.waiver.isEmpty))
     val exilePays = PayCost(p3, Location.OnCard(terror), Cost(favor = 1))
     assertEquals(ban.reason(terrorUnderBanditsWithForestRuined(p3).ready,
       exilePays), None)

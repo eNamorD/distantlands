@@ -66,9 +66,12 @@ final class NonPersistentPowerRestriction(val id: PowerId, card: CardId,
       else asked.map(_._2)
     OperationReason(reasonCode, s"$describe cannot be used by " +
       s"${player.value}", OperationReasonKind.Impossible,
-      consent.zip(askedKey).map((rule, key) => OperationWaiver(id,
-        rule.granter(ready), ConsentKey(id, player, PowerUseRules.useKey,
-          target), key(cardSource), plain(cardSource))))
+      // With nobody to ask, the refusal carries no waiver, as before the
+      // Bandit Crown.
+      consent.zip(askedKey).flatMap((rule, key) =>
+        rule.granter(ready).map(granter => OperationWaiver(id, Some(granter),
+          ConsentKey(id, player, PowerUseRules.useKey, target),
+          key(cardSource), plain(cardSource)))))
 
   def refusal(catalog: ExecutableCatalog, ready: ReadyGame, use: PowerUse)
       : Option[PowerUseRefusal] =

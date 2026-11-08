@@ -88,8 +88,9 @@ final case class Restriction(
 ) extends Contribution
 
 /** How a restriction on enemies may be waived (consent design, rulings 1 and
-  * 4). `granter` is the player who may consent: the power's ruler, or `None`
-  * when bandits, the Empire or nobody rules it, since none of them consents.
+  * 4). `granter` is the player who may consent: the power's ruler, the
+  * Bandit Crown's holder when bandits rule it (catalog batch 11, ruling 5),
+  * or `None` when bandits with no holder, the Empire or nobody rules it.
   * `source` names the power in the log. `note` is the hover reason of an
   * option the player may ask consent for.
   */

@@ -83,13 +83,14 @@ case object WildMounts extends DenizenPlan(WildMountsCard,
       OperationRewrite.ops(ctx, children)(swappable(ctx.actor)) :+
         Deferred.resolve(WildMounts.deferred)(swap(ctx.catalog, ctx.actor))))
 
-  /** The plan, when it was used in this Campaign. */
+  /** The plan, when it was used in this Campaign: the attacker's use first,
+    * when both sides used it. */
   private def used(catalog: ExecutableCatalog, ready: ReadyGame,
       pending: PendingTree, actor: PlayerId): Option[PlanUse] =
     PlanUse.chosen(catalog, ready, pending, actor, cardRef, sides,
       afterOutcome = true).headOption
 
-  /** Holds the discard of a Nomad card chosen as a battle plan on the side
+  /** Holds the discard of a Nomad card chosen as a battle plan on a side
     * the plan was used on. */
   private def swappable(actor: PlayerId)
       : OperationRewrite.Matcher[CoreOperation, CoreOperation] =
@@ -102,10 +103,15 @@ case object WildMounts extends DenizenPlan(WildMountsCard,
     }
 
   /** What resolves the held discards: a question, a swap, or the
-    * discards. */
+    * discards. A plan both sides used (catalog batch 11, ruling 3) is held
+    * once for each use, but it is one card, so it is resolved once. */
   private def swap(catalog: ExecutableCatalog,
       actor: PlayerId)(ready: ReadyGame, pending: PendingTree,
-      held: Vector[CoreOperation]): Vector[Operation] =
+      holds: Vector[CoreOperation]): Vector[Operation] =
+    val held = holds.distinctBy {
+      case discard: Discard.Denizen => discard.card
+      case other => other
+    }
     used(catalog, ready, pending, actor).fold(discarded(catalog, held)) { use =>
       use.user match
         case Some(user) => ask(catalog, use, user, discarded(catalog, held),

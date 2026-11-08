@@ -2,6 +2,7 @@ package oathdigital.gameplay.powers.campaign
 
 import oathdigital.gameplay.powers.search.BrackenCard
 import oathdigital.gameplay.powers.whenplayed.AutumnWindCard
+import oathdigital.gameplay.BanditCrownCard
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.OathRules
 import oathdigital.gameplay.actions.campaign.CampaignIds
@@ -166,6 +167,21 @@ class WildMountsSuite extends munit.FunSuite:
       base.origin, mountedPatrol), base.extras.head, wildAllies)
     val done = commit(rules(losingDice), b, 4).finishPlanWindows
     assert(Look(done.state).inRegionalDiscard(mountedPatrol))
+    assert(!Look(done.state).inRegionalDiscard(wildAllies))
+    assertEquals(lines(done), Vector.empty)
+
+  test("a Nomad plan both sides used is one discard to the bandits, not " +
+      "two (catalog batch 11, ruling 3)"):
+    // The actor holds the Bandit Crown and picks the bandits' Horse
+    // Archers; the bandits apply it and Wild Mounts too.
+    val base = board(extras = 1, warbands = 5, supply = 7)
+    val b = withRelic(withSiteCard(withSiteCard(withSiteCard(base,
+      base.origin, card), base.origin, horseArchers), base.extras.head,
+      wildAllies), BanditCrownCard)
+    val done = commit(rules(losingDice), b, 4)
+      .pick(b.actor, CampaignIds.attackerPlan,
+        DecisionOptionRef.Denizen(horseArchers)).finishPlanWindows
+    assert(Look(done.state).inRegionalDiscard(horseArchers))
     assert(!Look(done.state).inRegionalDiscard(wildAllies))
     assertEquals(lines(done), Vector.empty)
 

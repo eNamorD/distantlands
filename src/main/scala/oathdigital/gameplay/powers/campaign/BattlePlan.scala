@@ -49,8 +49,9 @@ trait BattlePlan extends ContributingPower:
   def later: Map[PowerWindow, PlanUse => Vector[Operation]] = Map.empty
   /** What a used plan does to a later window's children, as the window is
     * folded, given the fold's context: it may add before them as well as
-    * after. A plan both sides used wraps once for each use, attacker first. It reads the state and answers the fold is made with, which are
-    * the same on every resume of the window, so it must not read what the
+    * after. A plan both sides used wraps once for each use, attacker first.
+    * It reads the state and answers the fold is made with, which are the
+    * same on every resume of the window, so it must not read what the
     * window's own children change.
     */
   def wrapping: Map[PowerWindow, BattlePlan.Wrap] =

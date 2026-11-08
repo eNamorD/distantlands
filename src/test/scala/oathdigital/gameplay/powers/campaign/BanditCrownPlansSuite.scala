@@ -50,6 +50,20 @@ class BanditCrownPlansSuite extends munit.FunSuite:
     // The Doctor spared p1's force.
     assertEquals(Look(done.state).player(b.actor).board.warbands, 5)
 
+  test("a defending holder uses a bandit card's plan too"):
+    val base = rivalRulesOriginAndHoldsOathkeeper(
+      board(extras = 1, warbands = 5, supply = 7))
+    val b = withRelicFor(on(base)(_.denizen(card, at = base.extras.head)),
+      base.rival, BanditCrownCard)
+    val committed = commit(rules(winningDice), b, 4)
+      .finishAttackerPlans(b.actor)
+    assert(committed.offered(b.rival).contains(ref))
+    val done = committed.pick(b.rival, CampaignIds.defenderPlan, ref)
+      .finishPlanWindows
+    assertEquals(done.winner, Some(true))
+    // The defeated holder used it, so it is discarded.
+    assert(Look(done.state).inRegionalDiscard(card))
+
   test("without the Crown, neither plan is offered"):
     Vector(doctorWithTheDefendingBandits(crown = false),
         doctorAtAnotherBanditSite(crown = false)).foreach { b =>

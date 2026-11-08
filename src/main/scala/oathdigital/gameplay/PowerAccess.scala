@@ -6,8 +6,8 @@ import oathdigital.model._
 /** The rulebook's access rule for using a card's power: cards at your site,
   * cards at sites you rule, and, for the Bandit Crown's holder, cards at
   * sites bandits rule (`BanditCrownRule`), and everything in your play area
-  * (relics, banners, advisers and legacies). One definition, used by phase powers and
-  * by every walker contribution's `applicable`.
+  * (relics, banners, advisers and legacies). One definition, used by phase
+  * powers and by every walker contribution's `applicable`.
   *
   * Denizens at sites are always faceup and relics at sites are always
   * facedown, so a site relic never grants access. Both faces of an edifice
@@ -18,9 +18,9 @@ import oathdigital.model._
   * for the rest of the action ([[asIfDecision]]). `ActAsIf` records the
   * answer as walker scratch (`CurrentGameState.walkerAsIfSite`), and the
   * walk's end clears it. For the walk's actor, that site then takes the
-  * pawn site's place for `locate` ([[presentSite]]). Ruled sites and the
-  * play area stay usable; the physical pawn site does not, unless the
-  * player rules it.
+  * pawn site's place for `locate` ([[presentSite]]). Ruled sites, the
+  * Crown holder's bandit sites and the play area stay usable; the physical
+  * pawn site does not, unless it is one of those.
   */
 private[gameplay] object PowerAccess:
   sealed trait Held extends Product with Serializable
@@ -103,8 +103,8 @@ private[gameplay] object PowerAccess:
 
   /** Where `card` is, if `actor` may use it. A site card or edifice at a
     * usable site is `AtSite`: a site the actor rules, a bandit site for the
-    * Crown's holder, or the one they act from ([[presentSite]]). A faceup adviser or relic in the actor's play
-    * area is `InPlayArea`.
+    * Crown's holder, or the one they act from ([[presentSite]]). A faceup
+    * adviser or relic in the actor's play area is `InPlayArea`.
     */
   def locate(ready: ReadyGame, actor: PlayerId, card: CardId)
       : Option[Held] =
