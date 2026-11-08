@@ -70,11 +70,11 @@ case object HallOfMinisters extends OperationRestriction with WaivableRule:
           noDiscardConsent(source), noDiscard(source))))
     }
 
-  /** Who may consent: the player who rules the intact Hall's site, or the
-    * Bandit Crown's holder under bandits; `None` when nobody rules it. */
+  /** Who may consent: the intact Hall's ruler, or the Bandit Crown's
+    * holder under bandits; `None` when nobody rules it. */
   def granter(ready: ReadyGame): Option[PlayerId] =
     ready.game.current.edificeSite(HallOfMinistersCard.id, EdificeSide.Intact)
-      .flatMap(SiteRulers.consentGranterAt(ready, _))
+      .flatMap(SiteRulers.consentGranterOf(ready, _, HallOfMinistersCard.id))
 
   /** The ruler of the site where the intact Hall stands. */
   private def hallRuler(ready: ReadyGame): Option[SiteRuler] =

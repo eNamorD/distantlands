@@ -5,7 +5,7 @@ import oathdigital.model._
 /** Who rules a site, for the powers whose reach is "the sites this card's
   * ruler rules": Toll Roads, Grasping Vines and Secret Police; a card's own
   * ruler is `CardRule`'s. It also names who may consent for a card's power
-  * (`consentGranterAt`). The Empire is covered through
+  * (`consentGranter`, `consentGranterOf`; a site's, `consentGranterAt`). The Empire is covered through
   * `SiteRule.rulingPlayer`.
   * Whether a player is an enemy of a ruler is `SiteRule.enemies(ruler,
   * SiteRuler.Player(player))`, the model's single definition.
@@ -15,21 +15,32 @@ private[gameplay] object SiteRulers:
   def rulerOf(ready: ReadyGame, site: SiteId): Option[SiteRuler] =
     SiteRule.rulingPlayer(ready, site)
 
-  /** Who may consent for a power of a card at `site`: the player who rules
-    * it, or the Bandit Crown's holder when bandits rule it (catalog batch
-    * 11, rulings 5 and 6). Nobody at an unruled site. The Empire's sites
-    * resolve to its governor. A consent ask drops a granter who is the
-    * requester, so the holder never lets themselves off. */
-  def consentGranterAt(ready: ReadyGame, site: SiteId): Option[PlayerId] =
-    rulerOf(ready, site).flatMap:
-      case SiteRuler.Player(player) => Some(player)
-      case SiteRuler.Bandits => BanditCrownRule.holder(ready)
-      case _ => None
+  /** Who may consent for a power whose ruler is `ruler`: that player, or
+    * the Bandit Crown's holder when bandits rule (catalog batch 11, rulings
+    * 5 and 6). Nobody for an unruled site or an Empire with no
+    * Chancellor. A consent ask drops a granter who is the requester, so
+    * nobody lets themselves off. */
+  private def granterFor(ready: ReadyGame, ruler: SiteRuler)
+      : Option[PlayerId] = ruler match
+    case SiteRuler.Player(player) => Some(player)
+    case SiteRuler.Bandits => BanditCrownRule.holder(ready)
+    case _ => None
 
-  /** [[consentGranterAt]] the site where `card` stands faceup. */
+  /** Who may consent for a power that reads `site`'s ruler: Hidden
+    * Passages (ruling 15). The Empire's sites resolve to its governor. */
+  def consentGranterAt(ready: ReadyGame, site: SiteId): Option[PlayerId] =
+    rulerOf(ready, site).flatMap(granterFor(ready, _))
+
+  /** Who may consent for a power of `card`, which stands at `site`: its
+    * ruler (`CardRule.rulerAt`), so the Grand Mask's wearer during their
+    * turn. */
+  def consentGranterOf(ready: ReadyGame, site: SiteId, card: CardId)
+      : Option[PlayerId] =
+    CardRule.rulerAt(ready, site, card).flatMap(granterFor(ready, _))
+
+  /** Who may consent for a power of the faceup denizen `card`. */
   def consentGranter(ready: ReadyGame, card: DenizenId): Option[PlayerId] =
-    ready.game.current.faceUpDenizenSite(card)
-      .flatMap(consentGranterAt(ready, _))
+    CardRule.rulerOf(ready, card).flatMap(granterFor(ready, _))
 
   /** The players a protection printed on `card` at `site` covers, for a
     * card that says "If ruled by Empire, all Imperials have this power"

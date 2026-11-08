@@ -84,7 +84,8 @@ case object SinkingPassages extends PassagesPower:
   * opens it for the turn. Under bandits the Bandit Crown's holder acts as
   * its ruler; with no holder nobody may consent and the menu shows "Hidden
   * Passages: Bandits rule this site."; at an unruled site, or for the
-  * ruler, nothing is asked.
+  * ruler, nothing is asked. Its ruler is the site's (catalog batch 11,
+  * ruling 15), so the Grand Mask changes nothing here.
   */
 case object HiddenPassages extends PassagesPower with ContributingPower
     with PowerUseRestriction:

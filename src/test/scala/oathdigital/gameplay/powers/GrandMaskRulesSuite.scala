@@ -67,6 +67,8 @@ class GrandMaskRulesSuite extends munit.FunSuite:
     assertEquals(SpellBreaker.refusal(catalog, ready, secretUse(p3)), None)
     val refusal = SpellBreaker.refusal(catalog, ready, secretUse(p2))
     assertEquals(refusal.map(_.power), Some(SpellBreaker.id))
+    assertEquals(refusal.flatMap(_.reason.waiver).flatMap(_.granter),
+      Some(p3))
     assert(SpellBreaker.refusal(catalog, maskedEmpire(facedown = true).ready,
       secretUse(p3)).nonEmpty)
 
