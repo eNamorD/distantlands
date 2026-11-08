@@ -8,7 +8,7 @@ import oathdigital.model._
   * you ruled them."
   *
   * The rule is `BanditCrownRule`, which `PowerAccess`, `PlanContext`,
-  * `SiteRulers.consentGranterAt` and `PayOrAsk.letOffBy` read. This power
+  * `SiteRulers`' consent granters and `PayOrAsk.letOffBy` read. This power
   * hooks no window. It is registered so the card counts as implemented.
   * It writes no line.
   */

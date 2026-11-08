@@ -14,7 +14,7 @@ object BanditCrownCard extends Relic(RelicId("R11"), "Bandit Crown", value = 56,
   * if they ruled them (catalog batch 11, rulings 1 to 6). The bandits still
   * rule those sites and cards. The holder reaches them through
   * `PowerAccess.usableSites` and `PlanContext`'s sources, and gives the
-  * consent their ruler would through `SiteRulers.consentGranterAt`. The
+  * consent their ruler would through `SiteRulers`' consent granters. The
   * battle plans are usable in any Campaign; the italic "against bandits"
   * is flavor (ruling 3). Only a faceup Crown counts.
   */

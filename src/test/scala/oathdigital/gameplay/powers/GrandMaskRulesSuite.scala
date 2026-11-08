@@ -113,7 +113,7 @@ class GrandMaskRulesSuite extends munit.FunSuite:
     assertEquals(SiteRulers.protectedBy(bare, home, ForgottenVaultCard.id),
       Set(p1, p2))
 
-  test("the wearer gains Quartermaster's Supply in their Wake"):
+  test("the wearer may use Quartermaster in their Wake"):
     def withQuartermaster(facedown: Boolean): ReadyGame =
       empireWithMaskHeldByP3(facedown).turn(p3, Phase.Wake)
         .denizen(QuartermasterCard.id, at = peaks).ready

@@ -5,8 +5,8 @@ import oathdigital.model._
 /** Who rules a site, for the powers whose reach is "the sites this card's
   * ruler rules": Toll Roads, Grasping Vines and Secret Police; a card's own
   * ruler is `CardRule`'s. It also names who may consent for a card's power
-  * (`consentGranter`, `consentGranterOf`; a site's, `consentGranterAt`). The Empire is covered through
-  * `SiteRule.rulingPlayer`.
+  * (`consentGranter`, `consentGranterOf`; a site's, `consentGranterAt`).
+  * The Empire is covered through `SiteRule.rulingPlayer`.
   * Whether a player is an enemy of a ruler is `SiteRule.enemies(ruler,
   * SiteRuler.Player(player))`, the model's single definition.
   */

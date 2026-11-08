@@ -2,6 +2,7 @@ package oathdigital.gameplay.powers
 
 import oathdigital.gameplay.{GrandMaskCard, SiteRulers}
 import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import oathdigital.gameplay.powerresolver.PowerUse
 import oathdigital.gameplay.operations.{HallOfMinisters,
   HallOfMinistersCard}
 import oathdigital.gameplay.powers.economy.CurfewCard
@@ -10,6 +11,7 @@ import oathdigital.gameplay.powers.recover.{RelicPatrols, RelicPatrolsCard}
 import oathdigital.gameplay.powers.travel.{ForbiddenForest,
   ForbiddenForestCard}
 import oathdigital.gameplay.powers.wake.{HiddenPassages, HiddenPassagesCard}
+import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.Table
 import oathdigital.testkit.Table.{p1, p2, p3}
@@ -25,7 +27,7 @@ class GrandMaskConsentSuite extends munit.FunSuite:
     * (Curfew, Relic Patrols, Hidden Passages) and Broken Peaks (Spell
     * Breaker, Forbidden Forest, Hall of Ministers). p3, an Exile, holds
     * the Mask `facedown` or faceup. It is p3's Act. */
-  private def maskedEmpire(facedown: Boolean = false): ReadyGame =
+  private def empireWithMaskHeldByP3(facedown: Boolean = false): ReadyGame =
     Table.start.imperial(p2, p1).turn(p3, Phase.Act)
       .warbandsAt(home, p2, 1).warbandsAt(peaks, p2, 1)
       .denizen(CurfewCard.id, at = home)
@@ -44,13 +46,18 @@ class GrandMaskConsentSuite extends munit.FunSuite:
     HallOfMinisters.granter(ready))
 
   test("the wearer consents for every masked card"):
-    assertEquals(granters(maskedEmpire()), Vector.fill(5)(Some(p3)))
+    assertEquals(granters(empireWithMaskHeldByP3()), Vector.fill(5)(Some(p3)))
 
   test("without the Mask, the Chancellor consents"):
-    assertEquals(granters(maskedEmpire(facedown = true)),
+    assertEquals(granters(empireWithMaskHeldByP3(facedown = true)),
       Vector.fill(5)(Some(p2)))
 
   test("Hidden Passages asks the site's ruler, under the Mask too"):
-    assertEquals(HiddenPassages.granter(maskedEmpire()), Some(p2))
-    assertEquals(SiteRulers.consentGranterOf(maskedEmpire(), home,
+    assertEquals(HiddenPassages.granter(empireWithMaskHeldByP3()), Some(p2))
+    // The wearer's own use asks the Chancellor (ruling 15).
+    val use = PowerUse(p3, HiddenPassages.id, Some(HiddenPassagesCard.id),
+      persistent = false, costsSecret = false)
+    assertEquals(HiddenPassages.refusal(catalog, empireWithMaskHeldByP3(),
+      use).flatMap(_.reason.waiver).flatMap(_.granter), Some(p2))
+    assertEquals(SiteRulers.consentGranterOf(empireWithMaskHeldByP3(), home,
       HiddenPassagesCard.id), Some(p3))
