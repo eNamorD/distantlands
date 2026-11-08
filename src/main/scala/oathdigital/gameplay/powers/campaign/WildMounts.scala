@@ -87,7 +87,7 @@ case object WildMounts extends DenizenPlan(WildMountsCard,
   private def used(catalog: ExecutableCatalog, ready: ReadyGame,
       pending: PendingTree, actor: PlayerId): Option[PlanUse] =
     PlanUse.chosen(catalog, ready, pending, actor, cardRef, sides,
-      afterOutcome = true)
+      afterOutcome = true).headOption
 
   /** Holds the discard of a Nomad card chosen as a battle plan on the side
     * the plan was used on. */
@@ -95,7 +95,7 @@ case object WildMounts extends DenizenPlan(WildMountsCard,
       : OperationRewrite.Matcher[CoreOperation, CoreOperation] =
     (ready, pending) => {
       case discard: Discard.Denizen if discard.suit == Suit.Nomad &&
-          PlanUse.sideUsed(ready, pending, cardRef, sides).exists(side =>
+          PlanUse.sidesUsed(ready, pending, cardRef, sides).exists(side =>
             PlanUse.plans(ready, pending, side).contains(
               DecisionOptionRef.Denizen(discard.card))) =>
         Vector(Defer(WildMounts.deferred, Vector(discard)))

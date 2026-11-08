@@ -13,13 +13,6 @@ object GrandMaskCard extends Relic(RelicId("R05"), "Grand Mask", value = 36, def
       "battle plans at Imperial sites, and Imperial players do not.")
   val powers: Vector[PrintedPower] = Vector(power)
 
-object BanditCrownCard extends Relic(RelicId("R11"), "Bandit Crown", value = 56, defense = 3):
-  val power = PrintedPower(PowerId("relic.bandit-crown"),
-    persistent = true, cost = Cost.free,
-    text = "You may use cards at sites ruled by bandits as if you ruled " +
-      "them. _You may use these battle plans against bandits._")
-  val powers: Vector[PrintedPower] = Vector(power)
-
 object AncientWritCard extends Relic(RelicId("R22"), "Ancient Writ", value = 81, defense = 1):
   val power = PrintedPower(PowerId("relic.ancient-grit"),
     persistent = false, cost = Cost.free,

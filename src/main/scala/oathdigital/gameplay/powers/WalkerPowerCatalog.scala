@@ -79,7 +79,7 @@ object WalkerPowerCatalog:
       Vector(ChaosCult) ++
       ActionModifiers.all ++
       TargetProtections.all ++
-      Vector(KnightsErrant, Marriage, PledgeToDiscord, Jinx) ++
+      Vector(KnightsErrant, Marriage, PledgeToDiscord, Jinx, BanditCrown) ++
       BattlePlans.all ++
       PlanRules.all ++
       SimplePlans.all ++

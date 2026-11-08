@@ -4,8 +4,9 @@ import oathdigital.gameplay.actions.BannerRules
 import oathdigital.model._
 
 /** The rulebook's access rule for using a card's power: cards at your site,
-  * cards at sites you rule, and everything in your play area (relics,
-  * banners, advisers and legacies). One definition, used by phase powers and
+  * cards at sites you rule, and, for the Bandit Crown's holder, cards at
+  * sites bandits rule (`BanditCrownRule`), and everything in your play area
+  * (relics, banners, advisers and legacies). One definition, used by phase powers and
   * by every walker contribution's `applicable`.
   *
   * Denizens at sites are always faceup and relics at sites are always
@@ -72,7 +73,8 @@ private[gameplay] object PowerAccess:
     asIfSite(ready, actor).orElse(ready.game.current.pawnSite(actor))
 
   private def usableSites(ready: ReadyGame, actor: PlayerId): Set[SiteId] =
-    ruledSites(ready, actor) ++ presentSite(ready, actor)
+    ruledSites(ready, actor) ++ presentSite(ready, actor) ++
+      BanditCrownRule.sitesFor(ready, actor)
 
   def accessible(ref: RuleSourceRef, face: RuleSourceFace, ready: ReadyGame,
       actor: PlayerId, facedownAdviser: Boolean = false): Boolean =
@@ -100,8 +102,8 @@ private[gameplay] object PowerAccess:
       case _ => false
 
   /** Where `card` is, if `actor` may use it. A site card or edifice at a
-    * usable site is `AtSite`: a site the actor rules, or the one they act
-    * from ([[presentSite]]). A faceup adviser or relic in the actor's play
+    * usable site is `AtSite`: a site the actor rules, a bandit site for the
+    * Crown's holder, or the one they act from ([[presentSite]]). A faceup adviser or relic in the actor's play
     * area is `InPlayArea`.
     */
   def locate(ready: ReadyGame, actor: PlayerId, card: CardId)

@@ -44,11 +44,12 @@ trait BattlePlan extends ContributingPower:
   def sides: Set[CampaignPlanSide]
   /** The plan, when it is usable now for `context`'s side. */
   def plan(context: PlanContext): Option[CampaignPlanOffer]
-  /** What a used plan adds at a later window. */
+  /** What a used plan adds at a later window, once for each side that used
+    * it (`PlanUse.chosen`). */
   def later: Map[PowerWindow, PlanUse => Vector[Operation]] = Map.empty
   /** What a used plan does to a later window's children, as the window is
     * folded, given the fold's context: it may add before them as well as
-    * after. It reads the state and answers the fold is made with, which are
+    * after. A plan both sides used wraps once for each use, attacker first. It reads the state and answers the fold is made with, which are
     * the same on every resume of the window, so it must not read what the
     * window's own children change.
     */
@@ -102,14 +103,13 @@ trait BattlePlan extends ContributingPower:
       case (window, build) => window -> Vector[Contribution](Transform(
         (ctx, children) => children :+ Branch((ready, pending) =>
           PlanUse.chosen(ctx.catalog, ready, pending, ctx.actor, cardRef,
-            sides, BattlePlan.outcomeKnown(window))
-            .fold(Vector.empty[Operation])(build))))
+            sides, BattlePlan.outcomeKnown(window)).flatMap(build))))
     val around: Map[PowerWindow, Vector[Contribution]] = wrapping.map:
       case (window, wrap) => window -> Vector[Contribution](Transform(
         (ctx, children) => PlanUse.chosen(ctx.catalog, ctx.state,
           PendingTree(ctx.nodePath, ctx.answered), ctx.actor, cardRef, sides,
-          BattlePlan.outcomeKnown(window)).fold(children)(
-            wrap(ctx, _, children))))
+          BattlePlan.outcomeKnown(window)).foldLeft(children)(
+            (wrapped, use) => wrap(ctx, use, wrapped))))
     (offers.keySet ++ afterwards.keySet ++ around.keySet ++ rewrites.keySet ++
       restrictions.keySet ++ otherContributions.keySet).map(window =>
       window -> (offers.getOrElse(window, Vector.empty) ++

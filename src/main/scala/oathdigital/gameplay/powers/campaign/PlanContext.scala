@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.campaign
 
 import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.EffectiveSuit
+import oathdigital.gameplay.{BanditCrownRule, EffectiveSuit}
 import oathdigital.gameplay.actions.BannerRules
 import oathdigital.gameplay.actions.campaign.{CampaignAnswers, CampaignIds, CampaignPlans, CampaignSetup, PlanAid}
 import oathdigital.gameplay.powerresolver.PowerCtx
@@ -14,7 +14,8 @@ import oathdigital.model._
   *
   * A plan is used only by the ruler of its source, so a plan asks this for where
   * a card stands: an adviser of the plan's user, a relic held faceup by the
-  * user, or a card at a site the user rules. A bandit defender is the ruler of
+  * user, or a card at a site the user rules. The Bandit Crown's holder also
+  * uses the cards at bandit sites. A bandit defender is the ruler of
   * the sites Bandits rule and holds nothing else.
   *
   * An Imperial user may also use what an Imperial ally lends (Imperial
@@ -42,8 +43,14 @@ final case class PlanContext(catalog: ExecutableCatalog, ready: ReadyGame,
   private def held: Option[PlayerState] =
     user.flatMap(ready.game.current.player)
 
+  /** The sites whose cards the user's plans come from: the sites they
+    * rule, and the bandits' sites when they hold the Bandit Crown (catalog
+    * batch 11, ruling 3). A bandit defender keeps its own sites, so a
+    * Crown plan may be used by both sides. */
   private def sitesRuled: Vector[(SiteId, SiteState)] =
-    sitesOf(ruler)
+    val crowned = user.exists(BanditCrownRule.holder(ready).contains)
+    sitesOf(ruler) ++
+      (if crowned then sitesOf(CampaignDefender.Bandits) else Vector.empty)
 
   private def sitesOf(who: CampaignDefender): Vector[(SiteId, SiteState)] =
     ready.game.current.map.inPlay
@@ -247,28 +254,31 @@ final case class PlanUse(catalog: ExecutableCatalog, side: CampaignPlanSide,
     side == CampaignPlanSide.Attacker))
 
 object PlanUse:
-  /** The side the plan named by `ref` was used on in this Campaign, if it
-    * was used on one of `sides`: chosen by a player, or applied by a bandit
+  /** The sides of `sides` the plan named by `ref` was used on in this
+    * Campaign, attacker first: chosen by a player, or applied by a bandit
     * defender, which the application recorded
-    * (`CampaignPlans.appliedMarker`). */
-  def sideUsed(ready: ReadyGame, pending: PendingTree,
+    * (`CampaignPlans.appliedMarker`). Both sides use one plan when the
+    * Bandit Crown's holder attacks the bandits with a bandit card's plan
+    * (catalog batch 11, ruling 3). */
+  def sidesUsed(ready: ReadyGame, pending: PendingTree,
       ref: DecisionOptionRef, sides: Set[CampaignPlanSide])
-      : Option[CampaignPlanSide] =
-    val picked = sides.toVector.find(side => CampaignAnswers.picks(pending,
-      CampaignIds.planDecision(side)).contains(ref))
+      : Vector[CampaignPlanSide] =
+    val picked = CampaignPlanSide.values.toVector.filter(side => sides(side) &&
+      CampaignAnswers.picks(pending, CampaignIds.planDecision(side))
+        .contains(ref))
     val banditApplied = Option.when(sides(CampaignPlanSide.Defender) &&
       ready.game.current.rollPools.contains(CampaignPlans.appliedMarker(ref)))(
       CampaignPlanSide.Defender)
-    picked.orElse(banditApplied)
+    (picked ++ banditApplied).distinct
 
-  /** The plan named by `ref`, if it was used on one of `sides` in this
-    * Campaign ([[sideUsed]]), as a later window reads it. `afterOutcome` says
+  /** Each use of the plan named by `ref` on one of `sides` in this Campaign
+    * ([[sidesUsed]]), as a later window reads it. `afterOutcome` says
     * whether `lastCampaignResult` is this Campaign's already.
     */
   def chosen(catalog: ExecutableCatalog, ready: ReadyGame,
       pending: PendingTree, actor: PlayerId, ref: DecisionOptionRef,
-      sides: Set[CampaignPlanSide], afterOutcome: Boolean): Option[PlanUse] =
-    sideUsed(ready, pending, ref, sides).map(side => PlanUse(catalog, side,
+      sides: Set[CampaignPlanSide], afterOutcome: Boolean): Vector[PlanUse] =
+    sidesUsed(ready, pending, ref, sides).map(side => PlanUse(catalog, side,
       actor, Option.when(afterOutcome)(ready.game.current.lastCampaignResult)
         .flatten.filter(_.attacker == actor), ready,
       CampaignSetup.setup(ready, actor, pending).map(_.defender)))

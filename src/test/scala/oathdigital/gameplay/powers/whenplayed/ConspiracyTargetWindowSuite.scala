@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.whenplayed
 
-import oathdigital.catalog.holding.BanditCrownCard
+import oathdigital.gameplay.BanditCrownCard
 import oathdigital.gameplay.powers.search.CrackedHornCard
 import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.cards.AncientCitySite

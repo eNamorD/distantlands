@@ -58,7 +58,7 @@ object DefenseScore:
   /** The rules of the plans chosen in `actor`'s Campaign. */
   def rules(ready: ReadyGame, pending: PendingTree, actor: PlayerId)
       : DefenseRules =
-    changes.filter(change => PlanUse.sideUsed(ready, pending, change.ref,
+    changes.filter(change => PlanUse.sidesUsed(ready, pending, change.ref,
       Set(change.side)).nonEmpty)
       .foldLeft(DefenseRules())((rules, change) => change.change(rules))
 

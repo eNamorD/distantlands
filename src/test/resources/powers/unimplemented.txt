@@ -56,7 +56,6 @@ legacy.the-standard-bearer
 legacy.wealthy
 legacy.world-crafter
 relic.ancient-grit
-relic.bandit-crown
 relic.grand-mask
 relic.whispering-stone
 site.ancient-city.enduring

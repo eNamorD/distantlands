@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.whenplayed
 
 import oathdigital.catalog.ExecutableCatalog
-import oathdigital.catalog.holding.BanditCrownCard
+import oathdigital.gameplay.BanditCrownCard
 import oathdigital.gameplay.powers.search.CrackedHornCard
 import oathdigital.gameplay.PlacementFixture.cardPlayDecisionId
 import oathdigital.gameplay.actions.VisionRules
