@@ -22,8 +22,8 @@ object JinxCard extends Denizen(DenizenId("68"), "Jinx", Suit.Arcane):
   * dice once." It costs one secret, paid onto the card when used.
   *
   * It offers itself at every attack or defense roll step whose roller rules
-  * it: a faceup adviser of the roller, or a card faceup at a site the roller
-  * rules. A facedown adviser has no power. The roll step stops offering it once it
+  * it: a faceup adviser of the roller, or a card faceup at a site whose
+  * ruler (`CardRule`) is the roller. A facedown adviser has no power. The roll step stops offering it once it
   * is used on a throw, which is the "once".
   *
   * It writes "Rerolled the attack dice." ("the defense dice"), before the

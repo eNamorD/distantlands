@@ -7,9 +7,8 @@ import oathdigital.model._
 /** The ban a site card holds over its ruler's enemies (Spell Breaker,
   * Forest Council, City Wall; catalog batch 8, slice 10). The ruler is the
   * card's ruler (`CardRule.rulerOf`), when that is a player or bandits:
-  * nobody is
-  * restricted at an unruled site. The Empire's sites resolve to its
-  * governor. Every player but a player ruler is an enemy, and every player
+  * nobody is restricted at an unruled site. The Empire's sites resolve to
+  * its governor. Every player but a player ruler is an enemy, and every player
   * is an enemy of bandits.
   * Only a player ruler, or the Bandit Crown's holder for a bandit ruler, may
   * consent (consent design, ruling 4; catalog batch 11, ruling 5). */

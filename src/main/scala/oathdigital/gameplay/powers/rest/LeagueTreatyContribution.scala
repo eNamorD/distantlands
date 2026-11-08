@@ -15,8 +15,8 @@ object LeagueTreatyCard extends Denizen(DenizenId("237"), "League Treaty", Suit.
       "favor bank.")
   val powers: Vector[PrintedPower] = Vector(power)
 
-/** League Treaty (card 237): before Rest cleanup, the ruler of the treaty's
-  * site may send the region's card favor to one bank instead of each card's
+/** League Treaty (card 237): before Rest cleanup, the treaty's ruler
+  * (`CardRule`) may send the region's card favor to one bank instead of each card's
   * printed bank.
   *
   * The transform inserts two decisions and zero or more moves ahead of cleanup.

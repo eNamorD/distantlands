@@ -93,8 +93,10 @@ Inventoried at `b59dbac4`, with slice 1's plan read for what it changes.
      `ForgeRules`, `EconomyTree`, the projector, `RuinedSiteSetupRules`,
      `GreatMarketRules` and `SiteRulers.imperialSites` (Imperial Seal).
    - `PowerAccess.ruledSites` and its counters: Royal Tax, Garrison, Royal
-     Ambitions, Quartermaster, Baron, Plague Engines, Messenger, Captains,
-     Vow of Union and Ancient Bloodline ("sites you rule").
+     Ambitions, Baron, Plague Engines, Messenger, Captains, Vow of Union and
+     Ancient Bloodline ("sites you rule"). Quartermaster ("If you rule this
+     card") was listed here by mistake; the Tasks 1-2 review caught it, and
+     it reads `CardRule.rulerOf`.
    - `PlanContext.sitesRuled`: battle plans stay the Empire's.
    - Bandit Forest's guard ("cards ruled by bandits"): a bandit site is
      never Imperial, so the card and site readings agree.

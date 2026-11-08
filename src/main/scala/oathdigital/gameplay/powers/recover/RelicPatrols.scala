@@ -29,7 +29,7 @@ object RelicPatrolsCard extends Edifice(EdificeId("E17"), Suit.Order):
   * a Campaign: a `Restriction` at `RecoverActionEligibility`, judged for
   * the Recover's actor at their pawn's site.
   *
-  * The ruler is the ruler of the site the face stands at. Every other
+  * The ruler is the face's ruler (`CardRule`). Every other
   * player is a player ruler's enemy, and every player is an enemy where
   * bandits rule (batch 8, slice 10, and the Tome Guardians FAQ). Nobody is
   * restricted at an unruled site, and Empire rulers are not supported.

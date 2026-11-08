@@ -18,7 +18,7 @@ object SpellBreakerCard extends Denizen(DenizenId("162"), "Spell Breaker", Suit.
   * cannot use powers that cost any [secret] or [secret-burnt]."
   *
   * It refuses every use that costs a secret ([[PowerUse.costsSecret]]) to
-  * the enemies of its site's ruler ([[RulerBans]]). A player ruler may
+  * the enemies of its ruler ([[RulerBans]]). A player ruler may
   * consent outside a Campaign; a grant covers the card's use for the turn.
   * It hooks no window and writes no line: a refused power is not used.
   */

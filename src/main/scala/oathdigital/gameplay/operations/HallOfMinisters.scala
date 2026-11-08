@@ -76,7 +76,7 @@ case object HallOfMinisters extends OperationRestriction with WaivableRule:
     ready.game.current.edificeSite(HallOfMinistersCard.id, EdificeSide.Intact)
       .flatMap(SiteRulers.consentGranterOf(ready, _, HallOfMinistersCard.id))
 
-  /** The ruler of the site where the intact Hall stands. */
+  /** The intact Hall's ruler (`CardRule`). */
   private def hallRuler(ready: ReadyGame): Option[SiteRuler] =
     ready.game.current.edificeSite(HallOfMinistersCard.id, EdificeSide.Intact)
       .flatMap(CardRule.rulerAt(ready, _, HallOfMinistersCard.id))

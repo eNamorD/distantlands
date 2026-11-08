@@ -18,9 +18,9 @@ object TollRoadsCard extends Denizen(DenizenId("118"), "Toll Roads", Suit.Order)
 
 /** Toll Roads (card 118), a persistent rule of a faceup site card: enemies
   * cannot travel to a site ruled by Toll Roads' ruler unless they give 1 favor
-  * to that ruler, or burn it when bandits rule. Toll Roads' ruler is the ruler
-  * of the site it stands at, and the rule covers every site that ruler holds,
-  * Toll Roads' own included.
+  * to that ruler, or burn it when bandits rule. Toll Roads' ruler is the
+  * card's ruler (`CardRule`), and the rule covers every site that ruler
+  * holds, Toll Roads' own included.
   *
   * When somebody may let the traveller off (a player ruler, or the Bandit
   * Crown's holder under bandits), the traveller is asked first to pay or to

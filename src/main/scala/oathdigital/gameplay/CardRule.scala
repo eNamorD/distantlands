@@ -10,7 +10,9 @@ import oathdigital.model._
   * plan (`GrandMaskRule`). Every reading of "this card's ruler", "you rule
   * this card" or "cards ruled by" goes through here; a reading of the site
   * itself (Supremacy, Campaign defenders, the Chronicle, "sites ruled by")
-  * reads `SiteRulers.rulerOf` or `SiteRule`.
+  * reads `SiteRulers.rulerOf` or `SiteRule`. Bandit Forest's "cards ruled
+  * by bandits" reads the site, since a bandit site is never Imperial and
+  * the two readings agree.
   *
   * A face is a battle plan when a power it prints carries the battle-plan
   * mark, which `CardCatalogSuite` holds equal to the plan catalog. The

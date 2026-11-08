@@ -167,7 +167,9 @@ object FortressRule:
 
 /** The Oaken Fortress (E28, intact): while its ruler is at this site, they
   * cannot be targeted by a Challenge or a Raid. While the
-  * Empire rules its site, it shields every Imperial player there.
+  * Empire rules its site, it shields every Imperial player there; during
+  * the Grand Mask's turn it shields the wearer alone
+  * (`SiteRulers.protectedBy`).
   */
 case object OakenFortress extends FortressRule:
   protected def power: PrintedPower = OakenFortressCard.intact.power

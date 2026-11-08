@@ -21,8 +21,8 @@ object ForestCouncilCard extends Denizen(DenizenId("194"), "Forest Council", Sui
   * non-persistent powers."
   *
   * A Beast card is one whose effective suit is Beast (`EffectiveSuit.of`):
-  * its printed suit, unless it is an adviser pledged to Discord. The enemies are its site's ruler's
-  * ([[RulerBans]]). It refuses an enemy's non-persistent use of a Beast
+  * its printed suit, unless it is an adviser pledged to Discord. The
+  * enemies are its ruler's ([[RulerBans]]). It refuses an enemy's non-persistent use of a Beast
   * card, a use whose cost places on one ([[Placements.byUse]]), and a
   * placement on one ([[Placements.onto]]). A player ruler may consent
   * outside a Campaign. One grant, under the card's use key, covers both.

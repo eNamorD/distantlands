@@ -11,8 +11,8 @@ import oathdigital.model._
 /** A persistent rule of an intact edifice face that keeps a banner its
   * ruler holds from being targeted by the ruler's enemies (catalog batch 9,
   * slice 2): Hall of Debate for the People's Favor, Tome Guardians for the
-  * Darkest Secret. The ruler is the ruler of the site the intact face
-  * stands at; under bandits or unruled nobody holds the banner through the
+  * Darkest Secret. The ruler is the intact face's ruler (`CardRule`);
+  * under bandits or unruled nobody holds the banner through the
   * edifice, so nothing is hidden. Empire rulers are not supported.
   *
   * "Target" means a Campaign's target selection only (catalog batch 3

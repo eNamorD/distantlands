@@ -26,7 +26,8 @@ object ForbiddenForestCard extends Edifice(EdificeId("E29"), Suit.Beast):
   *
   * It follows the Narrow Pass: a `Restriction` at `TravelActionEligibility`
   * that refuses a route arriving at the Forest's site when the traveller is
-  * an enemy of the site's ruler and holds no faceup Beast adviser
+  * an enemy of the Forest's ruler (`CardRule`) and holds no faceup Beast
+  * adviser
   * (`EffectiveSuit.count`, so Marriage counts and a Pledge to Discord
   * holder's advisers do not). The look-ahead hides the destination with
   * the reason. A player ruler may waive it, and the grant is keyed on the

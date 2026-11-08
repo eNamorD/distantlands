@@ -32,9 +32,12 @@ object Imperials:
     * otherwise the Chancellor (Steward of Imperial Domains; rulings R1 and
     * R2). */
   def governor(ready: ReadyGame): Option[PlayerId] =
-    val turn = ready.game.current.turn
-    val inTurn = turn.phase == Phase.Wake || turn.phase == Phase.Act ||
-      turn.phase == Phase.Rest
-    if inTurn && isImperial(ready, turn.activePlayer) then
-      Some(turn.activePlayer)
+    val active = ready.game.current.turn.activePlayer
+    if inOwnTurn(ready) && isImperial(ready, active) then Some(active)
     else chancellor(ready)
+
+  /** Whether the active player is in their own Wake, Act or Rest, the
+    * part of a turn that is theirs (Seal of the Empire, CR p. 35). */
+  def inOwnTurn(ready: ReadyGame): Boolean =
+    val phase = ready.game.current.turn.phase
+    phase == Phase.Wake || phase == Phase.Act || phase == Phase.Rest

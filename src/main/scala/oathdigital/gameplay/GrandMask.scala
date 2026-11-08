@@ -26,17 +26,13 @@ private[gameplay] object GrandMaskRule:
     * in their Wake, Act or Rest (the turn as `Imperials.governor` reads
     * it). */
   def wearer(ready: ReadyGame): Option[PlayerId] =
-    val turn = ready.game.current.turn
-    val inTurn = turn.phase == Phase.Wake || turn.phase == Phase.Act ||
-      turn.phase == Phase.Rest
-    holder(ready).filter(player => inTurn && turn.activePlayer == player &&
+    holder(ready).filter(player => Imperials.inOwnTurn(ready) &&
+      ready.game.current.turn.activePlayer == player &&
       Imperials.role(ready, player).contains(Role.Exile))
 
   /** The wearer, when `site` is an Imperial site. */
   def maskingAt(ready: ReadyGame, site: SiteId): Option[PlayerId] =
-    wearer(ready).filter(_ => ready.game.current.map.sites.get(site)
-      .exists(state => SiteRule.ruler(state.forces,
-        ready.game.current.players) == Right(SiteRuler.Empire)))
+    wearer(ready).filter(_ => SiteRulers.isImperialSite(ready, site))
 
   /** The Imperial sites while the Mask works, else none. */
   def maskedSites(ready: ReadyGame): Set[SiteId] =

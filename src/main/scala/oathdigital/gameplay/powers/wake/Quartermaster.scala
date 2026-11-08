@@ -2,7 +2,7 @@ package oathdigital.gameplay.powers.wake
 
 import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower,
   SiteOnly}
-import oathdigital.gameplay.{NoteSupport, PowerAccess}
+import oathdigital.gameplay.{CardRule, NoteSupport}
 import oathdigital.gameplay.powerresolver.PhasePower
 import oathdigital.model._
 
@@ -16,9 +16,10 @@ object QuartermasterCard extends Denizen(DenizenId("258"), "Quartermaster", Suit
   * Supply."
   *
   * An optional Wake power, once per turn, which the engine enforces, as Marble
-  * Fountains is. A card at a site the player rules is in reach wherever their
-  * pawn is, so the ruler of Quartermaster's site may use it from anywhere. A
-  * player whose pawn stands there without ruling it may not. Its line reads
+  * Fountains is. A card its player rules is in reach wherever their pawn is,
+  * so Quartermaster's ruler (`CardRule`, which names the Grand Mask's wearer
+  * during their turn) may use it from anywhere. A player whose pawn stands
+  * there without ruling it may not. Its line reads
   * the Supply the track allowed, as Wayside Inn's does: a full track gains
   * nothing and writes nothing.
   */
@@ -34,9 +35,7 @@ case object Quartermaster extends PhasePower:
       player: PlayerId, source: DecisionOptionRef): Boolean =
     source match
     case DecisionOptionRef.Denizen(card) =>
-      PowerAccess.ruledSites(ready, player).exists(site =>
-        ready.game.current.map.sites.get(site)
-          .exists(_.denizens.exists(_.id == card)))
+      CardRule.rulerOf(ready, card).contains(SiteRuler.Player(player))
     case _ => false
 
   def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,

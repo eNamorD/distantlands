@@ -64,7 +64,10 @@ private[gameplay] object SiteRulers:
     * with its warbands (rules: "Sites with Imperial warbands are called
     * Imperial sites"). */
   def imperialSites(ready: ReadyGame): Vector[SiteId] =
-    ready.game.current.map.inPlay.filter(site =>
-      ready.game.current.map.sites.get(site).exists(state =>
-        SiteRule.ruler(state.forces, ready.game.current.players) ==
-          Right(SiteRuler.Empire)))
+    ready.game.current.map.inPlay.filter(isImperialSite(ready, _))
+
+  /** Whether the Empire's warbands hold `site`. */
+  def isImperialSite(ready: ReadyGame, site: SiteId): Boolean =
+    ready.game.current.map.sites.get(site).exists(state =>
+      SiteRule.ruler(state.forces, ready.game.current.players) ==
+        Right(SiteRuler.Empire))

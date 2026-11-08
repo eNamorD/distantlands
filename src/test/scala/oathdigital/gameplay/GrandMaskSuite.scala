@@ -3,7 +3,9 @@ package oathdigital.gameplay
 import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   DeepWoodsSite}
 import oathdigital.gameplay.powers.action.{RovingTerror, RovingTerrorCard}
-import oathdigital.gameplay.powers.campaign.WrestlersCard
+import oathdigital.gameplay.operations.HallOfMinistersCard
+import oathdigital.gameplay.powers.campaign.{ToweringRampartCard,
+  WrestlersCard}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.testkit.{MenuPlay, Table}
@@ -44,6 +46,16 @@ class GrandMaskSuite extends munit.FunSuite:
 
   test("a battle plan stays the Empire's"):
     assertEquals(CardRule.rulerOf(p3WearsTheMask.ready, wrestlers),
+      Some(SiteRuler.Player(p2)))
+
+  test("an edifice is a plan by its face: the wearer rules Hall of " +
+      "Ministers, and Towering Rampart stays the Empire's"):
+    val ready = p3WearsTheMask
+      .edifice(HallOfMinistersCard, EdificeSide.Intact, at = home)
+      .edifice(ToweringRampartCard, EdificeSide.Ruined, at = home).ready
+    assertEquals(CardRule.rulerAt(ready, home, HallOfMinistersCard.id),
+      Some(SiteRuler.Player(p3)))
+    assertEquals(CardRule.rulerAt(ready, home, ToweringRampartCard.id),
       Some(SiteRuler.Player(p2)))
 
   test("the sites stay Imperial, and the wearer rules no site"):

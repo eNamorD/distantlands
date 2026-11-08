@@ -21,7 +21,7 @@ object CityWallCard extends Denizen(DenizenId("252"), "City Wall", Suit.Order) w
   * Wall's ruler cannot place [favor] / [secret] on cards or use
   * non-persistent powers."
   *
-  * An enemy of its site's ruler ([[RulerBans]]) whose pawn stands at that
+  * An enemy of its ruler ([[RulerBans]]) whose pawn stands at its
   * site cannot use a non-persistent power from any card, a use whose cost
   * places on its card ([[Placements.byUse]]), or place on any card
   * ([[Placements.onto]]). The site is the one the player acts from: a

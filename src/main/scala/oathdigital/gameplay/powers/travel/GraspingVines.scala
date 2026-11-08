@@ -16,7 +16,7 @@ object GraspingVinesCard extends Denizen(DenizenId("178"), "Grasping Vines", Sui
 
 /** Grasping Vines (card 178), a persistent rule of a faceup site card: an enemy
   * traveling from a site ruled by the Vines' ruler kills one warband on their
-  * own board if able. The Vines' ruler is the ruler of the site it stands at,
+  * own board if able. The Vines' ruler is the card's ruler (`CardRule`),
   * and that ruler is exempt.
   *
   * The kill is not required: a traveller with no warband on their board owes

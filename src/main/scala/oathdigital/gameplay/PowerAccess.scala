@@ -78,7 +78,9 @@ private[gameplay] object PowerAccess:
     * they rule, less those the Grand Mask takes from the Imperials during
     * its wearer's turn; the bandit sites for the Bandit Crown's holder; and
     * the Imperial sites for the Mask's wearer. A count of ruled sites reads
-    * `ruledSites`, which neither relic changes. */
+    * `ruledSites`, which neither relic changes. The wearer's sites include
+    * their battle plans, which stay the Empire's: plans are reached
+    * through `PlanContext`, not through access. */
   def rulingSites(ready: ReadyGame, actor: PlayerId): Set[SiteId] =
     ruledSites(ready, actor) -- GrandMaskRule.maskedSites(ready) ++
       BanditCrownRule.sitesFor(ready, actor) ++

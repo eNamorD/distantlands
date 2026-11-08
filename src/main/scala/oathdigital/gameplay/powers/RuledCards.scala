@@ -8,15 +8,14 @@ import oathdigital.model._
   * rules"): a player's faceup advisers, and the denizens and edifices it
   * rules at sites (`CardRule`), which the Grand Mask gives its wearer.
   * Bandits hold no advisers; they rule the cards at the sites they rule.
-  * Only a faceup
-  * card has a suit, so a facedown adviser or denizen belongs to no suit, while
-  * an edifice has its suit on either face. An adviser's suit is its
+  * Only a faceup card has a suit, so a facedown adviser or denizen belongs
+  * to no suit, while an edifice has its suit on either face. An adviser's suit is its
   * effective suit (`EffectiveSuit`), so a Pledge to Discord holder rules its
   * advisers as Discord.
   */
 object RuledCards:
   /** The cards of `suit` that `ruler` rules: its advisers first, then the
-    * cards at each ruled site in map order. */
+    * cards it rules at sites, in map order. */
   def of(catalog: ExecutableCatalog, ready: ReadyGame, ruler: SiteRuler,
       suit: Suit): Vector[CardId] =
     val current = ready.game.current

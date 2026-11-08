@@ -16,7 +16,7 @@ object SecretPoliceCard extends Denizen(DenizenId("113"), "Secret Police", Suit.
   * play Visions faceup while their pawn is at any site ruled by Secret
   * Police's ruler."
   *
-  * The Police's ruler is the ruler of the site it stands at. A player ruler
+  * The Police's ruler is the card's ruler (`CardRule`). A player ruler
   * binds every other player whose pawn is at a site that player rules. A
   * Bandit ruler binds every player at any Bandit-ruled site, the Police site
   * included, since bandits are every player's enemy. The Empire's sites resolve
