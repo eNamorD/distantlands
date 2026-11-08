@@ -13,10 +13,3 @@ object CouncilArbiterCard extends Denizen(DenizenId("200"), "Council Arbiter", S
       "advisers. _You cannot exchange locked advisers. You still " +
       "follow your adviser limit._")
   val powers: Vector[PrintedPower] = Vector(power)
-
-object MasterOfDisguiseCard extends Denizen(DenizenId("78"), "Master of Disguise", Suit.Arcane) with AdviserOnly:
-  val power = PrintedPower(PowerId("denizen.master-of-disguise"),
-    persistent = false, cost = Cost(secret = 1),
-    text = "Act as if you had another player's advisers instead. _(You " +
-      "can't use your other advisers.)_")
-  val powers: Vector[PrintedPower] = Vector(power)

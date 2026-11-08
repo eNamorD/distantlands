@@ -209,6 +209,7 @@ denizen.martial-culture declined = Declined Citizenship.
 denizen.martial-culture used = Became a Citizen.
 denizen.martial-culture used.chancellor = Became the Chancellor.
 denizen.master-at-arms rerolled = Rerolled {0}{0? hollow sword.| hollow swords.}
+denizen.master-of-disguise acted = Acted as if holding the advisers of {0}.
 denizen.memory-of-home used = Moved {0} from {1} to {2}.
 denizen.memory-of-home used.empty = Every other favor bank was empty.
 denizen.memory-of-nature used = Moved {0} to {1}.

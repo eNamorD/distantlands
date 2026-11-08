@@ -4,10 +4,11 @@ import oathdigital.gameplay.powerresolver.ContributingPower
 import oathdigital.gameplay.powers.challenge.ChallengeModifiers
 import oathdigital.gameplay.powers.economy.{ActingTroupe, AnimalPlaymates,
   AwaitedReturn, Birdsong, CupOfPlenty, Curfew, Defame, Downtrodden,
-  FriendlyFamiliar, GolemLegions, InitiationRite, MapLibrary, MountedLibrary,
-  MovingMarket, OldSongs, Pressgangs, RowdyPub, SecretSignal, SkilledMerchants,
-  SmallFriends, SpitefulMirror, TheOldOak, VillageIdiot, VowOfBeastkin,
-  VowOfPoverty, VowOfWandering, VowOfWanderingMuster}
+  FriendlyFamiliar, GolemLegions, InitiationRite, MapLibrary,
+  MasterOfDisguise, MountedLibrary, MovingMarket, OldSongs, Pressgangs,
+  RowdyPub, SecretSignal, SkilledMerchants, SmallFriends, SpitefulMirror,
+  TheOldOak, VillageIdiot, VowOfBeastkin, VowOfPoverty, VowOfWandering,
+  VowOfWanderingMuster}
 import oathdigital.gameplay.powers.recover.{RelicWorship, SilverCharm}
 import oathdigital.gameplay.powers.search.{Augury, Baron, Bracken,
   CrackedHorn, CropRotation, Disciples, ErrandBoy, ForcedLabor, ForestWarden,
@@ -33,7 +34,7 @@ object ActionModifiers:
       SpitefulMirror, ActingTroupe, MovingMarket, AwaitedReturn,
       MountedLibrary, Defame,
       GolemLegions, MapLibrary,
-      SkilledMerchants, SmallFriends,
+      SkilledMerchants, SmallFriends, MasterOfDisguise,
       FriendlyFamiliar, SecretSignal, Pressgangs,
       OldSongs, Curfew, ForcedLabor, InitiationRite,
       VowOfBeastkin, VowOfWanderingMuster,
