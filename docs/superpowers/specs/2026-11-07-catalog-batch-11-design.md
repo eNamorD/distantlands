@@ -61,7 +61,7 @@ their phases.
 ## Rulings
 
 Taken with the owner on 2026-11-07; rulings 15 to 18 on 2026-11-08,
-while planning slice 2.
+while planning slice 2, and ruling 19 the same day, while planning slice 3.
 
 1. **Bandit Crown: the bandits still rule.** Denizens at a bandit site stay
    ruled by the bandits. The Crown's holder acts as if they ruled them, and
@@ -138,6 +138,10 @@ while planning slice 2.
 18. **Grand Mask: Imperials keep their pawn's site.** During the wearer's
     turn the Imperials lose only the access that ruling gives. They may
     still use the masked cards at their own pawn's site.
+19. **Master of Disguise replaces advisers only.** Once it is picked, the
+    holder may still pick Trade modifiers from their own relics and from
+    the site cards they may use. Those modifiers read the chosen player's
+    advisers wherever they read the holder's (Cup of Plenty's match).
 
 ### Readings
 
@@ -153,7 +157,8 @@ with this spec.
   and the spend could take from either.
 - **Master of Disguise's chosen player** may be any other player. Their
   facedown advisers count as they would for them. The Trade's other
-  modifier picks come from their advisers only.
+  adviser modifiers come from their advisers only; the holder's relics and
+  usable site cards still offer theirs (ruling 19).
 - **Desecrated Ground.** An Exile who reveals a Vision while their pawn is
   at the site keeps every revealed Vision they already have. A reveal
   anywhere else discards all of the player's own revealed Visions. Any one
@@ -277,9 +282,12 @@ holder, for a battle-plan denizen, or for the site's own ruling.
   chosen player's advisers for the walk actor while the scratch is set, and
   the player's own otherwise. `EffectiveSuit.count` (the Trade's matching
   suit, Cup of Plenty, Vow of Beastkin), `PowerAccess.locate` and
-  `accessible`'s adviser case, `holdsFaceupAdviser` and
-  `faceupAdviserHolder` read through it. The slice's plan lists the raw
-  `.advisers` reads it leaves alone, with the reason for each.
+  `accessible`'s adviser case and `holdsFaceupAdviser` read through it.
+  `faceupAdviserHolder` keeps the real holder: no Trade reads it, and
+  through `advisersOf` a chosen card would have two holders. The slice's
+  plan lists the raw `.advisers` reads it leaves alone, with the reason for
+  each. Slice 5 reads Vow of Kinship's holder through `holdsFaceupAdviser`,
+  so Master of Disguise gets around Kinship too (FAQ).
 - **The pick.** Master of Disguise is a Trade modifier that asks which
   player, emits `ActAsIfAdvisers`, and is unavailable once another modifier
   is picked. Its own availability reads the real advisers.
