@@ -73,6 +73,45 @@ class CoreOperationsSuite extends munit.FunSuite:
         PositionedLocation(redArea)),
       FlipSecrets(red, 1, SecretSide.FaceUp, SecretSide.FaceDown)))
 
+  test("a payment, a buried discard and a relic discard keep their leaves"):
+    val card = DenizenId("denizen:paid")
+    val relic = RelicId("relic:set-aside")
+    val from = PositionedLocation(site)
+    val onCard = PositionedLocation(Location.OnCard(card))
+    val payerArea = PositionedLocation(redArea)
+
+    assertEquals(Operation.flatten(PayCost(red, Location.OnCard(card),
+      Cost(favor = 1, secret = 1, favorBurnt = 2, secretBurnt = 1))), Vector(
+      Move(Piece.Favor(1), payerArea, onCard),
+      Move(Piece.Secrets(1), payerArea, onCard),
+      Move(Piece.Favor(2), payerArea,
+        PositionedLocation(Location.SharedBank)),
+      Move(Piece.Secrets(1), payerArea,
+        PositionedLocation(Location.SharedBank))))
+
+    assertEquals(Operation.flatten(PayCost(red, Location.OnCard(card),
+      Cost(favor = 1, secret = 2), matchingBank = Some(Suit.Order),
+      offTurn = true)), Vector(
+      Move(Piece.Favor(1), payerArea,
+        PositionedLocation(Location.FavorBank(Suit.Order))),
+      FlipSecrets(red, 2, SecretSide.FaceUp, SecretSide.FaceDown)))
+
+    assertEquals(Operation.flatten(Discard.Buried(BuryableCard.Denizen(card),
+      from, Some(Suit.Order), favor = 1, secrets = 1, red)), Vector(
+      Move(Piece.Favor(1), onCard,
+        PositionedLocation(Location.FavorBank(Suit.Order))),
+      Move(Piece.Secrets(1), onCard, payerArea),
+      FlipSecrets(red, 1, SecretSide.FaceUp, SecretSide.FaceDown),
+      Bury(BuryableCard.Denizen(card), from)))
+
+    assertEquals(Operation.flatten(Discard.Relic(relic, from, secrets = 1,
+      red)), Vector(
+      Move(Piece.Card(relic), from,
+        PositionedLocation(Location.SetAsideRelics), by = Some(red)),
+      Move(Piece.Secrets(1), PositionedLocation(Location.OnCard(relic)),
+        payerArea),
+      FlipSecrets(red, 1, SecretSide.FaceUp, SecretSide.FaceDown)))
+
   test("Gain, burn, kill, sacrifice, and replace use the correct banks"):
     val exile = ForceKind.Exile(LineageId("red-lineage"))
     val gained = Operation.flatten(Gain.Secrets(red, 2)).head

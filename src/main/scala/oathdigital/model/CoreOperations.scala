@@ -118,11 +118,13 @@ object Bury:
       suit: Option[Suit], favor: Int, secrets: Int,
       actingPlayer: PlayerId): Vector[CoreOperation] =
     require(favor == 0 || suit.isDefined, "buried favor needs its suit bank")
-    Discard.returns(card.id, suit, favor, secrets, actingPlayer) :+
+    OperationChildren.returns(card.id, suit, favor, secrets,
+      actingPlayer) :+
       Bury(card, from)
 
 sealed trait Discard extends CoreOperation
 object Discard:
+  import OperationChildren.*
   /** Discards a denizen facedown to the specified regional pile and returns
     * all resources on it. `actingPlayer` takes its secrets and discards it,
     * unless the discard is `actorless`: an effect no player performs, as
@@ -211,45 +213,6 @@ object Discard:
       by = Some(actingPlayer))) ++
       returnedSecrets(card, secrets, actingPlayer)
 
-  private def discardWorld(card: WorldCardId, from: PositionedLocation,
-      destination: Region, by: Option[PlayerId],
-      position: StackPosition): Vector[Operation] =
-    Vector(Move(Piece.Card(card), from,
-      PositionedLocation(Location.RegionalDiscard(destination), position),
-      resultingOrientation = Some(Orientation.FaceDown), by = by))
-
-  // The suit fallback is never reached with a positive favor: positiveMove
-  // returns empty for zero and Bury.standard requires the suit.
-  private[model] def returns(card: CardId, suit: Option[Suit], favor: Int,
-      secrets: Int, actingPlayer: PlayerId): Vector[CoreOperation] =
-    (positiveMove(favor)(Piece.Favor.apply,
-      PositionedLocation(Location.OnCard(card)),
-      PositionedLocation(Location.FavorBank(suit.getOrElse(Suit.Arcane)))) ++
-      returnedSecrets(card, secrets, actingPlayer)).collect:
-      case operation: CoreOperation => operation
-
-  private def returnedResources(card: CardId, suit: Suit, favor: Int,
-      secrets: Int, actingPlayer: PlayerId): Vector[Operation] =
-    positiveMove(favor)(Piece.Favor.apply,
-      PositionedLocation(Location.OnCard(card)),
-      PositionedLocation(Location.FavorBank(suit))) ++
-    returnedSecrets(card, secrets, actingPlayer)
-
-  private def returnedSecrets(card: CardId, amount: Int,
-      actingPlayer: PlayerId): Vector[Operation] =
-    if amount == 0 then Vector.empty
-    else Vector(
-      Move(Piece.Secrets(amount), PositionedLocation(Location.OnCard(card)),
-        PositionedLocation(Location.PlayArea(actingPlayer))),
-      FlipSecrets(actingPlayer, amount, SecretSide.FaceUp,
-        SecretSide.FaceDown))
-
-  private def positiveMove(amount: Int)(piece: Int => Piece,
-      from: PositionedLocation,
-      to: PositionedLocation): Vector[Operation] =
-    if amount == 0 then Vector.empty
-    else Vector(Move(piece(amount), from, to))
-
 /** Takes a card off the map into a pile that holds no tokens (Pilgrimage,
   * catalog batch 10, slice 6): a denizen to the Dispossessed, or a ruined
   * edifice to the bottom of the edifice deck. Its favor goes to `suit`'s
@@ -264,7 +227,8 @@ final case class RemoveFromMap(card: CardId, from: PositionedLocation,
   require(secrets >= 0, "removed secrets must be non-negative")
 
   override val children: Vector[Operation] =
-    Discard.returns(card, Some(suit), favor, secrets, actingPlayer) :+
+    OperationChildren.returns(card, Some(suit), favor, secrets,
+      actingPlayer) :+
       Move(Piece.Card(card), from, to, by = Some(actingPlayer))
 
 /** Takes known cards from a prompted draw source, in the order drawn: from
@@ -368,14 +332,10 @@ final case class PayCost(player: PlayerId, placedAt: Location, cost: Cost,
     else secretMove(cost.secret, placedAt)
 
   private def favorMove(amount: Int, to: Location): Vector[Operation] =
-    if amount == 0 then Vector.empty
-    else Vector(Move(Piece.Favor(amount),
-      PositionedLocation(Location.PlayArea(player)), PositionedLocation(to)))
+    OperationChildren.fromPlayArea(player, amount, Piece.Favor.apply, to)
 
   private def secretMove(amount: Int, to: Location): Vector[Operation] =
-    if amount == 0 then Vector.empty
-    else Vector(Move(Piece.Secrets(amount),
-      PositionedLocation(Location.PlayArea(player)), PositionedLocation(to)))
+    OperationChildren.fromPlayArea(player, amount, Piece.Secrets.apply, to)
 
 /** Returns warbands to their matching bank. Imperial warbands use the
   * Chancellor's bank; bandits use the shared bandit bank.
