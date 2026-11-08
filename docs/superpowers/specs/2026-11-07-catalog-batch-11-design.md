@@ -60,7 +60,8 @@ their phases.
 
 ## Rulings
 
-Taken with the owner on 2026-11-07.
+Taken with the owner on 2026-11-07; rulings 15 to 18 on 2026-11-08,
+while planning slice 2.
 
 1. **Bandit Crown: the bandits still rule.** Denizens at a bandit site stay
    ruled by the bandits. The Crown's holder acts as if they ruled them, and
@@ -125,6 +126,18 @@ Taken with the owner on 2026-11-07.
     Prophet's warband is discarded, the warband is killed and its owner
     plays that Vision faceup or discards it, as a Search would. Losing False
     Prophet itself changes nothing (FAQ: the warband does not go away).
+15. **Grand Mask: Hidden Passages reads its site.** "Its ruler" is the
+    ruler of the Passages' site. During the wearer's turn the Chancellor
+    still consents to its use, the wearer's own included.
+16. **Grand Mask: Key to the City reads its site.** "The ruler" is the
+    ruler of the site it is played to, so the wearer may play it to an
+    Imperial site whose ruler's pawn is away and take the site.
+17. **Grand Mask: Hospital reads its site.** "If you still rule it" means
+    Hospital's site. The wearer does not rule an Imperial site, so their
+    killed warbands are never placed there.
+18. **Grand Mask: Imperials keep their pawn's site.** During the wearer's
+    turn the Imperials lose only the access that ruling gives. They may
+    still use the masked cards at their own pawn's site.
 
 ### Readings
 
@@ -235,6 +248,8 @@ holder for themselves; no change without the Crown.
   during their turn, and an Imperial actor loses access to the Mask's cards
   at those sites. Slice 1's consent granter reads the card ruler, so the
   holder is the granter of those cards' waivers during their turn.
+- **Site readings.** Hidden Passages, Key to the City and Hospital read
+  their site, not the card (rulings 15 to 17).
 
 Tests: use, toll paid to the holder, a ruler ban turned against the
 holder's enemies, a ruled-card count, and Imperials refused, all during the
