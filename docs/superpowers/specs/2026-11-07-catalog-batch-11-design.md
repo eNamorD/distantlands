@@ -250,6 +250,14 @@ holder for themselves; no change without the Crown.
   holder is the granter of those cards' waivers during their turn.
 - **Site readings.** Hidden Passages, Key to the City and Hospital read
   their site, not the card (rulings 15 to 17).
+- **Preferences.** The wearer becomes the granter of the masked cards for
+  their turn, so the consent reset (consent design, ruling 17) clears the
+  Chancellor's standing preferences on those cards when the turn starts,
+  and the wearer's when it ends. A Citizen's turn already does the same to
+  the Chancellor. The owner accepted this on 2026-11-08;
+  `GrandMaskConsentPreferenceSuite` pins it, and the ROADMAP's clean-up
+  phase holds the question of keeping preferences across a one-turn
+  handover.
 
 Tests: use, toll paid to the holder, a ruler ban turned against the
 holder's enemies, a ruled-card count, and Imperials refused, all during the

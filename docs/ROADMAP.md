@@ -53,6 +53,17 @@ Left behind by the
   Recorded in the
   [service log start states design](superpowers/specs/2026-09-28-service-log-start-states-design.md).
   The consent play-test below needs it.
+- [ ] **Keep consent preferences across a one-turn handover.** The reset
+  (consent ruling 17) clears a granter's standing preferences whenever
+  `ConsentPowers.granter` names someone else, and the turn decides that
+  for the Empire's cards: a Citizen's turn and the Grand Mask's wearer's
+  turn each take the cards from the Chancellor, so the Chancellor loses
+  every Always and Never on them, and the turn player loses theirs when
+  the turn ends. Comparing `ConsentDesk.stale` against the ruler outside
+  any turn would keep them. Accepted for now in
+  [catalog batch 11](superpowers/specs/2026-11-07-catalog-batch-11-design.md#slice-2-card-level-ruler)
+  and pinned by `GrandMaskConsentPreferenceSuite`; a change needs the
+  owner's ruling and updates that suite.
 - [ ] **Play-test consent in a browser.** The amber destination, campaign
   target, faceup Vision, Hall-protected card and free option of a toll, the confirmation, the
   ruler's prompt, automatic answers, the preferences grid and withdrawing
