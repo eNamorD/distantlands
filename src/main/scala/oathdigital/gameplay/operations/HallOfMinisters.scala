@@ -1,6 +1,7 @@
 package oathdigital.gameplay.operations
 
 import oathdigital.catalog.{Edifice, EdificeFace, Locked, PrintedPower}
+import oathdigital.gameplay.SiteRulers
 import oathdigital.model._
 
 object HallOfMinistersCard extends Edifice(EdificeId("E16"), Suit.Order):
@@ -69,10 +70,11 @@ case object HallOfMinisters extends OperationRestriction with WaivableRule:
           noDiscardConsent(source), noDiscard(source))))
     }
 
-  /** The player who rules the intact Hall, who may consent; `None` when
-    * bandits or nobody rules it. */
+  /** Who may consent: the player who rules the intact Hall's site, or the
+    * Bandit Crown's holder under bandits; `None` when nobody rules it. */
   def granter(ready: ReadyGame): Option[PlayerId] =
-    hallRuler(ready).collect { case SiteRuler.Player(player) => player }
+    ready.game.current.edificeSite(HallOfMinistersCard.id, EdificeSide.Intact)
+      .flatMap(SiteRulers.consentGranterAt(ready, _))
 
   /** The ruler of the site where the intact Hall stands. */
   private def hallRuler(ready: ReadyGame): Option[SiteRuler] =

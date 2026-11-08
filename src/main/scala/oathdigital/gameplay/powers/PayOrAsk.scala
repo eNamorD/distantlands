@@ -62,10 +62,10 @@ final case class PayOrAsk(power: PowerId, card: DenizenId,
     case decide: Decide => decide.decisionId == decisionId
     case _ => false
 
-  /** The player ruling the card; none under bandits. */
+  /** Who may waive this card's step: the player ruling the card, or the
+    * Bandit Crown's holder under bandits. */
   def granter(ready: ReadyGame): Option[PlayerId] =
-    SiteRulers.rulerOfCard(ready, card).collect {
-      case SiteRuler.Player(player) => player }
+    SiteRulers.consentGranter(ready, card)
 
   private def barred(ctx: PowerCtx, ref: DecisionOptionRef): Boolean =
     asking(ctx) && PayOrAsk.isFree(ref)

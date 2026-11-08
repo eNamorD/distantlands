@@ -1,5 +1,6 @@
 package oathdigital.gameplay.powers.poweruse
 
+import oathdigital.gameplay.BanditCrownCard
 import oathdigital.gameplay.cards.{AncientCitySite, DeepWoodsSite}
 import oathdigital.gameplay.powerresolver.PowerUse
 import oathdigital.gameplay.powers.action.{RovingTerror, RovingTerrorCard}
@@ -11,8 +12,8 @@ import oathdigital.testkit.Table.{p1, p2, p3}
 
 /** Bandit Forest (E29, ruined): "Imperials cannot place [favor]/[secret] on
   * cards ruled by bandits or use their non-persistent powers." (catalog
-  * batch 10, slice 1). It binds Imperial players only, and nobody may
-  * waive it. */
+  * batch 10, slice 1). It binds Imperial players only, and only the Bandit
+  * Crown's holder may waive it (catalog batch 11, ruling 6). */
 class BanditForestSuite extends munit.FunSuite:
   private val forest = NonPersistentPowerRestriction.banditForest
   private val home = AncientCitySite.id
@@ -33,12 +34,12 @@ class BanditForestSuite extends munit.FunSuite:
       costsSecret = false)
 
   test("it refuses an Imperial player a non-persistent power of a card " +
-      "bandits rule, and nobody may waive it"):
+      "bandits rule, and nobody may waive it without a Crown"):
     val ready = terrorUnderBanditsWithForestRuined(p1).ready
     val refusal = forest.refusal(catalog, ready, nonPersistentUseOf(terror,
       by = p1))
     assertEquals(refusal.map(_.note), Some(forest.usePlain(source)))
-    assertEquals(refusal.flatMap(_.reason.waiver), None)
+    assertEquals(refusal.flatMap(_.reason.waiver).flatMap(_.granter), None)
 
   test("an Exile may use the card"):
     val ready = terrorUnderBanditsWithForestRuined(p3).ready
@@ -50,7 +51,7 @@ class BanditForestSuite extends munit.FunSuite:
     val ban = forest.operationRestrictions(catalog).head
     val imperialPays = PayCost(p1, Location.OnCard(terror), Cost(favor = 1))
     assert(ban.reason(terrorUnderBanditsWithForestRuined(p1).ready,
-      imperialPays).exists(_.waiver.isEmpty))
+      imperialPays).exists(_.waiver.exists(_.granter.isEmpty)))
     val exilePays = PayCost(p3, Location.OnCard(terror), Cost(favor = 1))
     assertEquals(ban.reason(terrorUnderBanditsWithForestRuined(p3).ready,
       exilePays), None)
@@ -92,3 +93,27 @@ class BanditForestSuite extends munit.FunSuite:
     assertEquals(option, DecisionOption.Unavailable(
       DecisionOption.Denizen(DecisionOptionRef.Denizen(terror)),
       OptionReason.Noted(forest.id, forest.usePlain(source))))
+
+  test("the Crown's holder may waive it for an Imperial player"):
+    val ready = terrorUnderBanditsWithForestRuined(p1)
+      .relic(p3, BanditCrownCard).ready
+    val option = MenuPlay.menuOptionFor(catalog, ready,
+      ActionRef.UsePower(RovingTerror.id),
+      Vector(DecisionOptionRef.Denizen(terror)))
+    option match
+      case DecisionOption.Unavailable(_, OptionReason.Askable(power, note,
+          asks, _)) =>
+        assertEquals(power, forest.id)
+        assertEquals(note, forest.useAsked(source))
+        assertEquals(asks, Vector(ConsentAsk(p3, Vector(forest.id))))
+      case other => fail(s"not askable: $other")
+
+  test("an Imperial holder is still bound, and cannot let themselves off"):
+    val ready = terrorUnderBanditsWithForestRuined(p2)
+      .relic(p2, BanditCrownCard).ready
+    assertEquals(MenuPlay.menuOptionFor(catalog, ready,
+      ActionRef.UsePower(RovingTerror.id),
+      Vector(DecisionOptionRef.Denizen(terror))),
+      DecisionOption.Unavailable(
+        DecisionOption.Denizen(DecisionOptionRef.Denizen(terror)),
+        OptionReason.Noted(forest.id, forest.usePlain(source))))

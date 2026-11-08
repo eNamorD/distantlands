@@ -82,7 +82,7 @@ case object ForestCouncil extends ContributingPower with PowerUseRestriction:
       card <- use.card
       if beast(catalog, ready, card)
       keys <- reasons(ready, use)
-    yield RulerBans.refusal(id, ForestCouncilCard.id, ruler, use.user,
+    yield RulerBans.refusal(ready, id, ForestCouncilCard.id, use.user,
       covers(use.user, card), keys._1, keys._2, "forest-council")
 
   /** The placing ban, reading suits from `catalog`. */
@@ -93,6 +93,6 @@ case object ForestCouncil extends ContributingPower with PowerUseRestriction:
         if beast(catalog, ready, placed._2)
         ruler <- RulerBans.ruler(ready, ForestCouncilCard.id)
         if RulerBans.enemy(ruler, placed._1)
-      yield RulerBans.reason(id, ForestCouncilCard.id, ruler, placed._1,
+      yield RulerBans.reason(ready, id, ForestCouncilCard.id, placed._1,
         covers(placed._1, placed._2), placingPlain, placingAsked,
         "forest-council-placing")

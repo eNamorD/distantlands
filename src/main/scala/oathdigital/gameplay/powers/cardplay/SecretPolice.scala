@@ -49,10 +49,10 @@ case object SecretPolice extends ContributingPower:
         Some(waiver))))
 
   /** "Enemies cannot" (consent design, ruling 1): the player who rules the
-    * Police's site may waive it. */
+    * Police's site may waive it, or the Bandit Crown's holder under
+    * bandits. */
   private def waiver: Waiver = Waiver(
-    ready => SiteRulers.rulerOfCard(ready, cardId).collect {
-      case SiteRuler.Player(player) => player },
+    SiteRulers.consentGranter(_, cardId),
     PowerSourceRef.Card(cardId),
     (_, _) => noFaceupConsent(PowerSourceRef.Card(cardId)))
 

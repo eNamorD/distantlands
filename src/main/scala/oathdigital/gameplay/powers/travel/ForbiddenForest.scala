@@ -57,10 +57,10 @@ case object ForbiddenForest extends ContributingPower:
     ready.game.current.edificeSite(ForbiddenForestCard.id,
       EdificeSide.Intact)
 
-  /** The player who rules the Forest's site, who may consent. */
+  /** Who may consent: the player who rules the Forest's site, or the
+    * Bandit Crown's holder under bandits. */
   def granter(ready: ReadyGame): Option[PlayerId] =
-    forestSite(ready).flatMap(SiteRulers.rulerOf(ready, _)).collect {
-      case SiteRuler.Player(player) => player }
+    forestSite(ready).flatMap(SiteRulers.consentGranterAt(ready, _))
 
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
 

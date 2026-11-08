@@ -47,7 +47,7 @@ case object SpellBreaker extends ContributingPower with PowerUseRestriction:
     for
       ruler <- RulerBans.ruler(ready, SpellBreakerCard.id)
       if use.costsSecret && RulerBans.enemy(ruler, use.user)
-    yield RulerBans.refusal(id, SpellBreakerCard.id, ruler, use.user,
+    yield RulerBans.refusal(ready, id, SpellBreakerCard.id, use.user,
       ConsentKey(id, use.user, PowerUseRules.useKey,
         PowerUseRules.target(use)), plain, asked, "spell-breaker")
 

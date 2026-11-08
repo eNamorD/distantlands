@@ -57,12 +57,11 @@ sealed abstract class PatrolRule extends ContributingPower:
   /** The card the consent prompt and the log name. */
   final def card: PowerSourceRef = PowerSourceRef.Card(edifice)
 
-  /** The player who rules the face's site, who may consent: nobody under
-    * bandits or at an unruled site. */
+  /** Who may consent: the player who rules the face's site, or the Bandit
+    * Crown's holder under bandits; nobody at an unruled site. */
   final def granter(ready: ReadyGame): Option[PlayerId] =
     ready.game.current.edificeSite(edifice, side)
-      .flatMap(SiteRulers.rulerOf(ready, _)).collect {
-        case SiteRuler.Player(player) => player }
+      .flatMap(SiteRulers.consentGranterAt(ready, _))
 
   def contributions: Map[PowerWindow, Vector[Contribution]] = Map(
     PowerWindow.RecoverActionEligibility -> Vector(Restriction(

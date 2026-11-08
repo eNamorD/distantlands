@@ -1,5 +1,6 @@
 package oathdigital.gameplay.powers.wake
 
+import oathdigital.gameplay.BanditCrownCard
 import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
@@ -127,6 +128,20 @@ class PassagesSuite extends munit.FunSuite:
           HiddenPassages.banditsRule(HiddenPassages.card))))
     assert(menuOption(staged(EdificeSide.Intact,
       ruled = _.warbandsAt(home, p1, 1)), HiddenPassages.id).available)
+
+  test("under bandits the Crown's holder uses it freely, and anyone else " +
+      "asks the holder"):
+    assert(menuOption(staged(EdificeSide.Intact,
+      ruled = _.bandits(home, 1).relic(p1, BanditCrownCard)),
+      HiddenPassages.id).available)
+    menuOption(staged(EdificeSide.Intact,
+        ruled = _.bandits(home, 1).relic(p2, BanditCrownCard)),
+        HiddenPassages.id) match
+      case DecisionOption.Unavailable(_, OptionReason.Askable(_, note, asks,
+          _)) =>
+        assertEquals(note, HiddenPassages.needsConsent(HiddenPassages.card))
+        assertEquals(asks, Vector(ConsentAsk(p2, Vector(HiddenPassages.id))))
+      case other => fail(s"not askable: $other")
 
   test("with the pawn elsewhere the intact face is out of reach"):
     assert(!offered(staged(EdificeSide.Intact, pawnAt = peaks),

@@ -87,9 +87,9 @@ case object CityWall extends ContributingPower with PowerUseRestriction:
   def refusal(catalog: ExecutableCatalog, ready: ReadyGame, use: PowerUse)
       : Option[PowerUseRefusal] =
     for
-      ruler <- walledIn(ready, use.user)
+      _ <- walledIn(ready, use.user)
       keys <- reasons(ready, use)
-    yield RulerBans.refusal(id, CityWallCard.id, ruler, use.user,
+    yield RulerBans.refusal(ready, id, CityWallCard.id, use.user,
       ConsentKey(id, use.user, PowerUseRules.useKey,
         PowerUseRules.target(use)), keys._1, keys._2, "city-wall")
 
@@ -97,7 +97,7 @@ case object CityWall extends ContributingPower with PowerUseRestriction:
     def reason(ready: ReadyGame, operation: CoreOperation)
         : Option[OperationReason] =
       Placements.onto(ready, operation).flatMap(placed =>
-        walledIn(ready, placed._1).map(ruler => RulerBans.reason(id,
-          CityWallCard.id, ruler, placed._1, ConsentKey(id, placed._1,
+        walledIn(ready, placed._1).map(_ => RulerBans.reason(ready, id,
+          CityWallCard.id, placed._1, ConsentKey(id, placed._1,
             PowerUseRules.useKey, PowerUseRules.cardRef(placed._2)),
           placingPlain, placingAsked, "city-wall-placing")))

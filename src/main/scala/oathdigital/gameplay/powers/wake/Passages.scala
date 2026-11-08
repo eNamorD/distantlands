@@ -81,9 +81,10 @@ case object SinkingPassages extends PassagesPower:
   * who does not rule the site is refused, waivably by the player who rules
   * it, so the Wake menu shows the power askable with "Hidden Passages:
   * Needs its ruler's consent." and a grant remembered under the use key
-  * opens it for the turn. Under bandits nobody may consent and the menu
-  * shows "Hidden Passages: Bandits rule this site."; at an unruled site, or
-  * for the ruler, nothing is asked.
+  * opens it for the turn. Under bandits the Bandit Crown's holder acts as
+  * its ruler; with no holder nobody may consent and the menu shows "Hidden
+  * Passages: Bandits rule this site."; at an unruled site, or for the
+  * ruler, nothing is asked.
   */
 case object HiddenPassages extends PassagesPower with ContributingPower
     with PowerUseRestriction:
@@ -112,10 +113,10 @@ case object HiddenPassages extends PassagesPower with ContributingPower
   override val waiver: Option[Waiver] = Some(Waiver(granter, card,
     (_, _) => needsConsent(card)))
 
-  /** The player who rules the Passages' site, who may consent. */
+  /** Who may consent: the player who rules the Passages' site, or the
+    * Bandit Crown's holder under bandits. */
   def granter(ready: ReadyGame): Option[PlayerId] =
-    passagesSite(ready).flatMap(SiteRulers.rulerOf(ready, _)).collect {
-      case SiteRuler.Player(player) => player }
+    passagesSite(ready).flatMap(SiteRulers.consentGranterAt(ready, _))
 
   def refusal(catalog: ExecutableCatalog, ready: ReadyGame, use: PowerUse)
       : Option[PowerUseRefusal] =
@@ -124,9 +125,13 @@ case object HiddenPassages extends PassagesPower with ContributingPower
       site <- passagesSite(ready)
       ruler <- SiteRulers.rulerOf(ready, site)
       if ruler != SiteRuler.Player(use.user)
+      allowed = SiteRulers.consentGranterAt(ready, site)
+      // The Bandit Crown's holder uses it as its ruler would.
+      if !allowed.contains(use.user)
       (granter, plain) <- ruler match
         case SiteRuler.Player(player) => Some(Some(player) -> needsConsent)
-        case SiteRuler.Bandits => Some(None -> banditsRule)
+        case SiteRuler.Bandits =>
+          Some(allowed -> allowed.fold(banditsRule)(_ => needsConsent))
         case _ => None
     yield PowerUseRefusal(id, plain(card), OperationReason("hidden-passages",
       s"${use.user.value} needs the consent of the ruler of ${site.value}",
