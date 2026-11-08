@@ -1,13 +1,14 @@
 package oathdigital.gameplay.powers
 
-import oathdigital.gameplay.SiteRulers
+import oathdigital.gameplay.{BanditCrownRule, SiteRulers}
 import oathdigital.gameplay.powerresolver.{OptionRestriction, PowerCtx,
   Waiver}
 import oathdigital.model._
 
 /** A toll or penalty a card's ruling player may waive (consent design, "Toll
-  * and penalty steps"). When a player other than the payer rules the card,
-  * the payer is asked to pay or to go on without paying. The free option is
+  * and penalty steps"). When somebody other than the payer may let them off
+  * ([[PayOrAsk.letOffBy]]), the payer is asked to pay or to go on without
+  * paying. The free option is
   * barred by the card's waivable restriction: it is askable until the ruler
   * answers, and choosable once they consent. The step is hooked by
   * [[PowerWindow.PayOrAsk]], where only that restriction speaks.
@@ -72,6 +73,17 @@ final case class PayOrAsk(power: PowerId, card: DenizenId,
 
 object PayOrAsk:
   val pay: DecisionOptionRef.Button = DecisionOptionRef.Button("pay")
+
+  /** Who may let `payer` off what `ruler` is owed: a player ruler, or the
+    * Bandit Crown's holder under bandits (catalog batch 11, ruling 5);
+    * never the payer, who pays without being asked. A toll card's step is
+    * asked exactly when this names somebody. */
+  def letOffBy(ready: ReadyGame, ruler: SiteRuler, payer: PlayerId)
+      : Option[PlayerId] =
+    (ruler match
+      case SiteRuler.Player(owner) => Some(owner)
+      case SiteRuler.Bandits => BanditCrownRule.holder(ready)
+      case _ => None).filter(_ != payer)
 
   /** The free option of the step asked on `occasion`. */
   def free(occasion: String): DecisionOptionRef.Button =

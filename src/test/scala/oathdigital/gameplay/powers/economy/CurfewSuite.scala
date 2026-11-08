@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.economy
 
-import oathdigital.gameplay.OathRules
+import oathdigital.gameplay.{BanditCrownCard, OathRules}
 import oathdigital.gameplay.actions.economy.TradeProcedure
 import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.powers.{NoteText, PayOrAsk, WalkerPowerCatalog}
@@ -17,7 +17,9 @@ import oathdigital.testkit.Unwrap.{accepted, present}
 import oathdigital.testkit.StartPreview
 
 /** Curfew's ruler toll on a Trade. The toll is shared with Forced Labor
-  * (`RulerToll`); its bandit case is pinned here only. */
+  * (`RulerToll`); its bandit case is pinned here only. Under bandits the
+  * Bandit Crown's holder may let a trader off (catalog batch 11, rulings 4
+  * and 5). */
 class CurfewSuite extends munit.FunSuite:
   private val curfew = CurfewCard.id
   private val power = Curfew
@@ -152,3 +154,54 @@ class CurfewSuite extends munit.FunSuite:
       .find(_.ref == PayOrAsk.pay), Some(DecisionOption.Unavailable(
         DecisionOption.Button(PayOrAsk.pay, s"Give 1 favor to ${p2.value}"),
         OptionReason.Written("Needs 3 favor; you have 2"))))
+
+  /** Bandits rule both sites, so Curfew and Wrestlers are theirs; p2 holds
+    * the Bandit Crown. */
+  private def banditsRuleBothAndP2HoldsTheCrown: Table =
+    curfewTable.bandits(peaks, 1).bandits(home, 1).relic(p2, BanditCrownCard)
+
+  test("under bandits the Crown's holder may let a trader off: the step " +
+      "offers to burn, and the free option is askable of the holder"):
+    val ready = banditsRuleBothAndP2HoldsTheCrown.ready
+    val free = Curfew.free(DecisionOptionRef.Denizen(wrestlers))
+    val options = PlacementPicks.parkedOptions(tradedToStep(ready).state,
+      automatic)
+    assertEquals(options.find(_.ref == PayOrAsk.pay),
+      Some(DecisionOption.Button(PayOrAsk.pay, "Burn 1 favor")))
+    assertEquals(options.find(_.ref == free), Some(DecisionOption.Unavailable(
+      DecisionOption.Button(free, "Trade without paying"),
+      OptionReason.Askable(Curfew.id, Curfew.noFreeTradeConsent(
+        PowerSourceRef.Card(CurfewCard.id)),
+        Vector(ConsentAsk(p2, Vector(Curfew.id)))))))
+
+  test("paid under the Crown, the favor is still burnt"):
+    val ready = banditsRuleBothAndP2HoldsTheCrown.ready
+    val (events, result) = tradedAnswering(ready, PayOrAsk.pay)
+    assertEquals(Look(result).favor(p1), 1)
+    assertEquals(Look(result).favor(p2), Look(ready).favor(p2))
+    assertEquals(said(events), Vector(NoteText.Said("burned",
+      "Burned 1 favor.", covers = false)))
+    assertEquals(ActPowerHarness.replayed(rules, ready, events), result)
+
+  test("once the holder grants it, the trader gives nothing"):
+    val ready = banditsRuleBothAndP2HoldsTheCrown.ready
+    val free = Curfew.free(DecisionOptionRef.Denizen(wrestlers))
+    val granted = ready.copy(consent = ConsentState().granting(Vector(
+      ConsentKey(Curfew.id, p1, Curfew.decisionId, free)),
+      ConsentTurn.of(ready)))
+    val (events, result) = tradedAnswering(granted, free)
+    assertEquals(Look(result).favor(p1), Look(ready).favor(p1) + 1)
+    assertEquals(said(events), Vector(NoteText.Said("waived",
+      s"Gave nothing, with ${p2.value}'s consent.", covers = false)))
+
+  test("a trader who cannot pay may still ask the holder"):
+    assert(wrestlersOffered(banditsRuleBothAndP2HoldsTheCrown.favor(p1, 0)
+      .ready))
+
+  test("the holder pays the bandits' toll too, and is asked nothing"):
+    val ready = curfewTable.bandits(peaks, 1).bandits(home, 1)
+      .relic(p1, BanditCrownCard).ready
+    val done = tradedForFavorWithWrestlers(ready)
+    assertEquals(Look(done.result).favor(p1), 1)
+    assertEquals(said(done.journal.events), Vector(NoteText.Said("burned",
+      "Burned 1 favor.", covers = false)))

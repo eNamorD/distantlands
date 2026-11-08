@@ -26,9 +26,10 @@ object CurfewCard extends Denizen(DenizenId("119"), "Curfew", Suit.Order) with S
   *
   * The toll runs after the rest of the Trade's cost and reads the Trade's
   * source when it runs. Under bandits it is a required batch placed for
-  * every Trade by an enemy. When a player rules Curfew, the trader is asked
-  * first to pay or to trade without paying, which its ruler may consent to
-  * (consent slice 4), only for a source that ruler rules. A trader who
+  * every Trade by an enemy. When somebody may let the trader off (a player
+  * ruler, or the Bandit Crown's holder under bandits), the trader is asked
+  * first to pay or to trade without paying, which that player may consent
+  * to (consent slice 4), only for a source the ruler rules. A trader who
   * cannot pay and is not let off is refused, and the restriction look-ahead
   * hides that source. Its line reads the payment's step.
   */
@@ -63,7 +64,8 @@ case object Curfew extends ContributingPower:
   def contributions: Map[PowerWindow, Vector[Contribution]] = Map(
     PowerWindow.TradeCost -> Vector(Transform((ctx, operations) =>
       RulerToll.enemyRuler(ctx.state, cardId, ctx.actor)
-        .fold(operations)(charged(ctx.catalog, ctx.actor, _, operations)))),
+        .fold(operations)(charged(ctx.catalog, ctx.state, ctx.actor, _,
+          operations)))),
     PowerWindow.PayOrAsk -> Vector(Curfew.step.restriction))
 
   override def applicable(ctx: PowerCtx): Boolean =
@@ -72,30 +74,30 @@ case object Curfew extends ContributingPower:
 
   /** `operations` with what a Trade with a card `ruler` rules owes, read
     * against the Trade's source when it runs: the step first and its outcome
-    * last when a player rules Curfew (the outcome runs nothing when the step
-    * was not asked), the payment and its line last under
-    * bandits. */
-  private def charged(catalog: ExecutableCatalog,
+    * last when somebody may let the trader off (the outcome runs nothing
+    * when the step was not asked), else the payment and its line last. */
+  private def charged(catalog: ExecutableCatalog, state: ReadyGame,
       trader: PlayerId, ruler: SiteRuler,
-      operations: Vector[Operation]): Vector[Operation] = ruler match
-    case SiteRuler.Player(owner) =>
-      val paid = Vector(RulerToll.payment(trader, ruler),
+      operations: Vector[Operation]): Vector[Operation] =
+    PayOrAsk.letOffBy(state, ruler, trader) match
+      case Some(granter) =>
+        val paid = Vector(RulerToll.payment(trader, ruler),
+          Note(id, RulerToll.note(cardId, trader, ruler)))
+        val waived = Vector(Note(id, _ => Some(RulerToll.waived(
+          Curfew.step.source, NoteArg.Player(granter)))))
+        Branch((ready, pending) => tradedWith(catalog, ready, ruler, pending)
+          .toVector.map(source => Curfew.step.question(trader, source.wireId,
+            s"Curfew: ${RulerToll.paying(ruler)} to trade with this card?",
+            RulerToll.payOption(ready, trader, ruler,
+              RulerToll.favorTaken(operations, trader)),
+            "Trade without paying"))) +: operations :+
+          Curfew.step.outcome(paid, waived)
+      case None => operations ++ Vector(
+        BuildOps((ready, pending) => Right(
+          tradedWith(catalog, ready, ruler, pending)
+            .map(_ => RulerToll.payment(trader, ruler)).toVector),
+          required = true),
         Note(id, RulerToll.note(cardId, trader, ruler)))
-      val waived = Vector(Note(id, _ => Some(RulerToll.waived(
-        Curfew.step.source, NoteArg.Player(owner)))))
-      Branch((ready, pending) => tradedWith(catalog, ready, ruler, pending)
-        .toVector.map(source => Curfew.step.question(trader, source.wireId,
-          "Curfew: give 1 favor to trade with this card?",
-          RulerToll.payOption(ready, trader, owner,
-            RulerToll.favorTaken(operations, trader)),
-          "Trade without paying"))) +: operations :+
-        Curfew.step.outcome(paid, waived)
-    case _ => operations ++ Vector(
-      BuildOps((ready, pending) => Right(
-        tradedWith(catalog, ready, ruler, pending)
-          .map(_ => RulerToll.payment(trader, ruler)).toVector),
-        required = true),
-      Note(id, RulerToll.note(cardId, trader, ruler)))
 
   /** The Trade's source, when it is a card `ruler` rules. */
   private def tradedWith(catalog: ExecutableCatalog,

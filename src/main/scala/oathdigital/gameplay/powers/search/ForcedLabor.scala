@@ -23,9 +23,10 @@ object ForcedLaborCard extends Denizen(DenizenId("112"), "Forced Labor", Suit.Or
   * of a Search's cost ([[RulerToll]]). The ruler is exempt.
   *
   * The payment is required and comes after the Search's Supply, so a
-  * searcher who cannot pay is refused and the Search is not offered. When a
-  * player rules it, the searcher is asked first to pay or to search without
-  * paying, which its ruler may consent to (consent slice 4). Its line reads
+  * searcher who cannot pay is refused and the Search is not offered. When
+  * somebody may let the searcher off (a player ruler, or the Bandit Crown's
+  * holder under bandits), the searcher is asked first to pay or to search
+  * without paying, which that player may consent to (consent slice 4). Its line reads
   * the payment's step.
   */
 case object ForcedLabor extends ContributingPower:
@@ -71,5 +72,6 @@ case object ForcedLabor extends ContributingPower:
     site <- ctx.state.game.current.pawnSite(ctx.actor)
     if SiteRulers.rulerOf(ctx.state, site).contains(ruler)
   yield RulerToll.owed(ForcedLabor.step, ctx.state, ctx.actor, ruler,
-    operations, site.value, "Forced Labor: give 1 favor to search here?",
+    operations, site.value,
+    s"Forced Labor: ${RulerToll.paying(ruler)} to search here?",
     "Search without paying")

@@ -9,8 +9,9 @@ import oathdigital.model._
   * it faceup.
   *
   * The payment is required, so an enemy who cannot pay, and is not let off,
-  * is refused. When a player rules the card, the payer is asked first to
-  * pay or to go on free, which that ruler may consent to ([[PayOrAsk]]).
+  * is refused. When somebody may let the payer off (a player ruler, or the
+  * Bandit Crown's holder under bandits), the payer is asked first to pay or
+  * to go on free, which that player may consent to ([[PayOrAsk]]).
   * The payment runs after the rest of the cost either way. Toll Roads
   * charges the same toll for Travel, with lines that name the traveller.
   */
@@ -34,22 +35,27 @@ private[powers] object RulerToll:
     * relisted, so a key added above travels to every borrower. */
   def keys: Vector[NoteKey] = notes.declared
 
+  /** What paying the toll does, for a step's heading: "give 1 favor" to a
+    * player ruler, "burn 1 favor" under bandits. */
+  def paying(ruler: SiteRuler): String = ruler match
+    case SiteRuler.Player(_) => s"give $Favor favor"
+    case _ => s"burn $Favor favor"
+
   /** `operations` with what `payer` owes `ruler` for `step`'s card on
-    * `occasion`: the step when a player rules it, the payment and its line
-    * under bandits, run after the rest of the cost either way. */
+    * `occasion`: the step when somebody may let the payer off
+    * ([[PayOrAsk.letOffBy]]), else the payment and its line, run after the
+    * rest of the cost either way. */
   def owed(step: PayOrAsk, ready: ReadyGame, payer: PlayerId,
       ruler: SiteRuler, operations: Vector[Operation], occasion: String,
       heading: String, freeLabel: String): Vector[Operation] =
     val paid = Vector(payment(payer, ruler),
       Note(step.power, note(step.card, payer, ruler)))
-    ruler match
-      case SiteRuler.Player(owner) => step.around(operations, payer,
-        occasion, heading,
-        payOption(ready, payer, owner, favorTaken(operations, payer)),
-        freeLabel, paid,
-        Vector(Note(step.power, _ => Some(waived(step.source,
-          NoteArg.Player(owner))))))
-      case _ => operations ++ paid
+    PayOrAsk.letOffBy(ready, ruler, payer) match
+      case Some(granter) => step.around(operations, payer, occasion,
+        heading, payOption(ready, payer, ruler, favorTaken(operations, payer)),
+        freeLabel, paid, Vector(Note(step.power, _ => Some(waived(
+          step.source, NoteArg.Player(granter))))))
+      case None => operations ++ paid
 
   /** The ruler of the site holding `card` faceup, when `payer` is its
     * enemy. */
@@ -58,15 +64,16 @@ private[powers] object RulerToll:
     SiteRulers.rulerOfCard(ready, card).filter(ruler =>
       SiteRule.enemies(ruler, SiteRuler.Player(payer)))
 
-  /** The paying option of a toll step, "Give 1 favor to {owner}",
-    * unavailable with what it needs when `payer` holds less than the toll
+  /** The paying option of a toll step, "Give 1 favor to {owner}", or "Burn
+    * 1 favor" under bandits, unavailable with what it needs when `payer` holds less than the toll
     * and `taken`, the favor the rest of the cost takes first. The step is
     * asked before any of its cost is paid, so the favor held now is the
     * favor the cost will find. */
-  def payOption(ready: ReadyGame, payer: PlayerId, owner: PlayerId,
+  def payOption(ready: ReadyGame, payer: PlayerId, ruler: SiteRuler,
       taken: Int = 0): DecisionOption =
-    val option = DecisionOption.Button(PayOrAsk.pay,
-      s"Give $Favor favor to ${owner.value}")
+    val option = DecisionOption.Button(PayOrAsk.pay, ruler match
+      case SiteRuler.Player(owner) => s"Give $Favor favor to ${owner.value}"
+      case _ => s"Burn $Favor favor")
     val held = ready.game.current.player(payer)
       .fold(0)(_.board.favor)
     val needed = Favor + taken

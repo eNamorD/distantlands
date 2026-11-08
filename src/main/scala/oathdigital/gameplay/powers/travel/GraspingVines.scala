@@ -21,9 +21,11 @@ object GraspingVinesCard extends Denizen(DenizenId("178"), "Grasping Vines", Sui
   *
   * The kill is not required: a traveller with no warband on their board owes
   * nothing and is not stopped. Otherwise it is a plain `Kill` placed after
-  * the rest of the Travel's cost and before the pawn's move. When a player
-  * rules the Vines, the traveller is asked first to kill a warband or to
-  * travel without killing, which its ruler may consent to (consent slice 4).
+  * the rest of the Travel's cost and before the pawn's move. When somebody
+  * may let the traveller off (a player ruler, or the Bandit Crown's holder
+  * under bandits), the traveller is asked first to kill a warband or to
+  * travel without killing, which that player may consent to (consent
+  * slice 4).
   *
   * The kill writes "Killed 1 {Red} warband.", read from its step, so a
   * traveller with no warband reads nothing.
@@ -71,7 +73,8 @@ case object GraspingVines extends ContributingPower:
     else charged(ctx, Vector.empty).nonEmpty
 
   /** `operations` with what this Travel owes, if it owes anything: the step
-    * first when a player rules the Vines, the kill alone when bandits do.
+    * first when somebody may let the traveller off
+    * ([[PayOrAsk.letOffBy]]), else the kill alone.
     * Either way the kill runs after the rest of the cost and before the
     * pawn's move ([[TravelRoute.beforeMove]]). */
   private def charged(ctx: PowerCtx, operations: Vector[Operation])
@@ -89,13 +92,13 @@ case object GraspingVines extends ContributingPower:
       PositionedLocation(Location.PlayArea(route.player))),
       Note(id, NoteSupport.killedNote(GraspingVines.killed,
         PowerSourceRef.Card(cardId), route.player)))
-    ruler match
-      case SiteRuler.Player(owner) =>
+    PayOrAsk.letOffBy(ctx.state, ruler, route.player) match
+      case Some(granter) =>
         GraspingVines.step.question(route.player, route.source.value,
           "Grasping Vines: kill 1 warband to travel on?",
           DecisionOption.Button(PayOrAsk.pay, "Kill 1 warband"),
           "Travel without killing") +:
           TravelRoute.beforeMove(operations, Vector(GraspingVines.step.outcome(
             killed, Vector(Note(id, _ => Some(GraspingVines.spared(
-              PowerSourceRef.Card(cardId), NoteArg.Player(owner))))))))
-      case _ => TravelRoute.beforeMove(operations, killed)
+              PowerSourceRef.Card(cardId), NoteArg.Player(granter))))))))
+      case None => TravelRoute.beforeMove(operations, killed)

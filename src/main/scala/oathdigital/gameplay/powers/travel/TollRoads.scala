@@ -22,9 +22,11 @@ object TollRoadsCard extends Denizen(DenizenId("118"), "Toll Roads", Suit.Order)
   * of the site it stands at, and the rule covers every site that ruler holds,
   * Toll Roads' own included.
   *
-  * When a player rules it, the traveller is asked first to pay or to travel
-  * without paying, which its ruler may consent to ([[PayOrAsk]], consent
-  * slice 4). Under bandits the favor is burnt, unasked. The payment is a
+  * When somebody may let the traveller off (a player ruler, or the Bandit
+  * Crown's holder under bandits), the traveller is asked first to pay or to
+  * travel without paying, which that player may consent to ([[PayOrAsk]],
+  * consent slice 4). Otherwise, under bandits, the favor is burnt, unasked.
+  * The payment is a
   * required operation placed after the rest of the Travel's cost and before
   * the pawn's move, so a traveller who cannot pay and is not let off is
   * rejected. The ruler is exempt.
@@ -37,7 +39,7 @@ object TollRoadsCard extends Denizen(DenizenId("118"), "Toll Roads", Suit.Order)
   * slice 15) asks nothing: the sender settled the toll before sending it
   * (`TollRoads.sending`). The traveller pays if they agreed to
   * (`TollRoads.payerKey`); otherwise the ruler waived it. Under bandits the
-  * favor is burnt, as for any Travel.
+  * favor is burnt unasked, even with a Bandit Crown in play.
   */
 case object TollRoads extends ContributingPower:
   val id: PowerId = TollRoadsCard.power.id
@@ -228,8 +230,9 @@ case object TollRoads extends ContributingPower:
     else charged(ctx, Vector.empty).nonEmpty
 
   /** `operations` with what this Travel owes, if it owes anything: the step
-    * first when a player rules Toll Roads, the payment alone when bandits
-    * do. Either way the payment runs after the rest of the cost and before
+    * first when somebody may let the traveller off
+    * ([[PayOrAsk.letOffBy]]) and the Travel was not sent, else the payment
+    * alone. Either way the payment runs after the rest of the cost and before
     * the pawn's move ([[TravelRoute.beforeMove]]). */
   private def charged(ctx: PowerCtx, operations: Vector[Operation])
       : Option[Vector[Operation]] = for
@@ -248,17 +251,21 @@ case object TollRoads extends ContributingPower:
         else TravelRoute.beforeMove(operations, Vector(Note(id, _ =>
           Some(TollRoads.waived(PowerSourceRef.Card(cardId),
             NoteArg.Player(route.player), NoteArg.Player(owner))))))
-      case SiteRuler.Player(owner) =>
-        TollRoads.step.question(route.player, route.destination.value,
-          "Toll Roads: give 1 favor to travel there?",
-          RulerToll.payOption(ctx.state, route.player, owner,
-            RulerToll.favorTaken(operations, route.player)),
-          "Travel without paying") +:
-          TravelRoute.beforeMove(operations, Vector(TollRoads.step.outcome(
-            paid, Vector(Note(id, _ => Some(TollRoads.waived(
-              PowerSourceRef.Card(cardId), NoteArg.Player(route.player),
-              NoteArg.Player(owner))))))))
-      case _ => TravelRoute.beforeMove(operations, paid)
+      // A sent Travel under bandits pays without asking, as before.
+      case _ if sent(ctx.state, route) =>
+        TravelRoute.beforeMove(operations, paid)
+      case _ => PayOrAsk.letOffBy(ctx.state, ruler, route.player) match
+        case Some(granter) =>
+          TollRoads.step.question(route.player, route.destination.value,
+            s"Toll Roads: ${RulerToll.paying(ruler)} to travel there?",
+            RulerToll.payOption(ctx.state, route.player, ruler,
+              RulerToll.favorTaken(operations, route.player)),
+            "Travel without paying") +:
+            TravelRoute.beforeMove(operations, Vector(TollRoads.step.outcome(
+              paid, Vector(Note(id, _ => Some(TollRoads.waived(
+                PowerSourceRef.Card(cardId), NoteArg.Player(route.player),
+                NoteArg.Player(granter))))))))
+        case None => TravelRoute.beforeMove(operations, paid)
 
   /** Whether this Travel was sent to its destination by another player's
     * power. */
