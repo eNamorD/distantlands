@@ -439,20 +439,11 @@ final case class Take(piece: Piece, player: PlayerId,
   override val children: Vector[Operation] = leaving :+ move
 
 // ---------------------------------------------------------------------------
-// Walker leaves and composites.
-//
-// These cases MUST live in this file: CoreOperation/PrimitiveOperation are
-// sealed and Scala requires sealed subclasses in the same source file
-// (Task 1 review ruling / plan amendment). They extend PrimitiveOperation, so
-// `children = Vector(this)` — each is a leaf.
-//
-// Dice pools: pool counts live in state (CurrentGameState.rollPools:
-// Map[PoolKey, DicePoolState]); these leaves mutate/consume them. A `Roll`
-// only records that a roll must happen — the application layer pre-rolls the
-// faces at the command boundary (the engine never rolls). Powers/windows are
-// not wired in this slice, so leaves keep the default `window = None`; Roll
-// and Decide are the future window-hook candidates and may override `window`
-// once power windows land.
+// Walker leaves. Each extends PrimitiveOperation, so it is a leaf
+// (`children = Vector(this)`), and must stay in this file: Scala keeps a
+// sealed trait's direct subtypes in the trait's file. Dice-pool counts live
+// in `CurrentGameState.rollPools`; a `Roll` records that a roll happens,
+// and the walker or the next command supplies its faces.
 // ---------------------------------------------------------------------------
 
 /** Adds `delta` dice to a named pool's count in state. `window` makes the
@@ -723,25 +714,3 @@ final case class OpenPick(decisionId: String, option: DecisionOptionRef,
   * it. Closing with none open changes nothing. It writes no Game Log line.
   */
 final case class ClosePick() extends PrimitiveOperation
-
-/** Semantic window for a card played faceup, to a site or as a faceup
-  * adviser. `byPower` is the power whose effect made the play (Search
-  * Party, Temple of Ancestors, Oracle), `None` for an action's own play.
-  * Powers supply its children; no hook is a delta.
-  */
-final case class CardPlayedFaceup(card: WorldCardId,
-    resultingSource: RuleSourceRef, byPower: Option[PowerId] = None)
-    extends Operation:
-  override val window: Option[PowerWindow] = Some(PowerWindow.ActionCardPlayedFaceup)
-  override val children: Vector[Operation] = Vector.empty
-
-/** Semantic window for a card (a denizen or a Vision) placed facedown as an
-  * adviser by `player`. `byPower` is as for [[CardPlayedFaceup]]. A discard
-  * emits neither hook. Powers supply its children; no hook is a delta.
-  */
-final case class CardPlayedFacedown(card: WorldCardId, player: PlayerId,
-    byPower: Option[PowerId] = None)
-    extends Operation:
-  override val window: Option[PowerWindow] = Some(PowerWindow.ActionCardPlayedFacedown)
-  override val children: Vector[Operation] = Vector.empty
-

@@ -39,19 +39,6 @@ Left behind by earlier phases:
   a Plan Aid decision. Confirm the −/+ pair sits level with the amount
   between them.
 
-Left behind by
-[catalog batch 10](superpowers/specs/2026-11-03-catalog-batch-10-design.md):
-
-- [ ] **Make room in `CoreOperations.scala`.** Slice 14's
-  `TrackPawn` and `ClearTrackedPawn` brought it to 787 lines, 13 under the
-  800-line cap that `scripts/check-architecture.py` enforces, so a primitive
-  or two more fails the check. Scala 3 keeps every direct subtype of a
-  sealed trait in the trait's file, and `CoreOperation`, `Burn`, `Discard`
-  and `Gain` are all sealed there, so the cases cannot move. What can is
-  the code that builds their children (`discardWorld`, `returnedResources`
-  and the other companion helpers), into a sibling file of `model`.
-  `WalkerOperationCodec.scala` (704 lines) grows with every primitive too.
-
 Left behind by the
 [consent work](superpowers/specs/2026-10-08-consent-system-design.md):
 
