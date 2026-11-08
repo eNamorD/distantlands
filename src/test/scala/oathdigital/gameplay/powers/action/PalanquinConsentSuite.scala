@@ -160,19 +160,67 @@ class PalanquinConsentSuite extends munit.FunSuite:
     assertEquals(after.pawn(p3), coast)
     assertEquals(after.favor(p3), 0)
 
-  test("a sent Travel under bandits still burns unasked with a Bandit " +
-      "Crown in play"):
-    val ready = on(board())(_.adviser(p1, PalanquinCard.id).favor(p1, 1)
+  /** p1 holds Palanquin and 1 favor at the Cradle's plains, with p3 beside
+    * them holding 1 favor. Toll Roads stands at the Provinces' plains, and
+    * bandits rule it and the coast; `holder` holds the Bandit Crown. */
+  private def banditTollWithP3Beside(holder: PlayerId): ReadyGame =
+    on(board())(_.adviser(p1, PalanquinCard.id).favor(p1, 1)
       .pawn(p3, cradlePlains).favor(p3, 1).denizen(toll, at = provincePlains)
       .bandits(provincePlains, 1).bandits(coast, 1)
-      .relic(p2, BanditCrownCard))
-    assertEquals(askOf(offered(aimedAtP3(ready).state, coastRef)).asks,
-      Vector(ConsentAsk(p3, Vector(TollRoads.payerId))))
+      .relic(holder, BanditCrownCard))
+
+  test("under bandits the Bandit Crown's holder may waive a sent toll, as " +
+      "a ruler would (catalog batch 11, ruling 5)"):
+    val ready = banditTollWithP3Beside(p2)
+    val ask = askOf(offered(aimedAtP3(ready).state, coastRef))
+    assertEquals(ask.asks, Vector(
+      ConsentAsk(p3, Vector(TollRoads.payerId), alternative = true),
+      ConsentAsk(p2, Vector(TollRoads.id), alternative = true)))
+    assertEquals(ask.covers, Vector(TollRoads.payerKey(p3, coast),
+      TollRoads.freeKey(p3, coast)))
+    assertEquals(ask.note.key, TollRoads.sentBurnEither.name)
+    val waived = remembering(ready,
+      TollRoads.freeKey(p3, coast) -> ConsentAnswer.Granted.by(p2))
+    val free = Look(Outcomes.ready(sentToTheCoast(waived).state))
+    assertEquals(free.pawn(p3), coast)
+    assertEquals(free.favor(p3), 1)
     val agreed = remembering(ready,
       TollRoads.payerKey(p3, coast) -> ConsentAnswer.Granted.by(p3))
-    val after = Look(Outcomes.ready(sentToTheCoast(agreed).state))
+    val paid = Look(Outcomes.ready(sentToTheCoast(agreed).state))
+    assertEquals(paid.pawn(p3), coast)
+    assertEquals(paid.favor(p3), 0)
+    assertEquals(paid.favor(p2), Look(ready).favor(p2))
+
+  test("a Palanquin user holding the Crown chooses to burn or waive a " +
+      "bandit toll"):
+    val ready = banditTollWithP3Beside(p1)
+    val picked = sentToTheCoast(ready)
+    assertEquals(parkedDecide(picked.state).decisionId,
+      Palanquin.tollDecisionId)
+    assertEquals(parkedDecide(picked.state).query.heading,
+      Some("Toll Roads: burn 1 favor, or waive the toll"))
+    val burn = offered(picked.state, Palanquin.take)
+    burn match
+      case DecisionOption.Unavailable(shown, _) => assertEquals(shown,
+        DecisionOption.Button(Palanquin.take, "Burn 1 favor"))
+      case other => fail(s"expected the burn askable, got $other")
+    assertEquals(askOf(burn).asks,
+      Vector(ConsentAsk(p3, Vector(TollRoads.payerId))))
+    assertEquals(askOf(burn).note.key, TollRoads.sentBurn.name)
+    val waived = accepted(ActPowerHarness.answer(rules, picked.state,
+      Palanquin.tollDecisionId, Palanquin.waive))
+    val after = Look(Outcomes.ready(waived.state))
     assertEquals(after.pawn(p3), coast)
-    assertEquals(after.favor(p3), 0)
+    assertEquals(after.favor(p3), 1)
+    // Once the target agreed, taking burns their favor: p1 ends as after
+    // the waive, having paid only for Palanquin.
+    val agreed = sentToTheCoast(remembering(ready,
+      TollRoads.payerKey(p3, coast) -> ConsentAnswer.Granted.by(p3)))
+    val taken = Look(Outcomes.ready(accepted(ActPowerHarness.answer(rules,
+      agreed.state, Palanquin.tollDecisionId, Palanquin.take)).state))
+    assertEquals(taken.pawn(p3), coast)
+    assertEquals(taken.favor(p3), 0)
+    assertEquals(taken.favor(p1), after.favor(p1))
 
   test("a Pass ruler who also rules the toll is asked once for both, and " +
       "the target not at all"):

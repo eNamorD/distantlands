@@ -347,6 +347,7 @@ denizen.toll-roads paid = {0} paid {1} to {2}.
 denizen.toll-roads payer-asked = The traveller may agree to pay.
 denizen.toll-roads sent-both-refused = {0} refused, and {1} refused to waive it.
 denizen.toll-roads sent-burn = {0} must agree to burn {1}.
+denizen.toll-roads sent-burn-either = {0} must agree to burn {1}, or {2} must waive it.
 denizen.toll-roads sent-either = {0} must agree to give {1} to {2}, or {2} must waive it.
 denizen.toll-roads sent-no-favor = {0} has no favor for it.
 denizen.toll-roads sent-payer = {0} must agree to give {1} to {2}.

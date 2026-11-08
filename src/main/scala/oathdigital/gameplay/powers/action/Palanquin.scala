@@ -32,9 +32,11 @@ object PalanquinCard extends Denizen(DenizenId("107"), "Palanquin",
   * user's behalf. The power builds the ask: the grants
   * `QueuedStarts.consent` names (a ruled Narrow Pass), keyed as the
   * target's own answer, and Toll Roads' two alternatives, the target
-  * agreeing to pay or its ruler waiving it (`TollRoads.sending`). When the
-  * user rules Toll Roads, a question of theirs follows the pick: take 1
-  * favor, which the target must agree to, or waive the toll.
+  * agreeing to pay or its ruler waiving it (`TollRoads.sending`); under
+  * bandits the Bandit Crown's holder waives as a ruler would. When the
+  * user rules Toll Roads, or holds the Crown under bandits, a question of
+  * theirs follows the pick: take 1 favor (burn it, under bandits), which
+  * the target must agree to, or waive the toll.
   *
   * Its line: "Moved to {Coast}; {Blue} travels there."
   */
@@ -76,10 +78,13 @@ case object Palanquin extends PaidAction(PalanquinCard.power):
       case (Some(target), Some(DecisionOptionRef.Site(site)))
           if TollRoads.sending(live, target, site, player) ==
             TollRoads.Sending.SenderRules =>
+        val burnt = TollRoads.owed(live, target, site)
+          .contains(SiteRuler.Bandits)
+        val taking = if burnt then "burn 1 favor" else "take 1 favor"
         Vector(Decide(tollDecisionId, player, DecisionQuery.ChooseOne(
-          Vector(takeOption(live, target, site, player),
+          Vector(takeOption(live, target, site, player, burnt),
             DecisionOption.Button(waive, "Waive the toll")),
-          heading = Some("Toll Roads: take 1 favor, or waive the toll"))))
+          heading = Some(s"Toll Roads: $taking, or waive the toll"))))
       case _ => Vector.empty),
     BuildOps((live, pending) => sent(live, player, pending)),
     Note(id, states => for
@@ -97,8 +102,9 @@ case object Palanquin extends PaidAction(PalanquinCard.power):
       PawnMoves.noValidEnemyPawn)
 
   /** The target's queued Travel to `site`, sent by `user`. When the user
-    * ruling Toll Roads waived its toll, the entry carries the toll's free
-    * option after the site, which the Travel's toll reads. */
+    * who may let the target off (Toll Roads' ruler, or the Bandit Crown's
+    * holder under bandits) waived its toll, the entry carries the toll's
+    * free option after the site, which the Travel's toll reads. */
   def entry(user: PlayerId, target: PlayerId, site: SiteId,
       waived: Boolean = false): QueuedProcedure =
     QueuedProcedure(target, ActionRef.Travel,
@@ -188,11 +194,14 @@ case object Palanquin extends PaidAction(PalanquinCard.power):
         TollRoads.payerAsked(PowerSourceRef.Card(TollRoadsCard.id)), asks,
         keys)
 
-  /** "Take 1 favor": askable of the target, available once they agreed,
-    * unavailable once they refused or with no favor (ruling 10). */
+  /** "Take 1 favor", or "Burn 1 favor" when `burnt` under bandits:
+    * askable of the target, available once they agreed, unavailable once
+    * they refused or with no favor (ruling 10). */
   private def takeOption(ready: ReadyGame, target: PlayerId, site: SiteId,
-      user: PlayerId): DecisionOption =
-    val shown = DecisionOption.Button(take, "Take 1 favor")
+      user: PlayerId, burnt: Boolean): DecisionOption =
+    val shown = DecisionOption.Button(take,
+      if burnt then "Burn 1 favor" else "Take 1 favor")
+    val amount = NoteArg.Amount(TollRoads.Favor, NoteUnit.Favor)
     val card = PowerSourceRef.Card(TollRoadsCard.id)
     val key = TollRoads.payerKey(target, site)
     val them = NoteArg.Player(target)
@@ -206,9 +215,10 @@ case object Palanquin extends PaidAction(PalanquinCard.power):
       shown, OptionReason.Noted(TollRoads.id,
         TollRoads.sentNoFavor(card, them)))
     else DecisionOption.Unavailable(shown, OptionReason.Askable(
-      TollRoads.payerId, TollRoads.sentPayer(card, them,
-        NoteArg.Amount(TollRoads.Favor, NoteUnit.Favor),
-        NoteArg.Player(user)), Vector(ConsentAsk(target,
+      TollRoads.payerId,
+      if burnt then TollRoads.sentBurn(card, them, amount)
+      else TollRoads.sentPayer(card, them, amount, NoteArg.Player(user)),
+      Vector(ConsentAsk(target,
           Vector(TollRoads.payerId))), Vector(key)))
 
   /** Why the target's Travel would not reach a site, in the player's
