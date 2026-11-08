@@ -72,13 +72,13 @@ trait ActingSite extends SelectedModifier, AsksOnSelection:
     })),
     Note(id, actedNote))
 
-  /** Whether a modifier already picked stands at the pawn site, which the
-    * actor does not rule. */
+  /** Whether a modifier already picked stands at the pawn site, whose
+    * cards the actor does not use as a ruler (`PowerAccess.rulingSites`). */
   private def pickedAtPawnSite(ctx: PowerCtx): Boolean =
     val ready = ctx.state
     val picked = ModifierPicks.cards(ctx.answered).toSet
     ready.game.current.pawnSite(ctx.actor)
-      .filterNot(PowerAccess.ruledSites(ready, ctx.actor))
+      .filterNot(PowerAccess.rulingSites(ready, ctx.actor))
       .flatMap(ready.game.current.map.sites.get)
       .exists(_.denizens.exists(card => picked(card.id)))
 

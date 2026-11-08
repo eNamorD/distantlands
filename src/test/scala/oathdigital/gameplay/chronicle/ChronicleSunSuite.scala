@@ -1,10 +1,9 @@
 package oathdigital.gameplay.chronicle
 
-import oathdigital.catalog.holding.GrandMaskCard
 import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.powers.action.BrassHorseCard
 import oathdigital.gameplay.powers.economy.VowOfWanderingCard
-import oathdigital.gameplay.{OathRules, WalkerDiceFixture}
+import oathdigital.gameplay.{GrandMaskCard, OathRules, WalkerDiceFixture}
 import oathdigital.gameplay.operations.TheGrandScepterCard
 import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog

@@ -1,6 +1,6 @@
 package oathdigital.gameplay
 
-import oathdigital.catalog.holding.{CouncilArbiterCard, GrandMaskCard}
+import oathdigital.catalog.holding.CouncilArbiterCard
 import oathdigital.gameplay.cards.{BrokenPeaksSite, DunesSite}
 import oathdigital.gameplay.powers.action.BrassHorseCard
 import oathdigital.gameplay.powers.campaign.StickyFireCard

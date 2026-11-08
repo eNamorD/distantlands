@@ -1,7 +1,6 @@
 package oathdigital.application
 
-import oathdigital.catalog.holding.GrandMaskCard
-import oathdigital.gameplay.OathRules
+import oathdigital.gameplay.{GrandMaskCard, OathRules}
 import oathdigital.gameplay.actions.negotiation.NegotiationDeal
 import oathdigital.gameplay.cards.{BrokenPeaksSite, DunesSite}
 import oathdigital.gameplay.operations.TheGrandScepterCard

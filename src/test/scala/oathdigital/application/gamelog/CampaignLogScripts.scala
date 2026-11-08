@@ -4,7 +4,7 @@ import oathdigital.application.CampaignDicePort
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
-import oathdigital.catalog.holding.GrandMaskCard
+import oathdigital.gameplay.GrandMaskCard
 import oathdigital.gameplay.powers.search.CrackedHornCard
 import oathdigital.gameplay.powers.campaign.{Glamor, GlamorCard,
   ObsidianCageCard, OutridersCard, RelicHunter, RelicHunterCard, StickyFire, StickyFireCard,

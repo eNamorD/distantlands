@@ -5,7 +5,9 @@ import oathdigital.model._
 
 /** The rulebook's access rule for using a card's power: cards at your site,
   * cards at sites you rule, and, for the Bandit Crown's holder, cards at
-  * sites bandits rule (`BanditCrownRule`), and everything in your play area
+  * sites bandits rule (`BanditCrownRule`); for the Grand Mask's wearer,
+  * cards at Imperial sites, which the Imperials then reach only from their
+  * pawn's site (`GrandMaskRule`); and everything in your play area
   * (relics, banners, advisers and legacies). One definition, used by phase
   * powers and by every walker contribution's `applicable`.
   *
@@ -72,9 +74,18 @@ private[gameplay] object PowerAccess:
   def presentSite(ready: ReadyGame, actor: PlayerId): Option[SiteId] =
     asIfSite(ready, actor).orElse(ready.game.current.pawnSite(actor))
 
+  /** The sites whose cards `actor` uses as their ruler would: the sites
+    * they rule, less those the Grand Mask takes from the Imperials during
+    * its wearer's turn; the bandit sites for the Bandit Crown's holder; and
+    * the Imperial sites for the Mask's wearer. A count of ruled sites reads
+    * `ruledSites`, which neither relic changes. */
+  def rulingSites(ready: ReadyGame, actor: PlayerId): Set[SiteId] =
+    ruledSites(ready, actor) -- GrandMaskRule.maskedSites(ready) ++
+      BanditCrownRule.sitesFor(ready, actor) ++
+      GrandMaskRule.sitesFor(ready, actor)
+
   private def usableSites(ready: ReadyGame, actor: PlayerId): Set[SiteId] =
-    ruledSites(ready, actor) ++ presentSite(ready, actor) ++
-      BanditCrownRule.sitesFor(ready, actor)
+    rulingSites(ready, actor) ++ presentSite(ready, actor)
 
   def accessible(ref: RuleSourceRef, face: RuleSourceFace, ready: ReadyGame,
       actor: PlayerId, facedownAdviser: Boolean = false): Boolean =
@@ -102,8 +113,8 @@ private[gameplay] object PowerAccess:
       case _ => false
 
   /** Where `card` is, if `actor` may use it. A site card or edifice at a
-    * usable site is `AtSite`: a site the actor rules, a bandit site for the
-    * Crown's holder, or the one they act from ([[presentSite]]). A faceup
+    * usable site is `AtSite`: a site whose cards the actor uses as a ruler
+    * ([[rulingSites]]), or the one they act from ([[presentSite]]). A faceup
     * adviser or relic in the actor's play area is `InPlayArea`.
     */
   def locate(ready: ReadyGame, actor: PlayerId, card: CardId)

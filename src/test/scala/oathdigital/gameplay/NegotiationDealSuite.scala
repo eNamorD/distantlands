@@ -1,6 +1,5 @@
 package oathdigital.gameplay
 
-import oathdigital.catalog.holding.GrandMaskCard
 import oathdigital.gameplay.actions.negotiation.NegotiationDeal
 import oathdigital.gameplay.cards.{BrokenPeaksSite, DunesSite}
 import oathdigital.gameplay.powers.action.BrassHorseCard
