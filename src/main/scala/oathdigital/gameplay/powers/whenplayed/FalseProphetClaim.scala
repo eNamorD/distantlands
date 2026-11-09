@@ -20,14 +20,16 @@ import oathdigital.model._
   *  2. nests the claimant's card play of the Vision from the pile it went
   *     to, made by this power, as Search Party's play is; `claimRule`
   *     leaves it faceup or discard (ruling 33), and the hook names the
-  *     claimant, so the Vision rules judge the play for them;
-  *  3. kills every claimant's warband on it, each with its line.
+  *     claimant, so the Vision rules judge the play for them.
+  *
+  * Then, for each such Vision, it kills every claimant's warband on it,
+  * each with its line.
   *
   * A command that resumes inside the follow-up asks again, with the held
   * operations and the parked state, and must get the same tree
   * (`ExecutedTrigger`). The claimants are read from the warbands on the
-  * Vision, so the kill comes last; and the pile from the executed discard,
-  * since the claimant's play moves the card.
+  * Vision, so the kills come after every question; and the pile from the
+  * executed discard, since the claimant's play moves the card.
   */
 case object FalseProphetClaim extends ExecutedTrigger:
   val cardId: DenizenId = FalseProphetCard.id
@@ -72,8 +74,12 @@ case object FalseProphetClaim extends ExecutedTrigger:
   def onExecuted(batch: ExecutedBatch): Option[Operation] =
     val claims = discarded(batch.executed).filter((vision, _) =>
       RevealedVisions.claimants(batch.now, vision).nonEmpty)
-    Option.when(claims.nonEmpty)(Sequence(claims.map((vision, pile) =>
-      Sequence(follow(batch, vision, pile)))))
+    // Every Vision's question and play come before any kill: the claimants
+    // are read from the warbands, so a kill before a later question would
+    // change the tree a resume inside that question rebuilds.
+    Option.when(claims.nonEmpty)(Sequence(
+      claims.map((vision, pile) => Sequence(played(batch, vision, pile))) ++
+        claims.map((vision, _) => Sequence(kills(batch, vision)))))
 
   /** Each Vision the batch discarded, with the pile it went to, at any
     * depth of the batch's operations. */
@@ -85,7 +91,8 @@ case object FalseProphetClaim extends ExecutedTrigger:
     executed.flatMap(all).collect {
       case discard: Discard.Vision => (discard.card, discard.to) }.distinct
 
-  private def follow(batch: ExecutedBatch, vision: VisionId, pile: Region)
+  /** The choice of claimant, when there are several, and their play. */
+  private def played(batch: ExecutedBatch, vision: VisionId, pile: Region)
       : Vector[Operation] =
     val claimants = RevealedVisions.claimants(batch.now, vision)
     val current = batch.now.game.current.turn.activePlayer
@@ -106,16 +113,21 @@ case object FalseProphetClaim extends ExecutedTrigger:
       claimant => CardPlayProcedure.unchecked(batch.catalog, now, claimant,
         vision, CardPlayProcedure.Origin.DiscardPile(pile),
         byPower = Some(id))))
-    val kills = claimants.flatMap(claimant => Vector[Operation](
-      BuildOps((live, _) => Right(live.game.current.player(claimant).toVector
-        .flatMap { state =>
-          val kind = ForceKind.Exile(state.lineage)
-          val count = live.game.current.warbandsOn(vision, kind)
-          Option.when(count > 0)(Kill(Piece.Warbands(kind, count),
-            PositionedLocation(Location.OnCard(vision)))).toVector
-        })),
-      Note(id, killedNote(claimant, vision), covers = true)))
-    choose ++ Vector(play) ++ kills
+    choose :+ play
+
+  /** Each claimant's warband on `vision` killed, with its line. */
+  private def kills(batch: ExecutedBatch, vision: VisionId)
+      : Vector[Operation] =
+    RevealedVisions.claimants(batch.now, vision).flatMap(claimant =>
+      Vector[Operation](
+        BuildOps((live, _) => Right(live.game.current.player(claimant)
+          .toVector.flatMap { state =>
+            val kind = ForceKind.Exile(state.lineage)
+            val count = live.game.current.warbandsOn(vision, kind)
+            Option.when(count > 0)(Kill(Piece.Warbands(kind, count),
+              PositionedLocation(Location.OnCard(vision)))).toVector
+          })),
+        Note(id, killedNote(claimant, vision), covers = true)))
 
   private def rotated(players: Vector[PlayerId], first: PlayerId)
       : Vector[PlayerId] =

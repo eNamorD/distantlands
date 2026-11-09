@@ -165,7 +165,11 @@ class CardCatalogSuite extends munit.FunSuite:
       PhasePowerCatalog.default.powers.map(_.id))
       .filter(id => cardPrefixes.exists(id.value.startsWith))
       .filterNot(gameRules)
-    assertEquals(registered.filterNot(printed).distinct, Vector.empty)
+    // A second power of one printed power is named by the printed id and a
+    // suffix (False Prophet's claim, `denizen.false-prophet.claim`).
+    def ofPrinted(id: PowerId): Boolean = printed(id) ||
+      printed.exists(power => id.value.startsWith(power.value + "."))
+    assertEquals(registered.filterNot(ofPrinted).distinct, Vector.empty)
 
   test("a card leaves the holding files once a power of it is implemented, " +
       "and sits there until then"):

@@ -53,6 +53,13 @@ class FalseProphetClaimSuite extends munit.FunSuite:
     ready.game.current.warbandsOn(claimed,
       ForceKind.Exile(Look(ready).player(owner).lineage))
 
+  /** The state the recorded operations of a bare walk's `events` reach
+    * from `ready`: where the walk parked or ended. */
+  private def replayedFrom(ready: ReadyGame, events: Vector[OathEvent])
+      : ReadyGame =
+    accepted(OperationPipeline.run(ready, RecordedOps.all(events),
+      OperationPolicy.Permissive, Vector.empty)(Right(_))).state
+
   private def revealedBy(state: OathState, player: PlayerId): Vector[VisionId] =
     Look(Outcomes.ready(state)).player(player).revealedVisions.map(_.id)
 
@@ -96,12 +103,47 @@ class FalseProphetClaimSuite extends munit.FunSuite:
       None, walkerPowers))
     // The question is read where the walk parked: after the role change's
     // batch, whose operations are held for the follow-up.
-    val parkedAt = accepted(OperationPipeline.run(ready,
-      RecordedOps.all(outcome.events), OperationPolicy.Permissive,
-      Vector.empty)(Right(_))).state
+    val parkedAt = replayedFrom(ready, outcome.events)
     val decide = present(ProcedureWalker.parkedDecide(parkedAt, become,
       outcome.tree, walkerPowers), "the question")
     assertEquals((decide.decisionId, decide.owner), (placeId(claimed), p2))
+
+  test("two claimed Visions discarded together are each asked before " +
+      "either warband is killed"):
+    // p1 kept Conquest and Sanctuary (Desecrated Ground); p2 claims both,
+    // and p1 turning Citizen discards both in one batch.
+    val sanctuary = VisionRules.Sanctuary
+    val ready = conquestClaimedByP2.revealedVision(p1, sanctuary)
+      .warbandsOnCard(sanctuary, p2, 1).imperial(p3).turn(p1, Phase.Act)
+      .ready
+    val become = Citizenship.become(p1)
+    val first = Outcomes.parked(ProcedureWalker.advance(ready, become, None,
+      walkerPowers))
+    val atFirst = replayedFrom(ready, first.events)
+    val second = Outcomes.parked(ProcedureWalker.resolve(atFirst, become,
+      first.tree, Answered(placeId(claimed), DecisionAnswer.ChooseOneAnswer(
+        DecisionOptionRef.RevealedVision(p2)), p2), walkerPowers))
+    val events = first.events ++ second.events
+    val atSecond = replayedFrom(ready, events)
+    // Neither warband is killed yet, so Sanctuary is still claimed.
+    assertEquals(atSecond.game.current.warbandsOn(sanctuary,
+      ForceKind.Exile(Look(atSecond).player(p2).lineage)), 1)
+    val asked = present(ProcedureWalker.parkedDecide(atSecond, become,
+      second.tree, walkerPowers), "the second question")
+    assertEquals((asked.decisionId, asked.owner), (placeId(sanctuary), p2))
+    val pile = present(asked.query match
+      case one: DecisionQuery.ChooseOne => one.options.map(_.ref).collectFirst {
+        case pile: DecisionOptionRef.DiscardPile => pile }
+      case _ => None, "a discard option")
+    val done = Outcomes.finished(ProcedureWalker.resolve(atSecond, become,
+      second.tree, Answered(placeId(sanctuary),
+        DecisionAnswer.ChooseOneAnswer(pile), p2), walkerPowers))
+    val end = replayedFrom(ready, events ++ done.events)
+    assertEquals(Look(end).player(p2).revealedVisions.map(_.id),
+      Vector[VisionId](claimed))
+    val kind = ForceKind.Exile(Look(end).player(p2).lineage)
+    assertEquals((end.game.current.warbandsOn(claimed, kind),
+      end.game.current.warbandsOn(sanctuary, kind)), (0, 0))
 
   test("with two claimants the current player chooses who plays it, and " +
       "both warbands are killed"):
