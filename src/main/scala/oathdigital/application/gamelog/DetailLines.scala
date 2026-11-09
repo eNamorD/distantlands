@@ -1,6 +1,7 @@
 package oathdigital.application.gamelog
 
 import oathdigital.application.GamePresentationProjector
+import oathdigital.gameplay.KinshipRule
 import oathdigital.gameplay.actions.campaign.CampaignIds
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
@@ -102,7 +103,10 @@ private[gamelog] final class DetailLines(words: LogWords,
     def gainedFavor(player: PlayerId, suit: Suit, amount: Int) =
       if run.procedure == ActionRef.Trade && player == actor then Vector.empty
       else line(words.subject(player, actor, "gained") :+
-        LogSpan.Text(s"$amount favor from the $suit bank"))
+        LogSpan.Text(s"$amount favor from the $suit bank" +
+          // Vow of Kinship sent it on (catalog batch 11, ruling 29).
+          (if KinshipRule.holds(before, player) then ", to the Nomad bank"
+          else "")))
     def gainedSecrets(player: PlayerId, amount: Int) =
       if run.procedure == ActionRef.Trade && player == actor then Vector.empty
       else line(words.subject(player, actor, "gained") :+ LogSpan.Text(
@@ -203,6 +207,9 @@ private[gamelog] object DetailLines:
     * the composites the rules name stay whole; other composites open into
     * their children. */
   def parts(operation: CoreOperation): Vector[CoreOperation] = operation match
+    // Vow of Kinship's draw only moves favor the holder may spend onto
+    // their board for the spend after it; it is no gain.
+    case _: DrawNomadFavor => Vector.empty
     case _: Gain.Favor | _: Gain.Secrets | _: Draw | _: Discard.Denizen |
         _: Discard.Vision | _: Discard.RuinedEdifice | _: Discard.Relic |
         _: Reveal => Vector(operation)

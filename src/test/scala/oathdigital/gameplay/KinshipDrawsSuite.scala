@@ -51,6 +51,34 @@ class KinshipDrawsSuite extends munit.FunSuite:
       Vector(DrawNomadFavor(p1, 3), burning(p1, 3))
     assertEquals(KinshipDraws.before(ready, answered), answered)
 
+  test("a take from the board earlier in the batch leaves the spend " +
+      "short, so it draws"):
+    val ready = vowHolder(board = 2, bank = 4).ready
+    val taken = Take(Piece.Favor(2), p2, Location.PlayArea(p1),
+      Location.PlayArea(p2))
+    assertEquals(KinshipDraws.before(ready, Vector(taken, burning(p1, 2))),
+      Vector[CoreOperation](taken, DrawNomadFavor(p1, 2), burning(p1, 2)))
+
+  test("two holders draw on the one bank"):
+    // p2 holds the Vow, and p1, the walk's actor, acts with p2's advisers
+    // (Master of Disguise), so both hold it. Both boards are empty; the
+    // bank holds 3.
+    val ready = Table.start.adviser(p2, VowOfKinshipCard).favor(p1, 0)
+      .favor(p2, 0).bankFavor(Suit.Nomad, 3).ready
+      .updateCurrent(_.copy(walkerAsIfAdvisers = Some(p2)))
+    assertEquals(KinshipDraws.before(ready, Vector(burning(p1, 2),
+        burning(p2, 2))),
+      Vector[CoreOperation](DrawNomadFavor(p1, 2), burning(p1, 2),
+        DrawNomadFavor(p2, 1), burning(p2, 2)))
+
+  test("favor the holder places on a banner draws on the bank (ruling 26)"):
+    val ready = vowHolder(board = 1, bank = 4).ready
+    val placed = Move(Piece.Favor(3), PositionedLocation(Location.PlayArea(p1)),
+      PositionedLocation(Location.OnBanner(Banner.PeoplesFavor)),
+      by = Some(p1))
+    assertEquals(KinshipDraws.before(ready, Vector(placed)),
+      Vector[CoreOperation](DrawNomadFavor(p1, 2), placed))
+
   test("a draw is capped by the bank"):
     val ready = vowHolder(board = 0, bank = 1).ready
     assertEquals(KinshipDraws.before(ready, Vector(burning(p1, 3))),

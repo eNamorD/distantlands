@@ -22,7 +22,7 @@ object VowOfKinshipCard extends Denizen(DenizenId("152"), "Vow of Kinship", Suit
   * from the bank: `KinshipDraws` draws it onto the board before the spend.
   * Anything done to the holder reads their board only.
   */
-private[gameplay] object KinshipRule:
+object KinshipRule:
   def holds(ready: ReadyGame, player: PlayerId): Boolean =
     PowerAccess.holdsFaceupAdviser(ready, player, VowOfKinshipCard.id)
 

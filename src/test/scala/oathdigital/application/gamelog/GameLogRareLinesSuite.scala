@@ -1,6 +1,7 @@
 package oathdigital.application.gamelog
 
 import oathdigital.application.WalkerDecisionProjector
+import oathdigital.gameplay.VowOfKinshipCard
 import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
@@ -90,6 +91,23 @@ class GameLogRareLinesSuite extends munit.FunSuite:
     assert(lines.contains(s"${playerLabel(other)} peeked at a Relic"), lines)
     assert(lines.contains("Revealed Sticky Fire"), lines)
     assert(lines.contains("Buried Sticky Fire"), lines)
+
+  /** A board where p2 holds Vow of Kinship faceup and the Nomad bank holds
+    * 2 favor, on p1's Wake. */
+  private lazy val kinshipBoard: Script =
+    val (service, waking) = atTable("rare-kinship",
+      Table.start.turn(p1, Phase.Wake).adviser(p2, VowOfKinshipCard)
+        .bankFavor(Suit.Nomad, 2))
+    waking.endingWake(p1)
+    Script("rare-kinship", service, p1)
+
+  test("a Vow of Kinship holder's gain says it went to the Nomad bank, " +
+      "and a draw from the bank posts no gain"):
+    val lines = postedOn(kinshipBoard, ActionRef.Travel,
+      Gain.Favor(other, Suit.Arcane, 2), DrawNomadFavor(other, 1))
+    assert(lines.contains(s"${playerLabel(other)} gained 2 favor from the " +
+      "Arcane bank, to the Nomad bank"), lines)
+    assert(!lines.exists(_.contains("from the Nomad bank")), lines)
 
   // Imperial warbands have no case here: no setup seats a Chancellor and no
   // rule makes a Citizen, so `banks.warbandSupply` never holds Imperial and

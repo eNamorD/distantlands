@@ -104,6 +104,17 @@ class ForestCouncilSuite extends munit.FunSuite:
       .map(_.covers), Some(ConsentKey(ForestCouncil.id, p1, "power.use",
       errandBoyRef)))
 
+  test("it refuses an enemy's forced placement of favor onto a Beast " +
+      "card, as Whispering Leaves forces it"):
+    val ban = present(power.operationRestrictions(catalog).headOption,
+      "the ban")
+    val forced = Move(Piece.Favor(1),
+      PositionedLocation(Location.PlayArea(p1)),
+      PositionedLocation(Location.OnCard(errandBoy)))
+    assertEquals(ban.reason(councilAtDeepWoods(), forced).flatMap(_.waiver)
+      .map(_.covers), Some(ConsentKey(ForestCouncil.id, p1, "power.use",
+      errandBoyRef)))
+
   test("a Muster from a Beast card is askable of the ruler, beside a card " +
       "of another suit"):
     val options = musterSources(councilAtDeepWoods())
