@@ -5,14 +5,20 @@ import oathdigital.model._
 
 /** Reads a faceup Vision play off the card-play hook
   * (`ActionCardPlayedFaceup`), for the cards that forbid or reward one. The
-  * player is the one whose action runs, `ctx.actor`.
+  * player is the one the hook names, who may not be the walk's actor
+  * (False Prophet's claimant, catalog batch 11, slice 7).
   */
 private[cardplay] object VisionPlay:
 
   /** The Vision the hook plays faceup, the Conspiracy included. */
   def played(ctx: PowerCtx): Option[VisionId] = ctx.operation match
-    case CardPlayedFaceup(card: VisionId, _, _) => Some(card)
+    case CardPlayedFaceup(card: VisionId, _, _, _) => Some(card)
     case _ => None
+
+  /** The player who plays the card: the hook's, else the walk's actor. */
+  def player(ctx: PowerCtx): PlayerId = ctx.operation match
+    case CardPlayedFaceup(_, player, _, _) => player
+    case _ => ctx.actor
 
   /** The Vision the hook plays faceup, while the play is still to be made:
     * the card is in the player's temporary hand, among their facedown
@@ -22,7 +28,7 @@ private[cardplay] object VisionPlay:
     * because the state has changed since.
     */
   def pending(ctx: PowerCtx): Option[VisionId] =
-    played(ctx).filter(held(ctx.state, ctx.actor, _))
+    played(ctx).filter(held(ctx.state, player(ctx), _))
 
   def forbidden(card: String): OathViolation =
     OathViolation.InvalidSearchPlacement(s"$card forbids playing a Vision faceup")

@@ -7,9 +7,12 @@ package oathdigital.model
 /** Semantic window for a card played faceup, to a site or as a faceup
   * adviser. `byPower` is the power whose effect made the play (Search
   * Party, Temple of Ancestors, Oracle), `None` for an action's own play.
-  * Powers supply its children; no hook is a delta.
+  * Powers supply its children; no hook is a delta. `player` plays the
+  * card, and the hook's readers judge the play for them: a play inside
+  * another player's walk names its own player (False Prophet's claimant,
+  * catalog batch 11, slice 7).
   */
-final case class CardPlayedFaceup(card: WorldCardId,
+final case class CardPlayedFaceup(card: WorldCardId, player: PlayerId,
     resultingSource: RuleSourceRef, byPower: Option[PowerId] = None)
     extends Operation:
   override val window: Option[PowerWindow] = Some(PowerWindow.ActionCardPlayedFaceup)

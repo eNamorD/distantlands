@@ -290,7 +290,7 @@ object CardPlayProcedure:
     * 10, ruling 5). */
   def playedByPower(operation: Operation): Boolean = operation match
     case tree: PlacementTree => tree.byPower.nonEmpty
-    case CardPlayedFaceup(_, _, by) => by.nonEmpty
+    case CardPlayedFaceup(_, _, _, by) => by.nonEmpty
     case CardPlayedFacedown(_, _, by) => by.nonEmpty
     case _ => false
 
@@ -534,7 +534,7 @@ object CardPlayProcedure:
     case SearchPlacement.Adviser(Orientation.FaceDown, _) =>
       Vector(CardPlayedFacedown(card, actor, byPower))
     case _ => CardPlay.playedSource(ready, actor, card, placement)
-      .map(CardPlayedFaceup(card, _, byPower)).toVector
+      .map(CardPlayedFaceup(card, actor, _, byPower)).toVector
 
   private def siteCard(ref: DecisionOptionRef): Option[CardId] = ref match
     case DecisionOptionRef.Denizen(id) => Some(id)

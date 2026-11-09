@@ -41,6 +41,6 @@ case object WelcomingParty extends SelectedModifier:
         WelcomingParty.Favor))))
 
   override def appliesAt(ctx: PowerCtx): Boolean = ctx.operation match
-    case CardPlayedFaceup(card: DenizenId, _, _) => card != cardId &&
+    case CardPlayedFaceup(card: DenizenId, _, _, _) => card != cardId &&
       ctx.procedure.contains(ActionRef.Search)
     case _ => false

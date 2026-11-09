@@ -58,8 +58,9 @@ case object SecretPolice extends ContributingPower:
 
   private def blocked(ctx: PowerCtx): Option[OathViolation] = for
     _ <- VisionPlay.pending(ctx)
+    player = VisionPlay.player(ctx)
     ruler <- CardRule.rulerOf(ctx.state, cardId)
-    if SiteRule.enemies(ruler, SiteRuler.Player(ctx.actor))
-    pawn <- ctx.state.game.current.pawnSite(ctx.actor)
+    if SiteRule.enemies(ruler, SiteRuler.Player(player))
+    pawn <- ctx.state.game.current.pawnSite(player)
     if SiteRulers.rulerOf(ctx.state, pawn).contains(ruler)
   yield VisionPlay.forbidden("Secret Police")

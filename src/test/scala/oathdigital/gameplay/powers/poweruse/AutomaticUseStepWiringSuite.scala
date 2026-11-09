@@ -65,10 +65,10 @@ class AutomaticUseStepWiringSuite extends munit.FunSuite:
       Operation)] = Vector(
     ("Threatening Roar", ThreateningRoar,
       PowerWindow.ActionCardPlayedFaceup, CardPlayedFaceup(
-        ThreateningRoarCard.id, RuleSourceRef.GameRule(
+        ThreateningRoarCard.id, p1, RuleSourceRef.GameRule(
           ThreateningRoar.id.value))),
     ("Conspiracy", ConspiracyWhenPlayed, PowerWindow.ActionCardPlayedFaceup,
-      CardPlayedFaceup(VisionRules.Conspiracy, RuleSourceRef.GameRule(
+      CardPlayedFaceup(VisionRules.Conspiracy, p1, RuleSourceRef.GameRule(
         ConspiracyWhenPlayed.id.value))),
     ("Tyrant", Tyrant, PowerWindow.TravelCost, p2Travels),
     ("Hospitality", Hospitality, PowerWindow.TravelCost,

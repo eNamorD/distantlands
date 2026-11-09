@@ -70,7 +70,7 @@ class CircletOfCommandSuite extends munit.FunSuite:
       .relic(p2, crackedHorn)
       .relic(p2, circlet, facedown = circletSide == Orientation.FaceDown)
       .ready
-    val hook = CardPlayedFaceup(conspiracy,
+    val hook = CardPlayedFaceup(conspiracy, p1,
       RuleSourceRef.Adviser(p1, conspiracy))
     val powers = WalkerPowers.selected(WalkerPowerCatalog.default(catalog),
       Vector.empty)

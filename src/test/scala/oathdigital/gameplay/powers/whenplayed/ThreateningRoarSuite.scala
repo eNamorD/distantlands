@@ -64,7 +64,7 @@ class ThreateningRoarSuite extends munit.FunSuite:
       "Nothing was discarded.", covers = true)))
 
   test("its effect is an automatic use of the card's player"):
-    val played = CardPlayedFaceup(ThreateningRoarCard.id,
+    val played = CardPlayedFaceup(ThreateningRoarCard.id, p1,
       RuleSourceRef.GameRule(ThreateningRoar.id.value))
     assertEquals(AppendedAutomaticUses.at(ThreateningRoar,
       PowerWindow.ActionCardPlayedFaceup, played), Vector(

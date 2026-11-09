@@ -20,11 +20,11 @@ import oathdigital.testkit.Unwrap.{accepted, present}
   */
 object WhenPlayedHarness:
   def hook(card: DenizenId): CardPlayedFaceup =
-    CardPlayedFaceup(card, RuleSourceRef.Adviser(actor, card))
+    CardPlayedFaceup(card, actor, RuleSourceRef.Adviser(actor, card))
 
   /** The hook of `card` played to `site`. */
   def hookAt(card: DenizenId, site: SiteId): CardPlayedFaceup =
-    CardPlayedFaceup(card, RuleSourceRef.SiteCard(site, card))
+    CardPlayedFaceup(card, actor, RuleSourceRef.SiteCard(site, card))
 
   def powers(power: ContributingPower): WalkerPowers =
     WalkerPowers(Vector(power),

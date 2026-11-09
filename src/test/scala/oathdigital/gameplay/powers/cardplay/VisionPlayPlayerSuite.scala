@@ -1,0 +1,43 @@
+package oathdigital.gameplay.powers.cardplay
+
+import oathdigital.gameplay.SacredGroundCard
+import oathdigital.gameplay.actions.VisionRules
+import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import oathdigital.gameplay.powerresolver.{PowerCtx, Restriction}
+import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
+import oathdigital.model._
+import oathdigital.testkit.Table
+import oathdigital.testkit.Table.{p1, p2}
+
+/** A faceup Vision play is judged for the player the hook names, not for
+  * the walk's actor (catalog batch 11, slice 7): False Prophet's claimant
+  * reveals inside the Vision owner's walk. */
+class VisionPlayPlayerSuite extends munit.FunSuite:
+  private val vision = VisionRules.Faith
+
+  /** p1's turn, Sacred Ground intact at `sacred`; p1 stands at Ancient
+    * City and p2 at Broken Peaks; Faith lies in the Provinces discard. */
+  private def table(sacred: SiteId): ReadyGame = Table.start
+    .pawn(p1, at = AncientCitySite).pawn(p2, at = BrokenPeaksSite)
+    .edifice(SacredGroundCard.id, EdificeSide.Intact, at = sacred)
+    .discarded(Region.Provinces, vision).ready
+
+  /** Sacred Ground's refusal of `player`'s reveal of Faith in p1's walk. */
+  private def sacredGroundRefusal(sacred: SiteId, player: PlayerId)
+      : Option[OathViolation] =
+    val hook = CardPlayedFaceup(vision, player,
+      RuleSourceRef.Adviser(player, vision))
+    val ctx = PowerCtx(catalog, table(sacred), p1, SacredGround.source,
+      PowerWindow.ActionCardPlayedFaceup, Vector.empty, hook, None)
+    SacredGround.contributions(PowerWindow.ActionCardPlayedFaceup).collectFirst {
+      case Restriction(fn, _, _) => fn(ctx, hook)
+    }.flatten
+
+  test("p2's reveal on p1's turn is refused where p2's pawn is not"):
+    // Sacred Ground stands at p1's site: p1 could reveal, p2 cannot.
+    assertEquals(sacredGroundRefusal(AncientCitySite.id, p1), None)
+    assertEquals(sacredGroundRefusal(AncientCitySite.id, p2),
+      Some(VisionPlay.forbidden("Sacred Ground")))
+
+  test("p2's reveal on p1's turn is allowed where p2's pawn is"):
+    assertEquals(sacredGroundRefusal(BrokenPeaksSite.id, p2), None)

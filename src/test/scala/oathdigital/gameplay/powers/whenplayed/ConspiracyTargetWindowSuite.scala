@@ -49,7 +49,7 @@ class ConspiracyTargetWindowSuite extends munit.FunSuite:
           })))
 
   private def hook: CardPlayedFaceup =
-    CardPlayedFaceup(conspiracy, RuleSourceRef.Adviser(p1, conspiracy))
+    CardPlayedFaceup(conspiracy, p1, RuleSourceRef.Adviser(p1, conspiracy))
 
   /** Conspiracy's When Played power, with `power` beside it. */
   private def powers(power: Option[ContributingPower]): WalkerPowers =

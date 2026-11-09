@@ -27,7 +27,7 @@ trait WhenPlayedPower extends ContributingPower:
     * elsewhere (Twin Brother, Great Herd) keeps it firing, so a resumed walk
     * folds the hook the same way. */
   final override def applicable(ctx: PowerCtx): Boolean = ctx.operation match
-    case CardPlayedFaceup(card, _, _) => card == cardId &&
+    case CardPlayedFaceup(card, _, _, _) => card == cardId &&
       !ctx.state.game.current.commonCards.worldDeck.contains(cardId)
     case _ => false
 

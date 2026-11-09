@@ -42,7 +42,8 @@ case object VowOfObedience extends PhasePower with ContributingPower:
 
   def contributions: Map[PowerWindow, Vector[Contribution]] = Map(
     PowerWindow.ActionCardPlayedFaceup -> Vector(Restriction((ctx, _) =>
-      VisionPlay.pending(ctx).filter(_ => holds(ctx.state, ctx.actor))
+      VisionPlay.pending(ctx).filter(_ =>
+        holds(ctx.state, VisionPlay.player(ctx)))
         .map(_ => VisionPlay.forbidden("Vow of Obedience")),
       VisionPlay.note(cardId))))
 

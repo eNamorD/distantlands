@@ -79,7 +79,7 @@ class ForgottenVaultSuite extends munit.FunSuite:
     val bannered =
       if banner then staged.peoplesFavor(Some(p2), favor = 1) else staged
     val ready = vaultAt(bannered, Some(p2)).ready
-    val hook = CardPlayedFaceup(conspiracy,
+    val hook = CardPlayedFaceup(conspiracy, p1,
       RuleSourceRef.Adviser(p1, conspiracy))
     val powers = WalkerPowers.selected(WalkerPowerCatalog.default(catalog),
       Vector.empty)

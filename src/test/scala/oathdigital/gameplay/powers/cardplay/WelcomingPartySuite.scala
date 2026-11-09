@@ -97,16 +97,16 @@ class WelcomingPartySuite extends munit.FunSuite:
 
   test("it applies only to another denizen played faceup from a Search"):
     val power = WelcomingParty
-    val vision = CardPlayedFaceup(VisionRules.Faith,
+    val vision = CardPlayedFaceup(VisionRules.Faith, actor,
       RuleSourceRef.Adviser(actor, VisionRules.Faith))
     val ctx = PowerCtx(catalog, Table.start.denizen(party, at = home).ready,
       actor, power.source,
       PowerWindow.ActionCardPlayedFaceup, Vector.empty, vision,
       Some(ActionRef.Search))
     assert(!power.applicable(ctx))
-    assert(!power.applicable(ctx.copy(operation = CardPlayedFaceup(party,
-      RuleSourceRef.SiteCard(home, party)))))
-    val played = CardPlayedFaceup(plain.head,
+    assert(!power.applicable(ctx.copy(operation =
+      CardPlayedFaceup(party, actor, RuleSourceRef.SiteCard(home, party)))))
+    val played = CardPlayedFaceup(plain.head, actor,
       RuleSourceRef.SiteCard(home, plain.head))
     assert(power.applicable(ctx.copy(operation = played)))
     assert(!power.applicable(ctx.copy(operation = played,

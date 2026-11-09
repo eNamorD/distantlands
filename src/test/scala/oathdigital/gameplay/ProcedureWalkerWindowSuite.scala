@@ -30,7 +30,7 @@ class ProcedureWalkerWindowSuite extends munit.FunSuite:
   private val otherWindow: PowerWindow = PowerWindow.RecoverBeforeFirstRoll
 
   test("CardPlayed visits existing played-card window without recording hook"):
-    val hook = CardPlayedFaceup(adviser.id,
+    val hook = CardPlayedFaceup(adviser.id, actor,
       RuleSourceRef.Adviser(actor, adviser.id))
     assertEquals(hook.children, Vector.empty[Operation])
     assertEquals(hook.window, Some(PowerWindow.ActionCardPlayedFaceup))

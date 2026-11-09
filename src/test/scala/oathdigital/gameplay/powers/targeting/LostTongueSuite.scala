@@ -56,7 +56,7 @@ class LostTongueSuite extends munit.FunSuite:
 
   private val conspiracy = VisionRules.Conspiracy
 
-  private val hook = CardPlayedFaceup(conspiracy,
+  private val hook = CardPlayedFaceup(conspiracy, p1,
     RuleSourceRef.Adviser(p1, conspiracy))
 
   private val powers = WalkerPowers.selected(

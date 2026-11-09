@@ -53,8 +53,8 @@ case object BookBinders extends ContributingPower:
   override def applicable(ctx: PowerCtx): Boolean = reward(ctx).nonEmpty
 
 
-  /** The `Branch` that takes the holder's reward, whenever another player
-    * plays a Vision faceup and this card's holder is a different player.
+  /** The `Branch` that takes the holder's reward, whenever a player other
+    * than this card's holder plays a Vision faceup.
     * One node whatever the take does to bank state, and whatever the banks
     * hold, even none: the walker refolds this window on every command, and
     * a sibling contribution at the same window (Conspiracy's own target
@@ -70,7 +70,7 @@ case object BookBinders extends ContributingPower:
     */
   private def reward(ctx: PowerCtx): Option[Operation] = for
     vision <- VisionPlay.played(ctx)
-    holder <- holderOf(ctx.state).filter(_ != ctx.actor)
+    holder <- holderOf(ctx.state).filter(_ != VisionPlay.player(ctx))
   yield
     val decisionId = BookBinders.decisionId(ctx.state, holder, vision)
     Branch((state, _) => {

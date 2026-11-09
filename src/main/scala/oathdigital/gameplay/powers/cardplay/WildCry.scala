@@ -36,7 +36,7 @@ case object WildCry extends SelectedModifier:
       children ++ effects(ctx.actor))))
 
   override def appliesAt(ctx: PowerCtx): Boolean = ctx.operation match
-    case CardPlayedFaceup(card: DenizenId, _, _) =>
+    case CardPlayedFaceup(card: DenizenId, _, _, _) =>
       card != cardId &&
         EffectiveSuit.of(ctx.catalog, ctx.state, card).contains(Suit.Beast)
     case _ => false

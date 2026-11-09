@@ -258,7 +258,7 @@ class ConspiracyWhenPlayedSuite extends munit.FunSuite:
 
   test("its seizure is an automatic use of the card's player, and the " +
       "card's removal is not"):
-    val played = CardPlayedFaceup(VisionRules.Conspiracy,
+    val played = CardPlayedFaceup(VisionRules.Conspiracy, p1,
       RuleSourceRef.GameRule(ConspiracyWhenPlayed.id.value))
     assertEquals(AppendedAutomaticUses.at(ConspiracyWhenPlayed,
       PowerWindow.ActionCardPlayedFaceup, played), Vector(

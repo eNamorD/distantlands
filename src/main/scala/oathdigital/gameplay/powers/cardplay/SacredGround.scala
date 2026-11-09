@@ -32,5 +32,6 @@ case object SacredGround extends ContributingPower:
     if vision != VisionRules.Conspiracy
     site <- ctx.state.game.current.edificeSite(edifice, EdificeSide.Intact)
     if ctx.state.game.current.map.inPlay.contains(site)
-    if !ctx.state.game.current.pawnSite(ctx.actor).contains(site)
+    if !ctx.state.game.current.pawnSite(VisionPlay.player(ctx))
+      .contains(site)
   yield VisionPlay.forbidden("Sacred Ground")
