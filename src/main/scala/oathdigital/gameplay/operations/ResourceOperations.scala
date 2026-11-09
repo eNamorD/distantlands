@@ -1,5 +1,6 @@
 package oathdigital.gameplay.operations
 
+import oathdigital.gameplay.KinshipRule
 import oathdigital.model._
 
 /** Favor, secrets and warbands: counted moves, secret flips, and the
@@ -151,7 +152,8 @@ private[operations] object ResourceOperations:
 
   def applyCountedMoves(
       ready: ReadyGame,
-      leaves: Vector[Operation]
+      leaves: Vector[Operation],
+      redirect: Boolean = true
   ): Either[OperationError, ReadyGame] =
     val favorMoves = leaves.collect:
       case move @ Move(_: Piece.Favor, _, _, _, _) => move
@@ -166,10 +168,16 @@ private[operations] object ResourceOperations:
         val piece = move.piece.asInstanceOf[Piece.Favor]
         result.flatMap(adjustFavor(_, move.from.location, -piece.amount))
       }
+      // Vow of Kinship: favor bound for its holder's board lands in the
+      // Nomad bank, judged before the operation runs. A draw from the bank
+      // (`redirect = false`) lands on the board.
       withFavor <- favorMoves.foldLeft[Either[OperationError, ReadyGame]](
         Right(withoutFavor)) { (result, move) =>
         val piece = move.piece.asInstanceOf[Piece.Favor]
-        result.flatMap(adjustFavor(_, move.to.location, piece.amount))
+        val to =
+          if redirect then KinshipRule.creditAt(ready, move.to.location)
+          else move.to.location
+        result.flatMap(adjustFavor(_, to, piece.amount))
       }
       withoutSecrets <- plannedSecrets.foldLeft[
         Either[OperationError, ReadyGame]](Right(withFavor)):

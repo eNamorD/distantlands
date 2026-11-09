@@ -76,7 +76,8 @@ private[gameplay] object OperationApplication:
   ): Either[OperationError, ReadyGame] =
     val leaves = Operation.flatten(operation)
     for
-      resources <- ResourceOperations.applyCountedMoves(ready, leaves)
+      resources <- ResourceOperations.applyCountedMoves(ready, leaves,
+        redirect = !operation.isInstanceOf[DrawNomadFavor])
       pieces <- BoardControlOperations.applyPawnAndBannerMoves(
         resources, leaves)
       cards <- CardMovementOperations.applyCardMoves(pieces, leaves)

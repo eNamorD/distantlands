@@ -3,7 +3,7 @@ package oathdigital.gameplay.cards
 import oathdigital.catalog.{Denizen, Edifice, ExecutableCatalog, Legacy, Relic, Site}
 import oathdigital.catalog.holding._
 import oathdigital.gameplay.{ActingTroupeCard, BanditCrownCard, GrandMaskCard,
-  MarriageCard, PledgeToDiscordCard, SpitefulMirrorCard}
+  MarriageCard, PledgeToDiscordCard, SpitefulMirrorCard, VowOfKinshipCard}
 import oathdigital.gameplay.actions.challenge.{MagiciansCodeCard,
   SchoolOfVinesCard, SigilOfTheEyeCard, SigilOfTheHeartCard}
 import oathdigital.gameplay.actions.recover.UndergroundLibraryCard

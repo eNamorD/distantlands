@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers
 
-import oathdigital.catalog.holding.VowOfKinshipCard
+import oathdigital.gameplay.VowOfKinshipCard
 import oathdigital.gameplay.CampaignFixture._
 import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.powers.action.ConvoysCard
