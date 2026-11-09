@@ -122,6 +122,26 @@ object Bury:
       actingPlayer) :+
       Bury(card, from)
 
+/** Why a power discards a card (catalog batch 11, slice 4): `power`, whose
+  * use discards it, and whether the discard `makesRoom` that same power
+  * then fills (a mover's full target site, an adviser area at its limit).
+  * A discard without a cause is a rule's: a Search's own, a plain card
+  * play's, the Chronicle's. Wild Pastures reads it, since the walk itself
+  * cannot tell which power built a batch.
+  */
+final case class DiscardCause(power: PowerId, makesRoom: Boolean = false)
+
+object DiscardCause:
+  /** `operations` with every denizen and ruined-edifice discard among them
+    * caused by `cause`. A power marks its own batch, which nests no
+    * discard in a `Take`'s leaving. */
+  def mark(operations: Vector[CoreOperation], cause: DiscardCause)
+      : Vector[CoreOperation] = operations.map {
+    case discard: Discard.Denizen => discard.copy(cause = Some(cause))
+    case discard: Discard.RuinedEdifice => discard.copy(cause = Some(cause))
+    case other => other
+  }
+
 sealed trait Discard extends CoreOperation
 object Discard:
   import OperationChildren.*
@@ -131,13 +151,15 @@ object Discard:
     * Empty Grounds'. Its secrets still go to `actingPlayer`, the active
     * player, since secrets reach a card only on a player's turn.
     * `position` is the end of the pile it goes to: the top, unless a power
-    * says otherwise (Bracken, catalog batch 10, slice 9).
+    * says otherwise (Bracken, catalog batch 10, slice 9). `cause` is the
+    * power whose use discards it ([[DiscardCause]]).
     */
   final case class Denizen(card: DenizenId, from: PositionedLocation,
       to: Region, suit: Suit, favor: Int,
       secrets: Int, actingPlayer: PlayerId,
       override val required: Boolean = false, actorless: Boolean = false,
-      position: StackPosition = StackPosition.Top)
+      position: StackPosition = StackPosition.Top,
+      cause: Option[DiscardCause] = None)
       extends Discard:
     require(favor >= 0, "discarded favor must be non-negative")
     require(secrets >= 0, "discarded secrets must be non-negative")
@@ -186,10 +208,12 @@ object Discard:
   /** Only a ruined edifice can be discarded; intact edifices are locked.
     * `actingPlayer` and `actorless` are as for `Denizen`. A discarded
     * edifice is set aside in discard order, not buried, so Build Edifice
-    * offers it only when its suit has no other (Chronicle ruling 9). */
+    * offers it only when its suit has no other (Chronicle ruling 9).
+    * `cause` is the power whose use discards it ([[DiscardCause]]). */
   final case class RuinedEdifice(card: EdificeId, from: PositionedLocation,
       suit: Suit, favor: Int, secrets: Int, actingPlayer: PlayerId,
-      override val required: Boolean = false, actorless: Boolean = false)
+      override val required: Boolean = false, actorless: Boolean = false,
+      cause: Option[DiscardCause] = None)
       extends Discard:
     require(favor >= 0, "discarded favor must be non-negative")
     require(secrets >= 0, "discarded secrets must be non-negative")

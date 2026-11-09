@@ -95,6 +95,27 @@ class WalkerOperationWireSuite extends munit.FunSuite:
     val encoded = accepted(GameEventWire.encodeEvent("walker", 0, event))
     assertEquals(GameEventWire.decode(encoded).map(_.event), Right(event))
 
+  test("a discard's cause round trips, and a discard without one writes " +
+      "none"):
+    val atSite = PositionedLocation(Location.Site(SiteId("site")))
+    val cause = DiscardCause(PowerId("denizen.roving-terror"),
+      makesRoom = true)
+    val caused = Vector[CoreOperation](
+      Discard.Denizen(DenizenId("D1"), atSite, Region.Provinces, Suit.Nomad,
+        0, 1, Table.p1, cause = Some(cause)),
+      Discard.RuinedEdifice(EdificeId("E1"), atSite, Suit.Nomad, 1, 0,
+        Table.p1, cause = Some(DiscardCause(PowerId("denizen.riots")))))
+    caused.foreach { discard =>
+      val encoded = encodedStream("walker", Vector(recordedOperation(discard)))
+      assertEquals(accepted(GameEventWire.decodeStream(encoded))
+        .map(_.event), Vector(recordedOperation(discard)))
+    }
+    val plain = Discard.Denizen(DenizenId("D1"), atSite, Region.Provinces,
+      Suit.Nomad, 0, 0, Table.p1)
+    val written = ujson.read(encodedStream("walker",
+      Vector(recordedOperation(plain)))).arr
+    assert(!written(0)("payload")("step")("ops")(0).obj.contains("cause"))
+
   test("a discard's pile position round trips, and a discard that names " +
       "none, or names neither end, is refused"):
     val inHand = PositionedLocation(Location.Hand(Table.p1))

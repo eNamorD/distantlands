@@ -89,24 +89,24 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
         "card" -> encodeBuryableCard(bury.card),
         "from" -> encodePositionedLocation(bury.from))
       case Discard.Denizen(card, from, to, suit, favor, secrets, actingPlayer,
-          _, actorless, position) =>
-        withActorless(ujson.Obj("kind" -> "discard-denizen",
+          _, actorless, position, cause) =>
+        withCause(withActorless(ujson.Obj("kind" -> "discard-denizen",
           "card" -> card.value,
           "from" -> encodePositionedLocation(from), "to" -> to.key,
           "position" -> encodeStackPosition(position),
           "suit" -> suit.key, "favor" -> favor, "secrets" -> secrets,
-          "actingPlayerId" -> actingPlayer.value), actorless)
+          "actingPlayerId" -> actingPlayer.value), actorless), cause)
       case Discard.Vision(card, from, to, _, position) => ujson.Obj(
         "kind" -> "discard-vision", "card" -> card.value,
         "from" -> encodePositionedLocation(from), "to" -> to.key,
         "position" -> encodeStackPosition(position))
       case Discard.RuinedEdifice(card, from, suit, favor, secrets,
-          actingPlayer, _, actorless) =>
-        withActorless(ujson.Obj("kind" -> "discard-ruined-edifice",
+          actingPlayer, _, actorless, cause) =>
+        withCause(withActorless(ujson.Obj("kind" -> "discard-ruined-edifice",
           "card" -> card.value,
           "from" -> encodePositionedLocation(from), "suit" -> suit.key,
           "favor" -> favor, "secrets" -> secrets,
-          "actingPlayerId" -> actingPlayer.value), actorless)
+          "actingPlayerId" -> actingPlayer.value), actorless), cause)
       case Discard.Buried(card, from, suit, favor, secrets, actingPlayer, _) =>
         val encoded = ujson.Obj("kind" -> "discard-buried",
           "card" -> encodeBuryableCard(card),
@@ -167,6 +167,25 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
   /** Whether a discard says nobody performs it. */
   private def decodeActorless(value: ujson.Value): Boolean =
     value.obj.get("actorless").exists(_.bool)
+
+  /** A discard's cause, written only when it has one. */
+  private def withCause(encoded: ujson.Obj, cause: Option[DiscardCause])
+      : ujson.Obj =
+    cause.foreach(found => encoded("cause") = ujson.Obj(
+      "powerId" -> found.power.value, "makesRoom" -> found.makesRoom))
+    encoded
+
+  /** A discard's cause, when it names one. */
+  private def decodeCause(value: ujson.Value, path: String)
+      : Either[WireError, Option[DiscardCause]] =
+    value.obj.get("cause").fold[Either[WireError, Option[DiscardCause]]](
+        Right(None)) { found =>
+      found.obj.get("powerId").map(_.str).flatMap(PowerId.fromValue)
+        .toRight(InvalidValue(s"$path.cause.powerId",
+          "a discard's cause names its power"))
+        .map(power => Some(DiscardCause(power,
+          found.obj.get("makesRoom").exists(_.bool))))
+    }
 
   /** A discard's end of its pile. Required: a journal written before the
     * field existed need not decode. */
@@ -376,9 +395,10 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
       suit <- decodeSuit(value("suit").str, s"$path.suit")
       favor <- safeIntField(value.obj, "favor", path)
       secrets <- safeIntField(value.obj, "secrets", path)
+      cause <- decodeCause(value, path)
     yield Discard.Denizen(DenizenId(value("card").str), from, to, suit,
       favor, secrets, PlayerId(value("actingPlayerId").str),
-      actorless = decodeActorless(value), position = position)
+      actorless = decodeActorless(value), position = position, cause = cause)
     case "discard-vision" => for
       from <- decodePositionedLocation(value("from"), s"$path.from")
       to <- decodeRegion(value("to").str, s"$path.to")
@@ -390,9 +410,10 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
       suit <- decodeSuit(value("suit").str, s"$path.suit")
       favor <- safeIntField(value.obj, "favor", path)
       secrets <- safeIntField(value.obj, "secrets", path)
+      cause <- decodeCause(value, path)
     yield Discard.RuinedEdifice(EdificeId(value("card").str), from, suit,
       favor, secrets, PlayerId(value("actingPlayerId").str),
-      actorless = decodeActorless(value))
+      actorless = decodeActorless(value), cause = cause)
     case "discard-buried" => for
       card <- decodeBuryableCard(value("card"), s"$path.card")
       from <- decodePositionedLocation(value("from"), s"$path.from")
