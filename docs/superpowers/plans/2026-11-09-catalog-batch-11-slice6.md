@@ -1734,8 +1734,8 @@ git commit -m "docs(catalog): close catalog batch 11 slice 6, Desecrated Ground"
 - **The kept line names the walk's actor's own Visions only.** Every
   reveal today is by the walk's actor. Slice 7 adds a reveal inside
   another player's walk and gives the line an off-turn variant then.
-- **A replaced Vision row carries only the first card.**
-  `DecisionOptionProjection.replaces` is one card. The label names every
-  Vision, and the board marks every pill.
 - **The Wake win does not ask.** Ruling 30 moves the choice to Swear an
   Oath; the win's headline names every qualifying Vision.
+- **A pick that changes nothing writes no line.** When the winner picks
+  the Vision whose goal is already current, Swear an Oath sets nothing and
+  the log does not say which Vision they picked.

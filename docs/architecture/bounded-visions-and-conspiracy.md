@@ -80,5 +80,8 @@ The first three are `Restriction`s. They bind only while the Vision is still
 in the player's temporary hand or among their facedown advisers. The walker's
 restriction look-ahead removes the faceup placement from Search and from
 facedown-adviser play, which are the only faceup paths, and the answer-time
-check refuses a submitted one. Desecrated Ground (`edifice.e08.ruined`) is
-not implemented; E08 never appears in a generated game.
+check refuses a submitted one. Desecrated Ground (`edifice.e08.ruined`) lets
+an Exile at its site keep every revealed Vision (`DesecratedGroundRule`, read
+by `CardSlots` and `CardPlay`). A player's revealed Visions are a list, and a
+win records every one whose goal is met; Swear an Oath asks which won when
+there are several (catalog batch 11, slice 6).

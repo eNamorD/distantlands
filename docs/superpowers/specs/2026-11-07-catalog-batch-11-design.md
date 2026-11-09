@@ -1,6 +1,6 @@
 # Catalog Batch 11: The Engine-Wide Seams
 
-**Status:** designed 2026-11-07. Slices 0 to 5 landed.
+**Status:** designed 2026-11-07. Slices 0 to 6 landed.
 
 **Builds on** [Catalog batch 10](2026-11-03-catalog-batch-10-design.md),
 [batch 9](2026-11-02-catalog-batch-9-design.md) and

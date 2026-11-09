@@ -94,7 +94,6 @@ batch's [Deferred](superpowers/specs/2026-11-03-catalog-batch-10-design.md#defer
 section says why in a paragraph.
 
 - **Off-turn actor and a warband on a Vision:** False Prophet.
-- **Vision collection:** Desecrated Ground.
 
 ### Phase - All-Exile alpha readiness
 
@@ -207,13 +206,6 @@ one.
 - [ ] **Keyboard focus on the Chronicle pages.** A redraw of the Chronicle
   page drops the focused control, and the table's save dialog does not trap
   focus. Do it with the next accessibility pass over the start pages.
-- [ ] **Desecrated Ground.** E08's ruined face lets an Exile at its
-  site keep any number of revealed Visions, which turns
-  `PlayerState.revealedVision` into a collection across card play, projection,
-  Vision victory, the frontend and the save format. E08 never appears in
-  generated games, since the Nomad homeland becomes E06. Do it when E08 can
-  appear. Recorded in the
-  [rule gaps design](superpowers/specs/2026-09-26-rule-gaps-in-implemented-cards-design.md).
 
 ### Game Log deferred items
 
