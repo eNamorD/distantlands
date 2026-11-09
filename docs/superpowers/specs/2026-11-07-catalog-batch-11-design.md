@@ -61,7 +61,8 @@ their phases.
 ## Rulings
 
 Taken with the owner on 2026-11-07; rulings 15 to 18 on 2026-11-08,
-while planning slice 2, and ruling 19 the same day, while planning slice 3.
+while planning slice 2, ruling 19 the same day, while planning slice 3,
+and rulings 20 to 25 the same day, while planning slice 4.
 
 1. **Bandit Crown: the bandits still rule.** Denizens at a bandit site stay
    ruled by the bandits. The Crown's holder acts as if they ruled them, and
@@ -142,6 +143,31 @@ while planning slice 2, and ruling 19 the same day, while planning slice 3.
     holder may still pick Trade modifiers from their own relics and from
     the site cards they may use. Those modifiers read the chosen player's
     advisers wherever they read the holder's (Cup of Plenty's match).
+20. **Wild Pastures: no question where the discard makes room.** A power
+    that discards a card to make the room it then fills is not offered the
+    payment: Roving Terror or Giant Python moving to a full site, Horned
+    Mask at the adviser limit, a card play replacing an adviser or a card
+    at a full site. Where the room exists anyway, the payment is offered and
+    the power goes on.
+21. **Wild Pastures: ruined edifices.** A ruined Nomad edifice that its
+    ruler's power discards is asked about as a denizen is.
+22. **Wild Pastures: discards a power permits in a card play.** A site
+    discard that Baron, Crop Rotation or the People's Favor's Mob face
+    allows is from that power. A card play's other discards are rules,
+    unless a power made the play (Search Party, Oracle, Temple of
+    Ancestors).
+23. **Wild Pastures reads the effective suit.** A Pledge to Discord
+    holder's faceup advisers are Discord, so their discard is not of a
+    Nomad card.
+24. **Wild Pastures: the rest of the power goes on.** After a payment the
+    power's rewards stay (Taming Charm still gains 2 favor, Mounted Library
+    still doubles), and its counts read what was actually discarded (Riots
+    burns only for those).
+25. **Wild Pastures: only a faceup card with a place to stay.** Facedown
+    advisers have no suit, so their discard is never asked about (Squalid
+    District). A card in a hand cannot stay there, so its discard is not
+    asked about either (Spinning Bee). A faceup card in play, and a card in
+    a discard pile (Search Party's), are.
 
 ### Readings
 
@@ -183,7 +209,8 @@ with this spec.
   phase power, a When Played effect, a selected modifier or a battle plan.
   A Search's own discard, or a card play's discard of a displaced adviser,
   is a rule and is not from a power, unless a power started that Search or
-  card play (Search Party).
+  card play (Search Party). A site discard a power permits in a card play
+  is from that power (ruling 22).
 
 ## Slice 0: Room in CoreOperations
 
@@ -300,35 +327,48 @@ Disguise unavailable after another pick.
 
 ## Slice 4: A question before a batch
 
-**Wild Pastures** (rulings 11 and 12).
+**Wild Pastures** (rulings 11, 12 and 20 to 25).
 
-- **The seam.** Before the walker applies a leaf's batch, it gives the
-  registered batch questions a look at the built operations. A question
-  that finds something to ask, and has no answer recorded, parks the walk
-  on a `Decide`. On resume the leaf rebuilds its batch from the unchanged
-  state and applies the answers. The answers are keyed by what they
-  answer (a card id), so a rebuilt batch meets the same answers. This is
-  the operation-rewrite design's "ask per deferred op" extension point,
-  placed at the leaf so that no discard has to be lifted out of its batch.
-- **Wild Pastures' question.** For each `Discard.Denizen` of a Nomad card
-  whose acting player is Wild Pastures' card-level ruler, in a batch built
-  while one of that ruler's power uses runs: "Pay 1 favor to the Nomad bank
-  instead?" A yes replaces the discard with a favor payment to the Nomad
-  bank and leaves the card where it is; the line reads that they paid
-  instead of discarding. A ruler without spendable favor is not asked.
+- **The seam.** Before the walker runs a `BuildOps` leaf's batch, each
+  power that asks before a batch looks at the built operations, a `Take`'s
+  leaving included. When one asks, the leaf is walked as a subtree under
+  its own node: the questions, then the batch rebuilt from the unchanged
+  state with each taken answer's replacement in its operation's place,
+  then each replacement's line. A resume rebuilds the same subtree, so the
+  answers meet the same batch, and each question's id names what it asks
+  about (a card id). This is the operation-rewrite design's "ask per
+  deferred op" extension point, placed at the leaf so that no discard has
+  to be lifted out of its batch. A search walks the batch as built.
+- **"From a power".** The walk context does not tell which power built a
+  batch: `WalkCtx.procedure` names only a phase power's walk, and a leaf's
+  contributions list every power gathered at its windows, a Search
+  modifier at the Search's own discard included. So a discard carries its
+  cause: `Discard.Denizen` and `Discard.RuinedEdifice` gain
+  `cause: Option[DiscardCause]`, the power whose use discards the card and
+  whether the discard makes the room that power then fills (ruling 20).
+  Each power's discard sets it, and a rule's discard (a Search's own, a
+  plain card play's, the Chronicle's) has none. A card play a power made
+  gives its discards that power, and a site discard a power permits gives
+  the permission's power (ruling 22).
+- **Wild Pastures' question.** For each discard of a Nomad card (its
+  effective suit, ruling 23), denizen or ruined edifice (ruling 21), whose
+  acting player is Wild Pastures' card-level ruler, whose cause names a
+  power and makes no room, of a faceup card in play or a card in a discard
+  pile (ruling 25): "Pay 1 favor to the Nomad bank instead?" A yes replaces
+  the discard with a `Give` of 1 favor to the Nomad bank and leaves the card
+  where it is; the rest of the batch runs as built (ruling 24), and the line
+  reads that they paid instead of discarding. A ruler without favor on
+  their board is not asked.
 - **Composition.** Wild Mounts' `Defer` keeps its own question; the Wild
-  Pastures question is asked when the deferred discard's leaf applies, so
+  Pastures question is asked when the deferred discard's batch runs, so
   Wild Mounts asks first.
-- **"From a power".** The walker knows which power use is running from its
-  walk context; the slice uses that, and adds a cause to the batch only if
-  it does not.
 
 Tests: a phase power, a When Played effect, a battle plan and Search
-Party's card play each asked; a plain Search's discard and a card play's
-displaced adviser not asked; a batch whose later operation reads the freed
-slot (Roving Terror) still correct after a yes; the question parked and
-answered across a resume and a replay; Wild Mounts and Wild Pastures on
-one plan; an unruled or another player's Wild Pastures never asks.
+Party's card play each asked; a discard with no cause, one that makes room,
+a facedown adviser's and a card in a hand never asked; Roving Terror moving
+to a site with room after a yes; the question parked and answered across a
+resume and a replay; Wild Mounts and Wild Pastures on one plan; an unruled
+or another player's Wild Pastures never asks.
 
 ## Slice 5: Favor redirection
 
@@ -430,7 +470,7 @@ projection; replay of every new operation.
 | Crown access, plans and consent granter | 1 | Bandit Crown |
 | `CardRule.rulerOf` | 2 | Grand Mask, Wild Pastures |
 | `ActAsIfAdvisers`, `PowerAccess.advisersOf` | 3 | Master of Disguise |
-| Batch questions | 4 | Wild Pastures, Vow of Kinship |
+| Batch questions, `DiscardCause` | 4 | Wild Pastures, Vow of Kinship |
 | Spender on favor moves, `SpendableFavor` | 5 | Vow of Kinship |
 | `revealedVisions`, `RevealedVisions.of` | 6 | Desecrated Ground, False Prophet |
 | Player on `CardPlayedFaceup` | 7 | False Prophet |
