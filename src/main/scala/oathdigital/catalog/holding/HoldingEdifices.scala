@@ -35,21 +35,6 @@ object AmberDoorsCard extends Edifice(EdificeId("E05"), Suit.Discord):
         "draw a dormant legacy, then discard one you hold.")
     val powers: Vector[PrintedPower] = Vector(power)
 
-object WildPasturesCard extends Edifice(EdificeId("E07"), Suit.Nomad):
-  object intact extends EdificeFace("Wild Pastures") with Locked:
-    val power = PrintedPower(PowerId("edifice.e07.intact"),
-      persistent = true, cost = Cost.free,
-      text = "Whenever this card's ruler would discard a [suit-nomad] " +
-        "card from a power, they may instead pay [favor] to the " +
-        "[suit-nomad] bank.")
-    val powers: Vector[PrintedPower] = Vector(power)
-  object ruined extends EdificeFace("Blasted Pastures"):
-    val power = PrintedPower(PowerId("edifice.e07.ruined"),
-      persistent = true, cost = Cost.free,
-      text = "**CHRONICLE (START OF THRONE):** Bury all [suit-nomad] " +
-        "cards on the map unless the winner rules this card.")
-    val powers: Vector[PrintedPower] = Vector(power)
-
 object TheTribunalCard extends Edifice(EdificeId("E19"), Suit.Order):
   object intact extends EdificeFace("The Tribunal") with Locked:
     val power = PrintedPower(PowerId("edifice.e19.intact"),

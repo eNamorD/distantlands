@@ -70,7 +70,7 @@ object WalkerPowerCatalog:
       HiddenPassages, TempleOfAncestors) ++
       TravelSitePowers.all ++
       Vector(GrandCanal, LostLagoon, BoilingLakeTravel, ForbiddenForest,
-        HallowedSpring) ++
+        HallowedSpring, WildPastures) ++
       TravelModifiers.all ++
       Vector(LeagueTreatyContribution, SilverTongue, Insomnia, Assassin,
         LostTapestry, PiedPiper, FamilyWagon, VowOfUnionAdvisers, ASmallFavor,
