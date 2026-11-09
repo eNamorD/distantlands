@@ -62,7 +62,8 @@ their phases.
 
 Taken with the owner on 2026-11-07; rulings 15 to 18 on 2026-11-08,
 while planning slice 2, ruling 19 the same day, while planning slice 3,
-and rulings 20 to 25 the same day, while planning slice 4.
+rulings 20 to 25 the same day, while planning slice 4, and rulings 26 to
+29 on 2026-11-09, while planning slice 5.
 
 1. **Bandit Crown: the bandits still rule.** Denizens at a bandit site stay
    ruled by the bandits. The Crown's holder acts as if they ruled them, and
@@ -168,6 +169,19 @@ and rulings 20 to 25 the same day, while planning slice 4.
     District). A card in a hand cannot stay there, so its discard is not
     asked about either (Spinning Bee). A faceup card in play, and a card in
     a discard pile (Search Party's), are.
+26. **Vow of Kinship: Challenge counts the Nomad bank.** The holder has the
+    Nomad bank's favor for the People's Favor's "more favor than on it"
+    check, and the favor they place on the banner, after a Challenge or
+    with the banner's own action, may come from the bank.
+27. **Vow of Kinship and Vow of Poverty.** Vow of Poverty's "if you have no
+    favor" reads the holder's board only, so its REST works while the
+    Nomad bank holds favor.
+28. **Vow of Kinship and Whispering Leaves.** The favor a chosen player
+    must place on Whispering Leaves is done to them: it comes from their
+    board only.
+29. **Vow of Kinship: gain lines say where the favor went.** Every line
+    that says a holder gained favor, or that favor went to them, ends
+    ", to the Nomad bank" when the favor went there.
 
 ### Readings
 
@@ -374,37 +388,63 @@ or another player's Wild Pastures never asks.
 
 ## Slice 5: Favor redirection
 
-**Vow of Kinship** (rulings 9, 10 and 12).
+**Vow of Kinship** (rulings 9, 10, 12 and 26 to 29).
 
-- **Credit.** In `ResourceOperations.adjustFavor`, a favor `Move` into the
-  holder's `PlayArea` lands in `FavorBank(Nomad)`. This catches `Gain`,
-  `Take` and `Give` however they were built, without loosening their
-  ownership `require`s.
-- **Debit.** Favor moves made by the holder's own spend (`PayCost`, their
-  own `Give`, their own burn) carry their spender; today `PayCost` and
-  `Burn` moves carry none, and the slice adds it. Such a move may take from
-  the Nomad bank. `favorSourceViolations` and the quantity check follow the
-  same rule. A take or burn done to the holder reads the board only.
-- **Affordability.** A shared `SpendableFavor.of(ready, player)` replaces
-  the direct `board.favor` affordability reads (about 15:
-  `PricedOptions`, `ModifierChoice`, `RerollChoice`, `PlanPrice`,
-  `PlanAid`, `NegotiationDeal`, `SelfExile`, `TollRoads`, `RulerToll`,
-  `PeaceEnvoy`, `WitchsBargain`, `PlanAidDesk`). The reads ruling 9 keeps
-  on the board (Royal Tax, Chaos Cult, Charming Friend, Naysayers, Pied
-  Piper, Witch's Bargain's take, Defame, the Campaign's defender burn, Vow
-  of Poverty) stay. The slice's plan settles `BannerRules.playerResources`.
-- **The source question.** When both sources hold favor, slice 4's seam
-  asks the holder how much of the spend comes from the Nomad bank.
-- **Arrival.** `AdviserArrivalPass` moves the holder's board favor to the
-  Nomad bank when the Vow becomes a faceup adviser.
-- **Log.** The favor-gain notes compute a gain from the board's change
-  (`NoteSupport.favor`); under the Vow they would go silent, so they also
-  count favor that went to the Nomad bank for the holder and say so.
+The holder is the player who acts with the Vow faceup among their
+advisers (`PowerAccess.holdsFaceupAdviser`), so Master of Disguise lifts
+it, or lends it, for one Trade.
 
-Tests: gains, takes and gifts landing in the Nomad bank; a cost, a toll and
-a chosen burn paid from it; Royal Tax and the defender's burn reading the
-board only; affordability counting the bank; the source question asked only
-with both sources; the arrival move; Wild Pastures paid from bank to bank;
+- **Credit.** In `ResourceOperations`, a favor `Move` into the holder's
+  `PlayArea` lands in `FavorBank(Nomad)`. This catches `Gain`, `Take` and
+  `Give` however they were built, without loosening their ownership
+  `require`s. The one exception is the draw below.
+- **Spends.** A spend is a favor move out of the holder's board that the
+  holder makes: the move carries `by = Some(holder)`. `Give` moves already
+  carry their giver. The slice adds the payer to `PayCost`'s favor moves
+  and the actor to the Challenge's and the banner action's favor moves.
+  Revelation's chosen burn becomes a `PayCost` burn, as a bandit toll
+  already is. A take, the Campaign's defender burn and Defame carry
+  another mover or none, and Whispering Leaves' forced placement becomes a
+  plain move with no mover (ruling 28), so all of them read the board only.
+- **The draw.** The executor cannot draw on the bank by itself: a cost's
+  burn that Vow of Division takes becomes a `Take` by the taker, which
+  would then read the holder's board only. So before a walker batch runs,
+  and before `BurnTakes` rewrites it, `KinshipDraws.before` puts a
+  `DrawNomadFavor(holder, n)` in front of the first operation whose spend
+  the board cannot cover. The draw moves `n` favor from the Nomad bank onto
+  the board, unredirected, and the spend then runs unchanged.
+  `ModifierOffers`' dry run of selection payments uses the same pass.
+- **Affordability.** A shared `SpendableFavor.of(ready, player)`, the
+  board plus the holder's Nomad bank, replaces the direct `board.favor`
+  affordability reads: `Costs.plan`, `PricedOptions`, `ModifierChoice`,
+  `RerollChoice`, `PlanPrice`, `PlanAid`, `PlanAidDesk`,
+  `PlanAidProjector`, `NegotiationDeal`, `SelfExile`, `TollRoads`,
+  `RulerToll`, `PeaceEnvoy`, `WitchsBargain`'s give and Revelation's
+  amount. `BannerRules.playerResources` reads it for the People's Favor
+  (ruling 26). The reads ruling 9 and rulings 27 and 28 keep on the board
+  (Royal Tax, Chaos Cult, Charming Friend, Naysayers, Pied Piper, Witch's
+  Bargain's take, Defame, the Campaign's defender burn, Vow of Poverty,
+  Whispering Leaves) stay.
+- **The source question.** When the board and the bank both hold favor and
+  a batch's spend could take from either, the Vow asks the holder, through
+  slice 4's seam, how much of it comes from the Nomad bank. It asks once
+  per batch, at the batch's first spend, so the seam's `BatchContext` gains
+  the batch's operations. A cost walked as its child moves is a plain
+  leaf, not a `BuildOps`, so the seam also asks about a plain leaf, as a
+  batch of one. The answer puts its draw in front of the spend.
+- **Arrival.** The Vow follows arrivals: when it becomes a faceup adviser,
+  the holder's board favor moves to the Nomad bank.
+- **Log.** `NoteSupport.favor` counts the holder's Nomad bank with their
+  board, so a gain, payment or loss line reads what happened. A line about
+  favor that went to a holder carries `NoteArg.ToNomadBank`, and the Game
+  Log ends that sentence ", to the Nomad bank" (ruling 29).
+
+Tests: gains, takes and gifts landing in the Nomad bank; a cost, a toll, a
+chosen burn and a banner placement paid from it; a cost's burn taken by
+Vow of Division; Royal Tax, the defender's burn and Whispering Leaves
+reading the board only; affordability counting the bank; Vow of Poverty
+reading the board; the source question asked only with both sources; the
+arrival move; the gain lines' ending; Wild Pastures paid from bank to bank;
 Master of Disguise lifting the Vow for one Trade.
 
 ## Slice 6: Several revealed Visions
@@ -473,7 +513,7 @@ projection; replay of every new operation.
 | `CardRule.rulerOf` | 2 | Grand Mask, Wild Pastures |
 | `ActAsIfAdvisers`, `PowerAccess.advisersOf` | 3 | Master of Disguise |
 | Batch questions, `DiscardCause` | 4 | Wild Pastures, Vow of Kinship |
-| Spender on favor moves, `SpendableFavor` | 5 | Vow of Kinship |
+| A spend's mover, `DrawNomadFavor`, `SpendableFavor`, `NoteArg.ToNomadBank` | 5 | Vow of Kinship |
 | `revealedVisions`, `RevealedVisions.of` | 6 | Desecrated Ground, False Prophet |
 | Player on `CardPlayedFaceup` | 7 | False Prophet |
 
