@@ -123,7 +123,11 @@ object TakeWealthProcedure:
     states.previous.map(step => resource match
       case WakeResource.Favor => NoteSupport.favor(step, actor)
       case WakeResource.Secret => NoteSupport.secrets(step, actor))
-      .filter(_ > 0).map(_ => key(resource).sourceless(NoteArg.Site(site)))
+      .filter(_ > 0).map(_ =>
+        val note = key(resource).sourceless(NoteArg.Site(site))
+        if resource == WakeResource.Favor then
+          NoteSupport.toBank(states, actor)(note)
+        else note)
 
   private def key(resource: WakeResource): NoteKey = resource match
     case WakeResource.Favor => tookFavor

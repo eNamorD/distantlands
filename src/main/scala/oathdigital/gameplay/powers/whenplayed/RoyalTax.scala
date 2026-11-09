@@ -73,5 +73,6 @@ case object RoyalTax extends WhenPlayedPower:
   private def tookNote(states: NoteStates, actor: PlayerId,
       target: PlayerId): Option[LogNote] =
     val lost = -states.previous.fold(0)(NoteSupport.favor(_, target))
-    Option.when(lost > 0)(took(cardSource, NoteArg.Player(actor),
-      NoteArg.Amount(lost, NoteUnit.Favor), NoteArg.Player(target)))
+    Option.when(lost > 0)(NoteSupport.toBank(states, actor)(took(cardSource,
+      NoteArg.Player(actor), NoteArg.Amount(lost, NoteUnit.Favor),
+      NoteArg.Player(target))))

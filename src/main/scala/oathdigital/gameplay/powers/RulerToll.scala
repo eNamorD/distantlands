@@ -105,6 +105,6 @@ private[powers] object RulerToll:
     val source = PowerSourceRef.Card(card)
     val amount = NoteArg.Amount(paid, NoteUnit.Favor)
     ruler match
-      case SiteRuler.Player(owner) =>
-        gave(source, amount, NoteArg.Player(owner))
+      case SiteRuler.Player(owner) => NoteSupport.toBank(step, owner)(
+        gave(source, amount, NoteArg.Player(owner)))
       case _ => burned(source, amount)

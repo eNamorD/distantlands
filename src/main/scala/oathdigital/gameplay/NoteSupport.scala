@@ -15,7 +15,29 @@ object NoteSupport:
   def board(ready: ReadyGame, player: PlayerId): Option[PlayerBoardState] =
     ready.game.current.player(player).map(_.board)
 
-  def favor(step: Step, player: PlayerId): Int = change(step, player)(_.favor)
+  /** `player`'s favor change in the step: their board's, and for a Vow of
+    * Kinship holder the Nomad bank's too, so a gain into the bank or a
+    * spend from it reads as theirs (catalog batch 11, slice 5). */
+  def favor(step: Step, player: PlayerId): Int =
+    change(step, player)(_.favor) +
+      (if holder(step, player) then nomadBank(step._2) - nomadBank(step._1)
+       else 0)
+
+  /** Whether favor went to the Nomad bank for `player` in the step: they
+    * hold the Vow, and the bank rose (ruling 29). */
+  def banked(step: Step, player: PlayerId): Boolean =
+    holder(step, player) && nomadBank(step._2) > nomadBank(step._1)
+
+  /** `note`, ending ", to the Nomad bank" when the favor it tells of went
+    * there for `player`. */
+  def toBank(step: Step, player: PlayerId)(note: LogNote): LogNote =
+    if banked(step, player) then
+      note.copy(args = note.args :+ NoteArg.ToNomadBank)
+    else note
+
+  /** `toBank` for a note that reads the step before it, if any. */
+  def toBank(states: NoteStates, player: PlayerId)(note: LogNote): LogNote =
+    states.previous.fold(note)(toBank(_, player)(note))
   def supply(step: Step, player: PlayerId): Int =
     change(step, player)(_.supply.supply)
   def secrets(step: Step, player: PlayerId): Int =
@@ -63,7 +85,9 @@ object NoteSupport:
     step <- states.previous
     amount = read(step, player)
     if amount > 0
-  yield key(card, NoteArg.Player(player), NoteArg.Amount(amount, unit))
+  yield
+    val note = key(card, NoteArg.Player(player), NoteArg.Amount(amount, unit))
+    if unit == NoteUnit.Favor then toBank(step, player)(note) else note
 
   /** "{player} gained {amount} from {bank}.", declared in the borrowing
     * power's own set. */
@@ -79,8 +103,8 @@ object NoteSupport:
     amount = favor(step, player)
     if amount > 0
     bank <- bankPaid(step)
-  yield key(card, NoteArg.Player(player), NoteArg.Amount(amount, NoteUnit.Favor),
-    NoteArg.Bank(bank))
+  yield toBank(step, player)(key(card, NoteArg.Player(player),
+    NoteArg.Amount(amount, NoteUnit.Favor), NoteArg.Bank(bank)))
 
   /** "Killed {n} {player} warband.", declared in the borrowing power's own
     * set. */
@@ -115,12 +139,18 @@ object NoteSupport:
     amount = favor(step, player)
     if amount > 0
     bank <- bankPaid(step)
-  yield took(card, NoteArg.Player(player),
-    NoteArg.Amount(amount, NoteUnit.Favor), NoteArg.Bank(bank))
+  yield toBank(step, player)(took(card, NoteArg.Player(player),
+    NoteArg.Amount(amount, NoteUnit.Favor), NoteArg.Bank(bank)))
 
   private def change(step: Step, player: PlayerId)(
       read: PlayerBoardState => Int): Int =
     board(step._2, player).fold(0)(read) - board(step._1, player).fold(0)(read)
+
+  private def holder(step: Step, player: PlayerId): Boolean =
+    KinshipRule.holds(step._1, player) || KinshipRule.holds(step._2, player)
+
+  private def nomadBank(ready: ReadyGame): Int =
+    ready.banks.favor.getOrElse(Suit.Nomad, 0)
 
   private def relics(ready: ReadyGame, player: PlayerId): Vector[RelicId] =
     ready.game.current.player(player).toVector

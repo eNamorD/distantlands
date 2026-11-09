@@ -49,8 +49,9 @@ case object CharmingFriend extends PaidAction(CharmingFriendCard.power):
       NoteSupport.answer(states, decisionId) match
         case Some(DecisionOptionRef.Player(target)) =>
           val amount = states.previous.fold(0)(NoteSupport.favor(_, actor))
-          if amount > 0 then NoteSupport.took(card, NoteArg.Player(actor),
-            NoteArg.Amount(amount, NoteUnit.Favor), NoteArg.Player(target))
+          if amount > 0 then NoteSupport.toBank(states, actor)(
+            NoteSupport.took(card, NoteArg.Player(actor),
+              NoteArg.Amount(amount, NoteUnit.Favor), NoteArg.Player(target)))
           else broke(card, NoteArg.Player(target))
         case _ => nobody(card))
 

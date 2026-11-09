@@ -102,7 +102,10 @@ case object BookOfRecords extends PaidAction(BookOfRecordsCard.power):
       case Banner.PeoplesFavor => (NoteSupport.favor(step, actor), NoteUnit.Favor)
       case Banner.DarkestSecret =>
         (NoteSupport.secrets(step, actor), NoteUnit.Secret)
-    if amount > 0 then took(card, NoteArg.Player(actor),
-      NoteArg.Amount(amount, unit), NoteArg.Player(holder),
-      NoteArg.Banner(banner))
+    if amount > 0 then
+      val note = took(card, NoteArg.Player(actor),
+        NoteArg.Amount(amount, unit), NoteArg.Player(holder),
+        NoteArg.Banner(banner))
+      if unit == NoteUnit.Favor then NoteSupport.toBank(step, actor)(note)
+      else note
     else empty(card, NoteArg.Player(holder), NoteArg.Banner(banner))

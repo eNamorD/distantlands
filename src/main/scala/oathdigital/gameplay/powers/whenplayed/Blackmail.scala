@@ -140,8 +140,9 @@ case object Blackmail extends WhenPlayedPower:
     step <- states.previous
     gained = NoteSupport.favor(step, actor)
     if gained > 0
-  yield paid(cardSource, NoteArg.Player(target.owner),
-    NoteArg.Amount(gained, NoteUnit.Favor), NoteArg.Card(target.relic.id))
+  yield NoteSupport.toBank(step, actor)(paid(cardSource,
+    NoteArg.Player(target.owner), NoteArg.Amount(gained, NoteUnit.Favor),
+    NoteArg.Card(target.relic.id)))
 
   /** That the actor now holds the relic. */
   private def tookNote(states: NoteStates, actor: PlayerId, target: Target)

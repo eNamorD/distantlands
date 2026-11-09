@@ -97,7 +97,7 @@ case object StickyFire extends BattlePlan:
         case (false, true) => Some(StickyFire.gave(card, NoteArg.Player(loser),
           NoteArg.Amount(gift, NoteUnit.Favor)))
         case _ => None
-    yield note
+    yield if gift > 0 then NoteSupport.toBank(step, loser)(note) else note
 
   /** The warbands the step killed at a queued origin: only the attacker's
     * stand there. */

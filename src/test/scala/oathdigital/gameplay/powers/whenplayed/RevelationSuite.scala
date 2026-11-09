@@ -61,6 +61,7 @@ class RevelationSuite extends munit.FunSuite:
     val end = Look(walked.end)
     assertEquals(end.bankFavor(Suit.Nomad), 1)
     assertEquals(end.faceUpSecrets(p1), 3)
+    assertEquals(said(power, walked.events), Vector(burned(p1, 2)))
     assertJournalRebuilds(ready, walked.events, walked.end)
 
   test("a player with no favor is not asked"):

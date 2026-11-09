@@ -124,7 +124,7 @@ case object PiedPiper extends PaidAction(PiedPiperCard.power)
       NoteSupport.answer(states, decisionId).collect {
         case DecisionOptionRef.Player(receiver) =>
           val amount = states.previous.fold(0)(NoteSupport.favor(_, actor))
-          if amount > 0 then moved(card, NoteArg.Player(receiver),
-            NoteArg.Amount(amount, NoteUnit.Favor))
+          if amount > 0 then NoteSupport.toBank(states, actor)(moved(card,
+            NoteArg.Player(receiver), NoteArg.Amount(amount, NoteUnit.Favor)))
           else broke(card, NoteArg.Player(receiver), NoteArg.Player(receiver))
       })

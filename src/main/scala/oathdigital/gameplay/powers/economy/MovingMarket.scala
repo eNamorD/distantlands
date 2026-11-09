@@ -128,6 +128,7 @@ case object MovingMarket extends SelectedModifier:
   yield
     val card = PowerSourceRef.Card(cardId)
     val gained = states.previous.fold(0)(NoteSupport.favor(_, actor))
-    if gained > 0 then moved(card, NoteArg.Site(slot.site),
-      NoteArg.Amount(gained, NoteUnit.Favor), NoteArg.Bank(Suit.Nomad))
+    if gained > 0 then NoteSupport.toBank(states, actor)(moved(card,
+      NoteArg.Site(slot.site), NoteArg.Amount(gained, NoteUnit.Favor),
+      NoteArg.Bank(Suit.Nomad)))
     else movedOnly(card, NoteArg.Site(slot.site))

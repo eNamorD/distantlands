@@ -92,4 +92,5 @@ case object VowOfPoverty extends PhasePower with ContributingPower:
     amount = NoteSupport.favor(step, player)
     if amount > 0
     bank <- NoteSupport.bankPaid(step)
-  yield took(card, NoteArg.Amount(amount, NoteUnit.Favor), NoteArg.Bank(bank))
+  yield NoteSupport.toBank(step, player)(took(card,
+    NoteArg.Amount(amount, NoteUnit.Favor), NoteArg.Bank(bank)))

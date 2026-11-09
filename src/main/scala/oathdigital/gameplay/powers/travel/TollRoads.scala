@@ -326,6 +326,7 @@ case object TollRoads extends ContributingPower:
     val card = PowerSourceRef.Card(cardId)
     val amount = NoteArg.Amount(paid, NoteUnit.Favor)
     ruler match
-      case SiteRuler.Player(owner) => TollRoads.paid(card,
-        NoteArg.Player(traveller), amount, NoteArg.Player(owner))
+      case SiteRuler.Player(owner) => NoteSupport.toBank(step, owner)(
+        TollRoads.paid(card, NoteArg.Player(traveller), amount,
+          NoteArg.Player(owner)))
       case _ => TollRoads.burned(card, NoteArg.Player(traveller), amount)

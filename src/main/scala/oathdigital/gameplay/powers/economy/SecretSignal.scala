@@ -89,4 +89,5 @@ case object SecretSignal extends SelectedModifier:
     step <- states.previous
     amount = NoteSupport.favor(step, actor)
     if amount > 0
-  yield gained(PowerSourceRef.Card(cardId), NoteArg.Number(amount))
+  yield NoteSupport.toBank(step, actor)(gained(PowerSourceRef.Card(cardId),
+    NoteArg.Number(amount)))

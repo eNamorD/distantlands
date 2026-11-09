@@ -102,8 +102,8 @@ case object TamingCharm extends PaidAction(TamingCharmCard.power):
       chosen: CardId): LogNote =
     val favor = states.previous.fold(0)(NoteSupport.favor(_, player))
     catalog.suitOf(chosen).filter(_ => favor > 0) match
-      case Some(suit) => gained(card, NoteArg.Player(player),
-        NoteArg.Card(chosen), NoteArg.Amount(favor, NoteUnit.Favor),
-        NoteArg.Bank(suit))
+      case Some(suit) => NoteSupport.toBank(states, player)(gained(card,
+        NoteArg.Player(player), NoteArg.Card(chosen),
+        NoteArg.Amount(favor, NoteUnit.Favor), NoteArg.Bank(suit)))
       case None =>
         discardedOnly(card, NoteArg.Player(player), NoteArg.Card(chosen))

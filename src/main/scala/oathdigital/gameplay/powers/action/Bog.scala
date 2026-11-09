@@ -62,9 +62,9 @@ case object Bog extends PaidAction(BogCard.power):
       relic.spentRelic(states, player) match
         case Some((spent, _)) => states.previous.map { step =>
           val favor = NoteSupport.favor(step, player)
-          if favor > 0 then discarded(card, NoteArg.Player(player),
-            NoteArg.Card(spent), NoteArg.Amount(favor, NoteUnit.Favor),
-            NoteArg.Bank(Suit.Beast))
+          if favor > 0 then NoteSupport.toBank(step, player)(discarded(card,
+            NoteArg.Player(player), NoteArg.Card(spent),
+            NoteArg.Amount(favor, NoteUnit.Favor), NoteArg.Bank(Suit.Beast)))
           else discardedOnly(card, NoteArg.Player(player), NoteArg.Card(spent))
         }
         case None => Option.when(relic.emptyHanded(states, player))(

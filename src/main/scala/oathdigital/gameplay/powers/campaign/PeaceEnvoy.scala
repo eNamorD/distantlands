@@ -202,9 +202,9 @@ case object PeaceEnvoy extends DenizenPlan(PeaceEnvoyCard,
     .map(NoteSupport.favor(_, enemy)).filter(_ > 0).map { count =>
       val source = PowerSourceRef.Card(cardId)
       val amount = NoteArg.Amount(count, NoteUnit.Favor)
-      side match
+      NoteSupport.toBank(states, enemy)(side match
         case CampaignPlanSide.Attacker =>
           PeaceEnvoy.gave(source, amount, NoteArg.Player(enemy))
         case CampaignPlanSide.Defender => PeaceEnvoy.gaveOffTurn(source,
-          NoteArg.Player(user), amount, NoteArg.Player(enemy))
+          NoteArg.Player(user), amount, NoteArg.Player(enemy)))
     })

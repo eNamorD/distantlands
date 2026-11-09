@@ -66,8 +66,9 @@ case object GamblingHall extends PaidAction(GamblingHallCard.power):
       }
       amount = NoteSupport.favor(step, player)
       if amount > 0
-    yield gained(card, NoteArg.Player(player),
-      NoteArg.Amount(amount, NoteUnit.Favor), NoteArg.Bank(suit))
+    yield NoteSupport.toBank(step, player)(gained(card,
+      NoteArg.Player(player), NoteArg.Amount(amount, NoteUnit.Favor),
+      NoteArg.Bank(suit)))
 
   /** The bank question's copy. The roll has already happened and the whole
     * total is taken, so the heading states the number rather than offering

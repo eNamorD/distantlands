@@ -91,8 +91,8 @@ object TradeProcedure:
     val card = NoteArg.Card(source.card)
     Some(resource match
       case TradeResource.Favor =>
-        if gained > 0 then
-          tradedForFavor.sourceless(card, NoteArg.Number(gained))
+        if gained > 0 then NoteSupport.toBank(states, actor)(
+          tradedForFavor.sourceless(card, NoteArg.Number(gained)))
         else tradedForNoFavor.sourceless(card)
       case TradeResource.Secret =>
         if gained > 0 then

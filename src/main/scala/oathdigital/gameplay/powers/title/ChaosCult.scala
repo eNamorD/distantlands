@@ -66,5 +66,6 @@ case object ChaosCult extends ContributingPower:
     amount = NoteSupport.favor(step, holder)
     if amount > 0
     from <- step._2.game.current.title.holder
-  yield took(PowerSourceRef.Card(cardId), NoteArg.Player(holder),
-    NoteArg.Amount(amount, NoteUnit.Favor), NoteArg.Player(from))
+  yield NoteSupport.toBank(step, holder)(took(PowerSourceRef.Card(cardId),
+    NoteArg.Player(holder), NoteArg.Amount(amount, NoteUnit.Favor),
+    NoteArg.Player(from)))

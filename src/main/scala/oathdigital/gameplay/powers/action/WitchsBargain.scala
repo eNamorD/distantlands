@@ -176,12 +176,14 @@ case object WitchsBargain extends PaidAction(WitchsBargainCard.power):
   private def restated(card: PowerSourceRef, choice: DecisionOptionRef,
       other: PlayerId, step: NoteSupport.Step, actor: PlayerId)
       : Option[LogNote] =
-    if choice == giveSecret then Some(forSecret(card,
-      NoteArg.Amount(1, NoteUnit.Secret), NoteArg.Player(other),
-      NoteArg.Amount(NoteSupport.favor(step, actor), NoteUnit.Favor)))
-    else if choice == giveFavor then Some(forFavor(card,
-      NoteArg.Amount(Favor, NoteUnit.Favor), NoteArg.Player(other),
-      NoteArg.Amount(NoteSupport.secrets(step, actor), NoteUnit.Secret)))
+    if choice == giveSecret then Some(NoteSupport.toBank(step, actor)(
+      forSecret(card, NoteArg.Amount(1, NoteUnit.Secret),
+        NoteArg.Player(other),
+        NoteArg.Amount(NoteSupport.favor(step, actor), NoteUnit.Favor))))
+    else if choice == giveFavor then Some(NoteSupport.toBank(step, other)(
+      forFavor(card, NoteArg.Amount(Favor, NoteUnit.Favor),
+        NoteArg.Player(other),
+        NoteArg.Amount(NoteSupport.secrets(step, actor), NoteUnit.Secret))))
     else None
 
   /** "No exchange was made." when no exchange was. */
