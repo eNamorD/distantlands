@@ -33,7 +33,7 @@ object ChallengeModifiers:
     * would still leave that pick a dead end; none refuses it today. */
   private def codeAssumed(ctx: PowerCtx): Vector[CardId] =
     val affordable = ctx.state.game.current.player(ctx.actor).exists(
-      BannerRules.playerResources(_, Banner.PeoplesFavor) >=
+      BannerRules.playerResources(ctx.state, _, Banner.PeoplesFavor) >=
         MagiciansCodeCard.power.cost.favor)
     Vector[CardId](MagiciansCodeCard.id)
       .filter(card => affordable && pickable(ctx, card))

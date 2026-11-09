@@ -1,6 +1,6 @@
 package oathdigital.application
 
-import oathdigital.gameplay.OathRules
+import oathdigital.gameplay.{OathRules, SpendableFavor}
 import oathdigital.gameplay.actions.campaign.{CampaignIds, PlanAid}
 import oathdigital.model._
 import oathdigital.model.OathEvent.{PlanAidCleared, PlanAidSaved}
@@ -73,7 +73,8 @@ private[application] final class PlanAidDesk(rules: OathRules):
       : Either[OathViolation, Unit] =
     ready.game.current.player(ally).toRight(
       unavailable(s"${ally.value} is not seated")).flatMap(held =>
-      Either.cond(left.favor + left.favorBurnt <= held.board.favor &&
+      Either.cond(left.favor + left.favorBurnt <=
+          SpendableFavor.of(ready, ally) &&
         left.secrets + left.secretsBurnt <= held.board.faceUpSecrets, (),
         unavailable(s"${ally.value} cannot offer more than they hold")))
 

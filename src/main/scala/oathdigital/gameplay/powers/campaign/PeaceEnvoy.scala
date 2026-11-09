@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.campaign
 
 import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower}
-import oathdigital.gameplay.NoteSupport
+import oathdigital.gameplay.{NoteSupport, SpendableFavor}
 import oathdigital.gameplay.actions.campaign.{CampaignAnswers, CampaignIds,
   CampaignSetup, PlanAid}
 import oathdigital.gameplay.powerresolver.{OptionRestriction, PowerCtx}
@@ -163,7 +163,7 @@ case object PeaceEnvoy extends DenizenPlan(PeaceEnvoyCard,
       : Option[SiteId] = CampaignSetup.originOf(ready, player)
 
   private def favor(ready: ReadyGame, player: PlayerId): Int =
-    ready.game.current.player(player).fold(0)(_.board.favor)
+    SpendableFavor.of(ready, player)
 
   /** One favor per die in the defense pool, from `user` to `enemy`, given
     * first by an Imperial user's allies from what they offered (Imperial

@@ -53,7 +53,7 @@ object ChallengeReach:
     val current = ready.game.current
     val banner = Banner.DarkestSecret
     def outbids = current.player(actor).exists(player =>
-      BannerRules.playerResources(player, banner) + CodeSecrets >
+      BannerRules.playerResources(ready, player, banner) + CodeSecrets >
         BannerRules.resources(current, banner))
     if ChallengeProcedure.legalBanners(ready, actor, picks).contains(banner)
     then None

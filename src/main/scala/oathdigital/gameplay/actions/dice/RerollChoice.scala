@@ -1,5 +1,6 @@
 package oathdigital.gameplay.actions.dice
 
+import oathdigital.gameplay.SpendableFavor
 import oathdigital.gameplay.powerresolver.{OfferHost, PowerCtx, RerollHost}
 import oathdigital.model._
 
@@ -186,8 +187,8 @@ object RerollChoice:
         .map(_.board).flatMap(board =>
           if board.faceUpSecrets < cost.secret then Some(needs(cost.secret,
             secrets(cost.secret), board.faceUpSecrets))
-          else if board.favor < cost.favor then
-            Some(needs(cost.favor, "favor", board.favor))
+          else if SpendableFavor.of(ready, roller) < cost.favor then
+            Some(needs(cost.favor, "favor", SpendableFavor.of(ready, roller)))
           else None)
         .getOrElse("Cannot be paid for now")
 

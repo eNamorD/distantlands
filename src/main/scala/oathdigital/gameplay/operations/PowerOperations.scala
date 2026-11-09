@@ -1,6 +1,7 @@
 package oathdigital.gameplay.operations
 
 import oathdigital.catalog.ExecutableCatalog
+import oathdigital.gameplay.SpendableFavor
 import oathdigital.model.OathViolation._
 import oathdigital.model._
 
@@ -25,8 +26,9 @@ object Costs:
           .toRight(WrongPlayer(ready.game.current.turn.activePlayer, actor))
         favor = cost.favor + cost.favorBurnt
         secrets = cost.secret + cost.secretBurnt
-        _ <- Either.cond(player.board.favor >= favor, (),
-          InsufficientFavor(favor, player.board.favor))
+        spendable = SpendableFavor.of(ready, actor)
+        _ <- Either.cond(spendable >= favor, (),
+          InsufficientFavor(favor, spendable))
         _ <- Either.cond(player.board.faceUpSecrets >= secrets, (),
           InsufficientSecrets(secrets, player.board.faceUpSecrets))
         _ <- validatePlaced(ready, placedAt, cost, intoOccupied)

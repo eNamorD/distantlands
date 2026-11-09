@@ -1,6 +1,6 @@
 package oathdigital.gameplay.actions.campaign
 
-import oathdigital.gameplay.TurnOrder
+import oathdigital.gameplay.{SpendableFavor, TurnOrder}
 import oathdigital.gameplay.actions.BannerRules
 import oathdigital.model._
 
@@ -145,7 +145,7 @@ object PlanAid:
       held =>
         val left = remaining(ready, window, ally)
         AidAmounts(favor = math.max(0,
-          held.board.favor - left.favor - left.favorBurnt),
+          SpendableFavor.of(ready, ally) - left.favor - left.favorBurnt),
           secrets = math.max(0,
             held.board.faceUpSecrets - left.secrets - left.secretsBurnt))
     }).foldLeft(AidAmounts.none)(_ + _)
@@ -174,7 +174,8 @@ object PlanAid:
     // they hold unoffered and what their offers have left.
     case _: OathViolation.CoreOperationRejected =>
       player(ready, window.user).exists { held =>
-        val favor = printed.favor + printed.favorBurnt - held.board.favor
+        val favor = printed.favor + printed.favorBurnt -
+          SpendableFavor.of(ready, window.user)
         val secrets = printed.secrets + printed.secretsBurnt -
           held.board.faceUpSecrets
         val reach = allies(ready, window.user).map(remaining(ready, window, _))

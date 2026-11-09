@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers
 
-import oathdigital.gameplay.{CardRule, NoteSupport}
+import oathdigital.gameplay.{CardRule, NoteSupport, SpendableFavor}
 import oathdigital.model._
 
 /** The toll Curfew and Forced Labor charge an enemy of their ruler, on top
@@ -72,8 +72,7 @@ private[powers] object RulerToll:
     val option = DecisionOption.Button(PayOrAsk.pay, ruler match
       case SiteRuler.Player(owner) => s"Give $Favor favor to ${owner.value}"
       case _ => s"Burn $Favor favor")
-    val held = ready.game.current.player(payer)
-      .fold(0)(_.board.favor)
+    val held = SpendableFavor.of(ready, payer)
     val needed = Favor + taken
     if held >= needed then option
     else DecisionOption.Unavailable(option,

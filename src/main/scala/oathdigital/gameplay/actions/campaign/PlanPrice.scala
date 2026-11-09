@@ -1,5 +1,6 @@
 package oathdigital.gameplay.actions.campaign
 
+import oathdigital.gameplay.SpendableFavor
 import oathdigital.model._
 
 /** What a battle plan costs its user, for the option that offers it. The payments
@@ -69,8 +70,8 @@ private[campaign] object PlanPrice:
         case CampaignPlanCost.SecretBurnt(count) => count }.sum
       ready.game.current.player(user).map(_.board)
         .flatMap(board =>
-          if board.favor < favor then
-            Some(needs(favor, "favor", board.favor))
+          if SpendableFavor.of(ready, user) < favor then
+            Some(needs(favor, "favor", SpendableFavor.of(ready, user)))
           else if board.faceUpSecrets < secrets then
             Some(needs(secrets, secretWord(secrets), board.faceUpSecrets))
           else None)

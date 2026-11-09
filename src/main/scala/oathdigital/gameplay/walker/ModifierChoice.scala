@@ -1,6 +1,6 @@
 package oathdigital.gameplay.walker
 
-import oathdigital.gameplay.PowerAccess
+import oathdigital.gameplay.{PowerAccess, SpendableFavor}
 import oathdigital.gameplay.operations.PowerUseRules
 import oathdigital.gameplay.powerresolver.{AsksOnSelection, ContributingPower,
   ModifierHost, ModifierPicks, OfferReason, OnEdificeFace, PowerCtx}
@@ -146,7 +146,8 @@ final class ModifierChoice(val actor: PlayerId, modifierWindow: PowerWindow,
     val secrets = costs.map(cost => cost.secret + cost.secretBurnt).sum
     state.game.current.player(actor).map(_.board)
       .flatMap(board =>
-        if board.favor < favor then Some(needs(favor, "favor", board.favor))
+        val spendable = SpendableFavor.of(state, actor)
+        if spendable < favor then Some(needs(favor, "favor", spendable))
         else if board.faceUpSecrets < secrets then Some(needs(secrets,
           if secrets == 1 then "secret" else "secrets", board.faceUpSecrets))
         else None)

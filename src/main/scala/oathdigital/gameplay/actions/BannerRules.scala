@@ -1,5 +1,6 @@
 package oathdigital.gameplay.actions
 
+import oathdigital.gameplay.SpendableFavor
 import oathdigital.model._
 
 /** Shared printed banner invariants. Mob and Raid both use the printed
@@ -22,8 +23,13 @@ object BannerRules:
   def resourceName(banner: Banner): String = banner match
     case Banner.PeoplesFavor => "favor"
     case Banner.DarkestSecret => "secrets"
-  def playerResources(player: PlayerState, banner: Banner): Int = banner match
-    case Banner.PeoplesFavor => player.board.favor
+  /** What `player` holds toward `banner`: favor they may spend for the
+    * People's Favor, a Vow of Kinship holder's Nomad bank included
+    * (catalog batch 11, ruling 26), and faceup secrets for the Darkest
+    * Secret. */
+  def playerResources(ready: ReadyGame, player: PlayerState,
+      banner: Banner): Int = banner match
+    case Banner.PeoplesFavor => SpendableFavor.of(ready, player.player)
     case Banner.DarkestSecret => player.board.faceUpSecrets // CR p.26: facedown do not count.
   def leastFavorBanks(banks: Map[Suit, Int]): Vector[Suit] =
     val minimum = Suit.all.map(s => banks.getOrElse(s, 0)).min

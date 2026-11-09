@@ -1,6 +1,7 @@
 package oathdigital.gameplay.walker
 
 import oathdigital.catalog.ExecutableCatalog
+import oathdigital.gameplay.SpendableFavor
 import oathdigital.gameplay.powerresolver.{PhasePowers, QueuedStarts}
 import oathdigital.model._
 
@@ -117,7 +118,8 @@ object QueuedStart:
       board <- ready.game.current.player(entry.actor)
         .map(_.board)
       cost <- lifted(resources = false).orElse(lifted(resources = true))
-      text <- PricedOptions.needs(cost.least, board)
+      text <- PricedOptions.needs(cost.least, board,
+        SpendableFavor.of(ready, entry.actor))
     yield text
 
   /** The state the entry's start runs on: no walk open, and the entry

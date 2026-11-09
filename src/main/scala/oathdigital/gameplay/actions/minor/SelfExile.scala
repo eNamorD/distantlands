@@ -1,5 +1,6 @@
 package oathdigital.gameplay.actions.minor
 
+import oathdigital.gameplay.SpendableFavor
 import oathdigital.gameplay.actions.ProcedureNotes
 import oathdigital.gameplay.roles.Citizenship
 import oathdigital.model._
@@ -37,7 +38,8 @@ object SelfExile:
     state <- ready.game.current.player(actor)
       .toRight(WrongPlayer(ready.game.current.turn.activePlayer, actor))
     cost = price(ready, actor)
-    _ <- Either.cond(state.board.favor >= cost, (), MinorActionUnavailable(
+    _ <- Either.cond(SpendableFavor.of(ready, actor) >= cost, (),
+      MinorActionUnavailable(
       s"You need $cost favor to give the Chancellor"))
   yield tree(actor, chancellor, cost)
 

@@ -1,7 +1,8 @@
 package oathdigital.gameplay.powers.travel
 
 import oathdigital.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
-import oathdigital.gameplay.{CardRule, NoteSupport, SiteRulers}
+import oathdigital.gameplay.{CardRule, NoteSupport, SiteRulers,
+  SpendableFavor}
 import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerCtx, Transform, Waiver}
 import oathdigital.gameplay.powers.{CatalogResolution, PayOrAsk, RulerToll}
@@ -169,8 +170,7 @@ case object TollRoads extends ContributingPower:
 
   /** Whether `traveller` holds the favor the toll takes. */
   def canPay(ready: ReadyGame, traveller: PlayerId): Boolean =
-    ready.game.current.player(traveller)
-      .fold(0)(_.board.favor) >= Favor
+    SpendableFavor.of(ready, traveller) >= Favor
 
   /** What a sent Travel waits on for Toll Roads. The one who may waive it
     * is [[PayOrAsk.letOffBy]]'s: a player ruler, or the Bandit Crown's

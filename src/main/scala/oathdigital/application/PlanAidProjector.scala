@@ -1,6 +1,6 @@
 package oathdigital.application
 
-import oathdigital.gameplay.OathRules
+import oathdigital.gameplay.{OathRules, SpendableFavor}
 import oathdigital.gameplay.actions.campaign.PlanAid
 import oathdigital.model._
 import oathdigital.protocol.projection.{PlanAidOfferProjection,
@@ -45,7 +45,7 @@ private[application] final class PlanAidProjector(rules: OathRules,
         offer(saved), offer(AidOffer(used.filter(saved.plans.contains),
           used.filter(saved.requirements.contains),
           PlanAid.used(ready, window, ally))),
-        held.board.favor, held.board.faceUpSecrets)
+        SpendableFavor.of(ready, ally), held.board.faceUpSecrets)
 
   /** An item's option without the window's: the title's button keeps its
     * name. */

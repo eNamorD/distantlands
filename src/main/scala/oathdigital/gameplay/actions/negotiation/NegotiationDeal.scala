@@ -1,5 +1,6 @@
 package oathdigital.gameplay.actions.negotiation
 
+import oathdigital.gameplay.SpendableFavor
 import oathdigital.gameplay.operations.TheGrandScepterCard
 import oathdigital.gameplay.roles.Citizenship
 import oathdigital.model._
@@ -92,7 +93,8 @@ object NegotiationDeal:
     val player = state.game.current.player(author).get
     val exiles = offerable(state, author, participants)
     val ignored = Citizenship.ignored(state)
-    NegotiationBounds(participants.filter(_ != author), player.board.favor,
+    NegotiationBounds(participants.filter(_ != author),
+      SpendableFavor.of(state, author),
       player.relics.map(_.id), disclosable(state, player),
       citizenship = exiles,
       citizenshipRefused = Option.when(ignored && exiles.nonEmpty)(
@@ -147,8 +149,8 @@ object NegotiationDeal:
     val player = state.game.current.player(author).get
     val favor = terms.transfers.map(_.favor).sum
     for
-      _ <- Either.cond(favor <= player.board.favor, (),
-        OathViolation.InsufficientFavor(favor, player.board.favor))
+      _ <- Either.cond(favor <= SpendableFavor.of(state, author), (),
+        OathViolation.InsufficientFavor(favor, SpendableFavor.of(state, author)))
       _ <- Either.cond(terms.transfers.flatMap(_.relics).forall(id =>
         player.relics.exists(_.id == id)), (), OathViolation.NegotiationUnavailable(
         "an offered relic is no longer held by its author"))

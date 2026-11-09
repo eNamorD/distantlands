@@ -1,5 +1,6 @@
 package oathdigital.gameplay.walker
 
+import oathdigital.gameplay.SpendableFavor
 import oathdigital.gameplay.walker.WalkerSimulation.{PreviewOutcome,
   PreviewedOption}
 import oathdigital.model._
@@ -142,17 +143,19 @@ object PricedOptions:
         followUp = false).get(ref).flatMap(_.toOption)
     (board, lifted(resources = false).orElse(lifted(resources = true))) match
       case (Some(board), Some(outcome)) =>
-        needs(spent(paths(outcome).head, actor), board).getOrElse(fallback)
+        needs(spent(paths(outcome).head, actor), board,
+          SpendableFavor.of(state, actor)).getOrElse(fallback)
       case _ => fallback
 
   /** "Needs 2 Supply; you have 1", then the same for favor, then for faceup
-    * secrets: the first of them `cost` asks more of than `board` holds. */
-  private[walker] def needs(cost: Spent, board: PlayerBoardState)
-      : Option[String] =
+    * secrets: the first of them `cost` asks more of than `board` holds.
+    * `favor` is what the player may spend (`SpendableFavor`). */
+  private[walker] def needs(cost: Spent, board: PlayerBoardState,
+      favor: Int): Option[String] =
     if cost.supply > board.supply.supply then
       Some(s"Needs ${cost.supply} Supply; you have ${board.supply.supply}")
-    else if cost.allFavor > board.favor then
-      Some(s"Needs ${cost.allFavor} favor; you have ${board.favor}")
+    else if cost.allFavor > favor then
+      Some(s"Needs ${cost.allFavor} favor; you have $favor")
     else if cost.allSecrets > board.faceUpSecrets then
       Some(s"Needs ${cost.allSecrets} ${if cost.allSecrets == 1 then "secret"
         else "secrets"}; you have ${board.faceUpSecrets}")

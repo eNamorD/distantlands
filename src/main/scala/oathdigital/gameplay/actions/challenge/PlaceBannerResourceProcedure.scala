@@ -47,7 +47,7 @@ object PlaceBannerResourceProcedure:
     val current = state.game.current
     current.player(actor).toVector.flatMap(player =>
       Banner.all.filter(banner => BannerRules.holder(current, banner)
-        .contains(actor) && BannerRules.playerResources(player, banner) > 0))
+        .contains(actor) && BannerRules.playerResources(state, player, banner) > 0))
 
   private def noStartArgs(args: Vector[DecisionOptionRef])
       : Either[OathViolation, Unit] = Either.cond(args.isEmpty, (),
@@ -105,7 +105,7 @@ object PlaceBannerResourceProcedure:
   private def amountDecision(ready: ReadyGame, actor: PlayerId,
       banner: Banner): Operation =
     val own = ready.game.current.player(actor)
-      .fold(0)(BannerRules.playerResources(_, banner))
+      .fold(0)(BannerRules.playerResources(ready, _, banner))
     Decide(amountDecisionId, actor, DecisionQuery.ChooseAmount(1,
       math.max(1, own), Some(amountHeading(banner)),
       s"Place ${BannerRules.resourceName(banner)}"),

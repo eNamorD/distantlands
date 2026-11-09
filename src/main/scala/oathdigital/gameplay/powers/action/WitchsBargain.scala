@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.action
 
 import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.NoteSupport
+import oathdigital.gameplay.{NoteSupport, SpendableFavor}
 import oathdigital.gameplay.powers.{PlayerFacts, PowerAnswers}
 import oathdigital.model._
 
@@ -117,7 +117,7 @@ case object WitchsBargain extends PaidAction(WitchsBargainCard.power):
           Option.when(board.faceUpSecrets + board.faceDownSecrets > 0)(
             DecisionOption.Button(giveSecret, "Give a secret, take 2 favor"))
             .toVector ++
-          Option.when(board.favor >= Favor)(
+          Option.when(SpendableFavor.of(ready, actor) >= Favor)(
             DecisionOption.Button(giveFavor, "Give 2 favor, take a secret")) ++
           Option.when(others(ready, actor).size > 1)(
             DecisionOption.Button(switch, "Pick a different player")) :+

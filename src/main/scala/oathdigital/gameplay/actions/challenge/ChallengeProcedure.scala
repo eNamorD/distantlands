@@ -86,7 +86,7 @@ object ChallengeProcedure:
           holder.forall(rival => (player.pawnSite.nonEmpty &&
             player.pawnSite == current.pawnSite(rival)) ||
             ChallengeReach.unbound(state, actor, picks, banner, rival)) &&
-          BannerRules.playerResources(player, banner) +
+          BannerRules.playerResources(state, player, banner) +
             ChallengeReach.bonus(picks, banner) >
             BannerRules.resources(current, banner)
       }
@@ -153,7 +153,7 @@ object ChallengeProcedure:
     val current = ready.game.current
     val prior = BannerRules.resources(current, banner)
     val own = current.player(actor)
-      .fold(0)(BannerRules.playerResources(_, banner))
+      .fold(0)(BannerRules.playerResources(ready, _, banner))
     val least = math.max(0, prior + 1 - bonus)
     val unit = banner match
       case Banner.PeoplesFavor => "favor"
