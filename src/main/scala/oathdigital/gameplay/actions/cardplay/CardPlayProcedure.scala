@@ -110,6 +110,18 @@ object CardPlayProcedure:
   val playedFacedownAdviser: NoteKey = notes.key("played-facedown-adviser",
     Vector(NotePart.Text("Played "), NotePart.Arg(0),
       NotePart.Text(" as a facedown adviser")))
+  /** "{Blue} revealed Vision of Faith": a reveal by a player who is not
+    * the walk's actor (False Prophet's claimant, catalog batch 11,
+    * ruling 34). */
+  val revealedVisionOffTurn: NoteKey = notes.key("revealed-vision-off-turn",
+    Vector(NotePart.Arg(0), NotePart.Text(" revealed "), NotePart.Arg(1)))
+  /** "{Blue} discarded Vision of Faith to the Provinces discard". */
+  val discardedToOffTurn: NoteKey = notes.key("discarded-to-off-turn",
+    Vector(NotePart.Arg(0), NotePart.Text(" discarded "), NotePart.Arg(1),
+      NotePart.Text(" to the "), NotePart.Arg(2), NotePart.Text(" discard")))
+  /** "{Blue} discarded Vision of Faith", outside any regional pile. */
+  val discardedOffTurn: NoteKey = notes.key("discarded-off-turn", Vector(
+    NotePart.Arg(0), NotePart.Text(" discarded "), NotePart.Arg(1)))
   def noteKeys: Vector[NoteKey] = notes.declared
 
   /** Where the card went. The placement is the slot the player answered, so
@@ -117,21 +129,31 @@ object CardPlayProcedure:
     * batch and guessing which one was the play's. The pile comes from the
     * live state after the play, never from `previous`: the credits node and
     * the play's own operations both run before this leaf. */
-  private def playedNote(card: WorldCardId, ref: DecisionOptionRef)(
-      states: NoteStates): Option[LogNote] = playedAs(ref).flatMap {
-    case PlayedAs.Discarded => Some(discardPile(states.now, card).fold(
-      discarded.sourceless(NoteArg.Card(card)))(region =>
-        discardedTo.sourceless(NoteArg.Card(card),
-          NoteArg.RegionName(region))))
-    case PlayedAs.AtSite => siteOf(ref).map(site =>
-      playedAtSite.sourceless(NoteArg.Card(card), NoteArg.Site(site)))
-    case PlayedAs.Faceup if card.isInstanceOf[VisionId] =>
-      Some(revealedVision.sourceless(NoteArg.Card(card)))
-    case PlayedAs.Faceup =>
-      Some(playedFaceupAdviser.sourceless(NoteArg.Card(card)))
-    case PlayedAs.Facedown =>
-      Some(playedFacedownAdviser.sourceless(NoteArg.Card(card)))
-  }
+  private def playedNote(card: WorldCardId, actor: PlayerId,
+      ref: DecisionOptionRef)(states: NoteStates): Option[LogNote] =
+    // Only a reveal and a discard are made off turn (False Prophet's
+    // claimant), so the site and adviser lines keep one form.
+    val offTurn = actor != states.now.game.current.walkActor
+    val who = NoteArg.Player(actor)
+    playedAs(ref).flatMap {
+      case PlayedAs.Discarded => Some(discardPile(states.now, card).fold(
+        if offTurn then discardedOffTurn.sourceless(who, NoteArg.Card(card))
+        else discarded.sourceless(NoteArg.Card(card)))(region =>
+          if offTurn then discardedToOffTurn.sourceless(who,
+            NoteArg.Card(card), NoteArg.RegionName(region))
+          else discardedTo.sourceless(NoteArg.Card(card),
+            NoteArg.RegionName(region))))
+      case PlayedAs.AtSite => siteOf(ref).map(site =>
+        playedAtSite.sourceless(NoteArg.Card(card), NoteArg.Site(site)))
+      case PlayedAs.Faceup if card.isInstanceOf[VisionId] =>
+        Some(if offTurn then revealedVisionOffTurn.sourceless(who,
+          NoteArg.Card(card))
+        else revealedVision.sourceless(NoteArg.Card(card)))
+      case PlayedAs.Faceup =>
+        Some(playedFaceupAdviser.sourceless(NoteArg.Card(card)))
+      case PlayedAs.Facedown =>
+        Some(playedFacedownAdviser.sourceless(NoteArg.Card(card)))
+    }
 
   /** The regional pile `card` lies in, when it lies in one. */
   private def discardPile(ready: ReadyGame, card: WorldCardId)
@@ -474,7 +496,7 @@ object CardPlayProcedure:
             permits.map(_.note(site)))
           Vector(Sequence(lines), apply,
             Note(ProcedureNotes.id(ActionRef.PlayFacedownAdviser),
-              playedNote(card, slot.ref)),
+              playedNote(card, actor, slot.ref)),
             Note(DesecratedGroundRule.power,
               DesecratedGroundRule.keptNote(card, slot.ref)))
     })
@@ -511,7 +533,7 @@ object CardPlayProcedure:
         BuildOps((_, _) => Left(OathViolation.InvalidSearchPlacement(
           "the card has already been played"))),
         Note(ProcedureNotes.id(ActionRef.PlayFacedownAdviser),
-          playedNote(card, ref)),
+          playedNote(card, actor, ref)),
         Note(DesecratedGroundRule.power,
           DesecratedGroundRule.keptNote(card, ref))))
       Vector(noFollowUp, play) ++ hook(ready, actor, card, placement,

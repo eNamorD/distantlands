@@ -34,6 +34,11 @@ private[gameplay] object DesecratedGroundRule:
   /** "Desecrated Ground: Kept Vision of Faith." */
   val kept: NoteKey = notes.key("kept", Vector(NotePart.Text("Kept "),
     NotePart.Arg(0), NotePart.Text(".")))
+  /** "Desecrated Ground: {Blue} kept Vision of Faith.", for a player who
+    * is not the walk's actor (False Prophet's claimant, ruling 34). */
+  val keptOffTurn: NoteKey = notes.key("kept-off-turn", Vector(
+    NotePart.Arg(0), NotePart.Text(" kept "), NotePart.Arg(1),
+    NotePart.Text(".")))
   def noteKeys: Vector[NoteKey] = notes.declared
 
   /** Whether `player` keeps their revealed Visions when they reveal one
@@ -56,6 +61,9 @@ private[gameplay] object DesecratedGroundRule:
         player <- states.now.game.current.player(owner)
         others = player.revealedVisions.map(_.id).filterNot(_ == card)
         if others.nonEmpty
-      yield kept(PowerSourceRef.Card(SacredGroundCard.id),
-        NoteArg.Cards(others))
+      yield
+        val source = PowerSourceRef.Card(SacredGroundCard.id)
+        if owner == states.now.game.current.walkActor then
+          kept(source, NoteArg.Cards(others))
+        else keptOffTurn(source, NoteArg.Player(owner), NoteArg.Cards(others))
     case _ => None
