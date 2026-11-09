@@ -574,6 +574,43 @@ for them; the claimant's reveal at Desecrated Ground keeping their
 Visions; the warband killed; the projection; the journal rebuilding every
 new step.
 
+## Slice 8: Nested follow-ups
+
+Slice 7 left one limit: a follow-up's own batches started no follow-up. A
+claimant who reveals the claimed Vision discards their own revealed
+Vision, and when a third player claims that one, nothing resolved it.
+
+The rule came with the first trigger (catalog batch 8, slice 6) and rests
+on one held key. A batch that starts a follow-up holds its operations
+under `walker.executed-triggers`; `Defer` adds to what a key holds, a
+resume asks one question (is anything held?) to tell a leaf whose
+follow-ups parked, and every trigger is rebuilt from that key. A nested
+batch would mix its operations into the outer batch's, and a resume could
+not tell the two levels apart.
+
+- **A key per level.** A batch holds its operations under the key of its
+  follow-up depth: depth 0, the action's own batches, keeps
+  `walker.executed-triggers`; depth n uses `walker.executed-triggers.n`.
+  The walk counts the follow-ups it is inside, and the take, the resume
+  check and the rebuild each read their own level's key.
+- **Every trigger answers nested batches.** A follow-up's batch asks the
+  triggers like any other batch, so a Vision discarded inside False
+  Prophet's claim is claimed in its turn. Stopping is each trigger's job:
+  each card's follow-up removes what started it (the claim kills its
+  warbands, Pledge to Discord buries itself, Brass Army moves no pawn).
+  The walker refuses a chain deeper than 8 levels as a contract
+  violation, so a trigger that restarts itself fails loudly.
+- **What stays.** A claimed burn or cost that runs whole, and the take of
+  a held batch, start no follow-up, since a resume cannot reach one there.
+- **The look-ahead reads every level.** The restriction look-ahead folds
+  every follow-up the decision lies inside beside the action's tree, so
+  a nested claimant's reveal is judged for them too.
+
+Tests: a nested follow-up parking and resuming, at the right addresses,
+with each level's key; a parked decision two levels down resolving; the
+depth cap; False Prophet's nested claim resolved, judged by Sacred Ground
+for the nested claimant, and its log lines in order.
+
 ## Seams opened
 
 | Seam | Slice | Reused by |
@@ -586,6 +623,7 @@ new step.
 | A spend's mover, `DrawNomadFavor`, `SpendableFavor`, `NoteArg.ToNomadBank` | 5 | Vow of Kinship |
 | `revealedVisions`, `RevealedVisions.of`, `DesecratedGroundRule`, a win's `visions` | 6 | Desecrated Ground, False Prophet |
 | Player on `CardPlayedFaceup`, warbands on a Vision, off-turn card-play lines, look-ahead into a follow-up | 7 | False Prophet |
+| A held key per follow-up level | 8 | False Prophet |
 
 ## Testing
 
