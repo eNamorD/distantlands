@@ -332,11 +332,13 @@ Disguise unavailable after another pick.
 - **The seam.** Before the walker runs a `BuildOps` leaf's batch, each
   power that asks before a batch looks at the built operations, a `Take`'s
   leaving included. When one asks, the leaf is walked as a subtree under
-  its own node: the questions, then the batch rebuilt from the unchanged
-  state with each taken answer's replacement in its operation's place,
-  then each replacement's line. A resume rebuilds the same subtree, so the
-  answers meet the same batch, and each question's id names what it asks
-  about (a card id). This is the operation-rewrite design's "ask per
+  its own node. Its first child holds the questions, then each taken
+  answer's line. Its second holds the batch rebuilt from the unchanged
+  state, with each taken answer's replacement in its operation's place. A
+  resume rebuilds the same subtree, so the answers meet the same batch,
+  and each question's id names what it asks about (a card id). The batch's
+  place does not depend on the number of questions, so a resume inside the
+  batch's follow-ups, after the batch ran, never asks again. This is the operation-rewrite design's "ask per
   deferred op" extension point, placed at the leaf so that no discard has
   to be lifted out of its batch. A search walks the batch as built.
 - **"From a power".** The walk context does not tell which power built a

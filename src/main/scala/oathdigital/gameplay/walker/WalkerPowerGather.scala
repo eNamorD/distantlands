@@ -3,7 +3,7 @@ package oathdigital.gameplay.walker
 import oathdigital.gameplay.operations.PowerUseRules
 import oathdigital.gameplay.powerresolver.{ContributingPower, ContributionCollector, OfferHost, OptionRestriction, PowerCtx, RerollHost, Restriction, Waiver}
 import oathdigital.model.PowerResolution
-import oathdigital.model.{Answered, AutomaticUse, Branch, ConsentAnswer, ConsentAsk, ConsentKey, ConsentTurn, Decide, DecisionAnswer, DecisionOption, DecisionOptionRef, DecisionQuery, OathViolation, OfferedPlan, OfferedReroll, Operation, OptionReason, PendingTree, PlayerId, PowerId, LogNote, PowerWindow, LeafOperation, ProcedureRef, ReadyGame, Simultaneous}
+import oathdigital.model.{Answered, AutomaticUse, Branch, BuildOps, ConsentAnswer, ConsentAsk, ConsentKey, ConsentTurn, Decide, DecisionAnswer, DecisionOption, DecisionOptionRef, DecisionQuery, OathViolation, OfferedPlan, OfferedReroll, Operation, OptionReason, PendingTree, PlayerId, PowerId, LogNote, PowerWindow, LeafOperation, ProcedureRef, ReadyGame, Simultaneous}
 
 /** Task 3's power-gather/fold mechanics for [[ProcedureWalker]], split into
   * their own file to keep `ProcedureWalker.scala` under the project's
@@ -566,6 +566,12 @@ private[walker] object WalkerPowerGather:
     remaining.headOption match
       case None => Some(node)
       case Some(segment) => node match
+        // Under a leaf whose batch asked, the path enters its questions.
+        case build: BuildOps if segment == BatchQuestions.segment &&
+            build.window.forall(gathered.contains) =>
+          resolveAt(state, pending, powers, BatchQuestions.walked(build,
+              powers, state.game.current.walkActor, consumed),
+            remaining.tail, consumed :+ segment, Set.empty)
         // Past a leaf whose batch is held, the path enters a follow-up.
         case leaf: LeafOperation
             if leaf.window.forall(gathered.contains) &&

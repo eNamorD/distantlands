@@ -113,13 +113,21 @@ Inventoried at `5e1bbd20`, which includes slice 2's code
    doubling sit in the same batch, or before it, and run as built.
 6. **Where the subtree lives.**
    - A leaf whose batch asks is walked as a `Sequence` at
-     `path :+ "asked"`: the questions at `asked.0` to `asked.(n-1)`, then
-     the batch at `asked.n`, then the lines.
+     `path :+ "asked"`: a `Branch` at `asked.0` holds the questions
+     (`asked.0.0` to `asked.0.(n-1)`) and then the lines; the batch is at
+     `asked.1`.
+   - Execution note: the plan first put the questions at `asked.0` to
+     `asked.(n-1)`, the batch at `asked.n` and the lines after it. A resume
+     inside the batch's follow-ups rebuilt the questions from the state
+     after the batch, where a power may no longer ask, so `n` moved. The
+     fixed shape keeps the batch at `asked.1`, and the `Branch` selects its
+     questions only when the walk enters it. The code and tests in Task 2
+     below show the first shape; the committed code has the fixed one.
    - The batch directly under an `asked` segment asks nothing again
      (`BatchQuestions.answering`).
    - The segment is not a number, so `WalkerPowerGather.resolveAt` checks
      for it before its `ExecutedTriggers` case. That case also matches a
-     leaf whose batch is held, which the batch at `asked.n` can be once it
+     leaf whose batch is held, which the batch at `asked.1` can be once it
      runs and starts a follow-up.
    - Only two places read past a leaf: `resolveAt` and
      `ProcedureWalker.runNarrowed` (`grep -rn 'ExecutedTriggers.holds' src/main/scala`).

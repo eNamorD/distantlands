@@ -25,7 +25,9 @@ import oathdigital.model.{Answered, AutomaticUse, Branch, Burn, BuildOps, CoreOp
   *    (`OperationPolicy.Permissive`) and records one [[WalkerStepRecorded]]
   *    per executed leaf. [[oathdigital.model.BuildOps]] leaves are executed at walk time:
   *    `build(state, pending)` yields the delta batch to run and record (an
-  *    empty batch runs nothing and records nothing).
+  *    empty batch runs nothing and records nothing). A `BuildOps` batch a
+  *    power asks about first walks the power's questions under the leaf
+  *    ([[BatchQuestions]]).
   *  - [[oathdigital.model.Branch]] composites are resolved at walk time by evaluating
   *    `select(state, pending)` and walking the selected operations as the
   *    branch's children (statically the branch has none).
@@ -484,7 +486,12 @@ object ProcedureWalker extends DecideNarrowing:
       strict: Boolean): Either[OathViolation, Step] =
     cursor match
       case Some(remaining) =>
-        if remaining.nonEmpty then
+        if remaining.headOption.contains(BatchQuestions.segment) then
+          // The leaf's batch asked, and a question, or the follow-ups of
+          // the answered batch, parked.
+          resumeAsked(leaf, ctx, path, remaining.tail, resume, contributions,
+            strict)
+        else if remaining.nonEmpty then
           // The leaf ran in an earlier command, and its follow-ups parked.
           if ExecutedTriggers.holds(ctx.state) then
             walkTriggered(ctx, path, cursor, resume, ctx.state)
@@ -543,6 +550,18 @@ object ProcedureWalker extends DecideNarrowing:
               WalkerRerolls.filled(reroll, ctx.state, ctx.dice).flatMap(
                 WalkerSteps.record(_, ctx, path, contributions, strict)).map(Done(_))
             case _: Decide | _: Roll => Right(Park(path, ctx))
+            // A batch a power asks about is walked as its questions, then
+            // the answered batch ([[BatchQuestions]]); a search walks it as
+            // built.
+            case build: BuildOps if !ctx.searching =>
+              BatchQuestions.subtree(build, ctx.state, ctx.answered,
+                  ctx.powers, ctx.actor, path).flatMap {
+                case Some(asking) => walk(asking, ctx,
+                  path :+ BatchQuestions.segment, None, resume,
+                  WalkerHooks(contributions, Set.empty, strict))
+                case None =>
+                  WalkerSteps.runBuildOps(build, ctx, path, contributions)
+              }
             case build: BuildOps => WalkerSteps.runBuildOps(build, ctx, path, contributions)
             case delta: CoreOperation =>
               WalkerSteps.record(delta, ctx, path, contributions, strict).map(Done(_))
@@ -556,6 +575,18 @@ object ProcedureWalker extends DecideNarrowing:
               s"leaf ${WalkerSteps.leafLabel(other)} is neither a control " +
                 "leaf nor a recordable operation")
         ).flatMap(triggered(path, resume))
+
+  /** Resumes inside the subtree a leaf's batch questions made, rebuilt as
+    * the walk first built it ([[BatchQuestions]]). */
+  private def resumeAsked(leaf: LeafOperation, ctx: WalkCtx,
+      path: Vector[String], rest: Vector[String], resume: Resume,
+      contributions: Vector[PowerId], strict: Boolean)
+      : Either[OathViolation, Step] = leaf match
+    case build: BuildOps => walk(BatchQuestions.walked(build, ctx.powers,
+        ctx.actor, path), ctx, path :+ BatchQuestions.segment, Some(rest),
+      resume, WalkerHooks(contributions, Set.empty, strict))
+    case other => contractViolation(s"resume path enters questions at leaf " +
+      s"${WalkerSteps.leafLabel(other)}, which asks none")
 
   /** After a batch, the follow-ups its triggers started, when it held its
     * operations for them. */
