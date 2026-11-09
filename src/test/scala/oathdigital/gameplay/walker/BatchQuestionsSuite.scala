@@ -74,9 +74,10 @@ class BatchQuestionsSuite extends munit.FunSuite:
   private def answered(amount: Int, option: DecisionOptionRef): Answered =
     Answered(spendDecision(amount), ChooseOneAnswer(option), actor)
 
-  /** The position of question `index` on the batch at child 0. */
+  /** The position of the question on operation `index` of the batch at
+    * child 0. */
   private def questionAt(index: Int): Vector[String] =
-    Vector("0", BatchQuestions.segment, "0", index.toString)
+    Vector("0", BatchQuestions.segment, "0", index.toString, "0")
 
   test("a watched batch parks on its question under the leaf's node, and " +
       "nothing runs"):
@@ -95,7 +96,7 @@ class BatchQuestionsSuite extends munit.FunSuite:
     val done = finished(ProcedureWalker.resolve(applyEvents(ready,
       park.events), tree, park.tree, answered(1, continueOption), watching))
     assertEquals(steps(done.events).map(_.nodeId),
-      Vector("0.asked.0.0", "0.asked.1"))
+      Vector("0.asked.0.0.0", "0.asked.1"))
     assertEquals(RecordedOps.of(steps(done.events)(1)),
       Vector[CoreOperation](movePawnToS3))
     assertEquals(done.events.count(_.isInstanceOf[LogNoted]), 1)

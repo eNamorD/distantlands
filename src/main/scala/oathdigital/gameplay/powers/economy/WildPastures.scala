@@ -36,7 +36,8 @@ object WildPasturesCard extends Edifice(EdificeId("E07"), Suit.Nomad):
   *  - its cause names a power and makes no room (rulings 20 and 22);
   *  - its card is faceup in play, or in a discard pile (ruling 25).
   *
-  * The ruler is asked only while they have favor on their board. A "pay"
+  * The ruler is asked only while they have favor on their board, less the
+  * favor their earlier answers on the same batch pay. A "pay"
   * puts a `Give` of 1 favor to the Nomad bank in the discard's place, and
   * the card stays where it is. The rest of the batch runs as built (ruling
   * 24).
@@ -44,6 +45,10 @@ object WildPasturesCard extends Edifice(EdificeId("E07"), Suit.Nomad):
   * The line reads "Paid 1 favor to the Nomad bank instead of discarding
   * {card}." For a ruler who is not the walk's actor (a defender's plan), it
   * reads "{Blue} paid ...".
+  *
+  * Vow of Kinship is not implemented. When it lands, a Kinship holder may
+  * pay out of the Nomad bank (ruling 12), so the favor check and the
+  * `Give`'s source here change with it.
   *
   * The ruined face, Blasted Pastures, is a Chronicle step and is not
   * implemented.
@@ -90,7 +95,8 @@ case object WildPastures extends AsksBeforeBatch, OnEdificeFace:
     ruler <- ruler(batch.ready)
     (card, from) <- discarded(operation, ruler)
     if standsWithAFace(batch.ready, card, from)
-    if batch.ready.game.current.player(ruler).exists(_.board.favor >= 1)
+    if batch.ready.game.current.player(ruler).exists(_.board.favor -
+      paid(batch.taken, ruler) >= 1)
   yield BatchAsk(question(batch.catalog, ruler, card), answer =>
     Option.when(answer == DecisionAnswer.ChooseOneAnswer(pay))(Replacement(
       Vector(Give(Piece.Favor(1), ruler, Location.PlayArea(ruler),
@@ -108,6 +114,14 @@ case object WildPastures extends AsksBeforeBatch, OnEdificeFace:
         discard.by.contains(ruler) && fromAPower(discard.cause) =>
       Some(discard.card -> discard.from.location)
     case _ => None
+
+  /** The favor `ruler` already gives in place of the batch's earlier
+    * discards. */
+  private def paid(taken: Vector[Replacement], ruler: PlayerId): Int =
+    taken.flatMap(_.operations).collect {
+      case Give(Piece.Favor(amount), giver, _, _, _) if giver == ruler =>
+        amount
+    }.sum
 
   private def fromAPower(cause: Option[DiscardCause]): Boolean =
     cause.exists(!_.makesRoom)

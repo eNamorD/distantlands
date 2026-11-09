@@ -127,6 +127,11 @@ Inventoried at `5e1bbd20`, which includes slice 2's code
      fixed shape keeps the batch at `asked.1`, and the `Branch` selects its
      questions only when the walk enters it. The code and tests in Task 2
      below show the first shape; the committed code has the fixed one.
+   - Execution note: inside `asked.0`, each operation has its own `Branch`
+     (`asked.0.i`, its question at `asked.0.i.0`), selected after the
+     answers before it, and `BatchContext.taken` carries the replacements
+     those answers took. A ruler with 1 favor and two Nomad discards in one
+     batch is asked once.
    - The batch directly under an `asked` segment asks nothing again
      (`BatchQuestions.answering`).
    - The segment is not a number, so `WalkerPowerGather.resolveAt` checks

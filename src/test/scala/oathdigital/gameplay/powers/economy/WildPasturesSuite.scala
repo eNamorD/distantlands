@@ -3,7 +3,7 @@ package oathdigital.gameplay.powers.economy
 import oathdigital.gameplay.GrandMaskCard
 import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.powerresolver.BatchContext
-import oathdigital.gameplay.powers.NoteText
+import oathdigital.gameplay.powers.{NoteText, SearchFixture}
 import oathdigital.gameplay.powers.action.{RovingTerror, RovingTerrorCard,
   TamingCharm, TamingCharmCard}
 import oathdigital.gameplay.powers.campaign.{HorseArchersCard, WildMounts,
@@ -179,6 +179,7 @@ class WildPasturesSuite extends munit.FunSuite:
     assertEquals(Look(after(paid)).cardsAt(target).filter(card =>
       card == nomad || card == RovingTerrorCard.id),
       Vector[CardId](nomad, RovingTerrorCard.id))
+    assertEquals(Look(after(paid)).favor(p1), Look(after(asked)).favor(p1) - 1)
 
   test("the ruler is the card-level ruler: a Grand Mask wearer, during " +
       "their turn"):
@@ -189,22 +190,38 @@ class WildPasturesSuite extends munit.FunSuite:
     assertEquals(WildPastures.ruler(masked), Some(p3))
     assertEquals(WildPastures.ruler(pasturesAtPeaksRuledBy(None).ready), None)
 
-  test("a When Played Nomad discard asks its ruler"):
-    import oathdigital.gameplay.powers.whenplayed.WhenPlayedHarness
-    import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
-    import oathdigital.gameplay.walker.ProcedureWalker
-    import oathdigital.gameplay.powers.WalkerPowerCatalog
+  test("a When Played power's two Nomad discards ask in turn, and a ruler " +
+      "whose only favor the first pays is not asked again"):
+    import oathdigital.gameplay.operations.OperationRestrictions
+    import oathdigital.gameplay.powers.whenplayed.{ThreateningRoar,
+      ThreateningRoarCard, WhenPlayedHarness}
+    import oathdigital.gameplay.walker.{ProcedureWalker, WalkerPowers}
+    val other = SearchFixture.anyPlainDenizensOf(Suit.Nomad)
+      .filterNot(_ == nomad).head
+    val roarSite = WhenPlayedHarness.homeSite
     val ready = WhenPlayedHarness.p1AtHomeSite.favor(p1, 1)
       .adviser(p1, ThreateningRoarCard.id)
-      .denizen(nomad, at = WhenPlayedHarness.homeSite)
+      .denizen(nomad, at = roarSite).denizen(other, at = roarSite)
       .warbandsAt(WhenPlayedHarness.awaySite, p1, 2)
       .edifice(pastures, EdificeSide.Intact, at = WhenPlayedHarness.awaySite)
       .ready
-    val park = Outcomes.parked(ProcedureWalker.advance(ready,
-      WhenPlayedHarness.hook(ThreateningRoarCard.id), None,
-      WalkerPowerCatalog.default(catalog)))
-    assertEquals(park.tree.at.lastOption, Some("0"))
-    assert(park.tree.at.contains("asked"))
+    val powers = WalkerPowers(Vector(ThreateningRoar, WildPastures),
+      restrictionSet = OperationRestrictions.forCatalog(catalog),
+      declared = PowerRules.declared)
+    val hook = WhenPlayedHarness.hook(ThreateningRoarCard.id)
+    val park = Outcomes.parked(ProcedureWalker.advance(ready, hook, None,
+      powers))
+    assertEquals(park.events, Vector.empty[OathEvent])
+    val asked = ProcedureWalker.parkedDecide(ready, hook, park.tree, powers)
+    assertEquals(asked.map(_.decisionId), Some(WildPastures.decisionId(nomad)))
+    assertEquals(asked.map(_.owner), Some(p1))
+    val done = Outcomes.finished(ProcedureWalker.resolve(ready, hook,
+      park.tree, Answered(WildPastures.decisionId(nomad),
+        ChooseOneAnswer(WildPastures.pay), p1), powers))
+    assertEquals(Look(done.treeless).cardsAt(roarSite).filter(card =>
+      card == nomad || card == other), Vector[CardId](nomad))
+    assertEquals(Look(done.treeless).favor(p1), 0)
+    WhenPlayedHarness.assertJournalRebuilds(ready, done.events, done.treeless)
 
   test("Wild Mounts asks first; skipped, the Nomad plan's discard asks " +
       "Wild Pastures"):
@@ -248,3 +265,8 @@ class WildPasturesSuite extends munit.FunSuite:
       asked.state)
     assertEquals(pending.map(_.decision),
       Some(WildPastures.decisionId(nomad)))
+    val paid = accepted(SearchFixture.rules.resolveWalker(asked.state, p1,
+      WildPastures.decisionId(nomad), ChooseOneAnswer(WildPastures.pay)))
+    val end = Outcomes.ready(paid.state)
+    assert(Look(end).discardPile(Region.Provinces).contains(nomad))
+    assertEquals(Look(end).favor(p1), 0)
