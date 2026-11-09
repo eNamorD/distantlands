@@ -36,6 +36,19 @@ object KinshipDraws:
       operations.foldLeft(Pass(Vector.empty, boards,
           KinshipRule.bank(ready)))(_.next(_)).out
 
+  /** `holder`'s board favor and the Nomad bank's after `operations` run,
+    * with the draws the pass would put among them: what a spend after them
+    * may take from each. */
+  def standing(ready: ReadyGame, operations: Vector[CoreOperation],
+      holder: PlayerId): (Int, Int) =
+    val holders = (ready.game.current.players.map(_.player)
+      .filter(KinshipRule.holds(ready, _)) :+ holder).distinct
+    val boards = holders.map(player => player ->
+      ready.game.current.player(player).fold(0)(_.board.favor)).toMap
+    val pass = operations.foldLeft(Pass(Vector.empty, boards,
+      KinshipRule.bank(ready)))(_.next(_))
+    (pass.boards(holder), pass.bank)
+
   /** The favor `operation` spends from `player`'s board. */
   def spent(operation: CoreOperation, player: PlayerId): Int =
     Operation.flatten(operation).collect {

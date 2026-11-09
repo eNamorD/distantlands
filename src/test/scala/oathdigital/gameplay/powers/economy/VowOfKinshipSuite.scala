@@ -62,6 +62,49 @@ class VowOfKinshipSuite extends munit.FunSuite:
     assertEquals(asked(ready, burning(p1, 3)).decisionId,
       VowOfKinship.decisionId)
 
+  test("a cost walked as its moves draws what the answer says"):
+    val ready = vowHolder(p1, board = 2, bank = 4).ready
+    val tree = burning(p1, 3)
+    val park = parked(ProcedureWalker.advance(ready, tree, None, powers))
+    val done = finished(ProcedureWalker.resolve(ready, tree, park.tree,
+      Answered(VowOfKinship.decisionId, ChooseAmountAnswer(3), p1), powers))
+    assertEquals(Look(done.treeless).favor(p1), 2)
+    assertEquals(Look(done.treeless).bankFavor(Suit.Nomad), 1)
+
+  test("an answer of none pays from the board and writes no line"):
+    val ready = vowHolder(p1, board = 3, bank = 4).ready
+    val tree = batchOf(burning(p1, 2))
+    val park = parked(ProcedureWalker.advance(ready, tree, None, powers))
+    val done = finished(ProcedureWalker.resolve(ready, tree, park.tree,
+      Answered(VowOfKinship.decisionId, ChooseAmountAnswer(0), p1), powers))
+    assertEquals(Look(done.treeless).favor(p1), 1)
+    assertEquals(Look(done.treeless).bankFavor(Suit.Nomad), 4)
+    assertEquals(said(done.events), Vector.empty)
+
+  test("one question covers every spend of the batch, capped by the bank"):
+    // Board 1, bank 2, spends of 1 and 2: 3 in all, of which 2 to 2 may
+    // come from the bank, so least < most fails and nothing is asked; with
+    // a bank of 3, 2 to 3 may.
+    val spends = batchOf(burning(p1, 1), burning(p1, 2))
+    val none = finished(ProcedureWalker.advance(
+      vowHolder(p1, board = 1, bank = 2).ready, spends, None, powers))
+    assertEquals(Look(none.treeless).bankFavor(Suit.Nomad), 0)
+    asked(vowHolder(p1, board = 1, bank = 3).ready, spends).query match
+      case amount: DecisionQuery.ChooseAmount =>
+        assertEquals((amount.min, amount.max), (2, 3))
+      case other => fail(s"expected an amount, got $other")
+
+  test("a take from the board before the spend counts against the board"):
+    // Board 2, bank 4: p2 takes 1 first, so of the spend of 2 at least 1
+    // comes from the bank.
+    val taken = Take(Piece.Favor(1), p2, Location.PlayArea(p1),
+      Location.PlayArea(p2))
+    asked(vowHolder(p1, board = 2, bank = 4).ready,
+        batchOf(taken, burning(p1, 2))).query match
+      case amount: DecisionQuery.ChooseAmount =>
+        assertEquals((amount.min, amount.max), (1, 2))
+      case other => fail(s"expected an amount, got $other")
+
   test("with only one source, nothing is asked"):
     val bankOnly = finished(ProcedureWalker.advance(
       vowHolder(p1, board = 0, bank = 4).ready, batchOf(burning(p1, 3)),

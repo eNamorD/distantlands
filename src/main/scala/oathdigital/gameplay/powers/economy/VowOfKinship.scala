@@ -17,7 +17,9 @@ import oathdigital.model._
   * least is what the board cannot cover; the most is the spend, or the
   * bank if it holds less. The answer puts a `DrawNomadFavor` in front of
   * that spend, and the board pays the rest. A search walks the batch as
-  * built, which draws only what the board lacks.
+  * built, which draws only what the board lacks. A cost walked as its
+  * moves is a batch per move, so a cost that both places and burns favor
+  * asks once for each.
   *
   * The line reads "Spent {2 favor} from the Nomad bank.", naming the
   * holder when they are not the walk's actor. An answer of none writes no
@@ -81,11 +83,16 @@ case object VowOfKinship extends AsksBeforeBatch, FollowsArrivals:
   def askBefore(batch: BatchContext, operation: CoreOperation)
       : Option[BatchAsk] = for
     holder <- spender(batch.ready, operation)
-    if batch.operations.find(KinshipDraws.spent(_, holder) > 0)
-      .contains(operation)
-    total = batch.operations.map(KinshipDraws.spent(_, holder)).sum
-    board = batch.ready.game.current.player(holder).fold(0)(_.board.favor)
-    bank = KinshipRule.bank(batch.ready)
+    first = batch.operations.indexWhere(KinshipDraws.spent(_, holder) > 0)
+    if batch.operations.lift(first).contains(operation)
+    total = batch.operations.drop(first).map(KinshipDraws.spent(_, holder))
+      .sum
+    // The board and the bank as they stand at the first spend: after the
+    // operations before it, and after the replacements the batch's earlier
+    // answers took (a Wild Pastures payment).
+    (board, bank) = KinshipDraws.standing(batch.ready,
+      batch.taken.flatMap(_.operations) ++ batch.operations.take(first),
+      holder)
     least = math.max(0, total - board)
     most = math.min(total, bank)
     if board > 0 && bank > 0 && least < most

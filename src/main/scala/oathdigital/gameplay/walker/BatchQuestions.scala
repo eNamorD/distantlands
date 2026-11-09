@@ -62,10 +62,11 @@ private[walker] object BatchQuestions:
   def subtree(build: BuildOps, ready: ReadyGame, answered: Vector[Answered],
       powers: WalkerPowers, actor: PlayerId, path: Vector[String])
       : Either[OathViolation, Option[Operation]] =
-    if answering(path) || asking(powers, ready).isEmpty then Right(None)
+    lazy val watching = asking(powers, ready)
+    if answering(path) || watching.isEmpty then Right(None)
     else build.build(ready, PendingTree(at = path, answered = answered))
-      .map(operations => Option.when(of(asking(powers, ready), powers, actor,
-        ready, operations, answered).exists(_.nonEmpty))(
+      .map(operations => Option.when(of(watching, powers, actor, ready,
+        operations, answered).exists(_.nonEmpty))(
         walked(build, powers, actor, path)))
 
   /** The subtree a walk that asked enters, at the leaf `build` at `path`.
