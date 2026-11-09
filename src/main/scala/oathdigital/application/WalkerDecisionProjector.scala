@@ -417,16 +417,22 @@ private[application] final class WalkerDecisionProjector(
 
   /** A card play's Replace options as the confirm button reads them:
     * "Discard {replaced}; replace it with {played}", with the facing after
-    * an adviser play. A replaced card this viewer may not identify keeps the
-    * option's own label, as does every option that replaces nothing.
+    * an adviser play, and "Discard A and B; replace them with {played}" for
+    * a reveal that displaces several Visions. A replaced card this viewer
+    * may not identify keeps the option's own label, as does every option
+    * that replaces nothing.
     */
   private[application] def replacing(query: DecisionQueryProjection,
       played: CardDetailsProjection): DecisionQueryProjection =
-    def worded(option: DecisionOptionProjection) = option.replaces
-      .filterNot(_.hidden).fold(option)(replaced => option.copy(label =
-        s"${if option.buries then "Bury" else "Discard"} ${replaced.name}; " +
-          s"replace it with ${played.name}" +
-          option.variant.fold("")(word => s", ${word.toLowerCase}")))
+    def worded(option: DecisionOptionProjection) =
+      val replaced = option.replaces
+      if replaced.isEmpty || replaced.exists(_.hidden) then option
+      else option.copy(label =
+        s"${if option.buries then "Bury" else "Discard"} " +
+          s"${DecisionOptionRows.spokenList(replaced.map(_.name))}; " +
+          s"replace ${if replaced.size == 1 then "it" else "them"} with " +
+          s"${played.name}" +
+          option.variant.fold("")(word => s", ${word.toLowerCase}"))
     query match
       case one: DecisionQueryProjection.ChooseOne =>
         one.copy(options = one.options.map(worded))

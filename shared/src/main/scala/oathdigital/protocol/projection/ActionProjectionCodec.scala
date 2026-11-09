@@ -331,7 +331,7 @@ private[projection] object ActionProjectionCodec:
       "details" -> encoded(row.details)(ujson.Str(_)),
       "badge" -> stringOption(row.badge), "state" -> row.state,
       "reason" -> stringOption(row.reason),
-      "replaces" -> option(row.replaces)(encodeCard),
+      "replaces" -> encoded(row.replaces)(encodeCard),
       "buries" -> ujson.Bool(row.buries),
       "variant" -> stringOption(row.variant),
       "group" -> stringOption(row.group),
@@ -350,7 +350,9 @@ private[projection] object ActionProjectionCodec:
     badge <- optionalString(row, "badge", child)
     state <- default(row, "state", child, "available")(string)
     reason <- optionalAbsent(row, "reason", child)(string)
-    replaces <- optionalAbsent(row, "replaces", child)(decodeCard)
+    replaceRaws <- default(row, "replaces", child, Vector.empty[ujson.Value])(
+      array)
+    replaces <- traverse(replaceRaws, s"$child.replaces")(decodeCard)
     buries <- boolOr(row, "buries", child, false)
     variant <- optionalAbsent(row, "variant", child)(string)
     group <- optionalAbsent(row, "group", child)(string)

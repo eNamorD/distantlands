@@ -313,7 +313,7 @@ class BoardDecisionPanelSuite extends munit.FunSuite:
   test("a Replace pick's confirm is the sentence the projector wrote, alone"):
     val replace = DecisionOptionState("site-slot", "plains:0",
       "Discard Tavern Songs; replace it with Wayward Spirit",
-      replaces = Some(CardDetails("songs", "denizen", "Tavern Songs")))
+      replaces = Vector(CardDetails("songs", "denizen", "Tavern Songs")))
     val query = DecisionQueryState.ChooseOne(Vector(replace),
       Some("Play Wayward Spirit"))
     val panel = pane(new RecordingControls(), query, placing,

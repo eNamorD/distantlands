@@ -107,20 +107,20 @@ private[application] final class DecisionOptionRows(
       // Named after the wrapped option is described, so the label says what
       // the play discards and where the card goes. A reveal that displaces
       // several Visions nests one `Replacing` per Vision; the row names
-      // them all and carries the first.
+      // and carries them all.
       case replacing: DecisionOption.Replacing =>
         val (inner, cards) = replacedChain(replacing)
         val replaced = cards.map(shown(ready, viewer, index, _))
         project(ready, viewer, index, inner, details).map(row =>
           row.copy(label = replacingLabel(inner.ref,
-            spokenList(replaced.map(_.name))), replaces = replaced.headOption))
+            DecisionOptionRows.spokenList(replaced.map(_.name))), replaces = replaced))
       case DecisionOption.Burying(inner, card) =>
         val buried = shown(ready, viewer, index, card)
         val name = if buried.hidden then s"a ${buried.name.toLowerCase}"
           else buried.name
         project(ready, viewer, index, inner, details).map(row =>
           row.copy(label = buryingLabel(inner.ref, name),
-            replaces = Some(buried), buries = true))
+            replaces = Vector(buried), buries = true))
       case DecisionOption.Button(_, label) => row(label)
       case DecisionOption.Player(player) =>
         if ready.game.current.players.exists(_.player == player.id) then
@@ -238,11 +238,6 @@ private[application] final class DecisionOptionRows(
       (bottom, cards :+ card)
     case other => (other, Vector.empty)
 
-  /** "A", "A and B", "A, B and C". */
-  private def spokenList(names: Vector[String]): String = names match
-    case Vector(only) => only
-    case _ => names.init.mkString(", ") + " and " + names.last
-
   /** A Replace option's label: the card it discards, and where the played
     * card goes. */
   private def replacingLabel(ref: DecisionOptionRef, name: String): String =
@@ -307,3 +302,9 @@ private[application] final class DecisionOptionRows(
 
   private def orientationOf(state: Option[CardState]): Option[Orientation] =
     GamePresentationProjector.orientationOf(state)
+
+private[application] object DecisionOptionRows:
+  /** "A", "A and B", "A, B and C". */
+  def spokenList(names: Vector[String]): String = names match
+    case Vector(only) => only
+    case _ => names.init.mkString(", ") + " and " + names.last

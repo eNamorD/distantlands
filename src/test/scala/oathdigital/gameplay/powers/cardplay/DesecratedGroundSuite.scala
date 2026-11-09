@@ -98,6 +98,20 @@ class DesecratedGroundSuite extends munit.FunSuite:
       keptLines(revealedFaith(searchHoldingConquest(elsewhere)).events),
       Vector.empty)
 
+  test("a kept line names every kept Vision, in reveal order"):
+    val twoHeld = searchHoldingConquest(home,
+      _.revealedVision(actor, VisionRules.Sanctuary))
+    assertEquals(keptLines(revealedFaith(twoHeld).events),
+      Vector(s"Kept ${held.value}, ${VisionRules.Sanctuary.value}."))
+
+  test("an Imperial at the site keeps nothing"):
+    // An Imperial board has no Vision slot, so no Imperial reveals; the rule
+    // still reads the card's "If an Exile".
+    val ready = Table.from(SearchFixture.staged(Vector(drawn), supply = 5))
+      .edifice(SacredGroundCard.id, EdificeSide.Ruined, at = home)
+      .imperial(actor).ready
+    assert(!DesecratedGroundRule.keeps(ready, actor))
+
   test("the ruined face counts as implemented"):
     assert(PowerImplementationStatus.implemented(
       SacredGroundCard.ruined.power.id))

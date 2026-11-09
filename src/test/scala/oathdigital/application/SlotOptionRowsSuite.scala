@@ -47,20 +47,20 @@ class SlotOptionRowsSuite extends munit.FunSuite:
   test("an empty site slot names the site"):
     val row = rowOf(DecisionOption.SiteSlot(DecisionOptionRef.SiteSlot(home, 1)))
     assertEquals((row.kind, row.label, row.replaces),
-      ("site-slot", s"Empty slot at $site", None))
+      ("site-slot", s"Empty slot at $site", Vector.empty))
 
   test("a Replace site slot names the card it discards and carries it"):
     val row = rowOf(DecisionOption.Replacing(
       DecisionOption.SiteSlot(DecisionOptionRef.SiteSlot(home, 0)), wrestlers))
     assertEquals(row.label, s"Replace Wrestlers at $site")
-    assertEquals(row.replaces.map(_.cardId), Some(wrestlers.value))
+    assertEquals(row.replaces.map(_.cardId), Vector(wrestlers.value))
 
   test("a bury names the card it buries and is marked a bury"):
     val row = rowOf(DecisionOption.Burying(
       DecisionOption.SiteSlot(DecisionOptionRef.SiteSlot(home, 0)), wrestlers))
     assertEquals(row.label, s"Bury Wrestlers at $site")
     assertEquals((row.replaces.map(_.cardId), row.buries),
-      (Some(wrestlers.value), true))
+      (Vector(wrestlers.value), true))
 
   test("a site slot past the site's capacity is not presentable"):
     assertEquals(rows.project(board, Some(p1), None,
@@ -117,7 +117,13 @@ class SlotOptionRowsSuite extends munit.FunSuite:
       .label, s"Replace ${presentation.cardLabel(board, VisionRules.Conquest)}" +
         " as revealed Vision")
 
-  test("a spot that replaces two Visions names both and carries the first"):
+  test("a Vision option, as Swear an Oath asks it, names the card"):
+    val row = rowOf(DecisionOption.Vision(
+      DecisionOptionRef.Vision(VisionRules.Conquest)))
+    assertEquals(row.label, presentation.cardLabel(board, VisionRules.Conquest))
+    assertEquals(row.card.map(_.cardId), Some(VisionRules.Conquest.value))
+
+  test("a spot that replaces two Visions names and carries both"):
     val spot = DecisionOption.RevealedVision(
       DecisionOptionRef.RevealedVision(p1))
     val twoVisions = Table.from(board).revealedVision(p1, VisionRules.Faith)
@@ -129,7 +135,8 @@ class SlotOptionRowsSuite extends munit.FunSuite:
     def name(vision: VisionId) = presentation.cardLabel(twoVisions, vision)
     assertEquals(row.label, s"Replace ${name(VisionRules.Conquest)} and " +
       s"${name(VisionRules.Faith)} as revealed Vision")
-    assertEquals(row.replaces.map(_.cardId), Some(VisionRules.Conquest.value))
+    assertEquals(row.replaces.map(_.cardId),
+      Vector(VisionRules.Conquest.value, VisionRules.Faith.value))
 
   test("the discard pile and the world deck name themselves, for a card " +
       "play and a Search alike"):
@@ -164,6 +171,25 @@ class SlotOptionRowsSuite extends munit.FunSuite:
           "Wayward Spirit, facedown"),
         empty)))
 
+  test("a reveal that displaces two Visions reads as discarding both on " +
+      "the confirm button"):
+    val twoVisions = Table.from(board).revealedVision(p1, VisionRules.Faith)
+      .ready
+    val spot = DecisionOption.RevealedVision(
+      DecisionOptionRef.RevealedVision(p1))
+    val row = present(rows.project(twoVisions, Some(p1),
+      CardIndex.from(twoVisions.game).toOption,
+      DecisionOption.Replacing(DecisionOption.Replacing(spot,
+        VisionRules.Conquest), VisionRules.Faith)), "a projected row")
+    val played = CardDetailsProjection("vision:vision-of-sanctuary",
+      "vision", "Vision of Sanctuary")
+    def name(vision: VisionId) = presentation.cardLabel(twoVisions, vision)
+    assertEquals(projector.replacing(DecisionQueryProjection.ChooseOne(
+      Vector(row)), played), DecisionQueryProjection.ChooseOne(Vector(
+        row.copy(label = s"Discard ${name(VisionRules.Conquest)} and " +
+          s"${name(VisionRules.Faith)}; replace them with Vision of " +
+          "Sanctuary"))))
+
   test("a Replace option whose card the viewer may not identify keeps " +
       "its label"):
     val played = CardDetailsProjection("denizen:spirit", "denizen",
@@ -185,4 +211,4 @@ class SlotOptionRowsSuite extends munit.FunSuite:
       "a projected row")
     assertEquals(row.label, s"Replace Broken Forge at $site")
     assertEquals(row.replaces.map(card => (card.name, card.cardKind)),
-      Some(("Broken Forge", "edifice")))
+      Vector(("Broken Forge", "edifice")))

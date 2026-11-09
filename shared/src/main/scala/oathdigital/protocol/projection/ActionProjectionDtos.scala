@@ -159,7 +159,10 @@ final case class DecisionOptionProjection(kind: String, id: String,
     badge: Option[String] = None,
     state: String = "available",
     reason: Option[String] = None,
-    replaces: Option[CardDetailsProjection] = None,
+    /** The cards the option discards or buries to make room, in the order
+      * the play names them; several only for a reveal that displaces
+      * several Visions. */
+    replaces: Vector[CardDetailsProjection] = Vector.empty,
     buries: Boolean = false,
     variant: Option[String] = None,
     group: Option[String] = None,

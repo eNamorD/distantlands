@@ -198,7 +198,7 @@ class BoardOptionsRenderSuite extends munit.FunSuite:
     assertEquals(shown.picks, Vector(empty))
 
   test("a site card answers to the slot it would replace"):
-    val replace = option("site-slot", "woods:0").copy(replaces = Some(fox))
+    val replace = option("site-slot", "woods:0").copy(replaces = Vector(fox))
     val shown = recording(available(replace))
     assertEquals(one(world(shown.options), """[data-option-ref="site-slot:woods:0"]""")
       .getAttribute("data-card-id"), "fox")
@@ -216,7 +216,7 @@ class BoardOptionsRenderSuite extends munit.FunSuite:
     assertEquals(shown.picks, Vector(known, unknown))
 
   test("a bury option carries the Bury badge"):
-    val buried = option("site-slot", "woods:0").copy(replaces = Some(fox),
+    val buried = option("site-slot", "woods:0").copy(replaces = Vector(fox),
       buries = true)
     val root = world(recording(available(buried)).options)
     assertEquals(all(root, ".board-option-badge").map(_.textContent),
@@ -225,7 +225,7 @@ class BoardOptionsRenderSuite extends munit.FunSuite:
       .getAttribute("aria-label"), "Fox, Bury")
 
   test("a Replace option carries the badge, and an empty slot does not"):
-    val replace = option("site-slot", "woods:0").copy(replaces = Some(fox))
+    val replace = option("site-slot", "woods:0").copy(replaces = Vector(fox))
     val shown = recording(available(replace),
       available(option("site-slot", "woods:1")))
     val root = world(shown.options)
@@ -249,7 +249,7 @@ class BoardOptionsRenderSuite extends munit.FunSuite:
 
   test("an adviser play on a held slot is drawn on the card it replaces"):
     val onCard = recording(available(option("adviser-play",
-      "red:0:faceup").copy(replaces = Some(oak))))
+      "red:0:faceup").copy(replaces = Vector(oak))))
     val held = one(WorldBoardRenderer.playerBoards(table, "red",
       onCard.options), """[data-option-ref="adviser-slot:red:0"]""")
     assert(held.textContent.contains("Replace"), held.textContent)
@@ -275,7 +275,7 @@ class BoardOptionsRenderSuite extends munit.FunSuite:
       "empty spot"):
     val faith = CardDetails("faith", "vision", "Vision of Faith")
     val shown = recording(available(option("revealed-vision", "red")
-      .copy(replaces = Some(faith))))
+      .copy(replaces = Vector(faith))))
     val boards = WorldBoardRenderer.playerBoards(twoVisionsTable, "red",
       shown.options)
     assertEquals(all(boards, ".player-slot-vision.board-option-replace")

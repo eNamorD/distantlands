@@ -131,7 +131,7 @@ class ProjectionProtocolSuite extends munit.FunSuite:
         "cardplay.place.denizen.1", query = Some(
           DecisionQueryProjection.ChooseOne(Vector(DecisionOptionProjection(
             "site-slot", "site:a:0", "Bury Known at Site A",
-            replaces = Some(known), buries = true))))))))
+            replaces = Vector(known), buries = true))))))))
 
   test("the Imperial Tactics offer panel round-trips, and is absent when unset"):
     val row = DecisionOptionProjection("denizen", "108", "Shield Wall", None,
@@ -522,7 +522,7 @@ class ProjectionProtocolSuite extends munit.FunSuite:
 
   test("an option's replaced card round-trips beside an option with none"):
     val replacing = DecisionOptionProjection("site-slot", "site:a:0",
-      "Replace Known at A", replaces = Some(known))
+      "Replace Known at A", replaces = Vector(known))
     val pile = DecisionOptionProjection("discard-pile", "cradle",
       "Discard to the Cradle discard")
     assertRoundTrips(projection.copy(walkerDecision = Some(
@@ -537,7 +537,7 @@ class ProjectionProtocolSuite extends munit.FunSuite:
   test("a payload without an adviser limit or a replaced card decodes to the " +
       "defaults"):
     val replacing = DecisionOptionProjection("site-slot", "site:a:0",
-      "Replace Known at A", replaces = Some(known))
+      "Replace Known at A", replaces = Vector(known))
     val written = projection.copy(
       playerBoards = projection.playerBoards.map(_.copy(adviserLimit = 2)),
       walkerDecision = Some(WalkerDecisionProjection("search",
@@ -558,7 +558,7 @@ class ProjectionProtocolSuite extends munit.FunSuite:
         walkerDecision = Some(WalkerDecisionProjection("search",
           "cardplay.place.denizen.known", query = Some(
             DecisionQueryProjection.ChooseOne(Vector(
-              replacing.copy(replaces = None)))))))))
+              replacing.copy(replaces = Vector.empty)))))))))
 
   test("an option's band round-trips, and a payload without it decodes to " +
       "none"):
