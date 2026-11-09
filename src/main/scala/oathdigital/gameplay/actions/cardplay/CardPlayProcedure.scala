@@ -1,6 +1,7 @@
 package oathdigital.gameplay.actions.cardplay
 
 import oathdigital.catalog.ExecutableCatalog
+import oathdigital.gameplay.DesecratedGroundRule
 import oathdigital.gameplay.actions.{CardPlay, CardPlayRules, DiscardPermission,
   ProcedureNotes}
 import oathdigital.gameplay.powerresolver.ModifierPicks
@@ -440,8 +441,9 @@ object CardPlayProcedure:
     // play's own node so the hook keeps its place. They sit in a node of
     // their own, so the play is always the node's second child, as in
     // `settled`: a trigger's follow-up after the play is addressed under it.
-    // The play's own line follows it as a third child, which no path
-    // addresses into. The play's discards name their power
+    // The play's own line follows it as a third child, and Desecrated
+    // Ground's kept line as a fourth; no path addresses into either. The
+    // play's discards name their power
     // ([[PlayDiscardCauses]]).
     val play = Branch((_, pending) => {
       val extra = discarded(pending)
@@ -472,7 +474,9 @@ object CardPlayProcedure:
             permits.map(_.note(site)))
           Vector(Sequence(lines), apply,
             Note(ProcedureNotes.id(ActionRef.PlayFacedownAdviser),
-              playedNote(card, slot.ref)))
+              playedNote(card, slot.ref)),
+            Note(DesecratedGroundRule.power,
+              DesecratedGroundRule.keptNote(card, slot.ref)))
     })
     Vector(followUp, play) ++ hook(ready, actor, card, slot.placement,
       byPower)
@@ -486,7 +490,8 @@ object CardPlayProcedure:
     * the play, so neither runs again, and nothing addresses inside the
     * follow-ups' place.
     *
-    * The play's own line is here, as the same trailing child: the play's
+    * The play's own line is here, as the same third child, and the kept
+    * line as the fourth: the play's
     * batch can park inside itself, because an executed trigger's follow-up
     * walks under the play leaf's own path (Family Wagon beside Pledge to
     * Discord), and that park ends the command before the line's leaf is
@@ -500,13 +505,15 @@ object CardPlayProcedure:
         .map(SearchPlacement.Site(_, None)).orElse(placementOf(way)))
         .toVector.flatMap { placement =>
       // The play's shape as `played` built it, lines then play then the
-      // play's own line, so a path into a follow-up after the play finds
-      // it.
+      // play's own line and the kept line, so a path into a follow-up after
+      // the play finds it.
       val play = Sequence(Vector(Sequence(Vector.empty),
         BuildOps((_, _) => Left(OathViolation.InvalidSearchPlacement(
           "the card has already been played"))),
         Note(ProcedureNotes.id(ActionRef.PlayFacedownAdviser),
-          playedNote(card, ref))))
+          playedNote(card, ref)),
+        Note(DesecratedGroundRule.power,
+          DesecratedGroundRule.keptNote(card, ref))))
       Vector(noFollowUp, play) ++ hook(ready, actor, card, placement,
         byPower)
     }

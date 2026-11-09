@@ -1,33 +1,15 @@
 package oathdigital.gameplay.powers.cardplay
 
-import oathdigital.catalog.{Edifice, EdificeFace, Locked, ModifierMark,
-  PrintedPower}
+import oathdigital.gameplay.SacredGroundCard
 import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.powerresolver._
 import oathdigital.model._
-
-object SacredGroundCard extends Edifice(EdificeId("E08"), Suit.Nomad):
-  object intact extends EdificeFace("Sacred Ground") with Locked:
-    val power = PrintedPower(PowerId("edifice.e08.intact"),
-      persistent = true, cost = Cost.free,
-      modifier = Some(ModifierMark.Action(MajorActionType.Search)),
-      text = "Players **cannot** play Visions, except the Conspiracy, " +
-        "faceup unless their pawn is at this site.")
-    val powers: Vector[PrintedPower] = Vector(power)
-  object ruined extends EdificeFace("Desecrated Ground"):
-    val power = PrintedPower(PowerId("edifice.e08.ruined"),
-      persistent = true, cost = Cost.free,
-      text = "If an Exile reveals a Vision while their pawn is at this " +
-        "site, they do not discard their current revealed Vision. " +
-        "_They can have any number!_")
-    val powers: Vector[PrintedPower] = Vector(power)
 
 /** Sacred Ground (E08's intact face), a persistent rule: "Players cannot play
   * Visions, except the Conspiracy, faceup unless their pawn is at this site."
   *
   * It binds every player whose pawn is elsewhere, the site's own ruler
-  * included. Its ruined face, Desecrated Ground, is not implemented; E08
-  * never appears in a generated game.
+  * included. Its ruined face is `DesecratedGroundRule`.
   * When the look-ahead hides a faceup placement because of it, it writes
   * "{Red} cannot play a Vision faceup."
   */

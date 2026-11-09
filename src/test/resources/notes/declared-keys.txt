@@ -431,6 +431,7 @@ edifice.e06.ruined discarded = Discarded {0}.
 edifice.e07.intact paid = Paid 1 favor to the Nomad bank instead of discarding {0}.
 edifice.e07.intact paid-off-turn = {0} paid 1 favor to the Nomad bank instead of discarding {1}.
 edifice.e08.intact no-faceup = Cannot play a Vision faceup.
+edifice.e08.ruined kept = Kept {0}.
 edifice.e09.intact used = Giant's Path and {0} now stand at {1}.
 edifice.e09.ruined used = Buried {0} at {1}; Giant's Rampage and {2} now stand there.
 edifice.e09.ruined used.none = No denizen could be buried.

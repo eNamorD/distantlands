@@ -1,7 +1,8 @@
 package oathdigital.gameplay.actions
 
 import oathdigital.catalog.{AdviserOnly, ExecutableCatalog, SiteOnly}
-import oathdigital.gameplay.{EffectiveSuit, LimitedResource}
+import oathdigital.gameplay.{DesecratedGroundRule, EffectiveSuit,
+  LimitedResource}
 import oathdigital.gameplay.setup.FirstGameRulesData
 import oathdigital.model.OathViolation._
 import oathdigital.model._
@@ -153,7 +154,7 @@ object CardPlay:
             id != VisionRules.Conspiracy &&
             !Imperials.role(ready, player.player).forall(_.hasVisionSlot) then
           Left(InvalidSearchPlacement("an Imperial board has no Vision slot"))
-        else planVision(player, origin, id, orientation, replace)
+        else planVision(ready, player, origin, id, orientation, replace)
 
   private def sitePlan(ready: ReadyGame, origin: Origin, player: PlayerState,
       id: DenizenId, siteId: SiteId, suit: Suit,
@@ -171,9 +172,10 @@ object CardPlay:
       Location.PlayArea(player.player), orientation, required = true)),
       Vector.empty, removed.toVector, Vector.empty)
 
-  private def planVision(player: PlayerState, origin: Origin, id: VisionId,
-      orientation: Orientation, replace: Option[CardId])
-      : Either[OathViolation, PlacementPlan] = origin match
+  private def planVision(ready: ReadyGame, player: PlayerState,
+      origin: Origin, id: VisionId, orientation: Orientation,
+      replace: Option[CardId]): Either[OathViolation, PlacementPlan] =
+    origin match
     case _ if id == VisionRules.Conspiracy && orientation == Orientation.FaceUp =>
       // A played Conspiracy is boxed by its WHEN PLAYED power, so from either
       // origin it takes no slot and replaces nothing.
@@ -181,15 +183,16 @@ object CardPlay:
         InvalidSearchPlacement("a played Conspiracy replaces nothing"))
     case Origin.FacedownAdviser =>
       Either.cond(orientation == Orientation.FaceUp && replace.isEmpty,
-        revealed(player, origin, id), InvalidSearchPlacement(
+        revealed(ready, player, origin, id), InvalidSearchPlacement(
           "facedown adviser must be played faceup to advisers or the pawn's site"))
     case Origin.TemporaryHand | _: Origin.DiscardPile
         if orientation == Orientation.FaceUp =>
-      // A reveal displaces every revealed Vision. An answer that names one
-      // of them is still accepted.
-      val held = player.revealedVisions.map(_.id)
-      Either.cond(replace.forall(named => held.contains(named)),
-        revealed(player, origin, id),
+      // A reveal displaces every revealed Vision, unless Desecrated Ground
+      // keeps them. An answer that names one it displaces is still
+      // accepted.
+      val displaced = displacedBy(ready, player)
+      Either.cond(replace.forall(named => displaced.contains(named)),
+        revealed(ready, player, origin, id),
         InvalidSearchPlacement("a Vision replaces only a revealed Vision"))
     case Origin.TemporaryHand | _: Origin.DiscardPile =>
       adviserHeld(player, replace).map(removed => PlacementPlan(
@@ -197,12 +200,19 @@ object CardPlay:
           Location.PlayArea(player.player), Orientation.FaceDown,
           required = true)), Vector.empty, removed.toVector, Vector.empty))
 
-  /** `id` played faceup as a revealed Vision, displacing every one there. */
-  private def revealed(player: PlayerState, origin: Origin, id: VisionId)
-      : PlacementPlan =
+  /** `id` played faceup as a revealed Vision, displacing the ones there
+    * unless Desecrated Ground keeps them. */
+  private def revealed(ready: ReadyGame, player: PlayerState, origin: Origin,
+      id: VisionId): PlacementPlan =
     PlacementPlan(Some(Play(id, keptSource(origin, player.player),
       Location.PlayArea(player.player), Orientation.FaceUp, required = true)),
-      Vector.empty, player.revealedVisions.map(_.id), Vector.empty)
+      Vector.empty, displacedBy(ready, player), Vector.empty)
+
+  /** The revealed Visions a reveal by `player` now discards. */
+  private[gameplay] def displacedBy(ready: ReadyGame, player: PlayerState)
+      : Vector[WorldCardId] =
+    if DesecratedGroundRule.keeps(ready, player.player) then Vector.empty
+    else player.revealedVisions.map(_.id)
 
   /** The adviser `replace` names, which the actor must hold. */
   private def adviserHeld(player: PlayerState, replace: Option[CardId])

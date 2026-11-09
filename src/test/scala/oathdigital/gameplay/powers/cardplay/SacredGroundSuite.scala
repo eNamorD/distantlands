@@ -1,5 +1,6 @@
 package oathdigital.gameplay.powers.cardplay
 
+import oathdigital.gameplay.SacredGroundCard
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import oathdigital.gameplay.actions.VisionRules
