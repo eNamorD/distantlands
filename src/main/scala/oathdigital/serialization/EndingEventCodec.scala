@@ -20,10 +20,10 @@ private[serialization] trait EndingEventCodec { this: GameEventJsonSupport =>
       case RoundEnded(completed, next) => ujson.Obj(
         "completedRound" -> completed,
         "nextRound" -> next.fold[ujson.Value](ujson.Null)(ujson.Num(_)))
-      case WarExhaustionResolved(winner, kind, vision, candidates) => ujson.Obj(
+      case WarExhaustionResolved(winner, kind, visions, candidates) => ujson.Obj(
         "winnerPlayerId" -> winner.value,
         "victoryKind" -> kind.key,
-        "visionId" -> vision.fold[ujson.Value](ujson.Null)(v => ujson.Str(v.value)),
+        "visionIds" -> stringArray(visions.map(_.value)),
         "randomCandidatePlayerIds" -> stringArray(candidates.map(_.value)))
       case EndDieRolled(round, face, result) => ujson.Obj(
         "round" -> round,
@@ -38,8 +38,9 @@ private[serialization] trait EndingEventCodec { this: GameEventJsonSupport =>
         }))
       case UsurperFlipped(player) => ujson.Obj("playerId" -> player.value)
       case UsurperVictory(player) => ujson.Obj("playerId" -> player.value)
-      case VisionVictory(player, vision) => ujson.Obj(
-        "playerId" -> player.value, "visionId" -> vision.value)
+      case VisionVictory(player, visions) => ujson.Obj(
+        "playerId" -> player.value,
+        "visionIds" -> stringArray(visions.map(_.value)))
 
   protected final def victoryKind(value: ujson.Value, path: String)
       : Either[WireError, VictoryKind] =
@@ -60,10 +61,8 @@ private[serialization] trait EndingEventCodec { this: GameEventJsonSupport =>
         case WarExhaustionResolvedType => for
           kind <- victoryKind(payload("victoryKind"), s"$path.victoryKind")
         yield WarExhaustionResolved(PlayerId(payload("winnerPlayerId").str),
-          kind, payload("visionId") match {
-            case ujson.Null => None
-            case value => Some(VisionId(value.str))
-          }, payload("randomCandidatePlayerIds").arr.toVector.map(v => PlayerId(v.str)))
+          kind, payload("visionIds").arr.toVector.map(v => VisionId(v.str)),
+          payload("randomCandidatePlayerIds").arr.toVector.map(v => PlayerId(v.str)))
         case EndDieRolledType => for
           round <- safeIntField(payload.obj, "round", path)
           face <- safeIntField(payload.obj, "face", path)
@@ -85,6 +84,7 @@ private[serialization] trait EndingEventCodec { this: GameEventJsonSupport =>
         case UsurperVictoryType =>
           Right(UsurperVictory(PlayerId(payload("playerId").str)))
         case VisionVictoryType => Right(VisionVictory(
-          PlayerId(payload("playerId").str), VisionId(payload("visionId").str)))
+          PlayerId(payload("playerId").str),
+          payload("visionIds").arr.toVector.map(v => VisionId(v.str))))
     decoder.lift(eventType)
 }

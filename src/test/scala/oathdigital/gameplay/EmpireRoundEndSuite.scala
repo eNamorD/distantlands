@@ -84,7 +84,7 @@ class EmpireRoundEndSuite extends munit.FunSuite:
     val ready = roundEnd(8, holder = Some(p3))
     val events = ended(ready, RoundEndChoices.endDie(1))
     val won = WarExhaustionResolved(p1, VictoryKind.ChancellorExhaustion,
-      None, Vector.empty)
+      Vector.empty, Vector.empty)
     assertEquals(events, Vector(RoundEnded(8, None), won))
     val after = Outcomes.ready(accepted(replayed(ready, events)))
     assertEquals(after.game.current.result,
@@ -95,11 +95,11 @@ class EmpireRoundEndSuite extends munit.FunSuite:
       .darkestSecret(Some(p2), secrets = 1).ready
     val events = ended(ready, RoundEndChoices.endDie(1))
     assertEquals(events.last, WarExhaustionResolved(p2,
-      VictoryKind.Successor, None, Vector.empty))
+      VictoryKind.Successor, Vector.empty, Vector.empty))
     assert(replayed(ready, events).isRight)
 
   test("replay refuses an Empire's War Exhaustion with another winner"):
     val ready = roundEnd(8, holder = Some(p3))
     assertEquals(rejected(replayed(ready, Vector(RoundEnded(8, None),
-      WarExhaustionResolved(p3, VictoryKind.Oathkeeper, None,
+      WarExhaustionResolved(p3, VictoryKind.Oathkeeper, Vector.empty,
         Vector.empty)))).getClass, classOf[OathViolation.InvalidEventOrder])

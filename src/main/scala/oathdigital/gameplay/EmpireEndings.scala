@@ -37,12 +37,12 @@ object EmpireEndings:
     * then an Exile meeting their Vision; otherwise the Chancellor. */
   def warExhaustion(ready: ReadyGame): Option[WarExhaustionResolved] =
     def resolved(result: GameResult) =
-      WarExhaustionResolved(result.winner, result.kind, None, Vector.empty)
+      WarExhaustionResolved(result.winner, result.kind, Vector.empty, Vector.empty)
     if imperialOathkeeper(ready) then
       chancellorWins(ready, VictoryKind.StableRegime).map(resolved)
     else ready.game.current.title match
       case OathkeeperState(Some(player), TitleSide.Usurper) =>
-        Some(WarExhaustionResolved(player, VictoryKind.Usurper, None,
+        Some(WarExhaustionResolved(player, VictoryKind.Usurper, Vector.empty,
           Vector.empty))
       case _ => StateBasedEvaluation.visionaryWin(ready).orElse(
         chancellorWins(ready, VictoryKind.ChancellorExhaustion).map(resolved))

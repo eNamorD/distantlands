@@ -1,14 +1,18 @@
 package oathdigital.gameplay.chronicle
 
 import oathdigital.gameplay.actions.{ProcedureNotes, VisionRules}
-import oathdigital.gameplay.powers.OathkeeperGoalChoice
+import oathdigital.gameplay.powers.{OathkeeperGoalChoice, PowerAnswers}
 import oathdigital.model._
 
 /** Swear an Oath, the Throne's last step (CR p. 37). After a win by a
-  * Vision, the Oathkeeper goal becomes that Vision's goal. Otherwise the
-  * Throne holder chooses a goal different from the current one. */
+  * Vision, the Oathkeeper goal becomes that Vision's goal; a winner who met
+  * several Visions at once chooses which one won (catalog batch 11, ruling
+  * 30). Otherwise the Throne holder chooses a goal different from the
+  * current one. */
 object SwearOath:
   val goalDecisionId: String = "chronicle.swear-oath.goal"
+  /** Which Vision won, when the winner met several at once. */
+  val visionDecisionId: String = "chronicle.swear-oath.vision"
 
   private val noteId = ProcedureNotes.id(TriggeredProcedureRef.ChronicleThrone)
   private val notes = NoteSet(noteId)
@@ -18,8 +22,8 @@ object SwearOath:
 
   val steps: Vector[Operation] = Vector(
     Branch((state, _) => state.game.current.result match
-      case Some(GameResult(winner, VictoryKind.Visionary)) =>
-        visionGoal(state, winner)
+      case Some(GameResult(winner, VictoryKind.Visionary, visions)) =>
+        visionGoal(state, winner, visions)
       case _ => ChronicleTasks.forHolder(state, ChronicleTask.Throne)(holder =>
         Vector(
           Decide(goalDecisionId, holder, DecisionQuery.ChooseOne(
@@ -33,15 +37,38 @@ object SwearOath:
         swore.sourceless(NoteArg.Goal(after.game.campaign.oathkeeperGoal))
     }))
 
-  /** The winning Vision's goal, set only when it is not already the goal. */
-  private def visionGoal(state: ReadyGame, winner: PlayerId)
-      : Vector[Operation] =
-    state.game.current.player(winner)
-      .toVector.flatMap(_.revealedVisions).headOption.flatMap(vision =>
-        VisionRules.trueGoal(vision.id)) match
-      case None => Vector(ChronicleTasks.failing(OathViolation
+  /** The winning Vision's goal, set only when it is not already the goal.
+    * With several winning Visions the winner chooses which one won. */
+  private def visionGoal(state: ReadyGame, winner: PlayerId,
+      visions: Vector[VisionId]): Vector[Operation] =
+    visions.filter(VisionRules.trueGoal(_).isDefined) match
+      case Vector() => Vector(ChronicleTasks.failing(OathViolation
         .InvalidEventOrder(s"${winner.value} won by no Vision with a goal")))
-      case Some(goal) if goal == state.game.campaign.oathkeeperGoal =>
-        Vector.empty
-      case Some(goal) => Vector(BuildOps((_, _) =>
-        Right(Vector(SetOathkeeperGoal(goal))), required = true))
+      case Vector(only) => swear(state, only)
+      case several => Vector(
+        Decide(visionDecisionId, winner, DecisionQuery.ChooseOne(
+          several.map(vision => DecisionOption.Vision(
+            DecisionOptionRef.Vision(vision))),
+          heading = Some("Swear an Oath: which Vision won?"))),
+        BuildOps((live, pending) => chosenVision(pending)
+          .filter(several.contains)
+          .toRight(PowerAnswers.missing(visionDecisionId))
+          .map(vision => swearing(live, vision)), required = true))
+
+  /** The answered Vision, when the answer names one. */
+  private def chosenVision(pending: PendingTree): Option[VisionId] =
+    PowerAnswers.one(pending, visionDecisionId).collect {
+      case DecisionOptionRef.Vision(vision) => vision
+    }
+
+  private def swear(state: ReadyGame, vision: VisionId): Vector[Operation] =
+    swearing(state, vision) match
+      case Vector() => Vector.empty
+      case ops => Vector(BuildOps((_, _) => Right(ops), required = true))
+
+  /** `vision`'s goal as the new Oathkeeper goal, unless it already is. */
+  private def swearing(state: ReadyGame, vision: VisionId)
+      : Vector[CoreOperation] =
+    VisionRules.trueGoal(vision)
+      .filter(_ != state.game.campaign.oathkeeperGoal)
+      .map(SetOathkeeperGoal(_)).toVector

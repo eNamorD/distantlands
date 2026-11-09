@@ -183,11 +183,29 @@ class StateBasedEvaluationSuite extends munit.FunSuite:
       val revealed = table.revealedVision(p1, vision)
       val state = revealed.visionsDrawn(3).ready
       assertEquals(StateBasedEvaluation.visionAtWake(Ready(state)),
-        Right(Some(VisionVictory(p1, vision))), clue(vision))
+        Right(Some(VisionVictory(p1, Vector(vision)))), clue(vision))
       val below = revealed.visionsDrawn(2).ready
       assertEquals(StateBasedEvaluation.visionAtWake(Ready(below)), Right(None),
         clue(vision))
     }
+
+  test("a Wake win names every revealed Vision whose goal is met, in " +
+      "reveal order"):
+    // Desecrated Ground let p1 keep Faith and Sanctuary; both are met.
+    val both = preparedTable(Vector.empty)
+      .revealedVisionMet(p1, VisionRules.Faith)
+      .revealedVisionMet(p1, VisionRules.Sanctuary).visionsDrawn(3).ready
+    assertEquals(StateBasedEvaluation.visionAtWake(Ready(both)),
+      Right(Some(VisionVictory(p1,
+        Vector(VisionRules.Faith, VisionRules.Sanctuary)))))
+
+  test("a Wake win leaves out a revealed Vision whose goal is not met"):
+    // p1 rules no site, so Conquest is unmet; Faith is met.
+    val second = preparedTable(Vector.empty)
+      .revealedVision(p1, VisionRules.Conquest)
+      .revealedVisionMet(p1, VisionRules.Faith).visionsDrawn(3).ready
+    assertEquals(StateBasedEvaluation.visionAtWake(Ready(second)),
+      Right(Some(VisionVictory(p1, Vector(VisionRules.Faith)))))
 
   test("a newly flipped Oathkeeper can win by Vision but never immediately as Usurper"):
     val qualifying = preparedTable(Vector(p1), holder = Some(p1),
@@ -198,7 +216,7 @@ class StateBasedEvaluationSuite extends munit.FunSuite:
       Right(Some(UsurperFlipped(p1))))
     val flipped = accepted(rules.evolve(Ready(withVision), UsurperFlipped(p1)))
     assertEquals(StateBasedEvaluation.visionAtWake(flipped),
-      Right(Some(VisionVictory(p1, VisionRules.Conquest))))
+      Right(Some(VisionVictory(p1, Vector(VisionRules.Conquest)))))
     assertEquals(StateBasedEvaluation.atWake(flipped),
       Right(Some(UsurperVictory(p1))))
 
@@ -218,11 +236,11 @@ class StateBasedEvaluationSuite extends munit.FunSuite:
     val usurper = preparedTable(Vector.empty, holder = Some(p2),
       side = TitleSide.Usurper, round = 8)
     assertEquals(lastEventAtRoundEnd(usurper, pickFirstCandidate),
-      WarExhaustionResolved(p2, VictoryKind.Usurper, None, Vector.empty))
+      WarExhaustionResolved(p2, VictoryKind.Usurper, Vector.empty, Vector.empty))
 
     val keeper = preparedTable(Vector.empty, holder = Some(p3), round = 8)
     assertEquals(lastEventAtRoundEnd(keeper, pickFirstCandidate),
-      WarExhaustionResolved(p3, VictoryKind.Oathkeeper, None, Vector.empty))
+      WarExhaustionResolved(p3, VictoryKind.Oathkeeper, Vector.empty, Vector.empty))
 
     val roundEight = preparedTable(Vector.empty, round = 8)
     val base = atRoundEnd(roundEight)
@@ -261,7 +279,7 @@ class StateBasedEvaluationSuite extends munit.FunSuite:
       val state = table.revealedVision(p1, vision).visionsDrawn(3)
       assertEquals(lastEventAtRoundEnd(state, pickFirstCandidate),
         WarExhaustionResolved(p1, VictoryKind.Visionary,
-          Some(vision), Vector.empty), clue(vision))
+          Vector(vision), Vector.empty), clue(vision))
     }
 
     // p1 qualifies for Conquest and Rebellion; p1 reveals Conquest and p2
@@ -271,7 +289,7 @@ class StateBasedEvaluationSuite extends munit.FunSuite:
       .revealedVision(p2, VisionRules.Rebellion).visionsDrawn(3)
     assertEquals(lastEventAtRoundEnd(combined, pickFirstCandidate),
       WarExhaustionResolved(p1, VictoryKind.Visionary,
-        Some(VisionRules.Conquest), Vector.empty))
+        Vector(VisionRules.Conquest), Vector.empty))
 
   test("tied War Exhaustion Visions go to Conquest, then Rebellion, " +
       "Sanctuary and Faith"):
@@ -288,8 +306,29 @@ class StateBasedEvaluationSuite extends munit.FunSuite:
         .revealedVisionMet(first, earlier).revealedVisionMet(second, later)
         .visionsDrawn(3)
       assertEquals(lastEventAtRoundEnd(table, pickFirstCandidate),
-        WarExhaustionResolved(first, VictoryKind.Visionary, Some(earlier),
+        WarExhaustionResolved(first, VictoryKind.Visionary, Vector(earlier),
           Vector.empty), clue((earlier, later, first)))
+
+  test("War Exhaustion reads each Vision's own goal, not the player's"):
+    // p1 holds an unmet Conquest beside a met Faith; p2 a met Sanctuary.
+    // Conquest's priority finds no winner, so p2 wins at Sanctuary's,
+    // before p1's Faith.
+    val table = preparedTable(Vector.empty, round = 8)
+      .revealedVision(p1, VisionRules.Conquest)
+      .revealedVisionMet(p1, VisionRules.Faith)
+      .revealedVisionMet(p2, VisionRules.Sanctuary).visionsDrawn(3)
+    assertEquals(lastEventAtRoundEnd(table, pickFirstCandidate),
+      WarExhaustionResolved(p2, VictoryKind.Visionary,
+        Vector(VisionRules.Sanctuary), Vector.empty))
+
+  test("War Exhaustion records every Vision the winner meets"):
+    val table = preparedTable(Vector(p1), round = 8)
+      .revealedVision(p1, VisionRules.Faith)
+      .darkestSecret(Some(p1), secrets = 1)
+      .revealedVision(p1, VisionRules.Conquest).visionsDrawn(3)
+    assertEquals(lastEventAtRoundEnd(table, pickFirstCandidate),
+      WarExhaustionResolved(p1, VictoryKind.Visionary,
+        Vector(VisionRules.Faith, VisionRules.Conquest), Vector.empty))
 
   test("round-eight Visionary eligibility still requires three Visions drawn"):
     // p1 rules Dunes and reveals Conquest; `holder` holds the title.
@@ -301,19 +340,19 @@ class StateBasedEvaluationSuite extends munit.FunSuite:
       val event = lastEventAtRoundEnd(withCount(count, Some(p2)),
         pickFirstCandidate)
       assertEquals(event, WarExhaustionResolved(p2,
-        VictoryKind.Oathkeeper, None, Vector.empty), clue(count))
+        VictoryKind.Oathkeeper, Vector.empty, Vector.empty), clue(count))
       val random = as[WarExhaustionResolved](
         lastEventAtRoundEnd(withCount(count, None), pickLastCandidate))
       assertEquals(random.kind, VictoryKind.RandomSelection, clue(count))
     }
     assertEquals(lastEventAtRoundEnd(withCount(3, None), pickFirstCandidate),
       WarExhaustionResolved(p1, VictoryKind.Visionary,
-        Some(VisionRules.Conquest), Vector.empty))
+        Vector(VisionRules.Conquest), Vector.empty))
 
     val below = atRoundEnd(withCount(2, None))
     val afterRound = accepted(rules.evolve(Ready(below), RoundEnded(8, None)))
     val premature = WarExhaustionResolved(p1, VictoryKind.Visionary,
-      Some(VisionRules.Conquest), Vector.empty)
+      Vector(VisionRules.Conquest), Vector.empty)
     assertEquals(rules.evolve(afterRound, premature), Left(
       OathViolation.InvalidEventOrder("War Exhaustion mismatch: expected " +
         s"LeftRandom(Vector(p1, p2, p3)), recorded $premature")))

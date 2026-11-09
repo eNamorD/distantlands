@@ -44,13 +44,17 @@ object OathEvent:
   final case class WarExhaustionResolved(
       winner: PlayerId,
       kind: VictoryKind,
-      visionId: Option[VisionId],
+      /** Every revealed Vision whose goal the winner meets, for a
+        * Visionary win; empty otherwise. */
+      visions: Vector[VisionId],
       randomCandidates: Vector[PlayerId]
   ) extends OathEvent
   final case class UsurperFlipped(playerId: PlayerId) extends OathEvent
   final case class UsurperVictory(playerId: PlayerId) extends OathEvent
-  final case class VisionVictory(playerId: PlayerId, visionId: VisionId)
-      extends OathEvent
+  /** `visions` is every revealed Vision whose goal the winner meets, in
+    * reveal order; Swear an Oath asks which won when there are several. */
+  final case class VisionVictory(playerId: PlayerId,
+      visions: Vector[VisionId]) extends OathEvent
   /** Opens every command batch but Begin's (undo design, "Storage"): `by` is
     * the command's actor. The application layer prepends it; the rules
     * engine never builds it, and evolving it changes nothing. */

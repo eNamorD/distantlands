@@ -185,8 +185,11 @@ enum VictoryKind(val key: String):
     * Chancellor). */
   case Successor extends VictoryKind("successor")
 
+/** `visions` is a Visionary win's qualifying Visions, which Swear an Oath
+  * reads (catalog batch 11, ruling 30); empty for every other win. */
 final case class GameResult(winner: PlayerId,
-    kind: VictoryKind = VictoryKind.Usurper)
+    kind: VictoryKind = VictoryKind.Usurper,
+    visions: Vector[VisionId] = Vector.empty)
 
 /** One pick a pick-and-pay menu took in the current walk: a battle plan or a
   * modifier (`OpenPick`), and what it has paid so far, priced as its option

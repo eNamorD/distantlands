@@ -179,16 +179,16 @@ private[application] final class GameLogFormatter(catalog: ExecutableCatalog,
       // After the eighth round no round begins; the victory headline follows.
       case OathEvent.RoundEnded(_, None) => (Vector.empty, run)
       case OathEvent.UsurperVictory(player) =>
-        (Vector(victory(player, wonBy(VictoryKind.Usurper, None))), run)
-      case OathEvent.VisionVictory(player, vision) =>
+        (Vector(victory(player, wonBy(VictoryKind.Usurper, Vector.empty))), run)
+      case OathEvent.VisionVictory(player, visions) =>
         (Vector(victory(player,
-          wonBy(VictoryKind.Visionary, Some(vision)))), run)
-      case OathEvent.WarExhaustionResolved(winner, kind, vision, _) =>
-        (Vector(victory(winner, wonBy(kind, vision))), run)
+          wonBy(VictoryKind.Visionary, visions))), run)
+      case OathEvent.WarExhaustionResolved(winner, kind, visions, _) =>
+        (Vector(victory(winner, wonBy(kind, visions))), run)
       case OathEvent.EndDieRolled(round, face, result) =>
         (Posted(LogKind.Roll, Vector(Text(endDie(round, face)))) +:
           result.map(won => victory(won.winner,
-            wonBy(won.kind, None))).toVector, run)
+            wonBy(won.kind, won.visions))).toVector, run)
       case _: ConsentEvent => (consent.lines(journal, at, viewer), run)
       case _: PlanAidEvent => (planAid.lines(journal, at, viewer), run)
       // Undo's facts post no line of their own; `format` keeps markers out
@@ -315,12 +315,13 @@ private[application] final class GameLogFormatter(catalog: ExecutableCatalog,
 
   /** The rest of a victory line after the winner's name, for every way a
     * game ends. */
-  private def wonBy(kind: VictoryKind, vision: Option[VisionId])
+  private def wonBy(kind: VictoryKind, visions: Vector[VisionId])
       : Vector[LogSpan] = kind match
     case VictoryKind.Usurper => Vector(Text(" won as the Usurper"))
-    case VictoryKind.Visionary => vision.fold(
-      Vector[LogSpan](Text(" won as a Visionary")))(id =>
-        Vector(Text(" won with "), words.vision(id)))
+    case VictoryKind.Visionary =>
+      if visions.isEmpty then Vector[LogSpan](Text(" won as a Visionary"))
+      else Text(" won with ") +: LogWords.join(visions.map(id =>
+        Vector[LogSpan](words.vision(id))))
     case VictoryKind.Oathkeeper => Vector(Text(" won as the Oathkeeper"))
     case VictoryKind.RandomSelection => Vector(Text(" won by random selection"))
     case VictoryKind.StableRegime => Vector(Text(" won by Stable Regime"))

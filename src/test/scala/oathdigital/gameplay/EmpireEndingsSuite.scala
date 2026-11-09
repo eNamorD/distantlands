@@ -28,7 +28,7 @@ class EmpireEndingsSuite extends munit.FunSuite:
         c.tracks.copy(round = round, usurperLimited = false))))
 
   private val chancellorWin = WarExhaustionResolved(p1,
-    VictoryKind.ChancellorExhaustion, None, Vector.empty)
+    VictoryKind.ChancellorExhaustion, Vector.empty, Vector.empty)
 
   test("the end die needs a 6, a 5 and a 3 at rounds 5, 6 and 7"):
     assertEquals((1 to 8).map(EmpireEndings.threshold).toVector,
@@ -100,14 +100,14 @@ class EmpireEndingsSuite extends munit.FunSuite:
       "win"):
     val ready = empire(round = 8, holder = Some(p2)).ready
     assertEquals(EmpireEndings.warExhaustion(ready), Some(
-      WarExhaustionResolved(p1, VictoryKind.StableRegime, None,
+      WarExhaustionResolved(p1, VictoryKind.StableRegime, Vector.empty,
         Vector.empty)))
 
   test("War Exhaustion: an Exile Usurper wins next"):
     val ready = empire(round = 8, holder = Some(p3),
       side = TitleSide.Usurper).ready
     assertEquals(EmpireEndings.warExhaustion(ready), Some(
-      WarExhaustionResolved(p3, VictoryKind.Usurper, None, Vector.empty)))
+      WarExhaustionResolved(p3, VictoryKind.Usurper, Vector.empty, Vector.empty)))
 
   test("War Exhaustion: an Exile meeting their Vision wins next"):
     val ready = empire(round = 8, holder = None)
@@ -115,7 +115,7 @@ class EmpireEndingsSuite extends munit.FunSuite:
       .darkestSecret(Some(p3), secrets = 1).ready
     assertEquals(EmpireEndings.warExhaustion(ready), Some(
       WarExhaustionResolved(p3, VictoryKind.Visionary,
-        Some(VisionRules.Faith), Vector.empty)))
+        Vector(VisionRules.Faith), Vector.empty)))
 
   test("War Exhaustion: tied Visions go to Conquest, then Rebellion, " +
       "Sanctuary and Faith"):
@@ -133,7 +133,7 @@ class EmpireEndingsSuite extends munit.FunSuite:
       val table = base.revealedVisionMet(first, earlier)
         .revealedVisionMet(second, later).visionsDrawn(3)
       assertEquals(EmpireEndings.warExhaustion(table.ready), Some(
-        WarExhaustionResolved(first, VictoryKind.Visionary, Some(earlier),
+        WarExhaustionResolved(first, VictoryKind.Visionary, Vector(earlier),
           Vector.empty)), clue((earlier, later, first)))
 
   test("Supremacy has no Successor while the Chancellor holds the most " +
@@ -150,7 +150,8 @@ class EmpireEndingsSuite extends munit.FunSuite:
     val ready = empire(round = 8, holder = None,
       goal = OathkeeperGoal.Supremacy)
       .revealedVisionMet(p2, VisionRules.Faith).visionsDrawn(3).ready
-    assert(VisionVictoryEligibility.qualifies(p2, ready))
+    assertEquals(VisionVictoryEligibility.qualifying(p2, ready),
+      Vector[VisionId](VisionRules.Faith))
     assertEquals(EmpireEndings.warExhaustion(ready), Some(chancellorWin))
 
   test("War Exhaustion: otherwise the Chancellor wins, or the Successor"):
@@ -158,7 +159,7 @@ class EmpireEndingsSuite extends munit.FunSuite:
       empire(round = 8, holder = Some(p3)).ready), Some(chancellorWin))
     assertEquals(EmpireEndings.warExhaustion(empire(round = 8, holder = None)
       .darkestSecret(Some(p2), secrets = 1).ready), Some(
-      WarExhaustionResolved(p2, VictoryKind.Successor, None, Vector.empty)))
+      WarExhaustionResolved(p2, VictoryKind.Successor, Vector.empty, Vector.empty)))
 
   test("a game with no Chancellor has no Empire ending"):
     val ready = Table.start.oathkeeper(Some(p1)).ready

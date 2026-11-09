@@ -54,7 +54,7 @@ class EmpireTurnSuite extends munit.FunSuite:
       .revealedVision(p1, VisionRules.Rebellion)
       .peoplesFavor(Some(p1), 1).visionsDrawn(3)
     assertEquals(StateBasedEvaluation.visionAtWake(rebelling.state),
-      Right(Some(VisionVictory(p1, VisionRules.Rebellion))))
+      Right(Some(VisionVictory(p1, Vector(VisionRules.Rebellion)))))
     assertEquals(StateBasedEvaluation.visionAtWake(
       rebelling.imperial(p2, p1).state), Right(None))
 

@@ -143,23 +143,25 @@ class GameLogHeadlineSuite extends munit.FunSuite:
     val vision = VisionRules.Faith
     val headlines = Vector(
       OathEvent.UsurperVictory(winner) -> " won as the Usurper",
-      OathEvent.VisionVictory(winner, vision) -> " won with Vision of Faith",
-      OathEvent.WarExhaustionResolved(winner, VictoryKind.Usurper, None,
+      OathEvent.VisionVictory(winner, Vector(vision)) -> " won with Vision of Faith",
+      OathEvent.VisionVictory(winner, Vector(VisionRules.Conquest, vision)) ->
+        " won with Vision of Conquest and Vision of Faith",
+      OathEvent.WarExhaustionResolved(winner, VictoryKind.Usurper, Vector.empty,
         Vector.empty) -> " won as the Usurper",
       OathEvent.WarExhaustionResolved(winner, VictoryKind.Visionary,
-        Some(vision), Vector.empty) -> " won with Vision of Faith",
-      OathEvent.WarExhaustionResolved(winner, VictoryKind.Visionary, None,
+        Vector(vision), Vector.empty) -> " won with Vision of Faith",
+      OathEvent.WarExhaustionResolved(winner, VictoryKind.Visionary, Vector.empty,
         Vector.empty) -> " won as a Visionary",
-      OathEvent.WarExhaustionResolved(winner, VictoryKind.Oathkeeper, None,
+      OathEvent.WarExhaustionResolved(winner, VictoryKind.Oathkeeper, Vector.empty,
         Vector.empty) -> " won as the Oathkeeper",
-      OathEvent.WarExhaustionResolved(winner, VictoryKind.RandomSelection, None,
+      OathEvent.WarExhaustionResolved(winner, VictoryKind.RandomSelection, Vector.empty,
         Vector.empty) -> " won by random selection",
-      OathEvent.WarExhaustionResolved(winner, VictoryKind.StableRegime, None,
+      OathEvent.WarExhaustionResolved(winner, VictoryKind.StableRegime, Vector.empty,
         Vector.empty) -> " won by Stable Regime",
       OathEvent.WarExhaustionResolved(winner,
-        VictoryKind.ChancellorExhaustion, None, Vector.empty) ->
+        VictoryKind.ChancellorExhaustion, Vector.empty, Vector.empty) ->
         " won as the Chancellor",
-      OathEvent.WarExhaustionResolved(winner, VictoryKind.Successor, None,
+      OathEvent.WarExhaustionResolved(winner, VictoryKind.Successor, Vector.empty,
         Vector.empty) -> " won as Successor to the Chancellor")
     headlines.foreach { case (event, rest) =>
       val last = formatAppended(script, Vector(event)).last

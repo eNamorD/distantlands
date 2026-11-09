@@ -14,7 +14,7 @@ class GameEventFactsWireSuite extends munit.FunSuite:
     val p1 = PlayerId("p1")
     val p2 = PlayerId("p2")
     val events = Vector[OathEvent](RoundEnded(8, None),
-      WarExhaustionResolved(p2, VictoryKind.RandomSelection, None,
+      WarExhaustionResolved(p2, VictoryKind.RandomSelection, Vector.empty,
         Vector(p1, p2)))
     events.zipWithIndex.foreach { case (event, index) =>
       val encoded = accepted(GameEventWire.encodeEvent("war", index, event))
@@ -25,7 +25,7 @@ class GameEventFactsWireSuite extends munit.FunSuite:
 
   test("War Exhaustion round trips every victory kind"):
     VictoryKind.values.toVector.zipWithIndex.foreach { case (kind, index) =>
-      val event = WarExhaustionResolved(PlayerId("p1"), kind, None,
+      val event = WarExhaustionResolved(PlayerId("p1"), kind, Vector.empty,
         Vector.empty)
       val encoded = accepted(GameEventWire.encodeEvent("war", index, event))
       assertEquals(accepted(GameEventWire.decode(encoded)).event, event,
@@ -52,8 +52,15 @@ class GameEventFactsWireSuite extends munit.FunSuite:
 
   test("a Vision victory event round trips"):
     val events = Vector[OathEvent](OathEvent.VisionVictory(PlayerId("red"),
-      VisionId("vision:vision-of-faith")))
+      Vector(VisionId("vision:vision-of-faith"),
+        VisionId("vision:vision-of-conquest"))))
     assertStreamRoundTrips("visions", events)
+
+  test("a Visionary War Exhaustion round trips its Visions"):
+    val event = WarExhaustionResolved(PlayerId("p1"), VictoryKind.Visionary,
+      Vector(VisionId("vision:vision-of-faith")), Vector.empty)
+    val encoded = accepted(GameEventWire.encodeEvent("war", 0, event))
+    assertEquals(accepted(GameEventWire.decode(encoded)).event, event)
 
   test("state-based events are written at format version 1"):
     val events = Vector[OathEvent](

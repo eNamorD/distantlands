@@ -66,9 +66,8 @@ object StateBasedEvaluation:
       current.player(current.turn.activePlayer)
         .filterNot(actor => Imperials.isImperial(ready, actor.player))
         .flatMap { actor =>
-        actor.revealedVisions.headOption.flatMap(v => Option.when(
-          VisionVictoryEligibility.qualifies(actor.player, ready))(
-          VisionVictory(actor.player, v.id)))
+        val won = VisionVictoryEligibility.qualifying(actor.player, ready)
+        Option.when(won.nonEmpty)(VisionVictory(actor.player, won))
       }
     }
 
@@ -95,14 +94,14 @@ object StateBasedEvaluation:
     else
       val usurper = current.title match
         case OathkeeperState(Some(player), TitleSide.Usurper) => Some(
-          WarExhaustionResolved(player, VictoryKind.Usurper, None, Vector.empty))
+          WarExhaustionResolved(player, VictoryKind.Usurper, Vector.empty, Vector.empty))
         case _ => None
       val visionary = visionaryWin(ready)
       val fallback = current.title.holder.map(player => WarExhaustionResolved(
-        player, VictoryKind.Oathkeeper, None, Vector.empty)).getOrElse:
+        player, VictoryKind.Oathkeeper, Vector.empty, Vector.empty)).getOrElse:
         val candidates = turnOrder
         WarExhaustionResolved(random.choose(candidates),
-          VictoryKind.RandomSelection, None, candidates)
+          VictoryKind.RandomSelection, Vector.empty, candidates)
       Right(Vector(RoundEnded(8, None), usurper.orElse(visionary).getOrElse(fallback)))
   }
 
@@ -146,7 +145,7 @@ object StateBasedEvaluation:
         visionAtWake(state).flatMap:
           case Some(expected: VisionVictory) if expected == recorded =>
             update(state)(current => current.copy(result = Some(GameResult(
-              recorded.playerId, VictoryKind.Visionary))))
+              recorded.playerId, VictoryKind.Visionary, recorded.visions))))
           case expected => Left(InvalidEventOrder(
             s"Vision victory mismatch: expected $expected, recorded $recorded"))
       case recorded: RoundEnded => state match
@@ -177,11 +176,13 @@ object StateBasedEvaluation:
         case _ => Left(GameNotStarted)
       case recorded: WarExhaustionResolved => expectedWarExhaustion(state).flatMap:
         case ExactWar(expected) if expected == recorded => update(state)(current => current.copy(
-          result = Some(GameResult(recorded.winner, recorded.kind))))
+          result = Some(GameResult(recorded.winner, recorded.kind,
+            recorded.visions))))
         case LeftRandom(candidates) if recorded.kind == VictoryKind.RandomSelection &&
-            recorded.visionId.isEmpty && recorded.randomCandidates == candidates &&
+            recorded.visions.isEmpty && recorded.randomCandidates == candidates &&
             candidates.contains(recorded.winner) => update(state)(current => current.copy(
-          result = Some(GameResult(recorded.winner, recorded.kind))))
+          result = Some(GameResult(recorded.winner, recorded.kind,
+            recorded.visions))))
         case expected => Left(InvalidEventOrder(
           s"War Exhaustion mismatch: expected $expected, recorded $recorded"))
       case recorded: EndDieRolled => supported(state).flatMap { ready =>
@@ -205,16 +206,18 @@ object StateBasedEvaluation:
       case _ => Left(InvalidEventOrder("not a state-based evaluation event"))
 
   /** War Exhaustion's Visionary step: an Exile with a revealed Vision whose
-    * goal they meet, in printed priority order (CR p. 19). */
+    * goal they meet, in printed priority order (CR p. 19), read Vision by
+    * Vision. The winner's every qualifying Vision is recorded (catalog
+    * batch 11, ruling 30). */
   private[gameplay] def visionaryWin(ready: ReadyGame)
       : Option[WarExhaustionResolved] =
-    val current = ready.game.current
+    val exiles = ready.game.current.players.filterNot(p =>
+      Imperials.isImperial(ready, p.player)).map(p =>
+      p.player -> VisionVictoryEligibility.qualifying(p.player, ready))
     visionPriority.iterator.flatMap { vision =>
-      current.players.find(p => !Imperials.isImperial(ready, p.player) &&
-        p.revealedVisions.exists(_.id == vision) &&
-        VisionVictoryEligibility.qualifies(p.player, ready))
-        .map(p => WarExhaustionResolved(p.player, VictoryKind.Visionary,
-          Some(vision), Vector.empty))
+      exiles.find(_._2.contains(vision)).map((player, won) =>
+        WarExhaustionResolved(player, VictoryKind.Visionary, won,
+          Vector.empty))
     }.nextOption()
 
   private[gameplay] def supported(state: OathState): Either[OathViolation, ReadyGame] = state match
@@ -245,10 +248,10 @@ object StateBasedEvaluation:
     else
       current.title match
         case OathkeeperState(Some(player), TitleSide.Usurper) => Right(ExactWar(
-          WarExhaustionResolved(player, VictoryKind.Usurper, None, Vector.empty)))
+          WarExhaustionResolved(player, VictoryKind.Usurper, Vector.empty, Vector.empty)))
         case _ =>
           visionaryWin(ready).orElse(current.title.holder.map(player =>
-            WarExhaustionResolved(player, VictoryKind.Oathkeeper, None, Vector.empty))) match
+            WarExhaustionResolved(player, VictoryKind.Oathkeeper, Vector.empty, Vector.empty))) match
             case Some(value) => Right(ExactWar(value))
             case None =>
               val players = current.players.map(_.player)
