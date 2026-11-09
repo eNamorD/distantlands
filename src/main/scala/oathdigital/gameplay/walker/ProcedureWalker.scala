@@ -563,6 +563,19 @@ object ProcedureWalker extends DecideNarrowing:
                   WalkerSteps.runBuildOps(build, ctx, path, contributions)
               }
             case build: BuildOps => WalkerSteps.runBuildOps(build, ctx, path, contributions)
+            // A plain leaf a power asks about is walked as its questions,
+            // then the answered batch of one ([[BatchQuestions]]); a search
+            // records it as built.
+            case delta: CoreOperation if !ctx.searching =>
+              BatchQuestions.subtree(BatchQuestions.single(delta, strict),
+                  ctx.state, ctx.answered, ctx.powers, ctx.actor, path)
+                .flatMap {
+                  case Some(asking) => walk(asking, ctx,
+                    path :+ BatchQuestions.segment, None, resume,
+                    WalkerHooks(contributions, Set.empty, strict))
+                  case None => WalkerSteps.record(delta, ctx, path,
+                    contributions, strict).map(Done(_))
+                }
             case delta: CoreOperation =>
               WalkerSteps.record(delta, ctx, path, contributions, strict).map(Done(_))
             // `LeafOperation` is unsealed, so no match over it is
@@ -581,12 +594,13 @@ object ProcedureWalker extends DecideNarrowing:
   private def resumeAsked(leaf: LeafOperation, ctx: WalkCtx,
       path: Vector[String], rest: Vector[String], resume: Resume,
       contributions: Vector[PowerId], strict: Boolean)
-      : Either[OathViolation, Step] = leaf match
-    case build: BuildOps => walk(BatchQuestions.walked(build, ctx.powers,
-        ctx.actor, path), ctx, path :+ BatchQuestions.segment, Some(rest),
-      resume, WalkerHooks(contributions, Set.empty, strict))
-    case other => contractViolation(s"resume path enters questions at leaf " +
-      s"${WalkerSteps.leafLabel(other)}, which asks none")
+      : Either[OathViolation, Step] =
+    BatchQuestions.asked(leaf, strict) match
+      case Some(build) => walk(BatchQuestions.walked(build, ctx.powers,
+          ctx.actor, path), ctx, path :+ BatchQuestions.segment, Some(rest),
+        resume, WalkerHooks(contributions, Set.empty, strict))
+      case None => contractViolation(s"resume path enters questions at " +
+        s"leaf ${WalkerSteps.leafLabel(leaf)}, which asks none")
 
   /** After a batch, the follow-ups its triggers started, when it held its
     * operations for them. */

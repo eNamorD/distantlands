@@ -5,12 +5,13 @@ import oathdigital.model.{CoreOperation, Decide, DecisionAnswer, LogNote,
   PlayerId, ReadyGame}
 
 /** What a power reads when it looks at a walker batch before the batch
-  * runs (catalog batch 11, slice 4): the walk's catalog, the walk's actor,
-  * the state the batch was built in, and the replacements the answers to
-  * the batch's earlier questions `taken`, which that state does not show
-  * yet (two payments from one purse). */
+  * runs (catalog batch 11, slices 4 and 5): the walk's catalog, the walk's
+  * actor, the state the batch was built in, the batch as built, and the
+  * replacements the answers to the batch's earlier questions `taken`,
+  * which that state does not show yet (two payments from one purse). */
 final case class BatchContext(catalog: ExecutableCatalog, actor: PlayerId,
-    ready: ReadyGame, taken: Vector[Replacement] = Vector.empty)
+    ready: ReadyGame, operations: Vector[CoreOperation],
+    taken: Vector[Replacement] = Vector.empty)
 
 /** What an answer puts in an operation's place, and the line that says
   * so. */

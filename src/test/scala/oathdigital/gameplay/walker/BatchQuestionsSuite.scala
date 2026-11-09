@@ -129,6 +129,28 @@ class BatchQuestionsSuite extends munit.FunSuite:
       Vector[CoreOperation](movePawnToS3, SpendSupply(actor, 2)))
     assertEquals(steps(done.events).last.nodeId, "0.asked.1")
 
+  test("of two equal operations, the answer replaces the first only"):
+    val tree = batchSpending(1, 1)
+    val park = parked(ProcedureWalker.advance(ready, tree, None, watching))
+    assertEquals(park.tree.at, questionAt(0))
+    val done = finished(ProcedureWalker.resolve(applyEvents(ready,
+      park.events), tree, park.tree, answered(1, continueOption), watching))
+    assertEquals(RecordedOps.of(steps(done.events).last),
+      Vector[CoreOperation](movePawnToS3, spendOneSupply))
+
+  test("a plain leaf a power asks about parks on the question under its " +
+      "node, and runs as built on a decline"):
+    val park = parked(ProcedureWalker.advance(ready, spendOneSupply, None,
+      watching))
+    assertEquals(park.tree.at, Vector(BatchQuestions.segment, "0", "0", "0"))
+    assertEquals(ProcedureWalker.parkedDecide(ready, spendOneSupply,
+      park.tree, watching).map(_.decisionId), Some(spendDecision(1)))
+    val done = finished(ProcedureWalker.resolve(applyEvents(ready,
+      park.events), spendOneSupply, park.tree, answered(1, stopOption),
+      watching))
+    assertEquals(steps(done.events).last.nodeId, "asked.1")
+    assertEquals(supplyOf(done.treeless), supplyOf(ready) - 1)
+
   test("the journal's steps replay to the state the walk reached, " +
       "through the walker's own replay, which reads their node ids"):
     val tree = batchSpending(1)

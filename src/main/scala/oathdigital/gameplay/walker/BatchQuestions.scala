@@ -2,9 +2,9 @@ package oathdigital.gameplay.walker
 
 import oathdigital.gameplay.powerresolver.{AsksBeforeBatch, BatchAsk,
   BatchContext, ContributingPower, Replacement}
-import oathdigital.model.{Answered, Branch, BuildOps, CoreOperation, Note,
-  OathViolation, Operation, PendingTree, PlayerId, PowerId, ReadyGame,
-  Sequence, Take}
+import oathdigital.model.{Answered, Branch, BuildOps, CoreOperation,
+  LeafOperation, Note, OathViolation, Operation, PendingTree, PlayerId,
+  PowerId, ReadyGame, Sequence, Take}
 
 /** The walker's side of batch questions (catalog batch 11, slice 4). Before
   * a `BuildOps` leaf's batch runs, each power that asks before a batch
@@ -28,6 +28,9 @@ import oathdigital.model.{Answered, Branch, BuildOps, CoreOperation, Note,
   * `BuildOps` does, and the questions change nothing. A search does not
   * ask: it walks the batch as built, which declining every question
   * leaves.
+  *
+  * A plain leaf, such as a cost's move when the cost is walked as its
+  * moves, is asked about as a batch of one (catalog batch 11, slice 5).
   */
 private[walker] object BatchQuestions:
   /** The path segment under a leaf where its batch's questions are
@@ -37,6 +40,18 @@ private[walker] object BatchQuestions:
   /** A question one power asks about one operation. */
   private final case class Asked(power: PowerId, operation: CoreOperation,
       ask: BatchAsk)
+
+  /** A plain leaf, asked about as a batch of one. */
+  def single(delta: CoreOperation, strict: Boolean): BuildOps =
+    BuildOps((_, _) => Right(Vector(delta)), required = strict)
+
+  /** The batch a leaf's questions are about: a `BuildOps` itself, or a
+    * plain leaf as a batch of one. */
+  def asked(leaf: LeafOperation, strict: Boolean): Option[BuildOps] =
+    leaf match
+      case build: BuildOps => Some(build)
+      case delta: CoreOperation => Some(single(delta, strict))
+      case _ => None
 
   /** Whether the leaf at `path` is the batch a question subtree runs. */
   def answering(path: Vector[String]): Boolean =
@@ -75,7 +90,7 @@ private[walker] object BatchQuestions:
       BuildOps((now, pending) =>
         build.build(now, pending.copy(at = path)).map(rebuilt =>
           replaced(rebuilt, of(asking(powers, now), powers, actor, now,
-            rebuilt, pending.answered).flatten, pending.answered)),
+            rebuilt, pending.answered).flatten, pending.answered)._1),
         required = build.required)))
 
   /** The powers that may ask about a batch built in `ready`. */
@@ -94,7 +109,8 @@ private[walker] object BatchQuestions:
     flat(operations).foldLeft((Vector.empty[Option[Asked]],
         Vector.empty[Replacement], Set.empty[String])) {
       case ((done, taken, ids), operation) =>
-        val context = BatchContext(powers.catalog, actor, ready, taken)
+        val context = BatchContext(powers.catalog, actor, ready, operations,
+          taken)
         val found = asking.iterator.flatMap(power =>
           power.askBefore(context, operation).map(Asked(power.id, operation,
             _))).nextOption().filterNot(one => ids(one.ask.decide.decisionId))
@@ -110,17 +126,26 @@ private[walker] object BatchQuestions:
       asked.ask.instead(found.answer))
 
   /** `operations` with each answered operation replaced, a `Take`'s
-    * leaving included. */
+    * leaving included, and the questions whose replacement was used. A
+    * question replaces one operation only, the first equal to the one it
+    * asked about, so an equal operation later in the batch runs as built. */
   private def replaced(operations: Vector[CoreOperation],
-      asked: Vector[Asked], answered: Vector[Answered])
-      : Vector[CoreOperation] = operations.flatMap { operation =>
-    asked.find(_.operation == operation).flatMap(answer(answered, _)) match
-      case Some(replacement) => replacement.operations
-      case None => operation match
-        case take: Take if take.leaving.nonEmpty =>
-          Vector(take.copy(leaving = replaced(take.leaving, asked, answered)))
-        case other => Vector(other)
-  }
+      asked: Vector[Asked], answered: Vector[Answered],
+      used: Set[Asked] = Set.empty): (Vector[CoreOperation], Set[Asked]) =
+    operations.foldLeft((Vector.empty[CoreOperation], used)) {
+      case ((out, spent), operation) =>
+        val question = asked.find(one => one.operation == operation &&
+          !spent(one))
+        question.flatMap(answer(answered, _)) match
+          case Some(replacement) =>
+            (out ++ replacement.operations, spent ++ question)
+          case None => operation match
+            case take: Take if take.leaving.nonEmpty =>
+              val (leaving, after) = replaced(take.leaving, asked, answered,
+                spent ++ question)
+              (out :+ take.copy(leaving = leaving), after)
+            case other => (out :+ other, spent ++ question)
+    }
 
   private def flat(operations: Vector[CoreOperation]): Vector[CoreOperation] =
     operations.flatMap {

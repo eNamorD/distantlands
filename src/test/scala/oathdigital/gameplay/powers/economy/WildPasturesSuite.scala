@@ -72,7 +72,8 @@ class WildPasturesSuite extends munit.FunSuite:
       Region.Provinces, Suit.Nomad, 0, 0, p1))
 
   private def asks(ready: ReadyGame, discard: CoreOperation): Boolean =
-    WildPastures.askBefore(BatchContext(catalog, p1, ready), discard)
+    WildPastures.askBefore(BatchContext(catalog, p1, ready,
+      Vector(discard)), discard)
       .nonEmpty
 
   test("a phase power's Nomad discard asks its ruler, and paying keeps " +
@@ -132,8 +133,9 @@ class WildPasturesSuite extends munit.FunSuite:
   test("a ruler who is not the walk's actor is named in the line, and " +
       "declining replaces nothing"):
     val ready = p1RulesPastures.denizen(nomad, at = home).ready
-    val ask = WildPastures.askBefore(BatchContext(catalog, p2, ready),
-      nomadDiscardFrom(Location.Site(home)))
+    val discard = nomadDiscardFrom(Location.Site(home))
+    val ask = WildPastures.askBefore(BatchContext(catalog, p2, ready,
+      Vector(discard)), discard)
     assertEquals(ask.flatMap(_.instead(ChooseOneAnswer(WildPastures.pay)))
       .map(_.line), Some(WildPastures.paidOffTurn(
         PowerSourceRef.Card(WildPasturesCard.id), NoteArg.Player(p1),

@@ -73,8 +73,8 @@ object WalkerPowerCatalog:
         HallowedSpring, WildPastures) ++
       TravelModifiers.all ++
       Vector(LeagueTreatyContribution, SilverTongue, Insomnia, Assassin,
-        LostTapestry, PiedPiper, FamilyWagon, VowOfUnionAdvisers, ASmallFavor,
-        FaithfulFriend, Garrison, FamilyHeirloom, ShiftingFog, TwinBrother) ++
+        LostTapestry, PiedPiper, FamilyWagon, VowOfUnionAdvisers, VowOfKinship,
+        ASmallFavor, FaithfulFriend, Garrison, FamilyHeirloom, ShiftingFog, TwinBrother) ++
       WhenPlayedPowers.all ++
       Vector(ChaosCult) ++
       ActionModifiers.all ++

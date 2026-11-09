@@ -4,7 +4,6 @@ denizen.false-prophet
 denizen.reliquary-raid
 denizen.the-gathering
 denizen.traveling-negotiator
-denizen.vow-of-kinship
 edifice.e04.intact
 edifice.e04.ruined
 edifice.e05.intact
