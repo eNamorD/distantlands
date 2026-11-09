@@ -96,7 +96,6 @@ section says why in a paragraph.
 - **Favor source redirection:** Vow of Kinship.
 - **Off-turn actor and a warband on a Vision:** False Prophet.
 - **Vision collection:** Desecrated Ground.
-- **Discard replacement with a question:** Wild Pastures.
 
 ### Phase - All-Exile alpha readiness
 
