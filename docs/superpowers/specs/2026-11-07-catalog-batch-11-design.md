@@ -63,8 +63,9 @@ their phases.
 Taken with the owner on 2026-11-07; rulings 15 to 18 on 2026-11-08,
 while planning slice 2, ruling 19 the same day, while planning slice 3,
 rulings 20 to 25 the same day, while planning slice 4, rulings 26 to 29
-on 2026-11-09, while planning slice 5, and rulings 30 and 31 the same day,
-while planning slice 6.
+on 2026-11-09, while planning slice 5, rulings 30 and 31 the same day,
+while planning slice 6, and rulings 32 to 34 the same day, while planning
+slice 7.
 
 1. **Bandit Crown: the bandits still rule.** Denizens at a bandit site stay
    ruled by the bandits. The Crown's holder acts as if they ruled them, and
@@ -193,6 +194,20 @@ while planning slice 6.
 31. **Desecrated Ground: a kept Vision has a line.** A reveal that keeps
     Visions writes "Desecrated Ground: Kept Vision of Faith." after the
     reveal's own line.
+32. **False Prophet: the current player chooses the claimant.** Several
+    players may have a warband on one Vision. When it is discarded, every
+    claimant's warband is killed, and the player taking their turn chooses
+    which claimant plays or discards it (rule 15.3, Simultaneous Effects).
+    The others get nothing, even when the chosen claimant discards it.
+33. **False Prophet: faceup or discard.** The claimant may reveal the
+    Vision or discard it, never play it facedown as an adviser. A claimant
+    who cannot reveal a Vision, such as a Citizen, discards it.
+34. **False Prophet's lines.** The When Played writes "False Prophet: Put a
+    warband on Blue's Vision of Faith." The discard writes "False Prophet:
+    Killed Blue's warband on Vision of Faith." for each claimant. A card
+    play by a player who is not the walk's actor names them: "Blue revealed
+    Vision of Faith", "Blue discarded Vision of Faith to the Provinces
+    discard", and "Desecrated Ground: Blue kept Vision of Conquest."
 
 ### Readings
 
@@ -507,33 +522,49 @@ several; the role change; the projection and frontend showing several.
 
 ## Slice 7: A claimed Vision and an off-turn reveal
 
-**False Prophet** (ruling 14).
+**False Prophet** (rulings 14, 32, 33 and 34).
 
-- **The When Played.** For an Exile: choose another player's revealed
-  Vision, gain one warband from the warband bank and put it on that Vision
-  (`warbandsOnCards`, as the Obsidian Cage holds warbands).
+- **The When Played.** For an Exile with a warband in their bank: choose
+  another player's revealed Vision, gain one warband and put it on that
+  Vision (`warbandsOnCards`, as the Obsidian Cage holds warbands). With no
+  such Vision, no warband or no Exile role it does nothing and writes
+  nothing. A warband on a card is checked against the card's tokens today,
+  which a Vision has none of, so a Vision's warbands are read from
+  `warbandsOnCards` alone.
 - **The claim.** `RevealedVisions.of` adds, for a player, every other
-  player's revealed Vision that carries one of that player's warbands. The
-  victory reads use it, with the Exile check they already make. The
-  projection's revealed Vision shows its warbands.
+  player's revealed Vision that carries a warband of that player's lineage
+  (`ForceKind.Exile`). The kind is the lineage's, not the role's, so a
+  claimant who becomes a Citizen keeps the claim, and the victory reads'
+  Exile check stops them winning with it (FAQ). The owner's board shows the
+  Vision's warbands.
 - **The card-play actor.** `CardPlayedFaceup` carries no player, and the
   card-play hooks read `PowerCtx.actor`, which is the walk's actor. The
-  slice adds the player to `CardPlayedFaceup` and makes `VisionPlay` and the
-  Vision restrictions (Secret Police, Sacred Ground, Vow of Obedience) read
-  it, so a reveal inside another player's walk is judged for the right
-  player.
-- **The discard.** An `ExecutedTrigger` watches `Discard.Vision` of a
-  claimed Vision: it kills the warband, then nests a card play for the
-  warband's owner with `CardPlayProcedure.unchecked(..., Origin.DiscardPile,
-  byPower)`, as Search Party does, offering faceup or discard. It runs
-  inside the walk that discarded the Vision (walker game-loop design,
-  ruling 15: "as if" nests).
+  slice adds the player, as `CardPlayedFacedown` has it, and `VisionPlay`
+  and the Vision readers (Secret Police, Sacred Ground, Vow of Obedience,
+  Book Binders) read it, so a reveal inside another player's walk is
+  judged for the right player.
+- **The discard.** `FalseProphetClaim`, an `ExecutedTrigger`, watches the
+  batch's `Discard.Vision` of a Vision that carries warbands. Its
+  follow-up asks the current player which claimant plays it, when there
+  are several (ruling 32), nests a card play for that claimant with
+  `CardPlayProcedure.unchecked(..., Origin.DiscardPile(to), byPower =
+  Some(FalseProphet.id))`, as Search Party does, and then kills every
+  claimant's warband. A Transform at `SearchPlayAdviser` limits that play
+  to faceup or discard (ruling 33), as Temple of Ancestors limits its own.
+  A trigger's follow-up must give the same tree when a command resumes
+  inside it, and the warbands on the Vision are what it reads, so the
+  kill comes last and its line follows the play's.
+- **Off-turn lines** (ruling 34). The card play's own lines, and the kept
+  line, gain a variant naming the player when they are not the walk's
+  actor.
 
 Tests: the When Played and its three no-op cases; the claim winning for
 an Exile and not for a Citizen; the owner's replacement and role change
-each triggering the claimant's reveal, on the owner's turn; the claimant's
-reveal at Desecrated Ground keeping their Visions; the warband killed; the
-projection; replay of every new operation.
+each triggering the claimant's reveal, on the owner's turn; the current
+player choosing among two claimants; the claimant's restrictions judged
+for them; the claimant's reveal at Desecrated Ground keeping their
+Visions; the warband killed; the projection; the journal rebuilding every
+new step.
 
 ## Seams opened
 
@@ -546,7 +577,7 @@ projection; replay of every new operation.
 | Batch questions, `DiscardCause` | 4 | Wild Pastures, Vow of Kinship |
 | A spend's mover, `DrawNomadFavor`, `SpendableFavor`, `NoteArg.ToNomadBank` | 5 | Vow of Kinship |
 | `revealedVisions`, `RevealedVisions.of`, `DesecratedGroundRule`, a win's `visions` | 6 | Desecrated Ground, False Prophet |
-| Player on `CardPlayedFaceup` | 7 | False Prophet |
+| Player on `CardPlayedFaceup`, warbands on a Vision, off-turn card-play lines | 7 | False Prophet |
 
 ## Testing
 
