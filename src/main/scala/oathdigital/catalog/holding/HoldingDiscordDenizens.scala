@@ -11,12 +11,3 @@ object ReliquaryRaidCard extends Denizen(DenizenId("220"), "Reliquary Raid", Sui
     persistent = false, cost = Cost.free,
     text = "**WHEN PLAYED,** take a random relic from the Reliquary.")
   val powers: Vector[PrintedPower] = Vector(power)
-
-object FalseProphetCard extends Denizen(DenizenId("85"), "False Prophet", Suit.Discord) with Locked with AdviserOnly:
-  val power = PrintedPower(PowerId("denizen.false-prophet"),
-    persistent = false, cost = Cost.free,
-    text = "**WHEN PLAYED:** if you're an Exile, gain one warband and " +
-      "put it on any revealed Vision. You now also have it " +
-      "revealed. If it is ever discarded, kill the warband and " +
-      "play or discard the Vision as if you had searched.")
-  val powers: Vector[PrintedPower] = Vector(power)

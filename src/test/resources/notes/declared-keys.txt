@@ -112,6 +112,7 @@ denizen.fabled-feast took = {0} took {1} from {2}.
 denizen.fae-battalion counted = Hollow swords counted as swords.
 denizen.fae-merchant returned = {0} put {1} on the bottom of the relic deck.
 denizen.fae-merchant used = {0} drew {1} facedown.
+denizen.false-prophet put = Put a warband on {0}'s {1}.
 denizen.family-heirloom bottom = {0} drew {1} and put it on the bottom of the relic deck.
 denizen.family-heirloom keep = {0} drew {1} and kept it.
 denizen.family-wagon buried = Buried {0}.

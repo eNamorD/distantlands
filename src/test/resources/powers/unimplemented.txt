@@ -1,6 +1,5 @@
 denizen.council-arbiter
 denizen.deed-writer
-denizen.false-prophet
 denizen.reliquary-raid
 denizen.the-gathering
 denizen.traveling-negotiator
