@@ -62,7 +62,8 @@ the engine does not support is ignored, not blocking, and nothing records
 it.
 
 Three cards forbid a faceup Vision play and one rewards it. Each is a power on
-the card-play hook `ActionCardPlayedFaceup`:
+the card-play hook `ActionCardPlayedFaceup`, judged for the player the hook
+names:
 
 - **Vow of Obedience** (`denizen.vow-of-obedience`): its faceup holder cannot
   play Visions faceup, the Conspiracy included. Its REST takes one favor from
@@ -73,11 +74,13 @@ the card-play hook `ActionCardPlayedFaceup`:
   A player ruler may consent to a faceup play.
 - **Sacred Ground** (`edifice.e08.intact`): no player can, except with the
   Conspiracy, unless their pawn is at its site.
-- **Book Binders** (`denizen.book-binders`): after another player plays a
-  Vision faceup, its holder takes two favor from a bank of their choice.
+- **Book Binders** (`denizen.book-binders`): after a player other than its
+  holder plays a Vision faceup, its holder takes two favor from a bank of
+  their choice.
 
 The first three are `Restriction`s. They bind only while the Vision is still
-in the player's temporary hand or among their facedown advisers. The walker's
+in the player's temporary hand, among their facedown advisers, or in a
+discard pile. The walker's
 restriction look-ahead removes the faceup placement from Search and from
 facedown-adviser play, which are the only faceup paths, and the answer-time
 check refuses a submitted one. Desecrated Ground (`edifice.e08.ruined`) lets
@@ -85,3 +88,14 @@ an Exile at its site keep every revealed Vision (`DesecratedGroundRule`, read
 by `CardSlots` and `CardPlay`). A player's revealed Visions are a list, and a
 win records every one whose goal is met; Swear an Oath asks which won when
 there are several (catalog batch 11, slice 6).
+
+False Prophet (`denizen.false-prophet`) puts a warband on another
+player's revealed Vision, which then counts as the warband owner's too
+(`RevealedVisions.of`; a Citizen keeps the claim but cannot win with it).
+When that Vision is discarded, the current player chooses among several
+claimants, the chosen one reveals or discards it inside the walk that
+discarded it, and every claimant's warband is killed
+(`FalseProphetClaim`, `denizen.false-prophet.claim`; catalog batch 11,
+slice 7). The play's hook names the claimant, so the rules above judge the
+reveal for them. The play runs in an executed trigger's follow-up, and the
+restriction look-ahead reads that follow-up beside the action's tree.

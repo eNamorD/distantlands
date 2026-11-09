@@ -1,6 +1,6 @@
 # Catalog Batch 11: The Engine-Wide Seams
 
-**Status:** designed 2026-11-07. Slices 0 to 6 landed.
+**Status:** designed 2026-11-07. Slices 0 to 7 landed.
 
 **Builds on** [Catalog batch 10](2026-11-03-catalog-batch-10-design.md),
 [batch 9](2026-11-02-catalog-batch-9-design.md) and
@@ -548,12 +548,20 @@ several; the role change; the projection and frontend showing several.
   follow-up asks the current player which claimant plays it, when there
   are several (ruling 32), nests a card play for that claimant with
   `CardPlayProcedure.unchecked(..., Origin.DiscardPile(to), byPower =
-  Some(FalseProphet.id))`, as Search Party does, and then kills every
+  Some(FalseProphetClaim.id))`, as Search Party does, and then kills every
   claimant's warband. A Transform at `SearchPlayAdviser` limits that play
   to faceup or discard (ruling 33), as Temple of Ancestors limits its own.
   A trigger's follow-up must give the same tree when a command resumes
   inside it, and the warbands on the Vision are what it reads, so the
-  kill comes last and its line follows the play's.
+  kills come after every Vision's question and play, and their lines
+  follow the plays'. The trigger has its
+  own power id, `denizen.false-prophet.claim`, because the walker catalog
+  holds one power per id.
+- **The look-ahead reads the follow-up.** The walker's restriction
+  look-ahead folded only the action's tree, which never holds a trigger's
+  follow-up, so a Vision rule could not hide the claimant's faceup
+  placement. The walk, and the lookup of a parked decision, now fold the
+  follow-up the decision lies in beside the action's tree.
 - **Off-turn lines** (ruling 34). The card play's own lines, and the kept
   line, gain a variant naming the player when they are not the walk's
   actor.
@@ -577,7 +585,7 @@ new step.
 | Batch questions, `DiscardCause` | 4 | Wild Pastures, Vow of Kinship |
 | A spend's mover, `DrawNomadFavor`, `SpendableFavor`, `NoteArg.ToNomadBank` | 5 | Vow of Kinship |
 | `revealedVisions`, `RevealedVisions.of`, `DesecratedGroundRule`, a win's `visions` | 6 | Desecrated Ground, False Prophet |
-| Player on `CardPlayedFaceup`, warbands on a Vision, off-turn card-play lines | 7 | False Prophet |
+| Player on `CardPlayedFaceup`, warbands on a Vision, off-turn card-play lines, look-ahead into a follow-up | 7 | False Prophet |
 
 ## Testing
 

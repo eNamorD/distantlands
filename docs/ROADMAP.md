@@ -84,17 +84,6 @@ did":
 - [ ] The same summary filling in while a Campaign runs: the dice on each
   side as battle plans are chosen, and the sacrificed warbands.
 
-### Phase - Catalog batch - engine-blocked
-
-Cards that need an engine change first, grouped by the missing mechanism.
-[Catalog batch 10](superpowers/specs/2026-11-03-catalog-batch-10-design.md)
-(landed 2026-11-07) opened every minor or moderate seam and implemented the
-cards behind them. Each seam below cuts across the whole engine; the
-batch's [Deferred](superpowers/specs/2026-11-03-catalog-batch-10-design.md#deferred)
-section says why in a paragraph.
-
-- **Off-turn actor and a warband on a Vision:** False Prophet.
-
 ### Phase - All-Exile alpha readiness
 
 `0.1.0-alpha.2`, `0.1.0-alpha.3` and `0.1.0-alpha.4` shipped as GitHub prereleases through the
@@ -419,8 +408,9 @@ as current.
   are browsable; saved games and replays are not.
 - [ ] **L5 — Asynchronous accounts, invitations, and notifications**
 - [ ] **L6 — Incremental implementation of remaining phases and rules** (tracked
-  in the phased sequence above; the next denizens and relics come
-  from **Phase - Catalog batch - engine-blocked**)
+  in the phased sequence above; the remaining cards come with
+  **Phase - Negotiation terms and promises** and **Phase - Chronicle
+  steps**)
 - [ ] **L7 — Incremental synchronization transport**
   - Replace complete-snapshot polling with conditional responses, projection
     deltas, long polling, SSE, or another push transport when scale or latency
