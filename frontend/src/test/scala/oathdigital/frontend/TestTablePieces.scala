@@ -44,7 +44,7 @@ private[frontend] object TestBoards:
     PlayerBoard(playerId, warbands = 0, favor = 0, faceUpSecrets = 0,
       faceDownSecrets = 0, committedSecrets = 0, totalSecrets = 0, supply = 0,
       pawnSiteId = None, advisers = Vector.empty, relics = Vector.empty,
-      revealedVision = None, supplyBands = Vector.empty)
+      revealedVisions = Vector.empty, supplyBands = Vector.empty)
 
   extension (board: PlayerBoard)
     def withWarbands(count: Int): PlayerBoard = board.copy(warbands = count)

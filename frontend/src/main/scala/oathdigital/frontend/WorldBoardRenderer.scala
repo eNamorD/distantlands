@@ -108,18 +108,25 @@ private[frontend] object WorldBoardRenderer:
         }
       // The spot is drawn empty only while the decision lights it: the strip
       // never scrolls, so an empty spot may not spend a row on every board.
+      // A reveal that replaces marks every Vision it discards; one that
+      // keeps them (Desecrated Ground) lights an empty spot after them.
       val visionKey = Vector(BoardOptionViews.key("revealed-vision",
         player.playerId))
-      board.revealedVision.map { card =>
+      val lit = options.view(visionKey)
+      val replacing = lit.exists(_.option.replaces.nonEmpty)
+      board.revealedVisions.foreach { card =>
         val pill = button(card.name, "player-slot-vision")
         pill.onclick = _ => CardInspection.open(card, pill)
-        options.control(pill, visionKey,
-          Some(card.name -> (CardInspection.open(card, _))))
-      }.orElse(options.view(visionKey).map { _ =>
+        slots.appendChild(
+          if replacing then options.control(pill, visionKey,
+            Some(card.name -> (CardInspection.open(card, _))))
+          else pill)
+      }
+      lit.filterNot(_ => replacing).foreach { _ =>
         val spot = button("Vision", "player-slot-vision player-slot-vision-empty")
         spot.setAttribute("aria-label", "Empty revealed Vision spot")
-        options.control(spot, visionKey, None)
-      }).foreach(slots.appendChild)
+        slots.appendChild(options.control(spot, visionKey, None))
+      }
       if slots.childNodes.length > 0 then playerSummary.appendChild(slots)
 
       // One row, no headings: two labelled rows cost more height than the pane

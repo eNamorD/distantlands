@@ -220,7 +220,7 @@ private[protocol] object WorldProjectionCodec:
     "supply" -> value.supply, "pawnSiteId" -> stringOption(value.pawnSiteId),
     "advisers" -> encoded(value.advisers)(encodeCard),
     "relics" -> encoded(value.relics)(encodeCard),
-    "revealedVision" -> option(value.revealedVision)(encodeCard),
+    "revealedVisions" -> encoded(value.revealedVisions)(encodeCard),
     "banners" -> encoded(value.banners)(b => ujson.Obj(
       "banner" -> b.key, "face" -> b.face,
       "holderPlayerId" -> stringOption(b.holderPlayerId),
@@ -235,7 +235,7 @@ private[protocol] object WorldProjectionCodec:
     value <- obj(raw, path)
     _ <- exact(value, Set("playerId", "warbands", "favor", "faceUpSecrets",
       "faceDownSecrets", "committedSecrets", "totalSecrets", "supply", "pawnSiteId", "advisers", "relics",
-      "revealedVision", "banners", "bankedWarbands", "printedWarbands",
+      "revealedVisions", "banners", "bankedWarbands", "printedWarbands",
       "siteWarbands", "restSupplyBase", "supplyBands", "adviserLimit"), path)
     player <- string(value, "playerId", path); warbands <- int(value, "warbands", path)
     favor <- int(value, "favor", path); up <- int(value, "faceUpSecrets", path)
@@ -246,7 +246,8 @@ private[protocol] object WorldProjectionCodec:
     adviserRaws <- array(value, "advisers", path)
     advisers <- traverse(adviserRaws, s"$path.advisers")(decodeCard)
     relicRaws <- array(value, "relics", path); relics <- traverse(relicRaws, s"$path.relics")(decodeCard)
-    vision <- optional(value, "revealedVision", path)(decodeCard)
+    visionRaws <- array(value, "revealedVisions", path)
+    visions <- traverse(visionRaws, s"$path.revealedVisions")(decodeCard)
     bannerRaws <- default(value, "banners", path, Vector.empty[ujson.Value])(array)
     banners <- traverse(bannerRaws, s"$path.banners") { (raw, child) => for
       row <- obj(raw, child); _ <- exact(row,
@@ -263,4 +264,4 @@ private[protocol] object WorldProjectionCodec:
     bands <- traverse(bandRaws, s"$path.supplyBands")(decodeBand)
     limit <- intOr(value, "adviserLimit", path, 3)
   yield PlayerBoardProjection(player, warbands, favor, up, down, committed, total, supply, pawn,
-    advisers, relics, vision, banners, banked, printed, atSites, restBase, bands, limit)
+    advisers, relics, visions, banners, banked, printed, atSites, restBase, bands, limit)

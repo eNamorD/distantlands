@@ -95,7 +95,7 @@ class PlayerBoardSuite extends munit.FunSuite:
         .copy(playerBoards = Vector(board.withAdvisers(oak)
           .withRelics(CardDetails("r1", "relic", "Crown",
             orientation = Some("face-up")))
-          .copy(revealedVision = Some(CardDetails("v1", "vision", "Vision",
+          .copy(revealedVisions = Vector(CardDetails("v1", "vision", "Vision",
             orientation = Some("face-up")))))),
       "red")
     assertEquals(all(node, ".board-cards").size, 1)
@@ -209,7 +209,7 @@ class PlayerBoardSuite extends munit.FunSuite:
     val vision = CardDetails("vision:vision-of-faith", "vision",
       "Vision of Faith", orientation = Some("face-up"),
       rulesText = Some("Wake: You win if you hold the **Darkest Secret**."))
-    val node = renderWith(board.copy(revealedVision = Some(vision)),
+    val node = renderWith(board.copy(revealedVisions = Vector(vision)),
       Some(OathkeeperStatus("devotion", Some("red"), "oathkeeper",
         usurperLimited = false, None)))
     assertEquals(all(node, ".player-identity .player-title"), Vector.empty)
@@ -221,6 +221,16 @@ class PlayerBoardSuite extends munit.FunSuite:
     assert(!all(node, ".board-cards .card-face")
       .map(_.getAttribute("data-card-id"))
       .contains("vision:vision-of-faith"))
+
+  test("each revealed Vision has its own pill in the slots row"):
+    val faith = CardDetails("vision:vision-of-faith", "vision",
+      "Vision of Faith", orientation = Some("face-up"))
+    val conquest = faith.copy(cardId = "vision:vision-of-conquest",
+      name = "Vision of Conquest")
+    val node = renderWith(board.copy(revealedVisions = Vector(faith, conquest)),
+      None)
+    assertEquals(all(node, ".player-slots .player-slot-vision")
+      .map(_.textContent), Vector("Vision of Faith", "Vision of Conquest"))
 
   test("a player with neither a title nor a Vision has no slots row"):
     assertEquals(all(render(board, supplyMaximum = 7), ".player-slots"),
@@ -248,7 +258,7 @@ class PlayerBoardSuite extends munit.FunSuite:
         opened = opened :+ card.name
     val vision = CardDetails("vision:vision-of-faith", "vision",
       "Vision of Faith", orientation = Some("face-up"))
-    val node = renderWith(board.copy(revealedVision = Some(vision)),
+    val node = renderWith(board.copy(revealedVisions = Vector(vision)),
       Some(OathkeeperStatus("devotion", Some("red"), "oathkeeper",
         usurperLimited = false, None)))
     act(node)

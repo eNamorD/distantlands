@@ -265,6 +265,38 @@ class BoardOptionsRenderSuite extends munit.FunSuite:
     click(empty)
     assertEquals(shown.picks, Vector(spot))
 
+  /** `table` with red holding Faith and Conquest revealed. */
+  private def twoVisionsTable: GameProjection =
+    val faith = CardDetails("faith", "vision", "Vision of Faith")
+    table.copy(playerBoards = Vector(board.copy(revealedVisions =
+      Vector(faith, faith.copy(cardId = "conquest", name = "Vision of Conquest")))))
+
+  test("a reveal that replaces marks every revealed Vision, and draws no " +
+      "empty spot"):
+    val faith = CardDetails("faith", "vision", "Vision of Faith")
+    val shown = recording(available(option("revealed-vision", "red")
+      .copy(replaces = Some(faith))))
+    val boards = WorldBoardRenderer.playerBoards(twoVisionsTable, "red",
+      shown.options)
+    assertEquals(all(boards, ".player-slot-vision.board-option-replace")
+      .size, 2)
+    assertEquals(all(boards, ".player-slot-vision-empty"), Vector.empty)
+
+  test("a reveal that keeps the Visions leaves them plain and lights an " +
+      "empty spot after them"):
+    val spot = option("revealed-vision", "red")
+    val shown = recording(available(spot))
+    val boards = WorldBoardRenderer.playerBoards(twoVisionsTable, "red",
+      shown.options)
+    val pills = all(boards, ".player-slot-vision")
+    assertEquals(pills.map(_.textContent),
+      Vector("Vision of Faith", "Vision of Conquest", "Vision"))
+    assertEquals(all(boards, ".board-option-replace"), Vector.empty)
+    val empty = one(boards, ".player-slot-vision-empty")
+    assertEquals(empty.getAttribute("aria-label"), "Empty revealed Vision spot")
+    click(empty)
+    assertEquals(shown.picks, Vector(spot))
+
   test("a discard pile option picks on a click, and with no cards it has " +
       "no inspect button"):
     val pile = option("discard-pile", "cradle")

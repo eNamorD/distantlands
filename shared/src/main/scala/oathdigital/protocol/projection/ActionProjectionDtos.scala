@@ -320,7 +320,8 @@ final case class PlayerBoardProjection(
     pawnSiteId: Option[String],
     advisers: Vector[CardDetailsProjection],
     relics: Vector[CardDetailsProjection],
-    revealedVision: Option[CardDetailsProjection],
+    /** Faceup, in reveal order. */
+    revealedVisions: Vector[CardDetailsProjection],
     banners: Vector[BannerProjection] = Vector.empty,
     /** The warbands of this player's kind still in their bag: printed, less
       * those on the board and at sites. Public, as the bag is on the table. */
