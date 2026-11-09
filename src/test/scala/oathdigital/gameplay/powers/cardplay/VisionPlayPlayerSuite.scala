@@ -17,18 +17,19 @@ class VisionPlayPlayerSuite extends munit.FunSuite:
 
   /** p1's turn, Sacred Ground intact at `sacred`; p1 stands at Ancient
     * City and p2 at Broken Peaks; Faith lies in the Provinces discard. */
-  private def table(sacred: SiteId): ReadyGame = Table.start
-    .pawn(p1, at = AncientCitySite).pawn(p2, at = BrokenPeaksSite)
-    .edifice(SacredGroundCard.id, EdificeSide.Intact, at = sacred)
-    .discarded(Region.Provinces, vision).ready
+  private def pawnsApartWithSacredGroundAt(sacred: SiteId): ReadyGame =
+    Table.start.pawn(p1, at = AncientCitySite).pawn(p2, at = BrokenPeaksSite)
+      .edifice(SacredGroundCard.id, EdificeSide.Intact, at = sacred)
+      .discarded(Region.Provinces, vision).ready
 
   /** Sacred Ground's refusal of `player`'s reveal of Faith in p1's walk. */
   private def sacredGroundRefusal(sacred: SiteId, player: PlayerId)
       : Option[OathViolation] =
     val hook = CardPlayedFaceup(vision, player,
       RuleSourceRef.Adviser(player, vision))
-    val ctx = PowerCtx(catalog, table(sacred), p1, SacredGround.source,
-      PowerWindow.ActionCardPlayedFaceup, Vector.empty, hook, None)
+    val ctx = PowerCtx(catalog, pawnsApartWithSacredGroundAt(sacred), p1,
+      SacredGround.source, PowerWindow.ActionCardPlayedFaceup, Vector.empty,
+      hook, None)
     SacredGround.contributions(PowerWindow.ActionCardPlayedFaceup).collectFirst {
       case Restriction(fn, _, _) => fn(ctx, hook)
     }.flatten
@@ -41,3 +42,16 @@ class VisionPlayPlayerSuite extends munit.FunSuite:
 
   test("p2's reveal on p1's turn is allowed where p2's pawn is"):
     assertEquals(sacredGroundRefusal(BrokenPeaksSite.id, p2), None)
+
+  test("Book Binders rewards its holder when another player reveals in " +
+      "the holder's walk"):
+    // p1 holds Book Binders and is the walk's actor; p2 reveals Faith.
+    val ready = Table.start.adviser(p1, BookBindersCard.id)
+      .discarded(Region.Provinces, vision).ready
+    def applies(player: PlayerId): Boolean =
+      val hook = CardPlayedFaceup(vision, player,
+        RuleSourceRef.Adviser(player, vision))
+      BookBinders.applicable(PowerCtx(catalog, ready, p1, BookBinders.source,
+        PowerWindow.ActionCardPlayedFaceup, Vector.empty, hook, None))
+    assert(applies(p2))
+    assert(!applies(p1))

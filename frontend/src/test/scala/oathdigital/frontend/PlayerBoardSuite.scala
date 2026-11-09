@@ -241,6 +241,10 @@ class PlayerBoardSuite extends munit.FunSuite:
     val marks = all(node, ".player-slot-vision .player-slot-vision-warband")
     assertEquals(marks.size, 1)
     assert(marks.head.classList.contains("force-blue"))
+    assertEquals(marks.head.getAttribute("data-tip"), "Blue Warbands x1")
+    assertEquals(firstMatch(node, ".player-slot-vision")
+      .map(_.getAttribute("aria-label")),
+      Some("Vision of Faith, Blue Warbands x1"))
 
   test("a player with neither a title nor a Vision has no slots row"):
     assertEquals(all(render(board, supplyMaximum = 7), ".player-slots"),

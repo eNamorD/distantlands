@@ -118,7 +118,10 @@ private[frontend] object WorldBoardRenderer:
         val pill = button(card.name, "player-slot-vision")
         pill.onclick = _ => CardInspection.open(card, pill)
         // The warbands on the Vision (False Prophet's claims), one mark in
-        // each claimant's colour; the inspection overlay counts them.
+        // each claimant's colour; the card face counts them. The marks are
+        // hidden from assistive technology, so the pill's name says them.
+        if card.warbands.nonEmpty then pill.setAttribute("aria-label",
+          (card.name +: card.warbands.map(forceText)).mkString(", "))
         card.warbands.foreach { forces =>
           val mark = text("span", "player-slot-vision-warband " +
             forceCssClass(forces), "●")

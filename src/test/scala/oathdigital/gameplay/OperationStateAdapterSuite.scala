@@ -97,15 +97,15 @@ class OperationStateAdapterSuite extends munit.FunSuite:
     val kind = revealed.game.current.player(p2)
       .flatMap(PlayerForceKind.of(revealed, _)).getOrElse(fail("p2's kind"))
     val vision = PositionedLocation(Location.OnCard(VisionRules.Faith))
-    def run(ready: ReadyGame, operations: CoreOperation*): ReadyGame =
+    def runPermissively(ready: ReadyGame, operations: CoreOperation*): ReadyGame =
       accepted(OperationPipeline.run(ready, operations.toVector,
         OperationPolicy.Permissive, Vector.empty, requireAll = true)(
         Right(_))).state
-    val onCard = run(revealed, Move(Piece.Warbands(kind, 1),
+    val onCard = runPermissively(revealed, Move(Piece.Warbands(kind, 1),
       PositionedLocation(Location.PlayArea(p2)), vision))
     assertEquals(onCard.game.current.warbandsOn(VisionRules.Faith, kind), 1)
     assertEquals(OperationStateAdapter.quantity(onCard,
       Piece.Warbands(kind, 1), vision.location),
       Right(AvailableQuantity.Finite(1)))
-    val killed = run(onCard, Kill(Piece.Warbands(kind, 1), vision))
+    val killed = runPermissively(onCard, Kill(Piece.Warbands(kind, 1), vision))
     assertEquals(killed.game.current.warbandsOn(VisionRules.Faith, kind), 0)

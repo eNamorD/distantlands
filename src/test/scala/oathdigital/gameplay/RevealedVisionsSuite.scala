@@ -39,8 +39,8 @@ class RevealedVisionsSuite extends munit.FunSuite:
     assertEquals(RevealedVisions.claimants(ready, VisionRules.Faith),
       Vector(p2))
 
-  test("a claim is the claimant's lineage's, so a Citizen keeps it"):
-    // p2's warband goes on before p2 turns Citizen: the card keeps it.
+  test("a claim reads the lineage's warbands, whatever the claimant's role"):
+    // p2's Exile warband stands on the card while p2 plays Citizen.
     val ready = Table.start.revealedVision(p1, VisionRules.Faith)
       .warbandsOnCard(VisionRules.Faith, p2, 1).imperial(p3, p2).ready
     assertEquals(RevealedVisions.of(ready, p2),

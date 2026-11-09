@@ -109,7 +109,8 @@ object OperationStateAdapter:
     case Location.WarbandBank(`kind`) => warbandsInBank(ready, kind)
     // A Vision has no tokens: its warbands (False Prophet's) are only in
     // `warbandsOnCards`, wherever the card lies, so a claim discarded with
-    // its Vision can still be killed.
+    // its Vision can still be killed. Putting one only on a revealed Vision
+    // is the caller's job (False Prophet's targets).
     case Location.OnCard(id: VisionId) =>
       Right(ready.game.current.warbandsOn(id, kind))
     case Location.OnCard(id) => cardTokens(ready, id).map(_ =>
