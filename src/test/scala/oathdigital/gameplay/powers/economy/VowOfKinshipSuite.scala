@@ -93,3 +93,24 @@ class VowOfKinshipSuite extends munit.FunSuite:
     assertEquals(said(done.events), Vector(NoteText.Said(
       "spent-from-bank-off-turn",
       s"${p2.value} spent 2 favor from the Nomad bank.", covers = false)))
+
+  test("turned faceup, it moves its holder's board favor to the Nomad " +
+      "bank"):
+    // p1 holds the Vow facedown with 3 favor; revealing it is an arrival.
+    val ready = Table.start.adviser(p1, VowOfKinshipCard, facedown = true)
+      .favor(p1, 3).bankFavor(Suit.Nomad, 1).ready
+    val done = finished(ProcedureWalker.advance(ready,
+      Reveal(VowOfKinshipCard.id, Location.PlayArea(p1)), None, powers))
+    val look = Look(done.treeless)
+    assertEquals(look.favor(p1), 0)
+    assertEquals(look.bankFavor(Suit.Nomad), 4)
+    assertEquals(said(done.events), Vector(NoteText.Said("moved",
+      "Moved 3 favor to the Nomad bank.", covers = false)))
+
+  test("an arrival with no favor on the board moves nothing and says " +
+      "nothing"):
+    val ready = Table.start.adviser(p1, VowOfKinshipCard, facedown = true)
+      .favor(p1, 0).ready
+    val done = finished(ProcedureWalker.advance(ready,
+      Reveal(VowOfKinshipCard.id, Location.PlayArea(p1)), None, powers))
+    assertEquals(said(done.events), Vector.empty)

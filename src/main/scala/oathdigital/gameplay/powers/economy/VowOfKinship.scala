@@ -1,8 +1,9 @@
 package oathdigital.gameplay.powers.economy
 
 import oathdigital.gameplay.{KinshipDraws, KinshipRule, VowOfKinshipCard}
-import oathdigital.gameplay.powerresolver.{AsksBeforeBatch, BatchAsk,
-  BatchContext, Contribution, Replacement}
+import oathdigital.gameplay.powerresolver.{AdviserArrivals, ArrivalFollowUp,
+  AsksBeforeBatch, BatchAsk, BatchContext, Contribution, FollowsArrivals,
+  Replacement}
 import oathdigital.model._
 
 /** Vow of Kinship (card 152, catalog batch 11, rulings 9, 10, 12 and 26 to
@@ -21,8 +22,11 @@ import oathdigital.model._
   * The line reads "Spent {2 favor} from the Nomad bank.", naming the
   * holder when they are not the walk's actor. An answer of none writes no
   * line.
+  *
+  * When the Vow becomes a faceup adviser, its holder's board favor moves to
+  * the Nomad bank (Readings). When it leaves, the favor stays in the bank.
   */
-case object VowOfKinship extends AsksBeforeBatch:
+case object VowOfKinship extends AsksBeforeBatch, FollowsArrivals:
   val id: PowerId = VowOfKinshipCard.power.id
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
   def contributions: Map[PowerWindow, Vector[Contribution]] = Map.empty
@@ -40,6 +44,34 @@ case object VowOfKinship extends AsksBeforeBatch:
   val spentFromBankOffTurn: NoteKey = notes.key("spent-from-bank-off-turn",
     Vector(NotePart.Arg(0), NotePart.Text(" spent "), NotePart.Arg(1),
       NotePart.Text(" from the Nomad bank.")))
+
+  /** "Moved {3 favor} to the Nomad bank." */
+  val moved: NoteKey = notes.key("moved", Vector(NotePart.Text("Moved "),
+    NotePart.Arg(0), NotePart.Text(" to the Nomad bank.")))
+  /** "{Blue} moved {3 favor} to the Nomad bank.", for a holder who is not
+    * the walk's actor. */
+  val movedOffTurn: NoteKey = notes.key("moved-off-turn", Vector(
+    NotePart.Arg(0), NotePart.Text(" moved "), NotePart.Arg(1),
+    NotePart.Text(" to the Nomad bank.")))
+
+  /** The Vow turned faceup among a player's advisers: their board's favor
+    * moves to the Nomad bank. Nobody moves it. */
+  def onArrival(arrived: AdviserArrivals): Option[ArrivalFollowUp] = for
+    arrival <- arrived.arrivals.find(_.card == VowOfKinshipCard.id)
+    holder = arrival.player
+    favor <- arrived.after.game.current.player(holder).map(_.board.favor)
+    if favor > 0
+  yield ArrivalFollowUp(Vector(Move(Piece.Favor(favor),
+      PositionedLocation(Location.PlayArea(holder)),
+      PositionedLocation(Location.FavorBank(Suit.Nomad)))),
+    Note(id, _ => Some(movedLine(holder, arrived.actor, favor))))
+
+  private def movedLine(holder: PlayerId, actor: PlayerId, favor: Int)
+      : LogNote =
+    val card = PowerSourceRef.Card(VowOfKinshipCard.id)
+    val amount = NoteArg.Amount(favor, NoteUnit.Favor)
+    if holder == actor then moved(card, amount)
+    else movedOffTurn(card, NoteArg.Player(holder), amount)
 
   def watching(ready: ReadyGame): Boolean =
     KinshipRule.bank(ready) > 0 && ready.game.current.players.exists(
