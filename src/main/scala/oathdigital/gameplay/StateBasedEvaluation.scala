@@ -66,7 +66,7 @@ object StateBasedEvaluation:
       current.player(current.turn.activePlayer)
         .filterNot(actor => Imperials.isImperial(ready, actor.player))
         .flatMap { actor =>
-        actor.revealedVision.flatMap(v => Option.when(
+        actor.revealedVisions.headOption.flatMap(v => Option.when(
           VisionVictoryEligibility.qualifies(actor.player, ready))(
           VisionVictory(actor.player, v.id)))
       }
@@ -211,7 +211,7 @@ object StateBasedEvaluation:
     val current = ready.game.current
     visionPriority.iterator.flatMap { vision =>
       current.players.find(p => !Imperials.isImperial(ready, p.player) &&
-        p.revealedVision.exists(_.id == vision) &&
+        p.revealedVisions.exists(_.id == vision) &&
         VisionVictoryEligibility.qualifies(p.player, ready))
         .map(p => WarExhaustionResolved(p.player, VictoryKind.Visionary,
           Some(vision), Vector.empty))

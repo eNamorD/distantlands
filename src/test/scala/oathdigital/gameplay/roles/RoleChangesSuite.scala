@@ -40,9 +40,18 @@ class RoleChangesSuite extends munit.FunSuite:
     assertEquals(look.player(p3).board.warbands, 2)
     assertEquals(look.forces(peaks),
       SiteForces.Occupied(ForceKind.Imperial, 3))
-    assertEquals(look.player(p3).revealedVision, None)
+    assertEquals(look.player(p3).revealedVisions, Vector.empty)
     assertEquals(look.player(p3).board.supply.supply, 7)
     assertEquals(after.game.current.turn.phase, Phase.Rest)
+
+  test("becoming a Citizen discards every revealed Vision"):
+    val ready = exileInAct.revealedVision(p3, VisionRules.Sanctuary).ready
+    val after = applied(ready, RoleChanges.becomeImperial(ready, p3,
+      everyPlaceKept(ready, p3)))
+    assertEquals(Look(after).player(p3).revealedVisions, Vector.empty)
+    val discards = after.game.current.commonCards.regionalDiscards.values.flatten.toSet
+    assert(Set[WorldCardId](VisionRules.Conquest, VisionRules.Sanctuary)
+      .subsetOf(discards), discards)
 
   test("off their turn the Act phase is left alone"):
     val ready = exileInAct.turn(p2, Phase.Act).ready

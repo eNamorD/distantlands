@@ -74,8 +74,8 @@ class VisionPlaySuite extends munit.FunSuite:
   private def walkerIsFinished(state: OathState): Boolean =
     MenuPlay.pendingBeyondMenu(Outcomes.ready(state)).isEmpty
 
-  private def revealedVisionOf(state: OathState): Option[VisionState] =
-    Look(state).player(actor).revealedVision
+  private def revealedVisionsOf(state: OathState): Vector[VisionState] =
+    Look(state).player(actor).revealedVisions
 
   private def provincesDiscard(state: OathState): Vector[WorldCardId] =
     Outcomes.ready(state).game.current.commonCards.discard(Region.Provinces)
@@ -133,7 +133,7 @@ class VisionPlaySuite extends munit.FunSuite:
     val after = Outcomes.ready(done.state)
     val updated = Look(after).player(actor)
     assertEquals(updated.board.supply, before.board.supply)
-    assertEquals(updated.revealedVision.map(_.id), Some(revealed))
+    assertEquals(updated.revealedVisions.map(_.id), Vector(revealed))
     assert(!updated.advisers.exists(_.id == revealed))
     assert(provincesDiscard(done.state).contains(old))
     assertEquals(MenuPlay.pendingBeyondMenu(after), None)
@@ -170,8 +170,21 @@ class VisionPlaySuite extends munit.FunSuite:
     val state = visionInTemporaryHand(revealed = Some(existingVision))
     val after = answerPlacement(state, DecisionOptionRef.RevealedVision(actor))
     assert(walkerIsFinished(after))
-    assertEquals(revealedVisionOf(after).map(_.id), Some(newVision))
+    assertEquals(revealedVisionsOf(after).map(_.id), Vector(newVision))
     assert(provincesDiscard(after).contains(existingVision))
+
+  test("a Vision played faceup discards every revealed Vision"):
+    val stacked = atHome.worldDeckTop(newVision)
+      .revealedVision(actor, existingVision)
+      .revealedVision(actor, VisionRules.Sanctuary).ready
+    val parked = accepted(SearchPlay.searched(rules, Ready(stacked), actor))
+      .state
+    val played = answerPlacement(parked,
+      DecisionOptionRef.RevealedVision(actor))
+    assertEquals(revealedVisionsOf(played),
+      Vector(VisionState(newVision, Orientation.FaceUp)))
+    assert(Set[WorldCardId](existingVision, VisionRules.Sanctuary)
+      .subsetOf(provincesDiscard(played).toSet), provincesDiscard(played))
 
   test("a Vision answer naming a site slot is rejected -- it is not offered"):
     val state = visionInTemporaryHand()

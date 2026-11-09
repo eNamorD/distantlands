@@ -129,14 +129,13 @@ object RoleChanges:
         Vector(SetOathkeeper(Some(player)))
       else Vector.empty
 
-  /** The revealed Vision goes to the discard pile after the player's
+  /** Every revealed Vision goes to the discard pile after the player's
     * pawn's region, as a played card's discard does. */
   private def vision(ready: ReadyGame, state: PlayerState)
-      : Vector[CoreOperation] = (for
-    held <- state.revealedVision
-    region <- CardPlay.discardRegion(ready, state.player)
-  yield Discard.Vision(held.id,
-    PositionedLocation(Location.PlayArea(state.player)), region)).toVector
+      : Vector[CoreOperation] =
+    CardPlay.discardRegion(ready, state.player).toVector.flatMap(region =>
+      state.revealedVisions.map(held => Discard.Vision(held.id,
+        PositionedLocation(Location.PlayArea(state.player)), region)))
 
   /** End their Act phase if it is their turn, then refresh their Supply to
     * its leftmost space. */

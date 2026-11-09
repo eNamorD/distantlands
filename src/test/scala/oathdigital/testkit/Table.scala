@@ -345,11 +345,11 @@ final case class Table private (private val game: ReadyGame,
     update(_.updateCurrent(c => c.copy(tracks =
       c.tracks.copy(usurperLimited = onTrack))))
 
-  /** `vision` as `player`'s revealed Vision, faceup, taken from wherever
-    * it lay. */
+  /** `vision` added to `player`'s revealed Visions, faceup, taken from
+    * wherever it lay. */
   def revealedVision(player: PlayerId, vision: VisionId): Table =
-    moving(vision).onPlayer(player)(_.copy(revealedVision =
-      Some(VisionState(vision, Orientation.FaceUp))))
+    moving(vision).onPlayer(player)(state => state.copy(revealedVisions =
+      state.revealedVisions :+ VisionState(vision, Orientation.FaceUp)))
 
   /** `player` reveals `vision` and meets its goal: rules Dunes for
     * Conquest, holds the People's Favor for Rebellion, Dowsing Sticks for
@@ -576,7 +576,7 @@ object Table:
       players = c.players.map(p => p.copy(
         advisers = p.advisers.filter(a => keep(a.id)),
         relics = p.relics.filter(r => keep(r.id)),
-        revealedVision = p.revealedVision.filter(v => keep(v.id)))),
+        revealedVisions = p.revealedVisions.filter(v => keep(v.id)))),
       temporaryHands = c.temporaryHands.view.mapValues(_.filter(keep)).toMap,
       setAsideRelics = c.setAsideRelics.filter(keep))
     val campaign = ready.game.campaign

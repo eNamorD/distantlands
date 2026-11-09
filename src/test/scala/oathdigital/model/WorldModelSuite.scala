@@ -4,7 +4,7 @@ class WorldModelSuite extends munit.FunSuite:
   private def player(id: String, lineage: String): PlayerState = PlayerState(
     PlayerId(id), LineageId(lineage), None,
     PlayerBoardState(0, 0, 0, 0, SupplyTrack.full), Vector.empty,
-    Vector.empty, None)
+    Vector.empty, Vector.empty)
 
   test("site rule derives players and shared rulers directly from forces"):
     val red = player("red-player", "red-lineage")

@@ -19,7 +19,9 @@ final case class PlayerState(
     board: PlayerBoardState,
     advisers: Vector[AdviserState],
     relics: Vector[RelicState],
-    revealedVision: Option[VisionState]
+    /** Faceup, in reveal order. One unless Desecrated Ground kept the
+      * earlier ones (catalog batch 11, ruling 13). */
+    revealedVisions: Vector[VisionState]
 )
 
 /**

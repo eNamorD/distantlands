@@ -1,5 +1,6 @@
 package oathdigital.gameplay.operations
 
+import oathdigital.gameplay.actions.VisionRules
 import oathdigital.gameplay.powers.rest.SilverTongueCard
 import oathdigital.model._
 import oathdigital.model.TestGameFixtures._
@@ -117,6 +118,17 @@ class OperationMutationSuite extends munit.FunSuite:
         PositionedLocation(Location.Site(sites.head)))))
     assertEquals(Look(accepted(result)).player(playerId).pawnSite,
       Some(sites.head))
+
+  test("a faceup Vision moved to a play area joins the revealed Visions"):
+    // Card play discards the old Visions before the move; Desecrated
+    // Ground keeps them, so the write itself must not refuse a second one.
+    val held = Table.start.revealedVision(p1, VisionRules.Faith)
+      .hand(p1, VisionRules.Conquest).ready
+    val moved = accepted(RawOperationBatch.executeAll(held, Vector(Play(
+      VisionRules.Conquest, PositionedLocation(Location.Hand(p1)),
+      Location.PlayArea(p1), Orientation.FaceUp, required = true))))
+    assertEquals(Look(moved).player(p1).revealedVisions.map(_.id),
+      Vector[VisionId](VisionRules.Faith, VisionRules.Conquest))
 
   test("a pawn already on a site cannot move from the player area again"):
     val result = RawOperationBatch.executeAll(ready, Vector(

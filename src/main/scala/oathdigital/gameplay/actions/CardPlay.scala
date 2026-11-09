@@ -185,24 +185,24 @@ object CardPlay:
           "facedown adviser must be played faceup to advisers or the pawn's site"))
     case Origin.TemporaryHand | _: Origin.DiscardPile
         if orientation == Orientation.FaceUp =>
-      // The displacement is forced: a player has at most one revealed Vision.
-      // An answer that names it is still accepted.
-      val expected = player.revealedVision.map(_.id)
-      Either.cond(replace.isEmpty || replace == expected,
+      // A reveal displaces every revealed Vision. An answer that names one
+      // of them is still accepted.
+      val held = player.revealedVisions.map(_.id)
+      Either.cond(replace.forall(named => held.contains(named)),
         revealed(player, origin, id),
-        InvalidSearchPlacement("a Vision replaces only the revealed Vision"))
+        InvalidSearchPlacement("a Vision replaces only a revealed Vision"))
     case Origin.TemporaryHand | _: Origin.DiscardPile =>
       adviserHeld(player, replace).map(removed => PlacementPlan(
         Some(Play(id, keptSource(origin, player.player),
           Location.PlayArea(player.player), Orientation.FaceDown,
           required = true)), Vector.empty, removed.toVector, Vector.empty))
 
-  /** `id` played faceup as the revealed Vision, displacing the one there. */
+  /** `id` played faceup as a revealed Vision, displacing every one there. */
   private def revealed(player: PlayerState, origin: Origin, id: VisionId)
       : PlacementPlan =
     PlacementPlan(Some(Play(id, keptSource(origin, player.player),
       Location.PlayArea(player.player), Orientation.FaceUp, required = true)),
-      Vector.empty, player.revealedVision.toVector.map(_.id), Vector.empty)
+      Vector.empty, player.revealedVisions.map(_.id), Vector.empty)
 
   /** The adviser `replace` names, which the actor must hold. */
   private def adviserHeld(player: PlayerState, replace: Option[CardId])

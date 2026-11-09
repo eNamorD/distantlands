@@ -220,7 +220,7 @@ class ConspiracyWhenPlayedSuite extends munit.FunSuite:
       "leaves the revealed Vision alone"):
     val f = fromFacedownAdviser(p2AtAncientCity.relic(p2, crackedHorn,
       facedown = true))
-    val revealedBefore = Look(f.ready).player(p1).revealedVision
+    val revealedBefore = Look(f.ready).player(p1).revealedVisions
     val target = atTarget(f)
     assertEquals(targetDecision(f, target).map(_.options),
       Some(Vector[DecisionOptionRef](DecisionOptionRef.RelicSlot(p2, 0))))
@@ -228,7 +228,7 @@ class ConspiracyWhenPlayedSuite extends munit.FunSuite:
     val after = done.treeless
     assert(Look(after).player(p1).relics.exists(_.id == crackedHorn))
     assert(!Look(after).player(p1).advisers.exists(_.id == conspiracy))
-    assertEquals(Look(after).player(p1).revealedVision, revealedBefore)
+    assertEquals(Look(after).player(p1).revealedVisions, revealedBefore)
     assert(!accepted(CardIndex.from(after.game)).ids.contains(conspiracy))
     assertJournalRebuilds(f.ready, done.events, after)
 

@@ -35,7 +35,7 @@ final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
         PlayerBoardState(1, 1, 0, 3, SupplyTrack.full),
         adviserMap.get(participant.playerId).toVector.map(id =>
           DenizenState(id, Orientation.FaceDown, Tokens.empty)),
-        Vector.empty, None)
+        Vector.empty, Vector.empty)
     }
     FirstGameSetupMaterial(players, map,
       CardZones(plan.worldDeckOrder, plan.relicOrder.filterNot(usedRelics),

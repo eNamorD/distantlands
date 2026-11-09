@@ -356,6 +356,15 @@ class CardSlotsSuite extends munit.FunSuite:
     assertEquals(options(slotsOf(over, faith)).filter(_.ref == spot.ref),
       Vector(replacing(spot, VisionRules.Conquest)))
 
+  test("a faceup Vision over two revealed Visions replaces both"):
+    val faith = VisionRules.Faith
+    val over = atAncientCity.hand(p1, faith)
+      .revealedVision(p1, VisionRules.Conquest)
+      .revealedVision(p1, VisionRules.Sanctuary).ready
+    assertEquals(options(slotsOf(over, faith)).filter(_.ref == spot.ref),
+      Vector(replacing(replacing(spot, VisionRules.Conquest),
+        VisionRules.Sanctuary)))
+
   test("a faceup Conspiracy is Play, and takes no slot"):
     val conspiracy = VisionRules.Conspiracy
     val ready = atAncientCity.hand(p1, conspiracy)

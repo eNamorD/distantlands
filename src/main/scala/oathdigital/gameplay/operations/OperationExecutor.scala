@@ -78,7 +78,7 @@ private[operations] object OperationStateInvariant:
       ready: ReadyGame
   ): Either[OperationError, Unit] =
     val invalidRevealed = ready.game.current.players.exists(
-      _.revealedVision.exists(_.orientation != Orientation.FaceUp)
+      _.revealedVisions.exists(_.orientation != Orientation.FaceUp)
     )
     val invalidAdviser = ready.game.current.players.exists(
       _.advisers.exists {

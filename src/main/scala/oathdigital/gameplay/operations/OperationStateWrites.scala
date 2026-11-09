@@ -83,9 +83,9 @@ private[operations] object OperationStateWrites:
                 state.relics.map(value => if value.id == id then
                   f(value).asInstanceOf[RelicState] else value)))
             case CardContainer.Player(player, PlayerCardArea.RevealedVision) =>
-              updatePlayer(ready, player)(state => state.copy(revealedVision =
-                state.revealedVision.map(value =>
-                  f(value).asInstanceOf[VisionState])))
+              updatePlayer(ready, player)(state => state.copy(revealedVisions =
+                state.revealedVisions.map(value => if value.id == id then
+                  f(value).asInstanceOf[VisionState] else value)))
             case CardContainer.Site(site, SiteCardArea.Denizens) =>
               updateSite(ready, site)(state => state.copy(denizens =
                 state.denizens.map(value => if value.id == id then

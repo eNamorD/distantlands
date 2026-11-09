@@ -158,14 +158,14 @@ object CardIndex:
         player.relics,
         CardContainer.Player(player.player, PlayerCardArea.Relics)
       )
-      player.revealedVision.foreach { vision =>
+      player.revealedVisions.zipWithIndex.foreach { (vision, at) =>
         addState(
           vision,
           CardContainer.Player(
             player.player,
             PlayerCardArea.RevealedVision
           ),
-          0
+          at
         )
       }
     }

@@ -184,7 +184,7 @@ private[application] final class GamePresentationProjector(
             withWarbands(withTokens(cardDetails(card.id, Some(card.orientation),
               hidden = false), card.tokens), ready, card.id)
           else hiddenCard("relic")),
-        player.revealedVision.map(card => cardDetails(card.id,
+        player.revealedVisions.headOption.map(card => cardDetails(card.id,
           Some(card.orientation), hidden = false)),
         banners(ready).filter(_.holderPlayerId.contains(player.player.value)),
         banked, printed, atSites, restBase, bands,

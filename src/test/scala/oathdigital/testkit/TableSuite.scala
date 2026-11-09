@@ -361,9 +361,16 @@ class TableSuite extends munit.FunSuite:
   test("revealedVision reveals the Vision faceup and takes it from the deck"):
     val current = Table.start.revealedVision(p1, VisionRules.Faith).ready
       .game.current
-    assertEquals(current.player(p1).flatMap(_.revealedVision),
-      Some(VisionState(VisionRules.Faith, Orientation.FaceUp)))
+    assertEquals(current.player(p1).map(_.revealedVisions),
+      Some(Vector(VisionState(VisionRules.Faith, Orientation.FaceUp))))
     assert(!current.commonCards.worldDeck.contains(VisionRules.Faith))
+
+  test("revealedVision adds to the Visions already revealed"):
+    val current = Table.start.revealedVision(p1, VisionRules.Faith)
+      .revealedVision(p1, VisionRules.Conquest).ready.game.current
+    assertEquals(current.player(p1).map(_.revealedVisions),
+      Some(Vector(VisionState(VisionRules.Faith, Orientation.FaceUp),
+        VisionState(VisionRules.Conquest, Orientation.FaceUp))))
 
   test("backInPhase changes the phase and keeps the powers used this turn"):
     val wolves = WolvesCard.id

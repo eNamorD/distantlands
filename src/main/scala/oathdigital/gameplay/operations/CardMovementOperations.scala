@@ -10,7 +10,7 @@ import oathdigital.model._
   */
 private[operations] object CardMovementOperations:
   import OperationError._
-  import OperationStateAdapter.{card, playerState}
+  import OperationStateAdapter.card
   import OperationStateWrites.{
     CardTransfer,
     cardTransfers,
@@ -250,7 +250,8 @@ private[operations] object CardMovementOperations:
     case CardContainer.Player(player, PlayerCardArea.Relics) => updatePlayer(ready, player)(
       state => state.copy(relics = state.relics.filterNot(_.id == located.id)))
     case CardContainer.Player(player, PlayerCardArea.RevealedVision) => updatePlayer(ready,
-      player)(state => state.copy(revealedVision = None))
+      player)(state => state.copy(revealedVisions =
+        state.revealedVisions.filterNot(_.id == located.id)))
     case CardContainer.Site(site, SiteCardArea.Denizens) => updateSite(ready, site)(
       state => state.copy(denizens = state.denizens.filterNot(_.id == located.id)))
     case CardContainer.Site(site, SiteCardArea.Relics) => updateSite(ready, site)(
@@ -375,12 +376,10 @@ private[operations] object CardMovementOperations:
         case state: VisionState if state.orientation == Orientation.FaceDown =>
           updatePlayer(ready, player)(value =>
             value.copy(advisers = value.advisers :+ state))
-        case state: VisionState => playerState(ready, player).flatMap { value =>
-          Either.cond(value.revealedVision.isEmpty, (),
-            ConflictingDeltas("revealed Vision slot is occupied")).flatMap { _ =>
-            updatePlayer(ready, player)(_.copy(revealedVision = Some(state)))
-          }
-        }
+        // Card play discards the old Visions first; Desecrated Ground keeps
+        // them, so a second Vision joins the first.
+        case state: VisionState => updatePlayer(ready, player)(value =>
+          value.copy(revealedVisions = value.revealedVisions :+ state))
         case state: RelicState => updatePlayer(ready, player)(value =>
           value.copy(relics = value.relics :+ state))
         case _ => Left(InvalidDestination(transfer.piece, transfer.to.location))

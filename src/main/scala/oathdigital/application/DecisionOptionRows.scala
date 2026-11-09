@@ -105,12 +105,15 @@ private[application] final class DecisionOptionRows(
         viewer, index, inner, details).map(_.copy(state = "warning",
           reason = Some(reasonText(ready, viewer, reason))))
       // Named after the wrapped option is described, so the label says what
-      // the play discards and where the card goes.
-      case DecisionOption.Replacing(inner, card) =>
-        val replaced = shown(ready, viewer, index, card)
+      // the play discards and where the card goes. A reveal that displaces
+      // several Visions nests one `Replacing` per Vision; the row names
+      // them all and carries the first.
+      case replacing: DecisionOption.Replacing =>
+        val (inner, cards) = replacedChain(replacing)
+        val replaced = cards.map(shown(ready, viewer, index, _))
         project(ready, viewer, index, inner, details).map(row =>
-          row.copy(label = replacingLabel(inner.ref, replaced.name),
-            replaces = Some(replaced)))
+          row.copy(label = replacingLabel(inner.ref,
+            spokenList(replaced.map(_.name))), replaces = replaced.headOption))
       case DecisionOption.Burying(inner, card) =>
         val buried = shown(ready, viewer, index, card)
         val name = if buried.hidden then s"a ${buried.name.toLowerCase}"
@@ -225,6 +228,20 @@ private[application] final class DecisionOptionRows(
     ConsentAskProjection(ignoring.map(_.granter.value),
       ignoring.flatMap(_.powers).distinct.map(consentNames.power),
       asks.filter(_.alternative).map(one), payers.map(one))
+
+  /** The option a chain of `Replacing` wraps, and the cards the chain
+    * names, innermost first. */
+  private def replacedChain(option: DecisionOption)
+      : (DecisionOption, Vector[CardId]) = option match
+    case DecisionOption.Replacing(inner, card) =>
+      val (bottom, cards) = replacedChain(inner)
+      (bottom, cards :+ card)
+    case other => (other, Vector.empty)
+
+  /** "A", "A and B", "A, B and C". */
+  private def spokenList(names: Vector[String]): String = names match
+    case Vector(only) => only
+    case _ => names.init.mkString(", ") + " and " + names.last
 
   /** A Replace option's label: the card it discards, and where the played
     * card goes. */

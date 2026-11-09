@@ -37,7 +37,7 @@ object SwearOath:
   private def visionGoal(state: ReadyGame, winner: PlayerId)
       : Vector[Operation] =
     state.game.current.player(winner)
-      .flatMap(_.revealedVision).flatMap(vision =>
+      .toVector.flatMap(_.revealedVisions).headOption.flatMap(vision =>
         VisionRules.trueGoal(vision.id)) match
       case None => Vector(ChronicleTasks.failing(OathViolation
         .InvalidEventOrder(s"${winner.value} won by no Vision with a goal")))

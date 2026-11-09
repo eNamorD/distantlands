@@ -117,6 +117,20 @@ class SlotOptionRowsSuite extends munit.FunSuite:
       .label, s"Replace ${presentation.cardLabel(board, VisionRules.Conquest)}" +
         " as revealed Vision")
 
+  test("a spot that replaces two Visions names both and carries the first"):
+    val spot = DecisionOption.RevealedVision(
+      DecisionOptionRef.RevealedVision(p1))
+    val twoVisions = Table.from(board).revealedVision(p1, VisionRules.Faith)
+      .ready
+    val row = present(rows.project(twoVisions, Some(p1),
+      CardIndex.from(twoVisions.game).toOption,
+      DecisionOption.Replacing(DecisionOption.Replacing(spot,
+        VisionRules.Conquest), VisionRules.Faith)), "a projected row")
+    def name(vision: VisionId) = presentation.cardLabel(twoVisions, vision)
+    assertEquals(row.label, s"Replace ${name(VisionRules.Conquest)} and " +
+      s"${name(VisionRules.Faith)} as revealed Vision")
+    assertEquals(row.replaces.map(_.cardId), Some(VisionRules.Conquest.value))
+
   test("the discard pile and the world deck name themselves, for a card " +
       "play and a Search alike"):
     assertEquals(rowOf(DecisionOption.DiscardPile(

@@ -341,8 +341,9 @@ object CardSlots:
       case _: VisionId =>
         val spot = DecisionOption.RevealedVision(
           DecisionOptionRef.RevealedVision(player.player))
-        Vector(player.revealedVision.fold[DecisionOption](spot)(held =>
-          DecisionOption.Replacing(spot, held.id)) -> placement)
+        Vector(player.revealedVisions.foldLeft[DecisionOption](spot)(
+          (option, held) => DecisionOption.Replacing(option, held.id)) ->
+          placement)
       case _ => adviserSlots(player, card, origin, Orientation.FaceUp, rules)
 
   private def facedown(player: PlayerState, card: WorldCardId,

@@ -109,8 +109,8 @@ class SearchPartySuite extends munit.FunSuite:
       faith))
     val done = placedAs(peekedAndPicked(playedFaceupFromFacedown(ready),
       Region.Hinterland, faith), faith, PlayedAs.Faceup)
-    assertEquals(Look(after(done)).player(actor).revealedVision.map(_.id),
-      Some(faith))
+    assertEquals(Look(after(done)).player(actor).revealedVisions.map(_.id),
+      Vector(faith))
     assertEquals(after(done).game.current.tracks.visionsDrawn,
       ready.game.current.tracks.visionsDrawn)
 

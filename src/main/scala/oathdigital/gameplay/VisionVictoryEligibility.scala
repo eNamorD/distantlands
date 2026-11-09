@@ -7,8 +7,8 @@ import oathdigital.model._
 object VisionVictoryEligibility:
   def qualifies(playerId: PlayerId, ready: ReadyGame): Boolean =
     val current = ready.game.current
-    current.tracks.visionsDrawn >= 3 && current.player(playerId)
-      .flatMap(_.revealedVision).exists { revealed =>
+    current.tracks.visionsDrawn >= 3 && current.player(playerId).toVector
+      .flatMap(_.revealedVisions).exists { revealed =>
       VisionRules.trueGoal(revealed.id).exists:
         case OathkeeperGoal.Supremacy => uniquePositiveLeader(playerId,
           SupremacySites.counts(ready))

@@ -80,7 +80,7 @@ object TestGameFixtures:
     ),
     advisers = Vector(adviser),
     relics = Vector.empty,
-    revealedVision = None
+    revealedVisions = Vector.empty
   )
 
   val lineage: LineageState = LineageState(
@@ -172,7 +172,7 @@ object TestGameFixtures:
     val blue = PlayerState(blueId, blueLineage, pawnSite = Some(sites(1)),
       board = PlayerBoardState(favor = 2, faceUpSecrets = 1,
         faceDownSecrets = 0, warbands = 2, supply = SupplyTrack.full),
-      advisers = Vector.empty, relics = blueRelics, revealedVision = None)
+      advisers = Vector.empty, relics = blueRelics, revealedVisions = Vector.empty)
     val seated = game.copy(
       campaign = game.campaign.copy(lineages = game.campaign.lineages.updated(
         blueLineage, LineageState(blueLineage, Some(blueId), Role.Exile,
