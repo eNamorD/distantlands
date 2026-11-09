@@ -461,13 +461,15 @@ object ProcedureWalker extends DecideNarrowing:
 
   /** `decide`, parked at `pending`, narrowed as the walk narrowed it before
     * parking. A position whose search empties a required decision is
-    * returned as declared, and the answer-time check refuses it. */
+    * returned as declared, and the answer-time check refuses it.
+    * `followUp` is the follow-up tree the park lies in, if any. */
   private[walker] def narrowParked(state: ReadyGame, action: Operation,
-      pending: PendingTree, powers: WalkerPowers, decide: Decide): Decide =
+      pending: PendingTree, powers: WalkerPowers, decide: Decide,
+      followUp: Option[Operation]): Decide =
     val ctx = WalkCtx(strip(state), Vector.empty,
       state.game.current.walkActor, pending.answered,
       powers.withAnswers(pending.answered), WalkerDice.placeholder,
-      state.game.current.walkerProcedure, action)
+      state.game.current.walkerProcedure, action, followUp = followUp)
     narrowAt(decide, ctx, pending.at).toOption.flatten.getOrElse(decide)
 
   /** Whether the leaf is where a decision is asked: reached fresh, or at the
@@ -628,7 +630,7 @@ object ProcedureWalker extends DecideNarrowing:
       if index == triggers.size then
         WalkerSteps.record(TakeDeferred(ExecutedTriggers.key), at,
           path :+ index.toString, Vector.empty, strict = true).map(done =>
-          Done(done.copy(following = false,
+          Done(done.copy(following = false, followUp = None,
             previous = Some((before, done.state)))))
       else
         val trigger = triggers(index)
@@ -636,10 +638,12 @@ object ProcedureWalker extends DecideNarrowing:
           case (None, None) => from(index + 1, at, None)
           case (None, Some(_)) => contractViolation(
             s"resume path enters follow-up $index, which did not start")
-          case (Some(tree), _) => walk(tree, at, path :+ index.toString,
+          case (Some(tree), _) => walk(tree, at.copy(followUp = Some(tree)),
+              path :+ index.toString,
               rest, resume, WalkerHooks(Vector(trigger.id), Set.empty))
             .flatMap:
-              case Done(next) => from(index + 1, next, None)
+              case Done(next) =>
+                from(index + 1, next.copy(followUp = None), None)
               case stop => Right(stop)
     cursor.flatMap(_.headOption) match
       case None => from(0, ctx.copy(following = true), None)

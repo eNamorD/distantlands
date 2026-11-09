@@ -69,7 +69,7 @@ private[walker] trait DecideNarrowing:
           val kept = WalkerSearch.choosable(cut).toSet
           val hidden = WalkerSearch.choosable(decide).filterNot(kept)
           operationAsksAt(decide, ctx, path, hidden) ++
-            WalkerPowerGather.lookAheadNoted(ctx.root, decide, cut,
+            WalkerPowerGather.lookAheadNoted(ctx.restrictionRoot, decide, cut,
               ctx.state, ctx.actor, ctx.powers, ctx.answered,
               ctx.procedure, grantable(decide, ctx, path)).toMap
         narrowed match
@@ -135,13 +135,13 @@ private[walker] trait DecideNarrowing:
     * a required operation fails the path. */
   private def verdict(decide: Decide, ctx: WalkCtx, path: Vector[String])
       : DecisionAnswer => Either[OathViolation, Unit] =
-    lazy val baseline = WalkerPowerGather.breaches(ctx.root, ctx.state,
-      ctx.actor, ctx.powers, ctx.answered, ctx.procedure).toSet
+    lazy val baseline = WalkerPowerGather.breaches(ctx.restrictionRoot,
+      ctx.state, ctx.actor, ctx.powers, ctx.answered, ctx.procedure).toSet
     val searching = ctx.copy(events = Vector.empty, searching = true,
       visited = ctx.visited + ((path, WalkCtx.searchKey(ctx.state))))
     def reached(answer: DecisionAnswer): Either[OathViolation, Unit] =
       val hypothetical = Answered(decide.decisionId, answer, decide.owner)
-      WalkerPowerGather.breaches(ctx.root, ctx.state, ctx.actor,
+      WalkerPowerGather.breaches(ctx.restrictionRoot, ctx.state, ctx.actor,
           ctx.powers, ctx.answered :+ hypothetical, ctx.procedure)
         .find(!baseline(_)).toLeft(())
         .flatMap(_ => searched(walk(ctx.root, searching, Vector.empty,

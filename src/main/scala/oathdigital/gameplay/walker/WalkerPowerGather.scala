@@ -530,7 +530,8 @@ private[walker] object WalkerPowerGather:
       powers: WalkerPowers): Option[Operation] =
     val picked = powers.withAnswers(pending.answered)
     resolveAt(state, pending, picked, action, pending.at, Vector.empty,
-      Set.empty).map(narrowedAt(state, action, pending, picked))
+      Set.empty).map((node, followUp) =>
+        narrowedAt(state, action, pending, picked, followUp)(node))
 
   /** Every leaf open at the park: the open children's decisions of a
     * [[Simultaneous]] node parked at its own path, or else the one leaf
@@ -540,17 +541,18 @@ private[walker] object WalkerPowerGather:
     val picked = powers.withAnswers(pending.answered)
     resolveAt(state, pending, picked, action, pending.at, Vector.empty,
         Set.empty) match
-      case Some(node: Simultaneous) =>
+      case Some((node: Simultaneous, followUp)) =>
         SimultaneousChildren.open(node, pending.answered).map((_, decide) =>
-          narrowedAt(state, action, pending, picked)(decide))
-      case found => found.map(narrowedAt(state, action, pending, picked))
-        .toVector
+          narrowedAt(state, action, pending, picked, followUp)(decide))
+      case found => found.map((node, followUp) =>
+        narrowedAt(state, action, pending, picked, followUp)(node)).toVector
 
   private def narrowedAt(state: ReadyGame, action: Operation,
-      pending: PendingTree, picked: WalkerPowers)(node: Operation): Operation =
+      pending: PendingTree, picked: WalkerPowers,
+      followUp: Option[Operation])(node: Operation): Operation =
     node match
       case decide: Decide => ProcedureWalker.narrowParked(state, action,
-        pending, picked, decide)
+        pending, picked, decide, followUp)
       case other => other
 
   /** The node `pending.at` addresses itself, unnarrowed: what a caller
@@ -558,27 +560,31 @@ private[walker] object WalkerPowerGather:
   def nodeAt(state: ReadyGame, action: Operation, pending: PendingTree,
       powers: WalkerPowers): Option[Operation] =
     resolveAt(state, pending, powers.withAnswers(pending.answered), action,
-      pending.at, Vector.empty, Set.empty)
+      pending.at, Vector.empty, Set.empty).map(_._1)
 
+  /** The node `remaining` addresses under `node`, with the follow-up tree
+    * the path entered on the way, if any. */
   private def resolveAt(state: ReadyGame, pending: PendingTree,
       powers: WalkerPowers, node: Operation, remaining: Vector[String],
-      consumed: Vector[String], gathered: Set[PowerWindow]): Option[Operation] =
+      consumed: Vector[String], gathered: Set[PowerWindow],
+      followUp: Option[Operation] = None)
+      : Option[(Operation, Option[Operation])] =
     remaining.headOption match
-      case None => Some(node)
+      case None => Some((node, followUp))
       case Some(segment) => node match
         // Under a leaf whose batch asked, the path enters its questions.
         case build: BuildOps if segment == BatchQuestions.segment &&
             build.window.forall(gathered.contains) =>
           resolveAt(state, pending, powers, BatchQuestions.walked(build,
               powers, state.game.current.walkActor, consumed),
-            remaining.tail, consumed :+ segment, Set.empty)
+            remaining.tail, consumed :+ segment, Set.empty, followUp)
         // Under a plain leaf whose batch of one asked.
         case delta: CoreOperation if segment == BatchQuestions.segment &&
             delta.window.forall(gathered.contains) =>
           resolveAt(state, pending, powers, BatchQuestions.walked(
               BatchQuestions.single(delta, strict = false), powers,
               state.game.current.walkActor, consumed),
-            remaining.tail, consumed :+ segment, Set.empty)
+            remaining.tail, consumed :+ segment, Set.empty, followUp)
         // Past a leaf whose batch is held, the path enters a follow-up.
         case leaf: LeafOperation
             if leaf.window.forall(gathered.contains) &&
@@ -589,7 +595,7 @@ private[walker] object WalkerPowerGather:
             powers, node, consumed, gathered, remaining)
           if index >= 0 && index < children.size then
             resolveAt(state, pending, powers, children(index), remaining.tail,
-              consumed :+ segment, nextGathered)
+              consumed :+ segment, nextGathered, followUp)
           else None
         }
 
@@ -598,14 +604,14 @@ private[walker] object WalkerPowerGather:
     * (`ExecutedTrigger`). */
   private def followUpAt(state: ReadyGame, pending: PendingTree,
       powers: WalkerPowers, segment: String, rest: Vector[String],
-      consumed: Vector[String]): Option[Operation] =
+      consumed: Vector[String]): Option[(Operation, Option[Operation])] =
     val triggers = ExecutedTriggers.of(powers)
     for
       index <- segment.toIntOption if index >= 0 && index < triggers.size
       tree <- triggers(index).onExecuted(ExecutedTriggers.batch(
         powers.catalog, state.game.current.walkActor, state))
       found <- resolveAt(state, pending, powers, tree, rest,
-        consumed :+ segment, Set.empty)
+        consumed :+ segment, Set.empty, Some(tree))
     yield found
 
   /** The children `node` presents at `path` for the purpose of navigating one

@@ -1,7 +1,7 @@
 package oathdigital.gameplay.walker
 
 import oathdigital.model.{Answered, OathEvent, Operation,
-  OperationRestriction, PlayerId, ReadyGame}
+  OperationRestriction, PlayerId, ReadyGame, Sequence}
 
 /** Command-local walk state: the state threaded through executed deltas,
   * the events recorded so far, the walk's actor
@@ -32,8 +32,18 @@ private[walker] final case class WalkCtx(
     visited: Set[(Vector[String], ReadyGame)] = Set.empty,
     /** Set while the walk runs a trigger's follow-up, whose batches start
       * no follow-up of their own (`ExecutedTriggers`). */
-    following: Boolean = false
+    following: Boolean = false,
+    /** The follow-up tree this walk runs, if any. It is not part of
+      * `root`, so the restriction look-ahead reads it beside `root`: a
+      * follow-up may nest a card play whose hook a restriction judges
+      * (False Prophet's claim, catalog batch 11, slice 7). */
+    followUp: Option[Operation] = None
 ):
+  /** The tree the restriction look-ahead folds: `root`, and the follow-up
+    * this walk runs. */
+  def restrictionRoot: Operation =
+    followUp.fold(root)(tree => Sequence(Vector(root, tree)))
+
   /** The operation restrictions this walk's batches run with: its powers'
     * restrictions for the procedure it walks, which lift a power's own lock
     * during that power's use (catalog batch 10, slice 4). */
