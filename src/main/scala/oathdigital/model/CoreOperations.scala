@@ -318,6 +318,21 @@ final case class Give(piece: Piece, giver: PlayerId,
     PositionedLocation(to), by = Some(giver))
   override val children: Vector[Operation] = Vector(move)
 
+/** Moves `amount` favor from the Nomad bank onto `player`'s board, for the
+  * spend that follows it in the same batch (Vow of Kinship, catalog batch
+  * 11, slice 5). The favor lands on the board even while `player` holds
+  * the Vow, which sends every other favor bound for their board to the
+  * Nomad bank. Nobody moves it, so no restriction against a player holds.
+  */
+final case class DrawNomadFavor(player: PlayerId, amount: Int)
+    extends CoreOperation:
+  require(amount > 0, "a draw moves favor")
+  override val required: Boolean = true
+  val move: Move = Move(Piece.Favor(amount),
+    PositionedLocation(Location.FavorBank(Suit.Nomad)),
+    PositionedLocation(Location.PlayArea(player)))
+  override val children: Vector[Operation] = Vector(move)
+
 /** Pays a typed cost. The placed portions (`favor`/`secret`) move from the
   * player's play area to `placedAt`; the burnt portions leave play to the
   * shared bank. An all-zero cost is an inert no-op.

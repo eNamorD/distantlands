@@ -34,7 +34,8 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
     Peek | Flip | Bury | Discard | RemoveFromMap | Draw | Play | Reveal | Swap |
       Shuffle
   private type PieceOperation =
-    Move | Take | Kill | Replace | Sacrifice | Burn | Give | Exchange | PayCost
+    Move | Take | Kill | Replace | Sacrifice | Burn | Give | Exchange | PayCost |
+      DrawNomadFavor
   private type ResourceOperation = SpendSupply | GainSupply | FlipSecrets | Gain
   private type TurnOperation = AdvanceVisionsDrawn.type | AdvanceRound.type |
     UsurperLimiterRemoved.type | BeginTurn | EnterPhase |
@@ -241,6 +242,9 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
         "by" -> burn.by.fold[ujson.Value](ujson.Null)(
           by => ujson.Str(by.value)))
       case give: Give => encodeGive(give, "give")
+      case DrawNomadFavor(player, amount) => ujson.Obj(
+        "kind" -> "draw-nomad-favor", "playerId" -> player.value,
+        "amount" -> amount)
       case Exchange(give, receive) => ujson.Obj("kind" -> "exchange",
         "give" -> encodeGive(give, "exchange-give"),
         "receive" -> encodeGive(receive, "exchange-receive"))
@@ -527,6 +531,9 @@ private[serialization] trait WalkerOperationCodec extends CampaignResultCodec
 
   private def decodePieceOperation(value: ujson.Value,
       path: String): DecodedOperation =
+    case "draw-nomad-favor" =>
+      decodePositiveInt(value("amount"), s"$path.amount")
+        .map(amount => DrawNomadFavor(PlayerId(value("playerId").str), amount))
     case "move" => for
       piece <- decodePiece(value("piece"), s"$path.piece")
       from <- decodePositionedLocation(value("from"), s"$path.from")

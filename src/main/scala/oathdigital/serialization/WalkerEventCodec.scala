@@ -153,6 +153,7 @@ private[serialization] trait WalkerEventCodec extends WalkerOperationCodec:
         ujson.Obj("count" -> count, "siteId" -> site.value))))
     case NoteArg.Things(items) => ujson.Obj("kind" -> "things",
       "things" -> ujson.Arr.from(items.map(encodeNoteThing)))
+    case NoteArg.ToNomadBank => ujson.Obj("kind" -> "to-nomad-bank")
 
   private def encodeNoteThing(thing: NoteThing): ujson.Value = thing match
     case NoteThing.Site(id) => ujson.Obj("kind" -> "site",
@@ -237,6 +238,7 @@ private[serialization] trait WalkerEventCodec extends WalkerOperationCodec:
       case (thing, index) =>
         decodeNoteThing(thing, s"$path.things[$index]") })
       .map(NoteArg.Things.apply)
+    case "to-nomad-bank" => Right(NoteArg.ToNomadBank)
     case other => Left(InvalidValue(s"$path.kind",
       s"unknown note argument '$other'"))
 

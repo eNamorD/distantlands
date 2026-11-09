@@ -711,3 +711,10 @@ class WalkerOperationWireSuite extends munit.FunSuite:
     assertEquals(GameEventWire.decode(encoded).map(_.event), Right(event))
     assertEquals(ujson.read(encoded)("payload")("step")("ops")(0)("kind").str,
       "act-as-if-advisers")
+
+  test("a draw from the Nomad bank round trips"):
+    val event = recordedOperation(DrawNomadFavor(PlayerId("p1"), 2))
+    val encoded = accepted(GameEventWire.encodeEvent("walker", 0, event))
+    assertEquals(GameEventWire.decode(encoded).map(_.event), Right(event))
+    assertEquals(ujson.read(encoded)("payload")("step")("ops")(0)("kind").str,
+      "draw-nomad-favor")

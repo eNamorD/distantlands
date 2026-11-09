@@ -56,7 +56,13 @@ private[gamelog] final class NoteLines(words: LogWords,
       viewer: Option[PlayerId]): Option[Vector[LogSpan]] =
     wordings.template(power, note.key).map(template =>
       prefix(power, note, seen, viewer) ++
-        sentence(template, note.args, seen, viewer))
+        ended(note, sentence(template, note.args, seen, viewer)))
+
+  /** `spans`, ended for the Nomad bank when the note's favor went there
+    * (catalog batch 11, ruling 29). */
+  private def ended(note: LogNote, spans: Vector[LogSpan]): Vector[LogSpan] =
+    if note.args.contains(NoteArg.ToNomadBank) then NoteLines.toNomadBank(spans)
+    else spans
 
   /** "{source}: " for a power's or a game rule's line, and nothing for a
     * procedure's, which starts with its sentence. */
@@ -149,6 +155,7 @@ private[gamelog] final class NoteLines(words: LogWords,
         words.site(site))))
     case NoteArg.Things(items) => LogWords.join(items.map(thing(_, seen,
       viewer)))
+    case NoteArg.ToNomadBank => Vector.empty
 
   /** One item of a joined list, worded as the line that joined them by hand
     * worded it. */
@@ -235,3 +242,12 @@ private[gamelog] final class NoteLines(words: LogWords,
       Some(words.one(words.card(id, ready, ready, viewer)))
     case DecisionOptionRef.Banner(banner) => Some(Vector(words.banner(banner)))
     case _ => None
+
+private[gamelog] object NoteLines:
+  /** `spans` ending ", to the Nomad bank", before the final period if the
+    * sentence has one. */
+  def toNomadBank(spans: Vector[LogSpan]): Vector[LogSpan] =
+    spans.lastOption match
+      case Some(Text(last)) if last.endsWith(".") =>
+        spans.init :+ Text(last.dropRight(1) + ", to the Nomad bank.")
+      case _ => spans :+ Text(", to the Nomad bank")

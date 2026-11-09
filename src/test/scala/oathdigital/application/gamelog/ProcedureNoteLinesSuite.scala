@@ -219,6 +219,17 @@ class ProcedureNoteLinesSuite extends munit.FunSuite:
       Vector[LogSpan](Text("Traded with "), Text("a Denizen"),
         Text(" for "), Text("3"), Text(" favor")))
 
+  test("a Trade's favor that went to the Nomad bank says so"):
+    assertEquals(said(ActionRef.Trade, TradeProcedure.tradedForFavor,
+      NoteArg.Card(roar), NoteArg.Number(3), NoteArg.ToNomadBank),
+      "Traded with a Denizen for 3 favor, to the Nomad bank")
+
+  test("a sentence that ends in a period takes the ending before it"):
+    assertEquals(NoteLines.toNomadBank(Vector[LogSpan](Text("Gained "),
+        Text("2"), Text(" favor."))),
+      Vector[LogSpan](Text("Gained "), Text("2"),
+        Text(" favor, to the Nomad bank.")))
+
   test("a Trade for one secret says secret"):
     assertEquals(said(ActionRef.Trade, TradeProcedure.tradedForSecrets,
       NoteArg.Card(roar), NoteArg.Number(1)),

@@ -1,5 +1,6 @@
 package oathdigital.gameplay.powers
 
+import scala.util.chaining.scalaUtilChainingOps
 import oathdigital.gameplay.actions.BannerRules
 import oathdigital.gameplay.powerresolver.PhasePower
 import oathdigital.gameplay.walker.LogNoted
@@ -32,7 +33,14 @@ object NoteText:
         case NotePart.Plural(index, one, many) => note.args.lift(index) match
           case Some(NoteArg.Amount(1, _)) | Some(NoteArg.Number(1)) => one
           case _ => many
-      }.mkString)
+      }.mkString).pipe(ended(note, _))
+
+  /** `said`, ended ", to the Nomad bank" when the note carries the
+    * ending, as the Game Log ends it. */
+  private def ended(note: LogNote, said: String): String =
+    if !note.args.contains(NoteArg.ToNomadBank) then said
+    else if said.endsWith(".") then said.dropRight(1) + ", to the Nomad bank."
+    else said + ", to the Nomad bank"
 
   private def plain(arg: NoteArg): String = arg match
     case NoteArg.Player(id) => id.value
@@ -53,6 +61,7 @@ object NoteText:
     case NoteArg.Placements(entries) => entries.map((count, site) =>
       s"$count on ${site.value}").mkString(", ")
     case NoteArg.Things(items) => items.map(thing).mkString(", ")
+    case NoteArg.ToNomadBank => ""
 
   private def clause(part: NoteClause): String = part match
     case NoteClause.BurnedFavor(count) => s"burned $count favor"

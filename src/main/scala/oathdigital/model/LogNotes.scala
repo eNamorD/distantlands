@@ -49,6 +49,10 @@ object NoteArg:
     * Campaign's targets, and a won Raid's spoils. The joining is the Game
     * Log's. */
   final case class Things(items: Vector[NoteThing]) extends NoteArg
+  /** The line's favor went to the Nomad bank, as Vow of Kinship sends it
+    * (catalog batch 11, ruling 29). The Game Log ends the sentence ", to
+    * the Nomad bank". It is never a template's `Arg`. */
+  case object ToNomadBank extends NoteArg
 
 /** One clause of a joined note sentence (procedures journal their own notes
   * design, "Campaign"). Closed, because each case is something the rules do

@@ -29,6 +29,12 @@ class LogNoteWireSuite extends munit.FunSuite:
       assertEquals(GameEventWire.decode(encoded).map(_.event), Right(event))
     }
 
+  test("a log note's Nomad bank ending round trips"):
+    val event = noteEvent(PowerSourceRef.Card(DenizenId("denizen")),
+      NoteArg.Number(2), NoteArg.ToNomadBank)
+    val encoded = accepted(GameEventWire.encodeEvent("notes", 0, event))
+    assertEquals(GameEventWire.decode(encoded).map(_.event), Right(event))
+
   test("a log note's card list and banner arguments round trip"):
     val event = noteEvent(PowerSourceRef.Card(DenizenId("denizen")),
       NoteArg.Cards(Vector(DenizenId("other-denizen"), RelicId("r1"))),
