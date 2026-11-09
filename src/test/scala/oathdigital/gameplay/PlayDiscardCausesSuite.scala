@@ -24,7 +24,7 @@ class PlayDiscardCausesSuite extends munit.FunSuite:
     PositionedLocation(Location.RegionalDiscard(Region.Cradle)),
     Region.Provinces, Suit.Nomad, 0, 0, p1)
   private val cropPermission = DiscardPermission.lined(crop,
-    PowerSourceRef.Card(DenizenId("128")))
+    PowerSourceRef.Card(DenizenId("permitting-card")))
 
   test("a site discard names the power whose permission it spends, " +
       "making room when the site was full"):
