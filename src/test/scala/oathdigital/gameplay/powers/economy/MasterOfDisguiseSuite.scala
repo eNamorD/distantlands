@@ -188,6 +188,28 @@ class MasterOfDisguiseSuite extends munit.FunSuite:
       TradeProcedure.decisionId, DecisionOptionRef.Denizen(wrestlers))
     assertEquals(Look(done.state).favor(p1), Look(ready).favor(p1) + 1)
 
+  test("a Vow of Kinship holder disguised as another player gains the " +
+      "Trade's favor on their board, and one disguised as a holder gains " +
+      "it in the Nomad bank"):
+    // p1 holds the Vow; disguised as p2, it is lifted for the Trade.
+    val lifted = disguiseHolderBesideWrestlers()
+      .adviser(p1, oathdigital.gameplay.VowOfKinshipCard)
+      .bankFavor(Suit.Nomad, 0).ready
+    val liftedDone = answeredWith(disguisedAs(tradeForFavorBegun(lifted),
+      p2), TradeProcedure.decisionId, DecisionOptionRef.Denizen(wrestlers))
+    assertEquals(Look(liftedDone.state).favor(p1), Look(lifted).favor(p1) + 1)
+    assertEquals(Look(liftedDone.state).bankFavor(Suit.Nomad), 0)
+    // p2 holds the Vow; disguised as p2, p1 acts with it.
+    val lent = disguiseHolderBesideWrestlers()
+      .adviser(p2, oathdigital.gameplay.VowOfKinshipCard)
+      .bankFavor(Suit.Nomad, 0).ready
+    val lentDone = answeredWith(disguisedAs(tradeForFavorBegun(lent), p2),
+      TradeProcedure.decisionId, DecisionOptionRef.Denizen(wrestlers))
+    assertEquals(Look(lentDone.state).favor(p1), Look(lent).favor(p1))
+    assertEquals(Look(lentDone.state).bankFavor(Suit.Nomad), 1)
+    assertEquals(ActPowerHarness.replayed(rules, lent, lentDone.events),
+      Outcomes.ready(lentDone.state))
+
   test("a game parked after the choice and rebuilt from its events keeps " +
       "it"):
     val ready = disguiseHolderBesideWrestlers().adviser(p2, longbows).ready

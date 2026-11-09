@@ -2028,3 +2028,40 @@ EOF
   Nomad bank's change over the whole step. A step where another player
   also moves Nomad-bank favor would count that change for the holder. No
   production step does both.
+- **A cost a power claims is not asked about.** A `Burn` or `PayCost`
+  node that Vow of Division claims runs whole in `walkComposite`, outside
+  the batch-question seam. A holder with both sources pays it from the
+  board first, and the draw covers only the rest.
+- **A draw is not tied to its spend.** `KinshipDraws` puts a required
+  `DrawNomadFavor` in front of the spend. If a restriction skips a spend
+  that is not required, the drawn favor stays on the holder's board.
+- **A cost walked as its moves asks once per move.** A cost that both
+  places and burns favor asks the source question twice.
+
+## Execution notes
+
+- Slice 4 landed with its questions in one `Branch` at `asked.0` (one
+  `Branch` per operation at `asked.0.i`, the question at `asked.0.i.0`)
+  and the batch at `asked.1`, and with `BatchContext.taken`. Task 5 keeps
+  that shape: `BatchContext` gains `operations` beside `taken`, and
+  `resumeAsked` and `resolveAt` build `BatchQuestions.walked` for a plain
+  leaf through `BatchQuestions.single`. A plain root leaf parks at
+  `asked.0.0.0`.
+- `BatchQuestions.replaced` now replaces only the first of two equal
+  operations, so a Vow answer draws once.
+- `CardCatalogSuite` failed from Task 2 to Task 4: the card left the
+  holding file before Task 5 registered its power.
+- The Task 1 to 3 review found three gaps, which are fixed:
+  - Whispering Leaves' placement, a plain move with no mover, still counts
+    as the board owner's placement for City Wall and Forest Council
+    (`Placements.onto`).
+  - A draw posts no gain line (`DetailLines.parts`), and a holder's
+    generic gain line ends ", to the Nomad bank".
+  - The draw pass counts takes and burns from the board, flows through the
+    Nomad bank, and two holders sharing it.
+- The Task 5 review found that the question read the board and bank from
+  before the batch. `VowOfKinship.askBefore` now reads them at the first
+  spend (`KinshipDraws.standing`), after earlier operations and earlier
+  answers' replacements.
+- The `SpendableFavor` checks suite lives in `gameplay.powers`, so it can
+  reach `RulerToll`.

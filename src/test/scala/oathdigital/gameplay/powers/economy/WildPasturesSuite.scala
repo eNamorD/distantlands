@@ -1,6 +1,6 @@
 package oathdigital.gameplay.powers.economy
 
-import oathdigital.gameplay.GrandMaskCard
+import oathdigital.gameplay.{GrandMaskCard, VowOfKinshipCard}
 import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import oathdigital.gameplay.powerresolver.BatchContext
 import oathdigital.gameplay.powers.{NoteText, SearchFixture}
@@ -95,6 +95,28 @@ class WildPasturesSuite extends munit.FunSuite:
       NoteText.Said("paid", "Paid 1 favor to the Nomad bank instead of " +
         s"discarding ${nomad.value}.", covers = false)))
     assertWireRoundTrips(asked.events ++ paid.events)
+
+  test("a Vow of Kinship holder pays out of the Nomad bank into it " +
+      "(ruling 12)"):
+    // As the pay test above, with the ruler holding the Vow and an empty
+    // board.
+    val ready = pasturesAtPeaksRuledBy(Some(p1), favor = 0)
+      .adviser(p1, TamingCharmCard.id).adviser(p1, VowOfKinshipCard)
+      .denizen(nomad, at = home).ready
+    val asked = tamedTheNomad(ready)
+    assert(awaits(asked, WildPastures.decisionId(nomad)))
+    val paid = answer(asked, p1, WildPastures.decisionId(nomad),
+      WildPastures.pay)
+    val end = after(paid)
+    assertEquals(Look(end).cardsAt(home), Vector[CardId](nomad))
+    // Paid from the bank into it, and Taming Charm's 2 Nomad favor went
+    // from the bank back into it.
+    assertEquals(Look(end).favor(p1), 0)
+    assertEquals(Look(end).bankFavor(Suit.Nomad), 5)
+    assertEquals(NoteText.said(WildPastures.id, WildPastures.noteKeys,
+      paid.events), Vector(
+      NoteText.Said("paid", "Paid 1 favor to the Nomad bank instead of " +
+        s"discarding ${nomad.value}.", covers = false)))
 
   test("declining discards the card as built"):
     val ready = p1RulesPastures.adviser(p1, TamingCharmCard.id)

@@ -2,7 +2,7 @@ package oathdigital.gameplay.powers.economy
 
 import oathdigital.catalog.{Edifice, EdificeFace, ExecutableCatalog, Locked,
   PrintedPower}
-import oathdigital.gameplay.CardRule
+import oathdigital.gameplay.{CardRule, SpendableFavor}
 import oathdigital.gameplay.powerresolver.{AsksBeforeBatch, BatchAsk,
   BatchContext, Contribution, OnEdificeFace, Replacement}
 import oathdigital.model._
@@ -36,7 +36,7 @@ object WildPasturesCard extends Edifice(EdificeId("E07"), Suit.Nomad):
   *  - its cause names a power and makes no room (rulings 20 and 22);
   *  - its card is faceup in play, or in a discard pile (ruling 25).
   *
-  * The ruler is asked only while they have favor on their board, less the
+  * The ruler is asked only while they have favor they may spend, less the
   * favor their earlier answers on the same batch pay. A "pay"
   * puts a `Give` of 1 favor to the Nomad bank in the discard's place, and
   * the card stays where it is. The rest of the batch runs as built (ruling
@@ -46,9 +46,9 @@ object WildPasturesCard extends Edifice(EdificeId("E07"), Suit.Nomad):
   * {card}." For a ruler who is not the walk's actor (a defender's plan), it
   * reads "{Blue} paid ...".
   *
-  * Vow of Kinship is not implemented. When it lands, a Kinship holder may
-  * pay out of the Nomad bank (ruling 12), so the favor check and the
-  * `Give`'s source here change with it.
+  * A Vow of Kinship ruler may pay out of the Nomad bank (ruling 12): the
+  * `Give` from their board draws on the bank first (`KinshipDraws`), and
+  * the favor lands back in it.
   *
   * The ruined face, Blasted Pastures, is a Chronicle step and is not
   * implemented.
@@ -95,8 +95,8 @@ case object WildPastures extends AsksBeforeBatch, OnEdificeFace:
     ruler <- ruler(batch.ready)
     (card, from) <- discarded(operation, ruler)
     if standsWithAFace(batch.ready, card, from)
-    if batch.ready.game.current.player(ruler).exists(_.board.favor -
-      paid(batch.taken, ruler) >= 1)
+    // A Vow of Kinship ruler may pay from the Nomad bank (ruling 12).
+    if SpendableFavor.of(batch.ready, ruler) - paid(batch.taken, ruler) >= 1
   yield BatchAsk(question(batch.catalog, ruler, card), answer =>
     Option.when(answer == DecisionAnswer.ChooseOneAnswer(pay))(Replacement(
       Vector(Give(Piece.Favor(1), ruler, Location.PlayArea(ruler),

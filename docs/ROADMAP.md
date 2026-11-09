@@ -93,7 +93,6 @@ cards behind them. Each seam below cuts across the whole engine; the
 batch's [Deferred](superpowers/specs/2026-11-03-catalog-batch-10-design.md#deferred)
 section says why in a paragraph.
 
-- **Favor source redirection:** Vow of Kinship.
 - **Off-turn actor and a warband on a Vision:** False Prophet.
 - **Vision collection:** Desecrated Ground.
 
