@@ -453,18 +453,21 @@ object CardPlayProcedure:
         CardSlots.credited(catalog, ready, actor, card, site, rules,
           slot.replacedAtSite.filterNot(buried.contains).toVector ++ extra,
           buried))
-      // A site that was full needed the discard to take the card.
+      // At a site that was full, the replaced card's discard makes the
+      // room the played card takes; an extra discard makes none.
       val siteFull = slot.site.exists(site => (for
         state <- ready.game.current.map.sites.get(site)
         printed <- catalog.site(site)
       yield state.denizens.size >= printed.capacity).getOrElse(false))
+      val roomFor = slot.replacedAtSite.filterNot(buried.contains)
+        .filter(_ => siteFull)
       credited match
         case Left(error) => Vector(Sequence(Vector.empty),
           BuildOps((_, _) => Left(error)))
         case Right(permits) =>
           val apply = BuildOps((state, _) => CardPlay.operations(catalog,
             state, actor, card, slot.placement, from, extra, buried)
-            .map(PlayDiscardCauses.mark(_, card, byPower, permits, siteFull)))
+            .map(PlayDiscardCauses.mark(_, card, byPower, permits, roomFor)))
           val lines = slot.site.toVector.flatMap(site =>
             permits.map(_.note(site)))
           Vector(Sequence(lines), apply,

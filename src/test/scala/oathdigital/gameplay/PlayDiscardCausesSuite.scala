@@ -26,23 +26,33 @@ class PlayDiscardCausesSuite extends munit.FunSuite:
   private val cropPermission = DiscardPermission.lined(crop,
     PowerSourceRef.Card(DenizenId("permitting-card")))
 
-  test("a site discard names the power whose permission it spends, " +
-      "making room when the site was full"):
+  test("a site discard names the power whose permission it spends, and " +
+      "only the replaced card of a full site makes room"):
     val ops = Vector[CoreOperation](siteDiscard("a"), siteDiscard("b"))
     val permits = Vector(CardPlayRules.homeland(site), cropPermission)
     assertEquals(PlayDiscardCauses.mark(ops, played, None, permits,
-      siteFull = false), Vector[CoreOperation](siteDiscard("a"),
+      roomFor = None), Vector[CoreOperation](siteDiscard("a"),
       siteDiscard("b").copy(cause = Some(DiscardCause(crop)))))
+    // "a" is the replaced card of a full site; the extra "b" makes no room.
+    assertEquals(PlayDiscardCauses.mark(ops, played, None,
+      Vector(cropPermission, cropPermission), roomFor = Some(DenizenId("a"))),
+      Vector[CoreOperation](
+        siteDiscard("a").copy(cause = Some(DiscardCause(crop,
+          makesRoom = true))),
+        siteDiscard("b").copy(cause = Some(DiscardCause(crop)))))
+
+  test("in a play a power made, a discard on the Homeland rule's permission " +
+      "names that power (ruling 22)"):
     assertEquals(PlayDiscardCauses.mark(Vector(siteDiscard("a")), played,
-      None, Vector(cropPermission), siteFull = true),
-      Vector[CoreOperation](siteDiscard("a").copy(cause =
-        Some(DiscardCause(crop, makesRoom = true)))))
+      Some(searchParty), Vector(CardPlayRules.homeland(site)),
+      roomFor = None), Vector[CoreOperation](siteDiscard("a").copy(cause =
+        Some(DiscardCause(searchParty)))))
 
   test("a play a power made names that power on its replaced adviser, " +
       "making room, and on its played card"):
     assertEquals(PlayDiscardCauses.mark(
       Vector(adviserReplaced, playedDiscarded), played, Some(searchParty),
-      Vector.empty, siteFull = false), Vector[CoreOperation](
+      Vector.empty, roomFor = None), Vector[CoreOperation](
       adviserReplaced.copy(cause =
         Some(DiscardCause(searchParty, makesRoom = true))),
       playedDiscarded.copy(cause = Some(DiscardCause(searchParty)))))
@@ -50,4 +60,4 @@ class PlayDiscardCausesSuite extends munit.FunSuite:
   test("a plain play's discards name nothing"):
     val ops = Vector[CoreOperation](adviserReplaced, playedDiscarded)
     assertEquals(PlayDiscardCauses.mark(ops, played, None, Vector.empty,
-      siteFull = false), ops)
+      roomFor = None), ops)

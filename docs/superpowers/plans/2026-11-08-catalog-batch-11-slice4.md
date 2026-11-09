@@ -100,6 +100,10 @@ Inventoried at `5e1bbd20`, which includes slice 2's code
      Rotation or the Mob face. A removal spending a power's permission
      gets that power as its cause. It makes room when the site was full
      before the play.
+   - Execution note: only the replaced card of a full site makes room; an
+     extra discard does not. A removal on Homeland's permission takes
+     `byPower` when a power made the play (ruling 22). `mark` takes
+     `roomFor: Option[CardId]` in place of the plan's `siteFull`.
    - **A play-area adviser the play replaces.** This always makes room. It
      gets the power that made the play (`byPower`), if any.
    - **The played card discarded** (placement Discard). It gets `byPower`,
