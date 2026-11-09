@@ -232,6 +232,16 @@ class PlayerBoardSuite extends munit.FunSuite:
     assertEquals(all(node, ".player-slots .player-slot-vision")
       .map(_.textContent), Vector("Vision of Faith", "Vision of Conquest"))
 
+  test("a revealed Vision's pill shows the warbands on it"):
+    val faith = CardDetails("vision:vision-of-faith", "vision",
+      "Vision of Faith", orientation = Some("face-up"),
+      warbands = Vector(SiteForces.Exile(1, "p2", PlayerColor.Blue,
+        "Blue Warbands")))
+    val node = renderWith(board.copy(revealedVisions = Vector(faith)), None)
+    val marks = all(node, ".player-slot-vision .player-slot-vision-warband")
+    assertEquals(marks.size, 1)
+    assert(marks.head.classList.contains("force-blue"))
+
   test("a player with neither a title nor a Vision has no slots row"):
     assertEquals(all(render(board, supplyMaximum = 7), ".player-slots"),
       Vector.empty)

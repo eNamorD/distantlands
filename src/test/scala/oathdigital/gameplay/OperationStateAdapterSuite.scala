@@ -3,8 +3,10 @@ package oathdigital.gameplay
 import oathdigital.gameplay.operations._
 import oathdigital.model._
 import oathdigital.model.TestGameFixtures._
+import oathdigital.gameplay.actions.VisionRules
 import oathdigital.testkit.Table
-import oathdigital.testkit.Unwrap.rejected
+import oathdigital.testkit.Table.p2
+import oathdigital.testkit.Unwrap.{accepted, rejected}
 
 class OperationStateAdapterSuite extends munit.FunSuite:
   private val exile = ForceKind.Exile(lineageId)
@@ -87,3 +89,23 @@ class OperationStateAdapterSuite extends munit.FunSuite:
     assert(OperationStateAdapter.knows(ready, playerId, reliquaryRelic))
     assert(!OperationStateAdapter.knows(ready, playerId, worldDenizen),
       "a card the player never saw is not known")
+
+  test("a warband moves onto a revealed Vision and is killed off it"):
+    // False Prophet's claim (catalog batch 11, slice 7): a Vision has no
+    // tokens, so its warbands are read from the card's warband map alone.
+    val revealed = Table.start.revealedVision(Table.p1, VisionRules.Faith).ready
+    val kind = revealed.game.current.player(p2)
+      .flatMap(PlayerForceKind.of(revealed, _)).getOrElse(fail("p2's kind"))
+    val vision = PositionedLocation(Location.OnCard(VisionRules.Faith))
+    def run(ready: ReadyGame, operations: CoreOperation*): ReadyGame =
+      accepted(OperationPipeline.run(ready, operations.toVector,
+        OperationPolicy.Permissive, Vector.empty, requireAll = true)(
+        Right(_))).state
+    val onCard = run(revealed, Move(Piece.Warbands(kind, 1),
+      PositionedLocation(Location.PlayArea(p2)), vision))
+    assertEquals(onCard.game.current.warbandsOn(VisionRules.Faith, kind), 1)
+    assertEquals(OperationStateAdapter.quantity(onCard,
+      Piece.Warbands(kind, 1), vision.location),
+      Right(AvailableQuantity.Finite(1)))
+    val killed = run(onCard, Kill(Piece.Warbands(kind, 1), vision))
+    assertEquals(killed.game.current.warbandsOn(VisionRules.Faith, kind), 0)

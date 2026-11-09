@@ -207,6 +207,23 @@ class StateBasedEvaluationSuite extends munit.FunSuite:
     assertEquals(StateBasedEvaluation.visionAtWake(Ready(second)),
       Right(Some(VisionVictory(p1, Vector(VisionRules.Faith)))))
 
+  test("an Exile wins at Wake with a Vision they claim"):
+    // p2 claims p1's Faith with a warband and holds the Darkest Secret.
+    val ready = preparedTable(Vector.empty).turn(p2, Phase.Wake)
+      .revealedVision(p1, VisionRules.Faith)
+      .warbandsOnCard(VisionRules.Faith, p2, 1)
+      .darkestSecret(Some(p2), secrets = 1).visionsDrawn(3).ready
+    assertEquals(StateBasedEvaluation.visionAtWake(Ready(ready)),
+      Right(Some(VisionVictory(p2, Vector(VisionRules.Faith)))))
+
+  test("a Citizen cannot win with a Vision they claim"):
+    val ready = preparedTable(Vector.empty)
+      .revealedVision(p1, VisionRules.Faith)
+      .warbandsOnCard(VisionRules.Faith, p2, 1).imperial(p3, p2)
+      .turn(p2, Phase.Wake).darkestSecret(Some(p2), secrets = 1)
+      .visionsDrawn(3).ready
+    assertEquals(StateBasedEvaluation.visionAtWake(Ready(ready)), Right(None))
+
   test("a newly flipped Oathkeeper can win by Vision but never immediately as Usurper"):
     val qualifying = preparedTable(Vector(p1), holder = Some(p1),
       limited = false)

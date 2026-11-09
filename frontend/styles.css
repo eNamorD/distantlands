@@ -1220,6 +1220,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 .player-slot-vision > .board-option-badge { position: static;
   margin-left: 0.4em; }
 .player-slot-vision-empty { border-style: dashed; color: #b7a98f; }
+.player-slot-vision-warband { margin-left: 0.3em; font-size: 0.8em; }
 .resources { display: flex; align-items: baseline; flex-wrap: wrap;
   gap: 0 0.45em; color: var(--parchment-muted); font-weight: 400; }
 .resources > * + *::before { content: "·"; margin-right: 0.45em;

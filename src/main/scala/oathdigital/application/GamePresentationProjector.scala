@@ -184,14 +184,14 @@ private[application] final class GamePresentationProjector(
             withWarbands(withTokens(cardDetails(card.id, Some(card.orientation),
               hidden = false), card.tokens), ready, card.id)
           else hiddenCard("relic")),
-        player.revealedVisions.map(card => cardDetails(card.id,
-          Some(card.orientation), hidden = false)),
+        player.revealedVisions.map(card => withWarbands(cardDetails(card.id,
+          Some(card.orientation), hidden = false), ready, card.id)),
         banners(ready).filter(_.holderPlayerId.contains(player.player.value)),
         banked, printed, atSites, restBase, bands,
         AdviserLimit.drawn(catalog, ready, player.player))
     }
 
-  /** The warbands standing on `card` (Obsidian Cage), one entry per
+  /** The warbands standing on `card` (Obsidian Cage, False Prophet), one entry per
     * force: an Exile's by the colour of the player of that lineage. */
   private def withWarbands(details: CardDetailsProjection, ready: ReadyGame,
       card: CardId): CardDetailsProjection =

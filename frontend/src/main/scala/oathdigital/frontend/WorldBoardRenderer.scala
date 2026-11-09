@@ -117,6 +117,15 @@ private[frontend] object WorldBoardRenderer:
       board.revealedVisions.foreach { card =>
         val pill = button(card.name, "player-slot-vision")
         pill.onclick = _ => CardInspection.open(card, pill)
+        // The warbands on the Vision (False Prophet's claims), one mark in
+        // each claimant's colour; the inspection overlay counts them.
+        card.warbands.foreach { forces =>
+          val mark = text("span", "player-slot-vision-warband " +
+            forceCssClass(forces), "●")
+          mark.setAttribute("aria-hidden", "true")
+          HoverTip.set(mark, forceText(forces))
+          pill.appendChild(mark)
+        }
         slots.appendChild(
           if replacing then options.control(pill, visionKey,
             Some(card.name -> (CardInspection.open(card, _))))
