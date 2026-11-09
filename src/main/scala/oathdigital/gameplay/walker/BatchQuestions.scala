@@ -72,14 +72,15 @@ private[walker] object BatchQuestions:
     powers.powers.collect { case power: AsksBeforeBatch => power }
       .filter(_.watching(ready)).sortBy(ContributingPower.sortKey)
 
-  /** The first asking power's question on each operation. */
+  /** The first asking power's question on each operation. Equal operations
+    * share one question, which the first of them asks. */
   private def of(asking: Vector[AsksBeforeBatch], powers: WalkerPowers,
       actor: PlayerId, ready: ReadyGame, operations: Vector[CoreOperation])
       : Vector[Asked] =
     val context = BatchContext(powers.catalog, actor, ready)
     flat(operations).flatMap(operation => asking.iterator.flatMap(power =>
       power.askBefore(context, operation).map(Asked(power.id, operation, _)))
-      .nextOption())
+      .nextOption()).distinctBy(_.ask.decide.decisionId)
 
   /** The replacement the latest answer to `asked` takes, if any. */
   private def answer(answered: Vector[Answered], asked: Asked)

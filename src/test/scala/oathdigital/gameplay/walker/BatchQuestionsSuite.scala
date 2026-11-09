@@ -128,15 +128,21 @@ class BatchQuestionsSuite extends munit.FunSuite:
       Vector[CoreOperation](movePawnToS3, SpendSupply(actor, 2)))
     assertEquals(steps(done.events).last.nodeId, "0.asked.1")
 
-  test("the journal replays to the state the walk reached"):
+  test("the journal's steps replay to the state the walk reached, " +
+      "through the walker's own replay, which reads their node ids"):
     val tree = batchSpending(1)
     val park = parked(ProcedureWalker.advance(ready, tree, None, watching))
     val done = finished(ProcedureWalker.resolve(applyEvents(ready,
       park.events), tree, park.tree, answered(1, continueOption), watching))
-    val replayed = applyEvents(ready,
-      stepsWithOperations(park.events ++ done.events))
-    assertEquals(pawnSiteOf(replayed), pawnSiteOf(done.treeless))
-    assertEquals(supplyOf(replayed), supplyOf(done.treeless))
+    val replayed = stepsWithOperations(park.events ++ done.events)
+      .foldLeft[Either[OathViolation, OathState]](Right(OathState.Ready(
+        ready)))((state, step) => state.flatMap(
+        ProcedureWalker.applyRecorded(_, step)))
+    val after = replayed match
+      case Right(OathState.Ready(state)) => state
+      case other => fail(s"the steps did not replay: $other")
+    assertEquals(pawnSiteOf(after), pawnSiteOf(done.treeless))
+    assertEquals(supplyOf(after), supplyOf(done.treeless))
 
   test("with no power watching, the batch runs at its own node"):
     val done = finished(ProcedureWalker.advance(ready, batchSpending(1), None,

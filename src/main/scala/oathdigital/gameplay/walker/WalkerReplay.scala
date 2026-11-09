@@ -108,8 +108,7 @@ private[walker] object WalkerReplay:
 
       case WalkerParked(procedure, at, answered, startArgs, startFacts) =>
         for
-          _ <- Either.cond(at.nonEmpty && at.forall(segment =>
-            segment.nonEmpty && segment.forall(_.isDigit)), (),
+          _ <- Either.cond(validPath(at), (),
             OathViolation.InvalidEventOrder("invalid durable walker park path"))
           _ <- ready.game.current.walkerProcedure match
             case Some(existing) =>
@@ -202,5 +201,11 @@ private[walker] object WalkerReplay:
         invalid(s"unsupported walker event ${other.productPrefix}")
 
   private def validNodeId(nodeId: String): Boolean =
-    nodeId.nonEmpty && nodeId.split('.').forall(segment =>
-      segment.nonEmpty && segment.forall(_.isDigit))
+    nodeId.nonEmpty && validPath(nodeId.split('.').toVector)
+
+  /** A path of child indexes, where a leaf's batch questions may add their
+    * segment after the leaf's own path ([[BatchQuestions]]). */
+  private def validPath(path: Vector[String]): Boolean =
+    path.nonEmpty && path.zipWithIndex.forall((segment, index) =>
+      (segment.nonEmpty && segment.forall(_.isDigit)) ||
+        (index > 0 && segment == BatchQuestions.segment))
