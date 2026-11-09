@@ -46,12 +46,14 @@ private[model] object OperationChildren:
   /** `amount` of `piece` leaving `player`'s play area for `to`, or nothing
     * for a zero amount. */
   def fromPlayArea(player: PlayerId, amount: Int, piece: Int => Piece,
-      to: Location): Vector[Operation] =
+      to: Location, by: Option[PlayerId] = None): Vector[Operation] =
     positiveMove(amount)(piece,
-      PositionedLocation(Location.PlayArea(player)), PositionedLocation(to))
+      PositionedLocation(Location.PlayArea(player)), PositionedLocation(to),
+      by)
 
   private def positiveMove(amount: Int)(piece: Int => Piece,
       from: PositionedLocation,
-      to: PositionedLocation): Vector[Operation] =
+      to: PositionedLocation,
+      by: Option[PlayerId] = None): Vector[Operation] =
     if amount == 0 then Vector.empty
-    else Vector(Move(piece(amount), from, to))
+    else Vector(Move(piece(amount), from, to, by = by))

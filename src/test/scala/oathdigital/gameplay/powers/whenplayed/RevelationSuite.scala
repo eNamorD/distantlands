@@ -1,5 +1,6 @@
 package oathdigital.gameplay.powers.whenplayed
 
+import oathdigital.gameplay.VowOfKinshipCard
 import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import oathdigital.gameplay.powers.{NoteText, SearchFixture}
 import oathdigital.model._
@@ -48,6 +49,19 @@ class RevelationSuite extends munit.FunSuite:
     // Every event survives the wire, as a stored game's journal does.
     assertJournalRebuilds(ready, walked.events, walked.end)
     assertWireRoundTrips(walked.events)
+
+  test("a Vow of Kinship holder may burn the Nomad bank's favor"):
+    // p1 holds the Vow, with no favor on their board and 3 in the Nomad
+    // bank; p2 and p3 hold none.
+    val ready = holdingFavor(0, 0, 0).adviser(p1, VowOfKinshipCard)
+      .bankFavor(Suit.Nomad, 3).ready
+    val walked = walkAnswering(ready, power, played, burn(2))
+    assertEquals(walked.asked.map(_.owner), Vector(p1))
+    assertEquals(amountMaximaAsked(walked), Vector(3))
+    val end = Look(walked.end)
+    assertEquals(end.bankFavor(Suit.Nomad), 1)
+    assertEquals(end.faceUpSecrets(p1), 3)
+    assertJournalRebuilds(ready, walked.events, walked.end)
 
   test("a player with no favor is not asked"):
     val walked = walkAnswering(holdingFavor(1, 0, 1).ready, power, played,

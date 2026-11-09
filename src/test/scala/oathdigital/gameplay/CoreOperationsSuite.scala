@@ -82,10 +82,10 @@ class CoreOperationsSuite extends munit.FunSuite:
 
     assertEquals(Operation.flatten(PayCost(red, Location.OnCard(card),
       Cost(favor = 1, secret = 1, favorBurnt = 2, secretBurnt = 1))), Vector(
-      Move(Piece.Favor(1), payerArea, onCard),
+      Move(Piece.Favor(1), payerArea, onCard, by = Some(red)),
       Move(Piece.Secrets(1), payerArea, onCard),
       Move(Piece.Favor(2), payerArea,
-        PositionedLocation(Location.SharedBank)),
+        PositionedLocation(Location.SharedBank), by = Some(red)),
       Move(Piece.Secrets(1), payerArea,
         PositionedLocation(Location.SharedBank))))
 
@@ -93,7 +93,7 @@ class CoreOperationsSuite extends munit.FunSuite:
       Cost(favor = 1, secret = 2), matchingBank = Some(Suit.Order),
       offTurn = true)), Vector(
       Move(Piece.Favor(1), payerArea,
-        PositionedLocation(Location.FavorBank(Suit.Order))),
+        PositionedLocation(Location.FavorBank(Suit.Order)), by = Some(red)),
       FlipSecrets(red, 2, SecretSide.FaceUp, SecretSide.FaceDown)))
 
     assertEquals(Operation.flatten(Discard.Buried(BuryableCard.Denizen(card),

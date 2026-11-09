@@ -74,7 +74,7 @@ object PlaceBannerResourceProcedure:
       case Banner.PeoplesFavor => Piece.Favor(amount)
       case Banner.DarkestSecret => Piece.Secrets(amount)
     }, PositionedLocation(Location.PlayArea(actor)),
-      PositionedLocation(Location.OnBanner(banner))),
+      PositionedLocation(Location.OnBanner(banner)), by = Some(actor)),
       // Directly after the move, so `previous` is the move and the note
       // reads what actually left the play area rather than the amount
       // answered. No power contributes at

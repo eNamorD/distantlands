@@ -70,8 +70,11 @@ case object WhisperingLeaves extends PaidAction(WhisperingLeavesCard.power):
     yield
       val amount = math.min(Placed, state.board.favor)
       if amount == 0 then Vector.empty
-      else Vector(Give(Piece.Favor(amount), target, Location.PlayArea(target),
-        Location.OnCard(leaves)))
+      // Nobody moves it: it is done to the chosen player, so a Vow of
+      // Kinship holder places only their board's favor (ruling 28).
+      else Vector(Move(Piece.Favor(amount),
+        PositionedLocation(Location.PlayArea(target)),
+        PositionedLocation(Location.OnCard(leaves))))
 
   /** The favor the chosen player lost in the step before the note. With
     * nothing to give no step ran, and the step before changed no favor. */

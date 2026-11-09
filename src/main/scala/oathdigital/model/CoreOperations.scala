@@ -370,8 +370,11 @@ final case class PayCost(player: PlayerId, placedAt: Location, cost: Cost,
       SecretSide.FaceUp, SecretSide.FaceDown))
     else secretMove(cost.secret, placedAt)
 
+  // The payer moves the favor, so a Vow of Kinship holder's cost may draw
+  // on the Nomad bank (`KinshipDraws`).
   private def favorMove(amount: Int, to: Location): Vector[Operation] =
-    OperationChildren.fromPlayArea(player, amount, Piece.Favor.apply, to)
+    OperationChildren.fromPlayArea(player, amount, Piece.Favor.apply, to,
+      by = Some(player))
 
   private def secretMove(amount: Int, to: Location): Vector[Operation] =
     OperationChildren.fromPlayArea(player, amount, Piece.Secrets.apply, to)

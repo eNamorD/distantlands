@@ -1,5 +1,6 @@
 package oathdigital.gameplay.powers.action
 
+import oathdigital.gameplay.VowOfKinshipCard
 import oathdigital.gameplay.cards.{AncientCitySite, BuriedGiantSite}
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.model._
@@ -73,6 +74,13 @@ class WhisperingLeavesSuite extends munit.FunSuite:
     assertEquals(NoteText.said(WhisperingLeaves, done.events), Vector(
       NoteText.Said("used.empty", s"${p2.value} had no favor to place.",
         covers = false)))
+
+  test("a Vow of Kinship holder places only their board's favor (ruling " +
+      "28)"):
+    val done = choose(staged(favor = 0).adviser(p2, VowOfKinshipCard)
+      .bankFavor(Suit.Nomad, 3).ready, p2).answered
+    assertEquals(Look(after(done)).tokensOn(leaves), Tokens(0, 1))
+    assertEquals(Look(after(done)).bankFavor(Suit.Nomad), 3)
 
   test("it is unusable without a secret"):
     val broke = staged(secrets = 0).ready

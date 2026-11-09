@@ -224,7 +224,7 @@ object ChallengeProcedure:
       case Banner.PeoplesFavor => Piece.Favor(amount)
       case Banner.DarkestSecret => Piece.Secrets(amount)
     }, PositionedLocation(Location.PlayArea(actor)),
-      PositionedLocation(Location.OnBanner(banner)))
+      PositionedLocation(Location.OnBanner(banner)), by = Some(actor))
 
   /** Magician's Code's secrets, from the shared bank to the actor's board
     * just before the payment, which places them with the rest: the

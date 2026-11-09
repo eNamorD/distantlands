@@ -1,5 +1,6 @@
 package oathdigital.gameplay.walker
 
+import oathdigital.gameplay.KinshipDraws
 import oathdigital.gameplay.operations.{OperationPipeline, OperationPolicy}
 import oathdigital.gameplay.powerresolver.{ContributingPower, PowerCtx}
 import oathdigital.model.{OathViolation, PlayerId, PowerResolution,
@@ -41,6 +42,7 @@ object ModifierOffers:
       powers: Vector[ContributingPower]): Either[OathViolation, Unit] =
     val payments = powers.flatMap(_.selectionPayments(ready, actor))
     if payments.isEmpty then Right(())
-    else OperationPipeline.run(ready, payments, OperationPolicy.Permissive,
+    else OperationPipeline.run(ready, KinshipDraws.before(ready, payments),
+      OperationPolicy.Permissive,
       WalkerPowers.selected(catalog, powers.map(_.id))
         .operationRestrictions)(Right(_)).map(_ => ())

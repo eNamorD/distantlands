@@ -1,5 +1,6 @@
 package oathdigital.gameplay.walker
 
+import oathdigital.gameplay.KinshipDraws
 import oathdigital.gameplay.operations.{OperationPipeline, OperationPolicy, OperationRun}
 import oathdigital.model.{Answered, BuildOps, CoreOperation, Decide, DieFace, OathViolation, Operation, PendingTree, PowerId, Roll}
 
@@ -45,7 +46,9 @@ private[walker] object WalkerSteps:
     * the two leaf kinds that run rather than park (spec decision 5: one
     * hookable node, one event, its final operation batch). `ops` must already
     * be non-empty; callers short-circuit an empty batch themselves (an empty
-    * [[oathdigital.model.BuildOps]] batch records nothing). Each burn a
+    * [[oathdigital.model.BuildOps]] batch records nothing). A Vow of Kinship
+    * holder's spends first draw on the Nomad bank
+    * ([[oathdigital.gameplay.KinshipDraws]]). Each burn a
     * power claims is first replaced by a `Take` ([[BurnTakes]]), and the
     * claims' lines follow the step. A batch whose operations start a
     * trigger's follow-up also holds them, in the same step
@@ -58,7 +61,10 @@ private[walker] object WalkerSteps:
       label: String,
       requireAll: Boolean)
       : Either[OathViolation, WalkCtx] =
-    val swapped = BurnTakes.replace(ctx.state, ctx.powers.powers, ops)
+    // A Vow of Kinship holder's spend draws on the Nomad bank first, while
+    // the batch still holds its costs (`KinshipDraws`).
+    val swapped = BurnTakes.replace(ctx.state, ctx.powers.powers,
+      KinshipDraws.before(ctx.state, ops))
     val ran =
       if swapped.operations.isEmpty then
         Right(OperationRun(ctx.state, Vector.empty, Vector.empty))

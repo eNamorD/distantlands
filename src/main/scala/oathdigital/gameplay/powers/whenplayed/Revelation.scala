@@ -1,7 +1,7 @@
 package oathdigital.gameplay.powers.whenplayed
 
 import oathdigital.catalog.{Denizen, PrintedPower}
-import oathdigital.gameplay.NoteSupport
+import oathdigital.gameplay.{NoteSupport, SpendableFavor}
 import oathdigital.gameplay.phases.rest.FinishRestProcedure
 import oathdigital.gameplay.powerresolver.PowerCtx
 import oathdigital.model._
@@ -60,7 +60,7 @@ case object Revelation extends WhenPlayedPower:
     Branch((_, pending) => settle(pending.answered, player)))
 
   private def ask(ready: ReadyGame, player: PlayerId): Vector[Operation] =
-    NoteSupport.board(ready, player).map(_.favor).filter(_ > 0).toVector
+    Some(SpendableFavor.of(ready, player)).filter(_ > 0).toVector
       .map(favor => Decide(decisionId, player, DecisionQuery.ChooseAmount(0,
         favor, Some("Revelation: burn any favor to gain as many secrets"),
         "Burn favor")))
@@ -73,8 +73,9 @@ case object Revelation extends WhenPlayedPower:
       Some(declined(cardSource, NoteArg.Player(player)))))
     case Some(amount) => Vector(
       BuildOps((_, _) => Right(Vector(
-        Burn.favor(amount, PositionedLocation(Location.PlayArea(player)),
-          Some(player)),
+        // A chosen burn is the player's spend (ruling 9), paid as a cost's
+        // burn so that a Vow of Kinship holder may draw on the Nomad bank.
+        PayCost(player, Location.SharedBank, Cost(favorBurnt = amount)),
         Gain.Secrets(player, amount)))),
       Note(id, burnedNote(_, player), covers = true))
     case None => Vector.empty

@@ -1,5 +1,6 @@
 package oathdigital.gameplay.powers.whenplayed
 
+import oathdigital.gameplay.VowOfKinshipCard
 import oathdigital.gameplay.powers.NoteText
 import oathdigital.model._
 import oathdigital.testkit.{Look, Outcomes}
@@ -38,6 +39,20 @@ class RoyalTaxSuite extends munit.FunSuite:
     val done = Outcomes.finished(play(staged(held = 0), power, tax))
     // p1's 1 and p2's 2.
     assertEquals(Look(done.treeless).favor(p1), 1 + 2)
+    assertEquals(said(power, done.events), Vector(took(2, p2),
+      NoteText.Said("broke", s"${p3.value} had no favor to take.",
+        covers = false)))
+
+  test("a Vow of Kinship holder with an empty board is taxed nothing: the " +
+      "tax reads their board"):
+    val ready = p1AtHomeSite.adviser(p1, tax).favor(p1, 1)
+      .warbandsAt(homeSite, p1, 1).warbandsAt(nearSite, p1, 1)
+      .pawn(p2, nearSite).favor(p2, 3).pawn(p3, homeSite).favor(p3, 0)
+      .adviser(p3, VowOfKinshipCard).bankFavor(Suit.Nomad, 4).ready
+    val done = Outcomes.finished(play(ready, power, tax))
+    val after = Look(done.treeless)
+    assertEquals(after.favor(p1), 1 + 2)
+    assertEquals(after.bankFavor(Suit.Nomad), 4)
     assertEquals(said(power, done.events), Vector(took(2, p2),
       NoteText.Said("broke", s"${p3.value} had no favor to take.",
         covers = false)))
