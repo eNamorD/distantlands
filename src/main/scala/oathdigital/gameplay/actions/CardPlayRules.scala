@@ -15,11 +15,13 @@ enum SiteRemoval:
   * `appliesAt` says at which sites the leave holds (Baron's: the sites its
   * user rules). `source` is the power or rule that gives it, and `note`
   * the line card play writes at the site when a removal it allowed is
-  * made.
+  * made. `fromPower` is false for a rule's leave (Homeland), whose discard
+  * names no power.
   */
 final case class DiscardPermission(source: PowerId, note: SiteId => Note,
     removal: SiteRemoval = SiteRemoval.Discard,
-    appliesAt: (ReadyGame, SiteId) => Boolean = DiscardPermission.anySite)
+    appliesAt: (ReadyGame, SiteId) => Boolean = DiscardPermission.anySite,
+    fromPower: Boolean = true)
 
 object DiscardPermission:
   val anySite: (ReadyGame, SiteId) => Boolean = (_, _) => true
@@ -201,3 +203,4 @@ object CardPlayRules:
   def homeland(site: SiteId): DiscardPermission =
     DiscardPermission.lined(RuleNotes.homelandDiscard,
       PowerSourceRef.Site(site), appliesAt = (_, at) => at == site)
+      .copy(fromPower = false)

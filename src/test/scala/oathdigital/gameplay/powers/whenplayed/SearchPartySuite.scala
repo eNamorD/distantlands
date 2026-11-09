@@ -11,7 +11,7 @@ import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
 import oathdigital.model._
 import oathdigital.model.OathState.Ready
 import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look, MenuPlay,
-  PlacementPicks, Table}
+  PlacementPicks, RecordedOps, Table}
 import oathdigital.testkit.Outcomes.assertWireRoundTrips
 import oathdigital.testkit.Table.p2
 import oathdigital.testkit.Unwrap.accepted
@@ -92,6 +92,15 @@ class SearchPartySuite extends munit.FunSuite:
       Region.Provinces, plainHearth(0)), plainHearth(0), PlayedAs.Discarded)
     assertEquals(Look(after(done)).discardPile(Region.Provinces),
       Vector[WorldCardId](plainHearth(1), plainHearth(2), plainHearth(0)))
+
+  test("discarded, the card's discard names Search Party"):
+    val ready = p1HoldsSearchPartyFacedown(_.discarded(Region.Provinces,
+      plainHearth.take(3)*))
+    val done = placedAs(peekedAndPicked(playedFaceupFromFacedown(ready),
+      Region.Provinces, plainHearth(0)), plainHearth(0), PlayedAs.Discarded)
+    assertEquals(RecordedOps.all(done.events).collect {
+      case discard: Discard.Denizen if discard.card == plainHearth(0) =>
+        discard.cause }, Vector(Some(DiscardCause(SearchParty.id))))
 
   test("a Vision is revealed as from a Search, and the Visions Drawn " +
       "track stays"):

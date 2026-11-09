@@ -195,15 +195,14 @@ object CardSlots:
       if options.exists(_.available)
     yield MoreBuries(options)
 
-  /** The line of the permission each removal at `site` spent: discards
-    * spend the discard permissions and a bury a bury permission, each in
-    * the order `permissions` gives them, and every one covers any site
-    * card. Refused when more cards are removed than there are permissions
-    * for. */
-  def credits(catalog: ExecutableCatalog, ready: ReadyGame, actor: PlayerId,
+  /** The permission each removal at `site` spent: discards spend the
+    * discard permissions and a bury a bury permission, each in the order
+    * `permissions` gives them, and every one covers any site card. Refused
+    * when more cards are removed than there are permissions for. */
+  def credited(catalog: ExecutableCatalog, ready: ReadyGame, actor: PlayerId,
       card: WorldCardId, site: SiteId, rules: CardPlayRules,
       discarded: Vector[CardId], buried: Option[CardId] = None)
-      : Either[OathViolation, Vector[Note]] =
+      : Either[OathViolation, Vector[DiscardPermission]] =
     val permitted = permissions(catalog, ready, actor, card, site, rules)
     val discards = permitted.filter(_.removal == SiteRemoval.Discard)
     val buries = permitted.filter(_.removal == SiteRemoval.Bury)
@@ -214,8 +213,16 @@ object CardSlots:
       _ <- Either.cond(buried.size <= buries.size, (),
         OathViolation.InvalidSearchPlacement("more site cards are buried " +
           "than the permissions in play allow"))
-    yield (discards.take(discarded.size) ++ buries.take(buried.size))
-      .map(_.note(site))
+    yield discards.take(discarded.size) ++ buries.take(buried.size)
+
+  /** The line of the permission each removal at `site` spent
+    * ([[credited]]). */
+  def credits(catalog: ExecutableCatalog, ready: ReadyGame, actor: PlayerId,
+      card: WorldCardId, site: SiteId, rules: CardPlayRules,
+      discarded: Vector[CardId], buried: Option[CardId] = None)
+      : Either[OathViolation, Vector[Note]] =
+    credited(catalog, ready, actor, card, site, rules, discarded, buried)
+      .map(_.map(_.note(site)))
 
   /** `option` as the restrictions in force judge the plan it stands for,
     * played by `actor`. It is kept as it is when nothing refuses. When only

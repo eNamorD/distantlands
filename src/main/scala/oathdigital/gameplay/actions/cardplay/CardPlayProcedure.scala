@@ -1,7 +1,8 @@
 package oathdigital.gameplay.actions.cardplay
 
 import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.{CardPlay, CardPlayRules, ProcedureNotes}
+import oathdigital.gameplay.actions.{CardPlay, CardPlayRules, DiscardPermission,
+  ProcedureNotes}
 import oathdigital.gameplay.powerresolver.ModifierPicks
 import oathdigital.gameplay.walker.{ModifierChoice, ProcedureStart}
 import oathdigital.model._
@@ -440,25 +441,35 @@ object CardPlayProcedure:
     // their own, so the play is always the node's second child, as in
     // `settled`: a trigger's follow-up after the play is addressed under it.
     // The play's own line follows it as a third child, which no path
-    // addresses into.
+    // addresses into. The play's discards name their power
+    // ([[PlayDiscardCauses]]).
     val play = Branch((_, pending) => {
       val extra = discarded(pending)
       val buried =
         if buriesReplaced(pending) then slot.replacedAtSite
         else slot.buried.orElse(buriedMore(pending))
-      val apply = BuildOps((state, _) => CardPlay.operations(catalog, state,
-        actor, card, slot.placement, from, extra, buried))
-      val credited = slot.site.fold[Either[OathViolation, Vector[Note]]](
-        Right(Vector.empty))(site => CardSlots.credits(catalog, ready, actor,
-        card, site, rules,
-        slot.replacedAtSite.filterNot(buried.contains).toVector ++ extra,
-        buried))
+      val credited = slot.site.fold[Either[OathViolation,
+          Vector[DiscardPermission]]](Right(Vector.empty))(site =>
+        CardSlots.credited(catalog, ready, actor, card, site, rules,
+          slot.replacedAtSite.filterNot(buried.contains).toVector ++ extra,
+          buried))
+      // A site that was full needed the discard to take the card.
+      val siteFull = slot.site.exists(site => (for
+        state <- ready.game.current.map.sites.get(site)
+        printed <- catalog.site(site)
+      yield state.denizens.size >= printed.capacity).getOrElse(false))
       credited match
         case Left(error) => Vector(Sequence(Vector.empty),
           BuildOps((_, _) => Left(error)))
-        case Right(credits) => Vector(Sequence(credits), apply,
-          Note(ProcedureNotes.id(ActionRef.PlayFacedownAdviser),
-            playedNote(card, slot.ref)))
+        case Right(permits) =>
+          val apply = BuildOps((state, _) => CardPlay.operations(catalog,
+            state, actor, card, slot.placement, from, extra, buried)
+            .map(PlayDiscardCauses.mark(_, card, byPower, permits, siteFull)))
+          val lines = slot.site.toVector.flatMap(site =>
+            permits.map(_.note(site)))
+          Vector(Sequence(lines), apply,
+            Note(ProcedureNotes.id(ActionRef.PlayFacedownAdviser),
+              playedNote(card, slot.ref)))
     })
     Vector(followUp, play) ++ hook(ready, actor, card, slot.placement,
       byPower)
