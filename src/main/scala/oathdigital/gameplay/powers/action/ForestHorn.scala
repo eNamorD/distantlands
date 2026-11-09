@@ -56,7 +56,8 @@ case object ForestHorn extends PaidAction(ForestHornCard.intact.power):
       Region.all.map(region => DecisionOption.Button(button(region),
         region.toString)), heading = Some(heading))),
     Branch((live, pending) => chosen(pending).toVector.flatMap { region =>
-      val discard = new RegionDiscard(_ != Suit.Beast, (_, _) => Some(region))
+      val discard = new RegionDiscard(id, _ != Suit.Beast,
+        (_, _) => Some(region))
       val found = discard.targets(catalog, live, player)
       Vector[Operation](
         BuildOps((ready, _) => discard.discards(catalog, ready, player)),

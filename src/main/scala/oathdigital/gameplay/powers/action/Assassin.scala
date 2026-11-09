@@ -108,7 +108,7 @@ case object Assassin extends PaidAction(AssassinCard.power)
         yield Vector[CoreOperation](Discard.Denizen(chosen.card.id,
           PositionedLocation(Location.PlayArea(chosen.owner)), region, suit,
           chosen.card.tokens.favor, chosen.card.tokens.secrets, actor,
-          required = true))
+          required = true, cause = Some(DiscardCause(id))))
 
   /** The card discarded and its owner, read before the discard. */
   private def discardedNote(states: NoteStates, source: DecisionOptionRef)

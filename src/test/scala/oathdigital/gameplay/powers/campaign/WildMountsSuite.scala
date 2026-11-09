@@ -217,4 +217,5 @@ private final case class BareDiscardNomadPlan(
       "Bare discard", Vector.empty, Vector.empty))
   override def later: Map[PowerWindow, PlanUse => Vector[Operation]] = Map(
     PowerWindow.CampaignActionEligibility -> (use =>
-      use.user.toVector.map(PlanDiscard.denizen(catalog, _, cardId))))
+      use.user.toVector.map(PlanDiscard.denizen(catalog, _, cardId,
+        Some(DiscardCause(id))))))

@@ -15,8 +15,11 @@ import oathdigital.model._
   * the card is in place, then discards them in one step. Its line names the
   * targets no site holds after that step, so a card a restriction kept is
   * not named, and it says so when nothing was discarded.
+  *
+  * `power` is the power whose use discards, which each discard names.
   */
-private[powers] final class RegionDiscard(kept: Suit => Boolean,
+private[powers] final class RegionDiscard(power: PowerId,
+    kept: Suit => Boolean,
     regionOf: (ReadyGame, PlayerId) => Option[Region] =
       RegionDiscard.pawnRegion):
 
@@ -75,10 +78,12 @@ private[powers] final class RegionDiscard(kept: Suit => Boolean,
     val from = PositionedLocation(Location.Site(site))
     card match
       case denizen: DenizenState => Some(Discard.Denizen(denizen.id, from, to,
-        suit, denizen.tokens.favor, denizen.tokens.secrets, actor))
+        suit, denizen.tokens.favor, denizen.tokens.secrets, actor,
+        cause = Some(DiscardCause(power))))
       case edifice: EdificeState if edifice.side == EdificeSide.Ruined =>
         Some(Discard.RuinedEdifice(edifice.id, from, suit,
-          edifice.tokens.favor, edifice.tokens.secrets, actor))
+          edifice.tokens.favor, edifice.tokens.secrets, actor,
+          cause = Some(DiscardCause(power))))
       case _ => None
 
   private def discardable(card: SiteDenizenState): Boolean = card match

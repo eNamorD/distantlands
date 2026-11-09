@@ -50,7 +50,7 @@ case object Riots extends WhenPlayedPower:
 
   val cardId: DenizenId = RiotsCard.id
 
-  private val region = new RegionDiscard(_ => true)
+  private val region = new RegionDiscard(id, _ => true)
 
   def effect(ctx: PowerCtx): Vector[Operation] =
     Vector(Branch((live, _) =>

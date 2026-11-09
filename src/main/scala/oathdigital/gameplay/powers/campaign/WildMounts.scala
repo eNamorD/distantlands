@@ -173,5 +173,6 @@ case object WildMounts extends DenizenPlan(WildMountsCard,
       case (CampaignPlanSide.Defender, Some(user)) => WildMounts
         .swappedOffTurn(source, NoteArg.Player(user), NoteArg.Card(card))
       case _ => WildMounts.swapped(source, NoteArg.Card(card))
-    Vector(PlanDiscard.denizen(catalog, acting, card),
+    Vector(PlanDiscard.denizen(catalog, acting, card,
+        use.user.map(_ => DiscardCause(id))),
       Note(id, _ => Some(line)))

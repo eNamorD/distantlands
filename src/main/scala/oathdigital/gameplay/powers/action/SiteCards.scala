@@ -30,9 +30,11 @@ private[powers] final class SiteCards(suits: Set[Suit]):
     case EdificeState(id, EdificeSide.Ruined, _) => Some(id)
     case _ => None
 
-  /** The standard discard of `card`, of `suit`, from `site`. */
+  /** The standard discard of `card`, of `suit`, from `site`. `cause` is
+    * the power's use that discards it; a judgment passes none. */
   def discard(ready: ReadyGame, site: SiteId, card: SiteDenizenState,
-      suit: Suit, actor: PlayerId, required: Boolean)
+      suit: Suit, actor: PlayerId, required: Boolean,
+      cause: Option[DiscardCause])
       : Either[OathViolation, CoreOperation] =
     val from = PositionedLocation(Location.Site(site))
     card match
@@ -41,10 +43,11 @@ private[powers] final class SiteCards(suits: Set[Suit]):
         .toRight(OathViolation.InvalidEventOrder(
           s"${site.value} is not in play"))
         .map(region => Discard.Denizen(denizen.id, from, region, suit,
-          denizen.tokens.favor, denizen.tokens.secrets, actor, required))
+          denizen.tokens.favor, denizen.tokens.secrets, actor, required,
+          cause = cause))
       case edifice: EdificeState => Right(Discard.RuinedEdifice(edifice.id,
         from, suit, edifice.tokens.favor, edifice.tokens.secrets, actor,
-        required))
+        required, cause = cause))
 
   def option(card: SiteDenizenState): DecisionOption = card match
     case denizen: DenizenState =>
@@ -62,7 +65,8 @@ private[powers] final class SiteCards(suits: Set[Suit]):
       ready: ReadyGame, actor: PlayerId, site: SiteId,
       card: SiteDenizenState, suit: Suit): Option[DecisionOption] =
     CardSlots.judge(catalog, ready, actor, option(card),
-      discard(ready, site, card, suit, actor, required = true).map(Vector(_)))
+      discard(ready, site, card, suit, actor, required = true, cause = None)
+        .map(Vector(_)))
 
   /** The question over the cards at the player's site, each judged for the
     * player's discard. With none that may be chosen it is the Continue

@@ -162,7 +162,8 @@ case object ArmedMob extends PaidAction(ArmedMobCard.power):
         .toRight(OathViolation.PawnSiteMissing(actor))
     yield Vector[CoreOperation](Discard.Denizen(chosen.id,
       PositionedLocation(Location.PlayArea(target)), region, suit,
-      chosen.tokens.favor, chosen.tokens.secrets, actor, required = true))
+      chosen.tokens.favor, chosen.tokens.secrets, actor, required = true,
+      cause = Some(DiscardCause(id))))
 
   /** The card discarded and its owner; with no card chosen, why. */
   private def discardedNote(states: NoteStates, actor: PlayerId,

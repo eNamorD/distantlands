@@ -122,7 +122,7 @@ case object SqualidDistrict
       case denizen: DenizenId => catalog.suitOf(denizen)
         .toRight(OathViolation.UnknownWorldCard(denizen))
         .map(suit => Discard.Denizen(denizen, from, region, suit, 0, 0,
-          player, required = true))
+          player, required = true, cause = Some(DiscardCause(id))))
 
   /** Up to `count` cards from the deck's bottom, bottom first, each into
     * the play area facedown; each Vision among them advances the Visions

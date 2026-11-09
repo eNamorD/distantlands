@@ -42,7 +42,7 @@ case object RovingTerror extends PaidAction(RovingTerrorCard.power):
   val nothing: NoteKey = notes.key("used.none", Vector(
     NotePart.Text("No card could be replaced.")))
 
-  private val slots = new SiteSlotMoves(RovingTerrorCard.id,
+  private val slots = new SiteSlotMoves(RovingTerrorCard.id, id,
     empty = false)
   override def narratedDecisions: Set[String] = Set(decisionId)
 

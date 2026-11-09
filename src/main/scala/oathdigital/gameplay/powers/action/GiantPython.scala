@@ -49,7 +49,7 @@ case object GiantPython extends PaidAction(GiantPythonCard.action):
     NotePart.Text("Replaced "), NotePart.Arg(0), NotePart.Text(" at "),
     NotePart.Arg(1), NotePart.Text(".")))
 
-  private val slots = new SiteSlotMoves(GiantPythonCard.id,
+  private val slots = new SiteSlotMoves(GiantPythonCard.id, id,
     empty = true)
   override def narratedDecisions: Set[String] = Set(decisionId)
 

@@ -68,7 +68,7 @@ case object TamingCharm extends PaidAction(TamingCharmCard.power):
     cards.chosen(catalog, ready, player, pending, decisionId) match
       case None => Right(Vector.empty)
       case Some((site, card, suit)) => cards.discard(ready, site, card, suit,
-        player, required = true).map(Vector(_))
+        player, required = true, cause = Some(DiscardCause(id))).map(Vector(_))
 
   /** The gain from the bank of the answered card's suit, read from the
     * catalog: the card has left the site by now. */

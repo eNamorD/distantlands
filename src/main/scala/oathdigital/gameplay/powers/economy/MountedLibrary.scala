@@ -99,7 +99,7 @@ case object MountedLibrary extends SelectedModifier, DiscardsItself:
       card <- ready.game.current.map.sites.get(site)
         .flatMap(_.denizens.find(_.id == cardId))
     yield nomadCards.discard(ready, site, card, Suit.Nomad, actor,
-      required = true)) match
+      required = true, cause = Some(DiscardCause(id)))) match
       case Some(discarding) => discarding.map(Vector(_))
       case None => Right(Vector.empty))
 

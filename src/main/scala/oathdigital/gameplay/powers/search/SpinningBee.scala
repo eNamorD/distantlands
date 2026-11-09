@@ -165,6 +165,7 @@ case object SpinningBee extends SelectedModifier:
               previous <- done
               operations <- CardPlay.operations(catalog, ready, actor, card,
                 SearchPlacement.Discard, CardPlay.Origin.TemporaryHand)
+                .map(DiscardCause.mark(_, DiscardCause(id)))
             yield previous ++ operations
           }
         case _ => Right(Vector.empty)

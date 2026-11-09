@@ -18,16 +18,20 @@ import oathdigital.model._
   * `afterCampaign` is the discard of a plan that says "At end, discard" (Horse
   * Archers, Storm Caller), with its line. A power that replaces the discard
   * of a plan (Wild Mounts) finds the discard itself, however it was built.
+  *
+  * A plan's discard names the plan's power when a player used it. A bandit
+  * defender's plan names none: the attacker is only its acting player.
   */
 object PlanDiscard:
   /** The discard of a plan's own card, whose object gives its suit. */
-  def denizen(user: PlayerId, card: Denizen): Operation =
-    BuildOps((ready, _) => operations(ready, user, card.id, Some(card.suit)))
+  def denizen(user: PlayerId, card: Denizen, cause: Option[DiscardCause])
+      : Operation = BuildOps((ready, _) =>
+      operations(ready, user, card.id, Some(card.suit), cause))
 
   /** The discard of any denizen `card`, its suit read from `catalog`. */
-  def denizen(catalog: ExecutableCatalog, user: PlayerId, card: DenizenId)
-      : Operation = BuildOps((ready, _) =>
-      operations(ready, user, card, catalog.suitOf(card)))
+  def denizen(catalog: ExecutableCatalog, user: PlayerId, card: DenizenId,
+      cause: Option[DiscardCause]): Operation = BuildOps((ready, _) =>
+      operations(ready, user, card, catalog.suitOf(card), cause))
 
   /** The keys this object owns, which no one power owns. A power that
     * writes one includes this set. */
@@ -41,7 +45,8 @@ object PlanDiscard:
     * is the acting player of its discard. */
   def afterCampaign(power: PowerId, use: PlanUse, card: Denizen)
       : Vector[Operation] = Vector(
-    denizen(use.user.getOrElse(use.actor), card),
+    denizen(use.user.getOrElse(use.actor), card,
+      use.user.map(_ => DiscardCause(power))),
     discardedNote(power, card.id))
 
   /** `power`'s "Discarded after the Campaign." for `card`, written only when
@@ -56,7 +61,7 @@ object PlanDiscard:
     ready.game.current.commonCards.regionalDiscards.values.exists(_.contains(card))
 
   private def operations(ready: ReadyGame, user: PlayerId, card: DenizenId,
-      printedSuit: Option[Suit])
+      printedSuit: Option[Suit], cause: Option[DiscardCause])
       : Either[OathViolation, Vector[CoreOperation]] =
     val current = ready.game.current
     val player = current.player(user)
@@ -83,4 +88,4 @@ object PlanDiscard:
             else printedSuit).toRight(OathViolation.UnknownWorldCard(card))
         yield Vector[CoreOperation](Discard.Denizen(card, from,
           CardPlay.nextRegion(own), suit, tokens.favor, tokens.secrets, user,
-          required = true))
+          required = true, cause = cause))

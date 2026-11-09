@@ -120,12 +120,12 @@ case object EmptyGrounds extends ContributingPower:
           case denizen: DenizenState => operations :+ Discard.Denizen(denizen.id,
             PositionedLocation(Location.Site(siteId)), destination, suit,
             denizen.tokens.favor, denizen.tokens.secrets, active,
-            actorless = true)
+            actorless = true, cause = Some(DiscardCause(id)))
           case edifice: EdificeState if edifice.side == EdificeSide.Ruined =>
             operations :+ Discard.RuinedEdifice(edifice.id,
               PositionedLocation(Location.Site(siteId)), suit,
               edifice.tokens.favor, edifice.tokens.secrets, active,
-              actorless = true)
+              actorless = true, cause = Some(DiscardCause(id)))
           case _ => operations
     }
 

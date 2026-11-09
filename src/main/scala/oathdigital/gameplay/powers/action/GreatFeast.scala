@@ -62,7 +62,8 @@ case object GreatFeast extends PaidAction(GreatFeastCard.power):
   private def meal(ready: ReadyGame, player: PlayerId, site: SiteId,
       card: SiteDenizenState, suit: Suit)
       : Either[OathViolation, Vector[CoreOperation]] = for
-    discard <- cards.discard(ready, site, card, suit, player, required = true)
+    discard <- cards.discard(ready, site, card, suit, player, required = true,
+      cause = Some(DiscardCause(id)))
     held <- PlayerFacts.player(ready, player)
   yield
     val room = Gained.min(SupplyTrack.Maximum - held.board.supply.supply)

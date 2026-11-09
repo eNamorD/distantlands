@@ -51,7 +51,7 @@ case object Mercenaries extends DenizenPlan(MercenariesCard,
     PowerWindow.CampaignActionEligibility -> (use =>
       if !use.won.contains(false) then Vector.empty
       else use.user.toVector.flatMap(user => Vector(
-        PlanDiscard.denizen(user, MercenariesCard),
+        PlanDiscard.denizen(user, MercenariesCard, Some(DiscardCause(id))),
         Note(id, discardNote(user))))))
 
   /** Its line, when the discard's step took the card out of play. */

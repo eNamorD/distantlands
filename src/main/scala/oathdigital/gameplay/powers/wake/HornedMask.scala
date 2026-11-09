@@ -179,8 +179,11 @@ case object HornedMask extends PhasePower:
     operation <- chosen match
       case d: DenizenState => EffectiveSuit.of(catalog, ready, d.id)
         .toRight(OathViolation.UnknownWorldCard(d.id)).map(suit =>
+          // It discards only at the adviser limit, so the discard always
+          // makes the room the Mask's card then takes.
           Discard.Denizen(d.id, from, region, suit, d.tokens.favor,
-            d.tokens.secrets, actor, required = true))
+            d.tokens.secrets, actor, required = true,
+            cause = Some(DiscardCause(id, makesRoom = true))))
       case v: VisionState =>
         Right(Discard.Vision(v.id, from, region, required = true))
   yield Vector[CoreOperation](operation)

@@ -44,7 +44,8 @@ case object DarkEnforcer extends PaidAction(DarkEnforcerCard.power):
       : Either[OathViolation, Vector[CoreOperation]] =
     ready.game.current.pawnSite(player).toVector.flatMap(here =>
       cards.at(catalog, ready, here).map((card, suit) =>
-        cards.discard(ready, here, card, suit, player, required = false)))
+        cards.discard(ready, here, card, suit, player, required = false,
+          cause = Some(DiscardCause(id)))))
       .foldLeft[Either[OathViolation, Vector[CoreOperation]]](
         Right(Vector.empty))((done, next) =>
         done.flatMap(ops => next.map(ops :+ _)))

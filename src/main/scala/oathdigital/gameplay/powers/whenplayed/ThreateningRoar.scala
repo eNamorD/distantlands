@@ -28,7 +28,7 @@ case object ThreateningRoar extends WhenPlayedPower:
   notes.include(RegionDiscard.notes)
   override def noteKeys: Vector[NoteKey] = notes.declared
 
-  private val region = new RegionDiscard(ThreateningRoar.suits)
+  private val region = new RegionDiscard(id, ThreateningRoar.suits)
 
   def effect(ctx: PowerCtx): Vector[Operation] =
     region.effect(ctx.catalog, id, cardId, ctx.actor)

@@ -6,9 +6,10 @@ import oathdigital.model._
 
 /** Where a site card that moves itself may go (Giant Python, Roving Terror;
   * catalog batch 8, slice 10): `slot` at `site`, replacing `replaced` with
-  * its suit, or empty. */
+  * its suit, or empty. `makesRoom` when the replace frees the only slot
+  * the mover can take: the site was full (catalog batch 11, ruling 20). */
 final case class SlotMove(site: SiteId, slot: DecisionOptionRef.SiteSlot,
-    replaced: Option[(SiteDenizenState, Suit)])
+    replaced: Option[(SiteDenizenState, Suit)], makesRoom: Boolean)
 
 /** One question over the slots of the sites other than `mover`'s, as card
   * play asks it (`CardSlots`): each site's first empty slot, when `empty`
@@ -20,9 +21,10 @@ final case class SlotMove(site: SiteId, slot: DecisionOptionRef.SiteSlot,
   * card the Hall of Ministers protects is askable of its ruler or shown
   * with its reason. A Replace discards the card the standard way, and the
   * mover takes the site's last slot with its tokens, since a row has no
-  * gaps.
+  * gaps. The discard names `power`, the mover's power.
   */
-private[powers] final class SiteSlotMoves(mover: DenizenId, empty: Boolean):
+private[powers] final class SiteSlotMoves(mover: DenizenId, power: PowerId,
+    empty: Boolean):
   private val cards = new SiteCards(Suit.all.toSet)
 
   /** Every slot the mover may take, in map order then slot order. */
@@ -37,11 +39,12 @@ private[powers] final class SiteSlotMoves(mover: DenizenId, empty: Boolean):
       .flatMap(_.denizens)
     val room = catalog.site(site).exists(held.size < _.capacity)
     val open = Option.when(empty && room)(SlotMove(site,
-      DecisionOptionRef.SiteSlot(site, held.size), None))
+      DecisionOptionRef.SiteSlot(site, held.size), None, makesRoom = false))
     val replacing = cards.at(catalog, ready, site).flatMap((card, suit) =>
       val index = held.indexWhere(_.id == card.id)
       Option.when(index >= 0)(SlotMove(site,
-        DecisionOptionRef.SiteSlot(site, index), Some(card -> suit))))
+        DecisionOptionRef.SiteSlot(site, index), Some(card -> suit),
+        makesRoom = !room)))
     open.toVector ++ replacing
 
   private def option(move: SlotMove): DecisionOption =
@@ -69,7 +72,8 @@ private[powers] final class SiteSlotMoves(mover: DenizenId, empty: Boolean):
       discard <- move.replaced.fold[Either[OathViolation,
           Vector[CoreOperation]]](Right(Vector.empty))(replaced =>
         cards.discard(ready, move.site, replaced._1, replaced._2, actor,
-          required = true).map(Vector(_)))
+          required = true, cause = Some(DiscardCause(power,
+            makesRoom = move.makesRoom))).map(Vector(_)))
     yield discard :+ Move(Piece.Card(mover),
       PositionedLocation(Location.Site(here)),
       PositionedLocation(Location.Site(move.site)), by = Some(actor))
