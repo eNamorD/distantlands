@@ -62,8 +62,9 @@ their phases.
 
 Taken with the owner on 2026-11-07; rulings 15 to 18 on 2026-11-08,
 while planning slice 2, ruling 19 the same day, while planning slice 3,
-rulings 20 to 25 the same day, while planning slice 4, and rulings 26 to
-29 on 2026-11-09, while planning slice 5.
+rulings 20 to 25 the same day, while planning slice 4, rulings 26 to 29
+on 2026-11-09, while planning slice 5, and rulings 30 and 31 the same day,
+while planning slice 6.
 
 1. **Bandit Crown: the bandits still rule.** Denizens at a bandit site stay
    ruled by the bandits. The Crown's holder acts as if they ruled them, and
@@ -182,6 +183,16 @@ rulings 20 to 25 the same day, while planning slice 4, and rulings 26 to
 29. **Vow of Kinship: gain lines say where the favor went.** Every line
     that says a holder gained favor, or that favor went to them, ends
     ", to the Nomad bank" when the favor went there.
+30. **Desecrated Ground: the winner chooses the winning Vision.** A player
+    may meet the goals of several of their revealed Visions at once. They
+    win either way, and the Vision they won with matters only for the next
+    game's Oath, so the win records every Vision whose goal they meet and
+    Swear an Oath asks the winner which of them won. With one, nothing is
+    asked. War Exhaustion still breaks a tie between Exiles in printed
+    priority order, by each Exile's highest-priority qualifying Vision.
+31. **Desecrated Ground: a kept Vision has a line.** A reveal that keeps
+    Visions writes "Desecrated Ground: Kept Vision of Faith." after the
+    reveal's own line.
 
 ### Readings
 
@@ -202,7 +213,7 @@ with this spec.
 - **Desecrated Ground.** An Exile who reveals a Vision while their pawn is
   at the site keeps every revealed Vision they already have. A reveal
   anywhere else discards all of the player's own revealed Visions. Any one
-  of a player's revealed Visions can win. A player who becomes a Citizen
+  of a player's revealed Visions can win (ruling 30). A player who becomes a Citizen
   discards all their own revealed Visions. No card discards one particular
   revealed Vision: Horned Mask and Inquisitor discard facedown Visions.
 - **False Prophet's placement.** The warband goes on another player's
@@ -449,30 +460,50 @@ Master of Disguise lifting the Vow for one Trade.
 
 ## Slice 6: Several revealed Visions
 
-**Desecrated Ground** (ruling 13).
+**Desecrated Ground** (rulings 13, 30 and 31).
 
 - **The model.** `PlayerState.revealedVision: Option[VisionState]` becomes
-  `revealedVisions: Vector[VisionState]`. Its 24 production read and write
-  sites move to it: card play (`CardPlay.planVision` and `revealed`,
-  `CardSlots`), victory (`VisionVictoryEligibility`, `StateBasedEvaluation`,
-  `SwearOath`), the role change, the movement and state writes, `CardIndex`,
+  `revealedVisions: Vector[VisionState]`, in reveal order. Its 24
+  production read and write sites move to it: card play
+  (`CardPlay.planVision` and `revealed`, `CardSlots`), victory
+  (`VisionVictoryEligibility`, `StateBasedEvaluation`, `SwearOath`), the
+  role change, the movement and state writes, `CardIndex`,
   `OperationExecutor`, the projection DTOs and codec, and the frontend
-  board.
+  board. The movement write no longer refuses a second Vision: card play
+  decides what a reveal discards.
 - **One read path.** `RevealedVisions.of(ready, player)` returns a player's
-  revealed Visions. Every reader that asks "which Visions has this player
-  revealed" goes through it, so slice 7 can add claimed Visions in one
-  place.
-- **Desecrated Ground.** A reveal by an Exile whose pawn is at the ruined
-  E08 keeps the Visions already revealed: `CardSlots` offers no
-  replacement and the slot accepts the new Vision. Elsewhere a reveal
-  replaces all of them. A player who becomes a Citizen discards all of
-  them.
-- **Wire.** The projection's revealed Vision becomes a list; old journals
+  revealed Visions. The victory reads go through it, so slice 7 can add
+  claimed Visions in one place. The slot's own bookkeeping (card play, the
+  role change, the movement writes) reads the field, because a claim never
+  puts a Vision in the claimant's slot.
+- **Desecrated Ground.** `DesecratedGroundRule.keeps(ready, player)` is
+  true for an Exile whose pawn is at the site where E08 stands ruined, in
+  play. It sits in `gameplay`, beside the moved `SacredGroundCard`, because
+  card play may not import `gameplay.powers`. When it holds, `CardSlots`
+  offers the spot with no replacement and `CardPlay` discards nothing.
+  Elsewhere the spot replaces every revealed Vision: `CardSlots` nests one
+  `Replacing` per Vision, and the option row names them all ("Replace
+  Vision of Conquest and Vision of Faith as revealed Vision"). A player who
+  becomes a Citizen discards all of them. The power is registered with no
+  window, as Grand Mask is, so the card counts as implemented.
+- **The kept line** (ruling 31). The card play's tree gains a fourth child
+  after the play's own line: a note sourced from E08 that names the
+  player's revealed Visions other than the one just played. Elsewhere none
+  are left, so it writes nothing.
+- **The win** (ruling 30). `VisionVictory` and `WarExhaustionResolved`
+  carry `visions: Vector[VisionId]`, every revealed Vision whose goal the
+  winner meets, and `GameResult` gains the same field. The headline names
+  them all ("Red won with Vision of Conquest and Vision of Faith"). Swear an
+  Oath reads `GameResult.visions`: one sets its goal as today; several ask
+  the winner, through a new `chronicle.swear-oath.vision` decision, which
+  Vision won.
+- **Wire.** The projection's `revealedVision` becomes `revealedVisions`, a
+  list, and the two events' `visionId` becomes `visionIds`; old journals
   need not decode.
 
-Tests: a reveal at the site keeps the old Vision; one elsewhere discards
-every revealed Vision; victory through any one of several; the role
-change; the projection and frontend showing several.
+Tests: a reveal at the site keeps the old Vision and writes the kept line;
+one elsewhere discards every revealed Vision; victory through any one of several; Swear an Oath asking among
+several; the role change; the projection and frontend showing several.
 
 ## Slice 7: A claimed Vision and an off-turn reveal
 
@@ -514,7 +545,7 @@ projection; replay of every new operation.
 | `ActAsIfAdvisers`, `PowerAccess.advisersOf` | 3 | Master of Disguise |
 | Batch questions, `DiscardCause` | 4 | Wild Pastures, Vow of Kinship |
 | A spend's mover, `DrawNomadFavor`, `SpendableFavor`, `NoteArg.ToNomadBank` | 5 | Vow of Kinship |
-| `revealedVisions`, `RevealedVisions.of` | 6 | Desecrated Ground, False Prophet |
+| `revealedVisions`, `RevealedVisions.of`, `DesecratedGroundRule`, a win's `visions` | 6 | Desecrated Ground, False Prophet |
 | Player on `CardPlayedFaceup` | 7 | False Prophet |
 
 ## Testing
