@@ -47,7 +47,9 @@ final case class WorldCard(kind: String, id: String)
 final case class NegotiationTerms(
     transfers: Vector[NegotiationTransfer],
     disclosures: Vector[NegotiationDisclosure],
-    citizenshipPlayerIds: Vector[String] = Vector.empty
+    citizenshipPlayerIds: Vector[String] = Vector.empty,
+    promises: Vector[String] = Vector.empty,
+    bindingPromises: Vector[String] = Vector.empty
 )
 final case class NegotiationTransfer(
     recipientPlayerId: String, favor: Int, relicIds: Vector[String])

@@ -43,12 +43,23 @@ class WalkerDecisionWireSuite extends munit.FunSuite:
           NegotiationDisclosureRef.HeldRelic(red, RelicId("r2"))),
         NegotiationDisclosure(blue,
           NegotiationDisclosureRef.SiteRelic(SiteId("s1"), RelicId("r3")))),
-      Vector(blue))
+      Vector(blue), Vector("I will not attack you."),
+      Vector("I will give you 1 favor next turn."))
     val events = Vector[DecisionAnswer](DecisionAnswer.ProposeTerms(terms),
       DecisionAnswer.AcceptDeal, DecisionAnswer.DeclineDeal).map(answer =>
       WalkerStepRecorded("0.0.0", ChoicePayload("negotiation.deal", answer,
         red), Vector.empty): OathEvent)
     assertStreamRoundTrips("forge", events)
+
+  test("journalled terms with a promise over the limit are refused"):
+    val red = PlayerId("red")
+    val event: OathEvent = WalkerStepRecorded("0.0.0", ChoicePayload(
+      "negotiation.deal", DecisionAnswer.ProposeTerms(NegotiationTerms(
+        promises = Vector("short"))), red), Vector.empty)
+    val encoded = encodedStream("promise-limit", Vector(event))
+    val broken = encoded.replace("\"short\"", "\"" + "x" * 161 + "\"")
+    assert(broken != encoded, "the promise text must be in the stream")
+    assert(GameEventWire.decodeStream(broken).isLeft, broken)
 
   test("every generic walker decision answer round trips on the step and on " +
       "the park"):
