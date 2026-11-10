@@ -36,7 +36,7 @@ private[walker] final case class WalkCtx(
     triggersOff: Boolean = false,
     /** The follow-up trees this walk is inside, outermost first. Their
       * count is the walk's follow-up depth, whose key a batch holds its
-      * operations under (catalog batch 11, slice 8). None is part of
+      * operations under (catalog batch 11, slice 8). None of them is part of
       * `root`, so the restriction look-ahead reads them beside it: a
       * follow-up may nest a card play whose hook a restriction judges
       * (False Prophet's claim, slice 7). */

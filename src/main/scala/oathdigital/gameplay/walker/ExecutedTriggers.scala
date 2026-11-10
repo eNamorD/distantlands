@@ -25,8 +25,9 @@ private[walker] object ExecutedTriggers:
     if depth == 0 then DeferralKey("walker.executed-triggers")
     else DeferralKey(s"walker.executed-triggers.$depth")
 
-  /** How deep follow-ups may nest. A deeper chain is a trigger that
-    * starts itself again. */
+  /** How deep follow-ups may nest: a batch already eight follow-ups down
+    * may not start a ninth. A deeper chain is a trigger that starts itself
+    * again. */
   val MaxDepth: Int = 8
 
   /** The triggers among `powers` that a batch at `depth` asks, in the order

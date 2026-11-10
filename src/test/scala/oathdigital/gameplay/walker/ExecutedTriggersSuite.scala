@@ -129,11 +129,14 @@ class ExecutedTriggersSuite extends munit.FunSuite:
     * return starts the second trigger's question, one level down. */
   private val nesting = WalkerPowers(Vector(MovesThePawnBackFromS3,
     asksNested))
-  /** `trigger`'s place among the triggers a batch at `depth` asks. */
-  private def indexAt(depth: Int, trigger: ExecutedTrigger): String =
+  /** The path segment of `trigger`'s follow-up after a batch at `depth`:
+    * its place among the triggers that batch asks. */
+  private def followUpSegmentOf(depth: Int, trigger: ExecutedTrigger)
+      : String =
     ExecutedTriggers.of(nesting, depth).indexOf(trigger).toString
-  /** Where the take sits after the follow-ups of a batch at `depth`. */
-  private def takeAt(depth: Int): String =
+  /** The path segment of the take after the follow-ups of a batch at
+    * `depth`. */
+  private def takeSegmentAt(depth: Int): String =
     ExecutedTriggers.of(nesting, depth).size.toString
 
   test("a trigger that does not answer follow-ups ignores a follow-up's " +
@@ -156,8 +159,8 @@ class ExecutedTriggersSuite extends munit.FunSuite:
       "level down, holding its operations under that level's key"):
     val park = parked(ProcedureWalker.advance(ready, movedThenSpent, None,
       nesting))
-    val back = indexAt(0, MovesThePawnBackFromS3)
-    val asks = indexAt(1, asksNested)
+    val back = followUpSegmentOf(0, MovesThePawnBackFromS3)
+    val asks = followUpSegmentOf(1, asksNested)
     assertEquals(park.tree.at, Vector("0", back, asks, "0"))
     assertEquals(park.events.map(e => RecordedOps.of(recorded(e))), Vector(
       Vector[CoreOperation](movePawnToS3, heldMove),
@@ -176,16 +179,16 @@ class ExecutedTriggersSuite extends munit.FunSuite:
     val done = finished(ProcedureWalker.resolve(atPark, movedThenSpent,
       park.tree, Answered(decide.decisionId, ChooseOneAnswer(continueOption),
         actor), nesting))
-    val back = indexAt(0, MovesThePawnBackFromS3)
-    val asks = indexAt(1, asksNested)
+    val back = followUpSegmentOf(0, MovesThePawnBackFromS3)
+    val asks = followUpSegmentOf(1, asksNested)
     assertEquals(done.events.map(e => RecordedOps.of(recorded(e))), Vector(
       Vector.empty[CoreOperation], Vector[CoreOperation](spendOneSupply),
       Vector[CoreOperation](TakeDeferred(ExecutedTriggers.keyAt(1))),
       Vector[CoreOperation](TakeDeferred(ExecutedTriggers.keyAt(0))),
       Vector[CoreOperation](spendOneSupply)))
     assertEquals(done.events.map(recorded(_).nodeId), Vector(
-      s"0.$back.$asks.0", s"0.$back.$asks.1", s"0.$back.${takeAt(1)}",
-      s"0.${takeAt(0)}", "1"))
+      s"0.$back.$asks.0", s"0.$back.$asks.1", s"0.$back.${takeSegmentAt(1)}",
+      s"0.${takeSegmentAt(0)}", "1"))
     assertEquals(pawnSiteOf(done.treeless), pawnSiteOf(ready))
     assertEquals(supplyOf(done.treeless), supplyOf(ready) - 2)
 
