@@ -59,6 +59,19 @@ class NegotiationDealSuite extends munit.FunSuite:
       said(p1, AcceptDeal))
     assert(all.closed && all.agreed)
 
+  test("a promise alone is substance, and editing it clears every acceptance"):
+    val promise = NegotiationTerms(promises = Vector("I will not attack you."))
+    val agreed = fold(said(p1, ProposeTerms(promise)), said(p2, AcceptDeal),
+      said(p1, AcceptDeal))
+    assert(agreed.hasSubstance && agreed.agreed)
+    val edited = fold(said(p1, ProposeTerms(promise)), said(p2, AcceptDeal),
+      said(p1, ProposeTerms(NegotiationTerms(promises =
+        Vector("I will not attack you this round.")))))
+    assertEquals(edited.accepted, Set.empty[PlayerId])
+    val binding = fold(said(p1, ProposeTerms(NegotiationTerms(
+      bindingPromises = Vector("I will give you 1 favor next turn.")))))
+    assert(binding.hasSubstance)
+
   test("a decline closes the deal without agreeing it"):
     val deal = fold(said(p1, ProposeTerms(gift)), said(p1, AcceptDeal),
       said(p2, DeclineDeal))

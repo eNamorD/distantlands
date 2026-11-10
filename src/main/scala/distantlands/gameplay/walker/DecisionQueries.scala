@@ -360,6 +360,8 @@ object DecisionQueries:
             (own.citizenshipRefused.isEmpty &&
               terms.citizenship.forall(own.citizenship.contains)),
             decisionId, "offers Citizenship it cannot")
+          _ <- require(terms.bindingPromises.isEmpty || own.bindingPromises,
+            decisionId, "offers a binding promise it cannot")
         yield ()
 
   private def acceptsPartition(decisionId: String,

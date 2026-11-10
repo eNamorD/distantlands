@@ -575,6 +575,18 @@ class DecisionQuerySuite extends munit.FunSuite:
     assertEquals(acceptsBy(green, DecisionAnswer.ProposeTerms(fine)),
       invalid("decision recover.choice is not open to this player"))
 
+  test("a binding promise needs bounds that open them; a plain one does not"):
+    val plain = NegotiationTerms(promises = Vector("I will not attack you."))
+    val binding = NegotiationTerms(bindingPromises =
+      Vector("I will not attack you."))
+    assertEquals(acceptsBy(red, DecisionAnswer.ProposeTerms(plain)), Right(()))
+    assertEquals(acceptsBy(red, DecisionAnswer.ProposeTerms(binding)),
+      invalid("decision recover.choice offers a binding promise it cannot"))
+    val open = deal(acceptors = Set(red, blue)).copy(bounds = Map(
+      red -> redBounds.copy(bindingPromises = true), blue -> blueBounds))
+    assertEquals(acceptsBy(red, DecisionAnswer.ProposeTerms(binding), open),
+      Right(()))
+
   test("only an acceptor accepts and any participant declines"):
     assertEquals(acceptsBy(red, DecisionAnswer.AcceptDeal), Right(()))
     assertEquals(acceptsBy(red, DecisionAnswer.AcceptDeal, deal()),
