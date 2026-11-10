@@ -387,3 +387,41 @@ class NegotiationDealPanelSuite extends munit.FunSuite:
       case Intent.ResolveWalker(_, DecisionAnswerWire.ProposeTermsWire(terms)) =>
         terms.promises }
     assertEquals(sent, Vector(Vector("I will not attack you.")))
+
+  private val giftable = CardDetails("d7", "denizen", "Tinker",
+    orientation = Some("face-up"))
+
+  test("an adviser is offered only to the recipients the rules allow, and " +
+      "Save sends it as a world card"):
+    val deal = threeWay(NegotiationEditingState(3, Vector.empty, Vector.empty,
+      Vector.empty, canAccept = false, giftableAdvisers = Vector(giftable),
+      adviserRecipients = Vector("blue")))
+    val ui = new RecordingControls()
+    val panel = render(owner(deal), ui)
+    assert(Dom.all(panel, "[aria-label='Give Tinker to yellow']").isEmpty)
+    box(panel, "Give Tinker to blue").checked = true
+    button(panel, ".negotiation-save").click()
+    val sent = ui.submitted.collect {
+      case Intent.ResolveWalker(_, DecisionAnswerWire.ProposeTermsWire(
+          terms)) => terms }
+    assertEquals(sent.flatMap(_.transfers).flatMap(_.advisers),
+      Vector(distantlands.protocol.WorldCard("denizen", "d7")))
+
+  test("a transfer names the advisers the viewer can see and counts the rest"):
+    val base = dealWhereBlueHasAccepted()
+    val panel = render(spectator(base.copy(transfers = Vector(
+      NegotiationTransferState(authorPlayerId = "blue",
+        recipientPlayerId = "red", favor = 0, relicCount = 0,
+        relics = Vector.empty, adviserCount = 2,
+        advisers = Vector(giftable))))), new RecordingControls())
+    assertEquals(Dom.one(panel, ".negotiation-transfer").textContent,
+      "blue gives red: Tinker, 1 facedown adviser")
+
+  test("terms over an adviser limit withhold Accept with the reason"):
+    val base = dealWhereBlueHasAccepted(canAccept = false)
+    val panel = render(owner(base.copy(editing = base.editing.map(_.copy(
+      overAdviserLimit = Vector("blue"))))), new RecordingControls())
+    val accept = button(panel, ".negotiation-accept")
+    assertEquals(accept.getAttribute("aria-disabled"), "true")
+    assertEquals(accept.getAttribute("data-tip"),
+      "These terms would leave blue over their adviser limit.")

@@ -343,7 +343,8 @@ final case class PlayerBoardProjection(
 )
 final case class NegotiationTransferProjection(authorPlayerId: String,
     recipientPlayerId: String, favor: Int, relicCount: Int,
-    relics: Vector[CardDetailsProjection])
+    relics: Vector[CardDetailsProjection], adviserCount: Int = 0,
+    advisers: Vector[CardDetailsProjection] = Vector.empty)
 final case class NegotiationDisclosureProjection(authorPlayerId: String,
     recipientPlayerId: String, kind: String,
     card: Option[CardDetailsProjection])
@@ -368,10 +369,18 @@ final case class NegotiationEditingProjection(editableFavor: Int,
     editableCitizenship: Vector[String] = Vector.empty,
     citizenshipRefused: Option[String] = None,
     /** Whether the viewer may add binding promises (The Tribunal). */
-    bindingPromisesOpen: Boolean = false)
+    bindingPromisesOpen: Boolean = false,
+    /** The advisers the viewer may give, and to whom (Council Arbiter,
+      * Festival District). */
+    giftableAdvisers: Vector[CardDetailsProjection] = Vector.empty,
+    adviserRecipients: Vector[String] = Vector.empty,
+    /** The participants the current terms would leave over their adviser
+      * limit; while any is, nobody may accept. */
+    overAdviserLimit: Vector[String] = Vector.empty)
 
 /** A parked negotiation as one viewer sees it. Everyone sees the participants,
-  * who has accepted, favor amounts, relic counts and faceup relic details, and
+  * who has accepted, favor amounts, relic and adviser counts and the details of
+  * faceup relics and advisers, and
   * each disclosure's kind and recipient, and every promise. Only an author sees the identity of
   * their own facedown relics and of information they promise. `editing` is
   * present only for a participant.

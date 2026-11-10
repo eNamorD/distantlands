@@ -364,7 +364,9 @@ private[projection] object ActionProjectionCodec:
   private def encodeTransfer(row: NegotiationTransferProjection): ujson.Value =
     ujson.Obj("authorPlayerId" -> row.authorPlayerId,
       "recipientPlayerId" -> row.recipientPlayerId, "favor" -> row.favor,
-      "relicCount" -> row.relicCount, "relics" -> encoded(row.relics)(encodeCard))
+      "relicCount" -> row.relicCount, "relics" -> encoded(row.relics)(encodeCard),
+      "adviserCount" -> row.adviserCount,
+      "advisers" -> encoded(row.advisers)(encodeCard))
   private def encodeDisclosure(row: NegotiationDisclosureProjection): ujson.Value =
     ujson.Obj("authorPlayerId" -> row.authorPlayerId,
       "recipientPlayerId" -> row.recipientPlayerId, "kind" -> row.kind,
@@ -376,13 +378,17 @@ private[projection] object ActionProjectionCodec:
       : Result[NegotiationTransferProjection] = for
     row <- obj(raw, child)
     _ <- exact(row, Set("authorPlayerId", "recipientPlayerId", "favor",
-      "relicCount", "relics"), child)
+      "relicCount", "relics", "adviserCount", "advisers"), child)
     author <- string(row, "authorPlayerId", child)
     recipient <- string(row, "recipientPlayerId", child)
     favor <- int(row, "favor", child); count <- int(row, "relicCount", child)
     raws <- array(row, "relics", child)
     relics <- traverse(raws, s"$child.relics")(decodeCard)
-  yield NegotiationTransferProjection(author, recipient, favor, count, relics)
+    adviserCount <- int(row, "adviserCount", child)
+    adviserRaws <- array(row, "advisers", child)
+    advisers <- traverse(adviserRaws, s"$child.advisers")(decodeCard)
+  yield NegotiationTransferProjection(author, recipient, favor, count, relics,
+    adviserCount, advisers)
   private def decodeDisclosure(raw: ujson.Value, child: String)
       : Result[NegotiationDisclosureProjection] = for
     row <- obj(raw, child)
@@ -414,7 +420,10 @@ private[projection] object ActionProjectionCodec:
       "canAccept" -> editing.canAccept,
       "editableCitizenship" -> encoded(editing.editableCitizenship)(ujson.Str(_)),
       "citizenshipRefused" -> option(editing.citizenshipRefused)(ujson.Str(_)),
-      "bindingPromisesOpen" -> editing.bindingPromisesOpen)),
+      "bindingPromisesOpen" -> editing.bindingPromisesOpen,
+      "giftableAdvisers" -> encoded(editing.giftableAdvisers)(encodeCard),
+      "adviserRecipients" -> encoded(editing.adviserRecipients)(ujson.Str(_)),
+      "overAdviserLimit" -> encoded(editing.overAdviserLimit)(ujson.Str(_)))),
     "citizenship" -> encoded(value.citizenship)(offer => ujson.Obj(
       "authorPlayerId" -> offer.authorPlayerId,
       "recipientPlayerId" -> offer.recipientPlayerId)),
@@ -436,7 +445,8 @@ private[projection] object ActionProjectionCodec:
       row <- obj(rawEditing, child)
       _ <- exact(row, Set("editableFavor", "editableRelics", "editableAdvisers",
         "editableSiteRelics", "canAccept", "editableCitizenship",
-        "citizenshipRefused", "bindingPromisesOpen"), child)
+        "citizenshipRefused", "bindingPromisesOpen", "giftableAdvisers",
+        "adviserRecipients", "overAdviserLimit"), child)
       favor <- int(row, "editableFavor", child)
       relicRaws <- array(row, "editableRelics", child)
       relics <- traverse(relicRaws, s"$child.editableRelics")(decodeCard)
@@ -448,8 +458,12 @@ private[projection] object ActionProjectionCodec:
       offerable <- strings(row, "editableCitizenship", child)
       refused <- optionalString(row, "citizenshipRefused", child)
       open <- bool(row, "bindingPromisesOpen", child)
+      giftableRaws <- array(row, "giftableAdvisers", child)
+      giftable <- traverse(giftableRaws, s"$child.giftableAdvisers")(decodeCard)
+      adviserRecipients <- strings(row, "adviserRecipients", child)
+      overLimit <- strings(row, "overAdviserLimit", child)
     yield NegotiationEditingProjection(favor, relics, advisers, sites, canAccept,
-      offerable, refused, open) }
+      offerable, refused, open, giftable, adviserRecipients, overLimit) }
     offerRaws <- array(value, "citizenship", path)
     offers <- traverse(offerRaws, s"$path.citizenship") { (raw, child) => for
       row <- obj(raw, child)
