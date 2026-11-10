@@ -87,8 +87,9 @@ for grafted in GRAFTED_MODEL_FILES:
         errors.append(f"build.sbt: no longer grafts model/{grafted} into the "
                       "frontend; revisit the frontend gate's model exception")
 
+# `distantlands.chronicles`, `distantlands.log` and `distantlands.table` are browser storage keys, not packages.
 qualified_reference = re.compile(
-    r"(?<!\")\bdistantlands\.([A-Za-z0-9_]+)(?:\.([A-Za-z0-9_]+))?")
+    r"\bdistantlands\.(?!(?:chronicles|log|table)\b)([A-Za-z0-9_]+)(?:\.([A-Za-z0-9_]+))?")
 # `import distantlands.{application, model => m}` names packages inside the
 # braces, where the pattern above cannot see them.
 brace_group_import = re.compile(r"\bimport\s+distantlands\.\{([^}]*)\}")
