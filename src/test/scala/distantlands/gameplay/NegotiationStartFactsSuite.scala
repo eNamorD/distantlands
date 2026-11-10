@@ -27,3 +27,13 @@ class NegotiationStartFactsSuite extends munit.FunSuite:
     val facts = NegotiationStartFacts(Vector(p2, p3), Vector(p3))
     assert(facts.bindingPromises(Vector(p1, p3)))
     assert(!facts.bindingPromises(Vector(p1, p2)))
+
+  test("the adviser users round trip, and open the rules"):
+    val facts = NegotiationStartFacts(Vector(p2, p3), Vector.empty,
+      Vector(p3), Vector(p2))
+    assertEquals(NegotiationStartFacts.read(facts.refs), Right(facts))
+    assertEquals(facts.rules(Vector(p1, p2)).advisersOpen, true)
+    assertEquals(facts.rules(Vector(p1, p3)).adviserTraders, Vector(p3))
+    assertEquals(facts.rules(Vector(p1, p3)).advisersOpen, false)
+    assert(NegotiationStartFacts.read(Vector(DecisionOptionRef.Player(p2),
+      DecisionOptionRef.Button(NegotiationStartFacts.Marker))).isLeft)

@@ -22,6 +22,7 @@ import distantlands.gameplay.phases.rest.{BeginRestProcedure, FinishRestProcedur
 import distantlands.gameplay.phases.{PhaseMenu, PhasePowerProcedure}
 import distantlands.gameplay.oathkeeper.OathkeeperProcedure
 import distantlands.gameplay.powerresolver.PhasePowers
+import distantlands.gameplay.powers.AdviserLimit
 import distantlands.model.{ActionRef, Answered, Decide, DecisionOption, DecisionOptionRef, OathViolation, Operation, PendingTree, PhaseTransitionRef, PlayerId, PowerId, PowerWindow, ProcedureRef, ReadyGame, TriggeredProcedureRef}
 
 /** The one place a procedure registers its walker tree-building functions,
@@ -383,12 +384,14 @@ object WalkerProcedureRegistry:
     Entry.withoutStartGates(ForcedWakeProcedure.build(powers))
 
   /** Negotiation reads the power-use restrictions at its start: The
-    * Tribunal and Traveling Negotiator reach no further than their users
-    * may use them (catalog batch 12, ruling 24). A resume reads the start
-    * facts and needs no powers. */
+    * Tribunal, Traveling Negotiator, Council Arbiter and Festival District
+    * reach no further than their users may use them (catalog batch 12,
+    * rulings 24 and 26). Its deal reads the adviser limit, which only the
+    * powers know (ruling 17). A resume reads the start facts and needs no
+    * powers. */
   private def negotiationEntry(powers: WalkerPowers): Entry = Entry(
-    build = NegotiationProcedure.build(powers.useRestrictions),
-    rebuild = NegotiationProcedure.rebuild,
+    build = NegotiationProcedure.build(AdviserLimit, powers.useRestrictions),
+    rebuild = NegotiationProcedure.rebuild(AdviserLimit),
     startFacts = NegotiationProcedure.startFacts(powers.useRestrictions))
 
   /** The follow-up offer prices its action by a dry run of the action's

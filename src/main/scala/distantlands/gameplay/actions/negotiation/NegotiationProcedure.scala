@@ -1,7 +1,7 @@
 package distantlands.gameplay.actions.negotiation
 
 import distantlands.catalog.ExecutableCatalog
-import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.actions.{AdviserLimits, ProcedureNotes}
 import distantlands.gameplay.powerresolver.PowerUseRestriction
 import distantlands.gameplay.roles.Citizenship
 import distantlands.model._
@@ -21,7 +21,8 @@ import distantlands.model.DecisionAnswer.DeclineDeal
   *
   * The start reads the reach once, under the walk's power-use restrictions,
   * and stores it as walker start facts ([[NegotiationStartFacts]]); a
-  * rebuild reads them back.
+  * rebuild reads them back. The adviser limit is the powers' knowledge, so
+  * the registry passes `AdviserLimit` to `build` and `rebuild`.
   *
   * Nothing about the deal is stored: the guard, the query and the settlement
   * all read `PendingTree.answered` (see [[NegotiationDeal]]).
@@ -70,7 +71,8 @@ object NegotiationProcedure:
 
   /** A fresh start: the reach is read once, under the walk's power-use
     * restrictions, and refused when it holds nobody. */
-  def build(restrictions: Vector[PowerUseRestriction])(
+  def build(limits: AdviserLimits,
+      restrictions: Vector[PowerUseRestriction])(
       catalog: ExecutableCatalog, state: ReadyGame, actor: PlayerId,
       args: Vector[DecisionOptionRef]): Either[OathViolation, Operation] =
     for
@@ -79,15 +81,16 @@ object NegotiationProcedure:
       _ <- Either.cond(facts.candidates.nonEmpty, (),
         OathViolation.NegotiationUnavailable(
           "no other player is at your site or within reach"))
-    yield tree(actor, facts)
+    yield tree(catalog, limits, actor, facts)
 
   /** A resume rebuilds what the start built, from the facts it stored. */
-  def rebuild(catalog: ExecutableCatalog, state: ReadyGame, actor: PlayerId,
+  def rebuild(limits: AdviserLimits)(catalog: ExecutableCatalog,
+      state: ReadyGame, actor: PlayerId,
       args: Vector[DecisionOptionRef]): Either[OathViolation, Operation] =
     for
       _ <- noStartArgs(args)
       facts <- NegotiationStartFacts.read(state.game.current.walkerStartFacts)
-    yield tree(actor, facts)
+    yield tree(catalog, limits, actor, facts)
 
   /** What the start stores for every rebuild ([[NegotiationStartFacts]]). */
   def startFacts(restrictions: Vector[PowerUseRestriction])(
@@ -101,7 +104,8 @@ object NegotiationProcedure:
       s"walker procedure ${ActionRef.Negotiation.key} takes no start " +
         s"selection, got ${args.map(_.kind).mkString(", ")}"))
 
-  private def tree(actor: PlayerId, facts: NegotiationStartFacts): Operation =
+  private def tree(catalog: ExecutableCatalog, limits: AdviserLimits,
+      actor: PlayerId, facts: NegotiationStartFacts): Operation =
     val candidates = facts.candidates
     val choose: Vector[Operation] =
       if candidates.size < 2 then Vector.empty
@@ -118,8 +122,8 @@ object NegotiationProcedure:
         Branch((ready, pending) => {
           val deal = NegotiationDeal.deal(ready, actor, candidates, pending)
           Vector(Decide(NegotiationDeal.dealDecisionId, actor,
-            NegotiationDeal.snapshot(ready, deal,
-              facts.bindingPromises(deal.participants)),
+            NegotiationDeal.snapshot(catalog, ready, deal,
+              facts.rules(deal.participants), limits),
             coOwners = deal.participants.filter(_ != actor)))
         })),
       Branch((ready, pending) => {
@@ -188,7 +192,8 @@ object NegotiationProcedure:
           NoteArg.Site(site))
 
   /** One line per transfer, in `NegotiationDeal.transfers`' order: each
-    * author's favor before their relics. */
+    * author's favor, then relics, then advisers. A facedown adviser reads as
+    * its back to every player but the two who held it (`LogWords.seen`). */
   private def transferred(deal: DealState): Vector[LogNote] =
     deal.participants.flatMap(author =>
       deal.terms(author).transfers.flatMap(transfer =>
@@ -197,6 +202,9 @@ object NegotiationProcedure:
           NoteArg.Player(transfer.recipient))).toVector ++
           transfer.relics.map(relic => gaveCard.sourceless(
             NoteArg.Player(author), NoteArg.Card(relic),
+            NoteArg.Player(transfer.recipient))) ++
+          transfer.advisers.map(card => gaveCard.sourceless(
+            NoteArg.Player(author), NoteArg.Card(card),
             NoteArg.Player(transfer.recipient)))))
 
   /** The line for `citizen`'s new role, once the change has run. */

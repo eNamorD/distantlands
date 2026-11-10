@@ -1,8 +1,9 @@
 package distantlands.gameplay
 
-import distantlands.gameplay.actions.negotiation.{NegotiationDeal,
+import distantlands.gameplay.actions.negotiation.{DealRules, NegotiationDeal,
   TravelingNegotiatorCard}
 import distantlands.gameplay.cards.{BrokenPeaksSite, DunesSite}
+import distantlands.gameplay.powers.AdviserLimit
 import distantlands.gameplay.powers.action.BrassHorseCard
 import distantlands.gameplay.powers.campaign.StickyFireCard
 import distantlands.gameplay.powers.search.TruthfulHarpCard
@@ -114,7 +115,8 @@ class NegotiationDealSuite extends munit.FunSuite:
 
   test("the snapshot carries each author's own bounds and who may accept"):
     val deal = fold(said(p1, ProposeTerms(gift)), said(p1, AcceptDeal))
-    val query = NegotiationDeal.snapshot(ready, deal)
+    val query = NegotiationDeal.snapshot(catalog, ready, deal, DealRules(),
+      AdviserLimit)
     assertEquals(query.participants, Vector(p1, p2))
     assertEquals(query.terms(p1), gift)
     assertEquals(query.accepted, Set(p1))
@@ -135,7 +137,8 @@ class NegotiationDealSuite extends munit.FunSuite:
     })
 
   test("an empty deal has no acceptors"):
-    assertEquals(NegotiationDeal.snapshot(ready, fold()).acceptors,
+    assertEquals(NegotiationDeal.snapshot(catalog, ready, fold(), DealRules(),
+      AdviserLimit).acceptors,
       Set.empty[PlayerId])
 
   test("settlement records disclosures before transfers, in participant order"):
