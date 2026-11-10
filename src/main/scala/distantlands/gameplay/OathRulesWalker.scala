@@ -116,7 +116,9 @@ private[gameplay] trait OathRulesWalker:
           outcome <- walkerCall(ProcedureWalker.advance(ready, tree, None, powers,
             walkerDice, procedure = Some(procedure)))
           started <- walkerTransition(transition.state, procedure, tree,
-            outcome, powers, Vector.empty, Vector.empty)
+            outcome, powers, Vector.empty,
+            WalkerProcedureRegistry.startFacts(procedure, catalog, ready,
+              actor, walkerPowers = powers))
         yield started.copy(events = transition.events ++ started.events)
       case _ => Right(transition)
 
@@ -377,6 +379,8 @@ private[gameplay] trait OathRulesWalker:
       actor: PlayerId, startArgs: Vector[DecisionOptionRef],
       starting: Boolean)
       : Either[OathViolation, Operation] =
+    // These procedures read the walk's powers, so they go to the registry
+    // with them and never through the injected `walkerTree` source.
     procedure match
       case _: ActionRef.UsePower | TriggeredProcedureRef.ForcedWake |
           TriggeredProcedureRef.FollowUpOffer |

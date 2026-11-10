@@ -276,6 +276,26 @@ class NegotiationProcedureSuite extends munit.FunSuite:
     assertEquals(Outcomes.ready(started.state).game.current.walkerStartFacts,
       NegotiationStartFacts(Vector(p2), Vector.empty).refs)
 
+  test("a resume keeps the reach the start stored, though the state changed"):
+    val remote = Table.start.pawn(p1, at = site).pawn(p2, at = DunesSite)
+      .pawn(p3, at = FairIsleSite).adviser(p2, TravelingNegotiatorCard.id)
+      .ready
+    val started = start(remote).getOrElse(fail("Negotiation must start"))
+    // p2's Traveling Negotiator turns facedown mid-deal: rebuilt from live
+    // state, the reach would hold nobody.
+    val ready = Outcomes.ready(started.state)
+    val hidden = ready.updateCurrent(current => current.copy(players =
+      current.players.map(player => player.copy(advisers =
+        player.advisers.map {
+          case denizen: DenizenState
+              if denizen.id == TravelingNegotiatorCard.id =>
+            denizen.copy(orientation = Orientation.FaceDown)
+          case other => other }))))
+    val gave = say(Ready(hidden), p1, gift(p2, 1))
+      .getOrElse(fail("the deal must still stand"))
+    parked.assertParked(gave.state, ActionRef.Negotiation, dealId, p1)
+    assertEquals(parkedBounds(gave.state)(p1).recipients, Vector(p2))
+
   test("City Wall's ruler's enemy at its site cannot use Traveling " +
       "Negotiator to start one"):
     val walled = Table.start.pawn(p1, at = AncientCitySite)
@@ -285,6 +305,8 @@ class NegotiationProcedureSuite extends munit.FunSuite:
       .warbandsAt(AncientCitySite, p2, 1).ready
     // With no walker powers nothing blocks it.
     assert(start(walled).isRight)
+    assert(StartPreview.opens(catalog, walled, p1, ActionRef.Negotiation,
+      WalkerPowers.empty))
     val blocked = PowerRules.withWalkerPowers.startWalker(Ready(walled),
       ActionRef.Negotiation, p1)
     assert(blocked.left.toOption.exists(
