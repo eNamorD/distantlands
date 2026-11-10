@@ -49,7 +49,20 @@ object GameIntentMapper:
 
   private def invalid(path: String, value: String, kind: String) = Left(GameIntentMappingFailure(path, s"unknown $kind '$value'"))
   private def world(value: WorldCard, path: String): Result[WorldCardId] = value.kind match { case "denizen" => Right(DenizenId(value.id)); case "vision" => Right(VisionId(value.id)); case v => invalid(s"$path.kind", v, "world card kind") }
-  private def negotiation(value: distantlands.protocol.NegotiationTerms): Result[distantlands.model.NegotiationTerms] = traverse(value.disclosures)(disclosure).map(ds => distantlands.model.NegotiationTerms(value.transfers.map(v => distantlands.model.NegotiationTransfer(PlayerId(v.recipientPlayerId), v.favor, v.relicIds.map(RelicId.apply))), ds, value.citizenshipPlayerIds.map(PlayerId.apply)))
+  /** The engine's terms, or why the model refuses them. The command wire's
+    * decoder already refuses negative favor and repeated rows, relics and
+    * offers, so a decoded request never fails here; the catch keeps the
+    * mapper total for terms that did not come through it. */
+  private def negotiation(value: distantlands.protocol.NegotiationTerms)
+      : Result[distantlands.model.NegotiationTerms] =
+    traverse(value.disclosures)(disclosure).flatMap(ds =>
+      try Right(distantlands.model.NegotiationTerms(value.transfers.map(v =>
+        distantlands.model.NegotiationTransfer(PlayerId(v.recipientPlayerId),
+          v.favor, v.relicIds.map(RelicId.apply))), ds,
+        value.citizenshipPlayerIds.map(PlayerId.apply)))
+      catch case refused: IllegalArgumentException =>
+        Left(GameIntentMappingFailure("$.intent.terms",
+          Option(refused.getMessage).getOrElse("invalid Negotiation terms"))))
   private def disclosure(value: distantlands.protocol.NegotiationDisclosure): Result[distantlands.model.NegotiationDisclosure] = value.information match
     case NegotiationInformation.Adviser(owner, c) => world(c, "$.intent.terms.disclosures.information.card").map(v => distantlands.model.NegotiationDisclosure(PlayerId(value.recipientPlayerId), NegotiationDisclosureRef.Adviser(PlayerId(owner), v)))
     case NegotiationInformation.HeldRelic(owner, relic) => Right(distantlands.model.NegotiationDisclosure(PlayerId(value.recipientPlayerId), NegotiationDisclosureRef.HeldRelic(PlayerId(owner), RelicId(relic))))
