@@ -11,8 +11,8 @@ import distantlands.testkit.Table.{p1, p2}
 import LogScriptSupport.{atTable, tableWithOnePawnPerSite}
 import distantlands.testkit.Commands
 
-/** The Negotiation scripts: a deal declined, a deal agreed, and a facedown
-  * adviser disclosed. Reached through `LogScripts`.
+/** The Negotiation scripts: a deal declined, a deal agreed, a deal of one
+  * promise, and a facedown adviser disclosed. Reached through `LogScripts`.
   */
 object NegotiationLogScripts:
   /** p1 and p2 share Ancient City, so p1 can negotiate with exactly one
@@ -42,6 +42,17 @@ object NegotiationLogScripts:
       .parkedAfter(deal(partner, AcceptDeal))
       .after(deal(actor, AcceptDeal))
     Script("negotiation-agreed", service, actor)
+
+  /** A deal that holds nothing but the actor's promise: it may be accepted
+    * and settles with the promise's line (catalog batch 12, ruling 13). */
+  def negotiationPromised(using munit.Location): Script =
+    val (service, parked, actor, partner) = negotiating("negotiation-promised")
+    parked
+      .parkedAfter(deal(actor, ProposeTerms(NegotiationTerms(promises =
+        Vector("I will not attack you this round.")))))
+      .parkedAfter(deal(partner, AcceptDeal))
+      .after(deal(actor, AcceptDeal))
+    Script("negotiation-promised", service, actor)
 
   /** The partner shows the actor its facedown adviser. */
   def negotiationDisclosed(using munit.Location): Script =
