@@ -19,16 +19,24 @@ object WhisperingStoneCard extends Relic(RelicId("R34"), "Whispering Stone",
   * front of the queue, sourced on the relic, carrying the private marker
   * ([[NegotiationProcedure.privateArgs]]). The queued Negotiation asks for
   * the one player, reads its When Negotiating powers as the Negotiate
-  * action does, and keeps its terms from players outside the deal. The
-  * Stone writes no line of its own: the Game Log's "Used Whispering Stone"
-  * names it, and the Negotiation's opening line names the partner.
+  * action does, and keeps its terms from players outside the deal. Its
+  * own line, "Negotiate in private.", is public; the Negotiation's opening
+  * line names the partner.
   */
 case object WhisperingStone extends PaidAction(WhisperingStoneCard.power):
+  private val notes = NoteSet(id)
+  /** "Negotiate in private.": the use's own line. */
+  val negotiateInPrivate: NoteKey = notes.key(NoteKey.Used, Vector(
+    NotePart.Text("Negotiate in private.")))
+  override val noteKeys: Vector[NoteKey] = notes.declared
+
   def build(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId,
       source: DecisionOptionRef): Either[OathViolation, Operation] =
     source match
       case DecisionOptionRef.Relic(stone) =>
-        Right(QueueProcedure(entry(player, stone), atFront = true))
+        Right(Sequence(Vector(
+          QueueProcedure(entry(player, stone), atFront = true),
+          Note(id, _ => Some(negotiateInPrivate(PowerSourceRef.Card(stone)))))))
       case other => Left(OathViolation.InvalidEventOrder(
         s"${other.kind} is not a relic source"))
 
