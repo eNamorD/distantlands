@@ -1,17 +1,10 @@
 package distantlands.catalog.holding
 
-import distantlands.catalog.{AdviserOnly, Denizen, PrintedPower,
-  SiteOnly}
+import distantlands.catalog.{Denizen, PrintedPower, SiteOnly}
 import distantlands.model.{Cost, DenizenId, PowerId, Suit}
 
 // Generated from the retired runtime JSON (card classes slice 1).
 // Hand-edited from here on; a card moves out when it is implemented.
-
-object TravelingNegotiatorCard extends Denizen(DenizenId("242"), "Traveling Negotiator", Suit.Nomad) with AdviserOnly:
-  val power = PrintedPower(PowerId("denizen.traveling-negotiator"),
-    persistent = false, cost = Cost.free,
-    text = "**WHEN NEGOTIATING:** You may negotiate with any player.")
-  val powers: Vector[PrintedPower] = Vector(power)
 
 object TheGatheringCard extends Denizen(DenizenId("27"), "The Gathering", Suit.Nomad) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.the-gathering"),

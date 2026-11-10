@@ -80,7 +80,8 @@ object WalkerPowerCatalog:
       ActionModifiers.all ++
       TargetProtections.all ++
       Vector(KnightsErrant, Marriage, PledgeToDiscord, Jinx, BanditCrown,
-        GrandMask, DesecratedGround, FalseProphetClaim) ++
+        GrandMask, DesecratedGround, FalseProphetClaim, TravelingNegotiator,
+        TheTribunal, BanditTribunal) ++
       BattlePlans.all ++
       PlanRules.all ++
       SimplePlans.all ++
