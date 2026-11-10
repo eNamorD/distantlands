@@ -14,7 +14,9 @@ private[serialization] object NegotiationTermsCodec:
       "recipientPlayerId" -> transfer.recipient.value,
       "favor" -> transfer.favor,
       "relicIds" -> ujson.Arr.from(transfer.relics.map(r => ujson.Str(r.value))),
-      "advisers" -> ujson.Arr.from(transfer.advisers.map(encodeCardId))))),
+      "advisers" -> ujson.Arr.from(transfer.advisers.map(encodeCardId)),
+      "siteIds" -> ujson.Arr.from(transfer.sites.map(site =>
+        ujson.Str(site.value)))))),
     "disclosures" -> ujson.Arr.from(terms.disclosures.map { disclosure =>
       val information = disclosure.information match {
         case NegotiationDisclosureRef.Adviser(owner, card) => ujson.Obj(
@@ -47,7 +49,7 @@ private[serialization] object NegotiationTermsCodec:
             decodeWorldCardId(card, s"$path.transfers.advisers"))
         yield NegotiationTransfer(PlayerId(row("recipientPlayerId").str),
           favor, row("relicIds").arr.toVector.map(v => RelicId(v.str)),
-          advisers)
+          advisers, row("siteIds").arr.toVector.map(v => SiteId(v.str)))
       }
       disclosures <- traverse(value("disclosures").arr.toVector) { row =>
         val info = row("information")

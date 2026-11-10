@@ -26,6 +26,15 @@ class GameIntentMapperNegotiationSuite extends munit.FunSuite:
     assertEquals(bound(unknown).left.map(_.path),
       Left("$.intent.terms.transfers.advisers.kind"))
 
+  test("a site in a transfer row maps to its site id"):
+    val wire = Wire.ProposeTermsWire(distantlands.protocol.NegotiationTerms(
+      Vector(distantlands.protocol.NegotiationTransfer("blue", 0,
+        Vector.empty, Vector.empty, Vector("site:dunes"))), Vector.empty))
+    assertEquals(bound(wire), Right(PlayerIntent.ResolveWalker(TreeDecision(
+      "negotiation.deal", DecisionAnswer.ProposeTerms(NegotiationTerms(
+        Vector(NegotiationTransfer(PlayerId("blue"), 0, Vector.empty,
+          Vector.empty, Vector(SiteId("site:dunes"))))))))))
+
   test("a proposed terms wire answer maps to the engine's terms"):
     val wire = Wire.ProposeTermsWire(distantlands.protocol.NegotiationTerms(
       Vector(distantlands.protocol.NegotiationTransfer("blue", 2, Vector("r1"))),

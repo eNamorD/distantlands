@@ -8,7 +8,8 @@ private[protocol] object CommandNestedCodecs:
     "transfers" -> ujson.Arr.from(value.transfers.map { row => ujson.Obj(
       "recipientPlayerId" -> row.recipientPlayerId, "favor" -> row.favor,
       "relicIds" -> ujson.Arr.from(row.relicIds.map(ujson.Str(_))),
-      "advisers" -> ujson.Arr.from(row.advisers.map(world))) }),
+      "advisers" -> ujson.Arr.from(row.advisers.map(world)),
+      "siteIds" -> ujson.Arr.from(row.siteIds.map(ujson.Str(_)))) }),
     "disclosures" -> ujson.Arr.from(value.disclosures.map { row => ujson.Obj(
       "recipientPlayerId" -> row.recipientPlayerId,
       "information" -> encodeInformation(row.information)) }),
@@ -166,7 +167,8 @@ private[protocol] object CommandNestedCodecs:
     case NegotiationInformation.HeldRelic(owner, relic) => ujson.Obj("kind" -> "held-relic", "ownerPlayerId" -> owner, "relicId" -> relic)
     case NegotiationInformation.SiteRelic(site, relic) => ujson.Obj("kind" -> "site-relic", "siteId" -> site, "relicId" -> relic)
   private def decodeTransfer(value: ujson.Value, path: String) = obj(value, path).flatMap { row => for
-    _ <- exact(row, Set("recipientPlayerId", "favor", "relicIds", "advisers"), path)
+    _ <- exact(row, Set("recipientPlayerId", "favor", "relicIds", "advisers",
+      "siteIds"), path)
     recipient <- string(row, "recipientPlayerId", path)
     favor <- field(row, "favor", path).flatMap(integer(_, s"$path.favor"))
     relics <- field(row, "relicIds", path).flatMap(strings(_, s"$path.relicIds"))
@@ -174,7 +176,9 @@ private[protocol] object CommandNestedCodecs:
     adviserValues <- field(row, "advisers", path).flatMap(array(_, s"$path.advisers"))
     advisers <- traverse(adviserValues.zipWithIndex) { case (v, i) => decodeWorld(v, s"$path.advisers[$i]") }
     _ <- noDuplicates(advisers.map(card => s"${card.kind}/${card.id}"), s"$path.advisers")
-  yield NegotiationTransfer(recipient, favor, relics, advisers) }
+    sites <- field(row, "siteIds", path).flatMap(strings(_, s"$path.siteIds"))
+    _ <- noDuplicates(sites, s"$path.siteIds")
+  yield NegotiationTransfer(recipient, favor, relics, advisers, sites) }
   private def decodeDisclosure(value: ujson.Value, path: String) = obj(value, path).flatMap { row => for
     _ <- exact(row, Set("recipientPlayerId", "information"), path)
     recipient <- string(row, "recipientPlayerId", path)

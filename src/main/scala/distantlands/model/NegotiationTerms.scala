@@ -4,13 +4,16 @@ final case class NegotiationTransfer(
     recipient: PlayerId,
     favor: Int,
     relics: Vector[RelicId],
-    advisers: Vector[WorldCardId] = Vector.empty
+    advisers: Vector[WorldCardId] = Vector.empty,
+    sites: Vector[SiteId] = Vector.empty
 ):
   require(favor >= 0, "Negotiation favor must be non-negative")
   require(relics.distinct.size == relics.size,
     "Negotiation relic transfers must be distinct")
   require(advisers.distinct.size == advisers.size,
     "a transfer row names one adviser twice")
+  require(sites.distinct.size == sites.size,
+    "a transfer row names one site twice")
 
 sealed trait NegotiationDisclosureRef extends Product with Serializable
 object NegotiationDisclosureRef:

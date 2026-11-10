@@ -16,7 +16,7 @@ final case class DealState(participants: Vector[PlayerId],
     declined: Boolean):
   def hasSubstance: Boolean = terms.values.exists(t =>
     t.transfers.exists(x => x.favor > 0 || x.relics.nonEmpty ||
-      x.advisers.nonEmpty) ||
+      x.advisers.nonEmpty || x.sites.nonEmpty) ||
       t.disclosures.nonEmpty || t.citizenship.nonEmpty ||
       t.promises.nonEmpty || t.bindingPromises.nonEmpty)
   def unanimous: Boolean =
