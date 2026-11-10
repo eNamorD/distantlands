@@ -136,6 +136,19 @@ Taken with the owner on 2026-11-09.
     show only to the two participants, and other players get no line at
     all.
 
+### Power-use blockers
+
+Taken with the owner on 2026-11-10.
+
+24. **Blockers apply.** City Wall, Giant Python and Bandit Forest stop The
+    Tribunal (intact) and Traveling Negotiator, both non-persistent, as
+    they stop any non-persistent power. A refusal City Wall's ruler could
+    waive only blocks: the Negotiation asks no consent. Slice 3 asks the
+    same question of Council Arbiter and Festival District.
+25. **Judged as the user's use.** A blocker judges the use of whoever holds
+    the card or has the access, at their own site. If either side of a
+    pair has an unblocked route, the two may negotiate.
+
 ## The deal model
 
 - **Wider rows.** `NegotiationTransfer` gains `secrets: Int`,
@@ -204,25 +217,35 @@ clears acceptances; the panel adds and removes a promise.
 ## Slice 2: Wider eligibility, binding promises
 
 **Traveling Negotiator**, **The Tribunal** and **Bandit Tribunal**
-(rulings 7 to 9 and 11).
+(rulings 7 to 9, 11, 24 and 25).
 
-- **One reader.** `NegotiationDeal.eligible(state, actor)` returns the
-  players at the actor's site, plus every other player for whom
-  `NegotiationReach.reaches(state, actor, other)` holds. That function reads
-  each power's own check: `TravelingNegotiator.reaches` (either player holds
-  it faceup), `TheTribunal.reaches` (either player has access to it) and
-  `BanditTribunal.reaches` (both pawns at bandit-ruled sites, while the
-  card is on the map). The Negotiate action's gate and its negotiator
-  choice read `eligible`, so nothing else changes.
-- **Binding promises.** `NegotiationBounds.bindingPromises` holds when
-  any participant has access to The Tribunal (intact).
-- **Catalog.** The three faces leave holding. The Tribunal's text keeps its
-  "even into later games", which the engine does not track.
+- **One reader.** `NegotiationDeal.eligible(catalog, state, actor,
+  restrictions)` returns the players at the actor's site, plus every other
+  player for whom `NegotiationReach.reaches` holds. `NegotiationReach`
+  sits beside the action, since actions may not import powers. It holds
+  three checks: Traveling Negotiator (either player holds it faceup and
+  may use it), The Tribunal (either player has access to it and may use
+  it) and Bandit Tribunal (both pawns at bandit-ruled sites, while the card
+  is on the map). The two non-persistent checks pass the walk's power-use
+  restrictions (rulings 24 and 25).
+- **Read once, at the start.** The Negotiation's registry entry is built
+  from the walk's powers, so its start sees the restrictions. The start
+  stores the candidates and The Tribunal's users as walker start facts
+  (`NegotiationStartFacts`), and every rebuild reads them back, as Travel
+  reads its source. A rebuild carries no powers, and a settled
+  Citizenship can change what Bandit Forest blocks.
+- **Binding promises.** `NegotiationBounds.bindingPromises` holds for
+  every author when any participant is among The Tribunal's users.
+- **Catalog.** Traveling Negotiator and The Tribunal move beside the
+  Negotiation (`NegotiationReachCards`). Three powers register them with
+  no window. The Tribunal's text keeps its "even into later games", which
+  the engine does not track.
 
 Tests: each power's reach in both directions; a player at neither site nor
 holding the card stays out; Bandit Tribunal needs both pawns at bandit
-sites and the card on the map; the binding-promise box opens with Tribunal
-access and its line reads "made a binding promise".
+sites and the card on the map; City Wall, Giant Python and Bandit Forest
+each stopping a use, judged as its user's; the binding-promise box opens
+with Tribunal access and its line reads "made a binding promise".
 
 ## Slice 3: Adviser terms
 
@@ -336,7 +359,7 @@ disclosure or Citizenship input; a lone player skipping the loop.
 | Promise terms, `NoteArg.Promise`, `NegotiationBounds.bindingPromises` | 1 | every Negotiation, The Tribunal |
 | `DealRules` | 3 | slices 4 to 6 |
 | Per-deal decision prefix, `LogNote.readers` | 5 | Whispering Stone, The Gathering |
-| `NegotiationReach` | 2 | Traveling Negotiator, The Tribunal, Bandit Tribunal |
+| `NegotiationReach`, `NegotiationStartFacts` | 2 | Traveling Negotiator, The Tribunal, Bandit Tribunal; Whispering Stone's binding promises |
 | Adviser terms and the limit check | 3 | Council Arbiter, Festival District, The Gathering |
 | Site terms and the warband question | 4 | Deed Writer |
 | Private deal projection | 5 | Whispering Stone |
