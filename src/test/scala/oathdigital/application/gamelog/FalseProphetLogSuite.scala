@@ -40,6 +40,35 @@ class FalseProphetLogSuite extends munit.FunSuite:
         DecisionAnswer.ChooseOneAnswer(DecisionOptionRef.RevealedVision(p2))))))
     texts(service)
 
+  /** `claimRevealed`, where p2 owns Sanctuary, which p3 claims, so p2's
+    * reveal of Conquest discards it and p3 reveals it. */
+  private def nestedClaimRevealed: Vector[String] =
+    val table = Table.start.pawn(p1, AncientCitySite)
+      .pawn(p2, BrokenPeaksSite).supply(p1, 5)
+      .revealedVision(p1, VisionRules.Conquest)
+      .warbandsOnCard(VisionRules.Conquest, p2, 1)
+      .revealedVision(p2, VisionRules.Sanctuary)
+      .warbandsOnCard(VisionRules.Sanctuary, p3, 1)
+      .adviser(p2, FalseProphetCard.id).worldDeckTop(VisionRules.Faith)
+    val (service, _) = table.service()
+    val started = accepted(service.handle("g", 0L,
+      ParkedServiceFixture.startSearch(p1)))
+    val picked = accepted(service.handle("g", started.nextSequence,
+      ParkedServiceFixture.pickSearchSource(p1, SearchSource.WorldDeck)))
+    val faith = accepted(service.handle("g", picked.nextSequence,
+      Commands.resolveWalker(p1, TreeDecision(
+        CardPlayProcedure.placementDecisionId(VisionRules.Faith),
+        DecisionAnswer.ChooseOneAnswer(DecisionOptionRef.RevealedVision(p1))))))
+    val conquest = accepted(service.handle("g", faith.nextSequence,
+      Commands.resolveWalker(p2, TreeDecision(
+        CardPlayProcedure.placementDecisionId(VisionRules.Conquest),
+        DecisionAnswer.ChooseOneAnswer(DecisionOptionRef.RevealedVision(p2))))))
+    accepted(service.handle("g", conquest.nextSequence,
+      Commands.resolveWalker(p3, TreeDecision(
+        CardPlayProcedure.placementDecisionId(VisionRules.Sanctuary),
+        DecisionAnswer.ChooseOneAnswer(DecisionOptionRef.RevealedVision(p3))))))
+    texts(service)
+
   private def texts(service: GameApplicationService): Vector[String] =
     formatter.format(present(accepted(service.history("g")),
       "a stored game").steps, Some(p3)).map(LogScripts.text)
@@ -53,3 +82,20 @@ class FalseProphetLogSuite extends munit.FunSuite:
     assert(killed.endsWith("'s warband on Vision of Conquest."), log.toString)
     assert(!log.exists(_.startsWith("Revealed Vision of Conquest")),
       log.toString)
+
+  test("a nested claim reads in walk order: the inner claim whole, then " +
+      "the outer claimant's reveal and kill, then the owner's reveal"):
+    // A play's own line follows the follow-ups walked under its batch, so
+    // p3's claim, started by p2's reveal, reads before p2's reveal line.
+    val log = nestedClaimRevealed
+    def at(line: String => Boolean): Int =
+      val index = log.indexWhere(line)
+      assert(index >= 0, log.toString)
+      index
+    val order = Vector(
+      at(_.endsWith(" revealed Vision of Sanctuary")),
+      at(_.endsWith("'s warband on Vision of Sanctuary.")),
+      at(_.endsWith(" revealed Vision of Conquest")),
+      at(_.endsWith("'s warband on Vision of Conquest.")),
+      at(_.startsWith("Revealed Vision of Faith")))
+    assertEquals(order, order.sorted, log.toString)

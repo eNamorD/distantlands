@@ -30,6 +30,11 @@ import oathdigital.model._
   * (`ExecutedTrigger`). The claimants are read from the warbands on the
   * Vision, so the kills come after every question; and the pile from the
   * executed discard, since the claimant's play moves the card.
+  *
+  * A claimant who reveals the Vision discards their own revealed Vision
+  * inside this follow-up. When another player claims that one, its
+  * discard starts this trigger's follow-up again, one level down (catalog
+  * batch 11, slice 8), and that claim resolves before this one's kills.
   */
 case object FalseProphetClaim extends ExecutedTrigger:
   val cardId: DenizenId = FalseProphetCard.id
@@ -72,7 +77,7 @@ case object FalseProphetClaim extends ExecutedTrigger:
         case _ => children)))
 
   def onExecuted(batch: ExecutedBatch): Option[Operation] =
-    val claims = discarded(batch.executed).filter((vision, _) =>
+    val claims = discarded(batch).filter((vision, _) =>
       RevealedVisions.claimants(batch.now, vision).nonEmpty)
     // Every Vision's question and play come before any kill: the claimants
     // are read from the warbands, so a kill before a later question would
@@ -81,15 +86,33 @@ case object FalseProphetClaim extends ExecutedTrigger:
       claims.map((vision, pile) => Sequence(played(batch, vision, pile))) ++
         claims.map((vision, _) => Sequence(kills(batch, vision)))))
 
+  /** It answers its own follow-up's batches: a claimant's reveal discards
+    * their own revealed Vision, which another player may claim (catalog
+    * batch 11, slice 8). */
+  override def answersFollowUps: Boolean = true
+
   /** Each Vision the batch discarded, with the pile it went to, at any
-    * depth of the batch's operations. */
-  private def discarded(executed: Vector[CoreOperation])
-      : Vector[(VisionId, Region)] =
+    * depth of the batch's operations, that starts a claim. Two discards
+    * start none, since the claim being resolved made them: one from a
+    * discard pile, the claimant's own discard of the claimed Vision; and
+    * one from the slot of a player whose warband is still on it, the
+    * claimant swapping the claimed Vision out again. That claim's other
+    * claimants get nothing, as when the chooser passed them over (ruling
+    * 32), and its kills follow. */
+  private def discarded(batch: ExecutedBatch): Vector[(VisionId, Region)] =
     def all(operation: Operation): Vector[Operation] = operation match
       case _: LeafOperation => Vector(operation)
       case _ => operation +: operation.children.flatMap(all)
-    executed.flatMap(all).collect {
-      case discard: Discard.Vision => (discard.card, discard.to) }.distinct
+    def restarted(discard: Discard.Vision): Boolean =
+      discard.from.location match
+        case _: Location.RegionalDiscard => true
+        case Location.PlayArea(owner) =>
+          RevealedVisions.claimants(batch.now, discard.card).contains(owner)
+        case _ => false
+    batch.executed.flatMap(all).collect {
+      case discard: Discard.Vision if !restarted(discard) =>
+        (discard.card, discard.to)
+    }.distinct
 
   /** The choice of claimant, when there are several, and their play. */
   private def played(batch: ExecutedBatch, vision: VisionId, pile: Region)

@@ -145,6 +145,73 @@ class FalseProphetClaimSuite extends munit.FunSuite:
     assertEquals((end.game.current.warbandsOn(claimed, kind),
       end.game.current.warbandsOn(sanctuary, kind)), (0, 0))
 
+  test("a claimant who swaps one claimed Vision out for another starts no " +
+      "claim on it"):
+    // p1 turning Citizen discards Conquest and Sanctuary, both p2's claims;
+    // p2 reveals Conquest, then Sanctuary, which discards Conquest again.
+    val sanctuary = VisionRules.Sanctuary
+    val ready = conquestClaimedByP2.revealedVision(p1, sanctuary)
+      .warbandsOnCard(sanctuary, p2, 1).imperial(p3).turn(p1, Phase.Act)
+      .ready
+    val become = Citizenship.become(p1)
+    val first = Outcomes.parked(ProcedureWalker.advance(ready, become, None,
+      walkerPowers))
+    val second = Outcomes.parked(ProcedureWalker.resolve(
+      replayedFrom(ready, first.events), become, first.tree,
+      Answered(placeId(claimed), DecisionAnswer.ChooseOneAnswer(
+        DecisionOptionRef.RevealedVision(p2)), p2), walkerPowers))
+    val events = first.events ++ second.events
+    val done = Outcomes.finished(ProcedureWalker.resolve(
+      replayedFrom(ready, events), become, second.tree,
+      Answered(placeId(sanctuary), DecisionAnswer.ChooseOneAnswer(
+        DecisionOptionRef.RevealedVision(p2)), p2), walkerPowers))
+    val end = replayedFrom(ready, events ++ done.events)
+    assertEquals(Look(end).player(p2).revealedVisions.map(_.id),
+      Vector[VisionId](sanctuary))
+    val kind = ForceKind.Exile(Look(end).player(p2).lineage)
+    assertEquals((end.game.current.warbandsOn(claimed, kind),
+      end.game.current.warbandsOn(sanctuary, kind)), (0, 0))
+
+  /** `conquestClaimedByP2`, where p2 owns Sanctuary, which p3 claims. */
+  private def sanctuaryClaimedByP3: Table = conquestClaimedByP2
+    .revealedVision(p2, VisionRules.Sanctuary)
+    .warbandsOnCard(VisionRules.Sanctuary, p3, 1)
+
+  test("a claimant's reveal that discards a Vision another player claims " +
+      "asks that player in turn, then kills both warbands"):
+    val sanctuary = VisionRules.Sanctuary
+    val asked = revealedOverClaim(sanctuaryClaimedByP3)
+    parked.assertParked(asked, ActionRef.Search, placeId(claimed), p2)
+    val nested = answer(asked, p2, placeId(claimed),
+      DecisionOptionRef.RevealedVision(p2))
+    parked.assertParked(nested, ActionRef.Search, placeId(sanctuary), p3)
+    val done = answer(nested, p3, placeId(sanctuary),
+      DecisionOptionRef.RevealedVision(p3))
+    assertEquals(revealedBy(done, p1), Vector[VisionId](drawn))
+    assertEquals(revealedBy(done, p2), Vector[VisionId](claimed))
+    assertEquals(revealedBy(done, p3), Vector[VisionId](sanctuary))
+    val ready = Outcomes.ready(done)
+    def on(vision: VisionId, owner: PlayerId): Int =
+      ready.game.current.warbandsOn(vision,
+        ForceKind.Exile(Look(ready).player(owner).lineage))
+    assertEquals((on(claimed, p2), on(sanctuary, p3)), (0, 0))
+
+  test("the nested claimant's reveal is judged for them"):
+    // Sacred Ground stands at Ancient City, where p1 and p2 stand, so both
+    // reveal; p3 at Broken Peaks may only discard Sanctuary.
+    val table = sanctuaryClaimedByP3.pawn(p2, at = AncientCitySite)
+      .pawn(p3, at = BrokenPeaksSite)
+      .edifice(SacredGroundCard.id, EdificeSide.Intact,
+        at = AncientCitySite.id)
+    val nested = answer(revealedOverClaim(table), p2, placeId(claimed),
+      DecisionOptionRef.RevealedVision(p2))
+    val offered = PlacementPicks.parkedOptions(nested, walkerPowers)
+      .filter(_.available).map(_.ref)
+    assert(!offered.contains(DecisionOptionRef.RevealedVision(p3)),
+      offered.toString)
+    assert(offered.exists(_.isInstanceOf[DecisionOptionRef.DiscardPile]),
+      offered.toString)
+
   test("with two claimants the current player chooses who plays it, and " +
       "both warbands are killed"):
     val asked = revealedOverClaim(conquestClaimedByP2
