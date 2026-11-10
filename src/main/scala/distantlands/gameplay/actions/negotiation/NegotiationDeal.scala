@@ -3,8 +3,8 @@ package distantlands.gameplay.actions.negotiation
 import distantlands.catalog.ExecutableCatalog
 import distantlands.gameplay.SpendableFavor
 import distantlands.gameplay.actions.AdviserLimits
-import distantlands.gameplay.operations.{OperationRestrictions,
-  TheGrandScepterCard}
+import distantlands.gameplay.operations.{OperationExecutor,
+  OperationRestrictions, TheGrandScepterCard}
 import distantlands.gameplay.powerresolver.PowerUseRestriction
 import distantlands.gameplay.roles.Citizenship
 import distantlands.model._
@@ -136,15 +136,19 @@ object NegotiationDeal:
 
   /** The participants the deal's adviser moves would leave over their
     * adviser limit, in participant order (ruling 17). The limit is read on
-    * the state after the moves, so a moved card that changes a limit
-    * counts. Only a player who gives or receives an adviser is judged. */
+    * the state after the moves, made by the settlement's own `Give`s, so a
+    * moved card that changes a limit counts. Only a player who gives or
+    * receives an adviser is judged. A move that no longer applies (its
+    * author gave the card away) is left out; settlement refuses it. */
   def overAdviserLimit(catalog: ExecutableCatalog, state: ReadyGame,
       deal: DealState, limits: AdviserLimits): Vector[PlayerId] =
     val moves = adviserMoves(deal)
     val touched = moves.flatMap((from, to, _) => Vector(from, to)).toSet
     if touched.isEmpty then Vector.empty
     else
-      val after = moves.foldLeft(state)(moved)
+      val executor = new OperationExecutor()
+      val after = moves.foldLeft(state)((now, move) =>
+        executor.execute(now, adviserGive.tupled(move)).getOrElse(now))
       deal.participants.filter(player => touched(player) &&
         limits.exceeded(catalog, after, player))
 
@@ -155,20 +159,13 @@ object NegotiationDeal:
       deal.terms(author).transfers.flatMap(transfer =>
         transfer.advisers.map((author, transfer.recipient, _))))
 
-  /** `state` with one adviser moved between play areas, face and tokens
-    * kept: what the limit judges, not a move the game makes. */
-  private def moved(state: ReadyGame,
-      move: (PlayerId, PlayerId, WorldCardId)): ReadyGame =
-    val (from, to, card) = move
-    state.game.current.player(from).flatMap(_.advisers.find(_.id == card))
-      .fold(state)(held => state.updateCurrent(current => current.copy(
-        players = current.players.map {
-          case seat if seat.player == from =>
-            seat.copy(advisers = seat.advisers.filterNot(_.id == card))
-          case seat if seat.player == to =>
-            seat.copy(advisers = seat.advisers :+ held)
-          case seat => seat
-        })))
+  /** `author` gives `card` to `recipient`, keeping its face. Required: a
+    * refused adviser rejects the settlement rather than being skipped. The
+    * bounds never offer one a restriction refuses. */
+  private def adviserGive(author: PlayerId, recipient: PlayerId,
+      card: WorldCardId): CoreOperation =
+    Give(Piece.Card(card), author, Location.PlayArea(author),
+      Location.PlayArea(recipient), required = true)
 
   /** The participants `author` may offer Citizenship: the other Exiles,
     * when `author` holds the Grand Scepter. The holder never names
@@ -261,11 +258,8 @@ object NegotiationDeal:
         val relics = transfer.relics.map(relic => Give(Piece.Card(relic),
           author, Location.PlayArea(author),
           Location.PlayArea(transfer.recipient)): CoreOperation)
-        // Required: a refused adviser rejects the settlement rather than
-        // being skipped. The bounds never offer one a restriction refuses.
-        val advisers = transfer.advisers.map(card => Give(Piece.Card(card),
-          author, Location.PlayArea(author),
-          Location.PlayArea(transfer.recipient), required = true): CoreOperation)
+        val advisers = transfer.advisers.map(
+          adviserGive(author, transfer.recipient, _))
         favor ++ relics ++ advisers
       }
     }
