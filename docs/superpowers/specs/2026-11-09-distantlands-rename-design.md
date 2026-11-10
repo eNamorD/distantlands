@@ -172,8 +172,14 @@ rename:
 - Stop the server and back up the database directory, per the
   [data policy](../../operations/data-policy.md).
 - Rename every `OATH_*` variable to `DLQ_*`.
-- Move the data folder to its new path (desktop folder, `var/distantlands`,
-  or remount the Docker volume at `/var/lib/distantlands`), and rename
+- Move the data to its new path. HSQLDB names its files after the last
+  segment of the database path, so the default path's files
+  `var/oathdigital.{script,properties,lobs,log}` are renamed to
+  `var/distantlands.*` (the `.tmp` directory too); the server must be
+  stopped, and the `.lck` file is left behind. Desktop and Docker database
+  paths end in `database`, so for them only the folder moves: rename the
+  desktop data folder, or remount the Docker volume at
+  `/var/lib/distantlands`. Rename the desktop settings file
   `oathdigital.properties` to `distantlands.properties` if present.
 - Point deployments at `ghcr.io/enamord/distantlands`.
 
