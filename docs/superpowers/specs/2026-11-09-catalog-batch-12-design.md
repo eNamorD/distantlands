@@ -24,19 +24,22 @@ written as text, to every Negotiation.
 | 3 | Adviser terms | Council Arbiter (200), Festival District (E21 intact) |
 | 4 | Site terms | Deed Writer (146) |
 | 5 | A remote, private deal | Whispering Stone (R34) |
-| 6 | A deal loop inside card play, secret terms | The Gathering (27) |
+| 6a | Secret terms, a prefixed deal walk | none |
+| 6b | A deal loop inside card play | The Gathering (27) |
 
 Slices are ordered so that each seam exists before the slice that reuses
 it. Slice 2's binding-promise box is slice 1's promise field with
 `NegotiationBounds.bindingPromises` set. Slice 5 reuses slice 2's Tribunal check
-for its binding promises. Slice 6 reuses slice 2's reach and Tribunal
-check, slice 3's adviser terms, slice 4's site terms, and the deal subtree
-that slices 1 to 5 generalize. Slices 5 and 6 touch the
-procedure walker's Negotiation subtree and run the walker suites in full
-before landing.
+for its binding promises. Slice 6a opens secret terms and moves the deal
+walk under a decision-id prefix, for the Negotiate action alone. Slice 6b
+reuses slice 2's reach and Tribunal check, slice 3's adviser terms, slice
+4's site terms, and slice 6a's secret terms and prefixed deal walk.
+Slice 6 was split in two on 2026-11-10, for its size. Slices 5, 6a and 6b
+touch the procedure walker's Negotiation subtree and run the walker suites
+in full before landing.
 
 The roadmap's **Phase - Negotiation terms and promises** loses its
-**Negotiation cards** item when slice 6 lands. Its other parts (banner,
+**Negotiation cards** item when slice 6b lands. Its other parts (banner,
 secret and site transfers as general terms, a registry of term kinds,
 binding promises with consequences) are not needed by any card here, and
 stay with the phase as written, narrowed by what lands.
@@ -83,6 +86,12 @@ Taken with the owner on 2026-11-09.
    remote player takes part in that deal and may decline it.
 6. **Secrets come from the player's supply.** A banner's secrets are never
    exchanged.
+31. **Only faceup secrets move** (2026-11-10). An author may offer up to
+    their faceup secrets: a player cannot remove facedown secrets from
+    their own board (NF "Costs"). Each secret arrives faceup.
+32. **Opening a deal unpasses its opener** (2026-11-10). Passes persist
+    across deals. A passed player may open a deal, which clears their own
+    pass only. The players they name keep theirs.
 
 ### Eligibility
 
@@ -200,13 +209,15 @@ Taken with the owner on 2026-11-10.
   22), so `DealRules` carries no flag for them.
   Until then the author's bounds carry the binding-promise flag
   (`NegotiationBounds.bindingPromises`), which `DealRules` sets from slice 3
-  on. `privateDeal` opens in slice 5 and the `prefix` in slice 6. It
+  on. `privateDeal` opens in slice 5 and `secretsOpen` in slice 6a. It
   holds:
-  - `participants`;
   - `kinds(author, recipient): Set[TermKind]`, with `TermKind` one of
     `Favor`, `Relic`, `Secret`, `Adviser` and `Site`;
-  - `bindingPromises` (ruling 11) and `privateDeal` (ruling 23);
-  - `prefix`, the deal's decision-id prefix.
+  - `bindingPromises` (ruling 11), `privateDeal` (ruling 23) and
+    `secretsOpen` (The Gathering, ruling 5).
+
+  The deal's participants and its decision-id prefix are not rules: the
+  deal walk carries them (`DealWalk`, slice 6a).
 - **Bounds.** `NegotiationBounds` gains the author's secrets, their
   movable advisers and the sites they may give, each offered only to the
   recipients `kinds` allows. The bound is recomputed from live state on
@@ -221,7 +232,8 @@ Taken with the owner on 2026-11-10.
 - **One decision id per deal.** The deal fold reads only the answers to
   `<prefix>.deal`. The Negotiate action uses `negotiation`, and the
   Gathering `gathering.<n>`, with `n` the deal's index, so one Gathering
-  can hold several deals without mixing their answers. Whispering Stone
+  can hold several deals without mixing their answers. The Deed Writer
+  warband questions take the prefix too: `<prefix>.warbands.<site>`. Whispering Stone
   runs a Negotiation walk of its own (slice 5), so its deal keeps
   `negotiation`.
 - **Settlement order.** Disclosures, then transfers in participant order
@@ -405,9 +417,40 @@ settlement lines visible to an outsider and the promise lines absent from
 their log; a When Negotiating power (Council Arbiter) widening the private
 deal.
 
-## Slice 6: A deal loop inside card play
+## Slice 6a: Secret terms, a prefixed deal walk
 
-**The Gathering** (rulings 1 to 6).
+Rulings 6 and 31. No card: the Negotiate action keeps secrets closed, and
+slice 6b opens them.
+
+- **Secret terms.** `NegotiationTransfer.secrets: Int`, in the journal
+  codec, the command wire, the intent mapper and the projection DTOs, all
+  required keys. `TermKind.Secret` and `DealRules.secretsOpen`, false in the
+  Negotiate action. `NegotiationBounds` gains `maxSecrets`, the author's
+  faceup secrets, offered only to `secretRecipients`. The answer check, the
+  substance check and the settlement's affordability check read them.
+  Settling moves each row's secrets faceup from the author's board to the
+  recipient's, after the favor, and writes "p1 gave 2 secrets to p2".
+- **Panel.** A "Secrets" number box per recipient the rules allow, beside
+  the favor box, and the transfer line names "2 secrets".
+- **A prefixed deal walk.** The deal decision's `Repeat` and the settlement
+  move out of `NegotiationProcedure` into `NegotiationDealTree`, driven by a
+  `DealWalk`: its prefix, the owner of its decision, its participants and
+  rules as the answers give them, and its opening line. The fold, the
+  decline line and the warband questions read `<prefix>.deal` and
+  `<prefix>.warbands.<site>`. The Negotiate action walks it with prefix
+  `negotiation`, and its tree, lines and park positions do not change.
+
+Tests: a secret alone is substance; secrets closed in the Negotiate action;
+the bound is the faceup count; terms over it or to a recipient outside
+`secretRecipients` refused; settlement moves faceup secrets and leaves
+facedown ones; settlement refused when the faceup secrets are gone; the
+secret line after the favor line; the fold, the decline line and the
+warband answers each reading only their own prefix; codec round trips; the
+panel's secrets box and transfer line.
+
+## Slice 6b: A deal loop inside card play
+
+**The Gathering** (rulings 1 to 6, 31 and 32).
 
 - **Pawns.** Its **When Played** power is a `Sequence` with one question
   per player in Chancellor order (`TurnOrder.nextRoundStart` and on, round
@@ -418,33 +461,37 @@ deal.
   site. Its answers are **Negotiate** with chosen players, **Pass** and
   **Unpass**. The opener may choose players at the site, and players
   elsewhere whom `NegotiationReach` lets the opener reach (ruling 5). A
-  Negotiate answer runs one deal subtree with prefix `gathering.<n>` and
-  the Gathering's `DealRules`: all four printed kinds between any pair,
-  site terms under Deed Writer, disclosures, the Citizenship offer,
-  non-binding promises, and binding promises when a participant may use
-  The Tribunal (ruling 5). The reach and the Tribunal's and Deed Writer's
-  users are read when the deal opens, under the walk's power-use
-  restrictions, and stored with the deal's answers so a rebuild reads
-  them back.
+  Negotiate answer runs one `DealWalk` with prefix `gathering.<n>` and
+  the Gathering's `DealRules`: all four printed kinds between any pair
+  (`secretsOpen` and `advisersOpen` on), site terms under Deed Writer,
+  disclosures, the Citizenship offer, non-binding promises, and binding
+  promises when a participant may use The Tribunal (ruling 5). The reach
+  and the Tribunal's and Deed Writer's users are read when the deal opens,
+  under the walk's power-use restrictions; how a When Played power reaches
+  those restrictions, and keeps what it read for a rebuild, is settled when
+  slice 6b is planned.
 - **Passing during a deal.** The deal's decision is co-owned by every
   player at the site and every named remote participant. Only players at
   the site may pass or unpass. A non-participant may answer only Pass or Unpass,
-  which the deal fold ignores and the pass fold counts.
+  which the deal fold ignores and the pass fold counts. Opening a deal
+  clears the opener's pass (ruling 32).
 - **Ending.** Passes are folded from the answers. The loop ends when every
   player at the site has passed and no deal is open. With fewer than two
   players at the site, the loop is skipped.
-- **Secrets.** `Secret` terms move secrets from player area to player area.
 - **Log.** "Gathered at Broken Peaks: Blue and Red." then each deal's
-  "Blue negotiated with Red." and its settlement lines.
+  opening line, its settlement lines and its promise lines. A deal the
+  actor opens reads "Negotiated with Red."; one another player opens reads
+  "Blue negotiated with Red." (power lines name the actor only off turn).
 - **Catalog.** The Gathering leaves holding.
 
 Tests: the pawn question in Chancellor order, and from the first player
 with no Chancellor; a moved pawn opening no Travel window; two deals in one
 Gathering kept apart by prefix; a pass, an unpass and a passed player named
-in a deal; the end once all pass; a secret and an adviser exchanged; a
-disclosure and a Citizenship offer settled; a binding promise opened by
-The Tribunal; a remote player named through Traveling Negotiator, and
-refused without it; a lone player skipping the loop.
+in a deal; a passed opener unpassed by opening; the end once all pass; a
+secret and an adviser exchanged; a disclosure and a Citizenship offer
+settled; a binding promise opened by The Tribunal; a remote player named
+through Traveling Negotiator, and refused without it; a lone player
+skipping the loop.
 
 ## Seams opened
 
@@ -453,12 +500,13 @@ refused without it; a lone player skipping the loop.
 | Promise terms, `NoteArg.Promise`, `NegotiationBounds.bindingPromises` | 1 | every Negotiation, The Tribunal |
 | `DealRules` | 3 | slices 4 to 6 |
 | `LogNote.readers` | 5 | Whispering Stone |
-| Per-deal decision prefix | 6 | The Gathering |
+| Per-deal decision prefix, `DealWalk` | 6a | The Gathering |
 | `NegotiationReach`, `NegotiationStartFacts` | 2 | Traveling Negotiator, The Tribunal, Bandit Tribunal; Whispering Stone's binding promises; The Gathering's reach and binding promises |
 | Adviser terms, `AdviserLimits` and the limit check | 3 | Council Arbiter, Festival District, The Gathering |
 | Site terms and the warband question | 4 | Deed Writer, The Gathering |
 | Private deal projection | 5 | Whispering Stone |
-| Deal loop inside card play, secret terms | 6 | The Gathering |
+| Secret terms | 6a | The Gathering |
+| Deal loop inside card play | 6b | The Gathering |
 
 ## Testing
 
