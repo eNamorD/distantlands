@@ -108,11 +108,11 @@ start_server() {
   log_file=$temporary_directory/server-$run_label.log
   log_files="$log_files $log_file"
   env \
-    OATH_MODE=trusted-alpha \
-    OATH_HOST=127.0.0.1 \
-    OATH_PORT="$port" \
-    OATH_PUBLIC_BASE_URL="$base_url" \
-    OATH_DATABASE_PATH="$database_path" \
+    DLQ_MODE=trusted-alpha \
+    DLQ_HOST=127.0.0.1 \
+    DLQ_PORT="$port" \
+    DLQ_PUBLIC_BASE_URL="$base_url" \
+    DLQ_DATABASE_PATH="$database_path" \
     ./bin/oathdigital >"$log_file" 2>&1 &
   child_pid=$!
 }
@@ -213,7 +213,7 @@ exchange_seat() {
   fi
   [ "$exchange_status" = 303 ] ||
     fail "$player_id seat exchange returned HTTP $exchange_status instead of 303 on run $run_label"
-  grep -F 'oath_seat' "$cookie_jar" >/dev/null ||
+  grep -F 'distantlands_seat' "$cookie_jar" >/dev/null ||
     fail "$player_id seat exchange did not store a cookie on run $run_label"
 }
 

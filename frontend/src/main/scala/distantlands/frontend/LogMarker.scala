@@ -71,7 +71,7 @@ private[frontend] final class LogMarker(store: Option[LogStore],
       target.write(name, sequence.toString)
 
 private[frontend] object LogMarker:
-  def key(gameId: String, seatId: String): String = s"oath.log.seen.$gameId.$seatId"
+  def key(gameId: String, seatId: String): String = s"distantlands.log.seen.$gameId.$seatId"
 
   def afterASecond(run: () => Unit): () => Unit =
     val handle = dom.window.setTimeout(() => run(), 1000)

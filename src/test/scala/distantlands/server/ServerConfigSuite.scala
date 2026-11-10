@@ -15,7 +15,7 @@ class ServerConfigSuite extends munit.FunSuite:
     assertEquals(config.port, 8080)
     assertEquals(config.publicBaseUrl, None)
     assertEquals(config.databasePath,
-      Paths.get("var/oathdigital").toAbsolutePath.normalize)
+      Paths.get("var/distantlands").toAbsolutePath.normalize)
     assertEquals(config.mode, ServerMode.Development)
     assertEquals(config.version, version)
 
@@ -23,11 +23,11 @@ class ServerConfigSuite extends munit.FunSuite:
     val config = parse(
       Array.empty,
       Map(
-        "OATH_HOST" -> "0.0.0.0",
-        "OATH_PORT" -> "8081",
-        "OATH_PUBLIC_BASE_URL" -> "http://192.168.1.20:8081",
-        "OATH_DATABASE_PATH" -> "var/test-db/../alpha-db",
-        "OATH_MODE" -> "trusted-alpha"
+        "DLQ_HOST" -> "0.0.0.0",
+        "DLQ_PORT" -> "8081",
+        "DLQ_PUBLIC_BASE_URL" -> "http://192.168.1.20:8081",
+        "DLQ_DATABASE_PATH" -> "var/test-db/../alpha-db",
+        "DLQ_MODE" -> "trusted-alpha"
       )
     )
 
@@ -49,11 +49,11 @@ class ServerConfigSuite extends munit.FunSuite:
         "--mode", "development"
       ),
       Map(
-        "OATH_HOST" -> "0.0.0.0",
-        "OATH_PORT" -> "8081",
-        "OATH_PUBLIC_BASE_URL" -> "http://192.168.1.20:8081",
-        "OATH_DATABASE_PATH" -> "var/env-db",
-        "OATH_MODE" -> "trusted-alpha"
+        "DLQ_HOST" -> "0.0.0.0",
+        "DLQ_PORT" -> "8081",
+        "DLQ_PUBLIC_BASE_URL" -> "http://192.168.1.20:8081",
+        "DLQ_DATABASE_PATH" -> "var/env-db",
+        "DLQ_MODE" -> "trusted-alpha"
       )
     )
 

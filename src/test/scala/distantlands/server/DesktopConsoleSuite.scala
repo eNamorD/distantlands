@@ -8,8 +8,8 @@ private final class BindFailedException extends RuntimeException("Bind failed")
 
 class DesktopConsoleSuite extends munit.FunSuite:
   private val version = "0.1.0-alpha.1"
-  private val dataFolder = Paths.get("/data/oathdigital/data")
-  private val settingsFile = Paths.get("/data/oathdigital/oathdigital.properties")
+  private val dataFolder = Paths.get("/data/distantlands/data")
+  private val settingsFile = Paths.get("/data/distantlands/distantlands.properties")
   private val nl = System.lineSeparator
 
   /** A trusted-alpha server of `version` whose database lives in
@@ -17,8 +17,8 @@ class DesktopConsoleSuite extends munit.FunSuite:
   private def config(environment: Map[String, String]): ServerConfig =
     ServerConfig.parse(
       Array.empty,
-      environment ++ Map("OATH_MODE" -> "trusted-alpha",
-        "OATH_DATABASE_PATH" -> dataFolder.resolve("database").toString),
+      environment ++ Map("DLQ_MODE" -> "trusted-alpha",
+        "DLQ_DATABASE_PATH" -> dataFolder.resolve("database").toString),
       version
     ).fold(errors => fail(errors.mkString("; ")), identity)
 
@@ -26,11 +26,11 @@ class DesktopConsoleSuite extends munit.FunSuite:
     DesktopLaunch(Map.empty, settingsFile, openBrowser = true, lanDetectionFailed, Vector.empty)
 
   test("the LAN banner names the player address, data folder and settings file"):
-    val lanConfig = config(Map("OATH_HOST" -> "0.0.0.0", "OATH_PUBLIC_BASE_URL" -> "http://192.168.1.20:8080"))
+    val lanConfig = config(Map("DLQ_HOST" -> "0.0.0.0", "DLQ_PUBLIC_BASE_URL" -> "http://192.168.1.20:8080"))
     assertEquals(
       DesktopConsole.banner(lanConfig, launch(lanDetectionFailed = false)),
       Vector(
-        s"Oath Digital $version is running.",
+        s"Distant Lands $version is running.",
         "  Players open:  http://192.168.1.20:8080",
         "  On this computer you can also use: http://localhost:8080",
         s"  Data folder:   $dataFolder",
@@ -41,28 +41,28 @@ class DesktopConsoleSuite extends munit.FunSuite:
     )
 
   test("a loopback public address gets no separate this-computer line"):
-    val loopbackConfig = config(Map("OATH_PUBLIC_BASE_URL" -> "http://localhost:8080"))
+    val loopbackConfig = config(Map("DLQ_PUBLIC_BASE_URL" -> "http://localhost:8080"))
     assert(!DesktopConsole.banner(loopbackConfig, launch(lanDetectionFailed = false))
       .contains("On this computer"))
 
   test("the no-LAN banner says only this computer can connect"):
-    val localConfig = config(Map("OATH_HOST" -> "127.0.0.1"))
+    val localConfig = config(Map("DLQ_HOST" -> "127.0.0.1"))
     assertEquals(
       DesktopConsole.banner(localConfig, launch(lanDetectionFailed = true)),
       Vector(
-        s"Oath Digital $version is running.",
+        s"Distant Lands $version is running.",
         "  Only this computer can connect: http://127.0.0.1:8080",
         s"  Data folder:   $dataFolder",
         s"  Settings:      $settingsFile",
-        "No local network address found. Set OATH_PUBLIC_BASE_URL in the settings file.",
+        "No local network address found. Set DLQ_PUBLIC_BASE_URL in the settings file.",
         "Close this window or press Ctrl-C to stop."
       ).mkString("", nl, nl)
     )
 
   test("the browser opens the public base URL, else loopback"):
-    val lanConfig = config(Map("OATH_HOST" -> "0.0.0.0", "OATH_PUBLIC_BASE_URL" -> "http://192.168.1.20:8080"))
+    val lanConfig = config(Map("DLQ_HOST" -> "0.0.0.0", "DLQ_PUBLIC_BASE_URL" -> "http://192.168.1.20:8080"))
     assertEquals(DesktopConsole.browserUrl(lanConfig), "http://192.168.1.20:8080/")
-    assertEquals(DesktopConsole.browserUrl(config(Map("OATH_HOST" -> "127.0.0.1"))), "http://127.0.0.1:8080/")
+    assertEquals(DesktopConsole.browserUrl(config(Map("DLQ_HOST" -> "127.0.0.1"))), "http://127.0.0.1:8080/")
 
   test("the browser command follows the operating system"):
     val url = "http://192.168.1.20:8080/"
@@ -86,11 +86,11 @@ class DesktopConsoleSuite extends munit.FunSuite:
         new ServerSocket(held.getLocalPort, 1, InetAddress.getLoopbackAddress).close()
       assertEquals(
         DesktopConsole.bindFailure(new RuntimeException("bind failed", error), 8080, settingsFile),
-        Some(s"port 8080 is in use. Is Oath Digital already running? Change OATH_PORT in $settingsFile.")
+        Some(s"port 8080 is in use. Is Distant Lands already running? Change DLQ_PORT in $settingsFile.")
       )
     finally held.close()
 
   test("Akka's BindFailedException is recognized by name"):
     assertEquals(DesktopConsole.bindFailure(new BindFailedException, 8080, settingsFile),
-      Some(s"port 8080 is in use. Is Oath Digital already running? Change OATH_PORT in $settingsFile."))
+      Some(s"port 8080 is in use. Is Distant Lands already running? Change DLQ_PORT in $settingsFile."))
     assertEquals(DesktopConsole.bindFailure(new IllegalStateException("other"), 8080, settingsFile), None)

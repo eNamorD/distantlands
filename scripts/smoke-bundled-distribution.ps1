@@ -18,14 +18,14 @@ $temporary = Join-Path ([IO.Path]::GetTempPath()) ('oathdigital-bundled-' + [gui
 New-Item -ItemType Directory -Path $temporary | Out-Null
 $log = Join-Path $temporary 'server.log'
 $errorLog = Join-Path $temporary 'server.err.log'
-$appData = Join-Path $temporary 'local\OathDigital'
+$appData = Join-Path $temporary 'local\DistantLands'
 
 $env:LOCALAPPDATA = Join-Path $temporary 'local'
 Remove-Item Env:JAVA_HOME -ErrorAction SilentlyContinue
 $env:PATH = "$env:SystemRoot\System32;$env:SystemRoot"
-$env:OATH_LAUNCH = 'desktop'
-$env:OATH_OPEN_BROWSER = 'false'
-$env:OATH_PORT = "$Port"
+$env:DLQ_LAUNCH = 'desktop'
+$env:DLQ_OPEN_BROWSER = 'false'
+$env:DLQ_PORT = "$Port"
 
 $process = Start-Process -FilePath (Join-Path $app 'bin\oathdigital.bat') -NoNewWindow -PassThru `
   -RedirectStandardOutput $log -RedirectStandardError $errorLog
@@ -49,7 +49,7 @@ try {
   $java = Get-CimInstance Win32_Process -Filter "Name = 'java.exe'" |
     Where-Object { $_.ExecutablePath -ieq $bundledJava }
   if (-not $java) { Fail 'server is not running on the bundled runtime' }
-  if (-not (Test-Path -LiteralPath (Join-Path $appData 'oathdigital.properties'))) { Fail 'settings file was not created' }
+  if (-not (Test-Path -LiteralPath (Join-Path $appData 'distantlands.properties'))) { Fail 'settings file was not created' }
   if (-not (Get-ChildItem -LiteralPath (Join-Path $appData 'data') -Filter 'database.*' -ErrorAction SilentlyContinue)) {
     Fail 'database was not created in the app-data folder'
   }

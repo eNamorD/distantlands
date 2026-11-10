@@ -20,7 +20,7 @@ final case class ServerConfig(
 object ServerConfig:
   private val DefaultHost = "127.0.0.1"
   private val DefaultPort = "8080"
-  private val DefaultDatabasePath = "var/oathdigital"
+  private val DefaultDatabasePath = "var/distantlands"
   private val DefaultMode = "development"
 
   private val SupportedOptionOrder = Vector(
@@ -34,7 +34,7 @@ object ServerConfig:
   private val OptionOrder = SupportedOptionOrder.zipWithIndex.toMap
 
   val usage: String =
-    "Usage: oathdigital [--host HOST] [--port PORT] " +
+    "Usage: distantlands [--host HOST] [--port PORT] " +
       "[--public-base-url URL] [--database-path PATH] " +
       "[--mode development|trusted-alpha]. " +
       "Internet exposure requires HTTPS at a trusted reverse proxy."
@@ -47,26 +47,26 @@ object ServerConfig:
     val (cli, argumentErrors) = parseArguments(arguments.toVector)
 
     val host = parseHost(value(
-      "--host", "OATH_HOST", DefaultHost, cli, environment
+      "--host", "DLQ_HOST", DefaultHost, cli, environment
     ))
     val port = parsePort(value(
-      "--port", "OATH_PORT", DefaultPort, cli, environment
+      "--port", "DLQ_PORT", DefaultPort, cli, environment
     ))
     val publicBaseUrl = parseOptionalUri(optionalValue(
-      "--public-base-url", "OATH_PUBLIC_BASE_URL", cli, environment
+      "--public-base-url", "DLQ_PUBLIC_BASE_URL", cli, environment
     ))
     val databasePath = parsePath(
       "--database-path",
       value(
         "--database-path",
-        "OATH_DATABASE_PATH",
+        "DLQ_DATABASE_PATH",
         DefaultDatabasePath,
         cli,
         environment
       )
     )
     val mode = parseMode(value(
-      "--mode", "OATH_MODE", DefaultMode, cli, environment
+      "--mode", "DLQ_MODE", DefaultMode, cli, environment
     ))
 
     val validationErrors = Vector(

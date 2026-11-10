@@ -10,34 +10,34 @@ import scala.util.control.NonFatal
 /** The desktop profile's optional per-user settings file. */
 object DesktopSettings:
   val Keys: Vector[String] = Vector(
-    "OATH_HOST",
-    "OATH_PORT",
-    "OATH_PUBLIC_BASE_URL",
-    "OATH_DATABASE_PATH",
-    "OATH_OPEN_BROWSER"
+    "DLQ_HOST",
+    "DLQ_PORT",
+    "DLQ_PUBLIC_BASE_URL",
+    "DLQ_DATABASE_PATH",
+    "DLQ_OPEN_BROWSER"
   )
 
   val template: String = Vector(
-    "# Oath Digital settings, used when the server is started with Start Oath Digital.",
+    "# Distant Lands settings, used when the server is started with Start Distant Lands.",
     "# Remove the leading # from a line to use it. Environment variables and",
     "# command-line options override this file. Restart the server after editing.",
     "# On Windows, write paths with forward slashes, for example C:/OathData/database.",
     "",
     "# Address to listen on. 0.0.0.0 accepts other computers on your network;",
     "# 127.0.0.1 accepts only this computer.",
-    "#OATH_HOST=0.0.0.0",
+    "#DLQ_HOST=0.0.0.0",
     "",
     "# Port to listen on. Seat links contain the port.",
-    "#OATH_PORT=8080",
+    "#DLQ_PORT=8080",
     "",
     "# Address players open, if the detected one is wrong. Seat links contain it.",
-    "#OATH_PUBLIC_BASE_URL=http://192.168.1.20:8080",
+    "#DLQ_PUBLIC_BASE_URL=http://192.168.1.20:8080",
     "",
     "# Database file prefix. Default: the data folder next to this file.",
-    "#OATH_DATABASE_PATH=/path/to/OathDigitalData/database",
+    "#DLQ_DATABASE_PATH=/path/to/DistantLandsData/database",
     "",
     "# Set to false to stop the browser opening at startup.",
-    "#OATH_OPEN_BROWSER=true",
+    "#DLQ_OPEN_BROWSER=true",
     ""
   ).mkString("\n")
 

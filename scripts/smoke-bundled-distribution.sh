@@ -36,12 +36,12 @@ temporary=$(cd "$temporary" && pwd -P)
 log_file="$temporary/server.log"
 mkdir -p "$temporary/home"
 case "$(uname -s)" in
-  Darwin) app_data="$temporary/home/Library/Application Support/OathDigital" ;;
+  Darwin) app_data="$temporary/home/Library/Application Support/DistantLands" ;;
   *) app_data="$temporary/xdg/oathdigital" ;;
 esac
 
 env -i PATH=/usr/bin:/bin HOME="$temporary/home" XDG_DATA_HOME="$temporary/xdg" \
-  OATH_LAUNCH=desktop OATH_OPEN_BROWSER=false OATH_PORT="$port" \
+  DLQ_LAUNCH=desktop DLQ_OPEN_BROWSER=false DLQ_PORT="$port" \
   "$app/bin/oathdigital" >"$log_file" 2>&1 &
 child_pid=$!
 
@@ -64,7 +64,7 @@ for path in /health/ready / /assets/main.js; do
 done
 ps -o command= -p "$child_pid" | grep -F "$app/jre/bin/java" >/dev/null ||
   fail "server is not running on the bundled runtime"
-[ -f "$app_data/oathdigital.properties" ] || fail "settings file was not created"
+[ -f "$app_data/distantlands.properties" ] || fail "settings file was not created"
 ls "$app_data/data" 2>/dev/null | grep -q '^database\.' ||
   fail "database was not created in the app-data folder"
 

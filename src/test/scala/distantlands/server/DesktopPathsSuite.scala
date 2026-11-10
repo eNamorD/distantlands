@@ -6,34 +6,34 @@ class DesktopPathsSuite extends munit.FunSuite:
   test("macOS uses Application Support under HOME"):
     assertEquals(
       DesktopPaths.appDataDirectory("Mac OS X", Map("HOME" -> "/Users/alex"), "/ignored"),
-      Paths.get("/Users/alex", "Library", "Application Support", "OathDigital")
+      Paths.get("/Users/alex", "Library", "Application Support", "DistantLands")
     )
 
   test("a blank or missing HOME falls back to user.home"):
-    val expected = Paths.get("/home/fallback", "Library", "Application Support", "OathDigital")
+    val expected = Paths.get("/home/fallback", "Library", "Application Support", "DistantLands")
     assertEquals(DesktopPaths.appDataDirectory("Mac OS X", Map.empty, "/home/fallback"), expected)
     assertEquals(DesktopPaths.appDataDirectory("Mac OS X", Map("HOME" -> " "), "/home/fallback"), expected)
 
   test("Windows uses LOCALAPPDATA"):
     assertEquals(
       DesktopPaths.appDataDirectory("Windows 11", Map("LOCALAPPDATA" -> "/c/Users/alex/AppData/Local"), "/ignored"),
-      Paths.get("/c/Users/alex/AppData/Local", "OathDigital")
+      Paths.get("/c/Users/alex/AppData/Local", "DistantLands")
     )
 
   test("Windows without LOCALAPPDATA uses AppData/Local under the home folder"):
     assertEquals(
       DesktopPaths.appDataDirectory("Windows 11", Map.empty, "/c/Users/alex"),
-      Paths.get("/c/Users/alex", "AppData", "Local", "OathDigital")
+      Paths.get("/c/Users/alex", "AppData", "Local", "DistantLands")
     )
 
   test("Linux uses XDG_DATA_HOME"):
     assertEquals(
       DesktopPaths.appDataDirectory("Linux", Map("XDG_DATA_HOME" -> "/data/xdg", "HOME" -> "/home/alex"), "/ignored"),
-      Paths.get("/data/xdg", "oathdigital")
+      Paths.get("/data/xdg", "distantlands")
     )
 
   test("Linux without a usable XDG_DATA_HOME uses .local/share"):
-    val expected = Paths.get("/home/alex", ".local", "share", "oathdigital")
+    val expected = Paths.get("/home/alex", ".local", "share", "distantlands")
     assertEquals(DesktopPaths.appDataDirectory("Linux", Map("HOME" -> "/home/alex"), "/ignored"), expected)
     assertEquals(
       DesktopPaths.appDataDirectory("Linux", Map("HOME" -> "/home/alex", "XDG_DATA_HOME" -> ""), "/ignored"),
@@ -41,6 +41,6 @@ class DesktopPathsSuite extends munit.FunSuite:
     )
 
   test("settings file and database path live in the app-data folder"):
-    val appData = Paths.get("/data/oathdigital")
-    assertEquals(DesktopPaths.settingsFile(appData), Paths.get("/data/oathdigital/oathdigital.properties"))
-    assertEquals(DesktopPaths.databasePath(appData), Paths.get("/data/oathdigital/data/database"))
+    val appData = Paths.get("/data/distantlands")
+    assertEquals(DesktopPaths.settingsFile(appData), Paths.get("/data/distantlands/distantlands.properties"))
+    assertEquals(DesktopPaths.databasePath(appData), Paths.get("/data/distantlands/data/database"))

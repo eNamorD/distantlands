@@ -76,7 +76,7 @@ case "${1:-}" in
     [ -n "${JAVA_HOME:-}" ] || fail "JAVA_HOME must select Java 21 for sbtw and smoke"
     [ "$("$JAVA_HOME/bin/java" -version 2>&1)" = "$java_version" ] || fail "JAVA_HOME and PATH select different Java runtimes"
     command -v node >/dev/null || fail "Node is required for frontend tests"
-    export OATH_RELEASE_VERSION=$release_version
+    export DLQ_RELEASE_VERSION=$release_version
     sh "$0" self-test
     python3 scripts/check-architecture.py
     python3 scripts/check-markdown-links.py

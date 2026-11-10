@@ -108,7 +108,7 @@ private[frontend] final class SidebarDivider(table: dom.html.Element,
     handle.remove()
 
 private[frontend] object SidebarDivider:
-  val StoreKey = "oath.table.sidebar-width"
+  val StoreKey = "distantlands.table.sidebar-width"
   /** Narrow enough to give the map room, wide enough that the Actions pane's
     * buttons keep their words on a line and a hand shows two cards a row. */
   val MinWidth = 240.0

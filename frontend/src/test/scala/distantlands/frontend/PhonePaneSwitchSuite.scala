@@ -55,7 +55,7 @@ class PhonePaneSwitchSuite extends munit.FunSuite:
 
   test("switching to the Log shows its newest entries"):
     val store = new FakeLogStore()
-    store.write("oath.log.seen.g.red", "3")
+    store.write("distantlands.log.seen.g.red", "3")
     withShell(Some(store)) { (browser, shell) =>
       // The stylesheet hides the Log behind Actions, so it is drawn with no
       // size and cannot scroll.
@@ -69,7 +69,7 @@ class PhonePaneSwitchSuite extends munit.FunSuite:
 
   test("the Log side counts the events the viewer has not seen"):
     val store = new FakeLogStore()
-    store.write("oath.log.seen.g.red", "3")
+    store.write("distantlands.log.seen.g.red", "3")
     withShell(Some(store)) { (browser, shell) =>
       shell.showLog("g", "red", entries, Map.empty)
       assertEquals(count(browser), "1")

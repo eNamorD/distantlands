@@ -74,6 +74,6 @@ class BrowserChronicleStorageSuite extends ChronicleStorageContract:
     installLocalStorage(_ != ChronicleStorage.Probe)
     try
       val store = present(ChronicleStorage.browser, "a store")
-      assert(!store.write("oath.chronicles", "[]"))
-      assertEquals(store.read("oath.chronicles"), None)
+      assert(!store.write("distantlands.chronicles", "[]"))
+      assertEquals(store.read("distantlands.chronicles"), None)
     finally putBackLocalStorage()

@@ -13,18 +13,18 @@ final case class DesktopLaunch(
 )
 
 /**
- * The double-click launch profile. Only active when `OATH_LAUNCH=desktop`;
+ * The double-click launch profile. Only active when `DLQ_LAUNCH=desktop`;
  * it fills in unset values and leaves validation to `ServerConfig.parse`.
  */
 object DesktopLaunchProfile:
-  val LaunchVariable = "OATH_LAUNCH"
+  val LaunchVariable = "DLQ_LAUNCH"
   private val Wildcard = "0.0.0.0"
   private val DefaultPort = "8080"
   private val Flags = Map(
-    "OATH_HOST" -> "--host",
-    "OATH_PORT" -> "--port",
-    "OATH_PUBLIC_BASE_URL" -> "--public-base-url",
-    "OATH_DATABASE_PATH" -> "--database-path"
+    "DLQ_HOST" -> "--host",
+    "DLQ_PORT" -> "--port",
+    "DLQ_PUBLIC_BASE_URL" -> "--public-base-url",
+    "DLQ_DATABASE_PATH" -> "--database-path"
   )
   private val Loopback = Set("127.0.0.1", "localhost", "::1", "[::1]")
 
@@ -64,27 +64,27 @@ object DesktopLaunchProfile:
     def higher(key: String): Option[String] =
       flagValue(key).orElse(environment.get(key)).orElse(settings.get(key))
 
-    val openBrowser = environment.get("OATH_OPEN_BROWSER")
-      .orElse(settings.get("OATH_OPEN_BROWSER"))
+    val openBrowser = environment.get("DLQ_OPEN_BROWSER")
+      .orElse(settings.get("DLQ_OPEN_BROWSER"))
       .getOrElse("true").trim.toLowerCase match
         case "true" => Right(true)
         case "false" => Right(false)
-        case _ => Left("OATH_OPEN_BROWSER: must be true or false")
+        case _ => Left("DLQ_OPEN_BROWSER: must be true or false")
 
     openBrowser.map { open =>
-      val port = higher("OATH_PORT").map(_.trim).getOrElse(DefaultPort)
-      val host = higher("OATH_HOST").map(_.trim).getOrElse(Wildcard)
+      val port = higher("DLQ_PORT").map(_.trim).getOrElse(DefaultPort)
+      val host = higher("DLQ_HOST").map(_.trim).getOrElse(Wildcard)
       val (address, lanDetectionFailed) =
-        if higher("OATH_PUBLIC_BASE_URL").nonEmpty then (Map.empty[String, String], false)
+        if higher("DLQ_PUBLIC_BASE_URL").nonEmpty then (Map.empty[String, String], false)
         else if host == Wildcard then detectLanAddress() match
-          case Some(lan) => (Map("OATH_PUBLIC_BASE_URL" -> s"http://$lan:$port"), false)
-          case None => (Map("OATH_HOST" -> "127.0.0.1"), true)
+          case Some(lan) => (Map("DLQ_PUBLIC_BASE_URL" -> s"http://$lan:$port"), false)
+          case None => (Map("DLQ_HOST" -> "127.0.0.1"), true)
         else if Loopback.contains(host.toLowerCase) then (Map.empty[String, String], false)
-        else (Map("OATH_PUBLIC_BASE_URL" -> s"http://${bracketed(host)}:$port"), false)
+        else (Map("DLQ_PUBLIC_BASE_URL" -> s"http://${bracketed(host)}:$port"), false)
 
       val defaults = Map(
-        "OATH_HOST" -> Wildcard,
-        "OATH_DATABASE_PATH" -> DesktopPaths.databasePath(appData).toString
+        "DLQ_HOST" -> Wildcard,
+        "DLQ_DATABASE_PATH" -> DesktopPaths.databasePath(appData).toString
       ).filter { case (key, _) => higher(key).isEmpty }
       val fromSettings = settings.filter { case (key, _) =>
         Flags.contains(key) && flagValue(key).isEmpty && !environment.contains(key)
@@ -100,7 +100,7 @@ object DesktopLaunchProfile:
     }
 
   private def createDataFolder(launch: DesktopLaunch): Either[String, Unit] =
-    launch.environment.get("OATH_DATABASE_PATH") match
+    launch.environment.get("DLQ_DATABASE_PATH") match
       case None => Right(())
       case Some(databasePath) =>
         val folder = Paths.get(databasePath).toAbsolutePath.normalize.getParent

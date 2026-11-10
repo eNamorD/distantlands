@@ -16,7 +16,7 @@ import distantlands.server.SensitiveTokenDigest
 
 /** A route served on a free loopback port for one test, with a client that
   * talks to it. `get` and `post` take a path under `base` and a `cookie`
-  * sent as the whole Cookie header value (such as `oath_seat=<code>`).
+  * sent as the whole Cookie header value (such as `distantlands_seat=<code>`).
   * `post` also sends the same-origin `Origin` and `csrfToken` as the
   * X-CSRF-Token header unless told otherwise (the development routes ignore
   * both). `close` unbinds the route and stops its actor system, even when

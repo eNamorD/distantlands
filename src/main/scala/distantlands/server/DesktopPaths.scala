@@ -12,18 +12,18 @@ object DesktopPaths:
     val home = nonBlank(environment, "HOME").getOrElse(fallbackHome)
     val os = osName.toLowerCase
     if os.startsWith("mac") then
-      Paths.get(home, "Library", "Application Support", "OathDigital")
+      Paths.get(home, "Library", "Application Support", "DistantLands")
     else if os.startsWith("windows") then
       nonBlank(environment, "LOCALAPPDATA")
-        .map(Paths.get(_, "OathDigital"))
-        .getOrElse(Paths.get(home, "AppData", "Local", "OathDigital"))
+        .map(Paths.get(_, "DistantLands"))
+        .getOrElse(Paths.get(home, "AppData", "Local", "DistantLands"))
     else
       nonBlank(environment, "XDG_DATA_HOME")
-        .map(Paths.get(_, "oathdigital"))
-        .getOrElse(Paths.get(home, ".local", "share", "oathdigital"))
+        .map(Paths.get(_, "distantlands"))
+        .getOrElse(Paths.get(home, ".local", "share", "distantlands"))
 
   def settingsFile(appData: Path): Path =
-    appData.resolve("oathdigital.properties")
+    appData.resolve("distantlands.properties")
 
   def databasePath(appData: Path): Path =
     appData.resolve("data").resolve("database")

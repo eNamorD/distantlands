@@ -79,13 +79,13 @@ object QueryParameterActor extends ActorResolution:
         "$.playerId").left.map(_ => AccessRefusal.Malformed)
     yield GameAccess.Seat(PlayerId(valid)))
 
-/** The trusted alpha's actor: the seat the `oath_seat` cookie opens, for
+/** The trusted alpha's actor: the seat the `distantlands_seat` cookie opens, for
   * the game the seat belongs to. A missing, malformed, unknown or
   * wrong-game cookie is forbidden alike, so a response never tells a
   * holder which it was. */
 final class SeatCookieActor(identities: IdentityRepository,
     blockingExecutionContext: ExecutionContext) extends ActorResolution:
-  val cookieName = "oath_seat"
+  val cookieName = "distantlands_seat"
 
   def resolve(request: HttpRequest, gameId: String)
       : Future[Either[AccessRefusal, GameAccess]] = Future {

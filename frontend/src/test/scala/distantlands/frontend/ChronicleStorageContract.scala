@@ -14,18 +14,18 @@ private[frontend] abstract class ChronicleStorageContract extends munit.FunSuite
   private val fresh = FunFixture[ChronicleStorage](_ => make(), release)
 
   fresh.test("a key that was written reads back its value"): store =>
-    assert(store.write("oath.chronicles", "[]"))
-    assertEquals(store.read("oath.chronicles"), Some("[]"))
+    assert(store.write("distantlands.chronicles", "[]"))
+    assertEquals(store.read("distantlands.chronicles"), Some("[]"))
 
   fresh.test("a second write to a key replaces the first"): store =>
-    store.write("oath.chronicles.loaded", "Ashen Crown")
-    store.write("oath.chronicles.loaded", "Iron Vow")
-    assertEquals(store.read("oath.chronicles.loaded"), Some("Iron Vow"))
+    store.write("distantlands.chronicles.loaded", "Ashen Crown")
+    store.write("distantlands.chronicles.loaded", "Iron Vow")
+    assertEquals(store.read("distantlands.chronicles.loaded"), Some("Iron Vow"))
 
   fresh.test("a removed key reads as nothing"): store =>
-    store.write("oath.chronicles.loaded", "Ashen Crown")
-    store.remove("oath.chronicles.loaded")
-    assertEquals(store.read("oath.chronicles.loaded"), None)
+    store.write("distantlands.chronicles.loaded", "Ashen Crown")
+    store.remove("distantlands.chronicles.loaded")
+    assertEquals(store.read("distantlands.chronicles.loaded"), None)
 
   fresh.test("a key that was never written reads as nothing"): store =>
-    assertEquals(store.read("oath.chronicles"), None)
+    assertEquals(store.read("distantlands.chronicles"), None)

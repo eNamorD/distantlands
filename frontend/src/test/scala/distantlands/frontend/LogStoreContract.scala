@@ -15,14 +15,14 @@ private[frontend] abstract class LogStoreContract extends munit.FunSuite:
   private val fresh = FunFixture[LogStore](_ => make(), release)
 
   fresh.test("a key that was written reads back its value"): store =>
-    store.write("oath.log.seen.g1.red", "42")
-    assertEquals(store.read("oath.log.seen.g1.red"), Some("42"))
+    store.write("distantlands.log.seen.g1.red", "42")
+    assertEquals(store.read("distantlands.log.seen.g1.red"), Some("42"))
 
   fresh.test("a second write to a key replaces the first"): store =>
-    store.write("oath.log.seen.g1.red", "42")
-    store.write("oath.log.seen.g1.red", "57")
-    assertEquals(store.read("oath.log.seen.g1.red"), Some("57"))
+    store.write("distantlands.log.seen.g1.red", "42")
+    store.write("distantlands.log.seen.g1.red", "57")
+    assertEquals(store.read("distantlands.log.seen.g1.red"), Some("57"))
 
   fresh.test("a key that was never written reads as nothing"): store =>
-    store.write("oath.log.seen.g1.red", "42")
-    assertEquals(store.read("oath.log.seen.g1.blue"), None)
+    store.write("distantlands.log.seen.g1.red", "42")
+    assertEquals(store.read("distantlands.log.seen.g1.blue"), None)

@@ -12,8 +12,8 @@ cd "$(dirname "$0")" || exit 1
 if [ "$(uname -s)" = "Darwin" ] && command -v xattr >/dev/null 2>&1; then
   xattr -dr com.apple.quarantine . 2>/dev/null || true
 fi
-OATH_LAUNCH=desktop
-export OATH_LAUNCH
+DLQ_LAUNCH=desktop
+export DLQ_LAUNCH
 bin/oathdigital "$@"
 status=$?
 case "$status" in

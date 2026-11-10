@@ -119,7 +119,7 @@ object HsqldbDatabaseOwner:
       // and leave its heartbeat lock behind for the next owner.
       source.setMinimumIdle(0)
       source.setConnectionTimeout(TimeUnit.SECONDS.toMillis(10))
-      source.setPoolName("oathdigital-database")
+      source.setPoolName("distantlands-database")
       val probe = source.getConnection
       probe.close()
       val owner = new HsqldbDatabaseOwner(

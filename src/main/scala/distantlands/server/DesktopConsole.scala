@@ -13,7 +13,7 @@ object DesktopConsole:
       case None => s"  Only this computer can connect: http://127.0.0.1:${config.port}"
     val lines =
       Vector(
-        s"Oath Digital ${config.version} is running.",
+        s"Distant Lands ${config.version} is running.",
         address
       ) ++
         config.publicBaseUrl
@@ -24,7 +24,7 @@ object DesktopConsole:
         s"  Settings:      ${launch.settingsFile}"
       ) ++
         (if launch.lanDetectionFailed then
-           Vector("No local network address found. Set OATH_PUBLIC_BASE_URL in the settings file.")
+           Vector("No local network address found. Set DLQ_PUBLIC_BASE_URL in the settings file.")
          else Vector.empty) ++
         (if config.publicBaseUrl.nonEmpty then
            Vector("Seat links contain this address. If it changes, players need the new address.")
@@ -63,5 +63,5 @@ object DesktopConsole:
       .collectFirst:
         case cause if cause.isInstanceOf[BindException] ||
             cause.getClass.getSimpleName == "BindFailedException" =>
-          s"port $port is in use. Is Oath Digital already running? " +
-            s"Change OATH_PORT in $settingsFile."
+          s"port $port is in use. Is Distant Lands already running? " +
+            s"Change DLQ_PORT in $settingsFile."

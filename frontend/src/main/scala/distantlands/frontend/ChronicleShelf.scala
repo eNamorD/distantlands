@@ -114,8 +114,8 @@ private[frontend] final class ChronicleShelf(storage: ChronicleStorage,
       case Some(existing) => AutoSave.Conflict(existing)
 
 private[frontend] object ChronicleShelf:
-  val ListKey = "oath.chronicles"
-  val LoadedKey = "oath.chronicles.loaded"
+  val ListKey = "distantlands.chronicles"
+  val LoadedKey = "distantlands.chronicles.loaded"
   /** The server's limit, `Chronicle.maxNameLength`. */
   val MaxNameLength = 80
   val Refused = "This browser refused to keep the Chronicle. Export it to " +

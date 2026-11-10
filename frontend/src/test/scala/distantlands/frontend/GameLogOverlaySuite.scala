@@ -18,10 +18,10 @@ class GameLogOverlaySuite extends munit.FunSuite:
   private val searched = entry(8, LogKind.Action, "Started Search")
 
   /** Where the shell keeps Red's place in game g's log. */
-  private val redSeenKey = "oath.log.seen.g.red"
+  private val redSeenKey = "distantlands.log.seen.g.red"
 
   /** An observer has no seat, so its key ends at the game. */
-  private val observerSeenKey = "oath.log.seen.g."
+  private val observerSeenKey = "distantlands.log.seen.g."
 
   private def withShell(store: Option[LogStore] = None)
       (body: (TestBrowser, GameTableShell) => Unit): Unit =

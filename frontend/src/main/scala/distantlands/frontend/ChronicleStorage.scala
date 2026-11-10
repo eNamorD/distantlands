@@ -30,7 +30,7 @@ private[frontend] object ChronicleStorage:
     * A browser that already holds Chronicles keeps its store even when the
     * probe fails, as a full storage's does: they stay listed and loadable,
     * and only writes are refused. */
-  val Probe = "oath.chronicles.probe"
+  val Probe = "distantlands.chronicles.probe"
 
   /** The browser's `localStorage`, or nothing when the browser refuses it. */
   def browser: Option[ChronicleStorage] =

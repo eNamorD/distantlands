@@ -1,6 +1,6 @@
 ThisBuild / scalaVersion := "3.9.0"
 ThisBuild / organization := "dev.oathdigital"
-ThisBuild / version := ReleaseVersion.resolve(sys.env.get("OATH_RELEASE_VERSION"))
+ThisBuild / version := ReleaseVersion.resolve(sys.env.get("DLQ_RELEASE_VERSION"))
 
 lazy val verifyReleaseVersion = taskKey[Unit]("Check release version validation")
 
@@ -114,14 +114,14 @@ lazy val root = (project in file("."))
     ).map(name => baseDirectory.value / "packaging/desktop" / name -> name),
     Universal / javaOptions += "-Dfile.encoding=UTF-8",
     bashScriptExtraDefines ++= Seq(
-      """if [ -z "${OATH_MODE+x}" ]; then OATH_MODE=trusted-alpha; fi""",
-      "export OATH_MODE",
+      """if [ -z "${DLQ_MODE+x}" ]; then DLQ_MODE=trusted-alpha; fi""",
+      "export DLQ_MODE",
       // A bundled-runtime archive ships jre/ beside bin/. The template gives
       // bundled_jvm priority over JAVA_HOME; -java-home still overrides it.
       """if [ -x "${app_home}/../jre/bin/java" ]; then bundled_jvm="$(realpath "${app_home}/../jre")"; fi"""
     ),
     batScriptExtraDefines ++= Seq(
-      "if not defined OATH_MODE set \"OATH_MODE=trusted-alpha\"",
+      "if not defined DLQ_MODE set \"DLQ_MODE=trusted-alpha\"",
       """if exist "%APP_HOME%\jre\bin\java.exe" set "BUNDLED_JVM=%APP_HOME%\jre""""
     ),
     Docker / packageName := "oathdigital",
@@ -132,11 +132,11 @@ lazy val root = (project in file("."))
     Docker / dockerBaseImage := "eclipse-temurin:21-jre",
     dockerBaseImage := (Docker / dockerBaseImage).value,
     Docker / dockerEnvVars := Map(
-      "OATH_HOST" -> "0.0.0.0",
-      "OATH_DATABASE_PATH" -> "/var/lib/oathdigital/database"
+      "DLQ_HOST" -> "0.0.0.0",
+      "DLQ_DATABASE_PATH" -> "/var/lib/distantlands/database"
     ),
     dockerEnvVars := (Docker / dockerEnvVars).value,
-    Docker / dockerExposedVolumes := Seq("/var/lib/oathdigital"),
+    Docker / dockerExposedVolumes := Seq("/var/lib/distantlands"),
     dockerExposedVolumes := (Docker / dockerExposedVolumes).value,
     verifyPackageMappings := {
       val packageMappings = (Universal / mappings).value
@@ -176,12 +176,12 @@ lazy val root = (project in file("."))
         ).flatten
       val dockerCommandLines = (Docker / dockerCommands).value
         .map(_.makeContent.trim)
-      val dataDirectory = "/var/lib/oathdigital"
+      val dataDirectory = "/var/lib/distantlands"
       val createDataDirectory =
-        """RUN ["mkdir", "-p", "/var/lib/oathdigital"]"""
+        """RUN ["mkdir", "-p", "/var/lib/distantlands"]"""
       val ownDataDirectory =
-        """RUN ["chown", "-R", "oathdigital:root", "/var/lib/oathdigital"]"""
-      val declareDataVolume = """VOLUME ["/var/lib/oathdigital"]"""
+        """RUN ["chown", "-R", "oathdigital:root", "/var/lib/distantlands"]"""
+      val declareDataVolume = """VOLUME ["/var/lib/distantlands"]"""
       val finalUser = "USER 10001:0"
       val createIndex = dockerCommandLines.indexOf(createDataDirectory)
       val ownIndex = dockerCommandLines.indexOf(ownDataDirectory)
@@ -193,35 +193,35 @@ lazy val root = (project in file("."))
           Seq.empty
         else Seq(
           "Docker image must create, own, and declare a volume for " +
-            "/var/lib/oathdigital before switching to USER 10001:0"
+            "/var/lib/distantlands before switching to USER 10001:0"
         )
       // The prepared data directory is useless unless the image also points
       // the server at it, so pin both halves: the configured database path
       // must live under the directory the image creates, and the generated
       // Dockerfile must actually carry that ENV declaration.
       val configuredDatabasePath = (Docker / dockerEnvVars).value
-        .getOrElse("OATH_DATABASE_PATH", "")
+        .getOrElse("DLQ_DATABASE_PATH", "")
       val environmentLines = dockerCommandLines
         .filter(_.startsWith("ENV"))
         .map(_.replace("\"", ""))
       val databasePathFailures =
         if (!configuredDatabasePath.startsWith(dataDirectory + "/"))
           Seq(
-            s"Docker OATH_DATABASE_PATH '$configuredDatabasePath' must live " +
+            s"Docker DLQ_DATABASE_PATH '$configuredDatabasePath' must live " +
               s"under the prepared data directory $dataDirectory"
           )
         else if (!environmentLines.exists(
-              _.contains(s"OATH_DATABASE_PATH=$configuredDatabasePath")
+              _.contains(s"DLQ_DATABASE_PATH=$configuredDatabasePath")
             ))
           Seq(
             "Docker image must declare ENV " +
-              s"OATH_DATABASE_PATH=$configuredDatabasePath"
+              s"DLQ_DATABASE_PATH=$configuredDatabasePath"
           )
         else Seq.empty
       val hostFailures =
-        if (environmentLines.exists(_.contains("OATH_HOST=0.0.0.0")))
+        if (environmentLines.exists(_.contains("DLQ_HOST=0.0.0.0")))
           Seq.empty
-        else Seq("Docker image must declare ENV OATH_HOST=0.0.0.0")
+        else Seq("Docker image must declare ENV DLQ_HOST=0.0.0.0")
       val dockerFailures =
         orderingFailures ++ databasePathFailures ++ hostFailures
       def launcherSource(destination: String): String = packageMappings

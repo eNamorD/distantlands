@@ -29,26 +29,26 @@ object DistantLandsServer:
       () => LanAddress.detect()
     ) match
       case Left(error) =>
-        System.err.println(s"oathdigital: $error")
+        System.err.println(s"distantlands: $error")
         sys.exit(2)
       case Right(prepared) => prepared
     launch.toVector.flatMap(_.warnings)
-      .foreach(warning => System.err.println(s"oathdigital: warning: $warning"))
+      .foreach(warning => System.err.println(s"distantlands: warning: $warning"))
     val environment = launch.fold(sys.env)(_.environment)
     val config = ServerConfig.parse(arguments, environment, version) match
       case Left(errors) =>
-        errors.foreach(error => System.err.println(s"oathdigital: $error"))
+        errors.foreach(error => System.err.println(s"distantlands: $error"))
         sys.exit(2)
       case Right(parsed) => parsed
     given system: ActorSystem[Nothing] =
-      ActorSystem[Nothing](Behaviors.empty, "oathdigital-server")
+      ActorSystem[Nothing](Behaviors.empty, "distantlands-server")
     given executionContext: ExecutionContext = system.executionContext
     val blockingExecutionContext = system.dispatchers.lookup(
       DispatcherSelector.fromConfig("distantlands.blocking-dispatcher")
     )
     val readiness = ServerReadiness.starting(config.version)
     system.log.info(
-      "Oath Digital server starting: version={}, mode={}, host={}, port={}, publicBaseUrlPresent={}, databasePath={}",
+      "Distant Lands server starting: version={}, mode={}, host={}, port={}, publicBaseUrlPresent={}, databasePath={}",
       config.version,
       config.mode,
       config.host,
@@ -77,7 +77,7 @@ object DistantLandsServer:
         ) { () =>
           Future {
             runtime.close()
-            system.log.info("Oath Digital database closed")
+            system.log.info("Distant Lands database closed")
             Done
           }(using blockingExecutionContext)
         }
@@ -105,12 +105,12 @@ object DistantLandsServer:
                 DesktopConsole.bindFailure(error, config.port, desktop.settingsFile)
               ) match
                 case Some(message) =>
-                  System.err.println(s"oathdigital: $message")
+                  System.err.println(s"distantlands: $message")
                   sys.exit(2)
                 case None => throw error
         readiness.markReady()
         system.log.info(
-          "Oath Digital server listening at http://{}:{}/",
+          "Distant Lands server listening at http://{}:{}/",
           config.host,
           Int.box(config.port)
         )
