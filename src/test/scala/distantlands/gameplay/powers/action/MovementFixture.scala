@@ -1,5 +1,6 @@
 package distantlands.gameplay.powers.action
 
+import distantlands.gameplay.actions.negotiation.FestivalDistrictCard
 import distantlands.gameplay.powers.economy.HallowedSpringCard
 import distantlands.gameplay.cards.{DeepWoodsSite, GoldenValleySite}
 import distantlands.model._

@@ -1,8 +1,8 @@
 package distantlands.application.gamelog
 
 import distantlands.application._
-import distantlands.gameplay.actions.negotiation.{NegotiationDeal,
-  TheTribunalCard}
+import distantlands.gameplay.actions.negotiation.{CouncilArbiterCard,
+  NegotiationDeal, TheTribunalCard}
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import distantlands.gameplay.powers.economy.BirdsongCard
 import distantlands.model._
@@ -13,8 +13,8 @@ import LogScriptSupport.{atTable, tableWithOnePawnPerSite}
 import distantlands.testkit.Commands
 
 /** The Negotiation scripts: a deal declined, a deal agreed, a deal of one
-  * promise, a binding promise through The Tribunal, and a facedown adviser
-  * disclosed. Reached through `LogScripts`.
+  * promise, a binding promise through The Tribunal, a facedown adviser
+  * disclosed, and a facedown adviser given. Reached through `LogScripts`.
   */
 object NegotiationLogScripts:
   /** p1 and p2 share Ancient City, so p1 can negotiate with exactly one
@@ -86,3 +86,17 @@ object NegotiationLogScripts:
       .parkedAfter(deal(actor, AcceptDeal))
       .after(deal(partner, AcceptDeal))
     Script("negotiation-disclosed", service, actor)
+
+  /** The partner gives the actor, who holds Council Arbiter, a facedown
+    * adviser (catalog batch 12, ruling 16). */
+  def negotiationAdviserGiven(using munit.Location): Script =
+    val birdsong: WorldCardId = BirdsongCard.id
+    val (service, parked, actor, partner) = negotiating(
+      "negotiation-adviser-given", _.adviser(p1, CouncilArbiterCard.id)
+        .adviser(p2, BirdsongCard.id, facedown = true))
+    parked
+      .parkedAfter(deal(partner, ProposeTerms(NegotiationTerms(Vector(
+        NegotiationTransfer(actor, 0, Vector.empty, Vector(birdsong)))))))
+      .parkedAfter(deal(actor, AcceptDeal))
+      .after(deal(partner, AcceptDeal))
+    Script("negotiation-adviser-given", service, actor)

@@ -1,7 +1,7 @@
 package distantlands.gameplay.powers
 
 import distantlands.catalog.ExecutableCatalog
-import distantlands.gameplay.actions.{AdviserFace, CardPlayRules}
+import distantlands.gameplay.actions.{AdviserFace, AdviserLimits, CardPlayRules}
 import distantlands.gameplay.powers.action.{Assassin, PiedPiper}
 import distantlands.gameplay.powers.cardplay.{FamilyWagon, LostTapestry}
 import distantlands.gameplay.powers.rest.{Insomnia, SilverTongue}
@@ -19,8 +19,11 @@ import distantlands.model._
   * (`CardPlayRules.Unbounded`) before those apply. `ignored` and
   * `towardLimit` read the facts by which card play's rules leave an adviser
   * out of the count (Lost Tapestry, Pied Piper).
+  *
+  * It is the one [[distantlands.gameplay.actions.AdviserLimits]], which the
+  * Negotiation reads through the walker's registry.
   */
-object AdviserLimit:
+object AdviserLimit extends AdviserLimits:
   val Default: Int = CardPlayRules.DefaultAdviserLimit
 
   def of(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId): Int =

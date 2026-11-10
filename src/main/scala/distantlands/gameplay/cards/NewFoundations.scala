@@ -8,8 +8,8 @@ import distantlands.gameplay.{ActingTroupeCard, BanditCrownCard, GrandMaskCard,
 import distantlands.gameplay.actions.challenge.{MagiciansCodeCard,
   SchoolOfVinesCard, SigilOfTheEyeCard, SigilOfTheHeartCard}
 import distantlands.gameplay.actions.recover.UndergroundLibraryCard
-import distantlands.gameplay.actions.negotiation.{TheTribunalCard,
-  TravelingNegotiatorCard}
+import distantlands.gameplay.actions.negotiation.{CouncilArbiterCard,
+  FestivalDistrictCard, TheTribunalCard, TravelingNegotiatorCard}
 import distantlands.gameplay.operations.{AncientBloodlineCard, BoilingLakeCard,
   HallOfMinistersCard, TheGrandScepterCard}
 import distantlands.gameplay.powers.action._

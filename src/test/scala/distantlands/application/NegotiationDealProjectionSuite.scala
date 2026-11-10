@@ -1,12 +1,14 @@
 package distantlands.application
 
 import distantlands.gameplay.{GrandMaskCard, OathRules}
-import distantlands.gameplay.actions.negotiation.{NegotiationDeal,
-  TheTribunalCard}
+import distantlands.gameplay.actions.negotiation.{CouncilArbiterCard,
+  NegotiationDeal, TheTribunalCard}
 import distantlands.gameplay.cards.{BrokenPeaksSite, DunesSite}
 import distantlands.gameplay.operations.TheGrandScepterCard
 import distantlands.gameplay.powers.action.BrassHorseCard
 import distantlands.gameplay.powers.campaign.StickyFireCard
+import distantlands.gameplay.powers.economy.BirdsongCard
+import distantlands.gameplay.powers.rest.SilverTongueCard
 import distantlands.gameplay.powers.search.TruthfulHarpCard
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
@@ -179,4 +181,47 @@ class NegotiationDealProjectionSuite extends munit.FunSuite:
       val editing = deal(view(state, viewer)).editing
         .getOrElse(fail(s"${viewer.value} edits"))
       assert(editing.bindingPromisesOpen, viewer.value)
+    }
+
+  test("a facedown adviser on offer is named to its author and counted " +
+      "for everyone else"):
+    val birdsong: WorldCardId = BirdsongCard.id
+    val table = gathered.adviser(p1, CouncilArbiterCard.id)
+      .adviser(p1, BirdsongCard.id, facedown = true)
+    val state = parkedDeal(table, who = Vector(p2, p3), terms = Some(
+      NegotiationTerms(Vector(NegotiationTransfer(p2, 0, Vector.empty,
+        Vector(birdsong))))))
+    val own = deal(view(state, p1)).transfers.head
+    assertEquals((own.adviserCount, own.advisers.map(_.cardId)),
+      (1, Vector(birdsong.value)))
+    Vector(p2, p3).foreach { viewer =>
+      val seen = deal(view(state, viewer)).transfers.head
+      assertEquals((seen.adviserCount, seen.advisers), (1, Vector.empty),
+        viewer.value)
+    }
+
+  test("the editor offers each author's movable advisers to the recipients " +
+      "the rules allow"):
+    val table = gathered.adviser(p1, CouncilArbiterCard.id)
+    val state = parkedDeal(table, who = Vector(p2, p3))
+    val p1Editing = deal(view(state, p1)).editing.getOrElse(fail("editing"))
+    assertEquals(p1Editing.giftableAdvisers.map(_.cardId),
+      Vector(CouncilArbiterCard.id.value))
+    assertEquals(p1Editing.adviserRecipients, Vector(p2.value, p3.value))
+    val p2Editing = deal(view(state, p2)).editing.getOrElse(fail("editing"))
+    assertEquals(p2Editing.adviserRecipients, Vector(p1.value))
+
+  test("terms over an adviser limit are projected with who they leave over"):
+    // p2 holds Silver Tongue faceup (a limit of 2) and Birdsong; p1 offers
+    // them Council Arbiter.
+    val table = gathered.adviser(p1, CouncilArbiterCard.id)
+      .adviser(p2, SilverTongueCard.id)
+      .adviser(p2, BirdsongCard.id, facedown = true)
+    val state = parkedDeal(table, who = Vector(p2), terms = Some(
+      NegotiationTerms(Vector(NegotiationTransfer(p2, 0, Vector.empty,
+        Vector(CouncilArbiterCard.id))))))
+    Vector(p1, p2).foreach { viewer =>
+      val editing = deal(view(state, viewer)).editing.getOrElse(fail("editing"))
+      assertEquals(editing.overAdviserLimit, Vector(p2.value), viewer.value)
+      assert(!editing.canAccept, viewer.value)
     }

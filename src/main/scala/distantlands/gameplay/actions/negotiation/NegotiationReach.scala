@@ -68,6 +68,8 @@ object NegotiationReach:
       Vector(actor, other).forall(player =>
         current.pawnSite(player).exists(bandits))
 
-  private def usable(catalog: ExecutableCatalog, ready: ReadyGame,
+  /** Whether no power-use restriction refuses `use`. Shared with
+    * [[NegotiationAdvisers]]. */
+  private[negotiation] def usable(catalog: ExecutableCatalog, ready: ReadyGame,
       use: PowerUse, restrictions: Vector[PowerUseRestriction]): Boolean =
     PowerUseRules.refusals(catalog, ready, use, restrictions).isEmpty

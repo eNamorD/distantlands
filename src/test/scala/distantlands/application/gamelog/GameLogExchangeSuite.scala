@@ -81,6 +81,19 @@ class GameLogExchangeSuite extends munit.FunSuite:
     val (giver, recipient) = (playerLabel(partner), playerLabel(script.actor))
     assertEquals(shown(Some(bystander)), s"$giver showed $recipient a Denizen")
 
+  test("a given facedown adviser is named to both who held it, a back to " +
+      "others"):
+    val script = negotiationAdviserGiven
+    val gave = (viewer: Option[PlayerId]) =>
+      val all = texts(format(script, viewer))
+      all.find(_.contains(" gave ")).getOrElse(
+        fail(s"no transfer line for $viewer in $all"))
+    val (giver, recipient) = (playerLabel(partner), playerLabel(script.actor))
+    Vector(Some(script.actor), Some(partner)).foreach(viewer =>
+      assertEquals(gave(viewer), s"$giver gave Birdsong to $recipient",
+        viewer.toString))
+    assertEquals(gave(Some(bystander)), s"$giver gave a Denizen to $recipient")
+
   test("a used power is named by its source card, once"):
     val all = texts(formatWithoutNotes(silverTongue, None).filter(_.depth == 1))
     assertEquals(all.count(_.startsWith("Used ")), 1, all)

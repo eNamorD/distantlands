@@ -9,6 +9,23 @@ class GameIntentMapperNegotiationSuite extends munit.FunSuite:
   private def bound(answer: Wire) =
     GameIntentMapper.map(Intent.ResolveWalker("negotiation.deal", answer))
 
+  test("an adviser in a transfer row maps to its world card"):
+    val wire = Wire.ProposeTermsWire(distantlands.protocol.NegotiationTerms(
+      Vector(distantlands.protocol.NegotiationTransfer("blue", 0,
+        Vector.empty, Vector(distantlands.protocol.WorldCard("vision", "v1"),
+          distantlands.protocol.WorldCard("denizen", "d1")))),
+      Vector.empty))
+    assertEquals(bound(wire), Right(PlayerIntent.ResolveWalker(TreeDecision(
+      "negotiation.deal", DecisionAnswer.ProposeTerms(NegotiationTerms(
+        Vector(NegotiationTransfer(PlayerId("blue"), 0, Vector.empty,
+          Vector(VisionId("v1"), DenizenId("d1"))))))))))
+    val unknown = Wire.ProposeTermsWire(distantlands.protocol.NegotiationTerms(
+      Vector(distantlands.protocol.NegotiationTransfer("blue", 0,
+        Vector.empty, Vector(distantlands.protocol.WorldCard("relic", "r1")))),
+      Vector.empty))
+    assertEquals(bound(unknown).left.map(_.path),
+      Left("$.intent.terms.transfers.advisers.kind"))
+
   test("a proposed terms wire answer maps to the engine's terms"):
     val wire = Wire.ProposeTermsWire(distantlands.protocol.NegotiationTerms(
       Vector(distantlands.protocol.NegotiationTransfer("blue", 2, Vector("r1"))),

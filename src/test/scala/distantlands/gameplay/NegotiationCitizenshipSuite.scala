@@ -3,9 +3,9 @@ package distantlands.gameplay
 import distantlands.gameplay.actions.ProcedureNotes
 import distantlands.gameplay.cards.{BrokenPeaksSite, DunesSite}
 import distantlands.gameplay.operations.TheGrandScepterCard
-import distantlands.gameplay.actions.negotiation.{NegotiationDeal,
+import distantlands.gameplay.actions.negotiation.{DealRules, NegotiationDeal,
   NegotiationProcedure}
-import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.{AdviserLimit, NoteText}
 import distantlands.gameplay.roles.Citizenship
 import distantlands.gameplay.setup.FirstGameSetupFixture._
 import distantlands.model._
@@ -60,7 +60,8 @@ class NegotiationCitizenshipSuite extends munit.FunSuite:
 
   private def bounds(ready: ReadyGame): Map[PlayerId, NegotiationBounds] =
     val deal = NegotiationDeal.fold(Vector(p1, p2, p3), Vector.empty)
-    NegotiationDeal.snapshot(ready, deal).bounds
+    NegotiationDeal.snapshot(catalog, ready, deal, DealRules(),
+      AdviserLimit).bounds
 
   test("only the Scepter's holder may offer Citizenship, to Exiles other " +
       "than themself"):

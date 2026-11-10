@@ -56,14 +56,16 @@ object GameIntentMapper:
     * terms that did not come through it. */
   private def negotiation(value: distantlands.protocol.NegotiationTerms)
       : Result[distantlands.model.NegotiationTerms] = for
+    rows <- traverse(value.transfers)(row => traverse(row.advisers)(card =>
+      world(card, "$.intent.terms.transfers.advisers")).map(row -> _))
     ds <- traverse(value.disclosures)(disclosure)
     promises <- promised(value.promises, "$.intent.terms.promises")
     binding <- promised(value.bindingPromises,
       "$.intent.terms.bindingPromises")
     terms <- try Right(distantlands.model.NegotiationTerms(
-        value.transfers.map(v => distantlands.model.NegotiationTransfer(
+        rows.map((v, advisers) => distantlands.model.NegotiationTransfer(
           PlayerId(v.recipientPlayerId), v.favor,
-          v.relicIds.map(RelicId.apply))), ds,
+          v.relicIds.map(RelicId.apply), advisers)), ds,
         value.citizenshipPlayerIds.map(PlayerId.apply), promises, binding))
       catch case refused: IllegalArgumentException =>
         Left(GameIntentMappingFailure("$.intent.terms",

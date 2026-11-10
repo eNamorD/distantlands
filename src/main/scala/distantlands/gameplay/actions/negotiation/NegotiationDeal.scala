@@ -2,7 +2,9 @@ package distantlands.gameplay.actions.negotiation
 
 import distantlands.catalog.ExecutableCatalog
 import distantlands.gameplay.SpendableFavor
-import distantlands.gameplay.operations.TheGrandScepterCard
+import distantlands.gameplay.actions.AdviserLimits
+import distantlands.gameplay.operations.{OperationExecutor,
+  OperationRestrictions, TheGrandScepterCard}
 import distantlands.gameplay.powerresolver.PowerUseRestriction
 import distantlands.gameplay.roles.Citizenship
 import distantlands.model._
@@ -13,7 +15,8 @@ final case class DealState(participants: Vector[PlayerId],
     terms: Map[PlayerId, NegotiationTerms], accepted: Set[PlayerId],
     declined: Boolean):
   def hasSubstance: Boolean = terms.values.exists(t =>
-    t.transfers.exists(x => x.favor > 0 || x.relics.nonEmpty) ||
+    t.transfers.exists(x => x.favor > 0 || x.relics.nonEmpty ||
+      x.advisers.nonEmpty) ||
       t.disclosures.nonEmpty || t.citizenship.nonEmpty ||
       t.promises.nonEmpty || t.bindingPromises.nonEmpty)
   def unanimous: Boolean =
@@ -82,34 +85,87 @@ object NegotiationDeal:
       pending: PendingTree): DealState =
     fold(participants(state, actor, candidates, pending), pending.answered)
 
-  /** The question the deal asks now: everyone's terms, who accepted, what each
-    * author may still offer, and who may accept (anyone who has not, once the
-    * deal has substance). `bindingPromises` opens binding promises to every
-    * author (ruling 11).
-    */
-  def snapshot(state: ReadyGame, deal: DealState,
-      bindingPromises: Boolean = false): DecisionQuery.Negotiate =
+  /** The question the deal asks now: everyone's terms, who accepted, what
+    * each author may still offer under `rules`, and who may accept (anyone
+    * who has not, once the deal has substance and leaves nobody over their
+    * adviser limit). */
+  def snapshot(catalog: ExecutableCatalog, state: ReadyGame, deal: DealState,
+      rules: DealRules, limits: AdviserLimits): DecisionQuery.Negotiate =
+    val over = overAdviserLimit(catalog, state, deal, limits)
     DecisionQuery.Negotiate(deal.participants, deal.terms, deal.accepted,
       deal.participants.map(author => author ->
-        bounds(state, author, deal.participants, bindingPromises)).toMap,
-      if deal.hasSubstance && !deal.declined then
+        bounds(catalog, state, author, deal.participants, rules)).toMap,
+      if deal.hasSubstance && !deal.declined && over.isEmpty then
         deal.participants.filterNot(deal.accepted).toSet
       else Set.empty[PlayerId],
-      heading = Some("Negotiation"))
+      heading = Some("Negotiation"), overAdviserLimit = over)
 
-  private def bounds(state: ReadyGame, author: PlayerId,
-      participants: Vector[PlayerId],
-      bindingPromises: Boolean): NegotiationBounds =
+  private def bounds(catalog: ExecutableCatalog, state: ReadyGame,
+      author: PlayerId, participants: Vector[PlayerId],
+      rules: DealRules): NegotiationBounds =
     val player = state.game.current.player(author).get
     val exiles = offerable(state, author, participants)
     val ignored = Citizenship.ignored(state)
+    val adviserRecipients = rules.adviserRecipients(author, participants)
     NegotiationBounds(participants.filter(_ != author),
       SpendableFavor.of(state, author),
       player.relics.map(_.id), disclosable(state, player),
       citizenship = exiles,
       citizenshipRefused = Option.when(ignored && exiles.nonEmpty)(
         Citizenship.ignoredReason),
-      bindingPromises = bindingPromises)
+      bindingPromises = rules.bindingPromises,
+      advisers = adviserRecipients.headOption.fold(Vector.empty)(
+        movable(catalog, state, player, _)),
+      adviserRecipients = adviserRecipients)
+
+  /** `player`'s advisers that may change hands: those no printed
+    * restriction refuses to give, which keeps a faceup locked adviser and
+    * an Ancient Bloodline denizen in place (ruling 16). A facedown card
+    * shows no lock. Which recipient is judged makes no difference: no
+    * printed restriction reads a play-area move's destination for an
+    * adviser. */
+  private def movable(catalog: ExecutableCatalog, state: ReadyGame,
+      player: PlayerState, recipient: PlayerId): Vector[WorldCardId] =
+    val printed = OperationRestrictions.forCatalog(catalog).printed
+    player.advisers.collect {
+      case DenizenState(id, _, _) => id: WorldCardId
+      case VisionState(id, _) => id: WorldCardId
+    }.filter(card => printed.forall(_.reason(state, Give(Piece.Card(card),
+      player.player, Location.PlayArea(player.player),
+      Location.PlayArea(recipient))).isEmpty))
+
+  /** The participants the deal's adviser moves would leave over their
+    * adviser limit, in participant order (ruling 17). The limit is read on
+    * the state after the moves, made by the settlement's own `Give`s, so a
+    * moved card that changes a limit counts. Only a player who gives or
+    * receives an adviser is judged. A move that no longer applies (its
+    * author gave the card away) is left out; settlement refuses it. */
+  def overAdviserLimit(catalog: ExecutableCatalog, state: ReadyGame,
+      deal: DealState, limits: AdviserLimits): Vector[PlayerId] =
+    val moves = adviserMoves(deal)
+    val touched = moves.flatMap((from, to, _) => Vector(from, to)).toSet
+    if touched.isEmpty then Vector.empty
+    else
+      val executor = new OperationExecutor()
+      val after = moves.foldLeft(state)((now, move) =>
+        executor.execute(now, adviserGive.tupled(move)).getOrElse(now))
+      deal.participants.filter(player => touched(player) &&
+        limits.exceeded(catalog, after, player))
+
+  /** Every adviser the deal moves: giver, recipient, card. */
+  private def adviserMoves(deal: DealState)
+      : Vector[(PlayerId, PlayerId, WorldCardId)] =
+    deal.participants.flatMap(author =>
+      deal.terms(author).transfers.flatMap(transfer =>
+        transfer.advisers.map((author, transfer.recipient, _))))
+
+  /** `author` gives `card` to `recipient`, keeping its face. Required: a
+    * refused adviser rejects the settlement rather than being skipped. The
+    * bounds never offer one a restriction refuses. */
+  private def adviserGive(author: PlayerId, recipient: PlayerId,
+      card: WorldCardId): CoreOperation =
+    Give(Piece.Card(card), author, Location.PlayArea(author),
+      Location.PlayArea(recipient), required = true)
 
   /** The participants `author` may offer Citizenship: the other Exiles,
     * when `author` holds the Grand Scepter. The holder never names
@@ -144,7 +200,8 @@ object NegotiationDeal:
     advisers ++ held ++ known
 
   /** What an agreed deal does: every disclosure records knowledge first, while
-    * the cards are still where they were disclosed, then every transfer moves.
+    * the cards are still where they were disclosed, then every transfer moves:
+    * favor, relics, then advisers, each keeping its face.
     * Refused (nothing recorded, the deal stays open) when an author can no
     * longer afford their terms.
     */
@@ -165,6 +222,10 @@ object NegotiationDeal:
       _ <- Either.cond(terms.transfers.flatMap(_.relics).forall(id =>
         player.relics.exists(_.id == id)), (), OathViolation.NegotiationUnavailable(
         "an offered relic is no longer held by its author"))
+      _ <- Either.cond(terms.transfers.flatMap(_.advisers).forall(id =>
+        player.advisers.exists(_.id == id)), (),
+        OathViolation.NegotiationUnavailable(
+          "an offered adviser is no longer held by its author"))
       _ <- Either.cond(terms.citizenship.isEmpty || (!Citizenship.ignored(state) &&
         terms.citizenship.forall(offerable(state, author,
           state.game.current.players.map(_.player)).contains)), (),
@@ -197,6 +258,8 @@ object NegotiationDeal:
         val relics = transfer.relics.map(relic => Give(Piece.Card(relic),
           author, Location.PlayArea(author),
           Location.PlayArea(transfer.recipient)): CoreOperation)
-        favor ++ relics
+        val advisers = transfer.advisers.map(
+          adviserGive(author, transfer.recipient, _))
+        favor ++ relics ++ advisers
       }
     }

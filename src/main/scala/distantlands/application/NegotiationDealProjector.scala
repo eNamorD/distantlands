@@ -6,8 +6,8 @@ import distantlands.protocol.projection._
 /** Projects a [[DecisionQuery.Negotiate]] for one viewer.
   *
   * Everyone sees what a non-author participant sees: who is in the deal, who
-  * has accepted, favor amounts, relic counts and the details of faceup relics,
-  * and the kind and recipient of each disclosure. Only an author sees the
+  * has accepted, favor amounts, relic and adviser counts and the details of
+  * faceup relics and advisers, and the kind and recipient of each disclosure. Only an author sees the
   * identity of a facedown relic they offer or of information they promise.
   * Only a participant gets the editing inputs, and never another player's.
   * Everyone reads every promise.
@@ -21,14 +21,23 @@ private[application] final class NegotiationDealProjector(
     val transfers = query.participants.flatMap { author =>
       val owner = current.player(author).get
       query.terms(author).transfers.map { transfer =>
+        val relicDetails = transfer.relics.flatMap(id =>
+          owner.relics.find(_.id == id)).collect {
+          case relic if viewer.contains(author) ||
+              relic.orientation == Orientation.FaceUp =>
+            presentation.cardDetails(relic.id, Some(relic.orientation),
+              hidden = false)
+        }
+        val advisers = transfer.advisers.flatMap(id =>
+          owner.advisers.find(_.id == id)).collect {
+          case adviser if viewer.contains(author) ||
+              presentation.adviserOrientation(adviser) == Orientation.FaceUp =>
+            presentation.cardDetails(adviser.id,
+              Some(presentation.adviserOrientation(adviser)), hidden = false)
+        }
         NegotiationTransferProjection(author.value, transfer.recipient.value,
-          transfer.favor, transfer.relics.size,
-          transfer.relics.flatMap(id => owner.relics.find(_.id == id)).collect {
-            case relic if viewer.contains(author) ||
-                relic.orientation == Orientation.FaceUp =>
-              presentation.cardDetails(relic.id, Some(relic.orientation),
-                hidden = false)
-          })
+          transfer.favor, transfer.relics.size, relicDetails,
+          transfer.advisers.size, advisers)
       }
     }
     val disclosures = query.participants.flatMap { author =>
@@ -81,4 +90,10 @@ private[application] final class NegotiationDealProjector(
               hidden = false)))
       },
       query.acceptors.contains(viewer), own.citizenship.map(_.value),
-      own.citizenshipRefused, bindingPromisesOpen = own.bindingPromises)
+      own.citizenshipRefused, bindingPromisesOpen = own.bindingPromises,
+      giftableAdvisers = own.advisers.flatMap(id =>
+        player.advisers.find(_.id == id)).map(adviser =>
+        presentation.cardDetails(adviser.id,
+          Some(presentation.adviserOrientation(adviser)), hidden = false)),
+      adviserRecipients = own.adviserRecipients.map(_.value),
+      overAdviserLimit = query.overAdviserLimit.map(_.value))

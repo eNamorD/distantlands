@@ -1,6 +1,6 @@
 package distantlands.gameplay
 
-import distantlands.catalog.holding.CouncilArbiterCard
+import distantlands.catalog.holding.DeedWriterCard
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite, DunesSite,
   FairIsleSite}
 import distantlands.gameplay.powers.action.BrassHorseCard
@@ -208,7 +208,7 @@ class NegotiationProcedureSuite extends munit.FunSuite:
     assertEquals(MenuPlay.pendingBeyondMenu(Outcomes.ready(agreed.state)), None)
 
   test("an unsupported Negotiation rule does not block the Negotiation"):
-    val powered = gathered.adviser(p1, CouncilArbiterCard).ready
+    val powered = gathered.adviser(p1, DeedWriterCard).ready
     val started = start(powered).getOrElse(
       fail("an unsupported rule must not block"))
     parked.assertParked(accepted(choose(started.state, p1, p2)).state,
