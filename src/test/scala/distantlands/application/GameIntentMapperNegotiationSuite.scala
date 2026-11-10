@@ -35,3 +35,9 @@ class GameIntentMapperNegotiationSuite extends munit.FunSuite:
     assertEquals(bound(terms(Vector.empty, Vector("   "))), Left(
       GameIntentMappingFailure("$.intent.terms.bindingPromises",
         "a blank promise")))
+    // Trimming can make two promises one.
+    assertEquals(bound(terms(Vector("Peace.", " Peace."))), Left(
+      GameIntentMappingFailure("$.intent.terms.promises",
+        "the same promise twice")))
+    assertEquals(bound(terms(Vector.tabulate(6)(i => s"Promise $i")))
+      .left.map(_.message), Left("more than 5 promises"))

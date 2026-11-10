@@ -29,20 +29,29 @@ object NegotiationPromise:
   val MaxLength: Int = 160
   val MaxPerKind: Int = 5
 
-  /** Why `promises` breaks a limit, or `None`. Length counts code points,
-    * so an emoji is one character. */
+  /** Why `promises` breaks a limit, or `None`: a promise's own fault
+    * first, then the count, then a repeat. Length counts code points, so an
+    * emoji is one character. A line or paragraph separator, or an invisible
+    * format character, counts as a control character. */
   def problem(promises: Vector[String]): Option[String] =
-    if promises.size > MaxPerKind then Some(s"more than $MaxPerKind promises")
-    else if promises.distinct.size != promises.size then
-      Some("the same promise twice")
-    else promises.collectFirst {
+    promises.collectFirst {
       case text if text.isBlank => "a blank promise"
       case text if text.strip != text => "a promise with surrounding spaces"
-      case text if text.exists(_.isControl) =>
+      case text if text.codePoints.anyMatch(controlLike) =>
         "a promise with a control character"
       case text if text.codePointCount(0, text.length) > MaxLength =>
         s"a promise over $MaxLength characters"
+    }.orElse {
+      if promises.size > MaxPerKind then Some(s"more than $MaxPerKind promises")
+      else Option.when(promises.distinct.size != promises.size)(
+        "the same promise twice")
     }
+
+  private def controlLike(codePoint: Int): Boolean =
+    Character.getType(codePoint) match
+      case Character.CONTROL | Character.LINE_SEPARATOR |
+          Character.PARAGRAPH_SEPARATOR | Character.FORMAT => true
+      case _ => false
 
 /** One author's terms. `citizenship` names the Exiles the author, the Grand
   * Scepter's holder, offers Citizenship (CR p. 34). `promises` and

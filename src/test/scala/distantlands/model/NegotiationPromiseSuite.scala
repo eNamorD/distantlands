@@ -27,6 +27,18 @@ class NegotiationPromiseSuite extends munit.FunSuite:
     assertEquals(NegotiationPromise.problem(Vector(longest + "x")),
       Some("a promise over 160 characters"))
 
+  test("a line separator or an invisible format character is refused"):
+    Vector("a\u2028b", "a\u2029b", "a\u200Bb", "a\u202Eb").foreach(text =>
+      assertEquals(NegotiationPromise.problem(Vector(text)),
+        Some("a promise with a control character"), text))
+
+  test("a promise's own fault is named before the count or a repeat"):
+    assertEquals(NegotiationPromise.problem(Vector("", "")),
+      Some("a blank promise"))
+    assertEquals(NegotiationPromise.problem(
+      Vector.fill(NegotiationPromise.MaxPerKind + 1)("Same")),
+      Some("more than 5 promises"))
+
   test("length counts characters, not UTF-16 units"):
     // Each emoji is one character and two UTF-16 units.
     val emoji = "\uD83D\uDE00" * NegotiationPromise.MaxLength
