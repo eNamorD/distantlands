@@ -363,7 +363,7 @@ private[frontend] object ServerUiSupport:
         }
         NegotiationDisclosure(disclosure.recipientPlayerId, information)
       },
-      value.citizenshipPlayerIds)
+      value.citizenshipPlayerIds, value.promises, value.bindingPromises)
 
   private[frontend] def playerDisplayName(
       value: GameProjection,
