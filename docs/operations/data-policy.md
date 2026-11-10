@@ -6,8 +6,8 @@ containing the configured database prefix as one unit. For example, when
 directory is `/home/alex/distantlands-data/alpha-1`, not one selected
 `database.*` file.
 
-**Never copy, restore, or move a live HSQLDB data directory.** Stop Oath
-Digital, wait for the process or container to exit, and confirm the
+**Never copy, restore, or move a live HSQLDB data directory.** Stop Distant
+Lands, wait for the process or container to exit, and confirm the
 `Distant Lands database closed` log line first. A partial or live copy is not a
 supported backup.
 

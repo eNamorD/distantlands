@@ -18,20 +18,20 @@ bundled archives were not part of this run; see
 At commit `5b817f65e13c9561b597c743e746c749c84fa3e3`
 (`build: prepare gated multiarchitecture alpha releases`), Task 2 ran the
 following locally on macOS arm64 with Temurin Java `21.0.12.1+1-LTS`, Node
-`v24.19.0`, and `DLQ_RELEASE_VERSION=0.1.0-alpha.1`:
+`v24.19.0`, and `OATH_RELEASE_VERSION=0.1.0-alpha.1`:
 
 ```sh
 export JAVA_HOME='/tmp/oath-release-java21.xc372r/jdk-21.0.12.1+1/Contents/Home'
 export PATH="$JAVA_HOME/bin:/Users/alex/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH"
-export DLQ_RELEASE_VERSION=0.1.0-alpha.1
+export OATH_RELEASE_VERSION=0.1.0-alpha.1
 ./sbtw verifyReleaseVersion test frontend/test verifyPackageMappings Universal/packageBin Universal/packageZipTarball Docker/stage
 ```
 
 The command exited 0: **563 JVM tests** (67 XML suites) and **137 frontend
 tests** (9 XML suites), all with zero failures and zero errors. It produced
-`distantlands-0.1.0-alpha.1.zip` (SHA-256
+`oathdigital-0.1.0-alpha.1.zip` (SHA-256
 `4bd90e5f1e2416ab4fc63ae13ab3ceb407d46f67b225288e0776779678e7369e`) and
-`distantlands-0.1.0-alpha.1.tgz` (SHA-256
+`oathdigital-0.1.0-alpha.1.tgz` (SHA-256
 `0fba4eb5841c54f36a31c9677f6cb9a5efeacda6f5f539c57399cf022baa7c00`). Each
 archive was extracted into its own temporary directory and passed
 `sh scripts/smoke-packaged-distribution.sh <extracted-root> 18080` using that
@@ -46,15 +46,15 @@ browser, proxy, TLS, or publication row below.
 
 | Field | Recorded value |
 | --- | --- |
-| Build version | `0.1.0-alpha.1` (`DLQ_RELEASE_VERSION=0.1.0-alpha.1`) |
+| Build version | `0.1.0-alpha.1` (`OATH_RELEASE_VERSION=0.1.0-alpha.1`) |
 | Git commit | `13d4118cedddb8a61f901e079ed0ea850c53cf21` (clean tree; archives built after this commit) |
-| Artifact and SHA-256 | `distantlands-0.1.0-alpha.1.tgz`, `e4789ed1cb5894694d5335936206b9ae623095f46a940e4ac204952822399578`. The `.zip` was built too (`363bbd981a25e43df0b8c2ae2d077e85559830d9baa48a2fe4788df9ced9f55c`) but not used. |
+| Artifact and SHA-256 | `oathdigital-0.1.0-alpha.1.tgz`, `e4789ed1cb5894694d5335936206b9ae623095f46a940e4ac204952822399578`. The `.zip` was built too (`363bbd981a25e43df0b8c2ae2d077e85559830d9baa48a2fe4788df9ced9f55c`) but not used. |
 | Extracted tree | Byte-identical to the archive (`diff -r` against a scratch extraction) |
 | Distribution type | Universal `.tgz` archive |
 | Host OS and architecture | macOS 26.6.2, arm64 (Machine A) |
 | Java version for Universal | OpenJDK 21.0.12.1 LTS, from the repository's `.tooling` directory. The system `java` was 26 and was not used. |
 | OCI image platform | Not applicable |
-| Database directory | `~/DistantLandsData/accept-1` (LAN, HTTP); `~/DistantLandsData/accept-tls-1` (HTTPS) |
+| Database directory | `~/OathDigitalData/accept-1` (LAN, HTTP); `~/OathDigitalData/accept-tls-1` (HTTPS) |
 | Public base URL | LAN: `http://192.168.1.193:8080`. HTTPS: `https://oath.lan.test` (NGINX 1.31.6 on port 443, backend `127.0.0.1:8080`) |
 | Machine A OS, browser, version | macOS 26.6.2 (host). Seat 1: Firefox 155.0.1. Seat 3: Safari 26.6.2 (21624.5.1.11.3). |
 | Machine B OS, browser, version | Windows (edition and build not recorded). Seat 2: Firefox 155.0.1. Throwaway profile: Chrome 153.0.8010.48. |
@@ -78,18 +78,18 @@ Game `accept-1`, three seats (`p1` red, `p2` blue, `p3` white), first player
 | ---: | --- | --- | --- |
 | 1 | Health endpoints succeed from Machine A at the public base URL. | PASS | Host check: `/health/live` and `/health/ready` returned 200 on `127.0.0.1` and `192.168.1.193`. Operator: Machine B also saw `live` and `ready`. |
 | 2 | Machine A creates one game through the host form with three distinct seats. | PASS | Operator. The journal holds three seat digests for `accept-1`. |
-| 3 | Three `/s/` links are shown and copied privately, and no raw code appears in application logs. | PASS | Operator confirmed all three links were saved privately. Host check: the application log has no `/s/`, `distantlands_seat`, cookie or token strings and no 22-character URL-safe tokens, before and after seat exchange, play, and restart. The database stores 64-hex-character digests only. |
+| 3 | Three `/s/` links are shown and copied privately, and no raw code appears in application logs. | PASS | Operator confirmed all three links were saved privately. Host check: the application log has no `/s/`, `oath_seat`, cookie or token strings and no 22-character URL-safe tokens, before and after seat exchange, play, and restart. The database stores 64-hex-character digests only. |
 | 4 | Seat 1 on Machine A, seat 2 on Machine B, seat 3 in a separate profile each redirect to `/games/accept-1`. | PASS | Operator. |
 | 5 | Each profile shows the correct private viewer and no other seat's private view. | PASS | Operator. Each seat reported its own `viewerPlayerId` from `/games/accept-1/api`. |
 | 6 | All three seats perform representative multiplayer turns. | PASS | Operator: `p1` placed a pawn at Ancient City and chose Arcane Armor; `p2` placed a pawn at Fair Isle and chose Errand Boy; `p3` placed a pawn at Broken Peaks and chose Birdsong; then `p1` performed Search, Travel, and Campaign. Sequence after play: 43 on all three seats. Host check of the journal: 17 accepted command batches, stream positions 1, 2, 3, 4, 5, 6, 8, 10, 13, 16, 20, 23, 25, 27, 32, 38, 43. Per-action sequence numbers were not mapped to events. |
 | 7 | Machine B disconnects, reconnects, reloads, and resumes its seat. | PASS | Operator: seat 2 disconnected and reconnected successfully, and reload resumed the seat. Outage duration was not recorded. See the deferred reconnection-UX note. |
-| 8 | Clients close, the server stops cleanly with the database-close log, and restarts against the same database. | PASS | Two stop cycles. First stop: the close line was not captured because Ctrl-C also killed `tee` in the pipeline that logged the server output; the database was nonetheless closed cleanly (`modified=no`, no `.lck` or `.log`, 43 events intact) and the restart at 16:16:31 reopened it without errors. Second stop: `2026-09-21 16:22:53,379 INFO ... Distant Lands database closed` was captured, no server process or listener remained, and the files were again clean. The launch command was then changed so that `tee` ignores SIGINT and appends to the log. |
+| 8 | Clients close, the server stops cleanly with the database-close log, and restarts against the same database. | PASS | Two stop cycles. First stop: the close line was not captured because Ctrl-C also killed `tee` in the pipeline that logged the server output; the database was nonetheless closed cleanly (`modified=no`, no `.lck` or `.log`, 43 events intact) and the restart at 16:16:31 reopened it without errors. Second stop: `2026-09-21 16:22:53,379 INFO ... Oath Digital database closed` was captured, no server process or listener remained, and the files were again clean. The launch command was then changed so that `tee` ignores SIGINT and appends to the log. |
 | 9 | After restart, all three canonical URLs load with retained cookies, show correct private views, and retain state. | PASS | Operator. Host check: all three seats reported sequence 43 before the first stop, and the reopened database held the same 43 events, stream position 43, three seats, and four schema versions. |
 | 10 | In a disposable profile, clearing the game cookie shows recovery guidance and reopening the original link restores only that seat. | PASS | Operator: the recovery page titled "Open your seat link" appeared ("Open the assigned seat link from your host to return to your game"), and the original link restored the seat. |
 
 ## HTTPS proxy and origin checks
 
-Backend `127.0.0.1:8080` with `DLQ_PUBLIC_BASE_URL=https://oath.lan.test`,
+Backend `127.0.0.1:8080` with `OATH_PUBLIC_BASE_URL=https://oath.lan.test`,
 database `accept-tls-1`. NGINX 1.31.6 (user-prefix Homebrew on Machine A) listened on
 443 with a certificate issued by a throwaway local CA (see Conditions). Games
 `accept-tls` (operator, on Machine B) and `tls-probe` (host check, created through
@@ -99,7 +99,7 @@ the proxy) were used.
 | ---: | --- | --- | --- |
 | 11 | Valid HTTPS certificate; backend not directly reachable from Machine B. | PASS | Operator confirmed this row on Machine B (valid HTTPS padlock; backend port not reachable). Host check: TLS 1.3, certificate SAN `oath.lan.test`, chains to the throwaway CA; backend bound to `127.0.0.1:8080` only, and a request to `192.168.1.193:8080` was refused. |
 | 12 | A new seat link uses the exact configured HTTPS origin. | PASS | Operator. Host check: every link from `POST /games` through the proxy began `https://oath.lan.test/s/` with a 22-character code, response `Cache-Control: no-store`. |
-| 13 | The seat link stays on the HTTPS origin and returns a `Secure`, `HttpOnly`, `SameSite=Lax` `distantlands_seat` cookie scoped to `/games/{game-id}`. | PASS | Operator: DevTools attributes. Host check: `303` to `/games/tls-probe` and `Set-Cookie: distantlands_seat=<redacted>; Max-Age=31536000; Path=/games/tls-probe; Secure; HttpOnly; SameSite=Lax`. |
+| 13 | The seat link stays on the HTTPS origin and returns a `Secure`, `HttpOnly`, `SameSite=Lax` `oath_seat` cookie scoped to `/games/{game-id}`. | PASS | Operator: DevTools attributes. Host check: `303` to `/games/tls-probe` and `Set-Cookie: oath_seat=<redacted>; Max-Age=31536000; Path=/games/tls-probe; Secure; HttpOnly; SameSite=Lax`. |
 | 14 | A same-origin request succeeds; a mismatched `Origin` is rejected without changing state. | PASS | Operator: gameplay over HTTPS from Machine B in Chrome, and in Firefox as seat 2. Host check: `Origin: https://evil.example` and `Origin: http://oath.lan.test` both returned 403 `csrf-validation-failed` with the sequence unchanged at 1; a same-origin command returned 200 and moved it to 2. |
 | 15 | Normal exchange, failing `/s/` requests, and a backend-unreachable `/s/` request leave no raw code, `Cookie`, or `Set-Cookie` value in any log. | PASS with mitigation | See below. |
 | 16 | Forwarded identity headers do not select or change a seat. | PASS | Host check only, from Machine A through the proxy: `X-Forwarded-User`, `X-Remote-User`, `Remote-User` and `Authorization` naming `p1` with no cookie returned 403; a valid `p1` cookie plus headers naming `p2` still resolved to `p1`. |
@@ -108,7 +108,7 @@ the proxy) were used.
 
 - **Normal exchange:** operator exchanges from Machine B (Chrome and Firefox) and host-check exchanges of `tls-probe` seats. Host check of the logs after all browser traffic:
   - NGINX access log (87 lines): no `/s/` (the `/s/` location has `access_log off`), no cookie strings, no query strings.
-  - NGINX error log (55 lines): no `/s/`, cookie, `distantlands_seat`, or `authorization` strings, and no 22-character tokens.
+  - NGINX error log (55 lines): no `/s/`, cookie, `oath_seat`, or `authorization` strings, and no 22-character tokens.
   - Backend log: no `/s/`, cookie, or token strings.
 - **Failing requests** (host check, live proxy): an unknown well-formed code (404), a malformed code (404), and a valid code with a query string (400) left no code in any log.
 - **Backend unreachable** (host check, throwaway NGINX instance on port 8444 whose upstream was a closed port, using the same configuration as the live proxy):
@@ -128,11 +128,11 @@ holds the details.
 | # | Check | Result | Notes |
 | --- | --- | --- | --- |
 | 17 | Download the archive with a browser and extract it with the OS's own tool. | PASS (macOS arm64, checkpoint) | Archive Utility extracted it with no prompt. Windows, Linux: UNEXECUTED. |
-| 18 | Double-click Start. Record the exact Gatekeeper or SmartScreen steps needed. | PASS (macOS arm64, checkpoint) | Required Privacy & Security › Open Anyway, then a Downloads-folder access prompt; found and fixed a gap where Gatekeeper approval did not cascade to `bin/distantlands`. Windows, Linux: UNEXECUTED. |
+| 18 | Double-click Start. Record the exact Gatekeeper or SmartScreen steps needed. | PASS (macOS arm64, checkpoint) | Required Privacy & Security › Open Anyway, then a Downloads-folder access prompt; found and fixed a gap where Gatekeeper approval did not cascade to `bin/oathdigital`. Windows, Linux: UNEXECUTED. |
 | 19 | Record the firewall prompt and the choice made (private networks only). | UNEXECUTED | |
 | 20 | The window shows the banner; the browser opens the game-creation page at the banner address. | PASS (macOS arm64, checkpoint) | Windows, Linux: UNEXECUTED. |
 | 21 | Create a game on the host; a second machine joins using a seat link with the banner address and completes a turn. | UNEXECUTED | |
-| 22 | Close the Start window (Windows: close the console window). The next start restores the game, and the log from the first run ends with `Distant Lands database closed`. | UNEXECUTED | |
+| 22 | Close the Start window (Windows: close the console window). The next start restores the game, and the log from the first run ends with `Oath Digital database closed`. | UNEXECUTED | |
 
 ## Browser observations
 
@@ -159,7 +159,7 @@ is not changed by this record.
   publicly trusted certificate behaves differently. NGINX ran in a user-prefix
   Homebrew install on Machine A, with the docs' configuration, one added
   `error_log` line, and log and temporary paths redirected into
-  `~/DistantLandsData/tls`.
+  `~/OathDigitalData/tls`.
 - **Documentation changed after the build.** The row 15 mitigation, the template
   wording, and the `docs/testing/` location were added after the tested archive
   was built. The archive's bundled documents therefore lack them. The change is
@@ -179,7 +179,7 @@ is not changed by this record.
 | --- | --- |
 | Overall status | PASS for rows 1–16 with the conditions above. Row 15 passes only with the `/s/` error-log mitigation. Rows 17–22 were not part of this run. |
 | Failed or blocked row numbers | None |
-| Raw evidence location | On Machine A, not in the repository: `~/DistantLandsData/accept-1.server.log`, `~/DistantLandsData/accept-tls-1.server.log`, and `~/DistantLandsData/tls/logs/` (NGINX access and error logs). Journals: `~/DistantLandsData/accept-1` and `~/DistantLandsData/accept-tls-1`. |
+| Raw evidence location | On Machine A, not in the repository: `~/OathDigitalData/accept-1.server.log`, `~/OathDigitalData/accept-tls-1.server.log`, and `~/OathDigitalData/tls/logs/` (NGINX access and error logs). Journals: `~/OathDigitalData/accept-1` and `~/OathDigitalData/accept-tls-1`. |
 | Seat-code redaction reviewed | Reviewed by Claude with `grep` over each log named above; the operator has not independently reviewed the logs. |
 | Operator sign-off | Pending. Not signed. |
 

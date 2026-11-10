@@ -26,8 +26,8 @@ private[frontend] enum AutoSave:
   case Conflict(existing: SavedChronicle)
   case Refused(reason: String)
 
-/** The browser's Chronicles: the list under `oath.chronicles` and the loaded
-  * entry's name under `oath.chronicles.loaded`. Every read goes to the
+/** The browser's Chronicles: the list under `distantlands.chronicles` and the loaded
+  * entry's name under `distantlands.chronicles.loaded`. Every read goes to the
   * storage, so two pages of one browser see each other's writes. */
 private[frontend] final class ChronicleShelf(storage: ChronicleStorage,
     now: () => String):

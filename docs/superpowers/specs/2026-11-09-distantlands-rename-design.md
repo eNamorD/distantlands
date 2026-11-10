@@ -82,7 +82,12 @@ name. A database moved by hand opens unchanged, within the alpha rule in
 - Published history: git history, tags, GitHub releases, existing ghcr
   images, and the published release notes
   `docs/operations/release-notes/0.1.0-alpha.*.md`, which describe the
-  `oathdigital-…` files people downloaded.
+  `oathdigital-…` files people downloaded. The acceptance records that go
+  with those releases stay as signed off, because they hold recorded
+  checksums, commands that were run, and quoted output:
+  `docs/testing/alpha-acceptance-0.1.0-alpha.1.md`,
+  `docs/testing/alpha-acceptance-0.1.0-alpha.2.md`, and
+  `docs/testing/bundled-launch-macos-arm64-2026-09-22.md`.
 - This spec and its implementation plan, which must name the old names.
 
 ## Delivery
@@ -150,8 +155,11 @@ All one-off, during the PR; nothing stays in the code.
    ```
 
    Allowlist: `.git-blame-ignore-revs`,
-   `docs/operations/release-notes/0.1.0-alpha.*.md`, this spec, and its
-   plan.
+   `docs/operations/release-notes/0.1.0-alpha.*.md`,
+   `docs/testing/alpha-acceptance-0.1.0-alpha.1.md`,
+   `docs/testing/alpha-acceptance-0.1.0-alpha.2.md`,
+   `docs/testing/bundled-launch-macos-arm64-2026-09-22.md`, this spec, and
+   its plan.
 4. End to end, in a browser: start the packaged server with `DLQ_*`
    variables on a fresh data folder, create a game, open a seat link, and
    confirm the `distantlands_seat` cookie and `distantlands.*` storage keys.
@@ -163,8 +171,11 @@ All one-off, during the PR; nothing stays in the code.
 **Repository** (maintainer): rename `eNamorD/oathdigital` to
 `distantlands` in GitHub settings, then
 `git remote set-url origin git@github.com:eNamorD/distantlands.git`.
-GitHub redirects the old URLs. The next release publishes to
-`ghcr.io/enamord/distantlands`; old images stay where they are.
+GitHub redirects the old URLs. Rename the repository before the next
+release tag is pushed, because the workflow builds the ghcr image name from
+the repository name. The first push creates a new ghcr package,
+`ghcr.io/enamord/distantlands`, which GitHub makes private, so the
+maintainer sets its visibility to public. Old images stay where they are.
 
 **Maintainer's server cutover**, once, at the first release with the
 rename:
@@ -188,3 +199,7 @@ for players: export Chronicles from the browser shelf before upgrading and
 import them after (the storage keys change, and a new domain is a new
 browser origin), and reopen seat links, since old seat cookies are not
 recognised.
+Also say that desktop hosts' old app-data folder (`OathDigital` /
+`oathdigital`) and its settings file are no longer read. A settings file
+that still holds `OATH_*` keys stops startup with an unknown-setting error,
+so those keys are renamed to `DLQ_*`.
