@@ -1,0 +1,5 @@
+0.0 round 0 | Round 1
+0.1 turn 0 | [player:p1|p1]'s turn
+0.2 phase 0 | Act
+14.0 action 1 negotiation@4 | Negotiated with [player:p2|p2]
+15.0 action 1 negotiation@4 | [player:p1|p1] made a binding promise to [player:p2|p2]: “I will give you 2 favor next round.”
