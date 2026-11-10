@@ -34,18 +34,3 @@ object AmberDoorsCard extends Edifice(EdificeId("E05"), Suit.Discord):
       text = "SETUP / **WHEN EXPLORED:** If you place your pawn here, " +
         "draw a dormant legacy, then discard one you hold.")
     val powers: Vector[PrintedPower] = Vector(power)
-
-object TheTribunalCard extends Edifice(EdificeId("E19"), Suit.Order):
-  object intact extends EdificeFace("The Tribunal") with Locked:
-    val power = PrintedPower(PowerId("edifice.e19.intact"),
-      persistent = false, cost = Cost.free,
-      text = "**WHEN NEGOTIATING:** You may negotiate with players at any " +
-        "sites. Players may make binding promises, even into later " +
-        "games.")
-    val powers: Vector[PrintedPower] = Vector(power)
-  object ruined extends EdificeFace("Bandit Tribunal"):
-    val power = PrintedPower(PowerId("edifice.e19.ruined"),
-      persistent = true, cost = Cost.free,
-      text = "**WHEN NEGOTIATING:** Players at sites ruled by bandits may " +
-        "negotiate with each other.")
-    val powers: Vector[PrintedPower] = Vector(power)

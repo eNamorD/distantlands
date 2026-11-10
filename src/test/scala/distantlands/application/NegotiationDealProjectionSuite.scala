@@ -1,7 +1,8 @@
 package distantlands.application
 
 import distantlands.gameplay.{GrandMaskCard, OathRules}
-import distantlands.gameplay.actions.negotiation.NegotiationDeal
+import distantlands.gameplay.actions.negotiation.{NegotiationDeal,
+  TheTribunalCard}
 import distantlands.gameplay.cards.{BrokenPeaksSite, DunesSite}
 import distantlands.gameplay.operations.TheGrandScepterCard
 import distantlands.gameplay.powers.action.BrassHorseCard
@@ -169,3 +170,13 @@ class NegotiationDealProjectionSuite extends munit.FunSuite:
       Vector("I will not attack you."))
     val editing = deal(view(state, p2)).editing.getOrElse(fail("editing"))
     assert(!editing.bindingPromisesOpen)
+
+  test("with The Tribunal in reach, every author's editing opens binding " +
+      "promises"):
+    val state = parkedDeal(gathered.edifice(TheTribunalCard,
+      EdificeSide.Intact, at = site), who = Vector(p2))
+    Vector(p1, p2).foreach { viewer =>
+      val editing = deal(view(state, viewer)).editing
+        .getOrElse(fail(s"${viewer.value} edits"))
+      assert(editing.bindingPromisesOpen, viewer.value)
+    }

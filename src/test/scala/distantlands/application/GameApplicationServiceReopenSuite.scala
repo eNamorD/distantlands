@@ -116,7 +116,7 @@ class GameApplicationServiceReopenSuite extends munit.FunSuite:
     val traveled = accepted(service.handle(gameId, parked.nextSequence,
       ParkedServiceFixture.pickTravelDestination(p1,
         BrokenPeaksSite.id)))
-    assertEquals(NegotiationDeal.eligible(Outcomes.ready(traveled.state), p1),
+    assertEquals(NegotiationDeal.eligible(catalog, Outcomes.ready(traveled.state), p1),
       Vector(p2))
     service.handle(gameId, traveled.nextSequence,
       MenuPlay.starting(p1, ActionRef.Negotiation))

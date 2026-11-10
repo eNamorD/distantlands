@@ -31,7 +31,8 @@ object StartPreview:
       args: Vector[DecisionOptionRef] = Vector.empty)
       : Vector[PreviewedOption] =
     val state = QueuedStart.startingFrom(ready, entry(actor, procedure, args))
-    WalkerProcedureRegistry.build(procedure, catalog, state, actor, args)
+    WalkerProcedureRegistry.build(procedure, catalog, state, actor, args,
+        walkerPowers = powers)
       .flatMap(tree => WalkerSimulation.started(tree, state, powers)
         .flatMap(_.at.fold[Either[OathViolation, Vector[PreviewedOption]]](
           Right(Vector.empty)) { (parked, pending) =>

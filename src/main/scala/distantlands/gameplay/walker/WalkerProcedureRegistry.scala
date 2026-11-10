@@ -227,11 +227,10 @@ object WalkerProcedureRegistry:
       rebuild = PlaceBannerResourceProcedure.rebuild),
 
     /** Negotiation is a minor action: no modifier window (none of its powers
-      * is player-selected).
+      * is player-selected). Its start reads the walk's power-use
+      * restrictions, so `lookup` builds it from the walk's powers.
       */
-    ActionRef.Negotiation -> Entry(
-      build = NegotiationProcedure.build,
-      rebuild = NegotiationProcedure.rebuild),
+    ActionRef.Negotiation -> negotiationEntry(WalkerPowers.empty),
 
     /** Campaign. Its first step spends the Supply, so a start runs an operation
       * before its first decision and cannot use the playable-option gate. No
@@ -383,6 +382,15 @@ object WalkerProcedureRegistry:
   private def forcedWakeEntry(powers: PhasePowers): Entry =
     Entry.withoutStartGates(ForcedWakeProcedure.build(powers))
 
+  /** Negotiation reads the power-use restrictions at its start: The
+    * Tribunal and Traveling Negotiator reach no further than their users
+    * may use them (catalog batch 12, ruling 24). A resume reads the start
+    * facts and needs no powers. */
+  private def negotiationEntry(powers: WalkerPowers): Entry = Entry(
+    build = NegotiationProcedure.build(powers.useRestrictions),
+    rebuild = NegotiationProcedure.rebuild,
+    startFacts = NegotiationProcedure.startFacts(powers.useRestrictions))
+
   /** The follow-up offer prices its action by a dry run of the action's
     * start, which needs the walk's powers. It is started by the driver, so
     * it has no fallback kind, no modifier window and no start selection. */
@@ -406,6 +414,7 @@ object WalkerProcedureRegistry:
       case ActionRef.UsePower(id) =>
         Right(usePowerEntry(id, powers, walkerPowers))
       case TriggeredProcedureRef.ForcedWake => Right(forcedWakeEntry(powers))
+      case ActionRef.Negotiation => Right(negotiationEntry(walkerPowers))
       case TriggeredProcedureRef.FollowUpOffer =>
         Right(followUpOfferEntry(powers, walkerPowers))
       case TriggeredProcedureRef.WakeMenu =>
@@ -511,6 +520,8 @@ object WalkerProcedureRegistry:
   /** The start facts `procedure` derives at a fresh start, empty for one that
     * declares none. */
   def startFacts(procedure: ProcedureRef, catalog: ExecutableCatalog,
-      state: ReadyGame, actor: PlayerId): Vector[DecisionOptionRef] =
-    lookup(procedure, entries).toOption.fold(Vector.empty)(
+      state: ReadyGame, actor: PlayerId,
+      walkerPowers: WalkerPowers = WalkerPowers.empty)
+      : Vector[DecisionOptionRef] =
+    lookup(procedure, entries, PhasePowers.empty, walkerPowers).toOption.fold(Vector.empty)(
       _.startFacts(catalog, state, actor))

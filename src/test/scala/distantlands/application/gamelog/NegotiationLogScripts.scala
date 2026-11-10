@@ -1,8 +1,9 @@
 package distantlands.application.gamelog
 
 import distantlands.application._
-import distantlands.gameplay.actions.negotiation.NegotiationDeal
-import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.actions.negotiation.{NegotiationDeal,
+  TheTribunalCard}
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import distantlands.gameplay.powers.economy.BirdsongCard
 import distantlands.model._
 import distantlands.model.DecisionAnswer.{AcceptDeal, DeclineDeal, ProposeTerms}
@@ -12,7 +13,8 @@ import LogScriptSupport.{atTable, tableWithOnePawnPerSite}
 import distantlands.testkit.Commands
 
 /** The Negotiation scripts: a deal declined, a deal agreed, a deal of one
-  * promise, and a facedown adviser disclosed. Reached through `LogScripts`.
+  * promise, a binding promise through The Tribunal, and a facedown adviser
+  * disclosed. Reached through `LogScripts`.
   */
 object NegotiationLogScripts:
   /** p1 and p2 share Ancient City, so p1 can negotiate with exactly one
@@ -53,6 +55,23 @@ object NegotiationLogScripts:
       .parkedAfter(deal(partner, AcceptDeal))
       .after(deal(actor, AcceptDeal))
     Script("negotiation-promised", service, actor)
+
+  /** p2 rules Broken Peaks, where The Tribunal stands, so p2 may use it and
+    * the deal takes binding promises (catalog batch 12, ruling 11). p1, who
+    * has no access, makes one. Nobody else is in reach, so the negotiators
+    * decision is not asked. p2 already holds the Oathkeeper title, so ruling
+    * Broken Peaks writes no title line. */
+  def negotiationBindingPromised(using munit.Location): Script =
+    val (service, parked, actor, partner) = negotiating(
+      "negotiation-binding-promised", _.edifice(TheTribunalCard,
+        EdificeSide.Intact, at = BrokenPeaksSite)
+        .warbandsAt(BrokenPeaksSite, p2, 1).oathkeeper(Some(p2)))
+    parked
+      .parkedAfter(deal(actor, ProposeTerms(NegotiationTerms(bindingPromises =
+        Vector("I will give you 2 favor next round.")))))
+      .parkedAfter(deal(partner, AcceptDeal))
+      .after(deal(actor, AcceptDeal))
+    Script("negotiation-binding-promised", service, actor)
 
   /** The partner shows the actor its facedown adviser. */
   def negotiationDisclosed(using munit.Location): Script =

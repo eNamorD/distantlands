@@ -1,10 +1,12 @@
 package distantlands.gameplay
 
-import distantlands.gameplay.actions.negotiation.NegotiationDeal
+import distantlands.gameplay.actions.negotiation.{NegotiationDeal,
+  TravelingNegotiatorCard}
 import distantlands.gameplay.cards.{BrokenPeaksSite, DunesSite}
 import distantlands.gameplay.powers.action.BrassHorseCard
 import distantlands.gameplay.powers.campaign.StickyFireCard
 import distantlands.gameplay.powers.search.TruthfulHarpCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
 import distantlands.model.DecisionAnswer.{AcceptDeal, ChooseManyAnswer, DeclineDeal, ProposeTerms}
 import distantlands.model.OathViolation.InsufficientFavor
@@ -83,20 +85,26 @@ class NegotiationDealSuite extends munit.FunSuite:
     assertEquals(fold(stray), fold())
 
   test("eligible lists the other players at the actor's site, in table order"):
-    assertEquals(NegotiationDeal.eligible(ready, p1), Vector(p2, p3))
-    assertEquals(NegotiationDeal.eligible(
+    assertEquals(NegotiationDeal.eligible(catalog, ready, p1), Vector(p2, p3))
+    assertEquals(NegotiationDeal.eligible(catalog,
       gathered.pawn(p3, at = DunesSite).ready, p1), Vector(p2))
-    assertEquals(NegotiationDeal.eligible(
+    assertEquals(NegotiationDeal.eligible(catalog,
       gathered.pawn(p2, at = DunesSite).pawn(p3, at = DunesSite).ready, p1),
       Vector.empty[PlayerId])
+
+  test("eligible adds the players a power reaches, in table order"):
+    val away = gathered.pawn(p2, at = DunesSite)
+      .adviser(p2, TravelingNegotiatorCard.id)
+    assertEquals(NegotiationDeal.eligible(catalog, away.ready, p1),
+      Vector(p2, p3))
 
   test("participants come from the negotiator answer, else the one candidate"):
     val chosen = PendingTree(Vector("1"), Vector(Answered(
       NegotiationDeal.negotiatorsDecisionId,
       ChooseManyAnswer(Vector(DecisionOptionRef.Player(p3))), p1)))
-    assertEquals(NegotiationDeal.participants(ready, p1, chosen), Vector(p1, p3))
-    val forced = gathered.pawn(p3, at = DunesSite)   // p2 is the one candidate
-    assertEquals(NegotiationDeal.participants(forced.ready, p1,
+    assertEquals(NegotiationDeal.participants(ready, p1, Vector(p2, p3),
+      chosen), Vector(p1, p3))
+    assertEquals(NegotiationDeal.participants(ready, p1, Vector(p2),
       PendingTree(Vector.empty, Vector.empty)), Vector(p1, p2))
 
   test("the snapshot carries each author's own bounds and who may accept"):
