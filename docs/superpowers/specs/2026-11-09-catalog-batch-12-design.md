@@ -143,11 +143,16 @@ Taken with the owner on 2026-11-10.
 24. **Blockers apply.** City Wall, Giant Python and Bandit Forest stop The
     Tribunal (intact) and Traveling Negotiator, both non-persistent, as
     they stop any non-persistent power. A refusal City Wall's ruler could
-    waive only blocks: the Negotiation asks no consent. Slice 3 asks the
-    same question of Council Arbiter and Festival District.
+    waive only blocks: the Negotiation asks no consent. Ruling 26 answers
+    the same question for Council Arbiter and Festival District.
 25. **Judged as the user's use.** A blocker judges the use of whoever holds
     the card or has the access, at their own site. If either side of a
     pair has an unblocked route, the two may negotiate.
+26. **The adviser powers are blocked the same way** (2026-11-10). The
+    three blockers stop Council Arbiter and Festival District, both
+    non-persistent, judged as the use of the holder or the player with
+    access. A blocked holder opens no adviser terms; another participant's
+    unblocked access to Festival District still opens them for all.
 
 ## The deal model
 
@@ -249,17 +254,35 @@ with Tribunal access and its line reads "made a binding promise".
 
 ## Slice 3: Adviser terms
 
-**Council Arbiter** and **Festival District** (rulings 14 to 17).
+**Council Arbiter** and **Festival District** (rulings 14 to 17, 26).
 
-- **Kinds.** `DealRules.kinds` adds `Adviser` for a pair when Festival
-  District is accessible to any participant, or when either side holds
-  Council Arbiter faceup.
+- **Read once, at the start.** `NegotiationAdvisers`, beside the action,
+  names the players who may use each card under the walk's power-use
+  restrictions. The start stores them in `NegotiationStartFacts`
+  (`arbiterUsers`, `festivalUsers`), beside slice 2's reach, since only
+  the start sees the restrictions and a settled deal can move Council
+  Arbiter.
+- **Kinds.** `DealRules`, built from the facts when the deal opens, adds
+  `Adviser` for a pair when a participant may use Festival District, or
+  when either side may use Council Arbiter. It holds no participant list
+  (the deal has one) and only the fields slice 3 reads; the rest open
+  with the slices that read them.
 - **Movement.** Each adviser moves with `Give(Piece.Card(id))` from play
   area to play area, keeping its orientation. A facedown adviser's recipient
   records knowledge of it.
-- **Bounds.** Movable advisers exclude locked cards. The limit check counts
-  the net advisers after every row, with the adviser-limit facts card play
-  uses (Pied Piper, Lost Tapestry and the narrowing holders).
+- **Bounds.** Movable advisers are those no printed restriction refuses
+  to give: a faceup locked card and an Ancient Bloodline denizen stay. A
+  facedown Vision is an adviser and may move. The limit check reads
+  `AdviserLimit.of` and `towardLimit` on the state after every row's
+  moves, for each player who gives or receives one. Actions may not
+  import powers, so a trait in `gameplay.actions` (`AdviserLimits`)
+  carries the limit, and the walker's registry passes `AdviserLimit` to
+  the Negotiation's build and rebuild. While anyone would be over,
+  `DecisionQuery.Negotiate.overAdviserLimit` names them and nobody may
+  accept.
+- **Projection.** A facedown adviser on offer is named only to its
+  author and counted for everyone else, as a facedown relic is. An
+  author can add an adviser disclosure to show it first.
 - **Log.** "Blue gave Tinker to Red." A facedown adviser follows the log's
   knowledge rule: others read "a Denizen".
 - **Catalog.** Council Arbiter and Festival District (intact) leave
@@ -267,7 +290,8 @@ with Tribunal access and its line reads "made a binding promise".
   unimplemented.
 
 Tests: an adviser term offered only with the holder on one side; Festival
-District opening it for all participants; a locked adviser never offered;
+District opening it for all participants; City Wall and Giant Python each
+stopping a use; a locked adviser never offered;
 a swap that would exceed a limit refused, with its reason; a facedown
 adviser staying facedown and known to its recipient; an adviser moved
 faceup keeping its power with its new holder.
@@ -360,7 +384,7 @@ disclosure or Citizenship input; a lone player skipping the loop.
 | `DealRules` | 3 | slices 4 to 6 |
 | Per-deal decision prefix, `LogNote.readers` | 5 | Whispering Stone, The Gathering |
 | `NegotiationReach`, `NegotiationStartFacts` | 2 | Traveling Negotiator, The Tribunal, Bandit Tribunal; Whispering Stone's binding promises |
-| Adviser terms and the limit check | 3 | Council Arbiter, Festival District, The Gathering |
+| Adviser terms, `AdviserLimits` and the limit check | 3 | Council Arbiter, Festival District, The Gathering |
 | Site terms and the warband question | 4 | Deed Writer |
 | Private deal projection | 5 | Whispering Stone |
 | Deal loop inside card play, secret terms | 6 | The Gathering |
