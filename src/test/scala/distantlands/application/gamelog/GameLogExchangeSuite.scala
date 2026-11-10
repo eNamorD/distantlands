@@ -81,6 +81,15 @@ class GameLogExchangeSuite extends munit.FunSuite:
     val (giver, recipient) = (playerLabel(partner), playerLabel(script.actor))
     assertEquals(shown(Some(bystander)), s"$giver showed $recipient a Denizen")
 
+  test("a site given under Deed Writer writes its own lines, not the " +
+      "generic warband line"):
+    val script = negotiationSiteGiven
+    val all = texts(format(script, Some(script.actor)))
+    val (giver, recipient) = (playerLabel(partner), playerLabel(script.actor))
+    assert(all.contains(s"$giver gave Broken Peaks to $recipient"), all)
+    assert(all.contains(s"$recipient placed 2 warbands at Broken Peaks"), all)
+    assert(!all.exists(_.startsWith("Moved ")), all)
+
   test("a given facedown adviser is named to both who held it, a back to " +
       "others"):
     val script = negotiationAdviserGiven

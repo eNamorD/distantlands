@@ -236,8 +236,9 @@ object NegotiationProcedure:
 
   /** `move`'s new ruler answers how many warbands to place, from 1 to
     * `NegotiationSites.most`; the answer places them, a required move, and
-    * writes its line (ruling 20). The question sits in a `Branch` so its
-    * bound reads the board when it is asked. */
+    * writes its line (ruling 20), which covers the generic warband line.
+    * The question sits in a `Branch` so its bound reads the board when it
+    * is asked. */
   private def placing(catalog: ExecutableCatalog, deal: DealState,
       move: SiteMove): Vector[Operation] =
     val id = NegotiationSites.warbandsDecisionId(move.site)
@@ -254,7 +255,7 @@ object NegotiationProcedure:
       Note(ProcedureNotes.id(ActionRef.Negotiation), states =>
         NegotiationSites.placed(states.answered, move.site).map(count =>
           placedWarbands.sourceless(NoteArg.Player(move.recipient),
-            NoteArg.Number(count), NoteArg.Site(move.site)))))
+            NoteArg.Number(count), NoteArg.Site(move.site))), covers = true))
 
   /** The line for `citizen`'s new role, once the change has run. */
   private def becameNote(states: NoteStates, citizen: PlayerId)

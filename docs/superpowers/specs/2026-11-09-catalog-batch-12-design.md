@@ -1,6 +1,6 @@
 # Catalog Batch 12: Negotiation
 
-**Status:** designed 2026-11-09. Slices 1 to 3 landed.
+**Status:** designed 2026-11-09. Slices 1 to 4 landed.
 
 **Builds on** [Catalog batch 11](2026-11-07-catalog-batch-11-design.md),
 [batch 10](2026-11-03-catalog-batch-10-design.md) and
@@ -349,8 +349,8 @@ faceup keeping its power with its new holder.
   the warbands as usual. The bandit refill runs only at the action
   boundary, so a site left empty while its new ruler answers stays empty.
 - **Log.** "Blue gave Broken Peaks to Red." and the placement line "Red
-  placed 3 warbands at Broken Peaks." The generic "Moved n warbands"
-  detail line is not written for a Negotiation, which writes its own.
+  placed 3 warbands at Broken Peaks." The placement line covers the
+  generic "Moved n warbands" detail line of its step.
 - **Catalog.** Deed Writer leaves holding.
 
 Tests: an own-colour site offered and a bandit or Imperial one refused;

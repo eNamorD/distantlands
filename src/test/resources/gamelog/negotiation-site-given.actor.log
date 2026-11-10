@@ -1,0 +1,6 @@
+0.0 round 0 | Round 1
+0.1 turn 0 | [player:p1|p1]'s turn
+0.2 phase 0 | Act
+14.0 action 1 negotiation@4 | Negotiated with [player:p2|p2]
+16.0 action 1 negotiation@4 | [player:p2|p2] gave [site:site:broken-peaks|Broken Peaks] to [player:p1|p1]
+21.0 action 1 negotiation@4 | [player:p1|p1] placed 2 warbands at [site:site:broken-peaks|Broken Peaks]

@@ -68,8 +68,8 @@ class NegotiationSiteTermsSuite extends munit.FunSuite:
   private def asked(state: OathState): (String, PlayerId, Int, Int) =
     val decide = parkedOn(state)
     decide.query match
-      case DecisionQuery.ChooseAmount(min, max, _, _, _) =>
-        (decide.decisionId, decide.owner, min, max)
+      case amount: DecisionQuery.ChooseAmount =>
+        (decide.decisionId, decide.owner, amount.min, amount.max)
       case other => fail(s"not an amount: $other")
 
   /** Runs `steps` in order from `state`, failing on any refusal. */
