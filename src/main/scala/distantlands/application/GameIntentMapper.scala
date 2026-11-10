@@ -49,16 +49,26 @@ object GameIntentMapper:
 
   private def invalid(path: String, value: String, kind: String) = Left(GameIntentMappingFailure(path, s"unknown $kind '$value'"))
   private def world(value: WorldCard, path: String): Result[WorldCardId] = value.kind match { case "denizen" => Right(DenizenId(value.id)); case "vision" => Right(VisionId(value.id)); case v => invalid(s"$path.kind", v, "world card kind") }
+  /** The engine's terms, or why they are refused: a promise over a limit,
+    * or terms the model refuses. The command wire's decoder already refuses
+    * negative favor and repeated rows, relics and offers, so a decoded
+    * request never fails the model; the catch keeps the mapper total for
+    * terms that did not come through it. */
   private def negotiation(value: distantlands.protocol.NegotiationTerms)
       : Result[distantlands.model.NegotiationTerms] = for
     ds <- traverse(value.disclosures)(disclosure)
     promises <- promised(value.promises, "$.intent.terms.promises")
     binding <- promised(value.bindingPromises,
       "$.intent.terms.bindingPromises")
-  yield distantlands.model.NegotiationTerms(value.transfers.map(v =>
-    distantlands.model.NegotiationTransfer(PlayerId(v.recipientPlayerId),
-      v.favor, v.relicIds.map(RelicId.apply))), ds,
-    value.citizenshipPlayerIds.map(PlayerId.apply), promises, binding)
+    terms <- try Right(distantlands.model.NegotiationTerms(
+        value.transfers.map(v => distantlands.model.NegotiationTransfer(
+          PlayerId(v.recipientPlayerId), v.favor,
+          v.relicIds.map(RelicId.apply))), ds,
+        value.citizenshipPlayerIds.map(PlayerId.apply), promises, binding))
+      catch case refused: IllegalArgumentException =>
+        Left(GameIntentMappingFailure("$.intent.terms",
+          Option(refused.getMessage).getOrElse("invalid Negotiation terms")))
+  yield terms
 
   /** The client's promises, trimmed, or why they break a limit (catalog
     * batch 12, ruling 10). */

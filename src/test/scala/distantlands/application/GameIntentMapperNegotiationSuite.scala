@@ -41,3 +41,24 @@ class GameIntentMapperNegotiationSuite extends munit.FunSuite:
         "the same promise twice")))
     assertEquals(bound(terms(Vector.tabulate(6)(i => s"Promise $i")))
       .left.map(_.message), Left("more than 5 promises"))
+
+  // The command wire's decoder refuses all of these, so no client reaches
+  // them today; the mapper still answers a typed failure, never a throw,
+  // for terms that skipped it.
+  test("terms the model refuses are a typed failure, not an exception"):
+    import distantlands.protocol.{NegotiationDisclosure => WireDisclosure,
+      NegotiationInformation => Information, NegotiationTerms => WireTerms,
+      NegotiationTransfer => WireTransfer}
+    def refused(terms: WireTerms) =
+      bound(Wire.ProposeTermsWire(terms)).left.map(_.path)
+    val shown = WireDisclosure("blue", Information.HeldRelic("red", "r2"))
+    Vector(
+      WireTerms(Vector(WireTransfer("blue", 1, Vector.empty),
+        WireTransfer("blue", 2, Vector.empty)), Vector.empty),
+      WireTerms(Vector.empty, Vector(shown, shown)),
+      WireTerms(Vector(WireTransfer("blue", -1, Vector.empty)), Vector.empty),
+      WireTerms(Vector(WireTransfer("blue", 0, Vector("r1", "r1"))),
+        Vector.empty),
+      WireTerms(Vector.empty, Vector.empty, Vector("blue", "blue")))
+      .foreach(terms => assertEquals(refused(terms), Left("$.intent.terms"),
+        terms))
