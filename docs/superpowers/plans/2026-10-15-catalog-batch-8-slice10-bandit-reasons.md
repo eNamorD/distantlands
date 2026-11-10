@@ -23,7 +23,7 @@
 - **File size.** Production and test Scala files stay at or under 800 lines. `ProcedureWalker.scala` is about 765 lines.
 - **Import rules.** The engine (`gameplay/walker`, `gameplay/operations`) never names a power.
 - **Line width.** Scala lines stay at or under 80 characters.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Stage explicit paths only. Re-check `git log --oneline -1` before any amend, reset or rebase.
 - **Worktree.** Fast-forward to local `main`, symlink `.tooling` and `node_modules`, and run `ExitWorktree` with `keep` before merging.
 - **Hover reasons, exactly:**
@@ -67,7 +67,7 @@ In `OperationRestrictionsSuite` and `PowerUseRulesSuite`, add the `plain` argume
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.OperationAsksSuite oathdigital.gameplay.powers.poweruse.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.OperationAsksSuite distantlands.gameplay.powers.poweruse.*"`
 Expected: compilation fails, because `OperationWaiver` has no `plain`.
 
 - [ ] **Step 3: Carry the plain reason**
@@ -101,7 +101,7 @@ Replace "An unexplained placement refusal" with "**A placement nobody may waive*
 
 - [ ] **Step 7: Run everything and commit**
 
-Run: `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"`, check the diff adds only `no-discard`, then `./sbtw test "frontend/test"`, `python3 scripts/check-architecture.py`, `python3 scripts/check-markdown-links.py`.
+Run: `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"`, check the diff adds only `no-discard`, then `./sbtw test "frontend/test"`, `python3 scripts/check-architecture.py`, `python3 scripts/check-markdown-links.py`.
 
 ```bash
 git commit -m "feat(batch8): an operation refusal nobody may waive shows its reason"

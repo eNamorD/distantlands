@@ -179,7 +179,7 @@ still a `case object` carrying nothing; Task 3 turns it into a case class.
 - Test: no new tests. The existing suites are the regression net; a rename that compiles and leaves every suite green is the whole verification.
 
 **Interfaces:**
-- Produces: `oathdigital.gameplay.walker.DeltaPayload`, a top-level
+- Produces: `distantlands.gameplay.walker.DeltaPayload`, a top-level
   `case object` extending `WalkerStepPayload`. `object WalkerStepPayload` no
   longer exists.
 
@@ -205,7 +205,7 @@ import form is rewritten first and the later two find nothing left on that
 line.
 
 ```bash
-grep -rl 'DeltaRecorded' src --include='*.scala' | xargs sed -i '' -e 's/import oathdigital\.gameplay\.walker\.WalkerStepPayload\.DeltaRecorded/import oathdigital.gameplay.walker.DeltaPayload/' -e 's/WalkerStepPayload\.DeltaRecorded/DeltaPayload/g' -e 's/\bDeltaRecorded\b/DeltaPayload/g'
+grep -rl 'DeltaRecorded' src --include='*.scala' | xargs sed -i '' -e 's/import distantlands\.gameplay\.walker\.WalkerStepPayload\.DeltaRecorded/import distantlands.gameplay.walker.DeltaPayload/' -e 's/WalkerStepPayload\.DeltaRecorded/DeltaPayload/g' -e 's/\bDeltaRecorded\b/DeltaPayload/g'
 ```
 
 - [x] **Step 3: Compile and read the import errors**
@@ -226,7 +226,7 @@ In `src/main/scala/distantlands/application/gamelog/NoteLines.scala:5-6`,
 `WalkerStepPayload` becomes `DeltaPayload`:
 
 ```scala
-import oathdigital.gameplay.walker.{ChoicePayload, DeltaPayload, LogNoted,
+import distantlands.gameplay.walker.{ChoicePayload, DeltaPayload, LogNoted,
   WalkerCompleted, WalkerParked, WalkerStepRecorded}
 ```
 
@@ -235,7 +235,7 @@ In `src/main/scala/distantlands/serialization/WalkerEventCodec.scala:5-7`,
 — and `DeltaPayload` is added:
 
 ```scala
-import oathdigital.gameplay.walker.{ActionBoundaryRan, ChoicePayload,
+import distantlands.gameplay.walker.{ActionBoundaryRan, ChoicePayload,
   DeltaPayload, FollowUpSkipped, LogNoted, ProcedureDequeued, RollPayload,
   WalkerCompleted, WalkerParked, WalkerStepPayload, WalkerStepRecorded}
 ```
@@ -243,7 +243,7 @@ import oathdigital.gameplay.walker.{ActionBoundaryRan, ChoicePayload,
 In `src/test/scala/distantlands/serialization/WalkerWireEvents.scala:4`:
 
 ```scala
-import oathdigital.gameplay.walker.{DeltaPayload, WalkerStepRecorded}
+import distantlands.gameplay.walker.{DeltaPayload, WalkerStepRecorded}
 ```
 
 In `src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala:6-7`,
@@ -251,7 +251,7 @@ In `src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala:6-7
 extends it, until Task 2 deletes that test:
 
 ```scala
-import oathdigital.gameplay.walker.{DeltaPayload, RollPayload,
+import distantlands.gameplay.walker.{DeltaPayload, RollPayload,
   WalkerStepPayload, WalkerStepRecorded}
 ```
 
@@ -284,7 +284,7 @@ Expected: no output.
 
 - [x] **Step 7: Run the suites the rename touches**
 
-Run: `./sbtw "testOnly oathdigital.serialization.* oathdigital.gameplay.walker.* oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.serialization.* distantlands.gameplay.walker.* distantlands.application.gamelog.*"`
 Expected: PASS, no test count change.
 
 - [x] **Step 8: Commit**
@@ -355,12 +355,12 @@ Append to `src/test/scala/distantlands/serialization/GameEventWireEnvelopeSuite.
       case Right(value) => fail(s"expected a WireError, got $value")
 ```
 
-`WalkerEvent` arrives with the file's existing `import oathdigital.model._`
+`WalkerEvent` arrives with the file's existing `import distantlands.model._`
 at line 7; add no import.
 
 - [~] **Step 2: Run it against the unsealed family** (superseded -- see the execution correction above)
 
-Run: `./sbtw "testOnly oathdigital.serialization.GameEventWireEnvelopeSuite"`
+Run: `./sbtw "testOnly distantlands.serialization.GameEventWireEnvelopeSuite"`
 Expected: PASS. It passes before the seal as well as after — it is a
 relocation of an existing guarantee, not a new one, and it must hold in both
 states or it is not the same guarantee.
@@ -373,7 +373,7 @@ Then drop `WalkerStepPayload` from the import at line 6; the file's remaining
 uses are `DeltaPayload`, `RollPayload` and `WalkerStepRecorded`:
 
 ```scala
-import oathdigital.gameplay.walker.{DeltaPayload, RollPayload,
+import distantlands.gameplay.walker.{DeltaPayload, RollPayload,
   WalkerStepRecorded}
 ```
 
@@ -410,7 +410,7 @@ Remove these two lines from `encodeStepPayload`
 
 - [x] **Step 7: Compile clean and run the wire suites**
 
-Run: `./sbtw "Test/compile" "testOnly oathdigital.serialization.*"`
+Run: `./sbtw "Test/compile" "testOnly distantlands.serialization.*"`
 Expected: PASS.
 
 - [x] **Step 8: Commit**
@@ -472,8 +472,8 @@ edits — and compile only where a step says to.
 - Produces:
   - `final case class DeltaPayload(ops: Vector[CoreOperation]) extends WalkerStepPayload`
   - `final case class WalkerStepRecorded(nodeId: String, payload: WalkerStepPayload, contributions: Vector[PowerId]) extends WalkerEvent` — three fields, not four
-  - `oathdigital.testkit.RecordedOps.of(step: WalkerStepRecorded): Vector[CoreOperation]`
-  - `oathdigital.testkit.RecordedOps.all(events: Vector[OathEvent]): Vector[CoreOperation]`
+  - `distantlands.testkit.RecordedOps.of(step: WalkerStepRecorded): Vector[CoreOperation]`
+  - `distantlands.testkit.RecordedOps.all(events: Vector[OathEvent]): Vector[CoreOperation]`
   - Wire: a step is `{"nodeId": …, "step": {"kind": "delta", "ops": […]}, "contributions": […]}`. There is no top-level `"ops"` key.
 
 - [x] **Step 1: Write the two failing tests**
@@ -532,7 +532,7 @@ rejects this step rather than the node-id check.
 
 - [x] **Step 2: Run both to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.serialization.WalkerOperationWireSuite oathdigital.gameplay.walker.WalkerReplayGuardSuite"`
+Run: `./sbtw "testOnly distantlands.serialization.WalkerOperationWireSuite distantlands.gameplay.walker.WalkerReplayGuardSuite"`
 Expected: FAIL — compilation error, `DeltaPayload` does not take arguments.
 
 - [x] **Step 3: Change the type**
@@ -791,7 +791,7 @@ makes the fourth-payload compile error land here too:
 and its import at lines 3-4:
 
 ```scala
-import oathdigital.gameplay.walker.{ChoicePayload, DeltaPayload,
+import distantlands.gameplay.walker.{ChoicePayload, DeltaPayload,
   HiddenOutcomes, RollPayload, WalkerStepRecorded}
 ```
 
@@ -846,11 +846,11 @@ Create `src/test/scala/distantlands/testkit/RecordedOps.scala`. Four suites
 had each written this collect themselves; they all delegate to it in Step 10.
 
 ```scala
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.gameplay.walker.{ChoicePayload, DeltaPayload, RollPayload,
+import distantlands.gameplay.walker.{ChoicePayload, DeltaPayload, RollPayload,
   WalkerStepRecorded}
-import oathdigital.model.{CoreOperation, OathEvent}
+import distantlands.model.{CoreOperation, OathEvent}
 
 /** The operations a recorded step applied, for the suites that assert what a
   * walk recorded.
@@ -889,8 +889,8 @@ not change.
 `src/test/scala/distantlands/gameplay/CampaignPlanWindowSuite.scala:55-56` and
 `src/test/scala/distantlands/gameplay/powers/campaign/PlanDriver.scala:102-103`
 each become a call to `RecordedOps.all(events)`, keeping their own signature
-and doc comment. Add `import oathdigital.testkit.RecordedOps` to each file
-that does not already import from `oathdigital.testkit`.
+and doc comment. Add `import distantlands.testkit.RecordedOps` to each file
+that does not already import from `distantlands.testkit`.
 
 - [x] **Step 11: Sweep the 30 wire-path assertions**
 
@@ -1000,7 +1000,7 @@ and the one roll case at line 34:
 Its import at lines 3-5 becomes one line, `WalkerStepPayload` no longer used:
 
 ```scala
-import oathdigital.gameplay.walker.{DeltaPayload, RollPayload,
+import distantlands.gameplay.walker.{DeltaPayload, RollPayload,
   WalkerStepRecorded}
 ```
 
@@ -1063,8 +1063,8 @@ Sites: `gameplay/ActAsIfSuite.scala:30`,
 `serialization/WalkerOperationWireSuite.scala:27,54`,
 `testkit/ProcedureWalkerFixture.scala:53`.
 
-Add `import oathdigital.testkit.RecordedOps` where the file does not already
-import it, and extend an existing `oathdigital.testkit.{…}` list where it
+Add `import distantlands.testkit.RecordedOps` where the file does not already
+import it, and extend an existing `distantlands.testkit.{…}` list where it
 does.
 
 `WalkerRecordedOpsReducer.scala:36-60` matches on `step.payload`, so it reads
@@ -1151,7 +1151,7 @@ shape -- so it is a working database until this branch merges. Run this after
 the merge, in the checkout that holds `var/`.
 
 ```bash
-rm -f var/oathdigital.lobs var/oathdigital.properties var/oathdigital.script
+rm -f var/distantlands.lobs var/distantlands.properties var/distantlands.script
 ```
 
 - [x] **Step 19: Commit**

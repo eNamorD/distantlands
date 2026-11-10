@@ -85,7 +85,7 @@ The product owner settled these on 2026-10-16. They override the slice 13 entry 
   - Nothing under `gameplay/actions` imports `gameplay/powers`.
   - Engine files under `gameplay/walker` and `gameplay/operations` never name a power.
 - **Line width.** Scala lines stay at or under 80 characters.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Stage explicit paths only; never `git add -A`. Re-check `git log --oneline -1` before any amend, reset or rebase.
 - **Worktree.** Work in a git worktree.
   - `EnterWorktree` branches from `origin`, which lags local `main`. Fast-forward the new branch to local `main` first (`git merge --ff-only main`).
@@ -102,8 +102,8 @@ The product owner settled these on 2026-10-16. They override the slice 13 entry 
   - The quiet table (`Table.start`) has p1 at Ancient City, p2 at Broken Peaks and p3 at Buried Giant. Each has 3 board warbands and 7 Supply, and it is p1's Act. `CampaignFixture.board` puts 2 Bandits at Ancient City, p1 there, and p2 and p3 together at the first other site. Read a site's region from `ready.game.current.map.regionOf(site)` rather than assuming it.
   - Errand Boy is a Beast denizen (`CatalogNames.denizen("Errand Boy")`).
   - `PlanDriver.winningDice` makes every attack die a sword, and `losingDice` every attack die half a sword. Both make every defense die blank, so neither rolls skulls.
-- **Note keys** are declared through a `NoteSet`. Regenerate `src/test/resources/notes/declared-keys.txt` with `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"`, and check that the diff holds only the keys the task names.
-- **The unimplemented-powers snapshot** is `src/test/resources/powers/unimplemented.txt`. Regenerate it with `UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.UnimplementedPowersSuite"`, and check that the diff drops only the ids the task names.
+- **Note keys** are declared through a `NoteSet`. Regenerate `src/test/resources/notes/declared-keys.txt` with `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"`, and check that the diff holds only the keys the task names.
+- **The unimplemented-powers snapshot** is `src/test/resources/powers/unimplemented.txt`. Regenerate it with `UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.UnimplementedPowersSuite"`, and check that the diff drops only the ids the task names.
 - **Names, exactly:**
   - `CampaignSetup.queuedOrigin(ready, actor): Option[SiteId]`, `CampaignSetup.atOrigin(ready, actor): Int` and `CampaignSetup.originForce(ready, actor): Option[OriginForce]`.
   - `final case class OriginForce(site: SiteId, atSite: Int, onBoard: Int)` in `model/CampaignTypes.scala`, and `CampaignResult.originForce: Option[OriginForce] = None`, on the wire as `"originForce"` with `"site"`, `"atSite"` and `"onBoard"`.
@@ -138,7 +138,7 @@ The engine seam, with no card behind it yet. A sourced Campaign entry may name a
 
 - [ ] **Step 1: Add the fixture helper**
 
-In `CampaignFixture.scala`, add the following (imports: `oathdigital.gameplay.walker.QueuedStart`, and the model types already imported there):
+In `CampaignFixture.scala`, add the following (imports: `distantlands.gameplay.walker.QueuedStart`, and the model types already imported there):
 
 ```scala
   /** The `Run` entry a power queues for a Campaign from `origin`. */
@@ -185,16 +185,16 @@ If `startWalker` clears `walkerEntry` (read `OathRulesWalker.startWalker` first)
 Create `CampaignOriginSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.campaign
+package distantlands.gameplay.campaign
 
-import oathdigital.gameplay.CampaignFixture
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignSetup}
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseAmountAnswer
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes,
+import distantlands.gameplay.CampaignFixture
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.{CampaignIds, CampaignSetup}
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseAmountAnswer
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes,
   Table}
 
 class CampaignOriginSuite extends munit.FunSuite:
@@ -272,7 +272,7 @@ Before running, adapt the test code to the fixtures:
 
 - [ ] **Step 3: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.campaign.CampaignOriginSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.campaign.CampaignOriginSuite"`
 Expected: FAIL. The start with a site argument is refused with "takes no start selection", and the force max is 1.
 
 - [ ] **Step 4: Read the queued origin**
@@ -357,7 +357,7 @@ Change `forceStep(state, actor)` to `forceStep(catalog, state, actor)` at its ca
 
 - [ ] **Step 6: Run the suite and the Campaign suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.campaign.CampaignOriginSuite" "testOnly oathdigital.gameplay.powers.campaign.*" "testOnly oathdigital.gameplay.*Campaign*"`
+Run: `./sbtw "testOnly distantlands.gameplay.campaign.CampaignOriginSuite" "testOnly distantlands.gameplay.powers.campaign.*" "testOnly distantlands.gameplay.*Campaign*"`
 Expected: PASS. No existing heading changes, because `split` is empty without a queued origin.
 
 - [ ] **Step 7: Commit**
@@ -484,7 +484,7 @@ In the Bear Traps suite, copy its test where the trap kills a warband beyond the
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.campaign.CampaignOriginSuite" "testOnly oathdigital.serialization.CampaignResultCodecSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.campaign.CampaignOriginSuite" "testOnly distantlands.serialization.CampaignResultCodecSuite"`
 Expected: FAIL to compile: no `originForce`, no `OriginForce`, no `CampaignIds.originDeaths`.
 
 - [ ] **Step 3: The model and the codec**
@@ -665,7 +665,7 @@ In `CampaignLines.losses`, replace the `killed` collect's guard so a site kill i
 
 - [ ] **Step 7: Run the suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.campaign.CampaignOriginSuite" "testOnly oathdigital.serialization.*" "testOnly oathdigital.gameplay.powers.campaign.*" "testOnly oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.campaign.CampaignOriginSuite" "testOnly distantlands.serialization.*" "testOnly distantlands.gameplay.powers.campaign.*" "testOnly distantlands.application.gamelog.*"`
 Expected: PASS. Fix any caller of `losses(ready, result)` the compiler names.
 
 - [ ] **Step 8: Commit**
@@ -735,24 +735,24 @@ The Vow of Union test to copy:
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.SignalTreesSuite" "testOnly oathdigital.gameplay.powers.campaign.PeaceEnvoySuite" "testOnly oathdigital.gameplay.powers.campaign.MercenariesSuite" "testOnly oathdigital.gameplay.powers.campaign.VowOfUnionSuite" "testOnly oathdigital.gameplay.powers.targeting.FortressRulesSuite" "testOnly oathdigital.gameplay.powers.travel.NarrowPassCampaignConsentSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.SignalTreesSuite" "testOnly distantlands.gameplay.powers.campaign.PeaceEnvoySuite" "testOnly distantlands.gameplay.powers.campaign.MercenariesSuite" "testOnly distantlands.gameplay.powers.campaign.VowOfUnionSuite" "testOnly distantlands.gameplay.powers.targeting.FortressRulesSuite" "testOnly distantlands.gameplay.powers.travel.NarrowPassCampaignConsentSuite"`
 Add the City Wall suite to the command. Expected: the eight new tests FAIL, reading the pawn's site.
 
 - [ ] **Step 3: Switch each read**
 
 - **`FortressRules.kindNote`:** `pawnSite(ctx.state, ctx.activePlayer)` becomes `CampaignSetup.originOf(ctx.state, ctx.activePlayer)`. Keep the protected `pawnSite` helper for the defender reads at lines ~189 and ~212.
-- **`TravelSitePowers` `campaignBlocked`:** the pawn becomes `CampaignSetup.originOf(ctx.state, ctx.activePlayer)`. Replace the error's "from the pawn site" with "from the Campaign's site". Import `oathdigital.gameplay.actions.campaign.CampaignSetup`.
+- **`TravelSitePowers` `campaignBlocked`:** the pawn becomes `CampaignSetup.originOf(ctx.state, ctx.activePlayer)`. Replace the error's "from the pawn site" with "from the Campaign's site". Import `distantlands.gameplay.actions.campaign.CampaignSetup`.
 - **`PeaceEnvoy`:** the private `pawnSite` helper returns `CampaignSetup.originOf(ready, player)`. Rename it `standingSite`, with the doc "Where `player` stands for the Campaign: a queued origin for the attacker, else the pawn site."
 - **`SignalTrees.home`:** `CampaignSetup.originOf(ready, user).flatMap(ready.game.current.map.regionOf)`.
 - **`VowOfUnion.region`:** `CampaignSetup.originOf(ready, holder).flatMap(map.regionOf)`.
 - **`PlanDiscard.operations`:** `pawnRegion` reads `CampaignSetup.originOf(ready, user).flatMap(current.map.regionOf)`, and the line keeps its `PawnSiteMissing(user)` error.
 - **`PlanContext.pawnAt`:** `user.exists(player => CampaignSetup.originOf(ready, player).contains(site))`. Update its doc: "has their pawn, or campaigns from a queued origin, at `site`".
 
-- **`CityWall.walledIn`:** `PowerAccess.pawnSite(ready, player)` becomes `CampaignSetup.originOf(ready, player)`. In the Scaladoc, replace "The pawn is the physical one: an as-if site does not count." with: "The site is the one the player acts from: a queued Campaign's origin for its attacker (slice 13), else the pawn site. Small Friends' as-if Trade site does not count yet (ROADMAP 13c)." Import `oathdigital.gameplay.actions.campaign.CampaignSetup`, and drop `PowerAccess` from the imports if nothing else uses it.
+- **`CityWall.walledIn`:** `PowerAccess.pawnSite(ready, player)` becomes `CampaignSetup.originOf(ready, player)`. In the Scaladoc, replace "The pawn is the physical one: an as-if site does not count." with: "The site is the one the player acts from: a queued Campaign's origin for its attacker (slice 13), else the pawn site. Small Friends' as-if Trade site does not count yet (ROADMAP 13c)." Import `distantlands.gameplay.actions.campaign.CampaignSetup`, and drop `PowerAccess` from the imports if nothing else uses it.
 
 - [ ] **Step 4: Run every Campaign and power suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.*" "testOnly oathdigital.gameplay.campaign.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.*" "testOnly distantlands.gameplay.campaign.*"`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -814,21 +814,21 @@ abstract class CampaignFromSite(power: PrintedPower, card: DenizenId)
 Create `WildAlliesSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignSetup}
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.powers.PhasePowerCatalog
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes,
+import distantlands.gameplay.actions.campaign.{CampaignIds, CampaignSetup}
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.powers.PhasePowerCatalog
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes,
   PhasePowerHarness, Table}
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.testkit.Table.{p1, p2}
 
 class WildAlliesSuite extends munit.FunSuite:
-  private val catalog = oathdigital.gameplay.cards.NewFoundations.catalog
+  private val catalog = distantlands.gameplay.cards.NewFoundations.catalog
   private val card = WildAlliesCard.id
   private val source = DecisionOptionRef.Denizen(card)
   private val errandBoy = CatalogNames.denizen("Errand Boy")
@@ -941,7 +941,7 @@ Before running, adapt:
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.WildAlliesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.WildAlliesSuite"`
 Expected: FAIL to compile: no `WildAllies`.
 
 - [ ] **Step 3: The seam**
@@ -998,7 +998,7 @@ Then add:
     QueuedStart.refusal(catalog, ready, entry, walkerPowers, phasePowers)
 ```
 
-Import `oathdigital.gameplay.walker.{QueuedStart, WalkerPowers}`. `PhaseMenu` in the same package already imports both.
+Import `distantlands.gameplay.walker.{QueuedStart, WalkerPowers}`. `PhaseMenu` in the same package already imports both.
 
 In `WalkerProcedureRegistry.scala`:
 - `usePowerEntry(id, powers)` becomes `usePowerEntry(id, powers, walkerPowers)` and passes `walkerPowers` to both `PhasePowerProcedure` calls.
@@ -1013,13 +1013,13 @@ In `QueuedStart.priced`, pass `walkerPowers = powers` to `WalkerProcedureRegistr
 Create `CampaignFromSite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.PrintedPower
-import oathdigital.gameplay.actions.campaign.CampaignProcedure
-import oathdigital.gameplay.powerresolver.QueuedStarts
-import oathdigital.gameplay.powers.{NoteSupport, PowerAnswers}
-import oathdigital.model._
+import distantlands.catalog.PrintedPower
+import distantlands.gameplay.actions.campaign.CampaignProcedure
+import distantlands.gameplay.powerresolver.QueuedStarts
+import distantlands.gameplay.powers.{NoteSupport, PowerAnswers}
+import distantlands.model._
 
 /** An ACTION that campaigns from a site other than the pawn's (catalog
   * batch 8, slice 13): Wild Allies and Captains. It pays its cost onto the
@@ -1105,11 +1105,11 @@ Check the `Note` signature against `MagicCarpet` and `NoteSupport.answer`. If `N
 Create `WildAllies.scala`, moving `WildAlliesCard` from `HoldingBeastDenizens.scala` unchanged and removing it there, with any import the holding file no longer uses:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.EffectiveSuit
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.EffectiveSuit
+import distantlands.model._
 
 object WildAlliesCard extends Denizen(DenizenId("198"), "Wild Allies", Suit.Beast):
   // The printed power, exactly as it stands in HoldingBeastDenizens.scala.
@@ -1160,10 +1160,10 @@ Register it in `WorldActionPowers.forCatalog`: append `++ Vector(WildAllies.forC
 
 - [ ] **Step 6: Regenerate the snapshots and run**
 
-Run: `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"`, then `UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.UnimplementedPowersSuite"`.
+Run: `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"`, then `UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.UnimplementedPowersSuite"`.
 Expected: the notes diff adds only `denizen.wild-allies` `campaign-at`. The unimplemented diff drops only `denizen.wild-allies`.
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.*" "testOnly oathdigital.gameplay.phases.*" "testOnly oathdigital.gameplay.walker.*" "testOnly oathdigital.gameplay.BackendArchitectureSuite" "testOnly oathdigital.gameplay.CardCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.*" "testOnly distantlands.gameplay.phases.*" "testOnly distantlands.gameplay.walker.*" "testOnly distantlands.gameplay.BackendArchitectureSuite" "testOnly distantlands.gameplay.CardCatalogSuite"`
 Expected: PASS. If `BackendArchitectureSuite` flags `CampaignFromSite` for importing `gameplay.walker`, the class has drifted from the seam; it must import `powerresolver` only.
 
 - [ ] **Step 7: Commit**
@@ -1246,7 +1246,7 @@ Match the start-line pattern to what `StartLines` writes for a sourced Campaign;
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.CaptainsSuite" "testOnly oathdigital.application.gamelog.GameLogActionLineSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.CaptainsSuite" "testOnly distantlands.application.gamelog.GameLogActionLineSuite"`
 Expected: FAIL to compile: no `Captains`.
 
 - [ ] **Step 3: Captains**
@@ -1269,14 +1269,14 @@ final case class Captains private (catalog: ExecutableCatalog)
     ready.game.current.map.inPlay.filter(ruled.contains)
 ```
 
-Import `oathdigital.gameplay.PowerAccess`. Register it in `WorldActionPowers.forCatalog` after Wild Allies.
+Import `distantlands.gameplay.PowerAccess`. Register it in `WorldActionPowers.forCatalog` after Wild Allies.
 
 - [ ] **Step 4: Regenerate the snapshots and run**
 
 Regenerate both snapshots as in Task 4, Step 6.
 Expected: the notes diff adds only `denizen.captains` `campaign-at`, and the unimplemented diff drops only `denizen.captains`.
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.*" "testOnly oathdigital.application.gamelog.*" "testOnly oathdigital.gameplay.CardCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.*" "testOnly distantlands.application.gamelog.*" "testOnly distantlands.gameplay.CardCatalogSuite"`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**

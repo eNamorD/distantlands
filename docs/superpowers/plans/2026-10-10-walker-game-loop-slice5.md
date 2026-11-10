@@ -29,7 +29,7 @@
   - No power name appears in walker or `gameplay/operations` sources.
 - **Line width.** Scala lines this plan writes stay at or under 80 characters, as in the files around them. Re-wrap any line that comes out longer.
 - **Indentation in lists.** A code block inside a list item is indented two extra spaces for the list. Drop those two when you copy it.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Other sessions commit to `main` while you work.
   - Stage explicit paths only; never `git add -A`.
   - Re-check `git log --oneline -1` before any amend, reset or rebase.
@@ -125,7 +125,7 @@ Every server test that reads `legalControls`, `actionSelectionOpen`, `phasePower
 - Rename: `src/test/scala/distantlands/application/PhasePowerProjectorSuite.scala` to `PhasePowerMenuSuite.scala`
 
 **Interfaces:**
-- Produces, in `oathdigital.testkit.MenuPlay`:
+- Produces, in `distantlands.testkit.MenuPlay`:
 
   ```scala
   def menuOptionFor(catalog: ExecutableCatalog, ready: ReadyGame,
@@ -136,7 +136,7 @@ Every server test that reads `legalControls`, `actionSelectionOpen`, `phasePower
       using munit.Location): Boolean
   ```
 
-- Produces, in `oathdigital.testkit.ProjectedMenu`: `def pickableIds(projection: GameProjection): Vector[String]`.
+- Produces, in `distantlands.testkit.ProjectedMenu`: `def pickableIds(projection: GameProjection): Vector[String]`.
 
 **The conversion table.** Use it in every step below.
 
@@ -211,10 +211,10 @@ If `DecisionOption` names its availability differently than `available`, use the
 Create `src/test/scala/distantlands/testkit/ProjectedMenu.scala`:
 
 ```scala
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.protocol.projection.GameProjection
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.protocol.projection.GameProjection
 
 /** The phase menu as a viewer's projection shows it (walker-driven game
   * loop design, slice 5, plan-time ruling 2). */
@@ -249,11 +249,11 @@ Convert by the table:
   - The `beginNegotiation` lines use `availableInMenu` with `Outcomes.ready(state)` for the state.
   - Delete the assertion on `parkedDeal(...)`: a parked deal is a walk, not a menu, and the driver tests cover that no menu parks under a walk.
 - Move `application/ModifierStartControlsSuite.scala` to `gameplay/ModifierMenuOptionsSuite.scala` with `git mv`.
-  - Package `oathdigital.gameplay`; class `ModifierMenuOptionsSuite`.
+  - Package `distantlands.gameplay`; class `ModifierMenuOptionsSuite`.
   - Delete `presentation`, `legal` and `controls`. Each `controls(ready, viewer).contains("beginX")` becomes `MenuPlay.availableInMenu(catalog, ready, procedure)` by the table. The viewer is always the active player there.
   - The class doc: "A menu option counts the modifiers its player could select: an action that only a modifier makes affordable is still available, and a modifier the player cannot pay for unlocks nothing." Test names say "available" in place of "offered".
 
-Run: `./sbtw "testOnly oathdigital.gameplay.RecoverEligibilitySuite oathdigital.gameplay.RestSuite oathdigital.gameplay.powers.economy.PressgangsSuite oathdigital.gameplay.powers.economy.GolemLegionsSuite oathdigital.application.ChallengeProjectionSuite oathdigital.application.EconomyProjectionSuite oathdigital.application.NegotiationDealProjectionSuite oathdigital.gameplay.ModifierMenuOptionsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.RecoverEligibilitySuite distantlands.gameplay.RestSuite distantlands.gameplay.powers.economy.PressgangsSuite distantlands.gameplay.powers.economy.GolemLegionsSuite distantlands.application.ChallengeProjectionSuite distantlands.application.EconomyProjectionSuite distantlands.application.NegotiationDealProjectionSuite distantlands.gameplay.ModifierMenuOptionsSuite"`
 Expected: PASS.
 
 - [ ] **Step 5: The phase power suites**
@@ -304,7 +304,7 @@ Rename `application/PhasePowerProjectorSuite.scala` to `PhasePowerMenuSuite.scal
 
 For a two-power source, `availableInMenu(… UsePower(id), Vector(banner))` finds the power's button through `menuOptionFor`'s fallback (Step 3).
 
-Run: `./sbtw "testOnly oathdigital.application.PhasePowerMenuSuite oathdigital.application.BannerFaceProjectionSuite"`
+Run: `./sbtw "testOnly distantlands.application.PhasePowerMenuSuite distantlands.application.BannerFaceProjectionSuite"`
 Expected: PASS.
 
 - [ ] **Step 6: The decision and service suites**
@@ -339,7 +339,7 @@ By the table's last three rows:
   - In "a board carries its bag and the band the bag falls in", the last assertion becomes `assertEquals(mine.restSupplyBase, preview(board, p1))`.
   - The class doc's second paragraph: "The maximum lets the client print "5/7" without knowing the rules, and the Act menu's ending says what ending the Act returns."
 
-Run: `./sbtw "testOnly oathdigital.application.WalkerDecisionProjectionSuite oathdigital.application.GameApplicationServiceActionsSuite oathdigital.application.GameApplicationServiceForgeSuite oathdigital.application.GameApplicationServiceStreamSuite oathdigital.application.GameApplicationServiceProjectionSuite oathdigital.application.SupplyProjectionSuite"`
+Run: `./sbtw "testOnly distantlands.application.WalkerDecisionProjectionSuite distantlands.application.GameApplicationServiceActionsSuite distantlands.application.GameApplicationServiceForgeSuite distantlands.application.GameApplicationServiceStreamSuite distantlands.application.GameApplicationServiceProjectionSuite distantlands.application.SupplyProjectionSuite"`
 Expected: PASS.
 
 - [ ] **Step 7: Nothing reads the fields any more**
@@ -463,7 +463,7 @@ git commit -m "refactor: the legal controls and the Act panel's projection field
 
 **Interfaces:**
 - Consumes: `QueuedStart.priced`, `QueuedStart.startingFrom`, `WalkerSimulation.started`, `WalkerSimulation.previewParked`, `WalkerProcedureRegistry.build`, `PhaseMenu.of` and `PhaseMenu.offers`.
-- Produces, in `oathdigital.testkit.StartPreview`:
+- Produces, in `distantlands.testkit.StartPreview`:
 
   ```scala
   def opens(catalog: ExecutableCatalog, ready: ReadyGame, actor: PlayerId,
@@ -482,14 +482,14 @@ git commit -m "refactor: the legal controls and the Act panel's projection field
 Create `src/test/scala/distantlands/testkit/StartPreview.scala`:
 
 ```scala
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.PhasePowers
-import oathdigital.gameplay.walker.{QueuedStart, WalkerPowers,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.PhasePowers
+import distantlands.gameplay.walker.{QueuedStart, WalkerPowers,
   WalkerProcedureRegistry, WalkerSimulation}
-import oathdigital.gameplay.walker.WalkerSimulation.PreviewedOption
-import oathdigital.model._
+import distantlands.gameplay.walker.WalkerSimulation.PreviewedOption
+import distantlands.model._
 
 /** A start dry-run as the phase menu runs it (walker-driven game loop
   * design, slice 5, plan-time ruling 4). It is for suites that asked a
@@ -550,7 +550,7 @@ In `testkit/PhasePowerHarness.scala`, replace `usableNow` with:
           case _ => Vector.empty))
 ```
 
-Import `oathdigital.gameplay.phases.PhaseMenu` and `oathdigital.gameplay.powerresolver.PhasePower`. Keep the imports `usableNow` used before only while something still uses them.
+Import `distantlands.gameplay.phases.PhaseMenu` and `distantlands.gameplay.powerresolver.PhasePower`. Keep the imports `usableNow` used before only while something still uses them.
 
 Callers read `.power` and `.ref`, which `MenuPower` keeps. A caller that reads `.source` (the old `PowerSourceRef`) reads `.ref` instead. Say which callers you changed.
 

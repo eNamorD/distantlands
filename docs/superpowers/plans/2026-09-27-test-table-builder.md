@@ -18,7 +18,7 @@
 
 **Commands and workflow**
 - Build and test with `./sbtw` from the repo root:
-  - one suite: `./sbtw "root/testOnly oathdigital.testkit.TableSuite"`
+  - one suite: `./sbtw "root/testOnly distantlands.testkit.TableSuite"`
   - everything: `./sbtw root/test`
 - Never use `preview_start`. It hits the live DB.
 - Never stage or commit `docs/ROADMAP.md`. Another session edits it.
@@ -150,13 +150,13 @@ These are part of every migration task.
 - [ ] **Step 1: Write the failing `TableSuite`**
 
 ```scala
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.application.{GameCommand, StartPayload}
-import oathdigital.gameplay.phases.rest.FinishRestProcedure
-import oathdigital.gameplay.setup.{FirstGameSetupFixture, GameStartRules}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.application.{GameCommand, StartPayload}
+import distantlands.gameplay.phases.rest.FinishRestProcedure
+import distantlands.gameplay.setup.{FirstGameSetupFixture, GameStartRules}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 import Table.{p1, p2, p3}
 
 /** `Table` builds rule-test states from the real game start without the
@@ -293,7 +293,7 @@ class TableSuite extends munit.FunSuite:
     assertEquals(Look(travelled.state).pawn(p1), CatalogNames.site("Dunes"))
 
   test("a journaled situation cannot start at a table, since a stream begins with GameStarted"):
-    val service = oathdigital.application.ParkedServiceFixture.service()
+    val service = distantlands.application.ParkedServiceFixture.service()
     val driver = Situation.journaled(service, catalog, "table")
     intercept[munit.FailException](Table.start.situation(driver))
 ```
@@ -304,18 +304,18 @@ Notes:
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw "root/testOnly oathdigital.testkit.TableSuite"`
+Run: `./sbtw "root/testOnly distantlands.testkit.TableSuite"`
 Expected: compilation fails with "Not found: Table" / "Not found: Look".
 
 - [ ] **Step 3: Write `Table.scala`**
 
 ```scala
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.setup.{FirstGameSetupFixture, GameStartRules}
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.setup.{FirstGameSetupFixture, GameStartRules}
+import distantlands.model._
+import distantlands.model.OathState.Ready
 
 /** Names as the catalog prints them, resolved to ids. An unknown name fails
   * the test and lists the five closest names, so a typo reads as one. */
@@ -690,10 +690,10 @@ Before compiling, check `CardIndexProblem.DuplicateCard`'s real field list in `s
 - [ ] **Step 4: Write `Look.scala`**
 
 ```scala
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
+import distantlands.model._
+import distantlands.model.OathState.Ready
 
 /** The reads rule tests make of a state, named the way `Table` names what it
   * places. */
@@ -745,7 +745,7 @@ object Look:
 
 - [ ] **Step 5: Run `TableSuite` and fix until green**
 
-Run: `./sbtw "root/testOnly oathdigital.testkit.TableSuite"`
+Run: `./sbtw "root/testOnly distantlands.testkit.TableSuite"`
 Expected: all tests pass.
 
 Where a test fails because of a real game rule, fix the test's staging and keep the intent. For example, if Travel to Dunes is not reachable from Ancient City for Supply reasons, pick a destination the rules accept and name it in the test. Do not weaken the assertions.
@@ -864,7 +864,7 @@ Expected: no output. Then delete those members.
 
 - [ ] **Step 4: Run the 13 suites, then the full suite**
 
-Run: `./sbtw "root/testOnly oathdigital.gameplay.*Muster* oathdigital.gameplay.*Trade* oathdigital.gameplay.powers.economy.* oathdigital.application.*Economy* oathdigital.application.*Supply* oathdigital.application.GamePresentationProjectorAdviserRedactionSuite oathdigital.gameplay.EnclosingProcedureSuite oathdigital.gameplay.EconomyWalkerSuite oathdigital.gameplay.SelectionPaymentsSuite"`, then `./sbtw root/test`
+Run: `./sbtw "root/testOnly distantlands.gameplay.*Muster* distantlands.gameplay.*Trade* distantlands.gameplay.powers.economy.* distantlands.application.*Economy* distantlands.application.*Supply* distantlands.application.GamePresentationProjectorAdviserRedactionSuite distantlands.gameplay.EnclosingProcedureSuite distantlands.gameplay.EconomyWalkerSuite distantlands.gameplay.SelectionPaymentsSuite"`, then `./sbtw root/test`
 Expected: all pass, with the same test count per suite as before.
 
 - [ ] **Step 5: Record timings and commit**
@@ -1050,7 +1050,7 @@ Read `CampaignFixture.againstPlayer` first. Copy exactly what it sets for "defen
 
 - [ ] **Step 2: Migrate the other 18 suites by the shared procedure**
 - [ ] **Step 3: Delete the `Board` family from `CampaignFixture`.** Verify with `grep -rn "Board\b\|board(\|withEnemyAtOrigin\|replacePlayer\|withAdviserFor\|againstPlayer\|raidBoard" src/test/scala/distantlands/gameplay`: only unrelated hits (for example `PlayerBoardState`).
-- [ ] **Step 4: Run `./sbtw "root/testOnly oathdigital.gameplay.powers.campaign.*"`, then `./sbtw root/test`.** Expected: all pass, and the campaign suites' CPU time drops (record it).
+- [ ] **Step 4: Run `./sbtw "root/testOnly distantlands.gameplay.powers.campaign.*"`, then `./sbtw root/test`.** Expected: all pass, and the campaign suites' CPU time drops (record it).
 - [ ] **Step 5: Commit** as `test(campaign-powers): build battle states with Table`.
 
 ---
@@ -1083,7 +1083,7 @@ def use(rules: OathRules, ready: ReadyGame, id: PowerId,
 `DenizenId("93")` becomes `"Gambling Hall"` (verify the name in the catalog JSON). `asAdviser(act(base), id)` becomes `Table.start.adviser(p1, "Gambling Hall").ready`.
 
 - [ ] **Step 3: Migrate the other action suites and `MovementFixture` by the shared procedure**
-- [ ] **Step 4: Run `./sbtw "root/testOnly oathdigital.gameplay.powers.action.*"`, then `./sbtw root/test`.** Expected: all pass.
+- [ ] **Step 4: Run `./sbtw "root/testOnly distantlands.gameplay.powers.action.*"`, then `./sbtw root/test`.** Expected: all pass.
 - [ ] **Step 5: Commit** as `test(action-powers): build states with Table`.
 
 ---

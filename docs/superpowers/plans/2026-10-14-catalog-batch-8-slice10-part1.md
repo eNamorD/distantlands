@@ -49,7 +49,7 @@ Task 1 amends the batch 8 documents with this slice's rulings. Read them again a
   - Nothing under `gameplay/actions` imports `gameplay/powers`.
 - **Tree addresses.** No procedure tree gains, loses or moves a node. Refused options keep their place in their decision.
 - **Line width.** Scala lines stay at or under 80 characters, as in the files around them. Re-wrap any line in this plan that comes out longer.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Other sessions commit to `main` while you work.
   - Stage explicit paths only; never `git add -A`.
   - Re-check `git log --oneline -1` before any amend, reset or rebase.
@@ -268,13 +268,13 @@ git commit -m "docs(batch8): record slice 10's plan-time rulings"
 Create `src/test/scala/distantlands/gameplay/operations/PowerUseRulesSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.gameplay.powerresolver.{PowerUse, PowerUseRefusal,
+import distantlands.gameplay.powerresolver.{PowerUse, PowerUseRefusal,
   PowerUseRestriction}
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2}
 
 /** The power-use filter's consent rules (catalog batch 8, slice 10): a
   * remembered grant lifts a refusal, and a refused option is askable only
@@ -343,16 +343,16 @@ class PowerUseRulesSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the suite to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.operations.PowerUseRulesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.operations.PowerUseRulesSuite"`
 Expected: compilation fails, because `PowerUse` and `PowerUseRules` do not exist.
 
 - [ ] **Step 3: Create `PowerUse.scala`**
 
 ```scala
-package oathdigital.gameplay.powerresolver
+package distantlands.gameplay.powerresolver
 
-import oathdigital.catalog.PrintedPower
-import oathdigital.model.{CardId, OperationReason, PlayerId, PowerId,
+import distantlands.catalog.PrintedPower
+import distantlands.model.{CardId, OperationReason, PlayerId, PowerId,
   PowerNote, ReadyGame}
 
 /** One use of a power, as the power-use restrictions judge it (catalog
@@ -404,11 +404,11 @@ trait PowerUseRestriction:
 - [ ] **Step 4: Create `PowerUseRules.scala`**
 
 ```scala
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.gameplay.powerresolver.{PowerUse, PowerUseRefusal,
+import distantlands.gameplay.powerresolver.{PowerUse, PowerUseRefusal,
   PowerUseRestriction}
-import oathdigital.model._
+import distantlands.model._
 
 /** The power-use filter (catalog batch 8, slice 10): the refusals a use
   * meets, with consent applied, and how an option for a refused use is
@@ -503,7 +503,7 @@ Add `PowerUseRestriction` to the `powerresolver` import.
 
 - [ ] **Step 7: Run the suite and the build**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.operations.PowerUseRulesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.operations.PowerUseRulesSuite"`
 Expected: 4 tests pass.
 
 Run: `./sbtw "Test/compile"`
@@ -547,12 +547,12 @@ git commit -m "feat(batch8): a power-use filter with consent"
 Create `src/test/scala/distantlands/gameplay/powers/poweruse/SpellBreakerSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.poweruse
+package distantlands.gameplay.powers.poweruse
 
-import oathdigital.gameplay.powerresolver.PowerUse
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.powerresolver.PowerUse
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Table}
+import distantlands.testkit.Table.{p1, p2}
 
 /** Spell Breaker (card 162): "Enemies of Spell Breaker's ruler cannot use
   * powers that cost any [secret] or [secret-burnt]." (catalog batch 8,
@@ -610,23 +610,23 @@ class SpellBreakerSuite extends munit.FunSuite:
       SpellBreaker.id), None)
 ```
 
-Add the imports `oathdigital.gameplay.powers.ConsentPowers` and `oathdigital.gameplay.setup.FirstGameSetupFixture.catalog`.
+Add the imports `distantlands.gameplay.powers.ConsentPowers` and `distantlands.gameplay.setup.FirstGameSetupFixture.catalog`.
 
 If `Table` names its steps differently (`warbandsAt`, `bandits`), use the names `HallOfMinistersConsentSuite` uses for the same boards.
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.poweruse.SpellBreakerSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.poweruse.SpellBreakerSuite"`
 Expected: compilation fails, because `SpellBreaker` does not exist.
 
 - [ ] **Step 3: Create `RulerBans.scala`**
 
 ```scala
-package oathdigital.gameplay.powers.poweruse
+package distantlands.gameplay.powers.poweruse
 
-import oathdigital.gameplay.SiteRulers
-import oathdigital.gameplay.powerresolver.{PowerUseRefusal, Waiver}
-import oathdigital.model._
+import distantlands.gameplay.SiteRulers
+import distantlands.gameplay.powerresolver.{PowerUseRefusal, Waiver}
+import distantlands.model._
 
 /** The ban a site card holds over its ruler's enemies (Spell Breaker,
   * Forest Council, City Wall; catalog batch 8, slice 10). The ruler is the
@@ -669,13 +669,13 @@ private[powers] object RulerBans:
 Move `SpellBreakerCard` here unchanged and remove it from `HoldingNomadDenizens.scala`.
 
 ```scala
-package oathdigital.gameplay.powers.poweruse
+package distantlands.gameplay.powers.poweruse
 
-import oathdigital.catalog.{Denizen, PrintedPower, SiteOnly}
-import oathdigital.gameplay.operations.PowerUseRules
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,
+import distantlands.catalog.{Denizen, PrintedPower, SiteOnly}
+import distantlands.gameplay.operations.PowerUseRules
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower,
   PowerUse, PowerUseRefusal, PowerUseRestriction}
-import oathdigital.model._
+import distantlands.model._
 
 object SpellBreakerCard extends Denizen(DenizenId("162"), "Spell Breaker", Suit.Nomad) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.spell-breaker"),
@@ -727,7 +727,7 @@ Add `Waiver` to the `powerresolver` import. Declare `waiver` after `asked`, sinc
 
 - [ ] **Step 5: Register it**
 
-- In `NewFoundations.scala`, add `import oathdigital.gameplay.powers.poweruse._` beside the other power-package imports. `SpellBreakerCard` keeps its place in the card list.
+- In `NewFoundations.scala`, add `import distantlands.gameplay.powers.poweruse._` beside the other power-package imports. `SpellBreakerCard` keeps its place in the card list.
 - In `WalkerPowerCatalog.scala`, add `Vector(SpellBreaker) ++` after `Vector(YewStaff) ++`, with its import, and add:
 
   ```scala
@@ -752,13 +752,13 @@ Add `Waiver` to the `powerresolver` import. Declare `waiver` after `asked`, sinc
   ```
 
   and add "and the power-use restrictions that declare one (catalog batch 8, slice 10)" to the class comment's list.
-- Regenerate the note-key snapshot: `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"`. Check with `git diff src/test/resources/notes/declared-keys.txt` that the only change is two added lines, for `denizen.spell-breaker`'s `no-secret-powers` and `no-secret-powers-consent`.
+- Regenerate the note-key snapshot: `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"`. Check with `git diff src/test/resources/notes/declared-keys.txt` that the only change is two added lines, for `denizen.spell-breaker`'s `no-secret-powers` and `no-secret-powers-consent`.
 
 `notes` must be declared after `id` and before the keys, as plain `val`s, never `lazy`: `NoteSet` reads its keys as the object initialises (`PowerNotes.scala`, "declared is complete only once the owning object's initialiser has run").
 
 - [ ] **Step 6: Run the suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.poweruse.SpellBreakerSuite oathdigital.gameplay.PowerKindsCatalogSuite oathdigital.gameplay.BackendArchitectureSuite oathdigital.gameplay.powers.DeclaredNoteKeysSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.poweruse.SpellBreakerSuite distantlands.gameplay.PowerKindsCatalogSuite distantlands.gameplay.BackendArchitectureSuite distantlands.gameplay.powers.DeclaredNoteKeysSuite"`
 Expected: all pass. SpellBreakerSuite has 5 tests.
 
 - [ ] **Step 7: Commit**
@@ -790,15 +790,15 @@ git commit -m "feat(batch8): Spell Breaker refuses its ruler's enemies secret po
 Create `src/test/scala/distantlands/gameplay/powers/poweruse/SpellBreakerPhaseSuite.scala`. It uses Roving Terror, a site-only ACTION that costs one secret, with p1 at Ancient City beside it, and a card at Broken Peaks for it to replace, as `HallOfMinistersConsentSuite` sets it up.
 
 ```scala
-package oathdigital.gameplay.powers.poweruse
+package distantlands.gameplay.powers.poweruse
 
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.powers.action.{RovingTerror, WardOfSilence}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, MenuPlay, PhasePowerHarness, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.powers.action.{RovingTerror, WardOfSilence}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, MenuPlay, PhasePowerHarness, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** Spell Breaker on the phase path (catalog batch 8, slice 10): the Act
   * menu shows a refused ACTION askable of the ruler, or unavailable, and
@@ -874,7 +874,7 @@ If `DecisionOption.forRef(terrorRef)` builds a different shell than `DecisionOpt
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.poweruse.SpellBreakerPhaseSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.poweruse.SpellBreakerPhaseSuite"`
 Expected: the askable, refused, bandit and Ward tests fail. Ward of Silence's printed cost is free.
 
 - [ ] **Step 3: Judge the use in `PhasePowerProcedure`**
@@ -961,7 +961,7 @@ In `WardOfSilence.scala`, add to `case object WardOfSilence`:
 
 - [ ] **Step 7: Run the suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.poweruse.* oathdigital.gameplay.PhaseMenuSuite oathdigital.gameplay.PhasePowerSuite oathdigital.gameplay.powers.action.WardOfSilenceSuite oathdigital.gameplay.operations.HallOfMinistersConsentSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.poweruse.* distantlands.gameplay.PhaseMenuSuite distantlands.gameplay.PhasePowerSuite distantlands.gameplay.powers.action.WardOfSilenceSuite distantlands.gameplay.operations.HallOfMinistersConsentSuite"`
 Expected: all pass.
 
 - [ ] **Step 8: Commit**
@@ -990,18 +990,18 @@ git commit -m "feat(batch8): the phase menu asks Spell Breaker's ruler"
 Create `src/test/scala/distantlands/gameplay/powers/poweruse/SpellBreakerModifierSuite.scala`. It uses Mushrooms, a Search modifier that costs one secret, from `MushroomsSuite`'s board, with Spell Breaker at Deep Woods.
 
 ```scala
-package oathdigital.gameplay.powers.poweruse
+package distantlands.gameplay.powers.poweruse
 
-import oathdigital.gameplay.ModifierPlay
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.powers.SearchFixture
-import oathdigital.gameplay.powers.search.Mushrooms
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, MenuPlay, ParkedNode, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.ModifierPlay
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.powers.SearchFixture
+import distantlands.gameplay.powers.search.Mushrooms
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{CatalogNames, MenuPlay, ParkedNode, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** Spell Breaker in the modifier picker (catalog batch 8, slice 10). */
 class SpellBreakerModifierSuite extends munit.FunSuite:
@@ -1056,7 +1056,7 @@ Use the start helpers `MushroomsSuite` and `ModifierPlay` use; if `MenuPlay.star
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.poweruse.SpellBreakerModifierSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.poweruse.SpellBreakerModifierSuite"`
 Expected: the askable and bandit tests fail; Mushrooms is shown available.
 
 - [ ] **Step 3: State the modifiers' use**
@@ -1112,13 +1112,13 @@ In `expand`, a pass with only askable modifiers must still ask, so the player ca
       (picked.nonEmpty && listed.nonEmpty)
 ```
 
-Add the import `oathdigital.gameplay.operations.PowerUseRules`.
+Add the import `distantlands.gameplay.operations.PowerUseRules`.
 
 A grant answers the modifier decision with the card, through the consent flow that every parked choose-one has. The next pass finds the grant, so the pick pays and stands.
 
 - [ ] **Step 5: Run the suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.poweruse.* oathdigital.gameplay.powers.search.* oathdigital.gameplay.walker.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.poweruse.* distantlands.gameplay.powers.search.* distantlands.gameplay.walker.*"`
 Expected: all pass.
 
 - [ ] **Step 6: Commit**
@@ -1151,21 +1151,21 @@ git commit -m "feat(batch8): the modifier picker asks Spell Breaker's ruler"
 Create `src/test/scala/distantlands/gameplay/powers/poweruse/SpellBreakerOfferSuite.scala`. The boards come from `CampaignFixture`, as `FireTalkersSuite`, `GleamingArmorSuite` and `JinxSuite` build them. Spell Breaker stands at Deep Woods, which is in play on every fixture map and is neither the origin nor a target.
 
 ```scala
-package oathdigital.gameplay.powers.poweruse
+package distantlands.gameplay.powers.poweruse
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.WalkerDiceFixture.scripted
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.actions.dice.RerollChoice
-import oathdigital.gameplay.actions.recover.RecoverProcedure
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, ParkedNode, Table}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.WalkerDiceFixture.scripted
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.actions.dice.RerollChoice
+import distantlands.gameplay.actions.recover.RecoverProcedure
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{CatalogNames, ParkedNode, Table}
+import distantlands.testkit.Unwrap.accepted
 
 /** Spell Breaker over battle plans and rerolls (catalog batch 8, slice
   * 10): a refused plan is withheld with the plain reason, since nobody is
@@ -1268,7 +1268,7 @@ Where a fixture helper is named differently on `main` (`losingDice`, `withAdvise
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.poweruse.SpellBreakerOfferSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.poweruse.SpellBreakerOfferSuite"`
 Expected: the refusal tests fail; the plans and Jinx are offered.
 
 - [ ] **Step 3: A plan's use**
@@ -1387,13 +1387,13 @@ In the `RerollHost` case, do the same for each `OfferedReroll`:
                   withheld = refused(byId(powerId))))(_ => offer)))
 ```
 
-Add the import `oathdigital.gameplay.operations.PowerUseRules`, and `OptionReason` to the model import if it is not there. If `WalkerPowerGather.scala` passes 800 lines, move `refused` into a new `walker/PowerUseJudge.scala` as `private[walker] object PowerUseJudge`.
+Add the import `distantlands.gameplay.operations.PowerUseRules`, and `OptionReason` to the model import if it is not there. If `WalkerPowerGather.scala` passes 800 lines, move `refused` into a new `walker/PowerUseJudge.scala` as `private[walker] object PowerUseJudge`.
 
 A withheld reroll shown with an `Askable` reason is asked about like any askable option of a parked choose-one. Once a grant is remembered, `refused` finds nothing, so the reroll stands and the grant's answer picks it.
 
 - [ ] **Step 6: Run the suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.poweruse.* oathdigital.gameplay.powers.campaign.* oathdigital.gameplay.powers.dice.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.poweruse.* distantlands.gameplay.powers.campaign.* distantlands.gameplay.powers.dice.*"`
 Expected: all pass.
 
 - [ ] **Step 7: Commit**

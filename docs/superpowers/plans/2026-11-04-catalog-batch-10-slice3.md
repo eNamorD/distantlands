@@ -112,7 +112,7 @@ In the test "a recorded roll needs its pool, its count and one family of faces",
 In `WalkerDiceContract.scala`, change the import to:
 
 ```scala
-import oathdigital.model.{AttackDieFace, DefenseDieFace, DiceKind, DieFace,
+import distantlands.model.{AttackDieFace, DefenseDieFace, DiceKind, DieFace,
   RoundDieFace}
 ```
 
@@ -146,7 +146,7 @@ In `WalkerDiceFixtureSuite`, give the "exact faces" subject round faces too:
       poolSizes = Vector(2)))
 ```
 
-In `CampaignDicePortContract.scala`, change the import to `import oathdigital.model.{AttackDieFace, DefenseDieFace, RoundDieFace}`, and inside `rollers.foreach`, after the defense test:
+In `CampaignDicePortContract.scala`, change the import to `import distantlands.model.{AttackDieFace, DefenseDieFace, RoundDieFace}`, and inside `rollers.foreach`, after the defense test:
 
 ```scala
     test(s"$name: a pool of n round dice rolls n faces"):
@@ -186,7 +186,7 @@ In `WalkerOperationWireSuite.scala`, after the test "a walker roll payload round
 
 - [ ] **Step 4: Run the tests to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.WalkerRollsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.WalkerRollsSuite"`
 Expected: compile errors, `RoundDieFace` and `DiceKind.Round` not found.
 
 - [ ] **Step 5: Add the die kind and its faces**
@@ -393,7 +393,7 @@ In `use`, replace `RerollChoice.throwOf(ctx).filter(rolled => Jinx.rules(ctx.sta
 
 - [ ] **Step 10: Run the tests to see them pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.* oathdigital.application.*DicePort* oathdigital.serialization.WalkerOperationWireSuite oathdigital.gameplay.AutomaticRollSuite oathdigital.gameplay.powers.action.GamblingHallSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.* distantlands.application.*DicePort* distantlands.serialization.WalkerOperationWireSuite distantlands.gameplay.AutomaticRollSuite distantlands.gameplay.powers.action.GamblingHallSuite"`
 Expected: PASS. Gambling Hall's Jinx test shows Jinx still rerolls defense dice.
 
 - [ ] **Step 11: Commit**
@@ -447,19 +447,19 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 Create `ShatteredPortalSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture}
-import oathdigital.gameplay.powers.dice.JinxCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.testkit.{Look, MenuPlay, Table}
-import oathdigital.testkit.ActPowerHarness
-import oathdigital.testkit.Outcomes.{assertWireRoundTrips, ready}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture}
+import distantlands.gameplay.powers.dice.JinxCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.testkit.{Look, MenuPlay, Table}
+import distantlands.testkit.ActPowerHarness
+import distantlands.testkit.Outcomes.{assertWireRoundTrips, ready}
+import distantlands.testkit.Unwrap.accepted
 
 /** Shattered Portal (catalog batch 10, slice 3): with the pawn at its site,
   * roll the round die and place the pawn that many sites Hinterward,
@@ -553,7 +553,7 @@ class ShatteredPortalSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the suite to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.ShatteredPortalSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.ShatteredPortalSuite"`
 Expected: compile error, `ShatteredPortal` not found.
 
 - [ ] **Step 3: Write the power**
@@ -561,14 +561,14 @@ Expected: compile error, `ShatteredPortal` not found.
 Create `ShatteredPortal.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.PowerAccess
-import oathdigital.gameplay.actions.dice.RollStep
-import oathdigital.gameplay.powerresolver.QueuedStarts
-import oathdigital.gameplay.powers.setup.EdificeSetupSupport
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.PowerAccess
+import distantlands.gameplay.actions.dice.RollStep
+import distantlands.gameplay.powerresolver.QueuedStarts
+import distantlands.gameplay.powers.setup.EdificeSetupSupport
+import distantlands.model._
 
 /** Shattered Portal (E14, ruined), ACTION: with the user's pawn at its site,
   * place 1 secret on it, roll the round die and place the pawn that many
@@ -644,12 +644,12 @@ In `OtherActionPowers.scala`, add `ShatteredPortal` to the list beside `GreatClo
 
 - [ ] **Step 5: Run the suite to see it pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.ShatteredPortalSuite oathdigital.gameplay.powers.action.StonePortalSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.ShatteredPortalSuite distantlands.gameplay.powers.action.StonePortalSuite"`
 Expected: PASS. Stone Portal's test "the ruined face offers nothing" still passes: it checks only `StonePortal.id`.
 
 - [ ] **Step 6: Regenerate the snapshots**
 
-Run: `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.*"`
+Run: `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.*"`
 Then `git diff src/test/resources`. Expected:
 - `declared-keys.txt` gains `edifice.e14.ruined used = Rolled {0}; {1} placed at {2}.`
 - `unimplemented.txt` drops `edifice.e14.ruined`.

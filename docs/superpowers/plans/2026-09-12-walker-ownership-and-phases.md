@@ -71,13 +71,13 @@ This is a pure move. Its acceptance criterion is the one batch-1 Task 1b used: n
 
 - [x] **Step 1: Record the baseline.**
 
-Run: `wc -l src/main/scala/distantlands/serialization/WalkerEventCodec.scala && ./sbtw "testOnly oathdigital.serialization.GameEventWireSuite"`
+Run: `wc -l src/main/scala/distantlands/serialization/WalkerEventCodec.scala && ./sbtw "testOnly distantlands.serialization.GameEventWireSuite"`
 Expected: `785` lines; suite PASS.
 
 - [x] **Step 2: Move the operation codec.** Create `WalkerOperationCodec.scala` holding, verbatim and in their current order, `encodeOperation` (line 164) through `decodeOrientation` (line 726), plus `decodeSignedInt` (line 738) and `decodeOptionalSignedInt` (line 562) if nothing outside the moved block still calls them. Start the file with:
 
 ```scala
-package oathdigital.serialization
+package distantlands.serialization
 
 // imports: copy exactly the imports the moved methods need from
 // WalkerEventCodec.scala's header, and remove any the event codec no longer uses.
@@ -265,7 +265,7 @@ Update the existing C1 tests in the same suite to the new `resolveWalker(state, 
 
 - [x] **Step 2: Run the tests to verify they fail.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OathRulesWalkerPowerSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.OathRulesWalkerPowerSuite"`
 Expected: FAIL to compile (`ChoicePayload` has two fields; `resolveWalker` takes an `Answered`).
 
 - [x] **Step 3: Change the model and events.**
@@ -349,7 +349,7 @@ Give each `Answered`/`ChoicePayload` the player who answers (the actor in every 
 Run: `./sbtw "test"`
 Expected: PASS, including the two new tests.
 
-- [x] **Step 10: Mutation check.** Temporarily change `answerDecide`'s check to `decide.owner == decide.owner` and run `./sbtw "testOnly oathdigital.gameplay.OathRulesWalkerPowerSuite"`.
+- [x] **Step 10: Mutation check.** Temporarily change `answerDecide`'s check to `decide.owner == decide.owner` and run `./sbtw "testOnly distantlands.gameplay.OathRulesWalkerPowerSuite"`.
 Expected: FAIL in "a seated non-active player's ResolveWalker against another player's parked decision is rejected". Revert.
 
 - [x] **Step 11: Commit**
@@ -470,7 +470,7 @@ In `EndWakeProcedureSuite`, change the completion assertion to `WalkerCompleted(
 
 - [x] **Step 2: Run them to verify they fail.**
 
-Run: `./sbtw "testOnly oathdigital.model.ActionValuesSuite"`
+Run: `./sbtw "testOnly distantlands.model.ActionValuesSuite"`
 Expected: FAIL to compile (`PhaseTransitionRef` not found).
 
 - [x] **Step 3: Implement the references.** `git mv` the file and write `ProcedureRef.scala` with the hierarchy above:
@@ -649,7 +649,7 @@ self-caught, neither a plan or production defect.
 
 - [x] **Step 2: Run them to verify they fail.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OathRulesWalkerPowerSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.OathRulesWalkerPowerSuite"`
 Expected: FAIL. The off-turn test gets `WrongPlayer` at the start continuation or the answer. The Wake test gets `Left(WrongPhase(Act, Wake))`. The Rest test already passes and stays as a guard.
 
 - [x] **Step 3: Implement the engine half.**
@@ -688,7 +688,7 @@ In `parkedContinue`, compute the awaited player once and pass it to `continuatio
 
 - [x] **Step 4: Run the engine tests.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OathRulesWalkerPowerSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.OathRulesWalkerPowerSuite"`
 Expected: PASS.
 
 - [x] **Step 5: Write the failing projection tests** in `WalkerDecisionProjectorSuite`. Add a helper parking a `Decide` owned by another player, using the suite's existing `TreeSource` seam:
@@ -739,7 +739,7 @@ In `WalkerDecisionQueryPowerSuite`, add a test that a synthetic `Transform` powe
 
 - [x] **Step 6: Run them to verify they fail.**
 
-Run: `./sbtw "testOnly oathdigital.application.WalkerDecisionProjectorSuite oathdigital.application.WalkerDecisionQueryPowerSuite"`
+Run: `./sbtw "testOnly distantlands.application.WalkerDecisionProjectorSuite distantlands.application.WalkerDecisionQueryPowerSuite"`
 Expected: FAIL to compile (`waiting`, `WalkerWaitingProjection` not found).
 
 - [x] **Step 7: Implement the projection.**
@@ -919,7 +919,7 @@ In `GameEventWireSuite`'s "every CoreOperation variant round-trips through the w
 
 - [x] **Step 2: Run them to verify they fail.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.operations.OperationStateMutationSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.operations.OperationStateMutationSuite"`
 Expected: FAIL to compile (`SetOathkeeper` not found).
 
 - [x] **Step 3: Implement.**
@@ -983,7 +983,7 @@ If the compiler reports a non-exhaustive match on `PrimitiveOperation` elsewhere
 
 - [x] **Step 4: Run the tests.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.operations.OperationStateMutationSuite oathdigital.serialization.GameEventWireSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.operations.OperationStateMutationSuite distantlands.serialization.GameEventWireSuite"`
 Expected: PASS.
 
 - [x] **Step 5: Full suite and architecture check.**
@@ -1027,7 +1027,7 @@ check by spec.
 **Interfaces:**
 - Consumes: Task 4's families and registry, Task 5's awaited-player continuation and projection, Task 6's `SetOathkeeper`.
 - Produces:
-  - `package oathdigital.gameplay.oathkeeper`: `sealed trait OathkeeperOutcome` with `NoChange`, `Transfer(holder: Option[PlayerId])`, `Choose(holder: PlayerId, candidates: Vector[PlayerId])`; `OathkeeperRules.outcome(ready: ReadyGame): OathkeeperOutcome`.
+  - `package distantlands.gameplay.oathkeeper`: `sealed trait OathkeeperOutcome` with `NoChange`, `Transfer(holder: Option[PlayerId])`, `Choose(holder: PlayerId, candidates: Vector[PlayerId])`; `OathkeeperRules.outcome(ready: ReadyGame): OathkeeperOutcome`.
   - `OathkeeperProcedure.recipientDecisionId: String = "oathkeeper.recipient"`; `OathkeeperProcedure.build(catalog: ExecutableCatalog, state: ReadyGame, activePlayer: PlayerId, args: Vector[DecisionOptionRef]): Either[OathViolation, Operation]`.
   - `TriggeredProcedureRef.Oathkeeper` (key `"oathkeeper"`).
   - `OathRulesWalker.startTriggered(transition: OathTransition, procedure: TriggeredProcedureRef): Either[OathViolation, OathTransition]`, `private[gameplay]`.
@@ -1036,13 +1036,13 @@ check by spec.
 - [x] **Step 1: Create the fixture.** Move `StateBasedEvaluationSuite.prepared`'s body into a reusable helper that works on any ready game, and make `StateBasedEvaluationSuite.prepared` delegate to it:
 
 ```scala
-package oathdigital.gameplay.oathkeeper
+package distantlands.gameplay.oathkeeper
 
-import oathdigital.gameplay.ReadyGame
-import oathdigital.gameplay.OathState.Ready
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.setup.FirstGameSetupRules
-import oathdigital.model._
+import distantlands.gameplay.ReadyGame
+import distantlands.gameplay.OathState.Ready
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.setup.FirstGameSetupRules
+import distantlands.model._
 
 /** Title and site-ruler setups for the Supremacy goal the first game uses:
   * `owners(i)` rules the i-th in-play site with one exile warband (`None` is
@@ -1080,11 +1080,11 @@ object OathkeeperFixture {
 - [x] **Step 2: Write the failing outcome tests** in `OathkeeperRulesSuite`:
 
 ```scala
-package oathdigital.gameplay.oathkeeper
+package distantlands.gameplay.oathkeeper
 
-import oathdigital.gameplay.oathkeeper.OathkeeperFixture._
-import oathdigital.gameplay.oathkeeper.OathkeeperOutcome._
-import oathdigital.model._
+import distantlands.gameplay.oathkeeper.OathkeeperFixture._
+import distantlands.gameplay.oathkeeper.OathkeeperOutcome._
+import distantlands.model._
 
 class OathkeeperRulesSuite extends munit.FunSuite {
   private val p = players
@@ -1128,16 +1128,16 @@ class OathkeeperRulesSuite extends munit.FunSuite {
 
 - [x] **Step 3: Run them to verify they fail.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.oathkeeper.OathkeeperRulesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.oathkeeper.OathkeeperRulesSuite"`
 Expected: FAIL to compile (`OathkeeperRules` not found).
 
 - [x] **Step 4: Implement the outcome.** Create `OathkeeperRules.scala`, moving `qualifyingPlayers` and `leadersWithPositiveCount` from `StateBasedEvaluation.scala:299-332` verbatim (their only caller is `afterAction`, which Step 9 deletes):
 
 ```scala
-package oathdigital.gameplay.oathkeeper
+package distantlands.gameplay.oathkeeper
 
-import oathdigital.gameplay.ReadyGame
-import oathdigital.model._
+import distantlands.gameplay.ReadyGame
+import distantlands.model._
 
 sealed trait OathkeeperOutcome extends Product with Serializable
 object OathkeeperOutcome {
@@ -1173,24 +1173,24 @@ object OathkeeperRules {
 }
 ```
 
-Run: `./sbtw "testOnly oathdigital.gameplay.oathkeeper.OathkeeperRulesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.oathkeeper.OathkeeperRulesSuite"`
 Expected: PASS.
 
 - [x] **Step 5: Write the failing procedure tests** in `OathkeeperProcedureSuite`:
 
 ```scala
-package oathdigital.gameplay.oathkeeper
+package distantlands.gameplay.oathkeeper
 
-import oathdigital.gameplay._
-import oathdigital.gameplay.OathEvent.BanditsRefilled
-import oathdigital.gameplay.OathState.Ready
-import oathdigital.gameplay.operations.SetOathkeeper
-import oathdigital.gameplay.oathkeeper.OathkeeperFixture._
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ChoicePayload, WalkerCompleted,
+import distantlands.gameplay._
+import distantlands.gameplay.OathEvent.BanditsRefilled
+import distantlands.gameplay.OathState.Ready
+import distantlands.gameplay.operations.SetOathkeeper
+import distantlands.gameplay.oathkeeper.OathkeeperFixture._
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ChoicePayload, WalkerCompleted,
   WalkerParked, WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
 
 class OathkeeperProcedureSuite extends munit.FunSuite {
   private val rules = new OathRules(catalog)
@@ -1328,7 +1328,7 @@ In `EconomySuite`, add a test that the legacy Muster path starts the procedure w
 
 - [x] **Step 6: Run them to verify they fail.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.oathkeeper.OathkeeperProcedureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.oathkeeper.OathkeeperProcedureSuite"`
 Expected: FAIL to compile (`OathkeeperProcedure`, `TriggeredProcedureRef.Oathkeeper`, `startTriggered` not found).
 
 - [x] **Step 7: Implement the procedure and its registration.**
@@ -1344,14 +1344,14 @@ object TriggeredProcedureRef {
 
 `OathkeeperProcedure.scala`:
 ```scala
-package oathdigital.gameplay.oathkeeper
+package distantlands.gameplay.oathkeeper
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.{OathViolation, ReadyGame}
-import oathdigital.gameplay.operations.{BuildOps, CoreOperation, Decide,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.{OathViolation, ReadyGame}
+import distantlands.gameplay.operations.{BuildOps, CoreOperation, Decide,
   Operation, Sequence, SetOathkeeper}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
 
 /** Declared tree for every Oathkeeper title change (triggered, started by the
   * action boundary).
@@ -1743,7 +1743,7 @@ In `EndWakeProcedureSuite`, rewrite the comment on "ending Wake does not run the
 
 - [x] **Step 2: Run them to verify they fail.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.TakeWealthProcedureSuite oathdigital.gameplay.oathkeeper.OathkeeperProcedureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.TakeWealthProcedureSuite distantlands.gameplay.oathkeeper.OathkeeperProcedureSuite"`
 Expected: FAIL: zero `BanditsRefilled` after Take Wealth, and no park after it.
 
 - [x] **Step 3: Decide the boundary by family.** In `OathRulesWalker`, replace `WalkerCompletion` and `completionIn` with:

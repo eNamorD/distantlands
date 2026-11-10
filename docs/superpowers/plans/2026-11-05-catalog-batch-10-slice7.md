@@ -46,7 +46,7 @@ This is the seventh of 14 slice plans, written against `0.2.0-alpha` at `73d7d09
   - `./sbtw clean coverage test coverageReport`, with statement coverage of at least 92%
   - `python3 scripts/check-architecture.py`, which caps files at 800 lines and enforces the layer import rules
   - `python3 scripts/check-markdown-links.py`
-- **Snapshots:** regenerate with `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.*"`, then read the diff. Commit only the lines the task explains. The files are `src/test/resources/notes/declared-keys.txt` and `src/test/resources/powers/unimplemented.txt`.
+- **Snapshots:** regenerate with `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.*"`, then read the diff. Commit only the lines the task explains. The files are `src/test/resources/notes/declared-keys.txt` and `src/test/resources/powers/unimplemented.txt`.
 - **Log lines:** a line names only non-actors (memory: "Log lines omit actor"). The Troupe's line names the card, not its user.
 - **Test helpers:** a helper's name states what it builds (memory: "Descriptive helper names").
 - **Modifier icon:** the Troupe's printed power gains `modifier = Some(ModifierMark.Action(MajorActionType.Trade))` (spec, "Catalog corrections").
@@ -69,7 +69,7 @@ This is the seventh of 14 slice plans, written against `0.2.0-alpha` at `73d7d09
 
 **Interfaces:**
 - Produces:
-  - `object ActingTroupeCard` in package `oathdigital.gameplay`, with `power`, `powers`, `suitDecision: String = "acting-troupe.suit"`, `suits: Vector[Suit] = Vector(Suit.Beast, Suit.Order)` and `button(suit: Suit): DecisionOptionRef.Button`.
+  - `object ActingTroupeCard` in package `distantlands.gameplay`, with `power`, `powers`, `suitDecision: String = "acting-troupe.suit"`, `suits: Vector[Suit] = Vector(Suit.Beast, Suit.Order)` and `button(suit: Suit): DecisionOptionRef.Button`.
   - `EffectiveSuit.troupe(answered: Vector[Answered]): Option[Suit]`.
   - `EffectiveSuit.count(catalog, ready, player, suit, answered: Vector[Answered] = Vector.empty): Int`.
   - `MusterSource.matching(catalog, state, actor, suit, answered: Vector[Answered]): Int`, the answers now required.
@@ -128,8 +128,8 @@ Update the suite's doc comment to end: "..., and a picked Acting Troupe counts a
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.EffectiveSuitSuite"`
-Expected: compile error, `ActingTroupeCard` not found in `oathdigital.gameplay`.
+Run: `./sbtw "testOnly distantlands.gameplay.EffectiveSuitSuite"`
+Expected: compile error, `ActingTroupeCard` not found in `distantlands.gameplay`.
 
 - [ ] **Step 3: Move the card**
 
@@ -152,14 +152,14 @@ object ActingTroupeCard extends Denizen(DenizenId("36"), "Acting Troupe", Suit.A
     DecisionOptionRef.Button(suit.key)
 ```
 
-Add `ModifierMark` to the `oathdigital.catalog` import of `EffectiveSuit.scala`. In `NewFoundations.scala`, change the `oathdigital.gameplay` import to:
+Add `ModifierMark` to the `distantlands.catalog` import of `EffectiveSuit.scala`. In `NewFoundations.scala`, change the `distantlands.gameplay` import to:
 
 ```scala
-import oathdigital.gameplay.{ActingTroupeCard, MarriageCard,
+import distantlands.gameplay.{ActingTroupeCard, MarriageCard,
   PledgeToDiscordCard, SpitefulMirrorCard}
 ```
 
-If another holding file or test imports `catalog.holding.ActingTroupeCard`, point it at `oathdigital.gameplay`. Run `grep -rn "ActingTroupeCard" src` to check.
+If another holding file or test imports `catalog.holding.ActingTroupeCard`, point it at `distantlands.gameplay`. Run `grep -rn "ActingTroupeCard" src` to check.
 
 - [ ] **Step 4: Read the pick in `EffectiveSuit`**
 
@@ -255,7 +255,7 @@ In `MusterProcedureSuite.scala`, the three `MusterSource.matching` calls in the 
 
 - [ ] **Step 6: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.EffectiveSuitSuite oathdigital.gameplay.powers.economy.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.EffectiveSuitSuite distantlands.gameplay.powers.economy.*"`
 Expected: PASS. The economy suites pin that the threading changes nothing without a Troupe.
 
 - [ ] **Step 7: Commit**
@@ -301,24 +301,24 @@ EOF
 Create `ActingTroupeSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.ActingTroupeCard
-import oathdigital.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.action.AlchemistCard
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, Look, MenuPlay, Outcomes,
+import distantlands.gameplay.ActingTroupeCard
+import distantlands.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.action.AlchemistCard
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, Look, MenuPlay, Outcomes,
   PhasePowerHarness, PowerRules, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 /** Acting Troupe (card 36), a selected Trade modifier: picked, it asks
   * Beast or Order, and the Trade counts it as that suit (catalog batch 10,
@@ -468,7 +468,7 @@ Notes for the implementer:
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.ActingTroupeSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.economy.ActingTroupeSuite"`
 Expected: compile error, `ActingTroupe` not found.
 
 - [ ] **Step 3: Write the power**
@@ -476,13 +476,13 @@ Expected: compile error, `ActingTroupe` not found.
 Create `ActingTroupe.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog}
-import oathdigital.gameplay.{ActingTroupeCard, NoteSupport, PowerAccess}
-import oathdigital.gameplay.powerresolver.Contribution
-import oathdigital.gameplay.powers.SelectedModifier
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog}
+import distantlands.gameplay.{ActingTroupeCard, NoteSupport, PowerAccess}
+import distantlands.gameplay.powerresolver.Contribution
+import distantlands.gameplay.powers.SelectedModifier
+import distantlands.model._
 
 /** Acting Troupe (card 36, adviser-only), a free selected Trade modifier:
   * "Act as if Acting Troupe is a [suit-beast] or [suit-order] card
@@ -547,12 +547,12 @@ In `ActionModifiers.scala`, add `ActingTroupe` to the `powers.economy` import (a
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.economy.*"`
 Expected: PASS.
 
 - [ ] **Step 5: Regenerate the snapshots**
 
-Run: `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.*"`
+Run: `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.*"`
 
 Then `git diff src/test/resources`. Expected:
 - `unimplemented.txt` loses `denizen.acting-troupe`, and nothing else.

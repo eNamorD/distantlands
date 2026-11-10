@@ -1,4 +1,4 @@
-# Oath Digital
+# Distant Lands
 
 A digital implementation of the board game Oath. Rulebook terms (site, adviser,
 denizen, relic, Chronicle, campaign, recover) are defined with citations in

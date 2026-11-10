@@ -12,13 +12,13 @@
 
 ## Global Constraints
 
-- Never touch the live database `var/oathdigital`. Browser checks use a scratch copy only, on port 8081, started through Bash, never through `preview_start`.
-- Work in a git worktree: from the main checkout run `git worktree add -b card-play-slots-board .claude/worktrees/card-play-slots-board main`, then `ln -s /Users/roman/projects/oathdigital/.tooling .claude/worktrees/card-play-slots-board/.tooling`, then `EnterWorktree`. Inside the worktree run `git merge --ff-only main` first. Before merging from the main checkout, `ExitWorktree(keep)`.
+- Never touch the live database `var/distantlands`. Browser checks use a scratch copy only, on port 8081, started through Bash, never through `preview_start`.
+- Work in a git worktree: from the main checkout run `git worktree add -b card-play-slots-board .claude/worktrees/card-play-slots-board main`, then `ln -s /Users/roman/projects/distantlands/.tooling .claude/worktrees/card-play-slots-board/.tooling`, then `EnterWorktree`. Inside the worktree run `git merge --ff-only main` first. Before merging from the main checkout, `ExitWorktree(keep)`.
 - Inside the worktree keep Bash plain: no `cd` chained with git, no heredocs. Write any helper script into the session scratchpad and run it with `python3`. Use `sed -i ''` on macOS.
 - Other sessions commit to `main` while you work, and HEAD can move. Check `git log -1` before any amend or merge. Stage explicit paths only; never `git add -A`. Never commit `node_modules`, `.tooling` or `target`.
 - Commit trailer: `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>` unless the committing model is another one, in which case use that model's own line.
 - `-Werror` with `-Wunused:imports,privates,locals,implicits,nowarn` on both projects. An unused import or private member fails the build, and so does a non-exhaustive match.
-- Production Scala files stay at or under 800 lines (`scripts/check-architecture.py`). `shared/src/main` may import only `oathdigital.protocol`. `application` must not import `persistence`, `serialization` or `server`.
+- Production Scala files stay at or under 800 lines (`scripts/check-architecture.py`). `shared/src/main` may import only `distantlands.protocol`. `application` must not import `persistence`, `serialization` or `server`.
 - Codec rule: every new projection field is written always and decoded with a default, so a payload from before this plan still decodes; every `exact` field set gains the new name.
 - Visibility rule: the one function `GamePresentationProjector.identifiesCard` decides whether a viewer sees a card's face. No other test of knowledge.
 - Names rule (`model/Decisions.scala` header): a game object's name never enters a query, an answer or a validator. The projector resolves names from refs.
@@ -82,7 +82,7 @@ Append to `ProjectionProtocolSuite` (inside the class, at the end):
       Right(parked(faceup.copy(variant = None))))
 ```
 
-Add to `SlotOptionRowsSuite`. Extend its protocol import to `import oathdigital.protocol.projection.{CardDetailsProjection, DecisionOptionProjection, DecisionQueryProjection}`, then append:
+Add to `SlotOptionRowsSuite`. Extend its protocol import to `import distantlands.protocol.projection.{CardDetailsProjection, DecisionOptionProjection, DecisionQueryProjection}`, then append:
 
 ```scala
   test("an adviser play carries its facing as the word its toggle shows"):
@@ -123,7 +123,7 @@ Add to `SlotOptionRowsSuite`. Extend its protocol import to `import oathdigital.
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.protocol.ProjectionProtocolSuite oathdigital.application.SlotOptionRowsSuite"`
+Run: `./sbtw "testOnly distantlands.protocol.ProjectionProtocolSuite distantlands.application.SlotOptionRowsSuite"`
 Expected: compile errors, "value variant is not a member" and "value replacing is not a member".
 
 - [ ] **Step 3: Add the field and its codec**
@@ -236,7 +236,7 @@ Update `headed`'s doc comment: "A card play's heading names its card or its site
 
 - [ ] **Step 5: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.protocol.ProjectionProtocolSuite oathdigital.application.SlotOptionRowsSuite oathdigital.application.WalkerDecisionProjectorSuite"`
+Run: `./sbtw "testOnly distantlands.protocol.ProjectionProtocolSuite distantlands.application.SlotOptionRowsSuite distantlands.application.WalkerDecisionProjectorSuite"`
 Expected: PASS.
 
 - [ ] **Step 6: Run the gates**
@@ -429,7 +429,7 @@ and append:
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.BoardHomesSuite oathdigital.frontend.BoardOptionsRenderSuite oathdigital.frontend.PlayerBoardSuite oathdigital.frontend.DiscardPileSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.BoardHomesSuite distantlands.frontend.BoardOptionsRenderSuite distantlands.frontend.PlayerBoardSuite distantlands.frontend.DiscardPileSuite"`
 Expected: compile error "value home is not a member of object BoardOptionViews".
 
 - [ ] **Step 3: Homes in `BoardHomes`**
@@ -698,7 +698,7 @@ After the `.player-slot-vision` rule:
 
 - [ ] **Step 10: Run the tests to verify they pass**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.BoardHomesSuite oathdigital.frontend.BoardOptionsRenderSuite oathdigital.frontend.PlayerBoardSuite oathdigital.frontend.DiscardPileSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.BoardHomesSuite distantlands.frontend.BoardOptionsRenderSuite distantlands.frontend.PlayerBoardSuite distantlands.frontend.DiscardPileSuite"`
 Expected: PASS.
 
 - [ ] **Step 11: Run the gates**
@@ -874,7 +874,7 @@ In `BoardDecisionPanelSuite`, give `table` a board for red so the adviser plays 
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.BoardSelectionDraftSuite oathdigital.frontend.BoardDecisionPanelSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.BoardSelectionDraftSuite distantlands.frontend.BoardDecisionPanelSuite"`
 Expected: compile errors, "value home is not a member of BoardSelectionDraft" and "value choose is not a member".
 
 - [ ] **Step 3: Shared homes in `BoardOptionViews`**
@@ -1077,7 +1077,7 @@ After `.board-decision-row.board-option-hover`:
 
 - [ ] **Step 7: Run the tests to verify they pass**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.BoardSelectionDraftSuite oathdigital.frontend.BoardDecisionPanelSuite oathdigital.frontend.BoardOptionsRenderSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.BoardSelectionDraftSuite distantlands.frontend.BoardDecisionPanelSuite distantlands.frontend.BoardOptionsRenderSuite"`
 Expected: PASS.
 
 - [ ] **Step 8: Run the gates**
@@ -1129,12 +1129,12 @@ Update its doc comment: "`stage`, `submitCommand`, `chooseFacedownAdviser`, `can
 Create `FacedownAdviserPickSuite.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.frontend.Dom.{all, click, one}
-import oathdigital.model.PlayerColor
-import oathdigital.protocol.{GameIntent => Intent, WalkerStartArgWire}
-import oathdigital.testkit.Unwrap.as
+import distantlands.frontend.Dom.{all, click, one}
+import distantlands.model.PlayerColor
+import distantlands.protocol.{GameIntent => Intent, WalkerStartArgWire}
+import distantlands.testkit.Unwrap.as
 import org.scalajs.dom
 
 /** "Play facedown adviser" lights the player's facedown advisers on their
@@ -1212,7 +1212,7 @@ In `CardChoicePanelSuite`, delete the `adviser` helper, `draft`, `advisers` and 
 
 - [ ] **Step 3: Run the tests to verify they fail**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.FacedownAdviserPickSuite oathdigital.frontend.CardChoicePanelSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.FacedownAdviserPickSuite distantlands.frontend.CardChoicePanelSuite"`
 Expected: compile error "value facedown is not a member of object BoardOptions".
 
 - [ ] **Step 4: `BoardOptions.facedown`**
@@ -1243,7 +1243,7 @@ In the `BoardOptions` companion:
 Replace `FacedownAdviserRenderer` with:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 import org.scalajs.dom
 import ServerUiSupport._
@@ -1285,7 +1285,7 @@ private[frontend] object FacedownAdviserRenderer:
 
 - [ ] **Step 7: Run the tests to verify they pass**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.FacedownAdviserPickSuite oathdigital.frontend.CardChoicePanelSuite oathdigital.frontend.ModifierFlowSuite oathdigital.frontend.SessionDraftsSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.FacedownAdviserPickSuite distantlands.frontend.CardChoicePanelSuite distantlands.frontend.ModifierFlowSuite distantlands.frontend.SessionDraftsSuite"`
 Expected: PASS.
 
 - [ ] **Step 8: Run the gates**
@@ -1323,11 +1323,11 @@ Expected: PASS. Then `grep -n "Card play UI" docs/ROADMAP.md` prints nothing.
 From the worktree root, with `S` the session scratchpad plus `/db-card-play-board`:
 
 ```bash
-mkdir -p $S && cp var/oathdigital.script var/oathdigital.properties var/oathdigital.log $S/ && cp -r var/oathdigital.lobs $S/
+mkdir -p $S && cp var/distantlands.script var/distantlands.properties var/distantlands.log $S/ && cp -r var/distantlands.lobs $S/
 ```
 
 ```bash
-./sbtw "frontend/fastLinkJS" "runMain oathdigital.server.OathServer --port 8081 --database-path $S/oathdigital"
+./sbtw "frontend/fastLinkJS" "runMain distantlands.server.DistantLandsServer --port 8081 --database-path $S/distantlands"
 ```
 
 Run the second command through Bash with `run_in_background` and wait for "Start completed" in its log. Open `http://127.0.0.1:8081/?mode=server` in the built-in browser at 1440×900, press "New game", and play Setup through to the first Act with the default choices. Then, with `read_page` for each check, a `wait` of 1 second before each screenshot, and one screenshot per check:

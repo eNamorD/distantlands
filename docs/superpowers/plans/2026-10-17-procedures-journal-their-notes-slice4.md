@@ -133,7 +133,7 @@ Read these before writing code; three of the design's premises have moved.
   `ordinal` may move. The exceptions this slice is allowed are exactly the
   ones listed per task, and each is recorded in the ledger. No other wording
   changes, however tempting the ledger's entries are.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Stage explicit paths; never `git add -A`.
   Re-check `git log --oneline -1` before any amend, reset or rebase.
 - **Never use bare `git stash` / `git stash pop`:** the stash stack is
@@ -149,9 +149,9 @@ Read these before writing code; three of the design's premises have moved.
 - **The full gate, green before every commit:**
   `./sbtw test && ./sbtw frontend/test && ./sbtw frontend/fastLinkJS && python3 scripts/check-architecture.py`
 - **Rewriting fixtures.** `GAMELOG_GOLDEN=write ./sbtw "testOnly
-  oathdigital.application.gamelog.GameLogGoldenSuite"` rewrites the goldens;
+  distantlands.application.gamelog.GameLogGoldenSuite"` rewrites the goldens;
   `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly
-  oathdigital.gameplay.powers.DeclaredNoteKeysSuite"` rewrites
+  distantlands.gameplay.powers.DeclaredNoteKeysSuite"` rewrites
   `src/test/resources/notes/declared-keys.txt`. **Review every rewritten
   line before committing it.** A golden diff that shows anything but a
   shifted `sequence.ordinal` on a migrated line is a defect.
@@ -266,14 +266,14 @@ the golden registry.
 Create `CampaignLogScripts.scala`:
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer,
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{ChooseAmountAnswer,
   ChooseManyAnswer, ChooseOneAnswer}
-import oathdigital.testkit.{Answers, CatalogNames, Dice, MenuPlay, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.{Answers, CatalogNames, Dice, MenuPlay, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
 import LogScripts.{atTable, raidAnswers}
 
 /** The Campaign branches the older goldens never play: a won Raid's
@@ -343,7 +343,7 @@ object CampaignLogScripts:
 ```
 
 Add the imports the two scripts need and nothing more; `-Werror` fails on an
-unused one. `Park` and `Decide` come from `oathdigital.model._`.
+unused one. `Park` and `Decide` come from `distantlands.model._`.
 
 - [ ] **Step 2: Calibrate the two new scripts against the real board**
 
@@ -352,7 +352,7 @@ Neither script's arithmetic is guessed at a desk: run each and read the log.
 Create `GoldenScripts.scala`:
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
 /** Every script with a golden file, for the suites that hold for each.
   * `LogScripts` is at its size limit, so the registry lives here and the
@@ -373,7 +373,7 @@ was.
 Then write the goldens and read them:
 
 ```bash
-GAMELOG_GOLDEN=write ./sbtw "testOnly oathdigital.application.gamelog.GameLogGoldenSuite"
+GAMELOG_GOLDEN=write ./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite"
 cat src/test/resources/gamelog/raid-spoils.actor.log
 cat src/test/resources/gamelog/conquest-placed.actor.log
 ```
@@ -520,7 +520,7 @@ commit, and uncomment it in Task 3.
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.serialization.PowerNoteWireSuite"`
+Run: `./sbtw "testOnly distantlands.serialization.PowerNoteWireSuite"`
 Expected: a compile error, `NoteThing` not found.
 
 - [ ] **Step 3: Add the kind to `model`**
@@ -547,7 +547,7 @@ object NoteThing:
   /** A player's pawn, "Blue's pawn". */
   final case class Pawn(player: PlayerId) extends NoteThing
   final case class Card(id: CardId) extends NoteThing
-  final case class Banner(banner: oathdigital.model.Banner) extends NoteThing
+  final case class Banner(banner: distantlands.model.Banner) extends NoteThing
 ```
 
 Then delete `NoteClause.LostWarbands` and `NoteClause.SentTo`. Task 4's
@@ -640,7 +640,7 @@ delete the two clause cases that no longer exist.
 
 - [ ] **Step 6: Run the codec and renderer suites**
 
-Run: `./sbtw "testOnly oathdigital.serialization.* oathdigital.application.gamelog.* oathdigital.gameplay.powers.DeclaredNoteKeysSuite"`
+Run: `./sbtw "testOnly distantlands.serialization.* distantlands.application.gamelog.* distantlands.gameplay.powers.DeclaredNoteKeysSuite"`
 Expected: PASS, apart from the `ProcedureNoteLinesSuite` test that waits for
 Task 3.
 
@@ -726,13 +726,13 @@ posting the lines exactly as it does today.
 - [ ] **Step 1: Write the file**
 
 ```scala
-package oathdigital.gameplay.actions.campaign
+package distantlands.gameplay.actions.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.{BannerRules, ProcedureNotes}
-import oathdigital.gameplay.powers.NoteSupport
-import oathdigital.gameplay.powers.campaign.AttackScore
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.{BannerRules, ProcedureNotes}
+import distantlands.gameplay.powers.NoteSupport
+import distantlands.gameplay.powers.campaign.AttackScore
+import distantlands.model._
 
 /** Every Game Log line a Campaign writes about itself, and what each one
   * reads (procedures journal their own notes design, "Campaign"). The
@@ -1090,7 +1090,7 @@ In `ProcedureNotes.keys`, add, beside the other `ActionRef` arms:
       case ActionRef.Campaign => CampaignNotes.noteKeys
 ```
 
-with `import oathdigital.gameplay.actions.campaign.CampaignNotes`.
+with `import distantlands.gameplay.actions.campaign.CampaignNotes`.
 Campaign's entry is still `Rule`, which the design allows explicitly: a
 procedure listed here that has not migrated writes no note and its line
 still comes from `ProcedureLog`, and listing it means the declared-key union
@@ -1191,7 +1191,7 @@ as its back.
 
 - [ ] **Step 4: Run them**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.ProcedureNoteLinesSuite oathdigital.gameplay.powers.DeclaredNoteKeysSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.ProcedureNoteLinesSuite distantlands.gameplay.powers.DeclaredNoteKeysSuite"`
 Expected: the wording tests pass and `DeclaredNoteKeysSuite` fails on the
 snapshot, which has twenty-three new lines.
 
@@ -1204,7 +1204,7 @@ Task 4 at best, and a silently reworded line at worst.
 - [ ] **Step 5: Rewrite the key snapshot and read the diff**
 
 ```bash
-NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"
+NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"
 git diff --stat src/test/resources/notes/declared-keys.txt
 git diff src/test/resources/notes/declared-keys.txt
 ```
@@ -1715,7 +1715,7 @@ absorbed. Report it with the two strings.
 
 - [ ] **Step 7: Run the Campaign and log suites**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.* oathdigital.gameplay.campaign.* oathdigital.gameplay.CampaignProcedureSuite oathdigital.gameplay.powers.campaign.*"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.* distantlands.gameplay.campaign.* distantlands.gameplay.CampaignProcedureSuite distantlands.gameplay.powers.campaign.*"`
 
 The goldens will fail. Read each failure **before** rewriting anything: the
 expected diff is a shifted `sequence.ordinal` on every migrated line, plus
@@ -1727,7 +1727,7 @@ a golden to rewrite.
 Then rewrite and read:
 
 ```bash
-GAMELOG_GOLDEN=write ./sbtw "testOnly oathdigital.application.gamelog.GameLogGoldenSuite"
+GAMELOG_GOLDEN=write ./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite"
 git diff src/test/resources/gamelog/
 ```
 

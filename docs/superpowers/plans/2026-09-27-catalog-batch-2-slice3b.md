@@ -31,7 +31,7 @@
 - Import rules:
   - `gameplay` never imports `application`, `serialization` or `server`.
   - A walker power (anything under `gameplay/powers`) never imports `gameplay.walker`.
-- Never touch the live database `var/oathdigital`.
+- Never touch the live database `var/distantlands`.
 - Other sessions commit to `main` while you work. Stage explicit paths only; never `git add -A`. Re-check `git log --oneline -1` before any amend, reset or rebase.
 - Work in a git worktree:
   - `EnterWorktree` branches from `origin`, which lags local `main`. Fast-forward the new branch to local `main` first.
@@ -140,7 +140,7 @@ In `ShuffleOperationSuite.scala`, add at the end:
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.application.CardKnowledgeSuite oathdigital.gameplay.operations.ShuffleOperationSuite"`
+Run: `./sbtw "testOnly distantlands.application.CardKnowledgeSuite distantlands.gameplay.operations.ShuffleOperationSuite"`
 Expected: FAIL. The peeker is not told the card ("to its peeker"), and the shuffled pile is still known.
 
 - [ ] **Step 3: Name a peeked pile card to its peeker**
@@ -212,7 +212,7 @@ with:
 
 - [ ] **Step 5: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.application.CardKnowledgeSuite oathdigital.gameplay.operations.ShuffleOperationSuite oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.application.CardKnowledgeSuite distantlands.gameplay.operations.ShuffleOperationSuite distantlands.application.gamelog.*"`
 Expected: PASS, the game log suites included.
 
 - [ ] **Step 6: Commit**
@@ -294,12 +294,12 @@ In `LogPageCodecSuite.scala`, add at the end:
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogPowerLinesSuite oathdigital.protocol.LogPageCodecSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogPowerLinesSuite distantlands.protocol.LogPageCodecSuite"`
 Expected: compilation FAILS: `LogSpan.Cards` and `LogSpanWire`'s `cards` do not exist.
 
 - [ ] **Step 3: Add the span and its wire field**
 
-In `LogEntry.scala`, add the import `import oathdigital.protocol.projection.CardDetailsProjection` below the package line, and add a case after `Cost` in `object LogSpan`:
+In `LogEntry.scala`, add the import `import distantlands.protocol.projection.CardDetailsProjection` below the package line, and add a case after `Cost` in `object LogSpan`:
 
 ```scala
   /** More cards than a line names inline, read as "6 cards": the list a
@@ -380,7 +380,7 @@ In `LogWords.scala`, after `def one(word: CardWord)`, add:
 
   /** A card as a card list shows it: its face when named, else its back. */
   private def face(id: CardId, word: CardWord)
-      : oathdigital.protocol.projection.CardDetailsProjection = word match
+      : distantlands.protocol.projection.CardDetailsProjection = word match
     case CardWord.Named(_) => presentation.cardDetails(id, None, hidden = false)
     case CardWord.Back(_) => presentation.hiddenCard(id match
       case _: RelicId => "relic"
@@ -409,7 +409,7 @@ with:
 
 - [ ] **Step 5: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.* oathdigital.protocol.LogPageCodecSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.* distantlands.protocol.LogPageCodecSuite"`
 Expected: PASS.
 
 - [ ] **Step 6: Commit**
@@ -453,9 +453,9 @@ git commit -m "feat(log): a note's list of more than five cards opens as a card 
 Create `src/test/scala/distantlands/gameplay/walker/InspectQuerySuite.scala`:
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.model.{DecisionAnswer, DecisionOptionRef, DecisionQuery,
+import distantlands.model.{DecisionAnswer, DecisionOptionRef, DecisionQuery,
   DenizenId, OathViolation, PlayerId}
 
 /** The `Inspect` decision (catalog batch 2, N5): cards to look at and one
@@ -513,7 +513,7 @@ In `ProjectionProtocolSuite.scala`, after the test "a ranged distribute query ro
       Right(carrying))
 ```
 
-In `GameLogPowerLinesSuite.scala`, add `ChoicePayload` to the `oathdigital.gameplay.walker` import, and after the test "more than five cards its viewer may identify none of read as a count" add:
+In `GameLogPowerLinesSuite.scala`, add `ChoicePayload` to the `distantlands.gameplay.walker` import, and after the test "more than five cards its viewer may identify none of read as a count" add:
 
 ```scala
 
@@ -533,7 +533,7 @@ In `GameLogPowerLinesSuite.scala`, add `ChoicePayload` to the `oathdigital.gamep
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.InspectQuerySuite oathdigital.protocol.ProjectionProtocolSuite oathdigital.application.gamelog.GameLogPowerLinesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.InspectQuerySuite distantlands.protocol.ProjectionProtocolSuite distantlands.application.gamelog.GameLogPowerLinesSuite"`
 Expected: compilation FAILS: `DecisionQuery.Inspect` and `DecisionQueryProjection.Inspect` do not exist.
 
 - [ ] **Step 3: Declare the query and validate it**
@@ -671,7 +671,7 @@ If the compiler reports another exhaustive match over `DecisionQuery` or `Decisi
 
 - [ ] **Step 5: Run the server and shared tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.* oathdigital.protocol.* oathdigital.application.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.* distantlands.protocol.* distantlands.application.*"`
 Expected: PASS.
 
 - [ ] **Step 6: Write the failing frontend tests**
@@ -690,10 +690,10 @@ In `ParkedDecisionSuite.scala`, after the test "each form routes to the surface 
 Create `frontend/src/test/scala/distantlands/frontend/InspectPanelSuite.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 import org.scalajs.dom
-import oathdigital.protocol.{DecisionAnswerWire, GameIntent}
+import distantlands.protocol.{DecisionAnswerWire, GameIntent}
 
 /** The Inspect decision's panel: the cards in order, faces and backs, and
   * the one Done button. Runs under jsdom. */
@@ -739,7 +739,7 @@ class InspectPanelSuite extends munit.FunSuite:
 
 - [ ] **Step 7: Run the frontend tests to verify they fail**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.ParkedDecisionSuite oathdigital.frontend.InspectPanelSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.ParkedDecisionSuite distantlands.frontend.InspectPanelSuite"`
 Expected: compilation FAILS: `Surface.Inspect` and `InspectPanel` do not exist (and `formSurface` no longer covers every form).
 
 - [ ] **Step 8: Build the card list, the panel and the route**
@@ -747,7 +747,7 @@ Expected: compilation FAILS: `Surface.Inspect` and `InspectPanel` do not exist (
 Create `frontend/src/main/scala/distantlands/frontend/CardList.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 import org.scalajs.dom
 import ServerUiSupport.{element, text}
@@ -774,7 +774,7 @@ private[frontend] object CardList:
 Create `frontend/src/main/scala/distantlands/frontend/InspectPanel.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 import org.scalajs.dom
 import ServerUiSupport.{button, text}
@@ -871,14 +871,14 @@ Add any file the compiler made you touch in Step 4 to this list.
 Create `src/test/scala/distantlands/gameplay/powers/action/ScryerSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.application.GamePresentationProjector
-import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture,
+import distantlands.application.GamePresentationProjector
+import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture,
   TargetsFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.protocol.projection.DecisionQueryProjection
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.protocol.projection.DecisionQueryProjection
 
 class ScryerSuite extends munit.FunSuite:
   import PowerFixture._
@@ -968,14 +968,14 @@ class ScryerSuite extends munit.FunSuite:
 Create `src/test/scala/distantlands/gameplay/powers/action/OracularPigSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.application.GamePresentationProjector
-import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture,
+import distantlands.application.GamePresentationProjector
+import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture,
   TargetsFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.protocol.projection.DecisionQueryProjection
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.protocol.projection.DecisionQueryProjection
 
 class OracularPigSuite extends munit.FunSuite:
   import PowerFixture._
@@ -1047,7 +1047,7 @@ class OracularPigSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.ScryerSuite oathdigital.gameplay.powers.action.OracularPigSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.ScryerSuite distantlands.gameplay.powers.action.OracularPigSuite"`
 Expected: compilation FAILS: `Scryer` and `OracularPig` do not exist.
 
 - [ ] **Step 3: Implement Scryer**
@@ -1055,9 +1055,9 @@ Expected: compilation FAILS: `Scryer` and `OracularPig` do not exist.
 Create `src/main/scala/distantlands/gameplay/powers/action/Scryer.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Scryer (denizen 19), ACTION: place 1 secret on this card, then peek at
   * any one discard pile.
@@ -1136,9 +1136,9 @@ case object Scryer extends PaidAction("denizen.scryer", Cost(secret = 1)):
 Create `src/main/scala/distantlands/gameplay/powers/action/OracularPig.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Oracular Pig (relic R14), ACTION, no cost: peek at the top 3 cards of the
   * world deck.
@@ -1185,7 +1185,7 @@ In `SelfActionPowers.scala`, make the list:
 
 - [ ] **Step 6: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.*"`
 Expected: PASS, `PowerNoteCatalogSuite` and `BackendArchitectureSuite` included.
 
 - [ ] **Step 7: Commit**
@@ -1271,7 +1271,7 @@ In `CardInspectionOverlaySuite.scala`, add at the end:
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.GameLogPaneSuite oathdigital.frontend.CardInspectionOverlaySuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.GameLogPaneSuite distantlands.frontend.CardInspectionOverlaySuite"`
 Expected: compilation FAILS: `CardInspection.Request.Cards` and `showCards` do not exist.
 
 - [ ] **Step 3: Open a card list from the log**
@@ -1384,7 +1384,7 @@ In `PowerImplementationStatusSuite.scala`, after the test "catalog batch 2's fir
       .foreach(id => assert(implemented(PowerId(id)), id))
 ```
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.PowerImplementationStatusSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.PowerImplementationStatusSuite"`
 Expected: PASS.
 
 - [ ] **Step 2: Record the slice**

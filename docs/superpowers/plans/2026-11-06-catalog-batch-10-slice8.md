@@ -6,7 +6,7 @@
 
 **Architecture:**
 - **No new primitive.** The fact "this Recover takes from the relic deck" is Drowned Library's pick, which the walk's answers already record. Answers survive a park and replay, so every reader works it out from them.
-  - The card object `UndergroundLibraryCard` moves down beside `RecoverProcedure`, as `ActingTroupeCard` moved into `oathdigital.gameplay` in slice 7.
+  - The card object `UndergroundLibraryCard` moves down beside `RecoverProcedure`, as `ActingTroupeCard` moved into `distantlands.gameplay` in slice 7.
   - `RecoverProcedure.fromRelicDeck(answered)` is `ModifierPicks.isPicked(answered, RecoverModifierSelection, E13)`. `RecoverProcedure.relicDeckDifficulty` is 5.
   - Recover names this one card, as `EffectiveSuit` names Acting Troupe. A general seam waits for a second card that sets where a Recover's relic comes from.
 - **`RecoverProcedure` reads the pick.**
@@ -62,7 +62,7 @@ This is the eighth of 14 slice plans, written against `0.2.0-alpha` at `0b419ab6
   - `./sbtw clean coverage test coverageReport`, with statement coverage of at least 92%
   - `python3 scripts/check-architecture.py`, which caps files at 800 lines and enforces the layer import rules
   - `python3 scripts/check-markdown-links.py`
-- **Snapshots:** regenerate with `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.*"`, then read the diff. Commit only the lines the task explains. The files are `src/test/resources/notes/declared-keys.txt` and `src/test/resources/powers/unimplemented.txt`.
+- **Snapshots:** regenerate with `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.*"`, then read the diff. Commit only the lines the task explains. The files are `src/test/resources/notes/declared-keys.txt` and `src/test/resources/powers/unimplemented.txt`.
 - **Test helpers:** a helper's name states what it builds (memory: "Descriptive helper names").
 - **Modifier icon:** Drowned Library's printed power gains `modifier = Some(ModifierMark.Action(MajorActionType.Recover))` (spec, "Catalog corrections").
 
@@ -81,7 +81,7 @@ This is the eighth of 14 slice plans, written against `0.2.0-alpha` at `0b419ab6
 
 **Interfaces:**
 - Produces:
-  - `object UndergroundLibraryCard` in package `oathdigital.gameplay.actions.recover`, unchanged but for the ruined power's modifier icon.
+  - `object UndergroundLibraryCard` in package `distantlands.gameplay.actions.recover`, unchanged but for the ruined power's modifier icon.
   - `RecoverProcedure.relicDeckDifficulty: Int = 5`.
   - `RecoverProcedure.fromRelicDeck(answered: Vector[Answered]): Boolean`.
   - `RecoverProcedure.difficulty(catalog: ExecutableCatalog, ready: ReadyGame, actor: PlayerId, answered: Vector[Answered]): Option[Int]`.
@@ -91,7 +91,7 @@ This is the eighth of 14 slice plans, written against `0.2.0-alpha` at `0b419ab6
 - [ ] **Step 1: Write the failing tests**
 
 In `RecoverProcedureSuite.scala`:
-- Add `import oathdigital.gameplay.actions.recover.UndergroundLibraryCard` beside the `RecoverProcedure` import, and `import oathdigital.gameplay.cards.DeepWoodsSite` beside the `FairIsleSite` import.
+- Add `import distantlands.gameplay.actions.recover.UndergroundLibraryCard` beside the `RecoverProcedure` import, and `import distantlands.gameplay.cards.DeepWoodsSite` beside the `FairIsleSite` import.
 - Add these members after `recoverBoard`:
 
 ```scala
@@ -207,7 +207,7 @@ Add these tests after the test "a successful Recover with no facedown relic fini
       Some(RecoverProcedure.relicDeckDifficulty))
 ```
 
-In `RecoverEligibilitySuite.scala`, add `import oathdigital.gameplay.cards.DeepWoodsSite` and this test:
+In `RecoverEligibilitySuite.scala`, add `import distantlands.gameplay.cards.DeepWoodsSite` and this test:
 
 ```scala
   test("Recover is not available at a site with no Recover difficulty"):
@@ -217,8 +217,8 @@ In `RecoverEligibilitySuite.scala`, add `import oathdigital.gameplay.cards.DeepW
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.RecoverProcedureSuite oathdigital.gameplay.RecoverEligibilitySuite"`
-Expected: compile failure, "value UndergroundLibraryCard is not a member of oathdigital.gameplay.actions.recover" (and `relicDeckDifficulty`, `noDifficulty`, `relicDeckOption`).
+Run: `./sbtw "testOnly distantlands.gameplay.RecoverProcedureSuite distantlands.gameplay.RecoverEligibilitySuite"`
+Expected: compile failure, "value UndergroundLibraryCard is not a member of distantlands.gameplay.actions.recover" (and `relicDeckDifficulty`, `noDifficulty`, `relicDeckOption`).
 
 - [ ] **Step 3: Move the card**
 
@@ -226,12 +226,12 @@ Create `src/main/scala/distantlands/gameplay/actions/recover/UndergroundLibraryC
 - The ruined face's `PrintedPower` gains `modifier = Some(ModifierMark.Action(MajorActionType.Recover)),` after its `cost`.
 - A doc comment on the object: "Underground Library (E13). The card lives beside the Recover, which reads Drowned Library's pick (`RecoverProcedure.fromRelicDeck`); its powers are `UndergroundLibrary` (intact) and `DrownedLibrary` (ruined)."
 
-Its imports: `oathdigital.catalog.{Edifice, EdificeFace, Locked, ModifierMark, PrintedPower}` and `oathdigital.model._`.
+Its imports: `distantlands.catalog.{Edifice, EdificeFace, Locked, ModifierMark, PrintedPower}` and `distantlands.model._`.
 
 Then:
-- In `UndergroundLibrary.scala`, delete the card object, import `oathdigital.gameplay.actions.recover.UndergroundLibraryCard`, and drop the catalog imports nothing uses any more (`ExecutableCatalog` stays: `build` takes it).
-- In `UndergroundLibrary`'s doc, replace the last sentence ("The ruined face, Drowned Library, needs a Recover whose source a power sets and is not implemented.") with "The ruined face is [[oathdigital.gameplay.powers.recover.DrownedLibrary]]."
-- In `NewFoundations.scala`, add `import oathdigital.gameplay.actions.recover.UndergroundLibraryCard`.
+- In `UndergroundLibrary.scala`, delete the card object, import `distantlands.gameplay.actions.recover.UndergroundLibraryCard`, and drop the catalog imports nothing uses any more (`ExecutableCatalog` stays: `build` takes it).
+- In `UndergroundLibrary`'s doc, replace the last sentence ("The ruined face, Drowned Library, needs a Recover whose source a power sets and is not implemented.") with "The ruined face is [[distantlands.gameplay.powers.recover.DrownedLibrary]]."
+- In `NewFoundations.scala`, add `import distantlands.gameplay.actions.recover.UndergroundLibraryCard`.
 - In `UndergroundLibrarySuite.scala`, add the same import.
 
 - [ ] **Step 4: Read the pick in `RecoverProcedure`**
@@ -421,10 +421,10 @@ In `RecoverProcedure.scala`:
 
 - [ ] **Step 5: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.RecoverProcedureSuite oathdigital.gameplay.RecoverEligibilitySuite oathdigital.gameplay.CatacombsContributionSuite oathdigital.gameplay.powers.recover.* oathdigital.gameplay.powers.action.UndergroundLibrarySuite oathdigital.application.GameApplicationServiceRecoverSuite oathdigital.gameplay.WalkerReplayDriftSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.RecoverProcedureSuite distantlands.gameplay.RecoverEligibilitySuite distantlands.gameplay.CatacombsContributionSuite distantlands.gameplay.powers.recover.* distantlands.gameplay.powers.action.UndergroundLibrarySuite distantlands.application.GameApplicationServiceRecoverSuite distantlands.gameplay.WalkerReplayDriftSuite"`
 Expected: all pass. The existing Recover suites must pass unchanged, since no walker path shifts.
 
-Then run `python3 scripts/check-architecture.py`. `cards.NewFoundations` already imports `oathdigital.gameplay` and `gameplay.operations`; if the checker refuses its import of `gameplay.actions.recover`, stop and report rather than move the card elsewhere.
+Then run `python3 scripts/check-architecture.py`. `cards.NewFoundations` already imports `distantlands.gameplay` and `gameplay.operations`; if the checker refuses its import of `gameplay.actions.recover`, stop and report rather than move the card elsewhere.
 
 - [ ] **Step 6: Commit**
 
@@ -467,32 +467,32 @@ EOF
 **Interfaces:**
 - Consumes: `UndergroundLibraryCard`, `RecoverProcedure.relicDeckOption`, `relicDecisionId`, `choiceDecisionId` (Task 1).
 - Produces:
-  - `trait OnEdificeFace extends ContributingPower` in `oathdigital.gameplay.powerresolver`, with `def edifice: EdificeId`, `def side: EdificeSide` and `final def faceUp(ready: ReadyGame): Boolean`.
-  - `case object DrownedLibrary extends OnEdificeFace` in `oathdigital.gameplay.powers.recover`, with `awayFromLibrary: String` and `emptyRelicDeck: String`.
+  - `trait OnEdificeFace extends ContributingPower` in `distantlands.gameplay.powerresolver`, with `def edifice: EdificeId`, `def side: EdificeSide` and `final def faceUp(ready: ReadyGame): Boolean`.
+  - `case object DrownedLibrary extends OnEdificeFace` in `distantlands.gameplay.powers.recover`, with `awayFromLibrary: String` and `emptyRelicDeck: String`.
 
 - [ ] **Step 1: Write the failing tests**
 
 Create `src/test/scala/distantlands/gameplay/powers/recover/DrownedLibrarySuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.recover
+package distantlands.gameplay.powers.recover
 
-import oathdigital.gameplay.{ModifierPlay, OathRules}
-import oathdigital.gameplay.WalkerDiceFixture.scripted
-import oathdigital.gameplay.actions.recover.{RecoverProcedure,
+import distantlands.gameplay.{ModifierPlay, OathRules}
+import distantlands.gameplay.WalkerDiceFixture.scripted
+import distantlands.gameplay.actions.recover.{RecoverProcedure,
   UndergroundLibraryCard}
-import oathdigital.gameplay.cards.{BrokenPeaksSite, DeepWoodsSite,
+import distantlands.gameplay.cards.{BrokenPeaksSite, DeepWoodsSite,
   FairIsleSite}
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, Look, MenuPlay, Outcomes,
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, Look, MenuPlay, Outcomes,
   ParkedNode, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 /** Drowned Library (E13, ruined), a Recover modifier for 1 secret: with
   * the user's pawn at its site, the Recover takes the relic deck's top card
@@ -633,7 +633,7 @@ Notes on the fixtures:
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.recover.DrownedLibrarySuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.recover.DrownedLibrarySuite"`
 Expected: compile failure, "Not found: DrownedLibrary".
 
 - [ ] **Step 3: Add `OnEdificeFace` and list by face**
@@ -654,7 +654,7 @@ trait OnEdificeFace extends ContributingPower:
     ready.game.current.edificeSite(edifice, side).nonEmpty
 ```
 
-`ContributingPower.scala` imports model names one by one: add `EdificeId` and `EdificeSide` to its `oathdigital.model.{...}` import.
+`ContributingPower.scala` imports model names one by one: add `EdificeId` and `EdificeSide` to its `distantlands.model.{...}` import.
 
 In `ModifierChoice.candidates`, add the face to the filter:
 
@@ -678,15 +678,15 @@ Add `OnEdificeFace` to the `powerresolver` import. In the class doc, after "then
 Create `src/main/scala/distantlands/gameplay/powers/recover/DrownedLibrary.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.recover
+package distantlands.gameplay.powers.recover
 
-import oathdigital.gameplay.PowerAccess
-import oathdigital.gameplay.actions.recover.UndergroundLibraryCard
-import oathdigital.gameplay.operations.Costs
-import oathdigital.gameplay.powerresolver.{Contribution, OfferReason,
+import distantlands.gameplay.PowerAccess
+import distantlands.gameplay.actions.recover.UndergroundLibraryCard
+import distantlands.gameplay.operations.Costs
+import distantlands.gameplay.powerresolver.{Contribution, OfferReason,
   OnEdificeFace, PowerCtx, PowerUse}
-import oathdigital.gameplay.powers.{CatalogResolution, SelectedModifier}
-import oathdigital.model._
+import distantlands.gameplay.powers.{CatalogResolution, SelectedModifier}
+import distantlands.model._
 
 /** Drowned Library (E13, ruined), a Recover modifier for 1 secret: "If your
   * pawn is at this site, you may recover the top card of the relic deck
@@ -759,14 +759,14 @@ In `WalkerPowerCatalog.scala:65`, register it after `CatacombsContribution`: `Ve
 
 - [ ] **Step 5: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.recover.* oathdigital.gameplay.CatacombsContributionSuite oathdigital.gameplay.RecoverProcedureSuite oathdigital.gameplay.powers.economy.*ModifierChoiceSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.recover.* distantlands.gameplay.CatacombsContributionSuite distantlands.gameplay.RecoverProcedureSuite distantlands.gameplay.powers.economy.*ModifierChoiceSuite"`
 Expected: all pass.
 
 If "it makes a site with no Recover difficulty recoverable" fails because the menu refuses, check that `QueuedStart.priced` reaches the pick: `WalkerSimulation.started` searches the modifier decision, and the Recover after it must see the pick in the answers it walks with. Do not move the refusal back to `recoveryAt`.
 
 - [ ] **Step 6: Regenerate the snapshots**
 
-Run: `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.*"`
+Run: `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.*"`
 
 Then `git diff src/test/resources`. Expected:
 - `unimplemented.txt` loses `edifice.e13.ruined`.

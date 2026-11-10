@@ -16,7 +16,7 @@
 - Walker sources (`gameplay/walker/`) must not name any power. Powers (`gameplay/powers/`) must not import `gameplay.walker`.
 - Journals are forward-only. New optional wire fields are written only when they differ from the default, and decode with the default when absent, so existing recorded events stay byte-identical.
 - Replay re-runs recorded operations through `OperationPipeline`. Anything the pipeline derives from state (off-turn settlement) must be derived again identically from the recorded, canonical operation.
-- Run one suite with `./sbtw "testOnly oathdigital.gameplay.SuiteName"`. Run everything with `./sbtw test`.
+- Run one suite with `./sbtw "testOnly distantlands.gameplay.SuiteName"`. Run everything with `./sbtw test`.
 - Commit messages end with `Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>`. Doc and code comments are normal prose.
 
 ## Decisions the plan makes where the spec was silent
@@ -65,11 +65,11 @@ Modify:
 Create `src/test/scala/distantlands/gameplay/OperationVocabularySuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.operations._
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model._
+import distantlands.gameplay.operations._
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model._
 
 class OperationVocabularySuite extends munit.FunSuite {
   private val base = initialReady
@@ -170,7 +170,7 @@ class OperationVocabularySuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run the suite to confirm it fails to compile**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OperationVocabularySuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.OperationVocabularySuite"`
 Expected: compile errors for `Give(... required)`, `BuryableCard.Vision`, `Bury.standard`.
 
 - [ ] **Step 3: Implement in `CoreOperations.scala`**
@@ -247,7 +247,7 @@ Mirror the exact shape of the neighbouring `BuryableCard.Edifice` case (read it 
 
 - [ ] **Step 5: Run the suite and the neighbouring suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OperationVocabularySuite oathdigital.gameplay.CoreOperationsSuite oathdigital.gameplay.OperationPipelineSuite oathdigital.serialization.GameEventWireSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.OperationVocabularySuite distantlands.gameplay.CoreOperationsSuite distantlands.gameplay.OperationPipelineSuite distantlands.serialization.GameEventWireSuite"`
 Expected: PASS. If the Vision bury test fails on a card-index or location rule, read `OperationValidator.cardViolations` and `OperationStateMutation` (`case bury: Bury`) and fix the vision case there. Do not weaken the test.
 
 - [ ] **Step 6: Commit**
@@ -284,11 +284,11 @@ git commit -m "feat: add Give.required, BuryableCard.Vision and Bury.standard"
 Create `src/test/scala/distantlands/gameplay/PayCostSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.operations._
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model._
+import distantlands.gameplay.operations._
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model._
 
 class PayCostSuite extends munit.FunSuite {
   private val base = initialReady
@@ -360,11 +360,11 @@ class PayCostSuite extends munit.FunSuite {
 Create `src/test/scala/distantlands/serialization/PayCostWireSuite.scala`:
 
 ```scala
-package oathdigital.serialization
+package distantlands.serialization
 
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.walker.{DeltaMeaning, WalkerStepPayload, WalkerStepRecorded}
-import oathdigital.model._
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.walker.{DeltaMeaning, WalkerStepPayload, WalkerStepRecorded}
+import distantlands.model._
 
 class PayCostWireSuite extends munit.FunSuite {
   private val player = PlayerId("red")
@@ -397,7 +397,7 @@ class PayCostWireSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run to confirm failure**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.PayCostSuite oathdigital.serialization.PayCostWireSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.PayCostSuite distantlands.serialization.PayCostWireSuite"`
 Expected: compile errors for `intoOccupied`, `matchingBank`, `Costs.onCard`.
 
 - [ ] **Step 3: Extend `PayCost`**
@@ -425,9 +425,9 @@ In `OperationError.scala`, after `IncompatibleLocation`:
 Create `PayCostRules.scala`:
 
 ```scala
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The placement rule for costs: a cost is placed onto a card only when the
   * card is empty. Battle plans opt out with `PayCost.intoOccupied`. Burnt
@@ -553,7 +553,7 @@ and the decode case:
 
 - [ ] **Step 6: Run the suites, then the whole gameplay tree**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.PayCostSuite oathdigital.serialization.PayCostWireSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.PayCostSuite distantlands.serialization.PayCostWireSuite"`
 Expected: PASS.
 
 Run: `./sbtw test`
@@ -589,11 +589,11 @@ git commit -m "feat: place PayCost costs only onto empty cards, with intoOccupie
 Create `PayCostSettlementSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.operations._
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model._
+import distantlands.gameplay.operations._
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model._
 
 class PayCostSettlementSuite extends munit.FunSuite {
   private val base = initialReady
@@ -682,7 +682,7 @@ class PayCostSettlementSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run to confirm failure**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.PayCostSettlementSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.PayCostSettlementSuite"`
 Expected: the first two tests fail (the payment rests on the card). The occupied-card test fails with `card-occupied`.
 
 - [ ] **Step 3: Add `offTurn` and the settled children**
@@ -725,9 +725,9 @@ In `PayCostRules.violations` change the guard to `if !pay.intoOccupied && !pay.o
 - [ ] **Step 5: Create `PayCostSettlement.scala`**
 
 ```scala
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Outside its own turn a player pays at once: favor goes straight to the
   * matching suit bank and secrets flip facedown, so nothing rests on the card.
@@ -780,7 +780,7 @@ and add to `OperationRun.canonical`: `case value: PayCost => value.copy(offTurn 
 
 - [ ] **Step 7: Run**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.PayCostSettlementSuite oathdigital.gameplay.PayCostSuite oathdigital.gameplay.OperationPipelineSuite oathdigital.gameplay.WalkerReplayDriftSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.PayCostSettlementSuite distantlands.gameplay.PayCostSuite distantlands.gameplay.OperationPipelineSuite distantlands.gameplay.WalkerReplayDriftSuite"`
 Expected: PASS.
 
 Run: `./sbtw test`
@@ -819,10 +819,10 @@ The rule (rulings, "Rules that apply to every power"): cards at your site, cards
 Create `PowerAccessSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model._
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model._
 
 class PowerAccessSuite extends munit.FunSuite {
   private val base = initialReady
@@ -946,16 +946,16 @@ class PowerAccessSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run to confirm failure**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.PowerAccessSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.PowerAccessSuite"`
 Expected: compile error, `PowerAccess` does not exist.
 
 - [ ] **Step 3: Create `PowerAccess.scala`**
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.model._
+import distantlands.gameplay.actions.BannerRules
+import distantlands.model._
 
 /** The rulebook's access rule for using a card's power: cards at your site,
   * cards at sites you rule, and everything in your play area (relics,
@@ -1057,11 +1057,11 @@ Replace the body of `accessible` and delete `rules`:
     PowerAccess.accessible(source.source, source.face, ready, player)
 ```
 
-Fix the imports: `import oathdigital.gameplay.{IndexedRuleSource, PowerAccess, RuleSourceIndex}`, and remove `RuleSourceAccess`, `RuleSourceFace` and any other import that is now unused. Update the scaladoc above `accessible` to point at `PowerAccess`.
+Fix the imports: `import distantlands.gameplay.{IndexedRuleSource, PowerAccess, RuleSourceIndex}`, and remove `RuleSourceAccess`, `RuleSourceFace` and any other import that is now unused. Update the scaladoc above `accessible` to point at `PowerAccess`.
 
 - [ ] **Step 5: Move Catacombs onto `PowerAccess`**
 
-In `CatacombsContribution.scala` add `import oathdigital.gameplay.PowerAccess` and `import oathdigital.gameplay.operations.Costs`. Replace `applicable`:
+In `CatacombsContribution.scala` add `import distantlands.gameplay.PowerAccess` and `import distantlands.gameplay.operations.Costs`. Replace `applicable`:
 
 ```scala
   // Stable across the action: card presence, never the relic/secrets spent.
@@ -1097,7 +1097,7 @@ Update the class comment: the card may sit at the pawn's site, at a site the act
 
 - [ ] **Step 7: Run**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.PowerAccessSuite oathdigital.gameplay.PhasePowerSuite oathdigital.gameplay.CatacombsContributionSuite oathdigital.application.GameApplicationServiceSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.PowerAccessSuite distantlands.gameplay.PhasePowerSuite distantlands.gameplay.CatacombsContributionSuite distantlands.application.GameApplicationServiceSuite"`
 Expected: PASS.
 
 - [ ] **Step 8: Commit**
@@ -1258,7 +1258,7 @@ Add to `PayCostWireSuite.scala`:
 
 - [ ] **Step 3: Run to confirm failure**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.PhasePowerSuite oathdigital.serialization.PayCostWireSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.PhasePowerSuite distantlands.serialization.PayCostWireSuite"`
 Expected: compile errors for `cost`, `PowerSourceRef.Banner`, `PowerSource.source`.
 
 - [ ] **Step 4: Implement the model and codec pieces**
@@ -1278,7 +1278,7 @@ Expected: compile errors for `cost`, `PowerSourceRef.Banner`, `PowerSource.sourc
 
 ```scala
   /** A banner whose printed face power was used. */
-  final case class Banner(banner: oathdigital.model.Banner) extends PowerSourceRef
+  final case class Banner(banner: distantlands.model.Banner) extends PowerSourceRef
 ```
 
 `WalkerOperationCodec.scala`: add to the encode `source match`:
@@ -1306,14 +1306,14 @@ and replace the decode `source <-` line:
 Replace the file body below the scaladoc (keep `timingOf`, `find`, `single`):
 
 ```scala
-package oathdigital.gameplay.phases
+package distantlands.gameplay.phases
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.{IndexedRuleSource, PowerAccess, RuleSourceIndex}
-import oathdigital.gameplay.operations.Costs
-import oathdigital.model.OathViolation._
-import oathdigital.gameplay.powerresolver.{PhasePower, PhasePowers}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.{IndexedRuleSource, PowerAccess, RuleSourceIndex}
+import distantlands.gameplay.operations.Costs
+import distantlands.model.OathViolation._
+import distantlands.gameplay.powerresolver.{PhasePower, PhasePowers}
+import distantlands.model._
 
 /** Use Power (rest-walker spec, Phase powers).
   *
@@ -1504,7 +1504,7 @@ In `PhasePowerProjector.scala` change the call to `printed(usable.source, usable
 
 ```scala
   private def printed(source: PowerSourceRef, power: PowerId)
-      : Option[(String, oathdigital.catalog.CatalogPower)] = source match {
+      : Option[(String, distantlands.catalog.CatalogPower)] = source match {
     case PowerSourceRef.Card(id: DenizenId) =>
       catalog.denizens.find(_.id.value == id.value)
         .flatMap(d => d.powers.find(_.id == power).map(d.name -> _))
@@ -1523,7 +1523,7 @@ Then fix every remaining compile error: `grep -rn "usable\.card\|PowerSource(\|P
 
 - [ ] **Step 7: Run**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.PhasePowerSuite oathdigital.application.PhasePowerProjectorSuite oathdigital.serialization.PayCostWireSuite oathdigital.gameplay.RestWalkerSuite oathdigital.gameplay.TakeWealthProcedureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.PhasePowerSuite distantlands.application.PhasePowerProjectorSuite distantlands.serialization.PayCostWireSuite distantlands.gameplay.RestWalkerSuite distantlands.gameplay.TakeWealthProcedureSuite"`
 Expected: PASS.
 
 Then `./sbtw test`. Expected: PASS. If `DecisionOption.forRef` or the projector cannot render an `Edifice` ref, add the case where `forRef` lives and add a projector test that mirrors the edifice source test above.
@@ -1554,11 +1554,11 @@ git commit -m "feat: phase powers carry a cost, accept edifice and banner source
 - [ ] **Step 1: Write the failing test**
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.powers.CatalogResolution
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model._
+import distantlands.gameplay.powers.CatalogResolution
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model._
 
 /** Pins the catalog flags the first powers batch depends on. A modifier is
   * catalogued `persistent: false` and a persistent rule `persistent: true`.
@@ -1597,7 +1597,7 @@ class PowerKindsCatalogSuite extends munit.FunSuite {
   test("Dazzle is a When Played power whatever its flag: it must fire on the " +
       "play, so it does not derive its resolution from the flag") {
     assertEquals(flag("denizen.dazzle"), Some(false))
-    assertEquals(oathdigital.gameplay.powers.whenplayed.Dazzle
+    assertEquals(distantlands.gameplay.powers.whenplayed.Dazzle
       .forCatalog(catalog).get.resolution, PowerResolution.Automatic)
   }
 }
@@ -1605,16 +1605,16 @@ class PowerKindsCatalogSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run to confirm failure**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.PowerKindsCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.PowerKindsCatalogSuite"`
 Expected: compile error, `CatalogResolution` does not exist.
 
 - [ ] **Step 3: Create `CatalogResolution.scala`**
 
 ```scala
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.catalog.{CatalogPower, ExecutableCatalog}
-import oathdigital.model.{PowerId, PowerResolution}
+import distantlands.catalog.{CatalogPower, ExecutableCatalog}
+import distantlands.model.{PowerId, PowerResolution}
 
 /** How a modifier or a persistent rule activates, read from the catalog: a
   * persistent power is automatic, a non-persistent one is selected by the
@@ -1646,7 +1646,7 @@ object CatalogResolution {
     CatalogResolution.of(catalog, id)
 ```
 
-and import `oathdigital.gameplay.powers.CatalogResolution`. In `LeagueTreatyContribution.scala` add the same override, since the treaty is persistent, so `Automatic`, as before.
+and import `distantlands.gameplay.powers.CatalogResolution`. In `LeagueTreatyContribution.scala` add the same override, since the treaty is persistent, so `Automatic`, as before.
 
 - [ ] **Step 5: Record the refinement in the design doc**
 
@@ -1658,7 +1658,7 @@ In `docs/superpowers/specs/2026-09-20-powers-design.md`, replace the body of "E2
 
 - [ ] **Step 6: Run and commit**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.PowerKindsCatalogSuite oathdigital.gameplay.CatacombsContributionSuite oathdigital.gameplay.powers.rest.LeagueTreatySuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.PowerKindsCatalogSuite distantlands.gameplay.CatacombsContributionSuite distantlands.gameplay.powers.rest.LeagueTreatySuite"`
 Expected: PASS.
 
 ```bash
@@ -1726,7 +1726,7 @@ First write the failing test in `DazzleSuite`:
   }
 ```
 
-Run it: `./sbtw "testOnly oathdigital.gameplay.powers.whenplayed.DazzleSuite"`. Expected: this test fails, because `Dazzle` collects denizens only.
+Run it: `./sbtw "testOnly distantlands.gameplay.powers.whenplayed.DazzleSuite"`. Expected: this test fails, because `Dazzle` collects denizens only.
 
 Then fix `Dazzle.effects`. Replace the `candidates` value and the fold below it with one pass over each site's cards, in card order, emitting a `Discard.Denizen` for a denizen and a `Discard.RuinedEdifice` for a ruined edifice, both only for Hearth and Order:
 
@@ -1898,7 +1898,7 @@ Add to `LeagueTreatySuite`:
 
 - [ ] **Step 4: Run and read the results**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.whenplayed.DazzleSuite oathdigital.gameplay.CatacombsContributionSuite oathdigital.gameplay.powers.rest.LeagueTreatySuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.whenplayed.DazzleSuite distantlands.gameplay.CatacombsContributionSuite distantlands.gameplay.powers.rest.LeagueTreatySuite"`
 Expected: PASS. A failing test is a finding. Do not weaken the assertion. If the cause is a fixture mistake, fix the fixture. If the cause is behaviour that differs from the ruling, mark the test with munit's `.fail` (`test("name".fail) { ... }`) so the suite stays green and the mismatch is recorded, and list it in Step 5.
 
 - [ ] **Step 5: Append the results to the rulings doc**

@@ -74,10 +74,10 @@ group, or drops the whole menu to the generic panel, and nothing fails.
 and `MenuPanel` re-derived it by holding the ids. The split is a printed Oath
 rule, so it gets a name:
 
-- `ActionClass` (`Major`, `Minor`) in `oathdigital.model`, carried by
+- `ActionClass` (`Major`, `Minor`) in `distantlands.model`, carried by
   `ActOffer`.
 - `OptionGroup` (`Major`, `Minor`, `Power`, `Ending`, `Other`) in
-  `oathdigital.model`, carried by a new `DecisionOption.Grouped` decorator
+  `distantlands.model`, carried by a new `DecisionOption.Grouped` decorator
   alongside `Priced`, `Badged`, `Unavailable` and `Warned`.
 - `DecisionOptionProjection.group`, an optional tag on the wire.
 

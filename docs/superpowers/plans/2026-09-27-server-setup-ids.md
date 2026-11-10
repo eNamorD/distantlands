@@ -37,10 +37,10 @@
 `src/test/scala/distantlands/application/FirstGameBootstrapMapperSuite.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.model.{LineageId, PlayerColor, PlayerId}
-import oathdigital.protocol.{BootstrapParticipantRequest, FirstGameBootstrapRequest}
+import distantlands.model.{LineageId, PlayerColor, PlayerId}
+import distantlands.protocol.{BootstrapParticipantRequest, FirstGameBootstrapRequest}
 
 class FirstGameBootstrapMapperSuite extends munit.FunSuite:
   test("each participant's lineage is derived from its color"):

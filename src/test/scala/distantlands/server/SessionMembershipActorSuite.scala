@@ -14,7 +14,7 @@ import distantlands.testkit.{HttpTestServer, IdentityRepositoryStub}
 /** The session resolution X6 will mount: a session cookie names a user, and
   * the user's membership in the game is their access. */
 class SessionMembershipActorSuite extends munit.FunSuite:
-  private val cookieName = "oath_session"
+  private val cookieName = "distantlands_session"
   private val owner = UserId("owner")
   private val player = UserId("player")
   private val spectator = UserId("spectator")

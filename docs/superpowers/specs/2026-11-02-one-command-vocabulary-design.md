@@ -227,7 +227,7 @@ and link checks, `git diff --check`).
    the rules and a playerId on …"), `MembershipAuthorizationServiceSuite`.
 3. **Retire the aliases.** A scripted edit turns `GameCommand.Undo(p1)`
    into `GameCommand.Issued(p1, PlayerIntent.Undo)` or, better, a testkit
-   `Commands.undo(p1)` family in `oathdigital.testkit`, across the 44 test
+   `Commands.undo(p1)` family in `distantlands.testkit`, across the 44 test
    files; `-Werror`'s unused-import check proves the sweep as it did for
    the power harness consolidation. Delete the companion `apply`/`unapply`
    shims. No production behaviour changes. Optional: it can be left in

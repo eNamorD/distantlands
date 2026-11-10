@@ -12,13 +12,13 @@
 
 ## Global Constraints
 
-- Never touch the live database `var/oathdigital`. The browser check uses a fresh scratch database on port 8081, started through Bash, never through `preview_start`.
-- Work in a git worktree: from the main checkout run `git worktree add -b log-action-sections .claude/worktrees/log-action-sections main`, then `ln -s /Users/roman/projects/oathdigital/.tooling .claude/worktrees/log-action-sections/.tooling`, then `EnterWorktree`. Inside the worktree run `git merge --ff-only main` first. Before merging from the main checkout, `ExitWorktree(keep)`.
+- Never touch the live database `var/distantlands`. The browser check uses a fresh scratch database on port 8081, started through Bash, never through `preview_start`.
+- Work in a git worktree: from the main checkout run `git worktree add -b log-action-sections .claude/worktrees/log-action-sections main`, then `ln -s /Users/roman/projects/distantlands/.tooling .claude/worktrees/log-action-sections/.tooling`, then `EnterWorktree`. Inside the worktree run `git merge --ff-only main` first. Before merging from the main checkout, `ExitWorktree(keep)`.
 - Inside the worktree keep Bash plain: no `cd` chained with git, no heredocs, no `git -C`. Write any helper script into the session scratchpad and run it with `python3`. Use `sed -i ''` on macOS.
 - Other sessions commit to `main` while you work, and HEAD can move. Check `git log -1` before any amend or merge. Stage explicit paths only; never `git add -A`. Never commit `node_modules`, `.tooling` or `target`.
 - Commit trailer: `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>` unless the committing model is another one, in which case use that model's own line.
 - `-Werror` with `-Wunused:imports,privates,locals,implicits,nowarn` on both projects. An unused import or private member fails the build, and so does a non-exhaustive match.
-- Production Scala files stay at or under 800 lines (`scripts/check-architecture.py`). `shared/src/main` may import only `oathdigital.protocol`.
+- Production Scala files stay at or under 800 lines (`scripts/check-architecture.py`). `shared/src/main` may import only `distantlands.protocol`.
 - Codec rule: a new wire field is written always and decoded with a default, so a payload from before this plan still decodes; every `exact` field set gains the new name.
 - Golden rule: `GAMELOG_GOLDEN=write` rewrites `src/test/resources/gamelog/*.log`. Run it through `env GAMELOG_GOLDEN=write ./sbtw ...`, then read every changed golden with `git diff` and check each change is one this task meant. Never rewrite goldens to silence a failure you have not explained.
 - Copy rule: player text is plain sentences, no em dashes, numbers as digits. The cost span's "−" is the existing `LogSpan.Cost` text and stays.
@@ -33,7 +33,7 @@
 4. **A Campaign's modifiers join its kind line.** The line after a Campaign tag reads "Raid against Blue with Fox"; any other action's reads "With Fox". Either way the tag is followed by at most one line.
 5. **A minor action in the middle of an action splits its band.** A minor action is its own section, so the action's lines after it start a second band piece with no tag. Nothing in this plan joins the two pieces.
 6. **Goldens show the section.** `GoldenLog.render` writes `sequence.ordinal kind depth action@id | spans`, with `action@id` left out for an entry with no section.
-7. **The browser check starts from an empty scratch database.** No copy of `var/oathdigital` is made.
+7. **The browser check starts from an empty scratch database.** No copy of `var/distantlands` is made.
 
 ### File map
 
@@ -64,17 +64,17 @@
 
 **Interfaces:**
 - Consumes: `Run(procedure, actor, first, started)` and `LogJournal.sequence(index): Long` from `LogJournal.scala`.
-- Produces: `final case class LogSection(id: Long, action: String)` (public, in package `oathdigital.application.gamelog`); `LogEntry(sequence, ordinal, kind, depth, spans, section: Option[LogSection] = None)`; `Posted(kind, depth, spans, section: Option[LogSection] = None)`; `LogSections.Minor: String = "minor"`; `LogSections.of(procedure: ProcedureRef): Boolean`; `LogSections.forRun(journal: LogJournal, run: Run): Option[LogSection]`.
+- Produces: `final case class LogSection(id: Long, action: String)` (public, in package `distantlands.application.gamelog`); `LogEntry(sequence, ordinal, kind, depth, spans, section: Option[LogSection] = None)`; `Posted(kind, depth, spans, section: Option[LogSection] = None)`; `LogSections.Minor: String = "minor"`; `LogSections.of(procedure: ProcedureRef): Boolean`; `LogSections.forRun(journal: LogJournal, run: Run): Option[LogSection]`.
 
 - [ ] **Step 1: Write the failing tests**
 
 Create `src/test/scala/distantlands/application/gamelog/GameLogSectionSuite.scala`:
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.model._
-import oathdigital.testkit.CatalogNames
+import distantlands.model._
+import distantlands.testkit.CatalogNames
 import LogScripts._
 
 /** Which entries share a band (log action sections design, "Server"): every
@@ -182,7 +182,7 @@ and add to its doc comment, after "Nothing a `LogEntry` holds is lost.": "An ent
 
 - [ ] **Step 2: Run the tests to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogSectionSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogSectionSuite"`
 Expected: compilation fails: `section` is not a member of `LogEntry`; `LogSection` and `LogSections` are not found.
 
 - [ ] **Step 3: Add the section to the entry model**
@@ -213,9 +213,9 @@ private[gamelog] final case class Posted(kind: LogKind, depth: Int,
 Create `LogSections.scala`:
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Which runs are sections (log action sections design, "Where a section
   * comes from"): every top-level action is one. Wake's Take Wealth, phase
@@ -277,13 +277,13 @@ In `walker`, stamp every line of the run, but not its headlines. Replace the `va
 
 - [ ] **Step 5: Run the new tests**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogSectionSuite oathdigital.application.gamelog.GameLogPropertiesSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogSectionSuite distantlands.application.gamelog.GameLogPropertiesSuite"`
 Expected: PASS.
 
 - [ ] **Step 6: Rewrite and review the goldens**
 
-Run: `env GAMELOG_GOLDEN=write ./sbtw "testOnly oathdigital.application.gamelog.GameLogGoldenSuite"`, then `git diff --stat src/test/resources/gamelog` and `git diff src/test/resources/gamelog/raid.actor.log src/test/resources/gamelog/reveal-relic.actor.log src/test/resources/gamelog/round.actor.log`.
-Expected: every golden changes, and every changed line only gains ` action@id` after its depth. In `round.actor.log`, `2.0` and `3.0` gain ` travel@2`, and the headlines, "Nothing happened in Wake" and "Increased supply" gain nothing. In `reveal-relic.actor.log`, `7.0` gains ` minor@7`. No line's spans, kind or order change. Then run `./sbtw "testOnly oathdigital.application.gamelog.GameLogGoldenSuite"`; expected PASS.
+Run: `env GAMELOG_GOLDEN=write ./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite"`, then `git diff --stat src/test/resources/gamelog` and `git diff src/test/resources/gamelog/raid.actor.log src/test/resources/gamelog/reveal-relic.actor.log src/test/resources/gamelog/round.actor.log`.
+Expected: every golden changes, and every changed line only gains ` action@id` after its depth. In `round.actor.log`, `2.0` and `3.0` gain ` travel@2`, and the headlines, "Nothing happened in Wake" and "Increased supply" gain nothing. In `reveal-relic.actor.log`, `7.0` gains ` minor@7`. No line's spans, kind or order change. Then run `./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite"`; expected PASS.
 
 - [ ] **Step 7: Run the gates**
 
@@ -371,7 +371,7 @@ Replace the last two tests ("a start line without modifiers has no 'with' clause
     assertEquals(tag.spans, Vector[LogSpan](LogSpan.Text("Play facedown adviser")))
 ```
 
-The suite already imports `p2` from `oathdigital.testkit.Table`.
+The suite already imports `p2` from `distantlands.testkit.Table`.
 
 In `GameLogPropertiesSuite.scala`, add after "no headline carries a section":
 
@@ -436,7 +436,7 @@ Update the tests that read the old start line:
 
 - [ ] **Step 2: Run the tests to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.*"`
 Expected: compilation fails: `Section` is not a member of `LogKind`.
 
 - [ ] **Step 3: Add the kind**
@@ -551,19 +551,19 @@ In `GameLogFormatter.walker`, `start` is now a `Vector[Posted]`. Change `val lin
 
 - [ ] **Step 6: Run the gamelog tests**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.* oathdigital.application.GameServerGatewaySubmitBeginSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.* distantlands.application.GameServerGatewaySubmitBeginSuite"`
 Expected: everything passes except `GameLogGoldenSuite`. If another test fails because it reads "Started ...", "Playing Facedown Adviser" or "Continued Recover", update it the same way as Step 1. If the property "an action with a tag opens with it" fails, a line source posts inside a Muster, Trade or Campaign run before its tag's anchor: stop and report which script and which line, since the spec requires holding that source back the way `PowerLines.held` does and this plan found no such source.
 
 - [ ] **Step 7: Rewrite and review the goldens**
 
-Run: `env GAMELOG_GOLDEN=write ./sbtw "testOnly oathdigital.application.gamelog.GameLogGoldenSuite"`, then `git diff src/test/resources/gamelog`.
+Run: `env GAMELOG_GOLDEN=write ./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite"`, then `git diff src/test/resources/gamelog`.
 Expected, and nothing else:
 - every `action 1 ... | Started X[cost:...]` becomes `section 1 ... | X[cost:...]` with X one of the nine names;
 - `augury.*.log`: `0.3 section 1 search@0 | Search[cost:2 Supply]`, then `0.4 action 1 search@0 | With [card:56|Augury]` (the other seat reads the card as its viewer may), and the later entries at sequence 0 move up one ordinal;
 - `raid.*.log`: `2.0 section 1 campaign@... | Campaign[cost:2 Supply]`, then `2.1 action 1 campaign@... | Raid against [player:p2|p2]`;
 - `facedown-adviser.*.log`: `0.3 section 1 play-facedown-adviser@0 | Play facedown adviser`;
 - `recover-failed.*.log`: `5.0 action 1 recover@0 | Continued[cost:1 Supply]`.
-Then run `./sbtw "testOnly oathdigital.application.gamelog.GameLogGoldenSuite"`; expected PASS.
+Then run `./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite"`; expected PASS.
 
 - [ ] **Step 8: Run the gates**
 
@@ -625,7 +625,7 @@ Append to `LogPageCodecSuite`:
       Left("$.entries[0].section.extra"))
 ```
 
-Append to `GameLogRouteSuite` (add `LogSectionWire` to its `oathdigital.protocol.projection` import):
+Append to `GameLogRouteSuite` (add `LogSectionWire` to its `distantlands.protocol.projection` import):
 
 ```scala
   test("the log page carries each line's section, and no headline has one"):
@@ -641,7 +641,7 @@ Append to `GameLogRouteSuite` (add `LogSectionWire` to its `oathdigital.protocol
 
 - [ ] **Step 2: Run the tests to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.protocol.LogPageCodecSuite oathdigital.application.gamelog.GameLogRouteSuite"`
+Run: `./sbtw "testOnly distantlands.protocol.LogPageCodecSuite distantlands.application.gamelog.GameLogRouteSuite"`
 Expected: compilation fails: `LogSectionWire` not found.
 
 - [ ] **Step 3: Add the wire type**
@@ -712,7 +712,7 @@ In `GameLogProjector.scala`, import `LogSectionWire` with the other wire types a
 
 - [ ] **Step 6: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.protocol.LogPageCodecSuite oathdigital.application.gamelog.GameLogRouteSuite"`
+Run: `./sbtw "testOnly distantlands.protocol.LogPageCodecSuite distantlands.application.gamelog.GameLogRouteSuite"`
 Expected: PASS.
 
 - [ ] **Step 7: Run the gates**
@@ -816,7 +816,7 @@ In `GameLogPaneSuite.scala`, add `LogSectionWire` to the protocol import and add
 
 - [ ] **Step 2: Run the tests to see them fail**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.GameLogPaneSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.GameLogPaneSuite"`
 Expected: the five new tests fail; the band lists are all "".
 
 - [ ] **Step 3: Give entries their band classes**
@@ -895,7 +895,7 @@ Add one sentence to the class doc comment, after "...offered the "New" chip.": "
 
 - [ ] **Step 4: Run the tests**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.GameLogPaneSuite oathdigital.frontend.GameLogOverlaySuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.GameLogPaneSuite distantlands.frontend.GameLogOverlaySuite"`
 Expected: PASS.
 
 - [ ] **Step 5: Draw the bands**
@@ -1017,7 +1017,7 @@ In `WalkerChoicePanelRenderSuite`, at the end of "a choose-one asked after a rol
 
 - [ ] **Step 2: Run the tests to see them fail**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.DieFaceSuite oathdigital.frontend.GameLogPaneSuite oathdigital.frontend.WalkerDecisionDraftSuite oathdigital.frontend.WalkerChoicePanelRenderSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.DieFaceSuite distantlands.frontend.GameLogPaneSuite distantlands.frontend.WalkerDecisionDraftSuite distantlands.frontend.WalkerChoicePanelRenderSuite"`
 Expected: compilation fails: `face` takes one argument; `poolDie` is not a member.
 
 - [ ] **Step 3: Give the chips their die**
@@ -1107,7 +1107,7 @@ In `frontend/styles.css`, after `.die-face-blank { border-style: dashed; border-
 
 - [ ] **Step 6: Run the tests**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.DieFaceSuite oathdigital.frontend.GameLogPaneSuite oathdigital.frontend.WalkerDecisionDraftSuite oathdigital.frontend.WalkerChoicePanelRenderSuite oathdigital.frontend.RecoverPanelSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.DieFaceSuite distantlands.frontend.GameLogPaneSuite distantlands.frontend.WalkerDecisionDraftSuite distantlands.frontend.WalkerChoicePanelRenderSuite distantlands.frontend.RecoverPanelSuite"`
 Expected: PASS.
 
 - [ ] **Step 7: Run the gates**
@@ -1231,7 +1231,7 @@ mkdir -p $S
 ```
 
 ```bash
-./sbtw "frontend/fastLinkJS" "runMain oathdigital.server.OathServer --port 8081 --database-path $S/oathdigital"
+./sbtw "frontend/fastLinkJS" "runMain distantlands.server.DistantLandsServer --port 8081 --database-path $S/distantlands"
 ```
 
 Run the second command through Bash with `run_in_background` and wait for "Start completed" in its log. Open `http://127.0.0.1:8081/?mode=server` in the built-in browser at 1440×900, press "New game", and play Setup through with the default choices. Play until the log holds, in the acting player's turns: a Search that keeps a card as a facedown adviser, a later Play facedown adviser, a minor action (move warbands), a Trade and a Campaign with a roll on both sides. Then, with `read_page` for each check, a `wait` of 1 second before each screenshot, and one screenshot per check:

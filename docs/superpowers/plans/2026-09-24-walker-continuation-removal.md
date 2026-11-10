@@ -90,15 +90,15 @@ Deleted: nothing but the members above. No test file is deleted.
 
 - [ ] **Step 1: Write the module**
 
-Create `ParkedDecisionAssertions.scala` in package `oathdigital.gameplay.walker`:
+Create `ParkedDecisionAssertions.scala` in package `distantlands.gameplay.walker`:
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powers.PhasePowers
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powers.PhasePowers
+import distantlands.model._
+import distantlands.model.OathState.Ready
 
 /** What a parked position holds, derived the way the walker derives it
   * rather than read off a value the rules stored. `coOwners` is the whole
@@ -187,7 +187,7 @@ final class ParkedDecisionAssertions(
 
 Check the import of `PhasePowers` and `WalkerPowers` against their real
 packages before compiling; `WalkerPowers` and `WalkerProcedureRegistry.Entry`
-are `private[gameplay]` at most, and this file is inside `oathdigital.gameplay
+are `private[gameplay]` at most, and this file is inside `distantlands.gameplay
 .walker`, so both are nameable here.
 
 - [ ] **Step 2: Write the module's own suite**
@@ -216,7 +216,7 @@ Tests to write:
 
 - [ ] **Step 3: Run the new suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.ParkedDecisionAssertionsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.ParkedDecisionAssertionsSuite"`
 Expected: PASS, 5 tests.
 
 - [ ] **Step 4: Commit**
@@ -335,7 +335,7 @@ sites (`:340,372,397`) become
 
 - [ ] **Step 8: Run the campaign suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CampaignProcedureSuite oathdigital.gameplay.CampaignPlanWindowSuite oathdigital.gameplay.CampaignRaidSuite oathdigital.gameplay.powers.campaign.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.CampaignProcedureSuite distantlands.gameplay.CampaignPlanWindowSuite distantlands.gameplay.CampaignRaidSuite distantlands.gameplay.powers.campaign.*"`
 Expected: PASS, with no change in test counts.
 
 - [ ] **Step 9: Commit**
@@ -429,10 +429,10 @@ Step 1 and need no second edit.
 
 - [ ] **Step 5: Run the power suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.*"`
 Expected: PASS.
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CoOwnedDecideSuite oathdigital.gameplay.CatacombsContributionSuite oathdigital.application.BannerFaceProjectionSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.CoOwnedDecideSuite distantlands.gameplay.CatacombsContributionSuite distantlands.application.BannerFaceProjectionSuite"`
 Expected: PASS — these never mention the type and must not need an edit.
 `BannerFaceProjectionSuite` is outside the `gameplay.powers` package but
 imports `TargetsFixture`, so it is the one consumer the package run misses.
@@ -517,7 +517,7 @@ parked.parkedDecision(accepted.state))`.
 
 - [ ] **Step 6: Run the application and server suites**
 
-Run: `./sbtw "testOnly oathdigital.application.* oathdigital.server.*"`
+Run: `./sbtw "testOnly distantlands.application.* distantlands.server.*"`
 Expected: PASS, three fewer assertions and no fewer tests.
 
 - [ ] **Step 7: Commit**
@@ -621,7 +621,7 @@ it exactly as it is. That `Left` is what Task 7 must keep alive.
 
 - [ ] **Step 8: Run the group**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.*"`
 Expected: PASS.
 
 - [ ] **Step 9: Commit**
@@ -679,7 +679,7 @@ Task 7.
 
 - [ ] **Step 4: Run both suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.WalkerProcedureRegistrySuite oathdigital.gameplay.BackendArchitectureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.WalkerProcedureRegistrySuite distantlands.gameplay.BackendArchitectureSuite"`
 Expected: PASS, with four fewer assertions and the same test count.
 
 - [ ] **Step 5: Commit**

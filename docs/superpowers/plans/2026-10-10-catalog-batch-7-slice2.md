@@ -43,7 +43,7 @@ Slice 1 was written from a plan, and its executor may have adapted names or line
   - No power name appears in walker sources.
   - Nothing under `gameplay/actions` imports `gameplay/powers`.
 - **Line width.** Scala lines stay at or under 80 characters, as in the files around them. Re-wrap any line in this plan that comes out longer.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Other sessions commit to `main` while you work.
   - Stage explicit paths only; never `git add -A`.
   - Re-check `git log --oneline -1` before any amend, reset or rebase.
@@ -286,10 +286,10 @@ In the same suite, the test "two attack rolls of one pool accumulate faces, skul
 Create `src/test/scala/distantlands/gameplay/actions/dice/DiceThrowSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.actions.dice
+package distantlands.gameplay.actions.dice
 
-import oathdigital.model._
-import oathdigital.testkit.Table
+import distantlands.model._
+import distantlands.testkit.Table
 
 /** A throw: the faces its roll added, and every earlier face rerolled since,
   * numbered by the rolls of its pool (catalog batch 7, slice 2). */
@@ -332,7 +332,7 @@ No game reaches the last test's table today, since nothing changes a pool betwee
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.operations.RollOperationsSuite oathdigital.gameplay.walker.WalkerRollsSuite oathdigital.gameplay.actions.dice.DiceThrowSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.operations.RollOperationsSuite distantlands.gameplay.walker.WalkerRollsSuite distantlands.gameplay.actions.dice.DiceThrowSuite"`
 Expected: compilation fails: `RollOutcome` has no member or parameter `throws` or `rerolled`.
 
 - [ ] **Step 3: Record the rerolled dice**
@@ -412,7 +412,7 @@ Update the `DiceThrow` case class's doc comment the same way: `indices` are the 
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.* oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.* distantlands.application.gamelog.*"`
 Expected: PASS. Slice 1's suites are unchanged: their rerolls touch only faces of the throw, and every pool they roll keeps its dice, so each throw keeps its number. A suite that compares a whole `RollOutcome` after one roll still passes, since `throws` defaults to 1. If one compares an outcome after two rolls, add `throws = 2` as in `WalkerRollsSuite`.
 
 - [ ] **Step 5: Commit**
@@ -443,7 +443,7 @@ Stage any other suite Step 4 made you change by its path.
   - From slice 1: `Reroll(pool, indices)`, `RollStep(pool, dice, roller, window)`, `RerollChoice.decisionId(pool, number)`, `RerollChoice.keep`, and Jinx in `WalkerPowerCatalog.default`.
 - Produces:
   - `PowerWindow.RecoverRoll`.
-  - In `oathdigital.gameplay.powers.recover`: `SilverCharmCard`, and `SilverCharm.id`, `SilverCharm.decisionId`, `SilverCharm.die(index: Int): DecisionOptionRef.Button`, `SilverCharm.rerolled: NoteKey` and `SilverCharm.forCatalog(catalog)`.
+  - In `distantlands.gameplay.powers.recover`: `SilverCharmCard`, and `SilverCharm.id`, `SilverCharm.decisionId`, `SilverCharm.die(index: Int): DecisionOptionRef.Button`, `SilverCharm.rerolled: NoteKey` and `SilverCharm.forCatalog(catalog)`.
   - `LogScripts.recoverSilverCharm: Script`.
 
 - [ ] **Step 1: Write the failing tests**
@@ -451,24 +451,24 @@ Stage any other suite Step 4 made you change by its path.
 Create `src/test/scala/distantlands/gameplay/powers/recover/SilverCharmSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.recover
+package distantlands.gameplay.powers.recover
 
-import oathdigital.gameplay.{ModifierPlay, OathRules}
-import oathdigital.gameplay.WalkerDiceFixture.scripted
-import oathdigital.gameplay.actions.dice.RerollChoice
-import oathdigital.gameplay.actions.recover.RecoverProcedure
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{PowerNoted, WalkerDice,
+import distantlands.gameplay.{ModifierPlay, OathRules}
+import distantlands.gameplay.WalkerDiceFixture.scripted
+import distantlands.gameplay.actions.dice.RerollChoice
+import distantlands.gameplay.actions.recover.RecoverProcedure
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{PowerNoted, WalkerDice,
   WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{ChooseManyAnswer, ChooseOneAnswer}
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, EconomyActions,
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{ChooseManyAnswer, ChooseOneAnswer}
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, CatalogNames, EconomyActions,
   Look, Outcomes, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Unwrap.accepted
 
 /** Silver Charm (relic R31): each time its user pays Supply for a Recover
   * roll, after the first, they may reroll any earlier Recover dice with the
@@ -684,12 +684,12 @@ In `LogScripts.scala`, add after `recoverWorship`:
     Script("recover-silver-charm", service, p1)
 ```
 
-Change the file's imports: `import oathdigital.gameplay.powers.recover.{RelicWorship, SilverCharm}`, and add `ChooseManyAnswer` to the `oathdigital.model.DecisionAnswer` import.
+Change the file's imports: `import distantlands.gameplay.powers.recover.{RelicWorship, SilverCharm}`, and add `ChooseManyAnswer` to the `distantlands.model.DecisionAnswer` import.
 
 Create `src/test/scala/distantlands/application/gamelog/GameLogSilverCharmSuite.scala`:
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
 import LogScripts._
 
@@ -717,7 +717,7 @@ class GameLogSilverCharmSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.recover.SilverCharmSuite oathdigital.application.gamelog.GameLogSilverCharmSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.recover.SilverCharmSuite distantlands.application.gamelog.GameLogSilverCharmSuite"`
 Expected: compilation fails: `SilverCharm` is not defined.
 
 - [ ] **Step 3: The window on Recover's roll**
@@ -751,14 +751,14 @@ In the tree diagram of `RecoverProcedure`'s doc comment, mark the roll step `// 
 Create `src/main/scala/distantlands/gameplay/powers/recover/SilverCharm.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.recover
+package distantlands.gameplay.powers.recover
 
-import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
-import oathdigital.gameplay.actions.recover.RecoverProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, Transform}
-import oathdigital.gameplay.powers.SelectedModifier
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseManyAnswer
+import distantlands.catalog.{ExecutableCatalog, PrintedPower, Relic}
+import distantlands.gameplay.actions.recover.RecoverProcedure
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.gameplay.powers.SelectedModifier
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseManyAnswer
 
 object SilverCharmCard extends Relic(RelicId("R31"), "Silver Charm", value = 37, defense = 1):
   val power = PrintedPower(PowerId("relic.silver-charm"),
@@ -878,18 +878,18 @@ The card object's header line matches the other card headers, which run past 80 
 
 The reroll reads the walk's last answer. Nothing is answered between Silver Charm's decision and its reroll, since the roll between them is automatic. On a payment where the decision was not asked, the last answer is another decision's, so nothing is rerolled.
 
-Remove `SilverCharmCard` from `HoldingRelics.scala`. In `NewFoundations.scala`, change the import to `import oathdigital.gameplay.powers.recover.{CatacombsCard, RelicWorshipCard, SilverCharmCard}`, re-wrapped to 80 characters; its list entry `SilverCharmCard,` stays.
+Remove `SilverCharmCard` from `HoldingRelics.scala`. In `NewFoundations.scala`, change the import to `import distantlands.gameplay.powers.recover.{CatacombsCard, RelicWorshipCard, SilverCharmCard}`, re-wrapped to 80 characters; its list entry `SilverCharmCard,` stays.
 
-In `ActionModifiers.forCatalog`, add `++ Vector(SilverCharm.forCatalog(catalog))` after `Vector(RelicWorship.forCatalog(catalog))`, and change the import to `import oathdigital.gameplay.powers.recover.{RelicWorship, SilverCharm}`.
+In `ActionModifiers.forCatalog`, add `++ Vector(SilverCharm.forCatalog(catalog))` after `Vector(RelicWorship.forCatalog(catalog))`, and change the import to `import distantlands.gameplay.powers.recover.{RelicWorship, SilverCharm}`.
 
 - [ ] **Step 5: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.recover.* oathdigital.application.gamelog.* oathdigital.gameplay.powers.dice.* oathdigital.catalog.* oathdigital.gameplay.cards.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.recover.* distantlands.application.gamelog.* distantlands.gameplay.powers.dice.* distantlands.catalog.* distantlands.gameplay.cards.*"`
 Expected: PASS.
 
 - [ ] **Step 6: Move the Recover roll in `RecoverProcedureSuite`**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.RecoverProcedureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.RecoverProcedureSuite"`
 Expected: the tree-shape assertions fail, for these reasons only:
 
 - The roll's recorded node id gains one more `.0`. A windowed leaf runs one level down, even when no power changes it. For example, if slice 1 left it at `"1.0.1.0"`, it is now `"1.0.1.0.0"`.
@@ -960,7 +960,7 @@ In `MasterAtArmsSuite`, replace both uses of `MasterAtArms.decisionId` in the te
       Some(WalkerRollFeedback(CampaignIds.attackPool)))
 ```
 
-Add `import oathdigital.gameplay.walker.{WalkerProcedureRegistry, WalkerRollFeedback}`. `ready` comes from the suite's `CampaignFixture` and `PlanDriver` imports, as `JinxSuite` uses it.
+Add `import distantlands.gameplay.walker.{WalkerProcedureRegistry, WalkerRollFeedback}`. `ready` comes from the suite's `CampaignFixture` and `PlanDriver` imports, as `JinxSuite` uses it.
 
 In `SilverCharmSuite`, after the test "a later payment asks which earlier dice to reroll, one option per die":
 
@@ -978,7 +978,7 @@ In `SilverCharmSuite`, after the test "a later payment asks which earlier dice t
       ModifierPicks.decisionId(PowerWindow.RecoverModifierSelection)), None)
 ```
 
-Add `WalkerProcedureRegistry` and `WalkerRollFeedback` to the suite's `oathdigital.gameplay.walker` import, and `import oathdigital.gameplay.powerresolver.ModifierPicks`.
+Add `WalkerProcedureRegistry` and `WalkerRollFeedback` to the suite's `distantlands.gameplay.walker` import, and `import distantlands.gameplay.powerresolver.ModifierPicks`.
 
 In `WalkerSelectionPanelsSuite`, after the test "the sacrifice panel draws dice, then totals, then the prompt":
 
@@ -1008,7 +1008,7 @@ The other choose-many tests pass no roll, so they draw none.
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.actions.dice.RerollChoiceSuite oathdigital.gameplay.powers.campaign.MasterAtArmsSuite oathdigital.gameplay.powers.recover.SilverCharmSuite" "frontend/testOnly oathdigital.frontend.WalkerSelectionPanelsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.actions.dice.RerollChoiceSuite distantlands.gameplay.powers.campaign.MasterAtArmsSuite distantlands.gameplay.powers.recover.SilverCharmSuite" "frontend/testOnly distantlands.frontend.WalkerSelectionPanelsSuite"`
 Expected: compilation fails: `RerollChoice.followUpId` is not defined, and `MasterAtArms.decisionId` takes no argument. Once those compile, the Silver Charm and frontend tests fail on the missing dice.
 
 - [ ] **Step 3: Questions under a throw's id**
@@ -1094,7 +1094,7 @@ Replace `rollFeedback`'s condition and doc comment:
         .flatMap(RecoverRules.difficulty(catalog, _)))).filter(_.target.nonEmpty)
 ```
 
-Import `oathdigital.gameplay.powerresolver.ModifierPicks`. The reroll decisions (`recover.reroll.{n}`) start with the prefix, so slice 1's `RerollChoice.poolOf` clause goes. Drop `RerollChoice` from the `actions.dice` import if nothing else in the file uses it.
+Import `distantlands.gameplay.powerresolver.ModifierPicks`. The reroll decisions (`recover.reroll.{n}`) start with the prefix, so slice 1's `RerollChoice.poolOf` clause goes. Drop `RerollChoice` from the `actions.dice` import if nothing else in the file uses it.
 
 In `SilverCharm`, build its id from the prefix:
 
@@ -1124,7 +1124,7 @@ In `renderMany`, take `decision: WalkerDecisionState` as its first parameter and
 
 - [ ] **Step 6: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.* oathdigital.application.*" "frontend/test"`
+Run: `./sbtw "testOnly distantlands.gameplay.* distantlands.application.*" "frontend/test"`
 Expected: PASS.
 
 - [ ] **Step 7: Commit**

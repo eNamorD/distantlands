@@ -12,13 +12,13 @@
 
 ## Global Constraints
 
-- Never touch the live database `var/oathdigital`. Browser checks use a scratch copy only, on port 8081, started through Bash, never through `preview_start`.
-- Work in a git worktree: from the main checkout run `git worktree add -b board-decisions .claude/worktrees/board-decisions main`, then `ln -s /Users/roman/projects/oathdigital/.tooling .claude/worktrees/board-decisions/.tooling`, then `EnterWorktree`. Inside the worktree run `git merge --ff-only main` first. Before merging from the main checkout, `ExitWorktree(keep)`.
+- Never touch the live database `var/distantlands`. Browser checks use a scratch copy only, on port 8081, started through Bash, never through `preview_start`.
+- Work in a git worktree: from the main checkout run `git worktree add -b board-decisions .claude/worktrees/board-decisions main`, then `ln -s /Users/roman/projects/distantlands/.tooling .claude/worktrees/board-decisions/.tooling`, then `EnterWorktree`. Inside the worktree run `git merge --ff-only main` first. Before merging from the main checkout, `ExitWorktree(keep)`.
 - Inside the worktree keep Bash plain: no `cd` chained with git, no heredocs. Write any helper script into the session scratchpad and run it with `python3`. Use `sed -i ''` on macOS.
 - Other sessions commit to `main` while you work, and HEAD can move. Check `git log -1` before any amend or merge. Stage explicit paths only; never `git add -A`. Never commit `node_modules`, `.tooling` or `target`.
 - Commit trailer: `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>` unless the committing model is another one, in which case use that model's own line.
 - `-Werror` with `-Wunused:imports,privates,locals,implicits,nowarn` on both projects. An unused import or private member fails the build, and so does a non-exhaustive match.
-- Production Scala files stay at or under 800 lines (`scripts/check-architecture.py`). `shared/src/main` may import only `oathdigital.protocol`. `application` must not import `persistence`, `serialization` or `server`. The model may not import gameplay.
+- Production Scala files stay at or under 800 lines (`scripts/check-architecture.py`). `shared/src/main` may import only `distantlands.protocol`. `application` must not import `persistence`, `serialization` or `server`. The model may not import gameplay.
 - Codec rule: every new projection field is written always and decoded with a default, so a payload from before this plan still decodes; every `exact` field set gains the new name.
 - Visibility rule: the one function `GamePresentationProjector.identifiesCard` decides whether a viewer sees a card's face. No other test of knowledge.
 - Copy rule: player text is plain sentences, no em dashes, numbers as digits.
@@ -98,7 +98,7 @@ Spec slice 1, engine half. No player-visible change: nothing emits the new shape
 - Test: `src/test/scala/distantlands/gameplay/walker/DecisionQuerySuite.scala`, `src/test/scala/distantlands/gameplay/walker/WalkerSearchSuite.scala`
 
 **Interfaces:**
-- Produces, in `oathdigital.model`:
+- Produces, in `distantlands.model`:
   - `sealed trait OptionReason`; `OptionReason.Written(text: String)`; `OptionReason.Noted(power: PowerId, note: PowerNote)`.
   - `DecisionOption.available: Boolean` (default `true`; `Priced` and `Badged` ask what they wrap).
   - `DecisionOption.Unavailable(option: DecisionOption, reason: OptionReason)`, `available == false`, `ref` is the wrapped option's.
@@ -107,14 +107,14 @@ Spec slice 1, engine half. No player-visible change: nothing emits the new shape
   - `DecisionSummary(verb: String, one: String, many: String)` with `of(count: Int): String`.
   - `enum DecisionPresentation(val key: String)`: `Board` ("board"), `Panel` ("panel").
   - `Decide(..., passWhenEmpty: Boolean = false, presentation: DecisionPresentation = DecisionPresentation.Board)`.
-- Produces, in `oathdigital.gameplay.walker.WalkerSearch` (`private[walker]`):
+- Produces, in `distantlands.gameplay.walker.WalkerSearch` (`private[walker]`):
   - `choosable(decide: Decide): Vector[DecisionOptionRef]`.
   - `narrowed(decide: Decide, permitted: DecisionOptionRef => Boolean, explain: DecisionOptionRef => Option[OptionReason] = _ => None): Option[Decide]`.
   - `explained(decide: Decide, narrowed: Decide, reasons: Map[DecisionOptionRef, OptionReason]): Decide`.
 
 - [ ] **Step 1: Write the failing decision-contract tests**
 
-In `DecisionQuerySuite.scala`, add `DecisionTally` and `OptionReason` to the `oathdigital.model` import, then append:
+In `DecisionQuerySuite.scala`, add `DecisionTally` and `OptionReason` to the `distantlands.model` import, then append:
 
 ```scala
   // (k) An unavailable option is shown, and never answerable.
@@ -214,7 +214,7 @@ In `WalkerSearchSuite.scala` append:
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.DecisionQuerySuite oathdigital.gameplay.walker.WalkerSearchSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.DecisionQuerySuite distantlands.gameplay.walker.WalkerSearchSuite"`
 Expected: compilation fails: `Unavailable`, `OptionReason`, `DecisionTally`, `locked`, `tallies` and `choosable` are not members.
 
 - [ ] **Step 3: Add the vocabulary to `Decisions.scala`**
@@ -405,7 +405,7 @@ Update the class doc's sentence about staleness to add, after "the answer naming
 
 - [ ] **Step 6: Teach the search to skip unavailable options**
 
-In `WalkerSearch.scala`, add `DecisionOption` and `OptionReason` to the `oathdigital.model` import. In `narrow`, replace the two `val refs = ... .options.map(_.ref)` lines with `val refs = choosable(decide)`. In `answers`, replace `one.options.iterator.map(option => DecisionAnswer.ChooseOneAnswer(option.ref))` with `choosable(decide).iterator.map(DecisionAnswer.ChooseOneAnswer(_))`, and `selections(many.options.map(_.ref), many.min, many.max)` with `selections(choosable(decide), many.min, many.max)`.
+In `WalkerSearch.scala`, add `DecisionOption` and `OptionReason` to the `distantlands.model` import. In `narrow`, replace the two `val refs = ... .options.map(_.ref)` lines with `val refs = choosable(decide)`. In `answers`, replace `one.options.iterator.map(option => DecisionAnswer.ChooseOneAnswer(option.ref))` with `choosable(decide).iterator.map(DecisionAnswer.ChooseOneAnswer(_))`, and `selections(many.options.map(_.ref), many.min, many.max)` with `selections(choosable(decide), many.min, many.max)`.
 
 Replace `narrowed` with:
 
@@ -512,7 +512,7 @@ and add one more `_` to the `Decide(...)` patterns of the `Partition` and `Choos
 
 - [ ] **Step 8: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.DecisionQuerySuite oathdigital.gameplay.walker.WalkerSearchSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.DecisionQuerySuite distantlands.gameplay.walker.WalkerSearchSuite"`
 Expected: PASS.
 
 Then run the whole server suite: `./sbtw test`. Expected: PASS. Record the count; later tasks compare against it.
@@ -541,14 +541,14 @@ Spec slice 1, wire half. Still no player-visible change: no builder emits the ne
 
 **Interfaces:**
 - Consumes: Task 1's `OptionReason`, `DecisionOption.Unavailable`, `ChooseMany.locked/tallies/summary`, `Decide.presentation`.
-- Produces, in `oathdigital.protocol.projection`:
+- Produces, in `distantlands.protocol.projection`:
   - `DecisionOptionProjection(kind, id, label, card = None, details = Vector.empty, badge = None, state: String = "available", reason: Option[String] = None)`; `state` is `"available"`, `"locked"` or `"unavailable"`.
   - `DecisionTallyProjection(label: String, unit: String, values: Vector[DecisionTallyValueProjection], limit: Option[Int] = None)`.
   - `DecisionTallyValueProjection(kind: String, id: String, value: Int)`.
   - `DecisionSummaryProjection(verb: String, one: String, many: String)` with `of(count: Int): String`.
   - `DecisionQueryProjection.ChooseMany(options, minOptions, maxOptions, heading = None, tallies: Vector[DecisionTallyProjection] = Vector.empty, summary: Option[DecisionSummaryProjection] = None)`; locked options are in `options` with `state == "locked"`.
   - `WalkerDecisionProjection(..., answeredOptions = Vector.empty, presentation: String = "panel")`.
-- Produces, in `oathdigital.application.gamelog`: `private[application] final class NoteReasons(catalog: ExecutableCatalog, presentation: GamePresentationProjector, wordings: NoteWordings)` with `text(power: PowerId, note: PowerNote, ready: ReadyGame, viewer: Option[PlayerId]): Option[String]`, and a secondary constructor `(catalog, presentation)` that uses `NoteWordings.default(catalog)`.
+- Produces, in `distantlands.application.gamelog`: `private[application] final class NoteReasons(catalog: ExecutableCatalog, presentation: GamePresentationProjector, wordings: NoteWordings)` with `text(power: PowerId, note: PowerNote, ready: ReadyGame, viewer: Option[PlayerId]): Option[String]`, and a secondary constructor `(catalog, presentation)` that uses `NoteWordings.default(catalog)`.
 - Produces, frontend aliases: `DecisionTallyState`, `DecisionTallyValueState`, `DecisionSummaryState` (type and val each).
 
 - [ ] **Step 1: Write the failing codec test**
@@ -589,11 +589,11 @@ In `ProjectionProtocolSuite.scala`, after the test "choose-many and choose-amoun
       Right(carrying))
 ```
 
-The fixture's `walkerDecision` must be a `Some`; it is, since the existing choose-many test maps over it the same way. `DecisionTallyProjection` and the other new DTOs come in through the suite's `oathdigital.protocol.projection._` import.
+The fixture's `walkerDecision` must be a `Some`; it is, since the existing choose-many test maps over it the same way. `DecisionTallyProjection` and the other new DTOs come in through the suite's `distantlands.protocol.projection._` import.
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.protocol.ProjectionProtocolSuite"`
+Run: `./sbtw "testOnly distantlands.protocol.ProjectionProtocolSuite"`
 Expected: compilation fails: `state`, `tallies`, `DecisionTallyProjection` and `presentation` are not members.
 
 - [ ] **Step 3: Add the DTOs**
@@ -743,7 +743,7 @@ If `int` has no `(ujson.Obj, String, String)` overload, use the one `decodeChoos
 
 - [ ] **Step 5: Run the codec test to verify it passes**
 
-Run: `./sbtw "testOnly oathdigital.protocol.ProjectionProtocolSuite"`
+Run: `./sbtw "testOnly distantlands.protocol.ProjectionProtocolSuite"`
 Expected: PASS.
 
 - [ ] **Step 6: Write the failing note-wording test**
@@ -751,12 +751,12 @@ Expected: PASS.
 Create `src/test/scala/distantlands/application/gamelog/NoteReasonsSuite.scala`:
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.application.GamePresentationProjector
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.Table
+import distantlands.application.GamePresentationProjector
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.Table
 
 /** A power's note as the reason an option is not on offer: worded by the
   * Game Log's own template, after the power's source.
@@ -781,7 +781,7 @@ class NoteReasonsSuite extends munit.FunSuite:
 
 - [ ] **Step 7: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.NoteReasonsSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.NoteReasonsSuite"`
 Expected: compilation fails: `NoteReasons` not found.
 
 - [ ] **Step 8: Extract `spoken` and add `NoteReasons`**
@@ -813,11 +813,11 @@ and make `line`'s `PowerNoted` case use it:
 Create `src/main/scala/distantlands/application/gamelog/NoteReasons.scala`:
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.application.GamePresentationProjector
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.model.{PlayerId, PowerId, PowerNote, ReadyGame}
+import distantlands.application.GamePresentationProjector
+import distantlands.catalog.ExecutableCatalog
+import distantlands.model.{PlayerId, PowerId, PowerNote, ReadyGame}
 
 /** A power's note as one line of plain text: the reason an option it hid is
   * not on offer (board decisions design, "Unavailable options"). It is
@@ -841,7 +841,7 @@ private[application] final class NoteReasons(catalog: ExecutableCatalog,
 
 - [ ] **Step 9: Run it to verify it passes**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.NoteReasonsSuite oathdigital.application.gamelog.GameLogPowerLinesSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.NoteReasonsSuite distantlands.application.gamelog.GameLogPowerLinesSuite"`
 Expected: PASS.
 
 - [ ] **Step 10: Write the failing projector tests**
@@ -916,14 +916,14 @@ In `WalkerDecisionProjectorSuite.scala`, add `DecisionSummaryProjection`, `Decis
 
 - [ ] **Step 11: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.application.WalkerDecisionProjectorSuite"`
+Run: `./sbtw "testOnly distantlands.application.WalkerDecisionProjectorSuite"`
 Expected: FAIL: the states are all `"available"`, the tallies empty, and `presentation` is `"panel"`.
 
 - [ ] **Step 12: Project the new fields**
 
 In `WalkerDecisionProjector.scala`:
 
-Add `oathdigital.protocol.projection.{DecisionSummaryProjection, DecisionTallyProjection, DecisionTallyValueProjection}` to the imports, and a field after `deals`:
+Add `distantlands.protocol.projection.{DecisionSummaryProjection, DecisionTallyProjection, DecisionTallyValueProjection}` to the imports, and a field after `deals`:
 
 ```scala
   private lazy val reasons = new gamelog.NoteReasons(catalog, presentation)
@@ -1005,7 +1005,7 @@ val DecisionSummaryState = protocol.projection.DecisionSummaryProjection
 
 - [ ] **Step 15: Run the affected suites**
 
-Run: `./sbtw "testOnly oathdigital.application.WalkerDecisionProjectorSuite oathdigital.application.WalkerDecisionProjectionSuite oathdigital.protocol.ProjectionProtocolSuite" "frontend/test"`
+Run: `./sbtw "testOnly distantlands.application.WalkerDecisionProjectorSuite distantlands.application.WalkerDecisionProjectionSuite distantlands.protocol.ProjectionProtocolSuite" "frontend/test"`
 Expected: PASS. Then `./sbtw test`: PASS, at Task 1's count plus this task's new tests.
 
 - [ ] **Step 16: Commit**
@@ -1078,7 +1078,7 @@ In `WalkerSelectionPanelsSuite.scala` append:
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.WalkerChoicePanelRenderSuite oathdigital.frontend.WalkerSelectionPanelsSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.WalkerChoicePanelRenderSuite distantlands.frontend.WalkerSelectionPanelsSuite"`
 Expected: FAIL: the controls are enabled and carry no title.
 
 - [ ] **Step 3: Honour the states**
@@ -1124,7 +1124,7 @@ In `WalkerChooseManyDraft.toggle`, only an available option may be added:
 
 - [ ] **Step 4: Run them to verify they pass**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.WalkerChoicePanelRenderSuite oathdigital.frontend.WalkerSelectionPanelsSuite oathdigital.frontend.RecoverPanelSuite oathdigital.frontend.WalkerSelectionDraftSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.WalkerChoicePanelRenderSuite distantlands.frontend.WalkerSelectionPanelsSuite distantlands.frontend.RecoverPanelSuite distantlands.frontend.WalkerSelectionDraftSuite"`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -1160,9 +1160,9 @@ Spec slice 2, the pure half. Three new modules, each tested alone; nothing uses 
 Create `frontend/src/test/scala/distantlands/frontend/BoardSelectionDraftSuite.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{DecisionAnswerWire, DecisionOptionWire,
+import distantlands.protocol.{DecisionAnswerWire, DecisionOptionWire,
   GameIntent => Intent}
 
 /** The board draft and the option states drawn from it, with no DOM: a
@@ -1284,9 +1284,9 @@ class BoardSelectionDraftSuite extends munit.FunSuite:
 Create `frontend/src/test/scala/distantlands/frontend/BoardHomesSuite.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.model.PlayerColor
+import distantlands.model.PlayerColor
 
 /** Whether an option has a place on the table the projection draws, which
   * decides between the board and the Action panel.
@@ -1340,13 +1340,13 @@ Check the constructors against `frontend.scala` and the existing `BoardHomesSuit
 
 - [ ] **Step 3: Run them to verify they fail**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.BoardSelectionDraftSuite oathdigital.frontend.BoardHomesSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.BoardSelectionDraftSuite distantlands.frontend.BoardHomesSuite"`
 Expected: compilation fails: `BoardSelectionDraft`, `BoardOptionViews`, `OptionState` and `BoardHomes` are not found.
 
 - [ ] **Step 4: Write `BoardOptionViews.scala`**
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 /** How a board option is drawn; `classes` are its CSS classes. */
 private[frontend] enum OptionState(val classes: Vector[String]):
@@ -1451,9 +1451,9 @@ private[frontend] object BoardOptionViews:
 - [ ] **Step 5: Write `BoardSelectionDraft.scala`**
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{DecisionAnswerWire, DecisionOptionWire,
+import distantlands.protocol.{DecisionAnswerWire, DecisionOptionWire,
   GameIntent => GameCommand}
 
 /** What a viewer has picked for a parked board decision and not yet
@@ -1526,7 +1526,7 @@ private[frontend] object BoardSelectionDraft:
 - [ ] **Step 6: Write `BoardHomes.scala`**
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 /** Whether an option has a place on the table (board decisions design,
   * "Board home"): a site's box, a card in a site's row or on a player
@@ -1582,7 +1582,7 @@ If the projection's world field is not `world: Vector[GameRegion]` with `sites`,
 
 - [ ] **Step 7: Run them to verify they pass**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.BoardSelectionDraftSuite oathdigital.frontend.BoardHomesSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.BoardSelectionDraftSuite distantlands.frontend.BoardHomesSuite"`
 Expected: PASS.
 
 - [ ] **Step 8: Commit**
@@ -1618,10 +1618,10 @@ Spec slice 2, the DOM half. A new `BoardOptions` marks the table's elements; the
 Create `frontend/src/test/scala/distantlands/frontend/BoardOptionsRenderSuite.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.frontend.Dom.{all, click, one, press}
-import oathdigital.model.PlayerColor
+import distantlands.frontend.Dom.{all, click, one, press}
+import distantlands.model.PlayerColor
 import org.scalajs.dom
 import scala.collection.mutable.ArrayBuffer
 import scala.scalajs.js
@@ -1784,13 +1784,13 @@ Use `GamePawn`'s real field order (`playerId`, `siteId`, as `WorldBoardRenderer`
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.BoardOptionsRenderSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.BoardOptionsRenderSuite"`
 Expected: compilation fails: `BoardOptions` is not found, and `world` and `playerBoards` take no options.
 
 - [ ] **Step 3: Write `BoardOptions.scala`**
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 import org.scalajs.dom
 import ServerUiSupport.{button, element}
@@ -1972,7 +1972,7 @@ In `WorldBoardRenderer.scala`:
 
 - [ ] **Step 5: Run the render tests and the board suites**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.BoardOptionsRenderSuite oathdigital.frontend.BoardSurfaceSuite oathdigital.frontend.PlayerBoardSuite oathdigital.frontend.SiteBoxLayoutSuite oathdigital.frontend.DiscardPileSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.BoardOptionsRenderSuite distantlands.frontend.BoardSurfaceSuite distantlands.frontend.PlayerBoardSuite distantlands.frontend.SiteBoxLayoutSuite distantlands.frontend.DiscardPileSuite"`
 Expected: PASS.
 
 - [ ] **Step 6: Commit**
@@ -2050,12 +2050,12 @@ Update the suite's doc comment: "pawn placement to the board" becomes "board-pre
 Create `frontend/src/test/scala/distantlands/frontend/BoardDecisionPanelSuite.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.frontend.Dom.{all, one}
-import oathdigital.model.PlayerColor
-import oathdigital.protocol.{DecisionAnswerWire, GameIntent => Intent}
-import oathdigital.testkit.Unwrap.as
+import distantlands.frontend.Dom.{all, one}
+import distantlands.model.PlayerColor
+import distantlands.protocol.{DecisionAnswerWire, GameIntent => Intent}
+import distantlands.testkit.Unwrap.as
 import ParkedDecision.{Routed, Surface}
 import org.scalajs.dom
 
@@ -2119,7 +2119,7 @@ class BoardDecisionPanelSuite extends munit.FunSuite:
       ".board-decision-confirm")).click()
     assertEquals(ui.submitted, Vector(
       Intent.ResolveWalker("campaign.targets", DecisionAnswerWire
-        .ChooseManyWire(Vector(oathdigital.protocol.DecisionOptionWire(
+        .ChooseManyWire(Vector(distantlands.protocol.DecisionOptionWire(
           "site", "hills")))),
       Intent.ResolveWalker("campaign.targets",
         DecisionAnswerWire.ChooseManyWire(Vector.empty))))
@@ -2264,7 +2264,7 @@ Five more suites call `world` with Task 5's signature. In `BoardOptionsRenderSui
 
 - [ ] **Step 4: Run them to verify they fail**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.ParkedDecisionSuite oathdigital.frontend.BoardDecisionPanelSuite oathdigital.frontend.BoardSurfaceSuite oathdigital.frontend.SessionDraftsSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.ParkedDecisionSuite distantlands.frontend.BoardDecisionPanelSuite distantlands.frontend.BoardSurfaceSuite distantlands.frontend.SessionDraftsSuite"`
 Expected: compilation fails: `Surface.BoardDecision`, `BoardForm`, `BoardDecisionPanel` and `BoardOptions.of` are not found.
 
 - [ ] **Step 5: Switch the drafts**
@@ -2373,7 +2373,7 @@ In `WalkerPanelSupport.scala`, delete `renderBoardPanel` and its doc comment.
 - [ ] **Step 8: Write `BoardDecisionPanel.scala`**
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 import org.scalajs.dom
 
@@ -2634,11 +2634,11 @@ Run: `~/.claude/skills/impeccable/scripts/impeccable detect --json frontend/styl
 From the worktree root, with `S` the session scratchpad plus `/db-board-decisions`:
 
 ```bash
-mkdir -p $S && cp var/oathdigital.script var/oathdigital.properties var/oathdigital.log $S/ && cp -r var/oathdigital.lobs $S/
+mkdir -p $S && cp var/distantlands.script var/distantlands.properties var/distantlands.log $S/ && cp -r var/distantlands.lobs $S/
 ```
 
 ```bash
-./sbtw "frontend/fastLinkJS" "runMain oathdigital.server.OathServer --port 8081 --database-path $S/oathdigital"
+./sbtw "frontend/fastLinkJS" "runMain distantlands.server.DistantLandsServer --port 8081 --database-path $S/distantlands"
 ```
 
 Run the second command through Bash with `run_in_background` and wait for "Start completed" in its log. Open `http://127.0.0.1:8081/?mode=server` in the built-in browser at 1440×900 and press "New game". Setup's pawn placement is a board decision. Check in one batched pass, with `read_page`, `javascript_tool` and one screenshot:
@@ -2681,14 +2681,14 @@ Spec slice 3. Both pruning paths keep an option a power's note explains, as unav
 Create `src/test/scala/distantlands/gameplay/UnavailableReasonsSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.PowerNoteHideSuite.{ForbiddingPower, HidingPower,
+import distantlands.gameplay.PowerNoteHideSuite.{ForbiddingPower, HidingPower,
   hid, hideSource}
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerPowers}
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Outcomes.parked
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerPowers}
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Outcomes.parked
 
 /** An option a power hides is still shown, as unavailable, when the power
   * says why (board decisions design, "Unavailable options"): the reason is
@@ -2749,12 +2749,12 @@ class UnavailableReasonsSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.UnavailableReasonsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.UnavailableReasonsSuite"`
 Expected: FAIL: the hidden options are absent rather than unavailable.
 
 - [ ] **Step 3: Explain in the window fold**
 
-In `WalkerPowerGather.scala`, add `OptionReason` to the `oathdigital.model` import. Replace `optionRefs`'s body with `WalkerSearch.choosable(decide)` and its doc with "The options of a choose-one or choose-many decision that a player may choose, in order." Add:
+In `WalkerPowerGather.scala`, add `OptionReason` to the `distantlands.model` import. Replace `optionRefs`'s body with `WalkerSearch.choosable(decide)` and its doc with "The options of a choose-one or choose-many decision that a player may choose, in order." Add:
 
 ```scala
   /** The note of the first power in `restrictions` that forbids `ref`, when
@@ -2828,7 +2828,7 @@ Rename `lookAheadNotes` to `lookAheadNoted`, returning `Vector[(DecisionOptionRe
 
 - [ ] **Step 5: Narrow with the explanations, and journal their notes once**
 
-In `ProcedureWalker.scala`, add `DecisionOptionRef` and `OptionReason` to the `oathdigital.model` import, and add inside `object ProcedureWalker`:
+In `ProcedureWalker.scala`, add `DecisionOptionRef` and `OptionReason` to the `distantlands.model` import, and add inside `object ProcedureWalker`:
 
 ```scala
   /** A decision as the look-ahead leaves it: narrowed, with each option it
@@ -2872,7 +2872,7 @@ and in `narrowParked` replace the last line with `narrowAt(decide, ctx, pending.
 
 - [ ] **Step 6: Run the new suite, then the whole server suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.UnavailableReasonsSuite oathdigital.gameplay.PowerNoteHideSuite oathdigital.gameplay.RestrictionLookAheadSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.UnavailableReasonsSuite distantlands.gameplay.PowerNoteHideSuite distantlands.gameplay.RestrictionLookAheadSuite"`
 Expected: PASS.
 
 Run: `./sbtw test`. Suites of real restricting powers that note what they hide (Lost Tongue, Forgotten Vault, the Fortress rules, Circlet of Command, the Travel site powers, and any other the run names) may fail where they assert a forbidden option is absent from a parked query. For each failure of that kind, change only the assertion's reading of the options from `.options.map(_.ref)` (or `.options`) to `.options.filter(_.available).map(_.ref)` (or `.filter(_.available)`), which keeps its meaning: the option is not on offer. Do not change any other failure; stop and report it instead. Rerun until PASS.
@@ -2906,7 +2906,7 @@ Spec slice 4, targets half.
 
 - [ ] **Step 1: Write the failing tests**
 
-In `CampaignProcedureSuite.scala`, add `as` to the `oathdigital.testkit.Unwrap` import. Replace the body of "extra same-ruler sites are offered as optional targets, in map order" with:
+In `CampaignProcedureSuite.scala`, add `as` to the `distantlands.testkit.Unwrap` import. Replace the body of "extra same-ruler sites are offered as optional targets, in map order" with:
 
 ```scala
     val b = board(extras = 2, warbands = 5, supply = 7)
@@ -2999,7 +2999,7 @@ and append:
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CampaignProcedureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.CampaignProcedureSuite"`
 Expected: FAIL: `locked`, `tallies` and `summary` are empty, and no option is unavailable.
 
 - [ ] **Step 3: One source for each target's defense and force**
@@ -3065,11 +3065,11 @@ In `CampaignBattle.scala`, replace `printedDefense` and `defenderForce` with:
 - [ ] **Step 4: Write `CampaignTargets.scala`**
 
 ```scala
-package oathdigital.gameplay.actions.campaign
+package distantlands.gameplay.actions.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.BannerRules
+import distantlands.model._
 
 /** The Campaign targets question as the table shows it (board decisions
   * design, "Campaign targets"): the target the Campaign already has, the two
@@ -3179,7 +3179,7 @@ In `CampaignProcedure.scala`, pass the catalog: `targetsStep(catalog, actor)` in
 
 - [ ] **Step 6: Run the Campaign suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CampaignProcedureSuite oathdigital.gameplay.CampaignSetupSuite oathdigital.gameplay.CampaignRaidSuite oathdigital.gameplay.CampaignPowersSuite oathdigital.gameplay.CampaignPlanWindowSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.CampaignProcedureSuite distantlands.gameplay.CampaignSetupSuite distantlands.gameplay.CampaignRaidSuite distantlands.gameplay.CampaignPowersSuite distantlands.gameplay.CampaignPlanWindowSuite"`
 Expected: PASS. A suite that compares the whole targets query with `assertEquals` now fails on the new fields; compare its available options instead, as Step 1 does.
 
 Then `./sbtw test`: PASS.
@@ -3257,7 +3257,7 @@ and append:
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.EncirclementSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.EncirclementSuite"`
 Expected: FAIL: `withheld` is `None`, since the plans are left out rather than shown.
 
 - [ ] **Step 3: Let an offer stand withheld**
@@ -3366,7 +3366,7 @@ Update the class doc's first bullet: "A player asks a decision listing the plans
 
 - [ ] **Step 6: Run the plan suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.* oathdigital.gameplay.CampaignPlanWindowSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.* distantlands.gameplay.CampaignPlanWindowSuite"`
 Expected: PASS. If the shortfall test reads "Cannot be paid for now", print the violation the dry run returned and add its case to `shortfall` with the same "Needs …; you have …" wording; do not loosen the test.
 
 Then `./sbtw test`: PASS.
@@ -3419,11 +3419,11 @@ In "sites holding more bandits than the bank holds warbands are refused", read `
       "Needs 2 warbands; your bank holds 1"))
 ```
 
-Import `oathdigital.gameplay.powers.PlayerFacts` beside `NoteText`; `mine` is the suite's force kind for p1 and `ready` the first test's `bandited.ready`.
+Import `distantlands.gameplay.powers.PlayerFacts` beside `NoteText`; `mine` is the suite's force kind for p1 and `ready` the first test's `bandited.ready`.
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.whenplayed.BanditPrinceSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.whenplayed.BanditPrinceSuite"`
 Expected: FAIL: no tallies, no summary, and the unaffordable site is absent.
 
 - [ ] **Step 3: Declare the tally, the summary and the reasons**
@@ -3475,7 +3475,7 @@ Update the object's doc: "The walker's search hides a site whose bandits alone e
 
 - [ ] **Step 4: Run them to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.whenplayed.BanditPrinceSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.whenplayed.BanditPrinceSuite"`
 Expected: PASS. Then `./sbtw test`: PASS.
 
 - [ ] **Step 5: Commit**

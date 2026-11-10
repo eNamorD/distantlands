@@ -1,4 +1,4 @@
-# Arcs-inspired Oath Digital panel UI
+# Arcs-inspired Distant Lands panel UI
 
 Date: 2026-09-08
 
@@ -6,7 +6,7 @@ Status: Approved in conversation and implemented on `feat/arcs-panel-ui`. See th
 
 ## Objective
 
-Replace Oath Digital's vertically stacked game page with a viewport-filling, responsive table inspired by Arcs. World Map, Players, Action Selection, and Game Log remain simultaneously present. Preserve existing game interactions while making overflow navigable within each panel.
+Replace Distant Lands' vertically stacked game page with a viewport-filling, responsive table inspired by Arcs. World Map, Players, Action Selection, and Game Log remain simultaneously present. Preserve existing game interactions while making overflow navigable within each panel.
 
 ## Approved layout
 

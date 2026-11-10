@@ -51,7 +51,7 @@ under the cap and unblocks new operations on the serialization side.
 - [ ] **Step 1: Confirm the starting state**
 
 ```bash
-cd /Users/roman/projects/oathdigital
+cd /Users/roman/projects/distantlands
 wc -l src/main/scala/distantlands/serialization/WalkerOperationCodec.scala
 grep -n 'private def encodeGive' src/main/scala/distantlands/serialization/WalkerOperationCodec.scala
 ./sbtw -batch 'root/Test/compile'
@@ -67,7 +67,7 @@ The suite is the real pin, but a recorded baseline catches a silent spelling
 change that no assertion happens to cover.
 
 ```bash
-./sbtw -batch 'testOnly oathdigital.serialization.WalkerOperationWireSuite' 2>&1 | tail -5
+./sbtw -batch 'testOnly distantlands.serialization.WalkerOperationWireSuite' 2>&1 | tail -5
 ```
 
 Expected: PASS. Note the test count; it must be identical at Step 8.
@@ -78,14 +78,14 @@ The block runs from `private def encodeGive` (line 557) to end of file.
 Build the new file, then delete the block from the old one.
 
 ```bash
-cd /Users/roman/projects/oathdigital
+cd /Users/roman/projects/distantlands
 F=src/main/scala/distantlands/serialization/WalkerOperationCodec.scala
 N=src/main/scala/distantlands/serialization/WalkerValueCodec.scala
 {
   cat <<'HDR'
-package oathdigital.serialization
+package distantlands.serialization
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Wire spellings for the values a recorded operation is made of -- pieces,
   * locations, positions, costs, gives, dice kinds, die faces, orientations
@@ -121,7 +121,7 @@ and 24 of the 26 are called from the retained operation arms. Widen them all
 for consistency.
 
 ```bash
-cd /Users/roman/projects/oathdigital
+cd /Users/roman/projects/distantlands
 N=src/main/scala/distantlands/serialization/WalkerValueCodec.scala
 perl -pi -e 's/^  private def /  protected final def /' $N
 perl -0pi -e 's/private\[serialization\] trait WalkerOperationCodec extends CampaignResultCodec\n    with FollowUpWire with OathkeeperWire with PositionWire:/private[serialization] trait WalkerOperationCodec extends CampaignResultCodec\n    with FollowUpWire with OathkeeperWire with PositionWire with WalkerValueCodec:/s' src/main/scala/distantlands/serialization/WalkerOperationCodec.scala
@@ -143,7 +143,7 @@ same-named private method was dispatched in place of
 encode half was already renamed to `orientationKey`; follow that convention.
 
 ```bash
-cd /Users/roman/projects/oathdigital
+cd /Users/roman/projects/distantlands
 perl -pi -e 's/\bdecodeOrientation\b/orientationFromKey/g' src/main/scala/distantlands/serialization/WalkerValueCodec.scala
 perl -pi -e 's/\bdecodeOrientation\b/orientationFromKey/g' src/main/scala/distantlands/serialization/WalkerOperationCodec.scala
 grep -n 'orientationFromKey\|decodeOrientation' src/main/scala/distantlands/serialization/WalkerValueCodec.scala src/main/scala/distantlands/serialization/WalkerOperationCodec.scala
@@ -194,7 +194,7 @@ treatment.
 - [ ] **Step 8: Prove the move is pure**
 
 ```bash
-./sbtw -batch 'testOnly oathdigital.serialization.WalkerOperationWireSuite'
+./sbtw -batch 'testOnly distantlands.serialization.WalkerOperationWireSuite'
 python3 scripts/check-architecture.py
 wc -l src/main/scala/distantlands/serialization/WalkerOperationCodec.scala src/main/scala/distantlands/serialization/WalkerValueCodec.scala
 ```
@@ -257,7 +257,7 @@ separately.
 - [ ] **Step 1: Confirm the starting state**
 
 ```bash
-cd /Users/roman/projects/oathdigital
+cd /Users/roman/projects/distantlands
 wc -l src/main/scala/distantlands/model/CoreOperations.scala src/main/scala/distantlands/model/Operation.scala
 grep -n 'Parks a walker until\|^object Sequence:\|Semantic window for a card played faceup' src/main/scala/distantlands/model/CoreOperations.scala
 ./sbtw -batch 'root/Test/compile'
@@ -369,7 +369,7 @@ and delete them from `CoreOperations.scala`, highest range first so the
 earlier line numbers stay valid.
 
 ```bash
-cd /Users/roman/projects/oathdigital
+cd /Users/roman/projects/distantlands
 M=src/main/scala/distantlands/model
 { echo; sed -n '667,761p' $M/CoreOperations.scala; echo; sed -n '779,784p' $M/CoreOperations.scala; } >> $M/Operation.scala
 sed -i '' '779,784d' $M/CoreOperations.scala
@@ -385,7 +385,7 @@ In `Operation.scala`, change five `extends` clauses. `Decide` and `BuildOps`
 are leaves; the other three are composites.
 
 ```bash
-cd /Users/roman/projects/oathdigital
+cd /Users/roman/projects/distantlands
 M=src/main/scala/distantlands/model
 perl -0pi -e 's/^    extends PrimitiveOperation:$/    extends LeafOperation:/m' $M/Operation.scala
 perl -0pi -e 's/^    extends PrimitiveOperation$/    extends LeafOperation/m' $M/Operation.scala
@@ -458,7 +458,7 @@ Each of these asks whether a node is a leaf, not whether it is a game
 operation, so the rename corrects the predicate.
 
 ```bash
-cd /Users/roman/projects/oathdigital
+cd /Users/roman/projects/distantlands
 for f in src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala \
          src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala \
          src/main/scala/distantlands/gameplay/powerresolver/OperationRewrite.scala \
@@ -679,7 +679,7 @@ makes that unrepresentable.
 - [ ] **Step 1: Confirm nothing constructs it**
 
 ```bash
-cd /Users/roman/projects/oathdigital
+cd /Users/roman/projects/distantlands
 grep -rn 'UnencodableOperation' src/main/scala src/test/scala
 ```
 
@@ -731,7 +731,7 @@ together with the doc comment above it that ends
 
 ```bash
 ./sbtw -batch 'root/Test/compile'
-./sbtw -batch 'testOnly oathdigital.serialization.*'
+./sbtw -batch 'testOnly distantlands.serialization.*'
 python3 scripts/check-architecture.py
 ```
 
@@ -772,7 +772,7 @@ handles the test-side copy and verifies no others remain.
 - [ ] **Step 1: Find every remaining citation**
 
 ```bash
-cd /Users/roman/projects/oathdigital
+cd /Users/roman/projects/distantlands
 grep -rn '2\.13' src/main/scala src/test/scala
 ```
 
@@ -836,7 +836,7 @@ MSG
 After Task 4:
 
 ```bash
-cd /Users/roman/projects/oathdigital
+cd /Users/roman/projects/distantlands
 python3 scripts/check-architecture.py
 ./sbtw -batch 'root/Test/test' 2>&1 | tail -20
 find src/main/scala shared/src/main/scala frontend/src/main/scala -name '*.scala' | xargs wc -l | sort -rn | head -5

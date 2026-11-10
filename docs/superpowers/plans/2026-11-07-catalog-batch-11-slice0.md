@@ -12,7 +12,7 @@ helpers that build composites' children move to a new
 `private[model] object OperationChildren`. The two card-play hooks, which
 extend the unsealed `Operation`, move to `CardPlayHooks.scala`. A stale
 16-line banner comment is rewritten in 7 lines. Everything stays in package
-`oathdigital.model`, so no import anywhere changes.
+`distantlands.model`, so no import anywhere changes.
 
 **Tech Stack:** Scala 3, munit, `./sbtw` (sbt wrapper), `-Werror`.
 
@@ -36,7 +36,7 @@ read "Goal and scope" and "Slice 0: Room in CoreOperations".
    `returnedSecrets` in `RestCleanup` and `ChallengeRibbon` are unrelated
    names.)
 3. **The hooks need no import changes.** The 28 files that name
-   `CardPlayedFaceup` or `CardPlayedFacedown` import `oathdigital.model._`
+   `CardPlayedFaceup` or `CardPlayedFacedown` import `distantlands.model._`
    or sit in the package, and the classes stay in that package.
 4. **The banner at lines 481-496 is stale.** It says power windows are "not
    wired in this slice", but `Roll` and `ModifyDicePool` now take a
@@ -98,7 +98,7 @@ read "Goal and scope" and "Slice 0: Room in CoreOperations".
 
 Add this test to `CoreOperationsSuite`, after the test "Discard routes
 cards and their resources by glossary rules". The suite already defines
-`red`, `redArea` and `site`, and imports `oathdigital.model._`.
+`red`, `redArea` and `site`, and imports `distantlands.model._`.
 
 ```scala
   test("a payment, a buried discard and a relic discard keep their leaves"):
@@ -143,7 +143,7 @@ cards and their resources by glossary rules". The suite already defines
 
 - [ ] **Step 2: Run it on today's code**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CoreOperationsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.CoreOperationsSuite"`
 Expected: PASS. If it fails, the expected leaves above misread today's
 code: fix the test to match today's leaves, never the code, and say so in
 the commit message.
@@ -151,7 +151,7 @@ the commit message.
 - [ ] **Step 3: Create `OperationChildren.scala`**
 
 ```scala
-package oathdigital.model
+package distantlands.model
 
 /** Builds the children of the composite operations in
   * `CoreOperations.scala`: a world card's discard move, the favor and
@@ -297,7 +297,7 @@ nothing is shadowed.
 
 - [ ] **Step 5: Run the operation suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CoreOperationsSuite oathdigital.gameplay.OperationVocabularySuite oathdigital.gameplay.operations.* oathdigital.serialization.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.CoreOperationsSuite distantlands.gameplay.OperationVocabularySuite distantlands.gameplay.operations.* distantlands.serialization.*"`
 Expected: PASS, with no compiler warning (`-Werror`).
 
 - [ ] **Step 6: Commit**
@@ -334,7 +334,7 @@ EOF
 Move the two classes verbatim, doc comments included:
 
 ```scala
-package oathdigital.model
+package distantlands.model
 
 // The card-play hooks are power windows, not Oath operations: they extend
 // the unsealed [[Operation]], so they live outside `CoreOperations.scala`

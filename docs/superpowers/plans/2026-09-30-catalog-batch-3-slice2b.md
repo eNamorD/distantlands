@@ -32,7 +32,7 @@ Neither adds an operation, window, query, option kind, `NoteArg` kind, protocol 
   - `gameplay` never imports `application`, `serialization` or `server`.
   - A walker power (anything under `gameplay/powers`) never imports `gameplay.walker`.
   - No power name appears in walker sources.
-- Never touch the live database `var/oathdigital`.
+- Never touch the live database `var/distantlands`.
 - Other sessions commit to `main` while you work. Stage explicit paths only; never `git add -A`. Re-check `git log --oneline -1` before any amend, reset or rebase.
 - Work in a git worktree:
   - `EnterWorktree` branches from `origin`, which lags local `main`. Fast-forward the new branch to local `main` first (`git merge --ff-only main`).
@@ -147,20 +147,20 @@ Docs: `docs/ROADMAP.md` and `docs/superpowers/specs/2026-09-30-global-operation-
 Create `src/test/scala/distantlands/gameplay/powers/rest/InsomniaSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.rest
+package distantlands.gameplay.powers.rest
 
-import oathdigital.gameplay.{OathRules, PlacementFixture}
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.phases.PhasePowerProcedure
-import oathdigital.gameplay.powers.{AdviserLimit, NoteText, PhasePowerCatalog,
+import distantlands.gameplay.{OathRules, PlacementFixture}
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.phases.PhasePowerProcedure
+import distantlands.gameplay.powers.{AdviserLimit, NoteText, PhasePowerCatalog,
   SearchFixture, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.banner.BannerFixture
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{WalkerOutcome, WalkerPowers}
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look, Table}
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.powers.banner.BannerFixture
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{WalkerOutcome, WalkerPowers}
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{CatalogNames, Look, Table}
+import distantlands.testkit.Table.p1
 
 class InsomniaSuite extends munit.FunSuite:
   private val rules = new OathRules(catalog,
@@ -249,7 +249,7 @@ class InsomniaSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the suite to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.rest.InsomniaSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.rest.InsomniaSuite"`
 Expected: compile FAIL with "Not found: Insomnia".
 
 - [ ] **Step 3: Create `HolderAdviserLimit`**
@@ -257,11 +257,11 @@ Expected: compile FAIL with "Not found: Insomnia".
 Create `src/main/scala/distantlands/gameplay/powers/rest/HolderAdviserLimit.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.rest
+package distantlands.gameplay.powers.rest
 
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, Transform}
-import oathdigital.model._
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.model._
 
 /** "You can only have two advisers", printed on an adviser: refactor P4 of
   * catalog batch 3, shared by Silver Tongue and Insomnia.
@@ -308,17 +308,17 @@ final case class HolderAdviserLimit(cardId: DenizenId, limit: Int,
 Replace the whole of `src/main/scala/distantlands/gameplay/powers/rest/SilverTongue.scala` with:
 
 ```scala
-package oathdigital.gameplay.powers.rest
+package distantlands.gameplay.powers.rest
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver._
-import oathdigital.gameplay.powers.NoteSupport
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver._
+import distantlands.gameplay.powers.NoteSupport
+import distantlands.model._
 
 /** Silver Tongue (card 92): "You can only have two advisers. REST: Take a
   * favor from a favor bank matching a card at your site."
   *
-  * The REST power is a [[oathdigital.gameplay.powerresolver.PhasePower]]. The
+  * The REST power is a [[distantlands.gameplay.powerresolver.PhasePower]]. The
   * adviser limit is a [[HolderAdviserLimit]], a registered transform at
   * `SearchPlayAdviser`, which Insomnia shares.
   */
@@ -398,12 +398,12 @@ object SilverTongue:
 Create `src/main/scala/distantlands/gameplay/powers/rest/Insomnia.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.rest
+package distantlands.gameplay.powers.rest
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver._
-import oathdigital.gameplay.powers.{CatalogCards, NoteSupport}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver._
+import distantlands.gameplay.powers.{CatalogCards, NoteSupport}
+import distantlands.model._
 
 /** Insomnia (card 97, adviser-only, locked): "You can only have two advisers.
   * REST: Gain [secret]."
@@ -413,7 +413,7 @@ import oathdigital.model._
   * as well the limit stays 2. The limit writes no line, as for Silver Tongue.
   *
   * The REST power is an optional
-  * [[oathdigital.gameplay.powerresolver.PhasePower]], once per turn, which the
+  * [[distantlands.gameplay.powerresolver.PhasePower]], once per turn, which the
   * engine enforces. Its line, "{Red} gained 1 secret.", restates the gain in
   * place of the generic gain line, as Tutor's does.
   */
@@ -461,18 +461,18 @@ object Insomnia:
 Replace the whole of `src/main/scala/distantlands/gameplay/powers/AdviserLimit.scala` with:
 
 ```scala
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.PlacementRules
-import oathdigital.gameplay.powers.rest.{Insomnia, SilverTongue}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.PlacementRules
+import distantlands.gameplay.powers.rest.{Insomnia, SilverTongue}
+import distantlands.model._
 
 /** How many advisers a player may hold, for a power that adds an adviser
   * outside card play (Horned Mask).
   *
-  * Card play gets its limit from [[oathdigital.gameplay.actions.PlacementRules]],
-  * which the [[oathdigital.gameplay.powers.rest.HolderAdviserLimit]] of Silver
+  * Card play gets its limit from [[distantlands.gameplay.actions.PlacementRules]],
+  * which the [[distantlands.gameplay.powers.rest.HolderAdviserLimit]] of Silver
   * Tongue and of Insomnia narrows. This reads the same facts as a read of
   * state, so the limit is defined once: the default is
   * `PlacementRules.DefaultAdviserLimit`, and the lowest limit a held card sets
@@ -550,7 +550,7 @@ with:
 
 In `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`:
 
-- Change `import oathdigital.gameplay.powers.rest.SilverTongue` to `import oathdigital.gameplay.powers.rest.{Insomnia, SilverTongue}`.
+- Change `import distantlands.gameplay.powers.rest.SilverTongue` to `import distantlands.gameplay.powers.rest.{Insomnia, SilverTongue}`.
 - Change `PhasePowers(SilverTongue.forCatalog(catalog).toVector ++` to:
 
 ```scala
@@ -560,7 +560,7 @@ In `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`:
 
 In `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`:
 
-- Change `import oathdigital.gameplay.powers.rest.{LeagueTreatyContribution, SilverTongue}` to `import oathdigital.gameplay.powers.rest.{Insomnia, LeagueTreatyContribution, SilverTongue}`.
+- Change `import distantlands.gameplay.powers.rest.{LeagueTreatyContribution, SilverTongue}` to `import distantlands.gameplay.powers.rest.{Insomnia, LeagueTreatyContribution, SilverTongue}`.
 - Add `Insomnia.forCatalog(catalog) ++` on the line after `SilverTongue.forCatalog(catalog) ++`.
 - In the doc comment, replace:
 
@@ -606,7 +606,7 @@ with:
 
 - [ ] **Step 10: Run the suites to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.rest.* oathdigital.gameplay.powers.AdviserLimitSuite oathdigital.gameplay.PlacementRulesSuite oathdigital.gameplay.RestSuite oathdigital.gameplay.powers.banner.* oathdigital.gameplay.powers.wake.HornedMaskSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.rest.* distantlands.gameplay.powers.AdviserLimitSuite distantlands.gameplay.PlacementRulesSuite distantlands.gameplay.RestSuite distantlands.gameplay.powers.banner.* distantlands.gameplay.powers.wake.HornedMaskSuite"`
 Expected: PASS. 6 new tests in `InsomniaSuite`. `SilverTongueSuite`, `AdviserLimitSuite`, `PlacementRulesSuite`, `PeoplesFavorMobSuite` and `HornedMaskSuite` pass unchanged, and `RestSuite` passes with the edit above.
 
 The last `InsomniaSuite` test fails without Step 7: the Mob's discard is not asked. If it fails with Step 7 in place, report it.
@@ -636,17 +636,17 @@ git commit -m "feat(powers): add Insomnia and share the adviser limit with Silve
 Create `src/test/scala/distantlands/gameplay/powers/wake/QuartermasterSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.wake
+package distantlands.gameplay.powers.wake
 
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.phases.PhasePowerProcedure
-import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look, Table}
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.phases.PhasePowerProcedure
+import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{CatalogNames, Look, Table}
+import distantlands.testkit.Table.p1
 
 class QuartermasterSuite extends munit.FunSuite:
   private val quartermaster = CatalogNames.denizen("Quartermaster")
@@ -709,7 +709,7 @@ class QuartermasterSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the suite to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.wake.QuartermasterSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.wake.QuartermasterSuite"`
 Expected: compile FAIL with "Not found: Quartermaster".
 
 - [ ] **Step 3: Create Quartermaster**
@@ -717,12 +717,12 @@ Expected: compile FAIL with "Not found: Quartermaster".
 Create `src/main/scala/distantlands/gameplay/powers/wake/Quartermaster.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.wake
+package distantlands.gameplay.powers.wake
 
-import oathdigital.gameplay.PowerAccess
-import oathdigital.gameplay.powerresolver.PhasePower
-import oathdigital.gameplay.powers.NoteSupport
-import oathdigital.model._
+import distantlands.gameplay.PowerAccess
+import distantlands.gameplay.powerresolver.PhasePower
+import distantlands.gameplay.powers.NoteSupport
+import distantlands.model._
 
 /** Quartermaster (card 258, site-only), WAKE: "If you rule this card, gain 1
   * Supply."
@@ -763,7 +763,7 @@ In `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`:
 - Change the wake import to:
 
 ```scala
-import oathdigital.gameplay.powers.wake.{Hunger, MarbleFountains,
+import distantlands.gameplay.powers.wake.{Hunger, MarbleFountains,
   Quartermaster, RiverSitePower}
 ```
 
@@ -776,7 +776,7 @@ import oathdigital.gameplay.powers.wake.{Hunger, MarbleFountains,
 
 - [ ] **Step 5: Run the suites to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.wake.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.wake.*"`
 Expected: PASS. 5 new tests in `QuartermasterSuite`, and every existing wake suite still passes.
 
 - [ ] **Step 6: Commit**
@@ -806,14 +806,14 @@ A play to a site also gains the player 1 favor from the played card's bank (`Car
 Create `src/test/scala/distantlands/gameplay/powers/cardplay/SaddleMakersSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.gameplay.powers.{NoteText, PowerFixture, SearchFixture,
+import distantlands.gameplay.powers.{NoteText, PowerFixture, SearchFixture,
   TargetsFixture}
-import oathdigital.gameplay.powers.action.PaidActionHarness
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.Table
+import distantlands.gameplay.powers.action.PaidActionHarness
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.Table
 
 class SaddleMakersSuite extends munit.FunSuite:
   import PowerFixture._
@@ -910,7 +910,7 @@ class SaddleMakersSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the suite to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.cardplay.SaddleMakersSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.cardplay.SaddleMakersSuite"`
 Expected: compile FAIL with "Not found: SaddleMakers".
 
 - [ ] **Step 3: Create Saddle Makers**
@@ -918,13 +918,13 @@ Expected: compile FAIL with "Not found: SaddleMakers".
 Create `src/main/scala/distantlands/gameplay/powers/cardplay/SaddleMakers.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerCtx, Transform}
-import oathdigital.gameplay.powers.{CatalogCards, CatalogResolution, NoteSupport}
-import oathdigital.model._
+import distantlands.gameplay.powers.{CatalogCards, CatalogResolution, NoteSupport}
+import distantlands.model._
 
 /** Saddle Makers (card 142, adviser-only), a persistent rule of a faceup
   * adviser: "After another player plays a [nomad] or [order] card, you gain
@@ -990,7 +990,7 @@ In `src/main/scala/distantlands/gameplay/powers/cardplay/CardPlayTriggers.scala`
 
 - [ ] **Step 5: Run the suites to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.cardplay.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.cardplay.*"`
 Expected: PASS. 8 new tests in `SaddleMakersSuite`, and every existing card-play suite still passes.
 
 - [ ] **Step 6: Commit**
@@ -1024,7 +1024,7 @@ git commit -m "feat(powers): add Saddle Makers"
 In `src/test/scala/distantlands/gameplay/OperationRestrictionsSuite.scala`, change the operations import to:
 
 ```scala
-import oathdigital.gameplay.operations.{GrandScepter, LockedCards,
+import distantlands.gameplay.operations.{GrandScepter, LockedCards,
   OperationPipeline, OperationPolicy, OperationRestrictions}
 ```
 
@@ -1092,7 +1092,7 @@ In `src/test/scala/distantlands/serialization/GameEventWireSuite.scala`, add thi
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OperationRestrictionsSuite oathdigital.serialization.GameEventWireSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.OperationRestrictionsSuite distantlands.serialization.GameEventWireSuite"`
 Expected: compile FAIL with "method apply in object Take does not take ... leaving" or a similar error naming `leaving`.
 
 - [ ] **Step 3: Add `leaving` to `Take`**
@@ -1349,7 +1349,7 @@ with:
 
 - [ ] **Step 9: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OperationRestrictionsSuite oathdigital.serialization.* oathdigital.gameplay.ChallengeProcedureSuite oathdigital.gameplay.CampaignRaidSuite oathdigital.gameplay.powers.whenplayed.* oathdigital.gameplay.powers.targeting.* oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.OperationRestrictionsSuite distantlands.serialization.* distantlands.gameplay.ChallengeProcedureSuite distantlands.gameplay.CampaignRaidSuite distantlands.gameplay.powers.whenplayed.* distantlands.gameplay.powers.targeting.* distantlands.application.gamelog.*"`
 Expected: PASS. 2 new tests (1 in `OperationRestrictionsSuite`, 1 in `GameEventWireSuite`), and every other test in those suites passes. `CampaignRaidSuite` asserts the Raid by state, so it passes unchanged.
 
 If a Game Log suite fails because a line read a banner's leaving operation from the top of a recorded batch, stop and report it: ruling 4 found no such line.
@@ -1380,21 +1380,21 @@ git commit -m "feat(operations): carry a banner's leaving operations inside its 
 Create `src/test/scala/distantlands/gameplay/powers/targeting/LostTongueSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.targeting
+package distantlands.gameplay.powers.targeting
 
-import oathdigital.gameplay.CampaignFixture.raidBoard
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.{CardStaging, NoteText, PowerFixture,
+import distantlands.gameplay.CampaignFixture.raidBoard
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.{CardStaging, NoteText, PowerFixture,
   SearchFixture, TargetsFixture, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.whenplayed.ConspiracyWhenPlayed
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ParkedDecisionAssertions, ProcedureWalker,
+import distantlands.gameplay.powers.whenplayed.ConspiracyWhenPlayed
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ParkedDecisionAssertions, ProcedureWalker,
   WalkerOutcome, WalkerPowers}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{CatalogNames, Table}
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.testkit.{CatalogNames, Table}
+import distantlands.testkit.Table.{p1, p2}
 
 class LostTongueSuite extends munit.FunSuite:
   import TargetingFixture._
@@ -1562,7 +1562,7 @@ class LostTongueSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the suite to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.targeting.LostTongueSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.targeting.LostTongueSuite"`
 Expected: compile FAIL with "Not found: LostTongue".
 
 - [ ] **Step 3: Create Lost Tongue**
@@ -1570,21 +1570,21 @@ Expected: compile FAIL with "Not found: LostTongue".
 Create `src/main/scala/distantlands/gameplay/powers/targeting/LostTongue.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.targeting
+package distantlands.gameplay.powers.targeting
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.BannerRules
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   OptionRestriction, PowerCtx, Transform}
-import oathdigital.gameplay.powers.{CatalogCards, CatalogResolution, RuledCards}
-import oathdigital.model._
+import distantlands.gameplay.powers.{CatalogCards, CatalogResolution, RuledCards}
+import distantlands.model._
 
 /** Lost Tongue (card 157, adviser-only), a persistent rule of a faceup
   * adviser: "Other players cannot target or take your relics or banners in
   * any way unless they rule a [nomad] card."
   *
   * Each part reads, when it applies, whether the acting player rules a nomad
-  * card ([[oathdigital.gameplay.powers.RuledCards]]):
+  * card ([[distantlands.gameplay.powers.RuledCards]]):
   *
   *  - **Target.** "Target" is a Campaign's target selection only. A Raid's
   *    optional targets (`CampaignTargetSelection`) hide the holder's relics
@@ -1713,7 +1713,7 @@ with:
 
 - [ ] **Step 5: Run the suites to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.targeting.* oathdigital.gameplay.powers.whenplayed.* oathdigital.gameplay.CampaignRaidSuite oathdigital.gameplay.ChallengeProcedureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.targeting.* distantlands.gameplay.powers.whenplayed.* distantlands.gameplay.CampaignRaidSuite distantlands.gameplay.ChallengeProcedureSuite"`
 Expected: PASS. 8 new tests in `LostTongueSuite`, and every existing test in those suites still passes.
 
 If the first Raid test finds the walk parked at `CampaignIds.targets` with no option rather than at `CampaignIds.force`, the walker kept an empty choose-many. Stop and report it: a Raid against a protected holder must still be playable.
@@ -1812,7 +1812,7 @@ In `src/test/scala/distantlands/gameplay/powers/targeting/ForgottenVaultSuite.sc
 
 - [ ] **Step 3: Run the suites to verify the new tests fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.targeting.CircletOfCommandSuite oathdigital.gameplay.powers.targeting.ForgottenVaultSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.targeting.CircletOfCommandSuite distantlands.gameplay.powers.targeting.ForgottenVaultSuite"`
 Expected: FAIL. The Circlet's Challenge, Conspiracy and line tests, and the Vault's three Conspiracy tests, fail because both cards still narrow those decisions.
 
 - [ ] **Step 4: Narrow the Circlet to Campaign targets**
@@ -1820,13 +1820,13 @@ Expected: FAIL. The Circlet's Challenge, Conspiracy and line tests, and the Vaul
 Replace the whole of `src/main/scala/distantlands/gameplay/powers/targeting/CircletOfCommand.scala` with:
 
 ```scala
-package oathdigital.gameplay.powers.targeting
+package distantlands.gameplay.powers.targeting
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution, OptionRestriction, PowerCtx}
-import oathdigital.gameplay.powers.{CatalogCards, CatalogResolution}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.BannerRules
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution, OptionRestriction, PowerCtx}
+import distantlands.gameplay.powers.{CatalogCards, CatalogResolution}
+import distantlands.model._
 
 /** The Circlet of Command (relic R15), a persistent rule of a faceup relic:
   * players other than the holder cannot target the holder's banners, or the
@@ -1909,13 +1909,13 @@ object CircletOfCommand:
 Replace the whole of `src/main/scala/distantlands/gameplay/powers/targeting/ForgottenVault.scala` with:
 
 ```scala
-package oathdigital.gameplay.powers.targeting
+package distantlands.gameplay.powers.targeting
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.SiteRulers
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution, OptionRestriction, PowerCtx}
-import oathdigital.gameplay.powers.{CatalogCards, CatalogResolution}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.SiteRulers
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution, OptionRestriction, PowerCtx}
+import distantlands.gameplay.powers.{CatalogCards, CatalogResolution}
+import distantlands.model._
 
 /** Forgotten Vault (card 75, site-only), a persistent rule: enemies of the
   * Vault's ruler cannot target relics that ruler holds, as the Circlet of
@@ -1995,7 +1995,7 @@ with:
 
 - [ ] **Step 6: Run the suites to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.targeting.* oathdigital.gameplay.ChallengeProcedureSuite oathdigital.gameplay.powers.whenplayed.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.targeting.* distantlands.gameplay.ChallengeProcedureSuite distantlands.gameplay.powers.whenplayed.*"`
 Expected: PASS. No new tests: the Circlet suite and the Vault suite keep their counts, with the turned-around tests passing.
 
 - [ ] **Step 7: Commit**

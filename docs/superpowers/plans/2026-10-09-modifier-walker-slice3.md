@@ -42,7 +42,7 @@
   - No power name appears in walker sources, in any case, not even in a comment.
   - Nothing under `gameplay/actions` imports `gameplay/powers`.
 - **Line width.** Scala lines stay at or under 80 characters, as in the files around them. Re-wrap any line in this plan that comes out longer.
-- **Never touch the live database `var/oathdigital`.** A browser check runs a scratch server on port 8081 through Bash, never `preview_start`.
+- **Never touch the live database `var/distantlands`.** A browser check runs a scratch server on port 8081 through Bash, never `preview_start`.
 - **Concurrent sessions.** Other sessions commit to `main` while you work.
   - Stage explicit paths only; never `git add -A`.
   - Re-check `git log --oneline -1` before any amend, reset or rebase.
@@ -148,14 +148,14 @@ and, inside it:
 Replace `src/test/scala/distantlands/testkit/EconomyActions.scala` with:
 
 ```scala
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.gameplay.{ModifierPlay, OathRules}
-import oathdigital.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
+import distantlands.gameplay.{ModifierPlay, OathRules}
+import distantlands.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.OathState.Ready
 
 /** Muster and Trade driven through the rules to the end: start, pick the
   * modifiers in the modifier decision and start the action, then answer the
@@ -252,20 +252,20 @@ object EconomyActions:
 Create `src/test/scala/distantlands/gameplay/powers/economy/MusterModifierChoiceSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.ModifierPlay
-import oathdigital.gameplay.actions.economy.MusterProcedure
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.powers.{SearchFixture, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, EconomyActions, Look, Outcomes,
+import distantlands.gameplay.ModifierPlay
+import distantlands.gameplay.actions.economy.MusterProcedure
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.powers.{SearchFixture, WalkerPowerCatalog}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{CatalogNames, EconomyActions, Look, Outcomes,
   Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.{accepted, rejected}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.{accepted, rejected}
 
 /** Muster asks for its modifiers inside the walk (modifier walker design,
   * slice 3). */
@@ -345,18 +345,18 @@ class MusterModifierChoiceSuite extends munit.FunSuite:
 Create `src/test/scala/distantlands/gameplay/powers/economy/TradeModifierChoiceSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.ModifierPlay
-import oathdigital.gameplay.actions.economy.TradeProcedure
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.powers.SearchFixture
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, EconomyActions, Look, Outcomes,
+import distantlands.gameplay.ModifierPlay
+import distantlands.gameplay.actions.economy.TradeProcedure
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.powers.SearchFixture
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{CatalogNames, EconomyActions, Look, Outcomes,
   Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.{accepted, rejected}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.{accepted, rejected}
 
 /** Trade asks for its modifiers inside the walk, after its resource
   * (modifier walker design, slice 3). */
@@ -435,7 +435,7 @@ class TradeModifierChoiceSuite extends munit.FunSuite:
 
 - [ ] **Step 5: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.MusterModifierChoiceSuite oathdigital.gameplay.powers.economy.TradeModifierChoiceSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.economy.MusterModifierChoiceSuite distantlands.gameplay.powers.economy.TradeModifierChoiceSuite"`
 
 Expected:
 - "with no modifier to pick" (both suites) and "the start control previews the sources" pass already.
@@ -446,14 +446,14 @@ Expected:
 Replace `src/main/scala/distantlands/gameplay/actions/economy/EconomyTree.scala` with:
 
 ```scala
-package oathdigital.gameplay.actions.economy
+package distantlands.gameplay.actions.economy
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.OathLifecycle
-import oathdigital.gameplay.walker.{ModifierChoice, PricedOptions,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.OathLifecycle
+import distantlands.gameplay.walker.{ModifierChoice, PricedOptions,
   WalkerPowers, WalkerSimulation}
-import oathdigital.gameplay.walker.WalkerSimulation.PreviewedOption
-import oathdigital.model._
+import distantlands.gameplay.walker.WalkerSimulation.PreviewedOption
+import distantlands.model._
 
 /** The tree Muster and Trade share (modifier walker design for its first
   * node):
@@ -570,7 +570,7 @@ Keep `afterSource`, `answered` and `fail` below it as they are.
 
 In `MusterProcedure.scala`:
 
-- Change the walker import to `import oathdigital.gameplay.walker.WalkerPowers`. Keep the `PreviewedOption` import.
+- Change the walker import to `import distantlands.gameplay.walker.WalkerPowers`. Keep the `PreviewedOption` import.
 - Replace the doc comment's last sentence with "Takes no start selection; the modifiers are the `muster.modifiers` decision and the card is the `muster.source` decision."
 - Replace `kind` and `startOptions`:
 
@@ -596,7 +596,7 @@ In `MusterProcedure.scala`:
 
 In `TradeProcedure.scala`:
 
-- Change the walker import to `import oathdigital.gameplay.walker.WalkerPowers`. Keep the `PreviewedOption` import.
+- Change the walker import to `import distantlands.gameplay.walker.WalkerPowers`. Keep the `PreviewedOption` import.
 - Change the doc comment's last sentence to "Both spend one Supply, and both ask for their modifiers in the `trade.modifiers` decision, then draw on the `trade.source` decision."
 - Replace `kind`'s two cases and `startOptions`:
 
@@ -652,7 +652,7 @@ In its trait doc comment, the first bullet under "The payment is `selectionPayme
 
 - [ ] **Step 9: Run the new suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.MusterModifierChoiceSuite oathdigital.gameplay.powers.economy.TradeModifierChoiceSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.economy.MusterModifierChoiceSuite distantlands.gameplay.powers.economy.TradeModifierChoiceSuite"`
 
 Expected: PASS, 9 tests.
 
@@ -660,7 +660,7 @@ Expected: PASS, 9 tests.
 
 Each edit below replaces a direct start that carried modifiers, or a test that the new decision changes. The suites not listed drive through `EconomyActions` and need no edit.
 
-**Suites whose helper started with modifiers.** In each, replace the `rules.startWalker` call with `ModifierPlay.started`, keeping the rest of the helper. Add `import oathdigital.gameplay.ModifierPlay`.
+**Suites whose helper started with modifiers.** In each, replace the `rules.startWalker` call with `ModifierPlay.started`, keeping the rest of the helper. Add `import distantlands.gameplay.ModifierPlay`.
 
 - `DefameSuite.tradedForFavorWithMercenaries`, `MovingMarketSuite.tradedWithMarket`, `MapLibrarySuite.tradeStarted`, `OldSongsSuite.tradeStarted`, `SkilledMerchantsSuite.tradeStarted`, and the start in `VowOfPovertySuite`'s "Moving Market's favor is not from Trade, so its holder still gains it". Each becomes, with its own modifiers value and resource:
 
@@ -679,7 +679,7 @@ Each edit below replaces a direct start that carried modifiers, or a test that t
       PowerWindow.MusterModifierSelection, selected))
 ```
 
-  Use each helper's own names for the state and the vector. `KnightsErrantSuite` already imports from `oathdigital.gameplay`; make it `import oathdigital.gameplay.{ModifierPlay, OathRules, WalkerDiceFixture}`.
+  Use each helper's own names for the state and the vector. `KnightsErrantSuite` already imports from `distantlands.gameplay`; make it `import distantlands.gameplay.{ModifierPlay, OathRules, WalkerDiceFixture}`.
 
 These helpers also serve tests that pass no modifiers: `OldSongsSuite`'s "without it, the card with one secret is shown unavailable and refused", `PressgangsSuite`'s "without it, a card holding favor or secrets is shown unavailable and refused" and `KnightsErrantSuite`'s `afterMuster`. A source is playable in each, so "Start" is available, `ModifierPlay.started` answers it, and the walk parks on the source as before.
 
@@ -732,7 +732,7 @@ and add to the suite:
     ModifierPicks.decisionId(PowerWindow.MusterModifierSelection)
 ```
 
-with `import oathdigital.gameplay.powerresolver.ModifierPicks`.
+with `import distantlands.gameplay.powerresolver.ModifierPicks`.
 
 **`AwaitedReturnSuite`, "it lets a player with no Supply trade".** Replace the refused `attemptTrade` assertion with:
 
@@ -881,7 +881,7 @@ and the first Trade test with:
     ModifierPicks.decisionId(PowerWindow.TradeModifierSelection)
 ```
 
-Add `import oathdigital.gameplay.actions.economy.{MusterProcedure, TradeProcedure}`. The suite's `parked` helper, from slice 1, serves every action. `assertStarts` is now unused: delete it.
+Add `import distantlands.gameplay.actions.economy.{MusterProcedure, TradeProcedure}`. The suite's `parked` helper, from slice 1, serves every action. `assertStarts` is now unused: delete it.
 
 - [ ] **Step 14: Pick Golem Legions in the Game Log script**
 
@@ -986,7 +986,7 @@ Add to `UndoServiceSuite`:
     assertEquals(undone.state, withGolem.state)
 ```
 
-Imports: `oathdigital.gameplay.powers.economy.GolemLegions`. Slice 2 added `oathdigital.gameplay.ModifierPlay`.
+Imports: `distantlands.gameplay.powers.economy.GolemLegions`. Slice 2 added `distantlands.gameplay.ModifierPlay`.
 
 - [ ] **Step 2: The start line names the pick**
 
@@ -1006,7 +1006,7 @@ Add to `GameLogStartLineSuite`:
 
 - [ ] **Step 3: Run them**
 
-Run: `./sbtw "testOnly oathdigital.application.UndoServiceSuite oathdigital.application.gamelog.GameLogStartLineSuite oathdigital.application.gamelog.GameLogActionLineSuite"`
+Run: `./sbtw "testOnly distantlands.application.UndoServiceSuite distantlands.application.gamelog.GameLogStartLineSuite distantlands.application.gamelog.GameLogActionLineSuite"`
 
 Expected: PASS. `GameLogActionLineSuite`'s "Muster on Golem Legions: the line names the adviser as the source" also runs the converted script.
 
@@ -1056,13 +1056,13 @@ In `ModifierFlowSuite`, add after "a Search start goes out directly":
     assertEquals(host.currentDrafts.modifiers, None)
 ```
 
-Add `WalkerStartArgWire` to the `oathdigital.protocol` import.
+Add `WalkerStartArgWire` to the `distantlands.protocol` import.
 
 Slice 2 made "confirming leaves the flow and sends the folded submission without a redraw" use a `muster` value. Make it use `recover` instead:
 - Replace each `"muster"` in it with `"recover"`.
 - Replace `muster` with the suite's existing `recover`, and delete the `muster` value.
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.ModifierFlowSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.ModifierFlowSuite"`
 
 Expected: FAIL. The two new tests see a preview request.
 
@@ -1107,7 +1107,7 @@ In its doc comment, change "Search, facedown-adviser play and Travel ask for the
       GameIntent.StartWalker("recover", Vector("denizen.relic-worship")))
 ```
 
-- **`ModifierSelectionStateSuite`, "a Trade walker start retains its start argument":** no action in the flow takes a start argument now, but the fold still keeps any it is given. Rename the test to "a walker start keeps its start arguments through the fold", and replace its `GameIntent.StartWalker("trade", ...)` with `GameIntent.StartWalker("recover", Vector.empty, Vector(oathdigital.protocol.WalkerStartArgWire("button", "example")))`.
+- **`ModifierSelectionStateSuite`, "a Trade walker start retains its start argument":** no action in the flow takes a start argument now, but the fold still keeps any it is given. Rename the test to "a walker start keeps its start arguments through the fold", and replace its `GameIntent.StartWalker("trade", ...)` with `GameIntent.StartWalker("recover", Vector.empty, Vector(distantlands.protocol.WalkerStartArgWire("button", "example")))`.
 
 Run: `./sbtw "frontend/test"`
 
@@ -1129,7 +1129,7 @@ All must pass.
 
 - [ ] **Step 6: Browser check on a scratch database**
 
-Follow the memory recipe (`preview-start-hits-live-db`). Never use `preview_start`, and never open `var/oathdigital`.
+Follow the memory recipe (`preview-start-hits-live-db`). Never use `preview_start`, and never open `var/distantlands`.
 
 1. Seed a scratch HSQLDB in the scratchpad from `FirstGameSetupFixture.initialSituation().endingWake(p2)`. p2 stands at Ancient City, where a first game deals no denizen. Arrange Golem Legions as p2's adviser (`Play` onto `Location.PlayArea(p2)`).
 2. Run the server on port 8081 through Bash, in the background.

@@ -123,7 +123,7 @@ section "Slice 8: Nested follow-ups". Read "Slice 7" too, and the
 
 - [ ] **Step 1: Write the failing tests**
 
-In `ExecutedTriggersSuite.scala`, add `import oathdigital.model.TestGameFixtures.sites`
+In `ExecutedTriggersSuite.scala`, add `import distantlands.model.TestGameFixtures.sites`
 (check that `ProcedureWalkerFixture` takes `sites` from there:
 `grep -n "import" src/test/scala/distantlands/testkit/ProcedureWalkerFixture.scala`).
 
@@ -254,13 +254,13 @@ Add:
 ```
 
 `ExecutedTriggers` is `private[walker]`; the suite is in package
-`oathdigital.gameplay.walker`, so it reaches it. If the event list for the
+`distantlands.gameplay.walker`, so it reaches it. If the event list for the
 cap test is not a `Left` because a batch below the cap fails first, read
 the actual result and keep the assertion on the cap's message.
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.ExecutedTriggersSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.ExecutedTriggersSuite"`
 Expected: compile errors: `keyAt`, `MaxDepth` and `holds(_, _)` do not
 exist.
 
@@ -498,7 +498,7 @@ Keep the rest of the doc as it is.
 
 - [ ] **Step 7: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.*"`
 Expected: PASS.
 
 Run the whole backend suite, since every trigger now answers nested
@@ -648,7 +648,7 @@ the log and read the walk before changing the expected order.
 
 - [ ] **Step 3: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.FalseProphetClaimSuite oathdigital.application.gamelog.FalseProphetLogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.FalseProphetClaimSuite distantlands.application.gamelog.FalseProphetLogSuite"`
 Expected: PASS, with Task 1 in place. To see that the tests prove the
 nesting, check out Task 1's parent commit's walker files in a scratch
 copy only if a test passes suspiciously; do not revert committed work.

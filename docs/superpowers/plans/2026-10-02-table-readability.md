@@ -14,8 +14,8 @@
 
 - `-Werror` with `-Wunused:imports,privates,locals,implicits,nowarn` on both projects. An unused import or private member fails the build.
 - Production Scala files stay at or under 800 lines (`scripts/check-architecture.py`).
-- `shared/src/main` may import only `oathdigital.protocol`. `application` must not import `persistence`, `serialization` or `server`.
-- Never touch the live database `var/oathdigital`. Browser checks use a scratch copy only, on port 8081, started through Bash (not `preview_start`).
+- `shared/src/main` may import only `distantlands.protocol`. `application` must not import `persistence`, `serialization` or `server`.
+- Never touch the live database `var/distantlands`. Browser checks use a scratch copy only, on port 8081, started through Bash (not `preview_start`).
 - Other sessions commit to `main` while you work. Stage explicit paths only; never `git add -A`. Never commit `node_modules`, `.tooling` or `target`.
 - Work in a git worktree: `git worktree add -b table-readability .claude/worktrees/table-readability main`, then `ln -s "$(pwd)/.tooling" .claude/worktrees/table-readability/.tooling`, then `EnterWorktree`. Before merging from the main checkout, `ExitWorktree(keep)`.
 - Commit trailer: the committing model's own `Co-Authored-By` line.
@@ -90,7 +90,7 @@ In `ProjectionProtocolSuite`, after the test that uses `restSupplyGain = None` (
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.protocol.ProjectionProtocolSuite"`
+Run: `./sbtw "testOnly distantlands.protocol.ProjectionProtocolSuite"`
 Expected: compile error, `discardCards` is not a member of `SetupRegionProjection`.
 
 - [ ] **Step 3: Add the field and the codec**
@@ -132,7 +132,7 @@ In `WorldProjectionCodec.scala`, replace `encodeRegion` and `decodeRegion`:
 
 - [ ] **Step 4: Run the codec test**
 
-Run: `./sbtw "testOnly oathdigital.protocol.ProjectionProtocolSuite"`
+Run: `./sbtw "testOnly distantlands.protocol.ProjectionProtocolSuite"`
 Expected: PASS, including the suite's existing unexpected-field rejection tests.
 
 - [ ] **Step 5: Write the failing projector test**
@@ -140,12 +140,12 @@ Expected: PASS, including the suite's existing unexpected-field rejection tests.
 Create `src/test/scala/distantlands/application/GamePresentationProjectorDiscardSuite.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Table}
+import distantlands.testkit.Table.{p1, p2}
 
 /** A discard pile's cards, top first, through the one visibility rule. */
 class GamePresentationProjectorDiscardSuite extends munit.FunSuite:
@@ -177,11 +177,11 @@ class GamePresentationProjectorDiscardSuite extends munit.FunSuite:
       Vector("hidden", "hidden"))
 ```
 
-If `CatalogNames` lives elsewhere than `oathdigital.testkit`, take the import from `Table.scala`'s own import of it.
+If `CatalogNames` lives elsewhere than `distantlands.testkit`, take the import from `Table.scala`'s own import of it.
 
 - [ ] **Step 6: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.application.GamePresentationProjectorDiscardSuite"`
+Run: `./sbtw "testOnly distantlands.application.GamePresentationProjectorDiscardSuite"`
 Expected: FAIL. `discardCards` is empty, so `take(2)` gives `Vector()`.
 
 - [ ] **Step 7: Project the cards**
@@ -212,7 +212,7 @@ Then pass the region at the three call sites (lines 62-65, 70-76 and 80-86): `re
 
 - [ ] **Step 8: Run both suites and the redaction suite**
 
-Run: `./sbtw "testOnly oathdigital.application.GamePresentationProjectorDiscardSuite oathdigital.application.GamePresentationProjectorAdviserRedactionSuite oathdigital.protocol.ProjectionProtocolSuite"`
+Run: `./sbtw "testOnly distantlands.application.GamePresentationProjectorDiscardSuite distantlands.application.GamePresentationProjectorAdviserRedactionSuite distantlands.protocol.ProjectionProtocolSuite"`
 Expected: PASS.
 
 - [ ] **Step 9: Commit**
@@ -269,7 +269,7 @@ In `ProjectionProtocolSuite`, add:
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.protocol.ProjectionProtocolSuite"`
+Run: `./sbtw "testOnly distantlands.protocol.ProjectionProtocolSuite"`
 Expected: compile error on `bankedWarbands` and `SupplyBandProjection`.
 
 - [ ] **Step 3: Add the DTO fields and the codecs**
@@ -353,7 +353,7 @@ in `decodeValue` after `restGain`:
 
 - [ ] **Step 4: Run the codec test**
 
-Run: `./sbtw "testOnly oathdigital.protocol.ProjectionProtocolSuite"`
+Run: `./sbtw "testOnly distantlands.protocol.ProjectionProtocolSuite"`
 Expected: PASS.
 
 - [ ] **Step 5: Write the failing projection test**
@@ -378,11 +378,11 @@ In `SupplyProjectionSuite`, add:
       SupplyBandProjection(0, Some(3), 4)))
 ```
 
-Add `SupplyBandProjection` to the suite's `oathdigital.protocol.projection` import.
+Add `SupplyBandProjection` to the suite's `distantlands.protocol.projection` import.
 
 - [ ] **Step 6: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.application.SupplyProjectionSuite"`
+Run: `./sbtw "testOnly distantlands.application.SupplyProjectionSuite"`
 Expected: FAIL, `printedWarbands` is 0 and `supplyBands` is empty.
 
 - [ ] **Step 7: Split `PlayerFacts.banked` into its parts**
@@ -428,7 +428,7 @@ In `FinishRestProcedure.scala`, replace the private `bankedWarbands` (lines 73-8
       UnsupportedRestState(s"no bounded warband supply for $kind"))
 ```
 
-Add `import oathdigital.gameplay.powers.PlayerFacts` to the file.
+Add `import distantlands.gameplay.powers.PlayerFacts` to the file.
 
 - [ ] **Step 9: Project the figures**
 
@@ -442,7 +442,7 @@ In `GamePresentationProjector.playerBoards`, before the `PlayerBoardProjection(`
       val restBase = FinishRestProcedure.ExileSupply.baseSupplyFor(banked).getOrElse(0)
 ```
 
-and append `banked, printed, atSites, restBase` after the `banners(...)` argument. Add the imports `oathdigital.gameplay.powers.PlayerFacts` and `oathdigital.gameplay.phases.rest.FinishRestProcedure`. `setupPlayerBoards` is unchanged; its defaults are zero.
+and append `banked, printed, atSites, restBase` after the `banners(...)` argument. Add the imports `distantlands.gameplay.powers.PlayerFacts` and `distantlands.gameplay.phases.rest.FinishRestProcedure`. `setupPlayerBoards` is unchanged; its defaults are zero.
 
 In `GameProjection.scala`, after `restSupplyGain = ...`:
 
@@ -453,11 +453,11 @@ In `GameProjection.scala`, after `restSupplyGain = ...`:
               band.warbandsInBank.maximum), band.baseSupply)))
 ```
 
-`SupplyBandProjection` comes from `oathdigital.protocol.projection`, which the file already imports.
+`SupplyBandProjection` comes from `distantlands.protocol.projection`, which the file already imports.
 
 - [ ] **Step 10: Run the suites**
 
-Run: `./sbtw "testOnly oathdigital.application.SupplyProjectionSuite oathdigital.model.SupplySuite oathdigital.protocol.ProjectionProtocolSuite" "testOnly oathdigital.gameplay.phases.rest.*"`
+Run: `./sbtw "testOnly distantlands.application.SupplyProjectionSuite distantlands.model.SupplySuite distantlands.protocol.ProjectionProtocolSuite" "testOnly distantlands.gameplay.phases.rest.*"`
 Expected: PASS. If the rest package has no suites under that name, run `./sbtw test` instead and expect the baseline count.
 
 - [ ] **Step 11: Commit**
@@ -486,9 +486,9 @@ git commit -m "feat(projection): banked warbands and the Supply bands on every b
 Create `frontend/src/test/scala/distantlands/frontend/DiscardPileSuite.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.model.PlayerColor
+import distantlands.model.PlayerColor
 import org.scalajs.dom
 
 /** A region's discard pile opens as a card list, top first. */
@@ -544,7 +544,7 @@ class DiscardPileSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.DiscardPileSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.DiscardPileSuite"`
 Expected: FAIL on `tagName`: the pile is a `div`.
 
 - [ ] **Step 3: Make the pile a button when it has cards to show**
@@ -599,7 +599,7 @@ In `WorldBoardRenderer.scala`, line 161-162 becomes:
 
 - [ ] **Step 4: Run the suite**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.DiscardPileSuite oathdigital.frontend.BoardSurfaceSuite oathdigital.frontend.SiteBoxLayoutSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.DiscardPileSuite distantlands.frontend.BoardSurfaceSuite distantlands.frontend.SiteBoxLayoutSuite"`
 Expected: PASS.
 
 - [ ] **Step 5: Style the button like the pile it was**
@@ -650,7 +650,7 @@ git commit -m "feat(frontend): a discard pile opens its cards in the overlay"
 Create `frontend/src/test/scala/distantlands/frontend/SupplyAtRestSuite.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 /** The lines behind a board's Supply figure. */
 class SupplyAtRestSuite extends munit.FunSuite:
@@ -684,7 +684,7 @@ class SupplyAtRestSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.SupplyAtRestSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.SupplyAtRestSuite"`
 Expected: compile error, `SupplyBand` and `SupplyAtRest` not found.
 
 - [ ] **Step 3: Write the alias and the object**
@@ -698,7 +698,7 @@ type SupplyBand = protocol.projection.SupplyBandProjection
 Create `frontend/src/main/scala/distantlands/frontend/SupplyAtRest.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 /** The text behind a board's Supply figure: what the bag holds, the Rest
   * table with the current band marked, and the Supply the next Rest
@@ -728,7 +728,7 @@ private[frontend] object SupplyAtRest:
 
 - [ ] **Step 4: Run the pure suite**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.SupplyAtRestSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.SupplyAtRestSuite"`
 Expected: PASS.
 
 - [ ] **Step 5: Write the failing board test**
@@ -754,7 +754,7 @@ The fixture's `board` has zero bag figures and the projection has no bands; the 
 
 - [ ] **Step 6: Run it to see it fail**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.PlayerBoardSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.PlayerBoardSuite"`
 Expected: FAIL, "no Supply button".
 
 - [ ] **Step 7: Make Supply a button**
@@ -783,7 +783,7 @@ with:
 
 - [ ] **Step 8: Run the board suite**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.PlayerBoardSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.PlayerBoardSuite"`
 Expected: PASS, including the existing test that reads `.resource` texts as `Vector("Warbands 3", "2", "1/2", "Supply 7/7")`.
 
 - [ ] **Step 9: Give the button the pill's look**
@@ -837,7 +837,7 @@ If the symbol ids carry a different prefix than `token-`, read `mount` and use t
 
 - [ ] **Step 3: Run it to see it fail**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.SuitGlyphSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.SuitGlyphSuite"`
 Expected: FAIL on the first `assert`.
 
 - [ ] **Step 4: Change the paths**
@@ -864,7 +864,7 @@ and
 
 - [ ] **Step 5: Run the suite**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.SuitGlyphSuite oathdigital.frontend.SiteFaceSuite oathdigital.frontend.CardInspectionOverlaySuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.SuitGlyphSuite distantlands.frontend.SiteFaceSuite distantlands.frontend.CardInspectionOverlaySuite"`
 Expected: PASS.
 
 - [ ] **Step 6: Commit**
@@ -1033,9 +1033,9 @@ git commit -m "style(frontend): site powers stay on the map and scale with it"
 From the worktree root:
 
 ```bash
-S=/private/tmp/claude-501/-Users-roman-projects-oathdigital/c17e13c6-2b51-40f4-a67d-0fd7cda78149/scratchpad/db-readability
-mkdir -p $S && cp var/oathdigital.script var/oathdigital.properties var/oathdigital.log $S/ && cp -r var/oathdigital.lobs $S/
-./sbtw "runMain oathdigital.server.OathServer --port 8081 --database-path $S/oathdigital"
+S=/private/tmp/claude-501/-Users-roman-projects-distantlands/c17e13c6-2b51-40f4-a67d-0fd7cda78149/scratchpad/db-readability
+mkdir -p $S && cp var/distantlands.script var/distantlands.properties var/distantlands.log $S/ && cp -r var/distantlands.lobs $S/
+./sbtw "runMain distantlands.server.DistantLandsServer --port 8081 --database-path $S/distantlands"
 ```
 
 Run the last line through Bash with `run_in_background` and wait for "Start completed" in its log. Open `http://127.0.0.1:8081/?mode=server&gameId=manual-1790308527747-879693` in the built-in browser at 1440×900 (`resize_window`). Red is the viewer.

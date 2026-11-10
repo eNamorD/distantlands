@@ -37,7 +37,7 @@ types this plan builds on.
 - Relic, edifice, site and legacy cards stay where they are (slices 3 and 4).
   Only their paid actions change in Task 2, to read the holding object's
   printed power.
-- Never touch the live database `var/oathdigital`.
+- Never touch the live database `var/distantlands`.
 - Gates at the end of every task: `./sbtw test frontend/test`,
   `python3 scripts/check-architecture.py`,
   `python3 scripts/check-markdown-links.py`.
@@ -189,7 +189,7 @@ def remove(src, pkg, names):
 - Consumes: slice 1's card objects (`object AlchemistCard extends Denizen(...)`
   with `val power` and `val powers`).
 - Produces: each implemented denizen's object in its power's package, for
-  example `oathdigital.gameplay.powers.action.StorytellerCard` beside
+  example `distantlands.gameplay.powers.action.StorytellerCard` beside
   `Storyteller`. Tasks 2 and 3 refer to `XCard.power` and `XCard.id` from the
   same file without an import.
 
@@ -203,7 +203,7 @@ Append to `CardCatalogSuite` (inside the class, after the last test):
     val registered = (WalkerPowerCatalog.default(catalog).powers.map(_.id) ++
       PhasePowerCatalog.default(catalog).powers.map(_.id)).toSet
     val misplaced = catalog.denizens.filter(card =>
-      (card.getClass.getPackageName == "oathdigital.catalog.holding") ==
+      (card.getClass.getPackageName == "distantlands.catalog.holding") ==
         card.powers.exists(power => registered(power.id)))
     assertEquals(misplaced.map(_.name), Vector.empty)
 ```
@@ -213,7 +213,7 @@ registered, or out of holding although none is.
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.cards.CardCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.cards.CardCatalogSuite"`
 Expected: FAIL. The obtained vector names the 126 implemented denizens
 ("Wrestlers", "Chaos Cult", "Outriders", ...).
 
@@ -292,8 +292,8 @@ for card, block, dest in moves:
     lines[j:j] = [""] + block.split("\n")
     s = "\n".join(lines)
     used = {t for t in TRAITS if re.search(rf"\bwith {t}\b", block)}
-    s = imports.add(s, "oathdigital.catalog", {"Denizen", "PrintedPower"} | used)
-    s = imports.add(s, "oathdigital.model",
+    s = imports.add(s, "distantlands.catalog", {"Denizen", "PrintedPower"} | used)
+    s = imports.add(s, "distantlands.model",
                     {"Cost", "DenizenId", "PowerId", "Suit"})
     open(dest, "w").write(s)
     package_of[card] = re.search(r"^package (\S+)", s, re.M).group(1)
@@ -308,7 +308,7 @@ for f, parts in parts_of.items():
     if not s.endswith("\n"):
         s += "\n"
     used = {t for t in TRAITS if re.search(rf"\bwith {t}\b", s)}
-    s = imports.remove(s, "oathdigital.catalog", set(TRAITS) - used)
+    s = imports.remove(s, "distantlands.catalog", set(TRAITS) - used)
     open(f, "w").write(s)
 
 registry = M + "gameplay/cards/NewFoundations.scala"
@@ -321,7 +321,7 @@ print(f"moved {len(moves)} denizens")
 
 - [ ] **Step 4: Run the suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.cards.CardCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.cards.CardCatalogSuite"`
 Expected: PASS, every test. If the guard names a card, a power file names a
 power id that is not its own or a registered power names its id indirectly:
 move that object by hand to the file that registers the power, and say so in
@@ -375,11 +375,11 @@ changed in them.)
 Create `src/test/scala/distantlands/gameplay/powers/action/PaidActionSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.PrintedPower
-import oathdigital.gameplay.powers.banner.WanderingFlameMove
-import oathdigital.model._
+import distantlands.catalog.PrintedPower
+import distantlands.gameplay.powers.banner.WanderingFlameMove
+import distantlands.model._
 
 /** A card's paid action reads its id and cost from the power its card
   * prints; a banner's, which no card prints, names both. */
@@ -408,7 +408,7 @@ class PaidActionSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.PaidActionSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.PaidActionSuite"`
 Expected: FAIL to compile: `Found: PrintedPower, Required: String` at
 `extends PaidAction(printed)`.
 
@@ -418,11 +418,11 @@ Replace `src/main/scala/distantlands/gameplay/powers/action/PaidAction.scala`
 with:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.PrintedPower
-import oathdigital.gameplay.powerresolver.PhasePower
-import oathdigital.model._
+import distantlands.catalog.PrintedPower
+import distantlands.gameplay.powerresolver.PhasePower
+import distantlands.model._
 
 /** An ACTION phase power gated only by its cost. The engine pays `cost`
   * onto the power's source card and reads "payable, including the
@@ -527,7 +527,7 @@ print(f"rewrote {count} paid actions")
 
 - [ ] **Step 5: Run the suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.PaidActionSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.PaidActionSuite"`
 Expected: PASS (3 tests).
 
 - [ ] **Step 6: Run the gates**
@@ -577,7 +577,7 @@ git commit -m "refactor(powers): paid actions charge their printed cost"
 - [ ] **Step 1: Write the failing test**
 
 Append to `CardCatalogSuite`, and add `ExecutableCatalog` to its
-`oathdigital.catalog` import (`import oathdigital.catalog.{AdviserOnly,
+`distantlands.catalog` import (`import distantlands.catalog.{AdviserOnly,
 ExecutableCatalog, Locked,` / `  PrintsPowers, SiteOnly}`):
 
 ```scala
@@ -592,7 +592,7 @@ ExecutableCatalog, Locked,` / `  PrintsPowers, SiteOnly}`):
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.cards.CardCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.cards.CardCatalogSuite"`
 Expected: FAIL. With no denizens listed, every power built through
 `CatalogCards.denizen`, `WhenPlayedPower.cardOf` or `denizenWithPower` is
 omitted, so the obtained set lacks about 90 ids; only the case-object paid
@@ -664,10 +664,10 @@ FOR = re.compile(r"(?P<doc>(?:  //[^\n]*\n|  /\*\*[^\n]*\*/\n)?)"
                  r"  def forCatalog\(catalog: ExecutableCatalog\): "
                  r"Option\[(?P<cls>\w+)\] =\s*" + LOOKUP +
                  r"\s*\.map\((?P<fn>[^\n]*)\)\n")
-PRUNE = (("oathdigital.gameplay.powers", "CatalogCards"),
-         ("oathdigital.catalog", "ExecutableCatalog"),
-         ("oathdigital.model", "DenizenId"),
-         ("oathdigital.gameplay.setup.FirstGameSetupFixture", "catalog"))
+PRUNE = (("distantlands.gameplay.powers", "CatalogCards"),
+         ("distantlands.catalog", "ExecutableCatalog"),
+         ("distantlands.model", "DenizenId"),
+         ("distantlands.gameplay.setup.FirstGameSetupFixture", "catalog"))
 
 
 def header_end(lines, start):
@@ -856,7 +856,7 @@ before).
 
 - [ ] **Step 5: Run the suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.cards.CardCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.cards.CardCatalogSuite"`
 Expected: PASS, every test.
 
 - [ ] **Step 6: Correct the omission docs**

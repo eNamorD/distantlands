@@ -115,7 +115,7 @@ because the design did not anticipate them.
   `NotePart` / `NoteArg` and never `LogSpan` or `LogKind`.
 - **Golden logs: the rendered line never changes, the sequence may — except
   in Task 4.** Run
-  `./sbtw "testOnly oathdigital.application.gamelog.GameLogGoldenSuite"`.
+  `./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite"`.
   Tasks 1, 2 and 3 move their lines onto the `PowerNoted` event, so the
   entry's `sequence` and `ordinal` shift and nothing else may. Set
   `GAMELOG_GOLDEN=write` only in a migration task and read the `git diff`
@@ -169,7 +169,7 @@ because the design did not anticipate them.
   declares.
 - **`src/test/resources/notes/declared-keys.txt` is expected to change** in
   every task. Rewrite it with
-  `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"`
+  `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"`
   and read the diff: it must add exactly the task's keys and change nothing
   else. The slice adds **18** keys in all: 4 Trade, 2 Recover, 5 card play,
   3 Search, 4 power lines.
@@ -270,13 +270,13 @@ site the way `LogScripts.source` places the existing one — and count the lines
 the **current rule** posts. Run it, read the number, then delete the suite.
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.gameplay.ModifierPlay
-import oathdigital.gameplay.powers.economy.TheOldOak
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, MenuPlay, Table}
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.ModifierPlay
+import distantlands.gameplay.powers.economy.TheOldOak
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, MenuPlay, Table}
+import distantlands.testkit.Table.p1
 import LogScripts._
 
 /** PROBE for slice 3 plan-time ruling 4. Delete once the count is in Task
@@ -313,8 +313,8 @@ If it is **one**, say so: ruling 4 is moot and the ledger entry in Step 7 says
 In `TradeProcedure.scala`, add the imports:
 
 ```scala
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.gameplay.powers.NoteSupport
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.powers.NoteSupport
 ```
 
 and, after `val decisionId: String = "trade.source"`:
@@ -426,11 +426,11 @@ Then thread the actor through both callers:
 - [ ] **Step 4: Register the keys and switch the entry**
 
 In `ProcedureNotes.scala`, add an arm above the wildcard — `TradeProcedure` is
-in `oathdigital.gameplay.actions.economy`, which the file already imports for
+in `distantlands.gameplay.actions.economy`, which the file already imports for
 `MusterProcedure`, so widen that import rather than adding one:
 
 ```scala
-import oathdigital.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
+import distantlands.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
 ```
 
 ```scala
@@ -458,7 +458,7 @@ In `ActionLines.scala`, delete three blocks by their exact text:
 - `private def source(...)`, its doc comment included — `traded` was its only
   caller, and `-Wunused:privates` will say so if anything is missed.
 
-Then remove the now-orphaned import `oathdigital.gameplay.actions.economy.TradeProcedure`.
+Then remove the now-orphaned import `distantlands.gameplay.actions.economy.TradeProcedure`.
 `DecisionAnswer.ChooseOneAnswer` is still used by `stopped` and
 `playedAdviser`, and `WalkerCompleted` by `recoverLines` and `usePowerLines`,
 so neither import goes yet. Compile to be sure.
@@ -539,7 +539,7 @@ what was observed, not what was expected.
 - [ ] **Step 8: Rewrite the snapshot and the goldens, then read both diffs**
 
 ```bash
-NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"
+NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"
 git diff src/test/resources/notes/declared-keys.txt
 ```
 
@@ -548,7 +548,7 @@ Expected: exactly four added lines and none removed —
 `traded-no-secrets`, each with its rendered template.
 
 ```bash
-GAMELOG_GOLDEN=write ./sbtw "testOnly oathdigital.application.gamelog.GameLogGoldenSuite"
+GAMELOG_GOLDEN=write ./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite"
 git diff src/test/resources/gamelog/
 ```
 
@@ -615,11 +615,11 @@ This is the test that would have caught slice 2's second regression. Create
 `src/test/scala/distantlands/gameplay/powers/recover/RelicWorshipLogSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.recover
+package distantlands.gameplay.powers.recover
 
-import oathdigital.application.gamelog.LogScripts
-import oathdigital.application.gamelog.LogScripts._
-import oathdigital.testkit.Table.p1
+import distantlands.application.gamelog.LogScripts
+import distantlands.application.gamelog.LogScripts._
+import distantlands.testkit.Table.p1
 
 /** Relic Worship appends its Supply gain to the node `RecoverAfterRelic`
   * names, so the recovered line must sit inside that node: outside it, the
@@ -651,7 +651,7 @@ bug and Task 2 fixes it rather than preserving it. Say which it was.
 In `RecoverProcedure.scala`, widen the existing actions import:
 
 ```scala
-import oathdigital.gameplay.actions.{ProcedureNotes, RecoverRules}
+import distantlands.gameplay.actions.{ProcedureNotes, RecoverRules}
 ```
 
 and, after `private val supplyCost: Int = 1`:
@@ -741,7 +741,7 @@ abandoned Recover's line.
 `ProcedureNotes.scala` — the file does not import the recover package yet:
 
 ```scala
-import oathdigital.gameplay.actions.recover.RecoverProcedure
+import distantlands.gameplay.actions.recover.RecoverProcedure
 ```
 
 ```scala
@@ -771,7 +771,7 @@ In `ActionLines.scala`, delete by exact text:
 - `private def stopped(...)` with its doc comment.
 
 Remove the orphaned import
-`oathdigital.gameplay.actions.recover.RecoverProcedure`. `LogJournal.pawnSite`
+`distantlands.gameplay.actions.recover.RecoverProcedure`. `LogJournal.pawnSite`
 loses its last caller in this file — check whether it keeps one elsewhere
 before touching it, and if it does not, leave it: it is a public member of
 `LogJournal` and out of this task's scope.
@@ -802,7 +802,7 @@ Add one anyway for the kind, which no golden asserts in isolation:
 - [ ] **Step 7: Rewrite the snapshot and the goldens, then read both diffs**
 
 ```bash
-NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"
+NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"
 git diff src/test/resources/notes/declared-keys.txt
 ```
 
@@ -810,7 +810,7 @@ Expected: exactly two added lines, `procedure.recover recovered` and
 `procedure.recover failed`.
 
 ```bash
-GAMELOG_GOLDEN=write ./sbtw "testOnly oathdigital.application.gamelog.GameLogGoldenSuite"
+GAMELOG_GOLDEN=write ./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite"
 git diff src/test/resources/gamelog/
 ```
 
@@ -879,7 +879,7 @@ Ruling 2 puts the keys in `CardPlayProcedure`, owned by
 In `CardPlayProcedure.scala`, widen the actions import:
 
 ```scala
-import oathdigital.gameplay.actions.{CardPlay, CardPlayRules, ProcedureNotes}
+import distantlands.gameplay.actions.{CardPlay, CardPlayRules, ProcedureNotes}
 ```
 
 and, after `val facedownAdviserDecisionId: String = "cardplay.facedown-adviser"`:
@@ -981,10 +981,10 @@ trailing child, so no path into the follow-ups shifts.
 - [ ] **Step 4: Register the keys and switch the entry**
 
 `ProcedureNotes.scala` already imports
-`oathdigital.gameplay.actions.cardplay` in no form — add it:
+`distantlands.gameplay.actions.cardplay` in no form — add it:
 
 ```scala
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
 ```
 
 ```scala
@@ -1074,7 +1074,7 @@ regional pile — is covered by nothing. Add one test:
 - [ ] **Step 7: Rewrite the snapshot and the goldens, then read both diffs**
 
 ```bash
-NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"
+NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"
 git diff src/test/resources/notes/declared-keys.txt
 ```
 
@@ -1082,7 +1082,7 @@ Expected: exactly five added lines, all under
 `procedure.play-facedown-adviser`.
 
 ```bash
-GAMELOG_GOLDEN=write ./sbtw "testOnly oathdigital.application.gamelog.GameLogGoldenSuite"
+GAMELOG_GOLDEN=write ./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite"
 git diff src/test/resources/gamelog/
 ```
 
@@ -1170,7 +1170,7 @@ commits, the first would print both phrasings at once.
 In `SearchProcedure.scala`, add the import:
 
 ```scala
-import oathdigital.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.actions.ProcedureNotes
 ```
 
 and, after `private val startLabel = "Start Search"`:
@@ -1414,7 +1414,7 @@ vector, so the Transform returns four nodes where it returns three today.
 `ProcedureNotes.scala`:
 
 ```scala
-import oathdigital.gameplay.actions.search.SearchProcedure
+import distantlands.gameplay.actions.search.SearchProcedure
 ```
 
 ```scala
@@ -1601,7 +1601,7 @@ line names the pile but cannot know how the draw was reshaped.
 - [ ] **Step 11: Rewrite the snapshot and the goldens, then read both diffs**
 
 ```bash
-NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"
+NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"
 git diff src/test/resources/notes/declared-keys.txt
 ```
 
@@ -1610,7 +1610,7 @@ Expected: seven added lines — three under `procedure.search`, one each under
 more under `denizen.spinning-bee` beside its existing two.
 
 ```bash
-GAMELOG_GOLDEN=write ./sbtw "testOnly oathdigital.application.gamelog.GameLogGoldenSuite"
+GAMELOG_GOLDEN=write ./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite"
 git diff src/test/resources/gamelog/
 ```
 

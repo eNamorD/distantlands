@@ -27,7 +27,7 @@
   - `gameplay` never imports `application`, `serialization` or `server`.
   - A walker power (anything under `gameplay/powers`) never imports `gameplay.walker`.
   - Test code may import `gameplay.walker`.
-- Never touch the live database `var/oathdigital`.
+- Never touch the live database `var/distantlands`.
 - Other sessions commit to `main` while you work. Stage explicit paths only; never `git add -A`. Re-check `git log --oneline -1` before any amend, reset or rebase.
 - Work in a git worktree:
   - `EnterWorktree` branches from `origin`, which lags local `main`. Fast-forward the new branch to local `main` first.
@@ -148,7 +148,7 @@ In `SetupWalkDriver.scala`, replace `driveToCompletion` with the two methods bel
 In `GreatMarketRulesSuite.scala`, add `NoteText` to the powers import:
 
 ```scala
-import oathdigital.gameplay.powers.{CardStaging, NoteText, WalkerPowerCatalog}
+import distantlands.gameplay.powers.{CardStaging, NoteText, WalkerPowerCatalog}
 ```
 
 Then append the following at the end of the class. The `withBandits` staging repeats the existing Bandit Market test's.
@@ -203,7 +203,7 @@ Then append the following at the end of the class. The `withBandits` staging rep
 In `GreatForgeRulesSuite.scala`, add `NoteText` to the powers import:
 
 ```scala
-import oathdigital.gameplay.powers.{CardStaging, NoteText, WalkerPowerCatalog}
+import distantlands.gameplay.powers.{CardStaging, NoteText, WalkerPowerCatalog}
 ```
 
 Then append the following at the end of the class.
@@ -249,7 +249,7 @@ Then append the following at the end of the class.
 
 - [ ] **Step 4: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.setup.GreatMarketRulesSuite oathdigital.gameplay.powers.setup.GreatForgeRulesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.setup.GreatMarketRulesSuite distantlands.gameplay.powers.setup.GreatForgeRulesSuite"`
 
 Expected: FAIL. The new tests see no notes, because every rule's `noteKeys` is empty and no rule writes a `Note`. The existing tests still pass.
 
@@ -284,7 +284,7 @@ In `EdificeSetupSupport.scala`, append inside `object EdificeSetupSupport`:
     NotePart.Text("Discarded "), NotePart.Arg(0), NotePart.Text(".")))
 ```
 
-Its imports (`oathdigital.model._`) already cover `NoteKey` and `NotePart`.
+Its imports (`distantlands.model._`) already cover `NoteKey` and `NotePart`.
 
 - [ ] **Step 7: Write the Market notes**
 
@@ -381,7 +381,7 @@ and in `object BanditMarket`:
 
 `BanditMarket.note` does not read `at`. The build's `-Wunused` set does not include parameters, so an unread parameter compiles.
 
-The file's imports stay as they are: `oathdigital.model._` covers `Note`, `NoteKey`, `NotePart`, `NoteArg`, `NoteUnit` and `PowerSourceRef`.
+The file's imports stay as they are: `distantlands.model._` covers `Note`, `NoteKey`, `NotePart`, `NoteArg`, `NoteUnit` and `PowerSourceRef`.
 
 - [ ] **Step 8: Write the Forge notes**
 
@@ -434,11 +434,11 @@ and in `object BrokenForge`:
     current.map.inPlay.flatMap(site => current.map.sites(site).relics.map(_.id))
 ```
 
-The imports stay as they are. `RelicDraws` is already imported from `oathdigital.gameplay.powers`.
+The imports stay as they are. `RelicDraws` is already imported from `distantlands.gameplay.powers`.
 
 - [ ] **Step 9: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.setup.* oathdigital.gameplay.powers.PowerNoteCatalogSuite oathdigital.gameplay.setup.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.setup.* distantlands.gameplay.powers.PowerNoteCatalogSuite distantlands.gameplay.setup.*"`
 
 Expected: PASS, including the existing effect tests.
 
@@ -485,7 +485,7 @@ Add the trailer line to the message.
 In `ProvingGroundsRulesSuite.scala`, add `NoteText` to the powers import:
 
 ```scala
-import oathdigital.gameplay.powers.{CardStaging, NoteText, PlayerFacts, WalkerPowerCatalog}
+import distantlands.gameplay.powers.{CardStaging, NoteText, PlayerFacts, WalkerPowerCatalog}
 ```
 
 Then append the following at the end of the class.
@@ -550,7 +550,7 @@ This test pins behavior the formatter already has. It is expected to pass at onc
 
 - [ ] **Step 3: Run the tests to verify the Grounds tests fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.setup.ProvingGroundsRulesSuite oathdigital.application.gamelog.GameLogPowerLinesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.setup.ProvingGroundsRulesSuite distantlands.application.gamelog.GameLogPowerLinesSuite"`
 
 Expected:
 - The two new Grounds tests FAIL; they see no notes.
@@ -564,7 +564,7 @@ In `ProvingGroundsRules.scala`, make these changes:
 1. Add `NoteSupport` to the powers import:
 
 ```scala
-import oathdigital.gameplay.powers.{CatalogCards, NoteSupport, PlayerFacts}
+import distantlands.gameplay.powers.{CatalogCards, NoteSupport, PlayerFacts}
 ```
 
 2. In `ProvingGrounds`, add:
@@ -637,11 +637,11 @@ The `val current` in `build` is still needed only if the fold body reads it. Rem
         Note(id, discardNote(ctx.state, site), covers = true)
 ```
 
-`SiteDenizenState`, `NoteStates`, `PowerNote`, `Note`, `NoteArg`, `NoteUnit` and `PowerSourceRef` come from `oathdigital.model._`, which is already imported.
+`SiteDenizenState`, `NoteStates`, `PowerNote`, `Note`, `NoteArg`, `NoteUnit` and `PowerSourceRef` come from `distantlands.model._`, which is already imported.
 
 - [ ] **Step 5: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.setup.* oathdigital.gameplay.powers.PowerNoteCatalogSuite oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.setup.* distantlands.gameplay.powers.PowerNoteCatalogSuite distantlands.application.gamelog.*"`
 
 Expected: PASS. No golden log changes.
 

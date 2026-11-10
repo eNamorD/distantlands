@@ -320,7 +320,7 @@ echo "state patches (updateCurrent/copy(current =): $(git grep -c -E 'updateCurr
 echo "@unchecked: $(git grep -c '@unchecked' -- $T $F | sum)"
 echo "numeric card ids: $(git grep -c -E '(Denizen|Relic|Edifice|Vision|Card|Site)Id\("[0-9]+"\)' -- $T $F | sum)"
 echo "tuple destructures with _: $(git grep -c -E 'val \((_|[a-z][A-Za-z0-9]*), .*_\) =' -- $T $F | sum)"
-echo "Table.update escapes: $(git grep -c -E '\.update\(' -- $T/oathdigital | sum)"
+echo "Table.update escapes: $(git grep -c -E '\.update\(' -- $T/distantlands | sum)"
 echo "test files over 800 lines: $(git ls-files "$T/*.scala" "$F/*.scala" | xargs wc -l | awk '$2 != "total" && $1 > 800' | wc -l | tr -d ' ')"
 echo "largest test file: $(git ls-files "$T/*.scala" "$F/*.scala" | xargs wc -l | awk '$2 != "total"' | sort -rn | head -1 | awk '{print $1, $2}')"
 ```

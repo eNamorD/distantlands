@@ -38,7 +38,7 @@ Where this plan quotes code, read the file as it is on `main` and apply the chan
   - No power name appears in walker sources.
   - Nothing under `gameplay/actions` imports `gameplay/powers`.
 - **Line width.** Scala lines stay at or under 80 characters, as in the files around them. Re-wrap any line in this plan that comes out longer.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Other sessions commit to `main` while you work.
   - Stage explicit paths only; never `git add -A`.
   - Re-check `git log --oneline -1` before any amend, reset or rebase.
@@ -47,10 +47,10 @@ Where this plan quotes code, read the file as it is on `main` and apply the chan
   - Then symlink the main checkout's `.tooling` and `node_modules` into the worktree before the first `./sbtw`.
 - **Commit trailer:** the committing model's own `Co-Authored-By` line.
 - **Names, exactly:**
-  - `oathdigital.model.SetOathkeeperGoal(goal: OathkeeperGoal)`, a `PrimitiveOperation`. Wire kind `set-oathkeeper-goal`, field `goal` holding `OathkeeperGoal.key`.
+  - `distantlands.model.SetOathkeeperGoal(goal: OathkeeperGoal)`, a `PrimitiveOperation`. Wire kind `set-oathkeeper-goal`, field `goal` holding `OathkeeperGoal.key`.
   - `OperationError.OathkeeperGoalUnchanged(goal)`, code `oathkeeper-goal-unchanged`.
   - `TurnStateOperations.setOathkeeperGoal`.
-  - `oathdigital.gameplay.powers.OathkeeperGoalChoice` (object).
+  - `distantlands.gameplay.powers.OathkeeperGoalChoice` (object).
   - `TheRedSeer` (case object) and `TheRedSeerCard`. Decision `power.the-red-seer.goal`.
   - `TrueOath` (final case class with `forCatalog`) and `TrueOathCard`. Decision `cardplay.true-oath.goal`.
   - Test helper `Table.oathkeeperGoal(goal)`.
@@ -225,7 +225,7 @@ In `WalkerOperationWireSuite.scala`, after `SetOathkeeper(None),` in the operati
 
 - [ ] **Step 3: Run them to see them fail.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.operations.OperationMutationSuite oathdigital.serialization.WalkerOperationWireSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.operations.OperationMutationSuite distantlands.serialization.WalkerOperationWireSuite"`
 Expected: compile failure, `SetOathkeeperGoal` not found.
 
 - [ ] **Step 4: Add the operation.** In `CoreOperations.scala`, after `SetOathkeeper`:
@@ -294,7 +294,7 @@ If the compiler names another exhaustive match over `CoreOperation`, add the cas
 
 - [ ] **Step 6: Run the tests to see them pass.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.operations.OperationMutationSuite oathdigital.serialization.WalkerOperationWireSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.operations.OperationMutationSuite distantlands.serialization.WalkerOperationWireSuite"`
 Expected: PASS.
 
 - [ ] **Step 7: Commit.**
@@ -328,19 +328,19 @@ git commit -m "feat(batch8): a Set Oathkeeper Goal operation"
 - [ ] **Step 1: Write the failing tests.** Create `TheRedSeerSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.powers.{NoteText, OathkeeperGoalChoice,
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.powers.{NoteText, OathkeeperGoalChoice,
   PhasePowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, ParkedNode, PhasePowerHarness,
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Look, ParkedNode, PhasePowerHarness,
   Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 /** The Red Seer: with the Darkest Secret, change the Oathkeeper goal to
   * anything but Devotion. */
@@ -434,14 +434,14 @@ class TheRedSeerSuite extends munit.FunSuite:
 Create `TheRedSeerLogSuite.scala`:
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.gameplay.powers.OathkeeperGoalChoice
-import oathdigital.gameplay.powers.action.TheRedSeer
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{CatalogNames, MenuPlay, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.powers.OathkeeperGoalChoice
+import distantlands.gameplay.powers.action.TheRedSeer
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.testkit.{CatalogNames, MenuPlay, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
 import LogScripts.{atTable, format, playerLabel, texts}
 
 /** How The Red Seer reads in the Game Log: its line names the new goal, its
@@ -484,15 +484,15 @@ If `Table.start` already gives p1 the Oathkeeper title under a different goal le
 
 - [ ] **Step 2: Run them to see them fail.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.TheRedSeerSuite oathdigital.application.gamelog.TheRedSeerLogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.TheRedSeerSuite distantlands.application.gamelog.TheRedSeerLogSuite"`
 Expected: compile failure, `TheRedSeer` and `OathkeeperGoalChoice` not found.
 
 - [ ] **Step 3: Write the shared goal question.** Create `OathkeeperGoalChoice.scala`:
 
 ```scala
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The question a power asks to change the Oathkeeper goal, and the line
   * that tells the change (catalog batch 8, slice 2). The Red Seer and True
@@ -572,12 +572,12 @@ object OathkeeperGoalChoice:
 - [ ] **Step 4: Write The Red Seer.** Remove `TheRedSeerCard` from `HoldingNomadDenizens.scala`, and drop any import that file no longer uses. Create `TheRedSeer.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, PrintedPower}
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.gameplay.powers.OathkeeperGoalChoice
-import oathdigital.model._
+import distantlands.catalog.{Denizen, PrintedPower}
+import distantlands.gameplay.actions.BannerRules
+import distantlands.gameplay.powers.OathkeeperGoalChoice
+import distantlands.model._
 
 object TheRedSeerCard extends Denizen(DenizenId("244"), "The Red Seer",
     Suit.Nomad):
@@ -630,7 +630,7 @@ Register it: in `WorldActionPowers.forCatalog`, add `TheRedSeer` to the first `V
 
 - [ ] **Step 5: Run the tests to see them pass.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.TheRedSeerSuite oathdigital.application.gamelog.TheRedSeerLogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.TheRedSeerSuite distantlands.application.gamelog.TheRedSeerLogSuite"`
 Expected: PASS, 5 tests.
 
 - [ ] **Step 6: Run the whole server suite** to catch catalog and campaign fixtures that relied on The Red Seer having no power.
@@ -663,12 +663,12 @@ git commit -m "feat(batch8): The Red Seer changes the Oathkeeper goal"
 - [ ] **Step 1: Write the failing tests.** Create `TrueOathSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.powers.{NoteText, OathkeeperGoalChoice}
-import oathdigital.model._
-import oathdigital.testkit.{Outcomes, Table}
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.powers.{NoteText, OathkeeperGoalChoice}
+import distantlands.model._
+import distantlands.testkit.{Outcomes, Table}
+import distantlands.testkit.Table.p1
 
 /** True Oath: with three other Beast cards ruled, its player may change the
   * Oathkeeper goal. */
@@ -734,20 +734,20 @@ class TrueOathSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run them to see them fail.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.whenplayed.TrueOathSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.whenplayed.TrueOathSuite"`
 Expected: compile failure, `TrueOath` not found.
 
 - [ ] **Step 3: Write True Oath.** Remove `TrueOathCard` from `HoldingBeastDenizens.scala`; `Locked` and `AdviserOnly` stay imported there while other cards use them. Create `TrueOath.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog, Locked,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog, Locked,
   PrintedPower}
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.gameplay.powers.{NoteSupport, OathkeeperGoalChoice,
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.powers.{NoteSupport, OathkeeperGoalChoice,
   PowerAnswers, RuledCards}
-import oathdigital.model._
+import distantlands.model._
 
 object TrueOathCard extends Denizen(DenizenId("209"), "True Oath",
     Suit.Beast) with Locked with AdviserOnly:
@@ -834,7 +834,7 @@ Register it: in `WhenPlayedPowers.forCatalog`, append `++ Vector(TrueOath.forCat
 
 - [ ] **Step 4: Run the tests to see them pass.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.whenplayed.TrueOathSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.whenplayed.TrueOathSuite"`
 Expected: PASS, 3 tests.
 
 - [ ] **Step 5: Run the whole server suite.**

@@ -38,7 +38,7 @@
   - Nothing under `gameplay/actions` imports `gameplay/powers`.
   - The walker (`gameplay/walker`) does not import `gameplay/actions` outside `WalkerProcedureRegistry`.
 - **Line width.** Scala lines stay at or under 80 characters, as in the files around them. Re-wrap any line in this plan that comes out longer.
-- **Never touch the live database `var/oathdigital`.** A browser check runs a scratch server on port 8081 through Bash, never `preview_start`.
+- **Never touch the live database `var/distantlands`.** A browser check runs a scratch server on port 8081 through Bash, never `preview_start`.
 - **Concurrent sessions.** Other sessions commit to `main` while you work.
   - Stage explicit paths only; never `git add -A`.
   - Re-check `git log --oneline -1` before any amend, reset or rebase.
@@ -205,11 +205,11 @@ git commit -m "docs(modifiers): record the slice 1 plan-time rulings"
 Create `src/test/scala/distantlands/gameplay/powerresolver/ModifierPicksSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powerresolver
+package distantlands.gameplay.powerresolver
 
-import oathdigital.model._
-import oathdigital.testkit.CatalogNames
-import oathdigital.testkit.Table.p1
+import distantlands.model._
+import distantlands.testkit.CatalogNames
+import distantlands.testkit.Table.p1
 
 /** The modifier decision's vocabulary: its id per window, its Start answer,
   * and the picks read back out of the answers (modifier walker design,
@@ -293,12 +293,12 @@ class ModifierPicksSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powerresolver.ModifierPicksSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powerresolver.ModifierPicksSuite"`
 Expected: compile error, `ModifierPicks` not found.
 
 - [ ] **Step 3: Add the hooks to `ContributingPower`**
 
-In `ContributingPower.scala`, add `CardId` to the `oathdigital.model` import. After the `Offer` case class, add:
+In `ContributingPower.scala`, add `CardId` to the `distantlands.model` import. After the `Offer` case class, add:
 
 ```scala
 /** A modifier's own verdict on its option in the modifier decision, given
@@ -340,9 +340,9 @@ Also reword `selectionPayments`' doc comment to say what it is now:
 Create `src/main/scala/distantlands/gameplay/powerresolver/ModifierPicks.scala`:
 
 ```scala
-package oathdigital.gameplay.powerresolver
+package distantlands.gameplay.powerresolver
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The modifier decision's vocabulary (modifier walker design): the decision
   * an action asks first, one modifier per pass, and the picks read back out
@@ -427,12 +427,12 @@ object ModifierPicks:
 
 - [ ] **Step 5: Run the vocabulary suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powerresolver.ModifierPicksSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powerresolver.ModifierPicksSuite"`
 Expected: PASS, 5 tests.
 
 - [ ] **Step 6: Write the failing `SelectedModifier` tests**
 
-Append to `SelectedModifierSuite.scala`. The suite's `Probe`, `ctx`, `travel` and `tentsAtAncientCity` are already there. Add `import oathdigital.gameplay.powerresolver.ModifierPicks` to the imports.
+Append to `SelectedModifierSuite.scala`. The suite's `Probe`, `ctx`, `travel` and `tentsAtAncientCity` are already there. Add `import distantlands.gameplay.powerresolver.ModifierPicks` to the imports.
 
 ```scala
   test("its option names its card, at its actions' selection windows"):
@@ -460,12 +460,12 @@ Append to `SelectedModifierSuite.scala`. The suite's `Probe`, `ctx`, `travel` an
 
 - [ ] **Step 7: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.SelectedModifierSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.SelectedModifierSuite"`
 Expected: the two new tests FAIL (`selectionCard` is `None`; the picked probe is not applicable).
 
 - [ ] **Step 8: Implement the hooks in `SelectedModifier`**
 
-In `SelectedModifier.scala`, add `ModifierPicks` to the `oathdigital.gameplay.powerresolver` import. Inside the trait, after `appliesAt`, add:
+In `SelectedModifier.scala`, add `ModifierPicks` to the `distantlands.gameplay.powerresolver` import. Inside the trait, after `appliesAt`, add:
 
 ```scala
   override def selectionCard: Option[CardId] = Some(cardId)
@@ -502,7 +502,7 @@ Update the trait's doc comment: the first bullet of "`applicable` answers three 
 
 - [ ] **Step 9: Run the `SelectedModifier` suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.SelectedModifierSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.SelectedModifierSuite"`
 Expected: PASS.
 
 - [ ] **Step 10: Give `WalkerPowers` its pool and `withAnswers`**
@@ -510,10 +510,10 @@ Expected: PASS.
 In `WalkerPowers.scala`, change the imports to:
 
 ```scala
-import oathdigital.gameplay.operations.OperationRestrictions
-import oathdigital.gameplay.powerresolver.{ContributingPower, ModifierPicks,
+import distantlands.gameplay.operations.OperationRestrictions
+import distantlands.gameplay.powerresolver.{ContributingPower, ModifierPicks,
   PowerWindowIndex}
-import oathdigital.model.{Answered, OperationRestriction, PowerId,
+import distantlands.model.{Answered, OperationRestriction, PowerId,
   PowerResolution}
 ```
 
@@ -578,7 +578,7 @@ In `WalkerPowerGather.scala`:
 
 - [ ] **Step 12: Run the walker and power suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.*"`
 Expected: PASS. No walk answers a modifier decision yet, so `withAnswers` returns the same powers everywhere.
 
 - [ ] **Step 13: Commit**
@@ -618,16 +618,16 @@ The suite drives a hand-built tree through `ProcedureWalker`, with stand-in powe
 Create `src/test/scala/distantlands/gameplay/walker/ModifierChoiceSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.operations.Costs
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,
+import distantlands.gameplay.operations.Costs
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower,
   ModifierPicks, OfferReason, OptionRestriction, PowerCtx, Transform}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Outcomes, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Outcomes, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 /** The modifier decision on its own: a hand-built tree whose first decision
   * is `ModifierChoice.loop`, walked with stand-in modifiers (modifier walker
@@ -837,7 +837,7 @@ class ModifierChoiceSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.ModifierChoiceSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.ModifierChoiceSuite"`
 Expected: compile error, `ModifierChoice` not found.
 
 - [ ] **Step 3: Create `ModifierChoice`**
@@ -845,12 +845,12 @@ Expected: compile error, `ModifierChoice` not found.
 Create `src/main/scala/distantlands/gameplay/walker/ModifierChoice.scala`. Mind the import rules: this file names no card and never spells the selected-modifier trait's name.
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.PowerAccess
-import oathdigital.gameplay.powerresolver.{ContributingPower, ModifierPicks,
+import distantlands.gameplay.PowerAccess
+import distantlands.gameplay.powerresolver.{ContributingPower, ModifierPicks,
   OfferReason, PowerCtx}
-import oathdigital.model._
+import distantlands.model._
 
 /** One pass of an action's modifier decision (modifier walker design): the
   * walk's first decision, a `Repeat` of these passes that ends on "Start".
@@ -1033,12 +1033,12 @@ Add one line to the method's doc comment: "When the node is a [[ModifierChoice]]
 
 - [ ] **Step 5: Run the suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.ModifierChoiceSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.ModifierChoiceSuite"`
 Expected: PASS, 9 tests. If a test fails on an option's exact shape (a `Priced` around a card, or a `Warned` around a `Priced`), fix the code to match the test, not the test. The shapes follow `PlanPrice.priced` and `CardSlots`.
 
 - [ ] **Step 6: Run the walker and architecture suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.* oathdigital.gameplay.BackendArchitectureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.* distantlands.gameplay.BackendArchitectureSuite"`
 Expected: PASS. A failure in "the engine never learns its powers" names a power in `ModifierChoice.scala`; reword it.
 
 - [ ] **Step 7: Commit**
@@ -1084,14 +1084,14 @@ git commit -m "feat(walker): the modifier decision node"
 Create `src/test/scala/distantlands/gameplay/ModifierPlay.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.testkit.{Answers, ParkedNode}
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.testkit.{Answers, ParkedNode}
 
 /** A start that picks its modifiers through the walk's modifier decision,
   * as a player does (modifier walker design). */
@@ -1153,21 +1153,21 @@ object ModifierPlay:
 Create `src/test/scala/distantlands/gameplay/SearchModifierChoiceSuite.scala`. It uses real cards. News from Afar costs 2 favor and makes the Search's Supply free. Wild Cry, at the actor's site, is offered for a Search and for a facedown-adviser play.
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.actions.search.SearchProcedure
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.cardplay.WildCry
-import oathdigital.gameplay.powers.search.NewsFromAfar
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Outcomes, ParkedNode, PowerRules,
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.actions.search.SearchProcedure
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.cardplay.WildCry
+import distantlands.gameplay.powers.search.NewsFromAfar
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{CatalogNames, Outcomes, ParkedNode, PowerRules,
   Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.{accepted, rejected}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.{accepted, rejected}
 
 /** Search and facedown-adviser play ask for their modifiers inside the walk
   * (modifier walker design, slice 1). */
@@ -1261,7 +1261,7 @@ class SearchModifierChoiceSuite extends munit.FunSuite:
 
 - [ ] **Step 3: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.SearchModifierChoiceSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.SearchModifierChoiceSuite"`
 Expected: FAIL. The Search parks on its source, and the start with a modifier is accepted.
 
 - [ ] **Step 4: Register which procedures choose their modifiers**
@@ -1298,7 +1298,7 @@ In `OathRulesWalker.startNow`, add a check before `validateModifiers`:
 
 In `SearchProcedure.scala`:
 
-1. Add the imports `oathdigital.gameplay.powerresolver.ModifierPicks` and `oathdigital.gameplay.walker.ModifierChoice` (beside `WalkerPowers`, `WalkerSimulation`).
+1. Add the imports `distantlands.gameplay.powerresolver.ModifierPicks` and `distantlands.gameplay.walker.ModifierChoice` (beside `WalkerPowers`, `WalkerSimulation`).
 2. Split the start gates out of `build`, and make `startable` preview what follows the decision:
 
 ```scala
@@ -1383,7 +1383,7 @@ with `private val startLabel = "Start Search"` beside `heading`.
 
 In `CardPlayProcedure.scala`:
 
-1. Add the imports `oathdigital.gameplay.powerresolver.ModifierPicks` and `oathdigital.gameplay.walker.ModifierChoice`.
+1. Add the imports `distantlands.gameplay.powerresolver.ModifierPicks` and `distantlands.gameplay.walker.ModifierChoice`.
 2. `facedownTree` becomes:
 
 ```scala
@@ -1486,7 +1486,7 @@ Update the trait's doc comment paragraph about payment: a Search modifier is pai
 
 - [ ] **Step 9: Run the new suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.SearchModifierChoiceSuite oathdigital.gameplay.CardSlotsSuite oathdigital.gameplay.powers.SelectedModifierSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.SearchModifierChoiceSuite distantlands.gameplay.CardSlotsSuite distantlands.gameplay.powers.SelectedModifierSuite"`
 Expected: PASS.
 
 - [ ] **Step 10: Move the Search and facedown helpers and suites onto the decision**
@@ -1539,7 +1539,7 @@ Replace the modifier undo test in `SearchSourceServiceSuite` with:
     assertEquals(undone.state, withNews.state)
 ```
 
-Add `import oathdigital.gameplay.ModifierPlay` to it. `TreeDecision` is the walker answer the service already takes. If the suite spells it differently, follow `ParkedServiceFixture.pickSearchSource`.
+Add `import distantlands.gameplay.ModifierPlay` to it. `TreeDecision` is the walker answer the service already takes. If the suite spells it differently, follow `ParkedServiceFixture.pickSearchSource`.
 
 Run: `./sbtw "test"`
 Expected: PASS. Repeat the rules above until it does. If a failure is not covered by them, stop and report it; do not change production code to suit a test.
@@ -1584,7 +1584,7 @@ The start line keeps its words: the tag "Search · 2 Supply", then "With News fr
 
 - [ ] **Step 1: Write the failing log tests**
 
-Add two scripts to `LogScripts.scala`, after `augury`. Add the imports `oathdigital.gameplay.ModifierPlay`, `oathdigital.gameplay.powers.cardplay.WildCry` and `oathdigital.gameplay.powers.search.NewsFromAfar`.
+Add two scripts to `LogScripts.scala`, after `augury`. Add the imports `distantlands.gameplay.ModifierPlay`, `distantlands.gameplay.powers.cardplay.WildCry` and `distantlands.gameplay.powers.search.NewsFromAfar`.
 
 ```scala
   /** Augury at p1's site and News from Afar as p1's adviser, with 2 favor
@@ -1641,7 +1641,7 @@ If `LogWords.join` writes two names as something other than "News from Afar and 
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogStartLineSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogStartLineSuite"`
 Expected: the new tests FAIL. The Search tag posts at News from Afar's payment, naming only it, and "Chose" lines appear.
 
 - [ ] **Step 3: Read the picks in `StartLines`**
@@ -1706,7 +1706,7 @@ and add "the modifier decision, which the start line names" to the doc comment a
 
 - [ ] **Step 5: Run the log suites**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.*"`
 Expected: PASS. A facedown-adviser test that pinned the tag at the start now sees it at the pick. Update that expectation only if the order of the visible lines is unchanged.
 
 - [ ] **Step 6: Commit**
@@ -1737,7 +1737,7 @@ git commit -m "feat(gamelog): name the modifiers picked in the walk"
 - `ModifierFlowSuite`: the test "a facedown-adviser start previews as Search and goes out with no card" becomes "a facedown-adviser start goes out directly". The start is sent, with no preview requested. Add the same test for a "search" start.
 - `ModifierFlowDrafts` and every other fixture that uses a "search" start as an action with a modifier stage: switch it to "travel", which still has one.
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.ModifierFlowSuite oathdigital.frontend.ModifierSelectionStateSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.ModifierFlowSuite distantlands.frontend.ModifierSelectionStateSuite"`
 Expected: FAIL. Search still previews.
 
 - [ ] **Step 2: Start Search and facedown play directly**

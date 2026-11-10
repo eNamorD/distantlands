@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Produce versioned Universal ZIP/TGZ and Linux OCI artifacts that run Oath Digital's server and optimized frontend without sbt or Node, using validated configuration and explicit liveness/readiness behavior.
+**Goal:** Produce versioned Universal ZIP/TGZ and Linux OCI artifacts that run Distant Lands' server and optimized frontend without sbt or Node, using validated configuration and explicit liveness/readiness behavior.
 
-**Architecture:** `ServerConfig` becomes the sole command-line/environment boundary and feeds a lifecycle-oriented `OathServer`. Production frontend files are generated into JVM classpath resources, so Universal and OCI packages share identical immutable assets. `sbt-native-packager` builds both artifact types from one Java server application mapping; smoke tests launch packaged output, wait for readiness, exercise the frontend and database, then verify clean shutdown.
+**Architecture:** `ServerConfig` becomes the sole command-line/environment boundary and feeds a lifecycle-oriented `DistantLandsServer`. Production frontend files are generated into JVM classpath resources, so Universal and OCI packages share identical immutable assets. `sbt-native-packager` builds both artifact types from one Java server application mapping; smoke tests launch packaged output, wait for readiness, exercise the frontend and database, then verify clean shutdown.
 
 **Tech Stack:** Scala 2.13.16, Scala.js 1.20.1, Java 21 runtime contract, Akka HTTP 10.5.3, HSQLDB 2.7.4, munit 1.0.4, sbt-native-packager 1.11.7, POSIX shell, OCI/Docker.
 
@@ -46,7 +46,7 @@ PATH=/Applications/ChatGPT.app/Contents/Resources/cua_node/bin:/usr/bin:/bin:/us
 - Create `docs/operations/packaged-smoke-test.md`: repeatable clean-environment test instructions.
 - Modify `project/plugins.sbt`: add sbt-native-packager.
 - Modify `build.sbt`: Java server packaging, optimized frontend resources, Universal and Docker settings, smoke aliases.
-- Modify `src/main/scala/distantlands/server/OathServer.scala`: consume `ServerConfig`, readiness state, and packaged route mode.
+- Modify `src/main/scala/distantlands/server/DistantLandsServer.scala`: consume `ServerConfig`, readiness state, and packaged route mode.
 - Modify `src/main/scala/distantlands/server/ServerRoutes.scala`: mount mode-specific frontend and health routes without exposing development routes in packaged mode.
 - Modify `src/main/scala/distantlands/server/DevelopmentRoutes.scala`: delegate `/health` ownership and preserve development asset behavior.
 - Modify `src/test/scala/distantlands/server/ServerRoutesSuite.scala`: prove route separation.
@@ -58,7 +58,7 @@ PATH=/Applications/ChatGPT.app/Contents/Resources/cua_node/bin:/usr/bin:/bin:/us
 **Files:**
 - Create: `src/main/scala/distantlands/server/ServerConfig.scala`
 - Create: `src/test/scala/distantlands/server/ServerConfigSuite.scala`
-- Modify: `src/main/scala/distantlands/server/OathServer.scala`
+- Modify: `src/main/scala/distantlands/server/DistantLandsServer.scala`
 
 **Interfaces:**
 - Consumes: `Array[String]`, `Map[String, String]`, and build version string.
@@ -72,12 +72,12 @@ Create table-driven tests covering defaults, environment values, CLI-over-enviro
 val result = ServerConfig.parse(
   Array("--host", "0.0.0.0", "--port", "9090"),
   Map(
-    "OATH_HOST" -> "127.0.0.1",
-    "OATH_PORT" -> "8081",
-    "OATH_DATABASE_PATH" -> "var/test-db",
-    "OATH_CATALOG_PATH" -> "docs/catalog/new-foundations-component-catalog.json",
-    "OATH_MODE" -> "trusted-alpha",
-    "OATH_PUBLIC_BASE_URL" -> "http://192.168.1.20:9090"
+    "DLQ_HOST" -> "127.0.0.1",
+    "DLQ_PORT" -> "8081",
+    "DLQ_DATABASE_PATH" -> "var/test-db",
+    "DLQ_CATALOG_PATH" -> "docs/catalog/new-foundations-component-catalog.json",
+    "DLQ_MODE" -> "trusted-alpha",
+    "DLQ_PUBLIC_BASE_URL" -> "http://192.168.1.20:9090"
   ),
   "0.1.0-alpha.1"
 )
@@ -95,7 +95,7 @@ Assert all parse errors are returned together in stable option order. Assert `de
 Run:
 
 ```sh
-./sbtw "testOnly oathdigital.server.ServerConfigSuite"
+./sbtw "testOnly distantlands.server.ServerConfigSuite"
 ```
 
 Expected: compilation fails because `ServerConfig` and `ServerMode` do not exist.
@@ -132,11 +132,11 @@ object ServerConfig {
 }
 ```
 
-Supported CLI options: `--host`, `--port`, `--public-base-url`, `--database-path`, `--catalog-path`, and `--mode`. Environment names match tests. Defaults remain `127.0.0.1`, `8080`, `var/oathdigital`, catalog path from current server, `development`, and no public base URL. `ServerConfig.usage` is included in every unknown-option or missing-value error; a separate help command is outside this first runtime slice.
+Supported CLI options: `--host`, `--port`, `--public-base-url`, `--database-path`, `--catalog-path`, and `--mode`. Environment names match tests. Defaults remain `127.0.0.1`, `8080`, `var/distantlands`, catalog path from current server, `development`, and no public base URL. `ServerConfig.usage` is included in every unknown-option or missing-value error; a separate help command is outside this first runtime slice.
 
 Do not read `sys.props` inside `ServerConfig`; the explicit environment parameter makes precedence deterministic. Keep URI/path parsing private and return messages without exceptions.
 
-- [ ] **Step 4: Switch `OathServer.main` to `ServerConfig`**
+- [ ] **Step 4: Switch `DistantLandsServer.main` to `ServerConfig`**
 
 Replace positional arguments and `sys.props` reads with:
 
@@ -155,7 +155,7 @@ Pass `config.databasePath`, `config.catalogPath`, `config.host`, and `config.por
 Run:
 
 ```sh
-./sbtw "testOnly oathdigital.server.ServerConfigSuite oathdigital.server.DevelopmentTrustBoundarySuite oathdigital.server.ServerRoutesSuite"
+./sbtw "testOnly distantlands.server.ServerConfigSuite distantlands.server.DevelopmentTrustBoundarySuite distantlands.server.ServerRoutesSuite"
 ```
 
 Expected: all tests pass.
@@ -163,7 +163,7 @@ Expected: all tests pass.
 - [ ] **Step 6: Commit typed configuration**
 
 ```sh
-git add src/main/scala/distantlands/server/ServerConfig.scala src/main/scala/distantlands/server/OathServer.scala src/test/scala/distantlands/server/ServerConfigSuite.scala
+git add src/main/scala/distantlands/server/ServerConfig.scala src/main/scala/distantlands/server/DistantLandsServer.scala src/test/scala/distantlands/server/ServerConfigSuite.scala
 git commit -m "feat(server): add typed runtime configuration"
 ```
 
@@ -172,11 +172,11 @@ git commit -m "feat(server): add typed runtime configuration"
 **Files:**
 - Create: `src/main/scala/distantlands/server/HealthRoutes.scala`
 - Create: `src/test/scala/distantlands/server/HealthRoutesSuite.scala`
-- Modify: `src/main/scala/distantlands/server/OathServer.scala`
+- Modify: `src/main/scala/distantlands/server/DistantLandsServer.scala`
 - Modify: `src/main/scala/distantlands/server/DevelopmentRoutes.scala`
 
 **Interfaces:**
-- Consumes: readiness state controlled by `OathServer`.
+- Consumes: readiness state controlled by `DistantLandsServer`.
 - Produces: `ServerReadiness`, `HealthRoutes.route(readiness): Route`, `GET /health/live`, and `GET /health/ready`.
 
 - [ ] **Step 1: Write failing route tests**
@@ -199,7 +199,7 @@ Assert bodies are fixed JSON containing only `status` and `version`, with `Cache
 - [ ] **Step 2: Run health tests and verify failure**
 
 ```sh
-./sbtw "testOnly oathdigital.server.HealthRoutesSuite"
+./sbtw "testOnly distantlands.server.HealthRoutesSuite"
 ```
 
 Expected: compilation fails because health types do not exist.
@@ -237,7 +237,7 @@ Remove `/health` from `DevelopmentRoutes`. Retain a temporary compatibility alia
 - [ ] **Step 5: Run focused lifecycle tests**
 
 ```sh
-./sbtw "testOnly oathdigital.server.HealthRoutesSuite oathdigital.server.ServerRoutesSuite"
+./sbtw "testOnly distantlands.server.HealthRoutesSuite distantlands.server.ServerRoutesSuite"
 ```
 
 Expected: all tests pass, including old `/health` compatibility check.
@@ -245,7 +245,7 @@ Expected: all tests pass, including old `/health` compatibility check.
 - [ ] **Step 6: Commit health lifecycle**
 
 ```sh
-git add src/main/scala/distantlands/server/HealthRoutes.scala src/main/scala/distantlands/server/OathServer.scala src/main/scala/distantlands/server/DevelopmentRoutes.scala src/test/scala/distantlands/server/HealthRoutesSuite.scala
+git add src/main/scala/distantlands/server/HealthRoutes.scala src/main/scala/distantlands/server/DistantLandsServer.scala src/main/scala/distantlands/server/DevelopmentRoutes.scala src/test/scala/distantlands/server/HealthRoutesSuite.scala
 git commit -m "feat(server): add liveness and readiness lifecycle"
 ```
 
@@ -260,12 +260,12 @@ git commit -m "feat(server): add liveness and readiness lifecycle"
 - Modify: `build.sbt`
 
 **Interfaces:**
-- Consumes: `ServerConfig.mode`, generated classpath resources under `oathdigital/frontend/`, existing `DevelopmentRoutes`.
+- Consumes: `ServerConfig.mode`, generated classpath resources under `distantlands/frontend/`, existing `DevelopmentRoutes`.
 - Produces: `ProductionFrontendRoutes.route: Route` and mode-separated `ServerRoutes.route(runtime, blockingExecutionContext, config, readiness, nowMillis)`.
 
 - [ ] **Step 1: Write failing production-route tests**
 
-Add a classpath test fixture at `src/test/resources/oathdigital/frontend/index.html` and `main.js`. Test:
+Add a classpath test fixture at `src/test/resources/distantlands/frontend/index.html` and `main.js`. Test:
 
 ```scala
 val route = ProductionFrontendRoutes.route
@@ -281,7 +281,7 @@ Assert index responses use `no-cache`; fingerprint-ready asset responses use `pu
 - [ ] **Step 2: Run production-route tests and verify failure**
 
 ```sh
-./sbtw "testOnly oathdigital.server.ProductionFrontendRoutesSuite oathdigital.server.ServerRoutesSuite"
+./sbtw "testOnly distantlands.server.ProductionFrontendRoutesSuite distantlands.server.ServerRoutesSuite"
 ```
 
 Expected: compilation fails because production routes and new route signature do not exist.
@@ -296,17 +296,17 @@ Create `frontend/production-index.html` with no development query flags:
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Oath Digital</title>
+    <title>Distant Lands</title>
     <link rel="stylesheet" href="/assets/styles.css">
   </head>
   <body>
-    <main id="app"><p>Loading Oath Digital…</p></main>
+    <main id="app"><p>Loading Distant Lands…</p></main>
     <script src="/assets/main.js"></script>
   </body>
 </html>
 ```
 
-Serve only known resources from `oathdigital/frontend`; never translate arbitrary URL text into a filesystem path. Unknown extensions return 404. SPA HTML fallback applies only to routes explicitly owned by frontend, initially `/`.
+Serve only known resources from `distantlands/frontend`; never translate arbitrary URL text into a filesystem path. Unknown extensions return 404. SPA HTML fallback applies only to routes explicitly owned by frontend, initially `/`.
 
 - [ ] **Step 4: Generate optimized frontend resources**
 
@@ -317,7 +317,7 @@ Compile / resourceGenerators += Def.task {
   val report = (frontend / Compile / fullLinkJS).value
   val linkerOutput = (frontend / Compile / fullLinkJS /
     scalaJSLinkerOutputDirectory).value
-  val output = (Compile / resourceManaged).value / "oathdigital" / "frontend"
+  val output = (Compile / resourceManaged).value / "distantlands" / "frontend"
   val linked = linkerOutput /
     report.data.publicModules.find(_.moduleID == "main").get.jsFileName
   val files = Seq(
@@ -339,8 +339,8 @@ Change `ServerRoutes.route` to accept `ServerConfig` and `ServerReadiness`. Alwa
 - [ ] **Step 6: Verify optimized resources and separation**
 
 ```sh
-./sbtw "testOnly oathdigital.server.ProductionFrontendRoutesSuite oathdigital.server.ServerRoutesSuite" "Compile/package"
-jar tf target/scala-2.13/oathdigital-engine_2.13-*.jar | grep 'oathdigital/frontend/main.js'
+./sbtw "testOnly distantlands.server.ProductionFrontendRoutesSuite distantlands.server.ServerRoutesSuite" "Compile/package"
+jar tf target/scala-2.13/distantlands-engine_2.13-*.jar | grep 'distantlands/frontend/main.js'
 ```
 
 Expected: tests pass and packaged JAR contains index, stylesheet, and optimized `main.js`.
@@ -369,11 +369,11 @@ git commit -m "feat(server): serve optimized packaged frontend"
 Create an sbt task `verifyPackageMappings` that fails unless mappings contain:
 
 ```text
-bin/oathdigital
-bin/oathdigital.bat
+bin/distantlands
+bin/distantlands.bat
 lib/<server-and-dependency-jars>
-share/oathdigital/new-foundations-component-catalog.json
-share/oathdigital/configuration.md
+share/distantlands/new-foundations-component-catalog.json
+share/distantlands/configuration.md
 ```
 
 Make `Universal/packageBin`, `Universal/packageZipTarball`, and `Docker/stage` depend on it. Run `./sbtw verifyPackageMappings`; expected result: task is unknown.
@@ -389,11 +389,11 @@ addSbtPlugin("com.github.sbt" % "sbt-native-packager" % "1.11.7")
 Enable `JavaServerAppPackaging` and `DockerPlugin` on root. Set:
 
 ```scala
-Compile / mainClass := Some("oathdigital.server.OathServer")
-Universal / packageName := "oathdigital"
-Docker / packageName := "oathdigital"
+Compile / mainClass := Some("distantlands.server.DistantLandsServer")
+Universal / packageName := "distantlands"
+Docker / packageName := "distantlands"
 Docker / dockerExposedPorts := Seq(8080)
-Docker / daemonUser := "oathdigital"
+Docker / daemonUser := "distantlands"
 Docker / daemonUserUid := Some("10001")
 Docker / dockerBaseImage := "eclipse-temurin:21-jre"
 ```
@@ -405,13 +405,13 @@ Add catalog and configuration documentation to `Universal / mappings`. Set packa
 Document every Task 1 CLI option and environment variable with defaults and archive/container examples. Include:
 
 ```sh
-OATH_MODE=trusted-alpha \
-OATH_HOST=0.0.0.0 \
-OATH_PORT=8080 \
-OATH_PUBLIC_BASE_URL=http://192.168.1.20:8080 \
-OATH_DATABASE_PATH=/var/lib/oathdigital/database \
-OATH_CATALOG_PATH=/opt/oathdigital/catalog/new-foundations-component-catalog.json \
-bin/oathdigital
+DLQ_MODE=trusted-alpha \
+DLQ_HOST=0.0.0.0 \
+DLQ_PORT=8080 \
+DLQ_PUBLIC_BASE_URL=http://192.168.1.20:8080 \
+DLQ_DATABASE_PATH=/var/lib/distantlands/database \
+DLQ_CATALOG_PATH=/opt/distantlands/catalog/new-foundations-component-catalog.json \
+bin/distantlands
 ```
 
 State Java 21 requirement for archives and bundled Java 21 for OCI. State that Internet exposure requires HTTPS at a reverse proxy; detailed acceptance remains plan 3.
@@ -460,7 +460,7 @@ Script contract:
 scripts/smoke-packaged-distribution.sh target/universal/stage 18080
 ```
 
-It must create a temporary directory with `mktemp -d`, copy only staged package contents, set trusted-alpha environment values, launch `bin/oathdigital`, poll `/health/ready` for at most 30 seconds, assert `/` contains `/assets/main.js`, assert asset HTTP 200, stop with `TERM`, wait at most 15 seconds, assert exit success, and verify HSQLDB files exist. Trap cleanup must terminate child process and remove only the exact temporary directory.
+It must create a temporary directory with `mktemp -d`, copy only staged package contents, set trusted-alpha environment values, launch `bin/distantlands`, poll `/health/ready` for at most 30 seconds, assert `/` contains `/assets/main.js`, assert asset HTTP 200, stop with `TERM`, wait at most 15 seconds, assert exit success, and verify HSQLDB files exist. Trap cleanup must terminate child process and remove only the exact temporary directory.
 
 Run before implementation with a nonexistent stage directory; expected: exit non-zero with `packaged stage directory not found`.
 
@@ -482,7 +482,7 @@ Expected: readiness, index, asset, persistence, and shutdown checks pass.
 Contract:
 
 ```sh
-scripts/smoke-packaged-container.sh oathdigital:smoke 18081
+scripts/smoke-packaged-container.sh distantlands:smoke 18081
 ```
 
 It creates one named volume and one container with unique explicit names, publishes only `127.0.0.1:18081:8080`, supplies trusted-alpha environment values, polls readiness, checks index and asset, restarts same container/volume, rechecks readiness, sends `docker stop --time 15`, then removes only those exact test resources in a trap. Reject missing Docker before creating anything.
@@ -510,7 +510,7 @@ If Docker is available, also run:
 
 ```sh
 ./sbtw Docker/publishLocal
-scripts/smoke-packaged-container.sh oathdigital:0.1.0-SNAPSHOT 18081
+scripts/smoke-packaged-container.sh distantlands:0.1.0-SNAPSHOT 18081
 ```
 
 Expected: every available gate passes; unavailable Docker is reported as an environment limitation, not silently skipped.
@@ -620,9 +620,9 @@ No Docker smoke container or volume existed to clean. This rebuild passed:
 
 It produced:
 
-- `target/universal/oathdigital-0.1.0-SNAPSHOT.zip` — 36,474,567 bytes,
+- `target/universal/distantlands-0.1.0-SNAPSHOT.zip` — 36,474,567 bytes,
   SHA-256 `8110ad6e9b30636ce9f2030ccb26f85c1253570a83dcf2e98741a28826848fba`.
-- `target/universal/oathdigital-0.1.0-SNAPSHOT.tgz` — 36,481,015 bytes,
+- `target/universal/distantlands-0.1.0-SNAPSHOT.tgz` — 36,481,015 bytes,
   SHA-256 `fd7745c0e110b6c713f72345bef68655bbc0c2db5fc50f42c84ce735adfdaee6`.
 
 The Universal process gate ran from copied staged contents with Temurin
@@ -640,7 +640,7 @@ close checks also pass.
 Host: macOS 26.6.2 (Darwin 25.6.0), Apple Silicon `arm64`. `Docker/stage`
 passed, including non-root-user and package-mapping validation. Docker CLI and
 daemon were unavailable, so `Docker/publishLocal` and
-`scripts/smoke-packaged-container.sh oathdigital:0.1.0-SNAPSHOT 18081` were not
+`scripts/smoke-packaged-container.sh distantlands:0.1.0-SNAPSHOT 18081` were not
 run. Therefore this verification does not claim a runnable local OCI image,
 container restart persistence, or multi-architecture OCI publication.
 

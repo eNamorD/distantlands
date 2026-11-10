@@ -51,7 +51,7 @@ Where this plan quotes code, read the file as it is on `main` and apply the chan
   - Nothing under `gameplay/actions` imports `gameplay/powers`.
 - **Tree addresses.** A parked game is stored by the address of its node in the procedure tree. The only new node in the Campaign tree is the consequences `Sequence`, as the second child of the transfer's `Sequence`. Do not wrap or insert anything elsewhere. The relocation's address must not change.
 - **Line width.** Scala lines stay at or under 80 characters, as in the files around them. Re-wrap any line in this plan that comes out longer.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Other sessions commit to `main` while you work.
   - Stage explicit paths only; never `git add -A`.
   - Re-check `git log --oneline -1` before any amend, reset or rebase.
@@ -62,7 +62,7 @@ Where this plan quotes code, read the file as it is on `main` and apply the chan
 - **Names, exactly:**
   - `PowerWindow.CampaignRaidConsequences`, key `"campaign.raid-consequences"`.
   - `CampaignRaid.takes` and `CampaignRaid.consequences`, each `(ReadyGame, CampaignResult) => Either[OathViolation, Vector[CoreOperation]]`. `CampaignRaid.transfer` goes away.
-  - `oathdigital.gameplay.powers.campaign.Keep` (case object) and `KeepCard`, in `campaign/Keep.scala`. Power id `denizen.keep`, unchanged.
+  - `distantlands.gameplay.powers.campaign.Keep` (case object) and `KeepCard`, in `campaign/Keep.scala`. Power id `denizen.keep`, unchanged.
   - `Keep.ended: NoteKey`, name `"ended"`.
   - `Keep.kept(ready): Option[(PlayerId, SiteId)]`.
 - **Texts, exactly:**
@@ -273,17 +273,17 @@ git commit -m "docs(batch8): slice 4 plan-time rulings for Keep"
 Add the imports:
 
 ```scala
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   Transform}
-import oathdigital.gameplay.walker.{ParkedDecisionAssertions,
+import distantlands.gameplay.walker.{ParkedDecisionAssertions,
   ProcedureWalker, WalkerDice, WalkerPowers}
 ```
 
-The second line replaces the existing `oathdigital.gameplay.walker` import.
+The second line replaces the existing `distantlands.gameplay.walker` import.
 
 - [ ] **Step 2: Run it to see it fail.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CampaignRaidSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.CampaignRaidSuite"`
 Expected: FAIL to compile: `CampaignRaidConsequences` is not a member of `PowerWindow`.
 
 - [ ] **Step 3: Add the window.** In `PowerWindow.scala`, after `CampaignRaidTransfer`:
@@ -408,12 +408,12 @@ In `BattlePlan.scala`, add it to `afterOutcome`, after `PowerWindow.CampaignRaid
 
 - [ ] **Step 5: Run the Raid suites.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CampaignRaidSuite oathdigital.gameplay.CampaignProcedureSuite oathdigital.gameplay.powers.campaign.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.CampaignRaidSuite distantlands.gameplay.CampaignProcedureSuite distantlands.gameplay.powers.campaign.*"`
 Expected: PASS, with 1 new test and no existing test changed.
 
 - [ ] **Step 6: Run the Game Log suites.** The transfer now journals two steps, and the closing line reads every step of the run.
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.*"`
 Expected: PASS, with no test changed.
 
 - [ ] **Step 7: Commit.**
@@ -442,10 +442,10 @@ git commit -m "feat(batch8): a Raid's consequences run in their own window"
 - [ ] **Step 1: Move the card.** Cut `KeepCard` from `HoldingOrderDenizens.scala` into a new `campaign/Keep.scala`, unchanged:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, PrintedPower, SiteOnly}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, PrintedPower, SiteOnly}
+import distantlands.model._
 
 object KeepCard extends Denizen(DenizenId("5"), "Keep", Suit.Order) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.keep"),
@@ -456,22 +456,22 @@ object KeepCard extends Denizen(DenizenId("5"), "Keep", Suit.Order) with SiteOnl
   val powers: Vector[PrintedPower] = Vector(power)
 ```
 
-In `NewFoundations.scala`, add `KeepCard` to the `oathdigital.gameplay.powers.campaign` import list. The `holding._` wildcard no longer supplies it. `HoldingOrderDenizens.scala` still uses `SiteOnly`, for City Wall and Martial Culture.
+In `NewFoundations.scala`, add `KeepCard` to the `distantlands.gameplay.powers.campaign` import list. The `holding._` wildcard no longer supplies it. `HoldingOrderDenizens.scala` still uses `SiteOnly`, for City Wall and Martial Culture.
 
 - [ ] **Step 2: Write the failing tests.** Create `KeepSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.BannerRules
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, CatalogNames, Look}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
 
 /** Keep: a defender who rules Keep's site and loses a Raid gives up only
   * what was targeted, and their pawn goes to Keep's site. */
@@ -589,23 +589,23 @@ Add to `PowerKindsCatalogSuite.scala`, after the Hospitality test:
   test("Keep's rule is automatic whatever its flag: it is a must, not a " +
       "modifier"):
     assertEquals(flag("denizen.keep"), Some(false))
-    assertEquals(oathdigital.gameplay.powers.campaign.Keep.resolution,
+    assertEquals(distantlands.gameplay.powers.campaign.Keep.resolution,
       PowerResolution.Automatic)
 ```
 
 - [ ] **Step 3: Run them to see them fail.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.KeepSuite oathdigital.gameplay.PowerKindsCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.KeepSuite distantlands.gameplay.PowerKindsCatalogSuite"`
 Expected: FAIL to compile: `Keep` is not found.
 
 - [ ] **Step 4: Write the power.** Append to `Keep.scala`, and extend its imports to:
 
 ```scala
-import oathdigital.catalog.{Denizen, PrintedPower, SiteOnly}
-import oathdigital.gameplay.SiteRulers
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.catalog.{Denizen, PrintedPower, SiteOnly}
+import distantlands.gameplay.SiteRulers
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerCtx, Transform}
-import oathdigital.model._
+import distantlands.model._
 ```
 
 ```scala
@@ -680,7 +680,7 @@ Register it in `PlanRules.forCatalog`: append `++ Vector(Keep)` after the last e
 
 - [ ] **Step 5: Run the tests.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.* oathdigital.gameplay.PowerKindsCatalogSuite oathdigital.gameplay.CampaignRaidSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.* distantlands.gameplay.PowerKindsCatalogSuite distantlands.gameplay.CampaignRaidSuite"`
 Expected: PASS, with 5 new tests.
 
 - [ ] **Step 6: Commit.**
@@ -705,11 +705,11 @@ git commit -m "feat(batch8): Keep spares a defeated defender who rules its site"
 - [ ] **Step 1: Write the failing log suite.** In `LogScripts.scala`, drop `private` from `raidAnswers` if slice 3 has not. Then create `KeepLogSuite.scala`:
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Dice, MenuPlay, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Dice, MenuPlay, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
 import LogScripts.{atTable, format, playerLabel, raidAnswers, texts}
 
 /** How Keep reads in the Game Log: its line says where the defender's
@@ -752,7 +752,7 @@ In the second test p2 rules Ancient City, so p1 may conquer it or raid p2. `raid
 
 - [ ] **Step 2: Run it to see it fail.**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.KeepLogSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.KeepLogSuite"`
 Expected: the second test passes, because nothing moves. The first fails on " was sent to ": the closing line still reports Keep's move as a relocation.
 
 - [ ] **Step 3: Leave restated steps out of the closing summary.** In `CampaignLines.closing`, the `WalkerCompleted` case reads every step of the run through `journal.runOps`. Keep the index of each step, so a step a covering note restates can be left out, and summarise the rest:
@@ -775,7 +775,7 @@ Then pass `told` wherever the case passes `outcome.tail` to `gains` and `losses`
 
 - [ ] **Step 4: Run the log suites.**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.*"`
 Expected: PASS, with 2 new tests and no existing test changed.
 
 - [ ] **Step 5: Commit.**

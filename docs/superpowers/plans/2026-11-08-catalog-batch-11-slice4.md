@@ -197,9 +197,9 @@ Inventoried at `5e1bbd20`, which includes slice 2's code
 Create `src/test/scala/distantlands/model/DiscardCauseSuite.scala`:
 
 ```scala
-package oathdigital.model
+package distantlands.model
 
-import oathdigital.testkit.Table.p1
+import distantlands.testkit.Table.p1
 
 /** A discard's cause (catalog batch 11, slice 4): the power whose use
   * discards a card, and whether the discard makes room that power fills. */
@@ -255,7 +255,7 @@ says so on the wire", add:
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.model.DiscardCauseSuite oathdigital.serialization.WalkerOperationWireSuite"`
+Run: `./sbtw "testOnly distantlands.model.DiscardCauseSuite distantlands.serialization.WalkerOperationWireSuite"`
 Expected: compile errors: `cause` is not a member of `Discard.Denizen`, and
 `DiscardCause` is not found.
 
@@ -385,7 +385,7 @@ already uses, `PowerId(found("powerId").str)`, inside the `fold`.
 
 - [ ] **Step 5: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.model.DiscardCauseSuite oathdigital.serialization.*"`
+Run: `./sbtw "testOnly distantlands.model.DiscardCauseSuite distantlands.serialization.*"`
 Expected: PASS.
 
 - [ ] **Step 6: Commit**
@@ -413,14 +413,14 @@ EOF
 
 **Interfaces:**
 - Consumes: nothing from Task 1.
-- Produces, in `oathdigital.gameplay.powerresolver`:
+- Produces, in `distantlands.gameplay.powerresolver`:
   - `final case class BatchContext(catalog: ExecutableCatalog, actor: PlayerId, ready: ReadyGame)`;
   - `final case class Replacement(operations: Vector[CoreOperation], line: LogNote)`;
   - `final case class BatchAsk(decide: Decide, instead: DecisionAnswer => Option[Replacement])`;
   - `trait AsksBeforeBatch extends ContributingPower` with
     `def watching(ready: ReadyGame): Boolean` and
     `def askBefore(batch: BatchContext, operation: CoreOperation): Option[BatchAsk]`.
-- Produces, in `oathdigital.gameplay.walker` (package-private):
+- Produces, in `distantlands.gameplay.walker` (package-private):
   - `BatchQuestions.segment: String` (`"asked"`);
   - `BatchQuestions.answering(path: Vector[String]): Boolean`;
   - `BatchQuestions.subtree(build: BuildOps, ready: ReadyGame, answered: Vector[Answered], powers: WalkerPowers, actor: PlayerId, path: Vector[String]): Either[OathViolation, Option[Operation]]`.
@@ -430,16 +430,16 @@ EOF
 Create `src/test/scala/distantlands/gameplay/walker/BatchQuestionsSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.powerresolver.{AsksBeforeBatch, BatchAsk,
+import distantlands.gameplay.powerresolver.{AsksBeforeBatch, BatchAsk,
   BatchContext, Contribution, ExecutedBatch, ExecutedTrigger, Replacement}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.Outcomes.{finished, parked}
-import oathdigital.testkit.ProcedureWalkerFixture._
-import oathdigital.testkit.RecordedOps
-import oathdigital.testkit.WalkerStubs.{continueOption, stopOption}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.testkit.Outcomes.{finished, parked}
+import distantlands.testkit.ProcedureWalkerFixture._
+import distantlands.testkit.RecordedOps
+import distantlands.testkit.WalkerStubs.{continueOption, stopOption}
 
 /** The walker's batch questions (catalog batch 11, slice 4): a power asks
   * about an operation of a `BuildOps` batch before it runs, and an answer
@@ -580,7 +580,7 @@ steps.
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.BatchQuestionsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.BatchQuestionsSuite"`
 Expected: compile errors: `AsksBeforeBatch`, `BatchAsk`, `BatchContext`,
 `Replacement` and `BatchQuestions` are not found.
 
@@ -589,10 +589,10 @@ Expected: compile errors: `AsksBeforeBatch`, `BatchAsk`, `BatchContext`,
 Create `src/main/scala/distantlands/gameplay/powerresolver/AsksBeforeBatch.scala`:
 
 ```scala
-package oathdigital.gameplay.powerresolver
+package distantlands.gameplay.powerresolver
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.model.{CoreOperation, Decide, DecisionAnswer, LogNote,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.model.{CoreOperation, Decide, DecisionAnswer, LogNote,
   PlayerId, ReadyGame}
 
 /** What a power reads when it looks at a walker batch before the batch
@@ -633,11 +633,11 @@ trait AsksBeforeBatch extends ContributingPower:
 Create `src/main/scala/distantlands/gameplay/walker/BatchQuestions.scala`:
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.powerresolver.{AsksBeforeBatch, BatchAsk,
+import distantlands.gameplay.powerresolver.{AsksBeforeBatch, BatchAsk,
   BatchContext, ContributingPower, Replacement}
-import oathdigital.model.{Answered, BuildOps, CoreOperation, Note,
+import distantlands.model.{Answered, BuildOps, CoreOperation, Note,
   OathViolation, Operation, PendingTree, PlayerId, PowerId, ReadyGame,
   Sequence, Take}
 
@@ -820,7 +820,7 @@ Import `BuildOps` in `WalkerPowerGather.scala` if it is not imported yet.
 
 - [ ] **Step 7: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.*"`
 Expected: PASS, the new suite and every existing walker suite.
 
 - [ ] **Step 8: Check the line bound**
@@ -845,7 +845,7 @@ EOF
 are in. A reviewer checks:
 - the resume and navigation paths (findings 6 and 7);
 - that the replay test covers the journal;
-- that `./sbtw "testOnly oathdigital.gameplay.walker.*"` passes.
+- that `./sbtw "testOnly distantlands.gameplay.walker.*"` passes.
 
 ---
 
@@ -880,19 +880,19 @@ are in. A reviewer checks:
 Create `src/test/scala/distantlands/gameplay/powers/PowerDiscardCausesSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.powers.action.{RovingTerror, RovingTerrorCard,
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.powers.action.{RovingTerror, RovingTerrorCard,
   SiteSlotMoves, TamingCharm, TamingCharmCard}
-import oathdigital.gameplay.powers.campaign.WildMountsCard
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{PhasePowerHarness, RecordedOps, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.powers.campaign.WildMountsCard
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.testkit.{PhasePowerHarness, RecordedOps, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 /** Each power's discard names the power whose use discards it (catalog
   * batch 11, slice 4), so Wild Pastures can tell a power's discard from a
@@ -944,7 +944,7 @@ If `RovingTerror`'s registered object has another name, read it from
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.PowerDiscardCausesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.PowerDiscardCausesSuite"`
 Expected: compile errors: the `SiteSlotMoves` constructor takes no power,
 and `SlotMove` has no `makesRoom`.
 
@@ -1019,13 +1019,13 @@ and `SlotMove` has no `makesRoom`.
     operations:
     `operations <- CardPlay.operations(catalog, ready, actor, card, SearchPlacement.Discard, CardPlay.Origin.TemporaryHand).map(DiscardCause.mark(_, DiscardCause(id)))`.
 
-`DiscardCause` lives in `oathdigital.model`, which these files import with
-`oathdigital.model._`. A file that imports `model` names one by one adds
+`DiscardCause` lives in `distantlands.model`, which these files import with
+`distantlands.model._`. A file that imports `model` names one by one adds
 `DiscardCause` to its list.
 
 - [ ] **Step 4: Run the tests and every power suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.*"`
 Expected: PASS. Existing suites compare whole operations only where they
 build them through the same helpers, so they pass unchanged. A suite that
 compares a hand-built `Discard.Denizen` with a recorded one, and now fails
@@ -1069,12 +1069,12 @@ EOF
 Create `src/test/scala/distantlands/gameplay/PlayDiscardCausesSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.{CardPlayRules, DiscardPermission}
-import oathdigital.gameplay.actions.cardplay.PlayDiscardCauses
-import oathdigital.model._
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.actions.{CardPlayRules, DiscardPermission}
+import distantlands.gameplay.actions.cardplay.PlayDiscardCauses
+import distantlands.model._
+import distantlands.testkit.Table.p1
 
 /** The causes of a card play's discards (catalog batch 11, rulings 20 and
   * 22). */
@@ -1138,12 +1138,12 @@ top of the next region's pile, even the pile it came from", add:
         discard.cause }, Vector(Some(DiscardCause(SearchParty.id))))
 ```
 
-Import `oathdigital.testkit.RecordedOps` in that suite if it does not
+Import `distantlands.testkit.RecordedOps` in that suite if it does not
 already.
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.PlayDiscardCausesSuite oathdigital.gameplay.powers.whenplayed.SearchPartySuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.PlayDiscardCausesSuite distantlands.gameplay.powers.whenplayed.SearchPartySuite"`
 Expected: a compile error, because `PlayDiscardCauses` is not found.
 
 - [ ] **Step 3: Mark the Homeland permission as a rule's**
@@ -1196,10 +1196,10 @@ the permissions, and `credits`, which maps them to their lines:
 Create `src/main/scala/distantlands/gameplay/actions/cardplay/PlayDiscardCauses.scala`:
 
 ```scala
-package oathdigital.gameplay.actions.cardplay
+package distantlands.gameplay.actions.cardplay
 
-import oathdigital.gameplay.actions.{DiscardPermission, SiteRemoval}
-import oathdigital.model._
+import distantlands.gameplay.actions.{DiscardPermission, SiteRemoval}
+import distantlands.model._
 
 /** The causes of a card play's discards (catalog batch 11, slice 4;
   * rulings 20 and 22):
@@ -1285,7 +1285,7 @@ discards name their power ([[PlayDiscardCauses]])." Import
 
 - [ ] **Step 7: Run the tests and every card-play suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.PlayDiscardCausesSuite oathdigital.gameplay.CardSlotsSuite oathdigital.gameplay.powers.whenplayed.* oathdigital.gameplay.powers.search.* oathdigital.gameplay.actions.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.PlayDiscardCausesSuite distantlands.gameplay.CardSlotsSuite distantlands.gameplay.powers.whenplayed.* distantlands.gameplay.powers.search.* distantlands.gameplay.actions.*"`
 Expected: PASS.
 
 - [ ] **Step 8: Commit**
@@ -1336,24 +1336,24 @@ reviewer checks:
 Create `src/test/scala/distantlands/gameplay/powers/economy/WildPasturesSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.GrandMaskCard
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.powerresolver.BatchContext
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.action.{RovingTerror, RovingTerrorCard,
+import distantlands.gameplay.GrandMaskCard
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.powerresolver.BatchContext
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.action.{RovingTerror, RovingTerrorCard,
   TamingCharm, TamingCharmCard}
-import oathdigital.gameplay.powers.campaign.{HorseArchersCard, WildMounts,
+import distantlands.gameplay.powers.campaign.{HorseArchersCard, WildMounts,
   WildMountsCard}
-import oathdigital.gameplay.powers.setup.GreatForgeCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{Look, MenuPlay, Outcomes, PowerRules, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.powers.setup.GreatForgeCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.testkit.{Look, MenuPlay, Outcomes, PowerRules, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
 
 /** Wild Pastures (E07, intact): "Whenever this card's ruler would discard
   * a Nomad card from a power, they may instead pay 1 favor to the Nomad
@@ -1527,10 +1527,10 @@ Add three integration tests in the same suite, reusing existing fixtures:
 
 ```scala
   test("a When Played Nomad discard asks its ruler"):
-    import oathdigital.gameplay.powers.whenplayed.WhenPlayedHarness
-    import oathdigital.gameplay.powers.whenplayed.ThreateningRoarCard
-    import oathdigital.gameplay.walker.ProcedureWalker
-    import oathdigital.gameplay.powers.WalkerPowerCatalog
+    import distantlands.gameplay.powers.whenplayed.WhenPlayedHarness
+    import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
+    import distantlands.gameplay.walker.ProcedureWalker
+    import distantlands.gameplay.powers.WalkerPowerCatalog
     val ready = WhenPlayedHarness.p1AtHomeSite.favor(p1, 1)
       .adviser(p1, ThreateningRoarCard.id)
       .denizen(nomad, at = WhenPlayedHarness.homeSite)
@@ -1551,10 +1551,10 @@ batch's node.
 ```scala
   test("Wild Mounts asks first; skipped, the Nomad plan's discard asks " +
       "Wild Pastures"):
-    import oathdigital.gameplay.CampaignFixture
-    import oathdigital.gameplay.actions.campaign.CampaignIds
-    import oathdigital.gameplay.powers.campaign.PlanDriver
-    import oathdigital.gameplay.powers.search.BrackenCard
+    import distantlands.gameplay.CampaignFixture
+    import distantlands.gameplay.actions.campaign.CampaignIds
+    import distantlands.gameplay.powers.campaign.PlanDriver
+    import distantlands.gameplay.powers.search.BrackenCard
     val bracken = PlanDriver.planlessCard(BrackenCard)
     val horseArchers = HorseArchersCard.id
     val start = Vector(nomad, bracken, horseArchers).foldLeft(
@@ -1588,8 +1588,8 @@ named in full: their wildcard imports would clash with this suite's own
 ```scala
   test("Search Party's discarded card asks, and paying leaves it in its " +
       "pile"):
-    import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-    import oathdigital.gameplay.powers.whenplayed.SearchPartyFixture._
+    import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+    import distantlands.gameplay.powers.whenplayed.SearchPartyFixture._
     val ready = p1HoldsSearchPartyFacedown(_.discarded(Region.Provinces,
         nomad).favor(p1, 1).warbandsAt(peaks, p1, 2)
       .edifice(pastures, EdificeSide.Intact, at = peaks))
@@ -1607,7 +1607,7 @@ carries different walker powers, read the parked decision with the
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.WildPasturesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.economy.WildPasturesSuite"`
 Expected: a compile error, because `WildPastures` is not found.
 
 - [ ] **Step 3: Move the card and write the power**
@@ -1617,14 +1617,14 @@ Delete `WildPasturesCard` (lines 38-51) from
 `src/main/scala/distantlands/gameplay/powers/economy/WildPastures.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.{Edifice, EdificeFace, ExecutableCatalog, Locked,
+import distantlands.catalog.{Edifice, EdificeFace, ExecutableCatalog, Locked,
   PrintedPower}
-import oathdigital.gameplay.CardRule
-import oathdigital.gameplay.powerresolver.{AsksBeforeBatch, BatchAsk,
+import distantlands.gameplay.CardRule
+import distantlands.gameplay.powerresolver.{AsksBeforeBatch, BatchAsk,
   BatchContext, Contribution, OnEdificeFace, Replacement}
-import oathdigital.model._
+import distantlands.model._
 
 object WildPasturesCard extends Edifice(EdificeId("E07"), Suit.Nomad):
   object intact extends EdificeFace("Wild Pastures") with Locked:
@@ -1790,7 +1790,7 @@ edifice.e07.intact paid-off-turn = {0} paid 1 favor to the Nomad bank instead of
 
 - [ ] **Step 5: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.WildPasturesSuite oathdigital.gameplay.powers.UnimplementedPowersSuite oathdigital.gameplay.powers.DeclaredNoteKeysSuite oathdigital.gameplay.powers.PowerCatalogUniquenessSuite oathdigital.gameplay.powers.PowerImplementationStatusSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.economy.WildPasturesSuite distantlands.gameplay.powers.UnimplementedPowersSuite distantlands.gameplay.powers.DeclaredNoteKeysSuite distantlands.gameplay.powers.PowerCatalogUniquenessSuite distantlands.gameplay.powers.PowerImplementationStatusSuite"`
 Expected: PASS.
 
 Then run every suite that drives the full catalog:

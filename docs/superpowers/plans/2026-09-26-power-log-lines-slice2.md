@@ -27,7 +27,7 @@
   - `gameplay` never imports `application`, `serialization` or `server`.
   - A walker power (anything under `gameplay/powers`) never imports `gameplay.walker`.
   - `application` never imports `serialization`.
-- Never touch the live database `var/oathdigital`.
+- Never touch the live database `var/distantlands`.
 - Other sessions commit to `main` while you work. Stage explicit paths only; never `git add -A`. Re-check `git log --oneline -1` before any amend, reset or rebase.
 - Work in a git worktree:
   - `EnterWorktree` branches from `origin`, which lags local `main`. Fast-forward the new branch to local `main` first.
@@ -192,7 +192,7 @@ In `GameLogPowerLinesSuite.scala`:
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogPowerLinesSuite oathdigital.gameplay.powers.PowerNoteCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogPowerLinesSuite distantlands.gameplay.powers.PowerNoteCatalogSuite"`
 Expected: compile errors: `isUse` and `seen` are not members, and `PowerSourceRef.of` returns `None` for a banner.
 
 - [ ] **Step 3: Implement**
@@ -257,7 +257,7 @@ In `LogJournal.scala`, change `notedUse`'s match arm to:
 
 In `PowerLines.scala`:
 
-- Import `WalkerStepRecorded` beside `PowerNoted`: `import oathdigital.gameplay.walker.{PowerNoted, WalkerStepRecorded}`.
+- Import `WalkerStepRecorded` beside `PowerNoted`: `import distantlands.gameplay.walker.{PowerNoted, WalkerStepRecorded}`.
 - Replace `line`, `kind`, `sentence` and `argument` with:
 
 ```scala
@@ -318,7 +318,7 @@ Update the class doc of `PowerLines` with one sentence: "A note names a card its
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.* oathdigital.gameplay.powers.PowerNoteCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.* distantlands.gameplay.powers.PowerNoteCatalogSuite"`
 Expected: PASS, the golden logs included: no journal has a variant or a banner note yet.
 
 - [ ] **Step 5: Commit**
@@ -376,11 +376,11 @@ git commit -m "feat(log): used-line variants and cards judged at the restated st
 Create `src/test/scala/distantlands/gameplay/powers/NoteText.scala`:
 
 ```scala
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.gameplay.powerresolver.PhasePower
-import oathdigital.gameplay.walker.PowerNoted
-import oathdigital.model._
+import distantlands.gameplay.powerresolver.PhasePower
+import distantlands.gameplay.walker.PowerNoted
+import distantlands.model._
 
 /** A phase power's notes as plain sentences, for the card suites (power log
   * lines design, "Tests"). Arguments read plainly: a player, card or site by
@@ -417,7 +417,7 @@ object NoteText:
 
 - [ ] **Step 2: Write the failing card tests**
 
-In each suite, add `NoteText` to the existing `oathdigital.gameplay.powers.{...}` import. The suites import:
+In each suite, add `NoteText` to the existing `distantlands.gameplay.powers.{...}` import. The suites import:
 
 - ElderSuite and WaysideInnSuite: `{NoteText, PhasePowerCatalog, PowerFixture}`
 - MagicWaterskinSuite: `{NoteText, PhasePowerCatalog, PowerFixture}`
@@ -425,7 +425,7 @@ In each suite, add `NoteText` to the existing `oathdigital.gameplay.powers.{...}
 - MarbleFountainsSuite: `{NoteText, PhasePowerCatalog, PlayerFacts, PowerFixture}`
 - SilverTongueSuite: `{NoteText, PhasePowerCatalog, WalkerPowerCatalog}`
 
-VowOfObedienceSuite imports `oathdigital.gameplay.powers.{CardStaging, PhasePowerCatalog, PowerFixture, ...}` over two lines. Add `NoteText` to that list.
+VowOfObedienceSuite imports `distantlands.gameplay.powers.{CardStaging, PhasePowerCatalog, PowerFixture, ...}` over two lines. Add `NoteText` to that list.
 
 `ElderSuite`:
 
@@ -520,7 +520,7 @@ VowOfObedienceSuite imports `oathdigital.gameplay.powers.{CardStaging, PhasePowe
 
 - [ ] **Step 3: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.ElderSuite oathdigital.gameplay.powers.action.WaysideInnSuite oathdigital.gameplay.powers.action.MagicWaterskinSuite oathdigital.gameplay.powers.action.AlchemistSuite oathdigital.gameplay.powers.wake.MarbleFountainsSuite oathdigital.gameplay.powers.rest.SilverTongueSuite oathdigital.gameplay.powers.cardplay.VowOfObedienceSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.ElderSuite distantlands.gameplay.powers.action.WaysideInnSuite distantlands.gameplay.powers.action.MagicWaterskinSuite distantlands.gameplay.powers.action.AlchemistSuite distantlands.gameplay.powers.wake.MarbleFountainsSuite distantlands.gameplay.powers.rest.SilverTongueSuite distantlands.gameplay.powers.cardplay.VowOfObedienceSuite"`
 Expected: the new tests fail with `Vector()` against the expected notes. None of these powers journals a note yet.
 
 - [ ] **Step 4: Create `NoteSupport`**
@@ -528,9 +528,9 @@ Expected: the new tests fail with `Vector()` against the expected notes. None of
 Create `src/main/scala/distantlands/gameplay/powers/NoteSupport.scala`:
 
 ```scala
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.model._
+import distantlands.model._
 
 /** What a power's note reads (power log lines design, "Amounts are what
   * happened"), and the sentences several powers share. A read compares the
@@ -614,10 +614,10 @@ object NoteSupport:
 `Elders.scala`, whole file:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.NoteSupport
-import oathdigital.model._
+import distantlands.gameplay.powers.NoteSupport
+import distantlands.model._
 
 /** Elders (card 26), ACTION: place 2 favor on this card, then gain 1 secret
   * from the shared bank, which holds an unlimited supply. Its own line
@@ -637,10 +637,10 @@ case object Elders extends PaidAction("denizen.elders", Cost(favor = 2)):
 `WaysideInn.scala`, whole file:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.NoteSupport
-import oathdigital.model._
+import distantlands.gameplay.powers.NoteSupport
+import distantlands.model._
 
 /** Wayside Inn (card 47), ACTION: place 1 favor on this card, then gain
   * 2 Supply. Its own line reads the Supply the track allowed.
@@ -660,7 +660,7 @@ case object WaysideInn extends PaidAction("denizen.wayside-inn",
 
 `MagicWaterskin.scala`:
 
-- Change the import to `import oathdigital.gameplay.powers.{NoteSupport, PlayerFacts}`.
+- Change the import to `import distantlands.gameplay.powers.{NoteSupport, PlayerFacts}`.
 - Add `val gained: NoteKey = NoteSupport.gainedKey(NoteKey.Used)` and `override def noteKeys: Vector[NoteKey] = Vector(gained)` under `val Supply`.
 - Change the `yield` to:
 
@@ -677,7 +677,7 @@ case object WaysideInn extends PaidAction("denizen.wayside-inn",
 
 `Alchemist.scala`:
 
-- Change the import to `import oathdigital.gameplay.powers.{NoteSupport, PowerAnswers}`.
+- Change the import to `import distantlands.gameplay.powers.{NoteSupport, PowerAnswers}`.
 - Add under `val decisionId`:
 
 ```scala
@@ -699,7 +699,7 @@ case object WaysideInn extends PaidAction("denizen.wayside-inn",
 
 `MarbleFountains.scala`:
 
-- Add `import oathdigital.gameplay.powers.NoteSupport`.
+- Add `import distantlands.gameplay.powers.NoteSupport`.
 - Add under `def timing`:
 
 ```scala
@@ -725,7 +725,7 @@ case object WaysideInn extends PaidAction("denizen.wayside-inn",
 
 `SilverTongue.scala`:
 
-- Add `import oathdigital.gameplay.powers.NoteSupport`.
+- Add `import distantlands.gameplay.powers.NoteSupport`.
 - Add `override def noteKeys: Vector[NoteKey] = Vector(NoteSupport.took)` under `def source`.
 - Wrap `build`'s `Branch` in a `Sequence` that ends in the note:
 
@@ -752,7 +752,7 @@ case object WaysideInn extends PaidAction("denizen.wayside-inn",
 
 `VowOfObedience.scala`:
 
-- Change the import to `import oathdigital.gameplay.powers.{CatalogCards, NoteSupport}`.
+- Change the import to `import distantlands.gameplay.powers.{CatalogCards, NoteSupport}`.
 - Add `override def noteKeys: Vector[NoteKey] = Vector(NoteSupport.took)` under `def source`.
 - Change `build` to:
 
@@ -792,7 +792,7 @@ In `LogScripts.scala`, add below `inserted`:
     formatter.format(withoutNotes(script.history.steps), viewer)
 ```
 
-- Import `oathdigital.gameplay.walker.PowerNoted` in `LogScripts.scala`.
+- Import `distantlands.gameplay.walker.PowerNoted` in `LogScripts.scala`.
 - If `RecordedEvent.index` is not a `Long`, match its type, as `inserted` does.
 - In `GameLogPowerLinesSuite.scala`, replace every `script.history.steps` with `withoutNotes(script.history.steps)`. Do not change the Gambling Hall test, which uses `format(script, None)`.
 
@@ -823,7 +823,7 @@ In `GameLogExchangeSuite.scala`, change `val all = lines(usePower)` in "a used p
 
 - [ ] **Step 8: Regenerate and review the `use-power` golden logs**
 
-Run: `GAMELOG_GOLDEN=write ./sbtw "testOnly oathdigital.application.gamelog.GameLogGoldenSuite"`
+Run: `GAMELOG_GOLDEN=write ./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite"`
 Then run: `git status --short src/test/resources/gamelog`
 Expected: only `use-power.actor.log` and `use-power.other.log` changed. In each, the lines:
 
@@ -881,7 +881,7 @@ Fix what it finds before Task 3.
 
 - [ ] **Step 1: Write the failing tests**
 
-Add `NoteText` to the `oathdigital.gameplay.powers.{...}` import of both suites.
+Add `NoteText` to the `distantlands.gameplay.powers.{...}` import of both suites.
 
 `BoneDiceSuite`:
 
@@ -933,12 +933,12 @@ Add `NoteText` to the `oathdigital.gameplay.powers.{...}` import of both suites.
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.BoneDiceSuite oathdigital.gameplay.powers.action.MurkyFountainSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.BoneDiceSuite distantlands.gameplay.powers.action.MurkyFountainSuite"`
 Expected: the new tests fail with `Vector()`.
 
 - [ ] **Step 3: Implement**
 
-`RollResults.scala`: change the import to `import oathdigital.model._`, and add to the object:
+`RollResults.scala`: change the import to `import distantlands.model._`, and add to the object:
 
 ```scala
   /** "{player} rolled {dice}, Total: {n}": a dice power's own line, in place
@@ -958,7 +958,7 @@ Expected: the new tests fail with `Vector()`.
 
 `GamblingHall.scala`:
 
-- Add `import oathdigital.gameplay.powers.NoteSupport`.
+- Add `import distantlands.gameplay.powers.NoteSupport`.
 - Replace the `rolled` definition with `val rolled: NoteKey = RollResults.rolled`, keeping its doc comment.
 - In `build`, change the first note to `Note(id, RollResults.rollNote(source, player, pool), covers = true)`.
 - Delete the private `rollNote` and `favor`.
@@ -966,7 +966,7 @@ Expected: the new tests fail with `Vector()`.
 
 `BoneDice.scala`:
 
-- Change the import to `import oathdigital.gameplay.powers.{NoteSupport, PlayerFacts}`.
+- Change the import to `import distantlands.gameplay.powers.{NoteSupport, PlayerFacts}`.
 - Add under `val pool`:
 
 ```scala
@@ -1006,7 +1006,7 @@ Expected: the new tests fail with `Vector()`.
 
 `MurkyFountain.scala`:
 
-- Add `import oathdigital.gameplay.powers.NoteSupport`.
+- Add `import distantlands.gameplay.powers.NoteSupport`.
 - Add under `val pool`:
 
 ```scala
@@ -1051,7 +1051,7 @@ Expected: the new tests fail with `Vector()`.
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.* oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.* distantlands.application.gamelog.*"`
 Expected: PASS. `GamblingHallSuite` and the `gambling-hall` golden are unchanged.
 
 - [ ] **Step 5: Commit**
@@ -1085,7 +1085,7 @@ git commit -m "feat(powers): dice powers write their roll and its outcome"
 
 - [ ] **Step 1: Write the failing tests**
 
-Add `NoteText` to each suite's `oathdigital.gameplay.powers.{...}` import.
+Add `NoteText` to each suite's `distantlands.gameplay.powers.{...}` import.
 
 `DowsingSticksSuite`:
 
@@ -1160,7 +1160,7 @@ Add `NoteText` to each suite's `oathdigital.gameplay.powers.{...}` import.
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.DowsingSticksSuite oathdigital.gameplay.powers.action.FaeMerchantSuite oathdigital.gameplay.powers.action.CrystalVialSuite oathdigital.gameplay.powers.action.IvoryEyeSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.DowsingSticksSuite distantlands.gameplay.powers.action.FaeMerchantSuite distantlands.gameplay.powers.action.CrystalVialSuite distantlands.gameplay.powers.action.IvoryEyeSuite"`
 Expected: the new tests fail with `Vector()`, except "with no candidate nothing is written", which already passes.
 
 - [ ] **Step 3: Implement**
@@ -1184,7 +1184,7 @@ Expected: the new tests fail with `Vector()`, except "with no candidate nothing 
 
 `DowsingSticks.scala`:
 
-- Change the import to `import oathdigital.gameplay.powers.RelicDraws`. It is unchanged.
+- Change the import to `import distantlands.gameplay.powers.RelicDraws`. It is unchanged.
 - Add:
 
 ```scala
@@ -1208,7 +1208,7 @@ With an empty deck, the draw journals nothing. The step before the note is then 
 
 `FaeMerchant.scala`:
 
-- Change the import to `import oathdigital.gameplay.powers.{NoteSupport, PlayerFacts, RelicDraws}`.
+- Change the import to `import distantlands.gameplay.powers.{NoteSupport, PlayerFacts, RelicDraws}`.
 - In the class, add `override def noteKeys: Vector[NoteKey] = Vector(RelicDraws.drew, returned)`.
 - Change `build` to:
 
@@ -1247,7 +1247,7 @@ With an empty deck, the draw journals nothing. The step before the note is then 
 
 `CrystalVial.scala`:
 
-- Change the import to `import oathdigital.gameplay.powers.{NoteSupport, PowerAnswers}`.
+- Change the import to `import distantlands.gameplay.powers.{NoteSupport, PowerAnswers}`.
 - In the class, add `override def noteKeys: Vector[NoteKey] = Vector(buried)`.
 - Change `build` to:
 
@@ -1277,7 +1277,7 @@ With an empty deck, the draw journals nothing. The step before the note is then 
 
 `IvoryEye.scala`:
 
-- Change the import to `import oathdigital.gameplay.powers.{NoteSupport, PowerAnswers}`.
+- Change the import to `import distantlands.gameplay.powers.{NoteSupport, PowerAnswers}`.
 - Add under `private val Prefix`:
 
 ```scala
@@ -1312,7 +1312,7 @@ With an empty deck, the draw journals nothing. The step before the note is then 
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.* oathdigital.gameplay.powers.PowerNoteCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.* distantlands.gameplay.powers.PowerNoteCatalogSuite"`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -1339,7 +1339,7 @@ git commit -m "feat(powers): relic draws, burials and peeks write their own line
 
 - [ ] **Step 1: Write the failing tests**
 
-Add `NoteText` to each suite's `oathdigital.gameplay.powers.{...}` import.
+Add `NoteText` to each suite's `distantlands.gameplay.powers.{...}` import.
 
 `SleightOfHandSuite`:
 
@@ -1394,14 +1394,14 @@ Add `NoteText` to each suite's `oathdigital.gameplay.powers.{...}` import.
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.SleightOfHandSuite oathdigital.gameplay.powers.action.WhistleSuite oathdigital.gameplay.powers.action.WolvesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.SleightOfHandSuite distantlands.gameplay.powers.action.WhistleSuite distantlands.gameplay.powers.action.WolvesSuite"`
 Expected: the new tests fail with `Vector()`.
 
 - [ ] **Step 3: Implement**
 
 `SleightOfHand.scala`:
 
-- Change the import to `import oathdigital.gameplay.powers.{NoteSupport, PowerAnswers}`.
+- Change the import to `import distantlands.gameplay.powers.{NoteSupport, PowerAnswers}`.
 - Add under `val MinimumSecrets`:
 
 ```scala
@@ -1437,7 +1437,7 @@ Expected: the new tests fail with `Vector()`.
 
 `Whistle.scala`:
 
-- Change the import to `import oathdigital.gameplay.powers.{NoteSupport, PowerAnswers}`.
+- Change the import to `import distantlands.gameplay.powers.{NoteSupport, PowerAnswers}`.
 - Add under `val decisionId`:
 
 ```scala
@@ -1474,7 +1474,7 @@ Expected: the new tests fail with `Vector()`.
 
 `Wolves.scala`:
 
-- Change the import to `import oathdigital.gameplay.powers.{NoteSupport, PlayerFacts, PowerAnswers}`.
+- Change the import to `import distantlands.gameplay.powers.{NoteSupport, PlayerFacts, PowerAnswers}`.
 - Add under `val decisionId`:
 
 ```scala
@@ -1514,7 +1514,7 @@ Expected: the new tests fail with `Vector()`.
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.*"`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -1550,7 +1550,7 @@ git commit -m "feat(powers): targeting powers write what they did, or that nothi
 
 - [ ] **Step 1: Write the failing tests**
 
-Add `NoteText` to each suite's `oathdigital.gameplay.powers.{...}` import.
+Add `NoteText` to each suite's `distantlands.gameplay.powers.{...}` import.
 
 `BrassHorseSuite`:
 
@@ -1637,7 +1637,7 @@ Add `NoteText` to each suite's `oathdigital.gameplay.powers.{...}` import.
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.BrassHorseSuite oathdigital.gameplay.powers.action.MagicCarpetSuite oathdigital.gameplay.powers.banner.* oathdigital.gameplay.powers.wake.HornedMaskSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.BrassHorseSuite distantlands.gameplay.powers.action.MagicCarpetSuite distantlands.gameplay.powers.banner.* distantlands.gameplay.powers.wake.HornedMaskSuite"`
 Expected: the new tests fail with `Vector()`.
 
 - [ ] **Step 3: Implement**
@@ -1695,7 +1695,7 @@ Expected: the new tests fail with `Vector()`.
 
 `MagicCarpet.scala`:
 
-- Change the imports to `import oathdigital.gameplay.powers.{NoteSupport, PlayerFacts}`. Keep `import oathdigital.gameplay.powers.PowerAnswers`, or merge all three into one.
+- Change the imports to `import distantlands.gameplay.powers.{NoteSupport, PlayerFacts}`. Keep `import distantlands.gameplay.powers.PowerAnswers`, or merge all three into one.
 - Add under `val discard`:
 
 ```scala
@@ -1756,7 +1756,7 @@ Expected: the new tests fail with `Vector()`.
 
 `WanderingFlamePlace.scala`:
 
-- Change the imports to `import oathdigital.gameplay.powers.NoteSupport` and `import oathdigital.gameplay.powers.action.{PaidAction, PawnMoves}`.
+- Change the imports to `import distantlands.gameplay.powers.NoteSupport` and `import distantlands.gameplay.powers.action.{PaidAction, PawnMoves}`.
 - Add:
 
 ```scala
@@ -1786,7 +1786,7 @@ Expected: the new tests fail with `Vector()`.
 
 `HornedMask.scala`:
 
-- Change the import to `import oathdigital.gameplay.powers.{AdviserLimit, NoteSupport, PlayerFacts, PowerAnswers}`.
+- Change the import to `import distantlands.gameplay.powers.{AdviserLimit, NoteSupport, PlayerFacts, PowerAnswers}`.
 - In the class, add `override def noteKeys: Vector[NoteKey] = Vector(took, taken)` under `def timing`.
 - Change `build` to:
 
@@ -1827,7 +1827,7 @@ Expected: the new tests fail with `Vector()`.
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run the Step 2 command, then `./sbtw "testOnly oathdigital.gameplay.powers.* oathdigital.application.gamelog.*"`.
+Run the Step 2 command, then `./sbtw "testOnly distantlands.gameplay.powers.* distantlands.application.gamelog.*"`.
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -1874,7 +1874,7 @@ In `PowerNoteCatalogSuite.scala`, add:
 
 In `LogScripts.scala`:
 
-- Import `Wolves` beside `GamblingHall`: `import oathdigital.gameplay.powers.action.{GamblingHall, Wolves}`.
+- Import `Wolves` beside `GamblingHall`: `import distantlands.gameplay.powers.action.{GamblingHall, Wolves}`.
 - Add below `gamblingHall`:
 
 ```scala
@@ -1921,12 +1921,12 @@ In `GameLogPowerLinesSuite.scala`, add:
 
 - [ ] **Step 2: Run the catalog test**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.PowerNoteCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.PowerNoteCatalogSuite"`
 Expected: PASS. Tasks 2 to 6 gave every phase power a `used` key. If a power fails, its task missed it.
 
 - [ ] **Step 3: Write and review the Wolves golden logs**
 
-Run: `GAMELOG_GOLDEN=write ./sbtw "testOnly oathdigital.application.gamelog.GameLogGoldenSuite"`
+Run: `GAMELOG_GOLDEN=write ./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite"`
 Then run: `git status --short src/test/resources/gamelog`
 Expected: only the two new `wolves.*.log` files. Read both. After the turn headline, the actor's log should hold:
 
@@ -1939,7 +1939,7 @@ The other seat's log should show the same lines.
 
 - [ ] **Step 4: Run the log suites**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.*"`
 Expected: PASS. `GameLogPropertiesSuite` now also holds the Wolves script to prefix stability, identical keys and no leak.
 
 - [ ] **Step 5: Commit**

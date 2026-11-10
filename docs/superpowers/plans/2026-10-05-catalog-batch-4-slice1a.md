@@ -27,7 +27,7 @@
   - `gameplay` never imports `application`, `serialization` or `server`.
   - A walker power (anything under `gameplay/powers`) never imports `gameplay.walker`.
   - No power name appears in walker sources.
-- Never touch the live database `var/oathdigital`.
+- Never touch the live database `var/distantlands`.
 - Other sessions commit to `main` while you work. Stage explicit paths only; never `git add -A`. Re-check `git log --oneline -1` before any amend, reset or rebase.
 - Work in a git worktree:
   - `EnterWorktree` branches from `origin`, which lags local `main`. Fast-forward the new branch to local `main` first (`git merge --ff-only main`).
@@ -145,7 +145,7 @@ p.write_text(s.rstrip("\n") + "\n")
 PY
 ```
 
-Replace `FILE` and `OBJECT` with the values the task gives. The plan file then defines the object exactly as the holding file did. In the same step, add the object's name to the `import oathdigital.gameplay.powers.campaign.{...}` list in `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`, in alphabetical order, rewrapping lines at 80 columns. `NewFoundations` already lists each card by name, and its wildcard `catalog.holding._` import no longer finds it.
+Replace `FILE` and `OBJECT` with the values the task gives. The plan file then defines the object exactly as the holding file did. In the same step, add the object's name to the `import distantlands.gameplay.powers.campaign.{...}` list in `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`, in alphabetical order, rewrapping lines at 80 columns. `NewFoundations` already lists each card by name, and its wildcard `catalog.holding._` import no longer finds it.
 
 ---
 
@@ -180,11 +180,11 @@ Replace `FILE` and `OBJECT` with the values the task gives. The plan file then d
 Create `AttackScoreSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.actions.campaign.CampaignBattle
-import oathdigital.model.AttackDieFace
-import oathdigital.model.AttackDieFace.{HollowSword, OneSword, TwoSwordsSkull}
+import distantlands.gameplay.actions.campaign.CampaignBattle
+import distantlands.model.AttackDieFace
+import distantlands.model.AttackDieFace.{HollowSword, OneSword, TwoSwordsSkull}
 
 /** The attack scorer's steps (catalog batch 4 rulings, "The attack score"):
   * face values, Lancers' doubling, the skull cap, War Tortoise, the total. */
@@ -242,10 +242,10 @@ class AttackScoreSuite extends munit.FunSuite:
 Create `DefenseScoreSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.model.DefenseDieFace
-import oathdigital.model.DefenseDieFace.{Blank, Doubler, OneShield, TwoShields}
+import distantlands.model.DefenseDieFace
+import distantlands.model.DefenseDieFace.{Blank, Doubler, OneShield, TwoShields}
 
 /** The defense scorer: face filters, then doublers on what is left, then the
   * defender's force (catalog batch 4 rulings, "The defense score"). */
@@ -280,17 +280,17 @@ class DefenseScoreSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.AttackScoreSuite oathdigital.gameplay.powers.campaign.DefenseScoreSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.AttackScoreSuite distantlands.gameplay.powers.campaign.DefenseScoreSuite"`
 Expected: compile failure, `Not found: AttackScore` and `Not found: DefenseScore`.
 
 - [ ] **Step 3: Create `AttackScore.scala`**
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.actions.campaign.{CampaignBattle, CampaignIds,
+import distantlands.gameplay.actions.campaign.{CampaignBattle, CampaignIds,
   CampaignSetup}
-import oathdigital.model._
+import distantlands.model._
 
 /** What a hollow sword is worth: half a sword, counted in pairs and rounded
   * down; a whole sword with Fae Battalion; nothing with Rusting Ray. */
@@ -402,11 +402,11 @@ object AttackScore:
 - [ ] **Step 4: Create `DefenseScore.scala`**
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.actions.campaign.{CampaignBattle, CampaignIds,
+import distantlands.gameplay.actions.campaign.{CampaignBattle, CampaignIds,
   CampaignSetup}
-import oathdigital.model._
+import distantlands.model._
 
 /** How the plans chosen in a Campaign score its defense (catalog batch 4
   * rulings, "The defense score"). The defaults are the printed rules.
@@ -486,13 +486,13 @@ object DefenseScore:
 
 - [ ] **Step 5: Run the two suites to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.AttackScoreSuite oathdigital.gameplay.powers.campaign.DefenseScoreSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.AttackScoreSuite distantlands.gameplay.powers.campaign.DefenseScoreSuite"`
 Expected: PASS, 11 tests. (`SingleShields.score` still exists; Step 6 rewires it to `DefenseScore`.)
 
 - [ ] **Step 6: Write Outriders, The Great Levy, Rain Boots, Bag of Siegeworks and Garrison Armory through the scorers**
 
 In `Outriders.scala`:
-- Delete the import `oathdigital.gameplay.actions.campaign.{CampaignBattle, CampaignIds}`: the faces are now read through `AttackScore`.
+- Delete the import `distantlands.gameplay.actions.campaign.{CampaignBattle, CampaignIds}`: the faces are now read through `AttackScore`.
 - In the class comment, replace the sentence "The rewrite is `Outriders.ignoreSkulls`, which The Great Levy shares." with "The rewrite is `Outriders.ignoreSkulls`, through the attack scorer (`AttackScore`), which The Great Levy, Kindred Warriors and Rangers share."
 - Replace `ignoreSkulls` and its comment with:
 
@@ -521,9 +521,9 @@ In `GreatLevy.scala`, replace `Outriders.ignoreSkulls(id, PowerSourceRef.Card(ca
 Replace the whole of `SingleShields.scala` with:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The single-shield rescoring of the defense, for the plans that ignore the
   * defense dice showing a single shield (Bag of Siegeworks, Rain Boots). Each
@@ -572,7 +572,7 @@ In `BagOfSiegeworks.scala`:
 ```
 
 In `GarrisonArmory.scala`:
-- Change the import `oathdigital.gameplay.actions.campaign.{CampaignBattle, CampaignIds, CampaignSetup}` to `oathdigital.gameplay.actions.campaign.{CampaignBattle, CampaignSetup}`.
+- Change the import `distantlands.gameplay.actions.campaign.{CampaignBattle, CampaignIds, CampaignSetup}` to `distantlands.gameplay.actions.campaign.{CampaignBattle, CampaignSetup}`.
 - Replace the second paragraph of the class comment ("A favor is placed onto the card. ... never applies it.") with:
 
 ```scala
@@ -600,7 +600,7 @@ In `GarrisonArmory.scala`:
 
 - [ ] **Step 7: Run the existing plan suites to verify they pass unchanged**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.* oathdigital.gameplay.Campaign* oathdigital.application.gamelog.GameLogCampaignSuite oathdigital.application.WalkerDecisionProjectorSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.* distantlands.gameplay.Campaign* distantlands.application.gamelog.GameLogCampaignSuite distantlands.application.WalkerDecisionProjectorSuite"`
 Expected: PASS. `OutridersSuite`, `GreatLevySuite`, `RainBootsSuite`, `BagOfSiegeworksSuite`, `GarrisonArmorySuite`, `HospitalSuite` and `StickyFireSuite` pass without edits. If one fails, fix the production code, not the suite.
 
 - [ ] **Step 8: Commit**
@@ -644,14 +644,14 @@ git commit -m "refactor(campaign): score the attack and the defense from every c
 Create `FaeBattalionSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.testkit.CatalogNames
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.testkit.CatalogNames
 
 /** Fae Battalion: a free attacker's plan, offered while its user holds the
   * Darkest Secret, that counts each hollow sword as a sword. */
@@ -689,14 +689,14 @@ class FaeBattalionSuite extends munit.FunSuite:
 Create `RustingRaySuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Look}
 
 /** Rusting Ray: a defender's plan, a secret placed, offered while its user
   * holds the Darkest Secret, that scores the attacker's hollow swords as
@@ -754,7 +754,7 @@ class RustingRaySuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.FaeBattalionSuite oathdigital.gameplay.powers.campaign.RustingRaySuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.FaeBattalionSuite distantlands.gameplay.powers.campaign.RustingRaySuite"`
 Expected: compile failure, `Not found: FaeBattalion` and `Not found: RustingRay`.
 
 - [ ] **Step 3: Add `PlanContext.holds` and switch Fire Talkers to it**
@@ -767,7 +767,7 @@ In `PlanContext.scala`, after `enemyHolds`, add:
     BannerRules.holder(ready.game.current, banner).contains(player))
 ```
 
-In `FireTalkers.scala`, replace `.filter(_ => holdsDarkestSecret(context))` with `.filter(_ => context.holds(Banner.DarkestSecret))`, delete the private `holdsDarkestSecret`, and delete the import `oathdigital.gameplay.actions.BannerRules`.
+In `FireTalkers.scala`, replace `.filter(_ => holdsDarkestSecret(context))` with `.filter(_ => context.holds(Banner.DarkestSecret))`, delete the private `holdsDarkestSecret`, and delete the import `distantlands.gameplay.actions.BannerRules`.
 
 - [ ] **Step 4: Move the card objects**
 
@@ -782,10 +782,10 @@ Add `FaeBattalionCard` and `RustingRayCard` to the `powers.campaign` import in `
 `RustingRay.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, PrintedPower}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, PrintedPower}
+import distantlands.model._
 
 object RustingRayCard extends Denizen(DenizenId("57"), "Rusting Ray", Suit.Arcane):
   val power = PrintedPower(PowerId("denizen.rusting-ray"),
@@ -832,10 +832,10 @@ case object RustingRay extends BattlePlan:
 `FaeBattalion.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, PrintedPower}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, PrintedPower}
+import distantlands.model._
 
 object FaeBattalionCard extends Denizen(DenizenId("215"), "Fae Battalion", Suit.Beast):
   val power = PrintedPower(PowerId("denizen.fae-battalion"),
@@ -893,7 +893,7 @@ In `PlanRules.scala`, append `Vector(RustingRay) ++ Vector(FaeBattalion)` to the
 
 - [ ] **Step 7: Run the suites to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.*"`
 Expected: PASS, including `FireTalkersSuite` unchanged and the 5 new tests.
 
 - [ ] **Step 8: Commit**
@@ -940,16 +940,16 @@ git commit -m "feat(campaign): Rusting Ray and Fae Battalion rescore hollow swor
 Create `WarTortoiseSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.WalkerDiceFixture.{skullThenSwords,
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.WalkerDiceFixture.{skullThenSwords,
   swordsCyclingDefense}
-import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignPlans}
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import distantlands.gameplay.actions.campaign.{CampaignIds, CampaignPlans}
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Look}
 
 /** War Tortoise: a favor placed. Used by the defender, the attacker's skull
   * faces score nothing and payable skulls still kill; used by the attacker,
@@ -1026,15 +1026,15 @@ class WarTortoiseSuite extends munit.FunSuite:
 Create `LancersSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.model.AttackDieFace.{OneSword, TwoSwordsSkull}
-import oathdigital.testkit.{CatalogNames, Look}
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.model.AttackDieFace.{OneSword, TwoSwordsSkull}
+import distantlands.testkit.{CatalogNames, Look}
 
 /** Lancers: a free attacker's plan that doubles the count of every face
   * rolled, before the skull cap, and is discarded after the Campaign. */
@@ -1082,15 +1082,15 @@ class LancersSuite extends munit.FunSuite:
 Create `FearsomeGeneralSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.model.AttackDieFace.TwoSwordsSkull
-import oathdigital.testkit.CatalogNames
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.model.AttackDieFace.TwoSwordsSkull
+import distantlands.testkit.CatalogNames
 
 /** Fearsome General: a free attacker's plan; each skull face is worth four
   * swords under every rule the face follows. */
@@ -1144,20 +1144,20 @@ class FearsomeGeneralSuite extends munit.FunSuite:
 Create `ScoringFoldOrderSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower}
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerDice
-import oathdigital.model._
-import oathdigital.model.AttackDieFace.{OneSword, TwoSwordsSkull}
-import oathdigital.model.DefenseDieFace.{OneShield, TwoShields}
-import oathdigital.testkit.CatalogNames
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower}
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerDice
+import distantlands.model._
+import distantlands.model.AttackDieFace.{OneSword, TwoSwordsSkull}
+import distantlands.model.DefenseDieFace.{OneShield, TwoShields}
+import distantlands.testkit.CatalogNames
 
 /** `inner` with its priority replaced, so its transforms fold elsewhere. */
 private final class Reprioritised(inner: ContributingPower,
@@ -1240,7 +1240,7 @@ class ScoringFoldOrderSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.WarTortoiseSuite oathdigital.gameplay.powers.campaign.LancersSuite oathdigital.gameplay.powers.campaign.FearsomeGeneralSuite oathdigital.gameplay.powers.campaign.ScoringFoldOrderSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.WarTortoiseSuite distantlands.gameplay.powers.campaign.LancersSuite distantlands.gameplay.powers.campaign.FearsomeGeneralSuite distantlands.gameplay.powers.campaign.ScoringFoldOrderSuite"`
 Expected: compile failure, `Not found: WarTortoise`, `Lancers` and `FearsomeGeneral`.
 
 - [ ] **Step 3: Move the card objects**
@@ -1255,10 +1255,10 @@ Add `FearsomeGeneralCard`, `LancersCard` and `WarTortoiseCard` to the `powers.ca
 - [ ] **Step 4: Create `WarTortoise.scala`**
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, PrintedPower}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, PrintedPower}
+import distantlands.model._
 
 object WarTortoiseCard extends Denizen(DenizenId("187"), "War Tortoise", Suit.Beast):
   val power = PrintedPower(PowerId("denizen.war-tortoise"),
@@ -1330,11 +1330,11 @@ case object WarTortoise extends BattlePlan:
 - [ ] **Step 5: Create `Lancers.scala`**
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.actions.campaign.CampaignBattle
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.actions.campaign.CampaignBattle
+import distantlands.model._
 
 object LancersCard extends Denizen(DenizenId("154"), "Lancers", Suit.Nomad):
   val power = PrintedPower(PowerId("denizen.lancers"),
@@ -1387,10 +1387,10 @@ object Lancers:
 - [ ] **Step 6: Create `FearsomeGeneral.scala`**
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, PrintedPower}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, PrintedPower}
+import distantlands.model._
 
 object FearsomeGeneralCard extends Denizen(DenizenId("253"), "Fearsome General", Suit.Order):
   val power = PrintedPower(PowerId("denizen.fearsome-general"),
@@ -1463,7 +1463,7 @@ In `PlanRules.scala`, append `Vector(WarTortoise) ++ Vector(Lancers.forCatalog(c
 
 - [ ] **Step 8: Run the suites to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.*"`
 Expected: PASS, with the 11 new tests.
 
 - [ ] **Step 9: Commit**
@@ -1509,15 +1509,15 @@ git commit -m "feat(campaign): War Tortoise, Lancers and Fearsome General rescor
 Create `KindredWarriorsSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.WalkerDiceFixture.skullThenSwords
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.WalkerDiceFixture.skullThenSwords
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Look}
 
 /** Kindred Warriors: a secret placed. ±X attack dice, X the suits other than
   * Arcane among the cards its user rules; an attacker also ignores every
@@ -1582,15 +1582,15 @@ class KindredWarriorsSuite extends munit.FunSuite:
 Create `RangersSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.WalkerDiceFixture.skullThenSwords
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.WalkerDiceFixture.skullThenSwords
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Look}
 
 /** Rangers: an attacker's plan, a favor placed, that ignores every skull and
   * adds two attack dice when the defense pool holds four or more dice. */
@@ -1633,7 +1633,7 @@ class RangersSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.KindredWarriorsSuite oathdigital.gameplay.powers.campaign.RangersSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.KindredWarriorsSuite distantlands.gameplay.powers.campaign.RangersSuite"`
 Expected: compile failure, `Not found: KindredWarriors` and `Not found: Rangers`.
 
 - [ ] **Step 3: Move the card objects**
@@ -1647,10 +1647,10 @@ Add `KindredWarriorsCard` and `RangersCard` to the `powers.campaign` import in `
 - [ ] **Step 4: Create `KindredWarriors.scala`**
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.model._
 
 object KindredWarriorsCard extends Denizen(DenizenId("60"), "Kindred Warriors", Suit.Arcane):
   val power = PrintedPower(PowerId("denizen.kindred-warriors"),
@@ -1724,11 +1724,11 @@ A companion's `private` member is visible to its class, so `KindredWarriors.labe
 - [ ] **Step 5: Create `Rangers.scala`**
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, PrintedPower}
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.model._
+import distantlands.catalog.{Denizen, PrintedPower}
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.model._
 
 object RangersCard extends Denizen(DenizenId("45"), "Rangers", Suit.Beast):
   val power = PrintedPower(PowerId("denizen.rangers"),
@@ -1790,7 +1790,7 @@ In `PlanRules.scala`, append `Vector(KindredWarriors.forCatalog(catalog)) ++ Vec
 
 - [ ] **Step 7: Run the suites to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.*"`
 Expected: PASS, with the 5 new tests.
 
 - [ ] **Step 8: Commit**
@@ -1831,14 +1831,14 @@ git commit -m "feat(campaign): Kindred Warriors and Rangers ignore skulls and ad
 Create `MountedPatrolSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Look}
 
 /** Mounted Patrol: a free defender's plan that halves the attack pool,
   * rounded down, just before the attack roll, and is discarded after the
@@ -1909,14 +1909,14 @@ If "a pool of one is halved to none" fails because the walker refuses to roll an
 Create `ScoutsSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Look}
 
 /** Scouts: a free attacker's plan that gains a Supply when it is applied. */
 class ScoutsSuite extends munit.FunSuite:
@@ -1945,7 +1945,7 @@ class ScoutsSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.MountedPatrolSuite oathdigital.gameplay.powers.campaign.ScoutsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.MountedPatrolSuite distantlands.gameplay.powers.campaign.ScoutsSuite"`
 Expected: compile failure, `Not found: MountedPatrol` and `Not found: Scouts`.
 
 - [ ] **Step 3: Move the card objects**
@@ -1959,11 +1959,11 @@ Add `MountedPatrolCard` and `ScoutsCard` to the `powers.campaign` import in `New
 - [ ] **Step 4: Create `MountedPatrol.scala`**
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.model._
 
 object MountedPatrolCard extends Denizen(DenizenId("163"), "Mounted Patrol", Suit.Nomad):
   val power = PrintedPower(PowerId("denizen.mounted-patrol"),
@@ -2035,11 +2035,11 @@ object MountedPatrol:
 - [ ] **Step 5: Create `Scouts.scala`**
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, PrintedPower}
-import oathdigital.gameplay.powers.NoteSupport
-import oathdigital.model._
+import distantlands.catalog.{Denizen, PrintedPower}
+import distantlands.gameplay.powers.NoteSupport
+import distantlands.model._
 
 object ScoutsCard extends Denizen(DenizenId("8"), "Scouts", Suit.Order):
   val power = PrintedPower(PowerId("denizen.scouts"),
@@ -2085,7 +2085,7 @@ In `SimplePlans.scala`, append `Vector(Scouts)`, and add Scouts to the class com
 
 - [ ] **Step 7: Run the suites to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.*"`
 Expected: PASS, with the 6 new tests.
 
 - [ ] **Step 8: Commit**

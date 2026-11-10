@@ -66,14 +66,14 @@ git checkout main && git merge --no-ff --no-edit <branch>
 
 **Rollback.** Each stage is one `--no-ff` merge; `git revert -m 1 <merge-sha>` on `main` undoes it. Stage D is last, so reverting an earlier stage never conflicts with the whole-repo rewrite.
 
-**API snapshot** (stages B and C). The local `var/oathdigital*` database predates the Scala 3 switch and holds two games. The snapshot copies it so the original is never opened by a newer build, starts the server on the copy, and stores the raw event history and one player's load projection per game. `LABEL` is `before` or `after`.
+**API snapshot** (stages B and C). The local `var/distantlands*` database predates the Scala 3 switch and holds two games. The snapshot copies it so the original is never opened by a newer build, starts the server on the copy, and stores the raw event history and one player's load projection per game. `LABEL` is `before` or `after`.
 
 ```bash
-SCRATCH=/private/tmp/claude-501/-Users-roman-projects-oathdigital/b1b4f917-9fa7-4417-87a5-82abd89b665b/scratchpad
+SCRATCH=/private/tmp/claude-501/-Users-roman-projects-distantlands/b1b4f917-9fa7-4417-87a5-82abd89b665b/scratchpad
 rm -rf "$SCRATCH/db" && mkdir -p "$SCRATCH/db"
-cp /Users/roman/projects/oathdigital/var/oathdigital.properties /Users/roman/projects/oathdigital/var/oathdigital.script /Users/roman/projects/oathdigital/var/oathdigital.lobs "$SCRATCH/db/"
+cp /Users/roman/projects/distantlands/var/distantlands.properties /Users/roman/projects/distantlands/var/distantlands.script /Users/roman/projects/distantlands/var/distantlands.lobs "$SCRATCH/db/"
 ./sbtw frontend/fastLinkJS
-./sbtw "runMain oathdigital.server.OathServer --mode development --database-path $SCRATCH/db/oathdigital --catalog-path docs/catalog/new-foundations-component-catalog.json"
+./sbtw "runMain distantlands.server.DistantLandsServer --mode development --database-path $SCRATCH/db/distantlands --catalog-path docs/catalog/new-foundations-component-catalog.json"
 ```
 
 Run the `runMain` command in the background (Bash `run_in_background`), wait until `curl -s http://127.0.0.1:8080/health/ready` answers 200, then:
@@ -102,7 +102,7 @@ Expected: four `same:` lines. A difference is a stage failure to investigate, no
 ### Task 1: Convert the implicit values and parameters to `given`/`using`
 
 **Files:**
-- Modify: `src/main/scala/distantlands/server/OathServer.scala:39-41`
+- Modify: `src/main/scala/distantlands/server/DistantLandsServer.scala:39-41`
 - Modify: `src/test/scala/distantlands/server/AuthenticatedGameRoutesSuite.scala:27,126`
 - Modify: `src/test/scala/distantlands/server/ServerRoutesSuite.scala:25,80,119,175-176`
 - Modify: `src/test/scala/distantlands/server/GameRoutesSuite.scala:31`
@@ -124,7 +124,7 @@ Note: the spec counted 16 implicit value sites and one implicit parameter list. 
 - [ ] **Step 1: Create the worktree**
 
 ```bash
-cd /Users/roman/projects/oathdigital && git checkout main && git log --oneline -1
+cd /Users/roman/projects/distantlands && git checkout main && git log --oneline -1
 git worktree add .claude/worktrees/modernize-givens -b modernize-givens main
 cd .claude/worktrees/modernize-givens
 ln -s ../../../.tooling .tooling && ln -s ../../../node_modules node_modules
@@ -132,7 +132,7 @@ ln -s ../../../.tooling .tooling && ln -s ../../../node_modules node_modules
 
 - [ ] **Step 2: Confirm the baseline compiles and the route suites pass**
 
-Run: `./sbtw compile Test/compile 'testOnly oathdigital.server.* oathdigital.persistence.*'`
+Run: `./sbtw compile Test/compile 'testOnly distantlands.server.* distantlands.persistence.*'`
 Expected: all tests pass. This is the green baseline the rewrite must keep.
 
 - [ ] **Step 3: Rewrite the three spellings with sed**
@@ -142,7 +142,7 @@ sed -i '' -E \
   -e 's/implicit private val/private given/' \
   -e 's/implicit val/given/' \
   -e 's/\(implicit/(using/' \
-  src/main/scala/distantlands/server/OathServer.scala \
+  src/main/scala/distantlands/server/DistantLandsServer.scala \
   src/test/scala/distantlands/server/AuthenticatedGameRoutesSuite.scala \
   src/test/scala/distantlands/server/ServerRoutesSuite.scala \
   src/test/scala/distantlands/server/GameRoutesSuite.scala \
@@ -159,11 +159,11 @@ grep -rn "implicit" --include='*.scala' src frontend/src shared
 
 Expected: the grep prints only `src/main/scala/distantlands/gameplay/actions/Search.scala:44:  private implicit final class TakeThrough...` (converted in Task 2) and nothing else.
 
-The result at `OathServer.scala:39-41` must read:
+The result at `DistantLandsServer.scala:39-41` must read:
 
 ```scala
     given system: ActorSystem[Nothing] =
-      ActorSystem[Nothing](Behaviors.empty, "oathdigital-server")
+      ActorSystem[Nothing](Behaviors.empty, "distantlands-server")
     given executionContext: ExecutionContext = system.executionContext
 ```
 
@@ -179,7 +179,7 @@ Known semantic: an alias given whose right-hand side is not a simple reference i
 
 - [ ] **Step 4: Compile and run the affected suites**
 
-Run: `./sbtw compile Test/compile 'testOnly oathdigital.server.* oathdigital.persistence.*'`
+Run: `./sbtw compile Test/compile 'testOnly distantlands.server.* distantlands.persistence.*'`
 Expected: zero warnings, all tests pass.
 
 - [ ] **Step 5: Commit**
@@ -201,7 +201,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 
 - [ ] **Step 1: Run the search suites for a green baseline**
 
-Run: `./sbtw 'testOnly oathdigital.gameplay.actions.*Search*'`
+Run: `./sbtw 'testOnly distantlands.gameplay.actions.*Search*'`
 Expected: pass.
 
 - [ ] **Step 2: Replace the class**
@@ -218,7 +218,7 @@ Replace lines 44-50 of `Search.scala` (the whole `private implicit final class T
 
 - [ ] **Step 3: Compile and rerun the suites**
 
-Run: `./sbtw compile 'testOnly oathdigital.gameplay.actions.*Search*'` then `grep -rn "implicit" --include='*.scala' src frontend/src shared`
+Run: `./sbtw compile 'testOnly distantlands.gameplay.actions.*Search*'` then `grep -rn "implicit" --include='*.scala' src frontend/src shared`
 Expected: pass, zero warnings, the grep prints nothing.
 
 - [ ] **Step 4: Commit**
@@ -236,7 +236,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 - Rename: `frontend/src/main/scala/distantlands/frontend/package.scala` to `frontend/src/main/scala/distantlands/frontend/frontend.scala`
 
 **Interfaces:**
-- Produces: the same `type`/`val` pairs (`GameProjection`, `CardDetails`, ..., `WalkerWaitingState`) and `object MinorAdviserPlacement`, now top level in package `oathdigital.frontend`. Every frontend source already sits in that package and uses the names unqualified; no importer changes.
+- Produces: the same `type`/`val` pairs (`GameProjection`, `CardDetails`, ..., `WalkerWaitingState`) and `object MinorAdviserPlacement`, now top level in package `distantlands.frontend`. Every frontend source already sits in that package and uses the names unqualified; no importer changes.
 
 - [ ] **Step 1: Rename the file**
 
@@ -249,15 +249,15 @@ git mv frontend/src/main/scala/distantlands/frontend/package.scala frontend/src/
 Edit `frontend.scala`: replace the first three lines
 
 ```scala
-package oathdigital
+package distantlands
 
 package object frontend {
 ```
 
-with two package clauses (the second clause keeps `protocol.projection.X` resolving relative to `oathdigital`; a single `package oathdigital.frontend` clause would not):
+with two package clauses (the second clause keeps `protocol.projection.X` resolving relative to `distantlands`; a single `package distantlands.frontend` clause would not):
 
 ```scala
-package oathdigital
+package distantlands
 package frontend
 
 ```
@@ -269,9 +269,9 @@ python3 - <<'PY'
 from pathlib import Path
 p = Path("frontend/src/main/scala/distantlands/frontend/frontend.scala")
 lines = p.read_text().splitlines()
-assert lines[0] == "package oathdigital" and lines[2] == "package object frontend {" and lines[-1] == "}"
+assert lines[0] == "package distantlands" and lines[2] == "package object frontend {" and lines[-1] == "}"
 body = [l[2:] if l.startswith("  ") else l for l in lines[3:-1]]
-p.write_text("\n".join(["package oathdigital", "package frontend", ""] + body) + "\n")
+p.write_text("\n".join(["package distantlands", "package frontend", ""] + body) + "\n")
 PY
 grep -n "package object" -r frontend/src shared src; echo "exit=$?"
 ```
@@ -279,7 +279,7 @@ grep -n "package object" -r frontend/src shared src; echo "exit=$?"
 Expected: the grep finds nothing. The file's first definitions now read:
 
 ```scala
-package oathdigital
+package distantlands
 package frontend
 
 type CampaignResultState = protocol.projection.CampaignResultProjection
@@ -320,7 +320,7 @@ Expected: tests pass, coverage at or above 86.8, `doc` prints only the two class
 - [ ] **Step 2: Merge into main**
 
 ```bash
-cd /Users/roman/projects/oathdigital && git checkout main && git log --oneline -3
+cd /Users/roman/projects/distantlands && git checkout main && git log --oneline -3
 ```
 
 If `main` moved since the branch point, follow the merge recipe in Working conventions (merge `main` into the branch, re-verify). Then:
@@ -344,7 +344,7 @@ Expected: a merge commit on `main` with the three stage commits behind it.
 - [ ] **Step 1: Create the worktree**
 
 ```bash
-cd /Users/roman/projects/oathdigital && git checkout main && git log --oneline -1
+cd /Users/roman/projects/distantlands && git checkout main && git log --oneline -1
 git worktree add .claude/worktrees/modernize-opaque-ids -b modernize-opaque-ids main
 cd .claude/worktrees/modernize-opaque-ids
 ln -s ../../../.tooling .tooling && ln -s ../../../node_modules node_modules
@@ -364,7 +364,7 @@ Expected: all four greps print nothing (measured on 2026-09-24). A hit in the fi
 
 - [ ] **Step 3: Take the `before` API snapshot**
 
-Follow the API snapshot recipe with `LABEL=before` (copy `var/oathdigital*` to the scratch `db` directory, `./sbtw frontend/fastLinkJS`, run the server in the background on the copy, curl the four responses, stop the server). Expected: four non-empty JSON files `api-before-*.json`.
+Follow the API snapshot recipe with `LABEL=before` (copy `var/distantlands*` to the scratch `db` directory, `./sbtw frontend/fastLinkJS`, run the server in the background on the copy, curl the four responses, stop the server). Expected: four non-empty JSON files `api-before-*.json`.
 
 ### Task 6: Make `PlayerId`, `LineageId`, `DecisionId` and `PowerId` opaque
 
@@ -383,7 +383,7 @@ Follow the API snapshot recipe with `LABEL=before` (copy `var/oathdigital*` to t
 Create `src/test/scala/distantlands/model/OpaqueIdSuite.scala`:
 
 ```scala
-package oathdigital.model
+package distantlands.model
 
 class OpaqueIdSuite extends munit.FunSuite {
   test("ids construct, extract and expose their value") {
@@ -412,7 +412,7 @@ class OpaqueIdSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run it to see the third test fail**
 
-Run: `./sbtw 'testOnly oathdigital.model.OpaqueIdSuite'`
+Run: `./sbtw 'testOnly distantlands.model.OpaqueIdSuite'`
 Expected: the first two tests pass, the third fails with `PlayerId(p1)` versus `p1`.
 
 - [ ] **Step 3: Rewrite the four definitions**
@@ -476,7 +476,7 @@ object PowerId {
 grep -rn 'CatalogPower("' --include='*.scala' src
 ```
 
-from `CatalogPower("some.id", ...)` to `CatalogPower(PowerId("some.id"), ...)`, adding `import oathdigital.model.PowerId` where the file lacks it.
+from `CatalogPower("some.id", ...)` to `CatalogPower(PowerId("some.id"), ...)`, adding `import distantlands.model.PowerId` where the file lacks it.
 
 - [ ] **Step 5: Compile and fix what the compiler reports**
 
@@ -512,11 +512,11 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 - Modify: `src/test/scala/distantlands/model/OpaqueIdSuite.scala`
 
 **Interfaces:**
-- Produces: `opaque type DefinitionId = String` in package `oathdigital.catalog` with `apply`, `unapply` and `extension (id: DefinitionId) def value: String`, same shape as Task 6.
+- Produces: `opaque type DefinitionId = String` in package `distantlands.catalog` with `apply`, `unapply` and `extension (id: DefinitionId) def value: String`, same shape as Task 6.
 
 - [ ] **Step 1: Extend the test**
 
-Add to `OpaqueIdSuite` (and `import oathdigital.catalog.DefinitionId` at the top):
+Add to `OpaqueIdSuite` (and `import distantlands.catalog.DefinitionId` at the top):
 
 ```scala
   test("DefinitionId keeps its validation and prints raw") {
@@ -528,7 +528,7 @@ Add to `OpaqueIdSuite` (and `import oathdigital.catalog.DefinitionId` at the top
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw 'testOnly oathdigital.model.OpaqueIdSuite'`
+Run: `./sbtw 'testOnly distantlands.model.OpaqueIdSuite'`
 Expected: the new test fails on `toString`.
 
 - [ ] **Step 3: Rewrite the definition**
@@ -567,11 +567,11 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 - Modify: `src/test/scala/distantlands/model/OpaqueIdSuite.scala`
 
 **Interfaces:**
-- Produces: `opaque type UserId = String` in `oathdigital.application` with `apply` (no validation, as today), `unapply`, `extension (id: UserId) def value: String`.
+- Produces: `opaque type UserId = String` in `distantlands.application` with `apply` (no validation, as today), `unapply`, `extension (id: UserId) def value: String`.
 
 - [ ] **Step 1: Extend the test**
 
-Add to `OpaqueIdSuite` (with `import oathdigital.application.UserId`):
+Add to `OpaqueIdSuite` (with `import distantlands.application.UserId`):
 
 ```scala
   test("UserId wraps any string and prints raw") {
@@ -583,7 +583,7 @@ Add to `OpaqueIdSuite` (with `import oathdigital.application.UserId`):
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw 'testOnly oathdigital.model.OpaqueIdSuite'`
+Run: `./sbtw 'testOnly distantlands.model.OpaqueIdSuite'`
 Expected: fails on `toString`.
 
 - [ ] **Step 3: Rewrite the definition**
@@ -619,11 +619,11 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 - Modify: `src/test/scala/distantlands/model/OpaqueIdSuite.scala`
 
 **Interfaces:**
-- Produces: `opaque type ViewId = String` in `oathdigital.presentation` with `apply` (blank rejected), `unapply`, `extension (id: ViewId) def value: String`.
+- Produces: `opaque type ViewId = String` in `distantlands.presentation` with `apply` (blank rejected), `unapply`, `extension (id: ViewId) def value: String`.
 
 - [ ] **Step 1: Extend the test**
 
-Add to `OpaqueIdSuite` (with `import oathdigital.presentation.ViewId`):
+Add to `OpaqueIdSuite` (with `import distantlands.presentation.ViewId`):
 
 ```scala
   test("ViewId keeps its validation and prints raw") {
@@ -635,7 +635,7 @@ Add to `OpaqueIdSuite` (with `import oathdigital.presentation.ViewId`):
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw 'testOnly oathdigital.model.OpaqueIdSuite'`
+Run: `./sbtw 'testOnly distantlands.model.OpaqueIdSuite'`
 Expected: fails on `toString`.
 
 - [ ] **Step 3: Rewrite the definition**
@@ -698,7 +698,7 @@ Expected: as in Working conventions. If coverage drops below 86.8 (the `unapply`
 Follow the API snapshot recipe with `LABEL=after`, then:
 
 ```bash
-SCRATCH=/private/tmp/claude-501/-Users-roman-projects-oathdigital/b1b4f917-9fa7-4417-87a5-82abd89b665b/scratchpad
+SCRATCH=/private/tmp/claude-501/-Users-roman-projects-distantlands/b1b4f917-9fa7-4417-87a5-82abd89b665b/scratchpad
 for f in "$SCRATCH"/api-before-*.json; do cmp "$f" "${f/before/after}" && echo "same: $f"; done
 ```
 
@@ -707,7 +707,7 @@ Expected: four `same:` lines. The server also opened the pre-Scala-3 database co
 - [ ] **Step 4: Merge into main**
 
 ```bash
-cd /Users/roman/projects/oathdigital && git checkout main && git log --oneline -3
+cd /Users/roman/projects/distantlands && git checkout main && git log --oneline -3
 ```
 
 If `main` moved, follow the merge recipe in Working conventions. Then:
@@ -734,7 +734,7 @@ Conversion rules, applied in Tasks 12 to 15:
 
 Families that stay sealed, recorded in Task 21:
 
-- `Phase` in `model/GameState.scala`: `RoundEnd` and `WarExhaustion` are `private[oathdigital]` (rule 8).
+- `Phase` in `model/GameState.scala`: `RoundEnd` and `WarExhaustion` are `private[distantlands]` (rule 8).
 - The nine window families in `model/PowerWindow.scala` (`SearchWindow`, `TravelWindow`, `CampaignWindow`, `MusterWindow`, `TradeWindow`, `ForgeWindow`, `RecoverWindow`, `ChallengeWindow`, `OtherWindow`): their cases are declared in `object PowerWindow`, and every `PowerWindow.SearchCost` reference in code and reviewed data depends on that. Moving cases into nine companions breaks rule 6.
 
 The spec's stop rule applies to families beyond these ten: if more than ten further families cannot follow rules 1 to 3, stop the stage for review.
@@ -748,7 +748,7 @@ The spec counted 61 flat families from a line-based scan. The hand check for thi
 - [ ] **Step 1: Create the worktree**
 
 ```bash
-cd /Users/roman/projects/oathdigital && git checkout main && git log --oneline -1
+cd /Users/roman/projects/distantlands && git checkout main && git log --oneline -1
 git worktree add .claude/worktrees/modernize-enums -b modernize-enums main
 cd .claude/worktrees/modernize-enums
 ln -s ../../../.tooling .tooling && ln -s ../../../node_modules node_modules
@@ -807,7 +807,7 @@ Expected: one line per sealed family. Every family named in Tasks 12 to 15 print
 Create `src/test/scala/distantlands/model/EnumShapeSuite.scala`:
 
 ```scala
-package oathdigital.model
+package distantlands.model
 
 class EnumShapeSuite extends munit.FunSuite {
   test("enum cases keep their names, keys and hand-written order") {
@@ -830,7 +830,7 @@ class EnumShapeSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw 'testOnly oathdigital.model.EnumShapeSuite'`
+Run: `./sbtw 'testOnly distantlands.model.EnumShapeSuite'`
 Expected: compile error, `all is not a member of object MajorActionType`.
 
 - [ ] **Step 3: Convert `World.scala` (bottom up)**
@@ -1288,7 +1288,7 @@ enum RuleSourceFace {
 
 - [ ] **Step 2: Compile and run the gameplay tests**
 
-Run: `./sbtw compile Test/compile 'testOnly oathdigital.gameplay.*'`
+Run: `./sbtw compile Test/compile 'testOnly distantlands.gameplay.*'`
 Expected: zero warnings, all pass.
 
 - [ ] **Step 3: Commit**
@@ -1428,7 +1428,7 @@ Expected: as in Working conventions. If coverage moves below 86.8, report the ex
 Follow the API snapshot recipe with `LABEL=after`, then:
 
 ```bash
-SCRATCH=/private/tmp/claude-501/-Users-roman-projects-oathdigital/b1b4f917-9fa7-4417-87a5-82abd89b665b/scratchpad
+SCRATCH=/private/tmp/claude-501/-Users-roman-projects-distantlands/b1b4f917-9fa7-4417-87a5-82abd89b665b/scratchpad
 for f in "$SCRATCH"/api-before-*.json; do cmp "$f" "${f/before/after}" && echo "same: $f"; done
 ```
 
@@ -1437,7 +1437,7 @@ Expected: four `same:` lines and the pre-Scala-3 database copy opened without er
 - [ ] **Step 4: Merge into main**
 
 ```bash
-cd /Users/roman/projects/oathdigital && git checkout main && git log --oneline -3
+cd /Users/roman/projects/distantlands && git checkout main && git log --oneline -3
 ```
 
 If `main` moved, follow the merge recipe in Working conventions. Then:
@@ -1462,7 +1462,7 @@ git worktree remove --force .claude/worktrees/modernize-enums && git branch -d m
 - [ ] **Step 1: Create the worktree**
 
 ```bash
-cd /Users/roman/projects/oathdigital && git checkout main && git log --oneline -1
+cd /Users/roman/projects/distantlands && git checkout main && git log --oneline -1
 git worktree add .claude/worktrees/modernize-syntax -b modernize-syntax main
 cd .claude/worktrees/modernize-syntax
 ln -s ../../../.tooling .tooling && ln -s ../../../node_modules node_modules
@@ -1640,7 +1640,7 @@ Expected: as in Working conventions. Coverage is statement based and a syntax re
 - [ ] **Step 2: Merge into main**
 
 ```bash
-cd /Users/roman/projects/oathdigital && git checkout main && git log --oneline -3
+cd /Users/roman/projects/distantlands && git checkout main && git log --oneline -3
 ```
 
 If `main` moved with Scala changes, merge `main` into the branch first; expect conflicts in any file both sides touched, resolve them in the new syntax, and re-run the full gate. Then:
@@ -1662,8 +1662,8 @@ git worktree remove --force .claude/worktrees/modernize-syntax && git branch -d 
 - [ ] **Step 1: Gather the counts**
 
 ```bash
-cd /Users/roman/projects/oathdigital && git checkout main
-grep -rnc "given " --include='*.scala' src/main/scala/distantlands/server/OathServer.scala src/test/scala/distantlands/server src/test/scala/distantlands/persistence | awk -F: '{s+=$2} END {print "givens:", s}'
+cd /Users/roman/projects/distantlands && git checkout main
+grep -rnc "given " --include='*.scala' src/main/scala/distantlands/server/DistantLandsServer.scala src/test/scala/distantlands/server src/test/scala/distantlands/persistence | awk -F: '{s+=$2} END {print "givens:", s}'
 grep -rnE "^opaque type" --include='*.scala' src | wc -l
 grep -rnE "^\s*(private(\[\w+\])?\s+)?enum\s+\w+" --include='*.scala' src/main shared frontend/src/main | wc -l
 ```

@@ -19,7 +19,7 @@
 - `-Werror` with `-Wunused:imports,privates,locals,implicits,nowarn`. An unused import or private member fails the build.
 - Production Scala files stay at or under 800 lines (`BackendArchitectureSuite`, `scripts/check-architecture.py`). `ProcedureWalker.scala` is at 716. Everything this slice adds to it must fit, and larger helpers go to `WalkerPowerGather.scala` (358).
 - `gameplay` never imports `application`, `serialization` or `server`. A walker power (anything under `gameplay/powers`) never imports `gameplay.walker`. `application` never imports `serialization`.
-- Never touch the live database `var/oathdigital`.
+- Never touch the live database `var/distantlands`.
 - Other sessions commit to `main` while you work. Stage explicit paths only; never `git add -A`. Re-check `git log --oneline -1` before any amend, reset or rebase.
 - Work in a git worktree. `EnterWorktree` branches from `origin`, which lags local `main`, so fast-forward the new branch to local `main` first. Then symlink the main checkout's `.tooling` into the worktree before the first `./sbtw`.
 - Commit trailer: the committing model's own `Co-Authored-By` line.
@@ -120,12 +120,12 @@ These were settled while planning (2026-09-26). Task 6 records each one in the s
 Create `src/test/scala/distantlands/gameplay/PowerNoteWalkerSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.walker.{PowerNoted, ProcedureWalker, WalkerOutcome,
+import distantlands.gameplay.walker.{PowerNoted, ProcedureWalker, WalkerOutcome,
   WalkerPowers, WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.model.TestGameFixtures._
+import distantlands.model._
+import distantlands.model.TestGameFixtures._
 
 /** The `Note` node (power log lines design, section 1). */
 class PowerNoteWalkerSuite extends munit.FunSuite:
@@ -233,7 +233,7 @@ class PowerNoteWalkerSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the test to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.PowerNoteWalkerSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.PowerNoteWalkerSuite"`
 Expected: compile failure, because `Note`, `NoteStates`, `PowerNote` and `PowerNoted` do not exist.
 
 - [ ] **Step 3: Write the model vocabulary**
@@ -241,7 +241,7 @@ Expected: compile failure, because `Note`, `NoteStates`, `PowerNote` and `PowerN
 Create `src/main/scala/distantlands/model/PowerNotes.scala`:
 
 ```scala
-package oathdigital.model
+package distantlands.model
 
 /** What one power says about its own effect, for the Game Log (power log
   * lines design, section 1). `source` is the card, site or banner the line
@@ -325,7 +325,7 @@ In `src/main/scala/distantlands/model/GameState.scala`, add this at the end of `
 
 - [ ] **Step 4: Add the event**
 
-In `src/main/scala/distantlands/gameplay/walker/WalkerEvents.scala`, add this after `WalkerCompleted`. Add `PowerNote` to the file's model import, or add `import oathdigital.model.PowerNote` if the file imports names one by one.
+In `src/main/scala/distantlands/gameplay/walker/WalkerEvents.scala`, add this after `WalkerCompleted`. Add `PowerNote` to the file's model import, or add `import distantlands.model.PowerNote` if the file imports names one by one.
 
 ```scala
 
@@ -342,7 +342,7 @@ final case class PowerNoted(power: PowerId, note: PowerNote, covers: Boolean)
 
 In `src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`:
 
-1. Add `Note, NoteStates` to the `oathdigital.model.{...}` import.
+1. Add `Note, NoteStates` to the `distantlands.model.{...}` import.
 2. Give `WalkCtx` a last field, after `root: Operation`:
 
 ```scala
@@ -412,7 +412,7 @@ In `src/main/scala/distantlands/gameplay/walker/WalkerReplay.scala`, add this ca
       case _: PowerNoted => Right(ready)
 ```
 
-In `src/main/scala/distantlands/gameplay/OathRules.scala`, add `PowerNoted` to the `oathdigital.gameplay.walker.{...}` import. Add this line after `case event: WalkerCompleted => ProcedureWalker.applyRecorded(state, event)`:
+In `src/main/scala/distantlands/gameplay/OathRules.scala`, add `PowerNoted` to the `distantlands.gameplay.walker.{...}` import. Add this line after `case event: WalkerCompleted => ProcedureWalker.applyRecorded(state, event)`:
 
 ```scala
       case event: PowerNoted => ProcedureWalker.applyRecorded(state, event)
@@ -420,7 +420,7 @@ In `src/main/scala/distantlands/gameplay/OathRules.scala`, add `PowerNoted` to t
 
 - [ ] **Step 7: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.PowerNoteWalkerSuite oathdigital.gameplay.ProcedureWalkerSuite oathdigital.gameplay.RepeatPassSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.PowerNoteWalkerSuite distantlands.gameplay.ProcedureWalkerSuite distantlands.gameplay.RepeatPassSuite"`
 Expected: all pass. Then run `wc -l src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala`. Expected: 800 or fewer.
 
 - [ ] **Step 8: Commit**
@@ -461,14 +461,14 @@ git commit -m "feat(walker): journal a power's note where the walk reaches it"
 Create `src/test/scala/distantlands/gameplay/PowerNoteHideSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   OptionRestriction, Restriction}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.initialReady
-import oathdigital.gameplay.walker.{PowerNoted, ProcedureWalker, WalkerOutcome,
+import distantlands.gameplay.setup.FirstGameSetupFixture.initialReady
+import distantlands.gameplay.walker.{PowerNoted, ProcedureWalker, WalkerOutcome,
   WalkerPowers}
-import oathdigital.model._
+import distantlands.model._
 
 object PowerNoteHideSuite:
   val noteSource: PowerSourceRef = PowerSourceRef.Site(SiteId("test-site"))
@@ -575,7 +575,7 @@ class PowerNoteHideSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the test to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.PowerNoteHideSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.PowerNoteHideSuite"`
 Expected: compile failure, because `OptionRestriction` and `Restriction` take one argument.
 
 - [ ] **Step 3: Give contributions their hook and powers their keys**
@@ -636,7 +636,7 @@ In `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala`, rename
   def applyWindow(window: Option[PowerWindow], operation: Operation,
       state: ReadyGame,
       activePlayer: PlayerId, powers: WalkerPowers, path: Vector[String],
-      ops: Vector[Operation], procedure: Option[oathdigital.model.ProcedureRef],
+      ops: Vector[Operation], procedure: Option[distantlands.model.ProcedureRef],
       answered: Vector[Answered] = Vector.empty, resuming: Boolean = false)
       : (Vector[Operation], Vector[PowerId]) =
     val (folded, order, _) = applyWindowNoted(window, operation, state,
@@ -651,7 +651,7 @@ In `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala`, rename
   def applyWindowNoted(window: Option[PowerWindow], operation: Operation,
       state: ReadyGame,
       activePlayer: PlayerId, powers: WalkerPowers, path: Vector[String],
-      ops: Vector[Operation], procedure: Option[oathdigital.model.ProcedureRef],
+      ops: Vector[Operation], procedure: Option[distantlands.model.ProcedureRef],
       answered: Vector[Answered], resuming: Boolean, noting: Boolean)
       : (Vector[Operation], Vector[PowerId], Vector[PowerNoted]) =
     window match
@@ -710,7 +710,7 @@ In `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala`, rename
 
 Still in `WalkerPowerGather.scala`:
 
-1. Add `Restriction` to the `oathdigital.gameplay.powerresolver.{...}` import.
+1. Add `Restriction` to the `distantlands.gameplay.powerresolver.{...}` import.
 2. Add this case class inside the object, near the top:
 
 ```scala
@@ -810,7 +810,7 @@ In `runLeaf`, replace `case Some(narrowed) => runNarrowed(narrowed, ctx, path, c
 
 - [ ] **Step 7: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.PowerNoteHideSuite oathdigital.gameplay.OptionRestrictionSuite oathdigital.gameplay.RestrictionLookAheadSuite oathdigital.gameplay.ProcedureWalkerSuite oathdigital.gameplay.PowerNoteWalkerSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.PowerNoteHideSuite distantlands.gameplay.OptionRestrictionSuite distantlands.gameplay.RestrictionLookAheadSuite distantlands.gameplay.ProcedureWalkerSuite distantlands.gameplay.PowerNoteWalkerSuite"`
 Expected: all pass. Then run `wc -l src/main/scala/distantlands/gameplay/walker/ProcedureWalker.scala src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala`. Expected: each 800 or fewer.
 
 - [ ] **Step 8: Commit**
@@ -851,7 +851,7 @@ Fix what it finds before Task 3.
 
 - [ ] **Step 1: Write the failing tests**
 
-Append to `GameEventWireSuite` (add `PowerNoted` to its `oathdigital.gameplay.walker.{...}` import):
+Append to `GameEventWireSuite` (add `PowerNoted` to its `distantlands.gameplay.walker.{...}` import):
 
 ```scala
   private def noteEvent(source: PowerSourceRef, args: NoteArg*): PowerNoted =
@@ -890,7 +890,7 @@ If `GameEventWire.decode` takes a `String` rather than a `ujson.Value`, pass `uj
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.serialization.GameEventWireSuite"`
+Run: `./sbtw "testOnly distantlands.serialization.GameEventWireSuite"`
 Expected: an encode failure (`MatchError` or "no discriminator") for the new tests.
 
 - [ ] **Step 3: Implement the codec**
@@ -1005,7 +1005,7 @@ In `WalkerEventCodec.scala`, add `PowerNoted` to the walker import, then:
 
 - [ ] **Step 4: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.serialization.GameEventWireSuite"`
+Run: `./sbtw "testOnly distantlands.serialization.GameEventWireSuite"`
 Expected: all pass.
 
 - [ ] **Step 5: Commit**
@@ -1042,7 +1042,7 @@ git commit -m "feat(serialization): journal power notes as walker.power-noted"
 
 - [ ] **Step 1: Add the journal-editing test helper**
 
-In `src/test/scala/distantlands/application/gamelog/LogScripts.scala`, add `import oathdigital.engine.{RecordedEvent, ReplayStep}`, and add to `object LogScripts`:
+In `src/test/scala/distantlands/application/gamelog/LogScripts.scala`, add `import distantlands.engine.{RecordedEvent, ReplayStep}`, and add to `object LogScripts`:
 
 ```scala
   /** `steps` with `events` journaled right after position `after`. Each
@@ -1062,15 +1062,15 @@ In `src/test/scala/distantlands/application/gamelog/LogScripts.scala`, add `impo
 Create `src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuite.scala`:
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.application.ParkedServiceFixture
-import oathdigital.engine.ReplayStep
-import oathdigital.gameplay.powers.rest.SilverTongue
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{PowerNoted, WalkerCompleted, WalkerParked,
+import distantlands.application.ParkedServiceFixture
+import distantlands.engine.ReplayStep
+import distantlands.gameplay.powers.rest.SilverTongue
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{PowerNoted, WalkerCompleted, WalkerParked,
   WalkerStepRecorded}
-import oathdigital.model._
+import distantlands.model._
 import LogScripts._
 
 /** Lines powers write about themselves (power log lines design, section 2).
@@ -1221,7 +1221,7 @@ class GameLogPowerLinesSuite extends munit.FunSuite:
 
 - [ ] **Step 3: Run the test to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogPowerLinesSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogPowerLinesSuite"`
 Expected: compile failure, because `NoteWordings` and the three-argument `GameLogFormatter` do not exist.
 
 - [ ] **Step 4: Wordings**
@@ -1229,11 +1229,11 @@ Expected: compile failure, because `NoteWordings` and the three-argument `GameLo
 Create `src/main/scala/distantlands/application/gamelog/NoteWordings.scala`:
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
-import oathdigital.model.{NoteKey, NotePart, PowerId}
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
+import distantlands.model.{NoteKey, NotePart, PowerId}
 
 /** Every power's note templates, by power and key (power log lines design,
   * "Wording"). A note whose power or key is missing here renders nothing. */
@@ -1332,10 +1332,10 @@ In `ActionLines.usedPower`, add `|| journal.notedUse(run, power, at)` to the con
 Create `src/main/scala/distantlands/application/gamelog/PowerLines.scala`:
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.gameplay.walker.PowerNoted
-import oathdigital.model._
+import distantlands.gameplay.walker.PowerNoted
+import distantlands.model._
 import LogSpan.Text
 
 /** The lines powers write about themselves (power log lines design,
@@ -1437,7 +1437,7 @@ private[application] final class GameLogFormatter(catalog: ExecutableCatalog,
 
 - [ ] **Step 9: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.*"`
 Expected: all pass, the existing suites included.
 
 - [ ] **Step 10: Commit**
@@ -1486,7 +1486,7 @@ Fix what it finds before Task 5.
 
 - [ ] **Step 1: Write the failing card tests**
 
-Append to `VowOfPeaceSuite` (add `import oathdigital.gameplay.walker.PowerNoted`):
+Append to `VowOfPeaceSuite` (add `import distantlands.gameplay.walker.PowerNoted`):
 
 ```scala
   private def notes(run: Run): Vector[PowerNoted] =
@@ -1504,7 +1504,7 @@ Append to `VowOfPeaceSuite` (add `import oathdigital.gameplay.walker.PowerNoted`
       Vector.empty)
 ```
 
-Append to `GamblingHallSuite` (add `import oathdigital.gameplay.walker.PowerNoted`):
+Append to `GamblingHallSuite` (add `import distantlands.gameplay.walker.PowerNoted`):
 
 ```scala
   private val card = PowerSourceRef.Card(hall)
@@ -1557,12 +1557,12 @@ In the capped-gain test, `ready0.banks.favor(Suit.Nomad)` must be below 6 for th
 Create `src/test/scala/distantlands/gameplay/powers/PowerNoteCatalogSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.gameplay.powers.action.GamblingHall
-import oathdigital.gameplay.powers.campaign.VowOfPeaceContribution
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.powers.action.GamblingHall
+import distantlands.gameplay.powers.campaign.VowOfPeaceContribution
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 /** Every power's declared notes (power log lines design, "Wording"). */
 class PowerNoteCatalogSuite extends munit.FunSuite:
@@ -1594,7 +1594,7 @@ class PowerNoteCatalogSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.VowOfPeaceSuite oathdigital.gameplay.powers.action.GamblingHallSuite oathdigital.gameplay.powers.PowerNoteCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.VowOfPeaceSuite distantlands.gameplay.powers.action.GamblingHallSuite distantlands.gameplay.powers.PowerNoteCatalogSuite"`
 Expected: compile failure, because `noSacrifice`, `rolled` and `gained` do not exist.
 
 - [ ] **Step 3: Vow of Peace**
@@ -1706,12 +1706,12 @@ In `GamblingHall.scala`:
 
 - [ ] **Step 5: Run the card tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.VowOfPeaceSuite oathdigital.gameplay.powers.action.GamblingHallSuite oathdigital.gameplay.powers.PowerNoteCatalogSuite oathdigital.gameplay.CampaignPowersSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.VowOfPeaceSuite distantlands.gameplay.powers.action.GamblingHallSuite distantlands.gameplay.powers.PowerNoteCatalogSuite distantlands.gameplay.CampaignPowersSuite"`
 Expected: all pass. The existing `replayed(...)` and `wireRoundTrips(...)` assertions now carry `PowerNoted` events through replay and the codec.
 
 - [ ] **Step 6: A Gambling Hall log script**
 
-In `LogScripts.scala`, add these imports: `oathdigital.gameplay.powers.action.GamblingHall` and `oathdigital.model.DecisionAnswer.ChooseOneAnswer` (the latter is already imported). Add:
+In `LogScripts.scala`, add these imports: `distantlands.gameplay.powers.action.GamblingHall` and `distantlands.model.DecisionAnswer.ChooseOneAnswer` (the latter is already imported). Add:
 
 ```scala
   /** Gambling Hall at the actor's site, used in Act with a second favor
@@ -1766,7 +1766,7 @@ Append to `GameLogPowerLinesSuite`:
 
 - [ ] **Step 8: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.*"`
 Expected: all pass, `GameLogPropertiesSuite` over the new script included.
 
 - [ ] **Step 9: Commit**

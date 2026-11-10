@@ -43,7 +43,7 @@ dead on the kinds that populate them: `card` and `site` spans both carry an
 The type this wire should have already exists. `LogSpan` in
 `application/gamelog/LogEntry.scala` is a sealed family with one case per kind,
 each carrying exactly its own fields, and it already imports
-`CardDetailsProjection` from `oathdigital.protocol`. `GameLogProjector.span` is
+`CardDetailsProjection` from `distantlands.protocol`. `GameLogProjector.span` is
 a nine-arm map from that good type onto the flat one, and it loses information
 in two of its arms. The mapping is not a boundary; it is the defect.
 
@@ -65,7 +65,7 @@ them; the projector keeps only its page assembly and its `after` bounds check.
 The move is legal and the architecture tests already point at it.
 `BackendArchitectureSuite` forbids `application` from importing `server` and
 `serialization` only, and the `model` and `gameplay` restrictions do not apply
-to `application`; `gamelog` already imports `oathdigital.protocol`. The same
+to `application`; `gamelog` already imports `distantlands.protocol`. The same
 suite's "projection and bootstrap transport DTOs are defined only in shared
 protocol" test states the direction this slice follows.
 

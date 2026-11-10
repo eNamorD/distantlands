@@ -109,7 +109,7 @@ are under `frontend/src/main/scala/distantlands/`.
 - [ ] Create the worktree and link the tooling:
 
 ```bash
-cd /Users/roman/projects/oathdigital
+cd /Users/roman/projects/distantlands
 git worktree add .worktrees/empire-slice-2 -b empire-slice-2 0.2.0-alpha
 ln -s ../../.tooling .worktrees/empire-slice-2/.tooling
 ln -s ../../node_modules .worktrees/empire-slice-2/node_modules
@@ -166,9 +166,9 @@ there are records.
 `src/main/scala/distantlands/gameplay/phases/rest/RoundEndRandomPort.scala`:
 
 ```scala
-package oathdigital.gameplay.phases.rest
+package distantlands.gameplay.phases.rest
 
-import oathdigital.model.PlayerId
+import distantlands.model.PlayerId
 
 /** The randomness of a round's end: the purple end die of a Stable Regime
   * check (CR p. 19), and the winner War Exhaustion picks in a game with no
@@ -190,10 +190,10 @@ object RoundEndRandomPort:
 `src/test/scala/distantlands/testkit/RoundEndChoices.scala`:
 
 ```scala
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.gameplay.phases.rest.RoundEndRandomPort
-import oathdigital.model.PlayerId
+import distantlands.gameplay.phases.rest.RoundEndRandomPort
+import distantlands.model.PlayerId
 
 /** Stubs of RoundEndRandomPort (canned answers, no record of calls). A stub
   * fails the test when asked for what it does not fix, so a test that
@@ -235,7 +235,7 @@ that would now call `endDie` on them. Add:
 
 - [ ] **Step 5: Run the affected suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.RoundEndRandomPortSuite oathdigital.gameplay.RestSuite oathdigital.gameplay.StateBasedEvaluationSuite oathdigital.application.GameApplicationServiceStreamSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.RoundEndRandomPortSuite distantlands.gameplay.RestSuite distantlands.gameplay.StateBasedEvaluationSuite distantlands.application.GameApplicationServiceStreamSuite"`
 Expected: PASS.
 
 - [ ] **Step 6: Commit**
@@ -298,7 +298,7 @@ In `GameLogHeadlineSuite`, add three rows to the `headlines` vector of
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.serialization.GameEventFactsWireSuite oathdigital.application.gamelog.GameLogHeadlineSuite"`
+Run: `./sbtw "testOnly distantlands.serialization.GameEventFactsWireSuite distantlands.application.gamelog.GameLogHeadlineSuite"`
 Expected: compile failure, `StableRegime is not a member of VictoryKind`.
 
 - [ ] **Step 3: Add the kinds**
@@ -352,7 +352,7 @@ In `GameLogFormatter.exhaustion`, add:
 
 - [ ] **Step 6: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.serialization.GameEventFactsWireSuite oathdigital.application.gamelog.GameLogHeadlineSuite"`
+Run: `./sbtw "testOnly distantlands.serialization.GameEventFactsWireSuite distantlands.application.gamelog.GameLogHeadlineSuite"`
 Expected: PASS.
 
 - [ ] **Step 7: Commit**
@@ -395,14 +395,14 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 `src/test/scala/distantlands/gameplay/EmpireEndingsSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.operations.TheGrandScepterCard
-import oathdigital.model._
-import oathdigital.model.OathEvent.WarExhaustionResolved
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.operations.TheGrandScepterCard
+import distantlands.model._
+import distantlands.model.OathEvent.WarExhaustionResolved
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2, p3}
 
 /** The Empire's endings as rules (CR p. 19; Empire phase design, "Slice
   * 2"). p1 is the Chancellor and p2 a Citizen; p3 is an Exile unless a
@@ -583,7 +583,7 @@ cards in `src/main/scala/distantlands`.
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.EmpireEndingsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.EmpireEndingsSuite"`
 Expected: compile failure, `Not found: EmpireEndings`.
 
 - [ ] **Step 3: Share the Visionary step**
@@ -614,11 +614,11 @@ path is unchanged.
 `src/main/scala/distantlands/gameplay/EmpireEndings.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.operations.TheGrandScepterCard
-import oathdigital.model._
-import oathdigital.model.OathEvent.WarExhaustionResolved
+import distantlands.gameplay.operations.TheGrandScepterCard
+import distantlands.model._
+import distantlands.model.OathEvent.WarExhaustionResolved
 
 /** The Empire's round-end endings (CR p. 19; Empire phase design, "Slice
   * 2"): Stable Regime on the end die at the end of rounds 5 to 7, War
@@ -698,7 +698,7 @@ object EmpireEndings:
 
 - [ ] **Step 5: Run the suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.EmpireEndingsSuite oathdigital.gameplay.StateBasedEvaluationSuite oathdigital.gameplay.RestSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.EmpireEndingsSuite distantlands.gameplay.StateBasedEvaluationSuite distantlands.gameplay.RestSuite"`
 Expected: PASS.
 
 - [ ] **Step 6: Commit**
@@ -775,7 +775,7 @@ In `GameLogHeadlineSuite`, add:
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.serialization.GameEventFactsWireSuite oathdigital.application.gamelog.GameLogHeadlineSuite"`
+Run: `./sbtw "testOnly distantlands.serialization.GameEventFactsWireSuite distantlands.application.gamelog.GameLogHeadlineSuite"`
 Expected: compile failure, `EndDieRolled is not a member of object OathEvent`.
 
 - [ ] **Step 3: Add the event**
@@ -860,14 +860,14 @@ and beside `exhaustion`:
     s"The end die rolled $face.$needed"
 ```
 
-Import `oathdigital.gameplay.EmpireEndings`. If
+Import `distantlands.gameplay.EmpireEndings`. If
 `check-architecture.py` refuses that import from `application/gamelog`,
 move `threshold` into `model/` as `StableRegime.threshold`, and have
 `EmpireEndings.threshold` call it.
 
 - [ ] **Step 7: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.serialization.GameEventFactsWireSuite oathdigital.application.gamelog.GameLogHeadlineSuite"` and `python3 scripts/check-architecture.py`
+Run: `./sbtw "testOnly distantlands.serialization.GameEventFactsWireSuite distantlands.application.gamelog.GameLogHeadlineSuite"` and `python3 scripts/check-architecture.py`
 Expected: PASS, and the architecture check passes.
 
 - [ ] **Step 8: Commit**
@@ -904,15 +904,15 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 `src/test/scala/distantlands/gameplay/EmpireRoundEndSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.OathEvent._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{Outcomes, RoundEndChoices, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, rejected}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.OathEvent._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Outcomes, RoundEndChoices, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, rejected}
 
 /** The end of a round in a game with an Empire (CR p. 19; Empire phase
   * design, "Slice 2"), from `endRound` and through replay. p1 is the
@@ -1016,7 +1016,7 @@ Check before running:
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.EmpireRoundEndSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.EmpireRoundEndSuite"`
 Expected: compile failure, because `endRound` takes a function, not a
 `RoundEndRandomPort`.
 
@@ -1101,7 +1101,7 @@ journals and replays them.
 
 - [ ] **Step 6: Run the suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.EmpireRoundEndSuite oathdigital.gameplay.StateBasedEvaluationSuite oathdigital.gameplay.RestSuite oathdigital.gameplay.EmpireEndingsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.EmpireRoundEndSuite distantlands.gameplay.StateBasedEvaluationSuite distantlands.gameplay.RestSuite distantlands.gameplay.EmpireEndingsSuite"`
 Expected: PASS.
 
 - [ ] **Step 7: Commit**
@@ -1135,7 +1135,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 `frontend/src/test/scala/distantlands/frontend/VictoryWordsSuite.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 /** What the victory screen calls each kind of win (Empire phase design,
   * "Slice 2", "UI"). */
@@ -1161,7 +1161,7 @@ class VictoryWordsSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.VictoryWordsSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.VictoryWordsSuite"`
 Expected: compile failure, `Not found: VictoryWords`.
 
 - [ ] **Step 3: Write the words**
@@ -1169,7 +1169,7 @@ Expected: compile failure, `Not found: VictoryWords`.
 `frontend/src/main/scala/distantlands/frontend/VictoryWords.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 /** What the winner banner and the game-over status call a win, from its
   * victory kind's wire key: "Usurper victory", "Successor to the
@@ -1243,13 +1243,13 @@ to change.
 `src/test/scala/distantlands/application/EmpireEndingsScenarioSuite.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.application.gamelog.LogScripts.{formatter, texts}
-import oathdigital.model._
-import oathdigital.testkit.{MenuPlay, Outcomes, RoundEndChoices, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.application.gamelog.LogScripts.{formatter, texts}
+import distantlands.model._
+import distantlands.testkit.{MenuPlay, Outcomes, RoundEndChoices, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** Stable Regime with a Successor taking the win (CR p. 19; Empire phase
   * design, "Slice 2"), played through the service. */
@@ -1344,7 +1344,7 @@ Check before running:
 - `AidWindow(actor, side, user)`: p1 is the Campaign's actor in both
   windows, so the suite's own `defending` value (p1's Campaign, p3
   defending) is the same window, and you may use it.
-- Import `EncirclementCard` from `oathdigital.gameplay.powers.campaign`.
+- Import `EncirclementCard` from `distantlands.gameplay.powers.campaign`.
 - `save`, `resolve` and `awaiting` are the suite's own helpers.
 - If `finished.events` does not hold the clearing, look in the events of
   the step the service journaled for it, as "the offers clear when the
@@ -1352,7 +1352,7 @@ Check before running:
 
 - [ ] **Step 3: Run the suites**
 
-Run: `./sbtw "testOnly oathdigital.application.EmpireEndingsScenarioSuite oathdigital.application.PlanAidServiceSuite"`
+Run: `./sbtw "testOnly distantlands.application.EmpireEndingsScenarioSuite distantlands.application.PlanAidServiceSuite"`
 Expected: PASS. If the gap test fails, treat it as a defect in 1b-ii's
 clearing (`PlanAidDesk.stale`), not in the test. Read the rule in
 `PlanAidDesk.stale` and fix the code.

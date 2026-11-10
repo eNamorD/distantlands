@@ -18,7 +18,7 @@
 - Every global restriction refuses as `Impossible`. An optional operation it refuses is skipped; a required one rejects the batch.
 - Replay applies recorded operations without re-checking restrictions. Do not change `WalkerReplay`.
 - No timing check joins `sbt test`. The `SearchBudget` benchmark stays a program run by hand.
-- Never touch the live database under `var/oathdigital`.
+- Never touch the live database under `var/distantlands`.
 - Commits end with the trailer the session's system reminder names.
 
 ## Decisions taken at plan time
@@ -77,7 +77,7 @@ already records them.
 - [ ] **Step 1: Write the failing tests**
 
 In `OperationRestrictionsSuite.scala`, change the import to
-`import oathdigital.gameplay.operations.{GrandScepter, LockedCards, OperationRestrictions}`,
+`import distantlands.gameplay.operations.{GrandScepter, LockedCards, OperationRestrictions}`,
 add `private val scepter = RelicId("grand-scepter")` beside `drum`, and add
 before the test "the catalog prints a lock for every lock-icon card and only
 those":
@@ -108,7 +108,7 @@ those":
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OperationRestrictionsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.OperationRestrictionsSuite"`
 Expected: compile failure, `Not found: GrandScepter`.
 
 - [ ] **Step 3: Write the restriction**
@@ -116,9 +116,9 @@ Expected: compile failure, `Not found: GrandScepter`.
 Create `GrandScepter.scala`:
 
 ```scala
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The Grand Scepter cannot be removed from play (global operation
   * restrictions design, "Rules"). A move that takes it from a site or a play
@@ -143,7 +143,7 @@ final case class GrandScepter(relic: RelicId) extends OperationRestriction:
 ```
 
 In `OperationRestrictions.scala`:
-- change the catalog import to `import oathdigital.catalog.{CardRestrictions, ExecutableCatalog, RelicRole}`;
+- change the catalog import to `import distantlands.catalog.{CardRestrictions, ExecutableCatalog, RelicRole}`;
 - in the class doc, change "`printed` are the restrictions a catalog's cards print: [[LockedCards]], holding every lock-icon card, and the [[HallOfMinisters]]." to "`printed` are the restrictions a catalog's cards print: [[LockedCards]], holding every lock-icon card, the [[HallOfMinisters]], and one [[GrandScepter]] per scepter relic.";
 - replace the last line of `printedBy`, `Vector(LockedCards(locked), HallOfMinisters(catalog))`, with:
 
@@ -155,7 +155,7 @@ In `OperationRestrictions.scala`:
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OperationRestrictionsSuite oathdigital.gameplay.powers.action.FaeMerchantSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.OperationRestrictionsSuite distantlands.gameplay.powers.action.FaeMerchantSuite"`
 Expected: PASS. Fae Merchant still filters the scepter itself, so its suite is unchanged.
 
 - [ ] **Step 5: Commit**
@@ -207,15 +207,15 @@ and these tests after "an optional choose-many with no survivor is not asked":
 Create `PassWhenEmptySuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ChoicePayload, ProcedureWalker,
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ChoicePayload, ProcedureWalker,
   WalkerOutcome, WalkerSimulation, WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
-import oathdigital.testkit.Table.p1
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Table}
+import distantlands.testkit.Table.p1
 
 /** A choose-one marked `passWhenEmpty` is passed when the search leaves it
   * no option, and parks as any decision does when one is left (global
@@ -290,7 +290,7 @@ class PassWhenEmptySuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.PassWhenEmptySuite oathdigital.gameplay.walker.WalkerSearchSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.PassWhenEmptySuite distantlands.gameplay.walker.WalkerSearchSuite"`
 Expected: compile failure: `passWhenEmpty` is not a member of `Decide`.
 
 - [ ] **Step 3: Add the flag to `Decide`**
@@ -359,7 +359,7 @@ and change its doc's second sentence to "`None` is an optional choose-many or a 
 
 - [ ] **Step 5: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.PassWhenEmptySuite oathdigital.gameplay.walker.WalkerSearchSuite oathdigital.gameplay.LazyPruningSuite oathdigital.gameplay.BackendArchitectureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.PassWhenEmptySuite distantlands.gameplay.walker.WalkerSearchSuite distantlands.gameplay.LazyPruningSuite distantlands.gameplay.BackendArchitectureSuite"`
 Expected: PASS. `LazyPruningSuite`'s "a later required decision, another player's, with every option pruned hides the earlier option" still holds: a decision without the flag still fails the path.
 
 - [ ] **Step 6: Commit**
@@ -485,7 +485,7 @@ In `DicePowerDecisionProjectionSuite.scala`, after the test "Fae Merchant names 
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.FaeMerchantSuite oathdigital.application.DicePowerDecisionProjectionSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.FaeMerchantSuite distantlands.application.DicePowerDecisionProjectionSuite"`
 Expected: compile failure on `val merchant = FaeMerchant` (the companion object is not a power). With that line reverted, the three one-relic tests fail because today's Fae Merchant asks nothing when one relic is eligible. "Fae Merchant does not offer the Grand Scepter" and the scepter-only test already pass on the old filter; they are regression guards for its removal.
 
 - [ ] **Step 3: Rewrite Fae Merchant**
@@ -493,10 +493,10 @@ Expected: compile failure on `val merchant = FaeMerchant` (the companion object 
 Replace `FaeMerchant.scala` with:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.{NoteSupport, PlayerFacts, RelicDraws}
-import oathdigital.model._
+import distantlands.gameplay.powers.{NoteSupport, PlayerFacts, RelicDraws}
+import distantlands.model._
 
 /** Fae Merchant (card 180), ACTION: place 1 secret on this card, draw a relic
   * and take it facedown, then put exactly one relic you hold, except the
@@ -583,7 +583,7 @@ In `PhasePowerCatalog.scala`, change `DiceAndRelicDrawPowers.forCatalog(catalog)
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.FaeMerchantSuite oathdigital.application.DicePowerDecisionProjectionSuite oathdigital.gameplay.BackendArchitectureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.FaeMerchantSuite distantlands.application.DicePowerDecisionProjectionSuite distantlands.gameplay.BackendArchitectureSuite"`
 Expected: PASS, including the unchanged tests "it draws a relic, then asks which relic to put on the bottom", "the Grand Scepter is never offered, and cannot be chosen" and "a secret on the relic put back returns to its holder facedown".
 
 Run: `grep -rn "FaeMerchant.forCatalog\|DiceAndRelicDrawPowers.forCatalog" src`
@@ -644,7 +644,7 @@ In `ConspiracyWhenPlayedSuite.scala`, in the test "Conspiracy taking the Darkest
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.ChallengeProcedureSuite oathdigital.gameplay.powers.whenplayed.ConspiracyWhenPlayedSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.ChallengeProcedureSuite distantlands.gameplay.powers.whenplayed.ConspiracyWhenPlayedSuite"`
 Expected: compile failure: the `Take` pattern has six arguments. (After Step 3's model change alone, both new tests fail on behaviour: Challenge parks, and Conspiracy records a `Move`.)
 
 - [ ] **Step 3: Give `Take` a `required` flag**
@@ -703,7 +703,7 @@ and add to the class doc, after the "take effects" bullet list: "The banner move
 
 - [ ] **Step 5: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.ChallengeProcedureSuite oathdigital.gameplay.powers.whenplayed.ConspiracyWhenPlayedSuite oathdigital.application.gamelog.GameLogActionLineSuite oathdigital.application.gamelog.GameLogRareLinesSuite oathdigital.serialization.GameEventWireSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.ChallengeProcedureSuite distantlands.gameplay.powers.whenplayed.ConspiracyWhenPlayedSuite distantlands.application.gamelog.GameLogActionLineSuite distantlands.application.gamelog.GameLogRareLinesSuite distantlands.serialization.GameEventWireSuite"`
 Expected: PASS. `GameLogActionLineSuite`'s "Challenge takes the banner from the bank; Place Banner Resource names the amount" and Conspiracy's "line names the banner it seized" show the Game Log lines are unchanged.
 
 - [ ] **Step 6: Commit**

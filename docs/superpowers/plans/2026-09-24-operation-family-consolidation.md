@@ -93,7 +93,7 @@ In the same suite delete these lines exactly (each is a two-line `assertEquals`)
 
 - [ ] **Step 3: Run the suite to confirm it still compiles and passes**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OperationValidatorSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.OperationValidatorSuite"`
 Expected: PASS, 14 tests.
 
 - [ ] **Step 4: Delete `OperationPolicy.all`**
@@ -137,7 +137,7 @@ In `OperationValidator.scala`:
 
 - [ ] **Step 7: Compile and run the operation suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OperationValidatorSuite oathdigital.gameplay.OperationPipelineSuite oathdigital.gameplay.OperationExecutorSuite oathdigital.gameplay.OperationResolutionSuite oathdigital.gameplay.PowerOperationsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.OperationValidatorSuite distantlands.gameplay.OperationPipelineSuite distantlands.gameplay.OperationExecutorSuite distantlands.gameplay.OperationResolutionSuite distantlands.gameplay.PowerOperationsSuite"`
 Expected: PASS.
 
 - [ ] **Step 8: Commit**
@@ -196,7 +196,7 @@ and the decode arm:
 
 - [ ] **Step 4: Compile everything and run the wire suite**
 
-Run: `./sbtw "testOnly oathdigital.serialization.GameEventWireSuite"`
+Run: `./sbtw "testOnly distantlands.serialization.GameEventWireSuite"`
 Expected: PASS. The encode match is exhaustiveness-checked, so a leftover reference fails compilation loudly.
 
 - [ ] **Step 5: Commit**
@@ -229,9 +229,9 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 Write `OperationStateWrites.scala`:
 
 ```scala
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
+import distantlands.model._
 
 /** State writers shared by every operation family, and the one collector of
   * card transfers that both a guard and a mutation read. Nothing here decides
@@ -331,7 +331,7 @@ In `OperationValidator.scala`, inside `object OperationShape`:
 
 - [ ] **Step 5: Compile and run the operation suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OperationValidatorSuite oathdigital.gameplay.OperationPipelineSuite oathdigital.gameplay.OperationExecutorSuite oathdigital.gameplay.operations.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.OperationValidatorSuite distantlands.gameplay.OperationPipelineSuite distantlands.gameplay.OperationExecutorSuite distantlands.gameplay.operations.*"`
 Expected: PASS.
 
 - [ ] **Step 6: Commit**
@@ -367,9 +367,9 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 - [ ] **Step 1: Create the file**
 
 ```scala
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Supply, the Visions Drawn track, dice pools and roll outcomes, and the
   * turn, phase and title writes.
@@ -504,7 +504,7 @@ In `OperationStateMutation.scala`, `applyNonMoveLeaves`, replace the arms from `
 
 - [ ] **Step 4: Compile and run the suites that exercise these operations**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OperationValidatorSuite oathdigital.gameplay.OperationExecutorSuite oathdigital.gameplay.SupplyAdjustSuite oathdigital.gameplay.OperationPipelineSuite oathdigital.gameplay.operations.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.OperationValidatorSuite distantlands.gameplay.OperationExecutorSuite distantlands.gameplay.SupplyAdjustSuite distantlands.gameplay.OperationPipelineSuite distantlands.gameplay.operations.*"`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -531,9 +531,9 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 - [ ] **Step 1: Create the file**
 
 ```scala
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
+import distantlands.model._
 
 /** `Flip`, `Reveal` and `Peek`: what a card shows and who knows it. */
 private[operations] object CardFaceOperations {
@@ -581,7 +581,7 @@ In `OperationStateMutation.scala`, `applyNonMoveLeaves`:
 
 - [ ] **Step 3: Compile and test**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OperationValidatorSuite oathdigital.gameplay.OperationExecutorSuite oathdigital.gameplay.RevealDiscardSuite oathdigital.gameplay.operations.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.OperationValidatorSuite distantlands.gameplay.OperationExecutorSuite distantlands.gameplay.RevealDiscardSuite distantlands.gameplay.operations.*"`
 Expected: PASS.
 
 - [ ] **Step 4: Commit**
@@ -608,9 +608,9 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 - [ ] **Step 1: Create the file**
 
 ```scala
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Pawn and banner moves. The guard threads the pawns' sites and the
   * banners' holders through one operation's leaves so two moves of one piece
@@ -640,7 +640,7 @@ In `OperationStateMutation.mutate` replace `pieces <- applyPawnAndBannerMoves(re
 
 - [ ] **Step 3: Compile and test**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OperationValidatorSuite oathdigital.gameplay.OperationExecutorSuite oathdigital.gameplay.operations.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.OperationValidatorSuite distantlands.gameplay.OperationExecutorSuite distantlands.gameplay.operations.*"`
 Expected: PASS.
 
 - [ ] **Step 4: Commit**
@@ -670,9 +670,9 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 - [ ] **Step 1: Create the file**
 
 ```scala
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Favor, secrets and warbands: counted moves, secret flips, and the
   * resource descriptions a discard carries. The mutation debits every source
@@ -782,7 +782,7 @@ In `OperationStateMutation.mutate`: `resources <- ResourceOperations.applyCounte
 
 - [ ] **Step 3: Compile and test**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OperationValidatorSuite oathdigital.gameplay.OperationExecutorSuite oathdigital.gameplay.OperationPipelineSuite oathdigital.gameplay.OperationResolutionSuite oathdigital.gameplay.PowerOperationsSuite oathdigital.gameplay.PayCostSuite oathdigital.gameplay.PayCostSettlementSuite oathdigital.gameplay.operations.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.OperationValidatorSuite distantlands.gameplay.OperationExecutorSuite distantlands.gameplay.OperationPipelineSuite distantlands.gameplay.OperationResolutionSuite distantlands.gameplay.PowerOperationsSuite distantlands.gameplay.PayCostSuite distantlands.gameplay.PayCostSettlementSuite distantlands.gameplay.operations.*"`
 Expected: PASS.
 
 - [ ] **Step 4: Commit**
@@ -842,7 +842,7 @@ In `OperationStateMutation.mutate`: `cards <- CardMovementOperations.applyCardMo
 
 - [ ] **Step 4: Compile and test, and check the line count**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OperationValidatorSuite oathdigital.gameplay.OperationExecutorSuite oathdigital.gameplay.OperationPipelineSuite oathdigital.gameplay.OperationVocabularySuite oathdigital.gameplay.operations.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.OperationValidatorSuite distantlands.gameplay.OperationExecutorSuite distantlands.gameplay.OperationPipelineSuite distantlands.gameplay.OperationVocabularySuite distantlands.gameplay.operations.*"`
 Expected: PASS.
 
 Run: `wc -l src/main/scala/distantlands/gameplay/operations/CardMovementOperations.scala`
@@ -883,11 +883,11 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 Create `src/test/scala/distantlands/gameplay/walker/WalkerReplayGuardSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.walker.WalkerStepPayload.DeltaRecorded
-import oathdigital.model._
-import oathdigital.model.TestGameFixtures._
+import distantlands.gameplay.walker.WalkerStepPayload.DeltaRecorded
+import distantlands.model._
+import distantlands.model.TestGameFixtures._
 
 /** Replay applies recorded operations through the executor. The executor
   * runs the shape guard as the mutation's precondition, so a recorded
@@ -931,15 +931,15 @@ class WalkerReplayGuardSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run it to see the second test fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.WalkerReplayGuardSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.WalkerReplayGuardSuite"`
 Expected: first test PASS; second test FAIL — replay returns `Right(...)` because `insertStack` treats `Unspecified` as a no-op and the card is silently dropped.
 
 - [ ] **Step 3: Create `OperationApplication.scala`**
 
 ```scala
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The two dispatchers over the operation families.
   *
@@ -1244,11 +1244,11 @@ git mv src/test/scala/distantlands/gameplay/OperationValidatorSuite.scala src/te
 Replace its contents with:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.operations._
-import oathdigital.model._
-import oathdigital.model.TestGameFixtures._
+import distantlands.gameplay.operations._
+import distantlands.model._
+import distantlands.model.TestGameFixtures._
 
 /** The shape guard through the two interfaces that cross it: the resolver's
   * `OperationApplication.validate`, which reports every reason, and
@@ -1539,10 +1539,10 @@ sed -i '' 's/class OperationStateMutationSuite/class OperationMutationSuite/' sr
 
 - [ ] **Step 11: Compile, run the replay test green, run the operation and walker suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.WalkerReplayGuardSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.WalkerReplayGuardSuite"`
 Expected: PASS, 2 tests.
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OperationApplicationSuite oathdigital.gameplay.OperationResolutionSuite oathdigital.gameplay.OperationPipelineSuite oathdigital.gameplay.OperationExecutorSuite oathdigital.gameplay.OperationVocabularySuite oathdigital.gameplay.PowerOperationsSuite oathdigital.gameplay.SupplyAdjustSuite oathdigital.gameplay.operations.* oathdigital.gameplay.ProcedureWalkerSuite oathdigital.gameplay.WalkerReplayDriftSuite oathdigital.gameplay.BackendArchitectureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.OperationApplicationSuite distantlands.gameplay.OperationResolutionSuite distantlands.gameplay.OperationPipelineSuite distantlands.gameplay.OperationExecutorSuite distantlands.gameplay.OperationVocabularySuite distantlands.gameplay.PowerOperationsSuite distantlands.gameplay.SupplyAdjustSuite distantlands.gameplay.operations.* distantlands.gameplay.ProcedureWalkerSuite distantlands.gameplay.WalkerReplayDriftSuite distantlands.gameplay.BackendArchitectureSuite"`
 Expected: PASS. `BackendArchitectureSuite` in particular confirms no new file names a power.
 
 - [ ] **Step 12: Run the whole backend suite**
@@ -1814,7 +1814,7 @@ Replace the body with
 
 - [ ] **Step 8: Compile and run every suite that exercises these operations**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OperationApplicationSuite oathdigital.gameplay.OperationExecutorSuite oathdigital.gameplay.OperationPipelineSuite oathdigital.gameplay.OperationResolutionSuite oathdigital.gameplay.SupplyAdjustSuite oathdigital.gameplay.operations.* oathdigital.gameplay.walker.WalkerReplayGuardSuite oathdigital.gameplay.ProcedureWalkerSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.OperationApplicationSuite distantlands.gameplay.OperationExecutorSuite distantlands.gameplay.OperationPipelineSuite distantlands.gameplay.OperationResolutionSuite distantlands.gameplay.SupplyAdjustSuite distantlands.gameplay.operations.* distantlands.gameplay.walker.WalkerReplayGuardSuite distantlands.gameplay.ProcedureWalkerSuite"`
 Expected: PASS. `OperationExecutorSuite` "Visions Drawn advances once and rejects integer overflow", "later failure returns no partial execution result", "a held banner cannot be claimed from the shared bank" and `OperationMutationSuite` "a pawn already on a site cannot move from the player area again" are the ones that would catch a deleted check the guard does not cover.
 
 - [ ] **Step 9: Run the whole backend suite**

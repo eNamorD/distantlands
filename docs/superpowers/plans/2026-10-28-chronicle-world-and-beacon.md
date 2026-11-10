@@ -17,7 +17,7 @@
 - Branch and worktree off local `0.2.0-alpha`, never `main`. Merge back into `0.2.0-alpha`.
 - Scalac runs with `-Werror`. A new sealed case breaks every exhaustive match; fix each one the compiler names.
 - Production Scala files stay at or under 800 lines (`scripts/check-architecture.py`, `BackendArchitectureSuite`). `model` must not import `gameplay`, `application` or `serialization`. `gameplay` must not import `application` or `serialization`. `gameplay/walker/ProcedureWalker.scala` is at 797 lines: add nothing to it. `model/CoreOperations.scala` is at 778 lines: Task 1 moves `Location` out of it first.
-- Tests run with `oathdigital.notes.strict=true`: a log note key not declared by its writer throws.
+- Tests run with `distantlands.notes.strict=true`: a log note key not declared by its writer throws.
 - Tests never spell catalog ids (`BackendArchitectureSuite`). Use `CatalogNames`, `Table` helpers, or rules-owned constants such as `VisionRules.Conquest`.
 - Old journals need not decode. New fields and operations are required on the wire.
 - Test helper names state what they build. A doc comment does not excuse a vague name.
@@ -79,10 +79,10 @@ Paths below are relative to the repo root. `M/` is `src/main/scala/distantlands/
 - [ ] **Step 1: Create the worktree from local `0.2.0-alpha`**
 
 ```bash
-cd /Users/roman/projects/oathdigital
+cd /Users/roman/projects/distantlands
 git worktree add .worktrees/chronicle-world-beacon -b chronicle-world-beacon 0.2.0-alpha
-ln -s /Users/roman/projects/oathdigital/.tooling .worktrees/chronicle-world-beacon/.tooling
-ln -s /Users/roman/projects/oathdigital/node_modules .worktrees/chronicle-world-beacon/node_modules
+ln -s /Users/roman/projects/distantlands/.tooling .worktrees/chronicle-world-beacon/.tooling
+ln -s /Users/roman/projects/distantlands/node_modules .worktrees/chronicle-world-beacon/node_modules
 ```
 
 - [ ] **Step 2: Confirm a green baseline**
@@ -113,7 +113,7 @@ Four new piles, each a `Location` a `Move` can reach, with the knowledge and ide
 
 - [ ] **Step 1: Move `Location` into its own file**
 
-Cut `sealed trait Location` and `object Location` (with `ownedBy`) from `CoreOperations.scala` into a new `M/model/Location.scala` in package `oathdigital.model`, unchanged. Compile: `./sbtw compile`. Expected: success. Commit:
+Cut `sealed trait Location` and `object Location` (with `ownedBy`) from `CoreOperations.scala` into a new `M/model/Location.scala` in package `distantlands.model`, unchanged. Compile: `./sbtw compile`. Expected: success. Commit:
 
 ```bash
 git add src/main/scala/distantlands/model/Location.scala src/main/scala/distantlands/model/CoreOperations.scala
@@ -127,11 +127,11 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 `T/gameplay/operations/ChroniclePilesSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2}
 
 /** The Chronicle's card piles: the gathering pile, the newly Dispossessed,
   * the suited reserves and a lineage's starting advisers. */
@@ -212,11 +212,11 @@ If either is missing, add it in this task. `OperationTestRun.applied(state: Oath
 `T/application/ChroniclePilesIdentitySuite.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2}
 
 /** Who may identify a card in the gathering pile or among a lineage's
   * starting advisers (Chronicle World and Beacon plan, Task 1). */
@@ -276,7 +276,7 @@ If `GamePresentationProjector` is a class, not an object, build it the way `Game
 
 - [ ] **Step 3: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.operations.ChroniclePilesSuite oathdigital.application.ChroniclePilesIdentitySuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.operations.ChroniclePilesSuite distantlands.application.ChroniclePilesIdentitySuite"`
 Expected: compile errors naming `Location.ChronicleGathering`, `chronicleGathering` and the other new names.
 
 - [ ] **Step 4: Add the locations, state and containers**
@@ -465,7 +465,7 @@ Add one round-trip case per new location to the existing location codec suite (f
 
 - [ ] **Step 8: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.operations.ChroniclePilesSuite oathdigital.application.ChroniclePilesIdentitySuite"` and the codec suite.
+Run: `./sbtw "testOnly distantlands.gameplay.operations.ChroniclePilesSuite distantlands.application.ChroniclePilesIdentitySuite"` and the codec suite.
 Expected: PASS. Fix every non-exhaustive match the compiler names.
 
 - [ ] **Step 9: Commit**
@@ -559,7 +559,7 @@ Add a round-trip case for `SuitedReserveFromBox` and for both shuffle piles to t
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.operations.ShuffleOperationSuite oathdigital.gameplay.operations.ChronicleStateOperationsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.operations.ShuffleOperationSuite distantlands.gameplay.operations.ChronicleStateOperationsSuite"`
 Expected: compile errors naming `ShufflePile.ChronicleGathering` and `SuitedReserveFromBox`.
 
 - [ ] **Step 3: Extend `ShufflePile`**
@@ -708,7 +708,7 @@ In `encodeShufflePile` / `decodeShufflePile`:
 
 - [ ] **Step 6: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.operations.* oathdigital.serialization.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.operations.* distantlands.serialization.*"`
 Expected: PASS.
 
 - [ ] **Step 7: Commit**
@@ -771,7 +771,7 @@ Add the two refs to `EnumWireKeySuite` and `ProcedureRefSuite` where `ChronicleT
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.chronicle.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.chronicle.*"`
 Expected: compile errors naming `ChronicleWindows.world` and `ChronicleWorld`.
 
 - [ ] **Step 3: Add refs, windows and skeletons**
@@ -829,10 +829,10 @@ Update its doc comment: drop "World, Beacon and Stars are later inserted"; say "
 `ChronicleWorldProcedure.scala` (Task 4 fills the steps):
 
 ```scala
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.model._
 
 /** The World task (CR p. 38, `docs/rules/chronicle.md` task 3), resolved by
   * the player holding its card. Each step is its own power window. */
@@ -855,10 +855,10 @@ object ChronicleWorldProcedure:
 `ChronicleBeaconProcedure.scala`:
 
 ```scala
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.model._
 
 /** The Beacon task (CR p. 39, `docs/rules/chronicle.md` task 4), resolved
   * by the player holding its card. Each step is its own power window. */
@@ -920,7 +920,7 @@ If `ActionLineSource.Notes` rejects an empty map, use `ActionLineSource.Silent("
 
 - [ ] **Step 4: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.chronicle.* oathdigital.model.* oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.chronicle.* distantlands.model.* distantlands.application.gamelog.*"`
 Expected: PASS. `ChronicleSunThroneEndToEndSuite` still passes: World and Beacon have no steps yet.
 
 - [ ] **Step 5: Commit**
@@ -979,18 +979,18 @@ Update the doc comment: "and, in a partition, each section's minimum".
 `T/gameplay/chronicle/WorldTaskSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.application.GamePresentationProjector
-import oathdigital.gameplay.{OathRules, WalkerDiceFixture}
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{ChooseOneAnswer, PartitionAnswer}
-import oathdigital.testkit.{Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.application.GamePresentationProjector
+import distantlands.gameplay.{OathRules, WalkerDiceFixture}
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{ChooseOneAnswer, PartitionAnswer}
+import distantlands.testkit.{Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** The World task (CR p. 38). p1 is the Chancellor; p2 holds the World. */
 class WorldTaskSuite extends munit.FunSuite:
@@ -1111,7 +1111,7 @@ If `discarded` cannot take a Vision, put the Vision in the discard with `update(
 
 - [ ] **Step 3: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.chronicle.WorldTaskSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.chronicle.WorldTaskSuite"`
 Expected: compile errors naming `ProtectAndDispossess`.
 
 - [ ] **Step 4: Separate Visions**
@@ -1119,9 +1119,9 @@ Expected: compile errors naming `ProtectAndDispossess`.
 `M/gameplay/chronicle/SeparateVisions.scala`:
 
 ```scala
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Separate Visions, the World's first step (CR p. 38): every Vision in
   * play leaves it. The Chronicle does not store Visions, and setup adds all
@@ -1159,11 +1159,11 @@ If `cardIndex` is not an `Either` with a printable left, or the codebase has no 
 `M/gameplay/chronicle/GatherDenizens.scala`:
 
 ```scala
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.model._
 
 /** Gather Denizens, the World's second step (CR p. 38). Every adviser is
   * discarded to the Cradle first, so `Discard.Denizen` returns its tokens.
@@ -1225,11 +1225,11 @@ The note's parts and arg types must match what `NoteSet` supports. Read `ShapeEm
 `M/gameplay/chronicle/ProtectAndDispossess.scala`:
 
 ```scala
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 /** Protect and Dispossess, the World's third step (CR p. 38). The World
   * task holder protects one of the two faceup stacks by naming a card in
@@ -1324,9 +1324,9 @@ object ProtectAndDispossess:
 The keep decision is shared with Beacon's Welcome a Stranger, so it lives in its own object. Create `M/gameplay/chronicle/StartingAdviserChoice.scala`:
 
 ```scala
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Keeping one card of a temporary hand as a facedown starting adviser,
   * the rest going to the world deck bottom: the World's Protect and the
@@ -1402,7 +1402,7 @@ Add `ChronicleWorld` to `GameLogPropertiesSuite`'s list of procedures that write
 
 - [ ] **Step 8: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.chronicle.* oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.chronicle.* distantlands.application.gamelog.*"`
 Expected: PASS. If `ChronicleSunThroneEndToEndSuite` now fails because p2 or p3 holds no lineage or the walk answers a partition differently, fix the cause, not the test.
 
 - [ ] **Step 9: Commit**
@@ -1436,16 +1436,16 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 `T/gameplay/chronicle/BeaconTaskSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.gameplay.{OathRules, WalkerDiceFixture}
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{CatalogNames, Outcomes, Table}
-import oathdigital.testkit.Table.p3
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.{OathRules, WalkerDiceFixture}
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.testkit.{CatalogNames, Outcomes, Table}
+import distantlands.testkit.Table.p3
+import distantlands.testkit.Unwrap.accepted
 
 /** The Beacon task (CR p. 39). p3 holds the Beacon. */
 class BeaconTaskSuite extends munit.FunSuite:
@@ -1566,7 +1566,7 @@ class BeaconTaskSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.chronicle.BeaconTaskSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.chronicle.BeaconTaskSuite"`
 Expected: compile errors naming `IntroduceNewcomers`.
 
 - [ ] **Step 3: Introduce Newcomers**
@@ -1574,11 +1574,11 @@ Expected: compile errors naming `IntroduceNewcomers`.
 `M/gameplay/chronicle/IntroduceNewcomers.scala`:
 
 ```scala
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.model._
 
 /** Introduce Newcomers, the Beacon's first step (CR p. 39). The Beacon task
   * holder chooses three different suits, one per draw count. Each chosen
@@ -1682,10 +1682,10 @@ Check these against the code before relying on them:
 `M/gameplay/chronicle/WelcomeStranger.scala`:
 
 ```scala
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.model._
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.model._
 
 /** Welcome a Stranger, the Beacon's second step (CR p. 39): the holder
   * keeps one drawn newcomer as a facedown starting adviser and the rest go
@@ -1745,7 +1745,7 @@ Add `ChronicleBeacon` to `GameLogPropertiesSuite`. Regenerate the note snapshot 
 
 - [ ] **Step 6: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.chronicle.* oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.chronicle.* distantlands.application.gamelog.*"`
 Expected: PASS.
 
 - [ ] **Step 7: Commit**

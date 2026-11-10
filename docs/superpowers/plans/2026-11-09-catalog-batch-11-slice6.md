@@ -509,7 +509,7 @@ use its helper instead of `OperationExecutor.apply` if the names differ.
 
 - [ ] **Step 8: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.testkit.TableSuite oathdigital.gameplay.CardSlotsSuite oathdigital.application.SlotOptionRowsSuite oathdigital.gameplay.VisionPlaySuite oathdigital.gameplay.roles.RoleChangesSuite"`
+Run: `./sbtw "testOnly distantlands.testkit.TableSuite distantlands.gameplay.CardSlotsSuite distantlands.application.SlotOptionRowsSuite distantlands.gameplay.VisionPlaySuite distantlands.gameplay.roles.RoleChangesSuite"`
 Expected: PASS. Then run the movement suite you chose.
 
 Run: `./sbtw test`
@@ -676,7 +676,7 @@ Vision is unchanged.
 
 - [ ] **Step 5: Run the tests**
 
-Run: `./sbtw "sharedJVM/testOnly oathdigital.protocol.ProjectionProtocolSuite" "frontend/testOnly oathdigital.frontend.PlayerBoardSuite"`
+Run: `./sbtw "sharedJVM/testOnly distantlands.protocol.ProjectionProtocolSuite" "frontend/testOnly distantlands.frontend.PlayerBoardSuite"`
 Expected: PASS. If the project names differ, read `build.sbt` for the
 shared and frontend project ids.
 
@@ -719,7 +719,7 @@ git commit -m "feat(projection): a board shows every revealed Vision" \
 
 **Interfaces:**
 - Consumes: `PlayerState.revealedVisions` (Task 1).
-- Produces: `oathdigital.gameplay.SacredGroundCard` (moved);
+- Produces: `distantlands.gameplay.SacredGroundCard` (moved);
   `private[gameplay] object DesecratedGroundRule` with `power: PowerId`,
   `kept: NoteKey`, `noteKeys: Vector[NoteKey]`,
   `keeps(ready: ReadyGame, player: PlayerId): Boolean` and
@@ -734,11 +734,11 @@ Create `src/main/scala/distantlands/gameplay/DesecratedGround.scala`. The
 `powers/cardplay/SacredGround.scala:9-23`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.catalog.{Edifice, EdificeFace, Locked, ModifierMark,
+import distantlands.catalog.{Edifice, EdificeFace, Locked, ModifierMark,
   PrintedPower}
-import oathdigital.model._
+import distantlands.model._
 
 object SacredGroundCard extends Edifice(EdificeId("E08"), Suit.Nomad):
   object intact extends EdificeFace("Sacred Ground") with Locked:
@@ -804,10 +804,10 @@ Edit `powers/cardplay/SacredGround.scala`: delete lines 9-23 (the card),
 change the imports to:
 
 ```scala
-import oathdigital.gameplay.SacredGroundCard
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.powerresolver._
-import oathdigital.model._
+import distantlands.gameplay.SacredGroundCard
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.powerresolver._
+import distantlands.model._
 ```
 
 and replace the doc comment's sentence "Its ruined face, Desecrated
@@ -815,21 +815,21 @@ Ground, is not implemented; E08 never appears in a generated game." with
 "Its ruined face is `DesecratedGroundRule`."
 
 In `gameplay/cards/NewFoundations.scala`, import `SacredGroundCard` from
-`oathdigital.gameplay` instead of `oathdigital.gameplay.powers.cardplay`
+`distantlands.gameplay` instead of `distantlands.gameplay.powers.cardplay`
 (find the import with `grep -n "SacredGroundCard\|powers.cardplay"`).
 Do the same in `SacredGroundSuite.scala` (add `import
-oathdigital.gameplay.SacredGroundCard`) and `CardPlayReasonsSuite.scala:8`.
+distantlands.gameplay.SacredGroundCard`) and `CardPlayReasonsSuite.scala:8`.
 
 - [ ] **Step 2: Register the power**
 
 Create `src/main/scala/distantlands/gameplay/powers/cardplay/DesecratedGround.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.gameplay.DesecratedGroundRule
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution}
-import oathdigital.model._
+import distantlands.gameplay.DesecratedGroundRule
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution}
+import distantlands.model._
 
 /** Desecrated Ground (E08's ruined face): "If an Exile reveals a Vision
   * while their pawn is at this site, they do not discard their current
@@ -847,7 +847,7 @@ case object DesecratedGround extends ContributingPower:
 ```
 
 `DesecratedGroundRule` is `private[gameplay]`, and this file is in
-`oathdigital.gameplay.powers.cardplay`, so the access compiles.
+`distantlands.gameplay.powers.cardplay`, so the access compiles.
 
 In `WalkerPowerCatalog.scala:82-83`:
 
@@ -875,17 +875,17 @@ It follows `SacredGroundSuite`: `SearchFixture.staged` stands p1 at
 Ancient City, with Broken Peaks elsewhere.
 
 ```scala
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.gameplay.{DesecratedGroundRule, SacredGroundCard}
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.powers.{NoteText, PowerFixture,
+import distantlands.gameplay.{DesecratedGroundRule, SacredGroundCard}
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.powers.{NoteText, PowerFixture,
   PowerImplementationStatus, SearchFixture}
-import oathdigital.model._
-import oathdigital.testkit.{Look, PlacementPicks, Table}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.model._
+import distantlands.testkit.{Look, PlacementPicks, Table}
+import distantlands.testkit.Unwrap.accepted
 
 /** E08 never appears in a generated first game (the Nomad Homeland takes
   * E06), so each test places it by hand, ruined. */
@@ -926,8 +926,8 @@ class DesecratedGroundSuite extends munit.FunSuite:
   test("at Desecrated Ground the spot replaces nothing"):
     val parked = searchHolding(home)
     val spot = PlacementPicks.parkedOptions(parked.state,
-      oathdigital.gameplay.powers.WalkerPowerCatalog.default(
-        oathdigital.gameplay.setup.FirstGameSetupFixture.catalog))
+      distantlands.gameplay.powers.WalkerPowerCatalog.default(
+        distantlands.gameplay.setup.FirstGameSetupFixture.catalog))
       .find(_.ref == DecisionOptionRef.RevealedVision(actor))
     assertEquals(spot.map(_.isInstanceOf[DecisionOption.Replacing]),
       Some(false))
@@ -996,18 +996,18 @@ Create `src/test/scala/distantlands/application/gamelog/DesecratedGroundLogSuite
 the golden line, following `HospitalityLogSuite`:
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.application.{GameApplicationService,
+import distantlands.application.{GameApplicationService,
   ParkedServiceFixture, TreeDecision}
-import oathdigital.gameplay.SacredGroundCard
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.model._
-import oathdigital.testkit.{Commands, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.gameplay.SacredGroundCard
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.model._
+import distantlands.testkit.{Commands, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.{accepted, present}
 import LogScripts.formatter
 
 /** The kept line as the Game Log shows it (catalog batch 11, ruling 31). */
@@ -1051,7 +1051,7 @@ command sequence, as `WayStationLogSuite` does for its Search. If the
 "Revealed" line is split from the kept line by another line, assert that
 the kept line follows the reveal line instead of `reveal + 1`.
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.cardplay.DesecratedGroundSuite oathdigital.application.gamelog.DesecratedGroundLogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.cardplay.DesecratedGroundSuite distantlands.application.gamelog.DesecratedGroundLogSuite"`
 Expected: FAIL: Visions discarded at the site, no kept line.
 
 - [ ] **Step 4: Read the rule in card play**
@@ -1109,7 +1109,7 @@ Expected: FAIL: Visions discarded at the site, no kept line.
     else player.revealedVisions.map(_.id)
 ```
 
-Add `DesecratedGroundRule` to the `oathdigital.gameplay` import at
+Add `DesecratedGroundRule` to the `distantlands.gameplay` import at
 `CardPlay.scala:4`. Keep the indentation of the `origin match` cases as
 the file has it.
 
@@ -1152,11 +1152,11 @@ play's own line (finding 9):
 Update the comment above `played`'s `Branch` and the doc on `settled` to
 say "The play's own line follows it as a third child, and the kept line
 as a fourth; no path addresses into either." Add `import
-oathdigital.gameplay.DesecratedGroundRule`.
+distantlands.gameplay.DesecratedGroundRule`.
 
 - [ ] **Step 6: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.cardplay.DesecratedGroundSuite oathdigital.application.gamelog.DesecratedGroundLogSuite oathdigital.gameplay.powers.cardplay.SacredGroundSuite oathdigital.gameplay.powers.UnimplementedPowersSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.cardplay.DesecratedGroundSuite distantlands.application.gamelog.DesecratedGroundLogSuite distantlands.gameplay.powers.cardplay.SacredGroundSuite distantlands.gameplay.powers.UnimplementedPowersSuite"`
 Expected: PASS.
 
 Run: `./sbtw "testOnly *DeclaredNoteKeys* *CardPlayProcedure* *VisionPlay* *CardSlots*"`
@@ -1238,12 +1238,12 @@ Fix what it confirms before Task 4.
 Create `src/test/scala/distantlands/gameplay/RevealedVisionsSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.actions.VisionRules
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2}
 
 class RevealedVisionsSuite extends munit.FunSuite:
   test("a player's revealed Visions are theirs, in reveal order"):
@@ -1365,9 +1365,9 @@ Expected: compile errors for the missing names and fields.
 Create `src/main/scala/distantlands/gameplay/RevealedVisions.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The Visions a player has revealed, as the victory rules read them
   * (catalog batch 11, slice 6): their own, in reveal order. Slice 7 adds
@@ -1608,7 +1608,7 @@ becomes `VisionVictory(p, Vector(v))`.
       .map(SetOathkeeperGoal(_)).toVector
 ```
 
-Import `PowerAnswers` from `oathdigital.gameplay.powers` beside
+Import `PowerAnswers` from `distantlands.gameplay.powers` beside
 `OathkeeperGoalChoice`. Check `ChooseOne`'s parameter names against the
 `goalDecisionId` `Decide` above it, which uses `heading = Some(...)`. The
 option's label is the card's name, as `DecisionOptionRows` projects a
@@ -1620,7 +1620,7 @@ Delete the temporary `headOption` reads that Task 1 left in
 
 - [ ] **Step 5: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.RevealedVisionsSuite oathdigital.gameplay.StateBasedEvaluationSuite oathdigital.gameplay.chronicle.SwearOathSuite oathdigital.serialization.GameEventFactsWireSuite oathdigital.application.gamelog.GameLogHeadlineSuite oathdigital.gameplay.EmpireEndingsSuite oathdigital.gameplay.EmpireRoundEndSuite oathdigital.gameplay.EmpireTurnSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.RevealedVisionsSuite distantlands.gameplay.StateBasedEvaluationSuite distantlands.gameplay.chronicle.SwearOathSuite distantlands.serialization.GameEventFactsWireSuite distantlands.application.gamelog.GameLogHeadlineSuite distantlands.gameplay.EmpireEndingsSuite distantlands.gameplay.EmpireRoundEndSuite distantlands.gameplay.EmpireTurnSuite"`
 Expected: PASS.
 
 Run: `./sbtw test`

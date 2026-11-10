@@ -32,7 +32,7 @@
   - `gameplay/powerresolver` imports only `model` and its own package. `gameplay/operations` may import `gameplay.powerresolver`.
 - **Line width.** Scala lines this plan writes stay at or under 80 characters, as in the files around them. Re-wrap any line that comes out longer.
 - **Indentation in lists.** A code block inside a list item is indented two extra spaces for the list. Drop those two when you copy it.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Other sessions commit to `main` while you work.
   - Stage explicit paths only; never `git add -A`.
   - Re-check `git log --oneline -1` before any amend, reset or rebase.
@@ -54,7 +54,7 @@
 
 Check each of these in the code before Task 1. If a name or signature differs, stop and report.
 
-- `oathdigital.gameplay.powerresolver.OperationRewrite`:
+- `distantlands.gameplay.powerresolver.OperationRewrite`:
 
   ```scala
   type Matcher[A, B] = (ReadyGame, PendingTree) => PartialFunction[A, Vector[B]]
@@ -67,7 +67,7 @@ Check each of these in the code before Task 1. If a name or signature differs, s
   - Both descend `Sequence`, `Repeat` and `Branch`; `ops` also wraps a `BuildOps`' `build`. Both leave alone a node below that carries its own window, except the windowed leaf being folded.
   - One replacement takes the op's place. Several, or none, go in a `Sequence` there; inside what a `BuildOps` builds they are spliced in.
   - A fold-time match reads `ctx.state` and `PendingTree(ctx.nodePath, ctx.answered)`. A walk-time match reads the closure's arguments.
-- `oathdigital.gameplay.powerresolver.Deferred`:
+- `distantlands.gameplay.powerresolver.Deferred`:
 
   ```scala
   def held(ready: ReadyGame, key: DeferralKey): Vector[CoreOperation]
@@ -77,8 +77,8 @@ Check each of these in the code before Task 1. If a name or signature differs, s
   ```
 
   `resolve` selects nothing while nothing is held, and otherwise `f(...) :+ TakeDeferred(key)`.
-- In `oathdigital.model`: `DeferralKey(value: String)`, `Defer(key, ops: Vector[CoreOperation])` and `TakeDeferred(key)`. Neither op writes a Game Log line.
-- `Transform(fn, phase: FoldPhase = FoldPhase.Normal)` and `enum FoldPhase { case Normal, Late }`, both in `oathdigital.gameplay.powerresolver`.
+- In `distantlands.model`: `DeferralKey(value: String)`, `Defer(key, ops: Vector[CoreOperation])` and `TakeDeferred(key)`. Neither op writes a Game Log line.
+- `Transform(fn, phase: FoldPhase = FoldPhase.Normal)` and `enum FoldPhase { case Normal, Late }`, both in `distantlands.gameplay.powerresolver`.
 
 ## Rulings made at plan time
 
@@ -220,12 +220,12 @@ Expected: pass for this file.
 Create `src/test/scala/distantlands/gameplay/operations/SupplyStripSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Unwrap.as
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Unwrap.as
 
 /** `SupplyStrip` finds the actor's Supply payments wherever the cost window
   * holds them (operation rewrite design, slice 2). Pure: no walker. */
@@ -264,7 +264,7 @@ class SupplyStripSuite extends munit.FunSuite:
 
 - [ ] **Step 5: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.operations.SupplyStripSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.operations.SupplyStripSuite"`
 Expected: compile failure: `SupplyStrip.apply` takes two arguments, not three.
 
 - [ ] **Step 6: Move `SupplyStrip` onto `ops`**
@@ -272,10 +272,10 @@ Expected: compile failure: `SupplyStrip.apply` takes two arguments, not three.
 Replace the whole of `src/main/scala/distantlands/gameplay/operations/SupplyStrip.scala` with:
 
 ```scala
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.gameplay.powerresolver.{OperationRewrite, PowerCtx}
-import oathdigital.model.{Operation, PlayerId, SpendSupply}
+import distantlands.gameplay.powerresolver.{OperationRewrite, PowerCtx}
+import distantlands.model.{Operation, PlayerId, SpendSupply}
 
 /** Removes `actor`'s Supply payments from a cost window's children, wherever
   * the window holds them (operation rewrite design): listed (a Campaign's, a
@@ -359,7 +359,7 @@ The `favorOwed` line is the file's own, already over 80 columns; leave it as it 
 
 - [ ] **Step 8: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.operations.SupplyStripSuite oathdigital.gameplay.FollowUpSupplyWaiverSuite oathdigital.gameplay.FollowUpRulesSuite oathdigital.gameplay.powers.travel.* oathdigital.gameplay.powers.search.* oathdigital.gameplay.powers.economy.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.operations.SupplyStripSuite distantlands.gameplay.FollowUpSupplyWaiverSuite distantlands.gameplay.FollowUpRulesSuite distantlands.gameplay.powers.travel.* distantlands.gameplay.powers.search.* distantlands.gameplay.powers.economy.*"`
 Expected: pass. `SupplyStripSuite` has 2 tests.
 
 Then run `./sbtw test`.
@@ -419,10 +419,10 @@ Expected: the definition and four calls, each `adjustSupply(ctx, operations)`.
 
 In `src/main/scala/distantlands/gameplay/powers/search/Disciples.scala`:
 
-Replace the `powerresolver` import with `import oathdigital.gameplay.powerresolver.{Contribution, OperationRewrite, Transform}` and re-wrap it:
+Replace the `powerresolver` import with `import distantlands.gameplay.powerresolver.{Contribution, OperationRewrite, Transform}` and re-wrap it:
 
 ```scala
-import oathdigital.gameplay.powerresolver.{Contribution, OperationRewrite,
+import distantlands.gameplay.powerresolver.{Contribution, OperationRewrite,
   Transform}
 ```
 
@@ -460,7 +460,7 @@ Replace `effects` and delete `capped`:
 In `src/main/scala/distantlands/gameplay/powers/economy/InitiationRite.scala`, replace the `powerresolver` import with:
 
 ```scala
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   OperationRewrite, PowerCtx, Transform}
 ```
 
@@ -482,7 +482,7 @@ and replace `contributions` with:
 In `src/main/scala/distantlands/gameplay/powers/economy/EconomySources.scala`, add this import after the `actions.economy` one:
 
 ```scala
-import oathdigital.gameplay.powerresolver.{OperationRewrite, PowerCtx}
+import distantlands.gameplay.powerresolver.{OperationRewrite, PowerCtx}
 ```
 
 Replace `intoOccupied` and its doc with:
@@ -538,7 +538,7 @@ with
 In `src/main/scala/distantlands/gameplay/powers/economy/SuitSupplyWaiver.scala`, replace the `powerresolver` import with:
 
 ```scala
-import oathdigital.gameplay.powerresolver.{Contribution, OperationRewrite,
+import distantlands.gameplay.powerresolver.{Contribution, OperationRewrite,
   Transform}
 ```
 
@@ -569,7 +569,7 @@ Replace `effects` with:
 In `src/main/scala/distantlands/gameplay/powers/economy/ExtraWarbands.scala`, add this import before the `powers.NoteSupport` one:
 
 ```scala
-import oathdigital.gameplay.powerresolver.{OperationRewrite, PowerCtx}
+import distantlands.gameplay.powerresolver.{OperationRewrite, PowerCtx}
 ```
 
 Replace `added` and its doc with:
@@ -617,7 +617,7 @@ with
 
 - [ ] **Step 7: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.travel.* oathdigital.gameplay.powers.search.* oathdigital.gameplay.powers.economy.* oathdigital.gameplay.MusterProcedureSuite oathdigital.gameplay.EconomyWalkerSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.travel.* distantlands.gameplay.powers.search.* distantlands.gameplay.powers.economy.* distantlands.gameplay.MusterProcedureSuite distantlands.gameplay.EconomyWalkerSuite"`
 Expected: pass.
 
 Then run `./sbtw test`.
@@ -725,7 +725,7 @@ In `src/main/scala/distantlands/gameplay/powers/search/SearchSources.scala`:
 Add after the `SearchProcedure` import:
 
 ```scala
-import oathdigital.gameplay.powerresolver.{OperationRewrite, PowerCtx}
+import distantlands.gameplay.powerresolver.{OperationRewrite, PowerCtx}
 ```
 
 Give each public method a leading `ctx: PowerCtx` and pass it on:
@@ -808,7 +808,7 @@ Update the callers:
         SearchSources.withheld(ctx, operations,
   ```
 
-- `ErrandBoy.scala`: replace its `powerresolver` import with `import oathdigital.gameplay.powerresolver.{Contribution, PowerCtx, Transform}`. Replace `        .fold(_ => operations, offered(operations, _)))))` with `        .fold(_ => operations, offered(ctx, operations, _)))))`. Replace `offered` with:
+- `ErrandBoy.scala`: replace its `powerresolver` import with `import distantlands.gameplay.powerresolver.{Contribution, PowerCtx, Transform}`. Replace `        .fold(_ => operations, offered(operations, _)))))` with `        .fold(_ => operations, offered(ctx, operations, _)))))`. Replace `offered` with:
 
   ```scala
     private def offered(ctx: PowerCtx, operations: Vector[Operation],
@@ -825,7 +825,7 @@ Update the callers:
 In `LandWarden.scala`, replace the `powerresolver` import with:
 
 ```scala
-import oathdigital.gameplay.powerresolver.{Contribution, OperationRewrite,
+import distantlands.gameplay.powerresolver.{Contribution, OperationRewrite,
   Transform}
 ```
 
@@ -843,7 +843,7 @@ and replace the `SearchKeep` entry of `effects` with:
 In `SpinningBee.scala`, replace the `powerresolver` import with:
 
 ```scala
-import oathdigital.gameplay.powerresolver.{Contribution, ModifierPicks,
+import distantlands.gameplay.powerresolver.{Contribution, ModifierPicks,
   OfferReason, OperationRewrite, OptionRestriction, PowerCtx, Transform}
 ```
 
@@ -865,7 +865,7 @@ Leave its `SearchBeforeDraw` entry as it is (ruling 2).
 In `VowOfWandering.scala`, replace the `powerresolver` import with:
 
 ```scala
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   OperationRewrite, PowerCtx, Transform}
 ```
 
@@ -886,10 +886,10 @@ and replace the `contributions` of `case object VowOfWandering` with:
 Replace the whole of `src/main/scala/distantlands/gameplay/powers/targeting/ConspiracyTargets.scala` with:
 
 ```scala
-package oathdigital.gameplay.powers.targeting
+package distantlands.gameplay.powers.targeting
 
-import oathdigital.gameplay.powerresolver.{OperationRewrite, PowerCtx}
-import oathdigital.model._
+import distantlands.gameplay.powerresolver.{OperationRewrite, PowerCtx}
+import distantlands.model._
 
 /** Narrows a played Conspiracy's target decision for a rule that protects
   * some of its targets (Lost Tongue).
@@ -928,7 +928,7 @@ In `LostTongue.scala`, replace `      ConspiracyTargets.narrowed(id, operations,
 
 - [ ] **Step 6: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.* oathdigital.gameplay.powers.search.* oathdigital.gameplay.powers.targeting.* oathdigital.gameplay.powers.campaign.* oathdigital.gameplay.MusterProcedureSuite oathdigital.gameplay.EconomyWalkerSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.economy.* distantlands.gameplay.powers.search.* distantlands.gameplay.powers.targeting.* distantlands.gameplay.powers.campaign.* distantlands.gameplay.MusterProcedureSuite distantlands.gameplay.EconomyWalkerSuite"`
 Expected: pass.
 
 Then run `./sbtw test`.
@@ -961,7 +961,7 @@ git commit -m "refactor(powers): the decision rewrites find their decision throu
 In `MountedLibrarySuite.scala`, add this import:
 
 ```scala
-import oathdigital.gameplay.powerresolver.{FoldPhase, Transform}
+import distantlands.gameplay.powerresolver.{FoldPhase, Transform}
 ```
 
 and add this test at the end of the class:
@@ -978,7 +978,7 @@ and add this test at the end of the class:
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.MountedLibrarySuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.economy.MountedLibrarySuite"`
 Expected: the new test fails with `Normal` where `Late` was expected.
 
 - [ ] **Step 3: The Old Oak records the gain**
@@ -986,7 +986,7 @@ Expected: the new test fails with `Normal` where `Late` was expected.
 In `TheOldOak.scala`, replace the `powerresolver` import with:
 
 ```scala
-import oathdigital.gameplay.powerresolver.{Contribution, Deferred,
+import distantlands.gameplay.powerresolver.{Contribution, Deferred,
   OperationRewrite, Transform}
 ```
 
@@ -1043,7 +1043,7 @@ In `object TheOldOak`, add after `val Secrets: Int = 1`:
 In `MountedLibrary.scala`, replace the `powerresolver` import with:
 
 ```scala
-import oathdigital.gameplay.powerresolver.{Contribution, Deferred,
+import distantlands.gameplay.powerresolver.{Contribution, Deferred,
   FoldPhase, OperationRewrite, Transform}
 ```
 
@@ -1119,7 +1119,7 @@ Expected: no match.
 
 - [ ] **Step 5: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.* oathdigital.gameplay.OperationRestrictionsSuite oathdigital.serialization.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.economy.* distantlands.gameplay.OperationRestrictionsSuite distantlands.serialization.*"`
 Expected: pass. `MountedLibrarySuite` has one more test than before.
 
 Then run `./sbtw test`.
@@ -1150,7 +1150,7 @@ git commit -m "refactor(powers): The Old Oak and Mounted Library read the Trade'
 In `WayStationSuite.scala`, add this import:
 
 ```scala
-import oathdigital.gameplay.powerresolver.{FoldPhase, Transform}
+import distantlands.gameplay.powerresolver.{FoldPhase, Transform}
 ```
 
 and add this test at the end of the class:
@@ -1165,7 +1165,7 @@ and add this test at the end of the class:
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.travel.WayStationSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.travel.WayStationSuite"`
 Expected: the new test fails with `Normal` where `Late` was expected.
 
 - [ ] **Step 3: Fold Way Station `Late`**
@@ -1175,7 +1175,7 @@ In `WayStation.scala`:
 Replace the `powerresolver` import with:
 
 ```scala
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   FoldPhase, PowerCtx, Transform}
 ```
 
@@ -1211,7 +1211,7 @@ Replace `contributions` with:
 
 - [ ] **Step 4: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.travel.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.travel.*"`
 Expected: pass. `WayStationSuite` has one more test than before.
 
 - [ ] **Step 5: Commit**

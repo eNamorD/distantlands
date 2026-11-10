@@ -46,7 +46,7 @@ The log line rules are in `docs/superpowers/specs/2026-09-26-power-log-lines-des
   - `gameplay` never imports `application`, `serialization` or `server`.
   - A walker power (anything under `gameplay/powers`) never imports `gameplay.walker`.
   - No power name appears in walker sources.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Other sessions commit to `main` while you work.
   - Stage explicit paths only; never `git add -A`.
   - Re-check `git log --oneline -1` before any amend, reset or rebase.
@@ -202,14 +202,14 @@ Docs: `docs/ROADMAP.md` and the batch 4 design spec, in Task 6.
 Create `src/test/scala/distantlands/gameplay/RestrictionIconsSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.operations.{OperationRestrictions, RestrictionIcons}
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.present
+import distantlands.gameplay.operations.{OperationRestrictions, RestrictionIcons}
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.present
 
 /** The restriction-icon rule (catalog batch 4 design, "The restriction-icon
   * rule"): whichever operation moves it, an adviser-only card cannot land
@@ -317,17 +317,17 @@ class RestrictionIconsSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.RestrictionIconsSuite"`
-Expected: compile failure, `RestrictionIcons` is not a member of `oathdigital.gameplay.operations`.
+Run: `./sbtw "testOnly distantlands.gameplay.RestrictionIconsSuite"`
+Expected: compile failure, `RestrictionIcons` is not a member of `distantlands.gameplay.operations`.
 
 - [ ] **Step 3: Write the rule**
 
 Create `src/main/scala/distantlands/gameplay/operations/RestrictionIcons.scala`:
 
 ```scala
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Restriction icons govern how a card is played, moved and swapped
   * (catalog batch 4 design, "The restriction-icon rule"). A `Move` that
@@ -393,7 +393,7 @@ final case class RestrictionIcons(adviserOnly: Set[CardId],
 
 In `src/main/scala/distantlands/gameplay/operations/OperationRestrictions.scala`:
 
-- Change the catalog import to `import oathdigital.catalog.{AdviserOnly, ExecutableCatalog, Locked, SiteOnly}`.
+- Change the catalog import to `import distantlands.catalog.{AdviserOnly, ExecutableCatalog, Locked, SiteOnly}`.
 - In the class doc comment, change "`printed` are the restrictions a catalog's cards print: [[LockedCards]], holding every card whose `Locked` trait shows the lock icon, and" to "`printed` are the restrictions a catalog's cards print: [[LockedCards]], holding every card whose `Locked` trait shows the lock icon, [[RestrictionIcons]], holding every adviser-only and site-only denizen, and".
 - Replace `printedBy`'s last line, `Vector(LockedCards(locked), HallOfMinisters, GrandScepter)`, with:
 
@@ -417,16 +417,16 @@ In `src/test/scala/distantlands/gameplay/OperationRestrictionsSuite.scala`, the 
       Vector[OperationRestriction](HallOfMinisters, GrandScepter))
 ```
 
-and add `RestrictionIcons` to the file's `oathdigital.gameplay.operations` import.
+and add `RestrictionIcons` to the file's `distantlands.gameplay.operations` import.
 
 - [ ] **Step 6: Run the rule's suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.RestrictionIconsSuite oathdigital.gameplay.OperationRestrictionsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.RestrictionIconsSuite distantlands.gameplay.OperationRestrictionsSuite"`
 Expected: PASS, 9 tests in the new suite.
 
 - [ ] **Step 7: See the audit's one failure**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.wake.HornedMaskSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.wake.HornedMaskSuite"`
 Expected: FAIL in "a site-only denizen becomes a facedown adviser, and the use is recorded once per turn". Wayside Inn is site-only, and Horned Mask's `Take` lands it faceup before its `Flip`.
 
 - [ ] **Step 8: Land Horned Mask's card facedown in one move**
@@ -461,12 +461,12 @@ In the class doc comment, replace "The effect is: discard the chosen adviser whe
 
 - [ ] **Step 9: Run Horned Mask's suite again**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.wake.HornedMaskSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.wake.HornedMaskSuite"`
 Expected: PASS, every test unchanged.
 
 - [ ] **Step 10: Run the restriction and card-play suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.*Restriction* oathdigital.gameplay.CardPlay* oathdigital.gameplay.powers.action.* oathdigital.gameplay.powers.whenplayed.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.*Restriction* distantlands.gameplay.CardPlay* distantlands.gameplay.powers.action.* distantlands.gameplay.powers.whenplayed.*"`
 Expected: PASS. Dream Thief, Enchantress, Twin Brother and Great Herd pass unchanged, which confirms ruling 2.
 
 - [ ] **Step 11: Commit**
@@ -495,7 +495,7 @@ git commit -m "feat(operations): restriction icons govern card moves and swaps"
 **Interfaces:**
 - Consumes: `RestrictionIcons` through `OperationRestrictions.printed` (Task 1), `PaidAction`, `PowerAccess.pawnSite`, `PlayerFacts.player`, `PowerAnswers.one`, `NoteSupport.answer`.
 - Produces:
-  - `object SiteRoom` in package `oathdigital.gameplay.powers`:
+  - `object SiteRoom` in package `distantlands.gameplay.powers`:
     - `def emptySlots(catalog: ExecutableCatalog, ready: ReadyGame, site: SiteId): Vector[Int]`
     - `def hasRoom(catalog: ExecutableCatalog, ready: ReadyGame, site: SiteId): Boolean`
     - `def open(catalog: ExecutableCatalog, ready: ReadyGame): Vector[SiteId]`
@@ -506,15 +506,15 @@ git commit -m "feat(operations): restriction icons govern card moves and swaps"
 Create `src/test/scala/distantlands/gameplay/powers/action/HomesteadersSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 class HomesteadersSuite extends munit.FunSuite:
   import PhasePowerHarness._
@@ -597,7 +597,7 @@ class HomesteadersSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.HomesteadersSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.HomesteadersSuite"`
 Expected: compile failure, `Homesteaders` is not found.
 
 - [ ] **Step 3: Write `SiteRoom`**
@@ -605,10 +605,10 @@ Expected: compile failure, `Homesteaders` is not found.
 Create `src/main/scala/distantlands/gameplay/powers/SiteRoom.scala`:
 
 ```scala
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.model._
 
 /** Room for a card at a site. Operations never check a site's capacity, so
   * a power that moves a card to a site offers only sites with room (catalog
@@ -643,13 +643,13 @@ Remove `object HomesteadersCard` (its five lines and the blank line after) from 
 Create `src/main/scala/distantlands/gameplay/powers/action/Homesteaders.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.PowerAccess
-import oathdigital.gameplay.powers.{NoteSupport, PlayerFacts, PowerAnswers,
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.PowerAccess
+import distantlands.gameplay.powers.{NoteSupport, PlayerFacts, PowerAnswers,
   SiteRoom}
-import oathdigital.model._
+import distantlands.model._
 
 object HomesteadersCard extends Denizen(DenizenId("127"), "Homesteaders", Suit.Hearth):
   val power = PrintedPower(PowerId("denizen.homesteaders"),
@@ -751,16 +751,16 @@ In `src/main/scala/distantlands/gameplay/powers/action/SelfActionPowers.scala`:
 - Append `++ Vector(Homesteaders.forCatalog(catalog))` after `Vector(BedOfRoots.forCatalog(catalog))`.
 - In the doc comment, change "The phase powers of catalog batch 2's slice 3 and catalog batch 3's slice 3a," to "The phase powers of catalog batch 2's slice 3, catalog batch 3's slice 3a and catalog batch 4's Homesteaders,".
 
-In `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`, add `HomesteadersCard` to the `oathdigital.gameplay.powers.action.{...}` import, in alphabetical order (after `GreatFeastCard`). The list entry `HomesteadersCard,` stays as it is: the name now resolves to the new import instead of the `catalog.holding._` wildcard.
+In `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`, add `HomesteadersCard` to the `distantlands.gameplay.powers.action.{...}` import, in alphabetical order (after `GreatFeastCard`). The list entry `HomesteadersCard,` stays as it is: the name now resolves to the new import instead of the `catalog.holding._` wildcard.
 
 - [ ] **Step 6: Run the suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.HomesteadersSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.HomesteadersSuite"`
 Expected: PASS, 5 tests.
 
 - [ ] **Step 7: Run the suites that hold Homesteaders as filler**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.* oathdigital.gameplay.powers.rest.InsomniaSuite oathdigital.gameplay.powers.whenplayed.* oathdigital.gameplay.powers.targeting.FortressRulesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.* distantlands.gameplay.powers.rest.InsomniaSuite distantlands.gameplay.powers.whenplayed.* distantlands.gameplay.powers.targeting.FortressRulesSuite"`
 Expected: PASS.
 
 - [ ] **Step 8: Commit**
@@ -795,15 +795,15 @@ git commit -m "feat(action): Homesteaders moves a faceup adviser to the pawn's s
 Create `src/test/scala/distantlands/gameplay/powers/action/ResettleSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
 
 class ResettleSuite extends munit.FunSuite:
   import PhasePowerHarness._
@@ -910,7 +910,7 @@ class ResettleSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.ResettleSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.ResettleSuite"`
 Expected: compile failure, `Resettle` is not found.
 
 - [ ] **Step 3: Write Resettle**
@@ -920,11 +920,11 @@ Remove `object ResettleCard` (its six lines and the blank line after) from `src/
 Create `src/main/scala/distantlands/gameplay/powers/action/Resettle.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
-import oathdigital.gameplay.powers.{NoteSupport, PowerAnswers, SiteRoom}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
+import distantlands.gameplay.powers.{NoteSupport, PowerAnswers, SiteRoom}
+import distantlands.model._
 
 object ResettleCard extends Denizen(DenizenId("159"), "Resettle", Suit.Nomad) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.resettle"),
@@ -1050,13 +1050,13 @@ In `src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala`:
 - Append `++ Vector(Resettle.forCatalog(catalog))` after `Vector(HonorGuard.forCatalog(catalog))`.
 - In the doc comment, change "The phase powers of catalog batch 2's slice 4 and catalog batch 3's slice 3b, actions on others," to "The phase powers of catalog batch 2's slice 4, catalog batch 3's slice 3b and catalog batch 4's Resettle, actions on others,".
 
-In `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`, add `ResettleCard` to the `oathdigital.gameplay.powers.action.{...}` import, in alphabetical order (after `RelicBreakerCard`).
+In `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`, add `ResettleCard` to the `distantlands.gameplay.powers.action.{...}` import, in alphabetical order (after `RelicBreakerCard`).
 
 If `SiteOnly` is no longer used in `HoldingNomadDenizens.scala`, remove it from that file's import. Moving Market, Convoys and others still use it, so it should stay.
 
 - [ ] **Step 5: Run the suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.ResettleSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.ResettleSuite"`
 Expected: PASS, 5 tests.
 
 - [ ] **Step 6: Commit**
@@ -1090,15 +1090,15 @@ git commit -m "feat(action): Resettle moves a faceup Nomad adviser to a site"
 Create `src/test/scala/distantlands/gameplay/powers/action/RovingTerrorSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 class RovingTerrorSuite extends munit.FunSuite:
   import PhasePowerHarness._
@@ -1190,7 +1190,7 @@ class RovingTerrorSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.RovingTerrorSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.RovingTerrorSuite"`
 Expected: compile failure, `RovingTerror` is not found.
 
 - [ ] **Step 3: Write Roving Terror**
@@ -1200,12 +1200,12 @@ Remove `object RovingTerrorCard` (its six lines and the blank line after) from `
 Create `src/main/scala/distantlands/gameplay/powers/action/RovingTerror.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
-import oathdigital.gameplay.SiteRulers
-import oathdigital.gameplay.powers.{NoteSupport, PowerAnswers}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
+import distantlands.gameplay.SiteRulers
+import distantlands.gameplay.powers.{NoteSupport, PowerAnswers}
+import distantlands.model._
 
 object RovingTerrorCard extends Denizen(DenizenId("46"), "Roving Terror", Suit.Beast) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.roving-terror"),
@@ -1315,11 +1315,11 @@ In `src/main/scala/distantlands/gameplay/powers/action/WorldActionPowers.scala`:
 - Append `++ Vector(RovingTerror.forCatalog(catalog))` after `Vector(GreatFeast.forCatalog(catalog))`.
 - In the doc comment, change "The phase powers of catalog batch 3's slice 3c, actions on sites, banks and banners," to "The phase powers of catalog batch 3's slice 3c and catalog batch 4's Roving Terror, actions on sites, banks and banners,".
 
-In `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`, add `RovingTerrorCard` to the `oathdigital.gameplay.powers.action.{...}` import, in alphabetical order (after `ResettleCard`).
+In `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`, add `RovingTerrorCard` to the `distantlands.gameplay.powers.action.{...}` import, in alphabetical order (after `ResettleCard`).
 
 - [ ] **Step 5: Run the suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.RovingTerrorSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.RovingTerrorSuite"`
 Expected: PASS, 5 tests.
 
 - [ ] **Step 6: Commit**
@@ -1356,21 +1356,21 @@ git commit -m "feat(action): Roving Terror replaces a card at another site"
 Create `src/test/scala/distantlands/gameplay/powers/economy/MovingMarketSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.actions.economy.TradeProcedure
-import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.ParkedDecisionAssertions
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, EconomyActions,
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.actions.economy.TradeProcedure
+import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.ParkedDecisionAssertions
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, CatalogNames, EconomyActions,
   Look, Outcomes, PhasePowerHarness, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 class MovingMarketSuite extends munit.FunSuite:
   private val market = CatalogNames.denizen("Moving Market")
@@ -1491,7 +1491,7 @@ class MovingMarketSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.MovingMarketSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.economy.MovingMarketSuite"`
 Expected: compile failure, `MovingMarket` is not found.
 
 - [ ] **Step 3: Write Moving Market**
@@ -1501,15 +1501,15 @@ Remove `object MovingMarketCard` (its seven lines and the blank line after) from
 Create `src/main/scala/distantlands/gameplay/powers/economy/MovingMarket.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
-import oathdigital.gameplay.SiteRulers
-import oathdigital.gameplay.actions.economy.TradeProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, Transform}
-import oathdigital.gameplay.powers.{NoteSupport, PowerAnswers,
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
+import distantlands.gameplay.SiteRulers
+import distantlands.gameplay.actions.economy.TradeProcedure
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.gameplay.powers.{NoteSupport, PowerAnswers,
   SelectedModifier, SiteRoom}
-import oathdigital.model._
+import distantlands.model._
 
 object MovingMarketCard extends Denizen(DenizenId("241"), "Moving Market", Suit.Nomad) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.moving-market"),
@@ -1639,18 +1639,18 @@ object MovingMarket:
 
 In `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`:
 
-- Add `MovingMarket` to the `oathdigital.gameplay.powers.economy.{...}` import, in alphabetical order.
+- Add `MovingMarket` to the `distantlands.gameplay.powers.economy.{...}` import, in alphabetical order.
 - Append `++ Vector(MovingMarket.forCatalog(catalog))` after `Vector(Downtrodden.forCatalog(catalog))`.
 
 In `src/main/scala/distantlands/gameplay/powers/MusterPowers.scala`, delete the line `object MovingMarket extends ReviewedPower("denizen.moving-market", None, economy)`, and delete `MovingMarket, ` from the `powers` vector.
 
-In `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`, add `MovingMarketCard` to the `oathdigital.gameplay.powers.economy.{...}` import, in alphabetical order (after `KnightsErrantCard`).
+In `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`, add `MovingMarketCard` to the `distantlands.gameplay.powers.economy.{...}` import, in alphabetical order (after `KnightsErrantCard`).
 
 In `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`, add `"denizen.moving-market"` to the end of `modifiers`.
 
 - [ ] **Step 5: Run the suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.* oathdigital.gameplay.PowerKindsCatalogSuite oathdigital.gameplay.powers.PowerImplementationStatusSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.economy.* distantlands.gameplay.PowerKindsCatalogSuite distantlands.gameplay.powers.PowerImplementationStatusSuite"`
 Expected: PASS, 6 tests in `MovingMarketSuite`, and every other economy suite unchanged.
 
 - [ ] **Step 6: Write the frontend test**
@@ -1681,7 +1681,7 @@ The suite's sites `hills` and `marsh` have capacity 3, so both slots have a home
 
 - [ ] **Step 7: Run it**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.BoardDecisionPanelSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.BoardDecisionPanelSuite"`
 Expected: PASS. No production frontend change is needed, which settles ruling 9's first item. If the test fails because a slot is drawn as a loose option or Skip is missing, stop and report: the spec says to ask the product owner.
 
 - [ ] **Step 8: Commit**

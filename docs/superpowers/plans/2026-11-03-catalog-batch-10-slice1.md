@@ -69,16 +69,16 @@ Check that the class line (`class GiantPythonRestrictionSuite`) is unchanged.
 Create `src/test/scala/distantlands/gameplay/powers/poweruse/BanditForestSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.poweruse
+package distantlands.gameplay.powers.poweruse
 
-import oathdigital.gameplay.cards.{AncientCitySite, DeepWoodsSite}
-import oathdigital.gameplay.powerresolver.PowerUse
-import oathdigital.gameplay.powers.action.RovingTerrorCard
-import oathdigital.gameplay.powers.travel.ForbiddenForestCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.cards.{AncientCitySite, DeepWoodsSite}
+import distantlands.gameplay.powerresolver.PowerUse
+import distantlands.gameplay.powers.action.RovingTerrorCard
+import distantlands.gameplay.powers.travel.ForbiddenForestCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2, p3}
 
 /** Bandit Forest (E29, ruined): "Imperials cannot place [favor]/[secret] on
   * cards ruled by bandits or use their non-persistent powers." (catalog
@@ -147,7 +147,7 @@ class BanditForestSuite extends munit.FunSuite:
 
 - [ ] **Step 3: Run both suites and check they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.poweruse.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.poweruse.*"`
 Expected: compile failure, `Not found: NonPersistentPowerRestriction`.
 
 - [ ] **Step 4: Write `NonPersistentPowerRestriction`**
@@ -155,16 +155,16 @@ Expected: compile failure, `Not found: NonPersistentPowerRestriction`.
 Delete `GiantPythonRestriction.scala` (`git rm`). Create `NonPersistentPowerRestriction.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.poweruse
+package distantlands.gameplay.powers.poweruse
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.SiteRulers
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.SiteRulers
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower,
   PowerUse, PowerUseRefusal, PowerUseRestriction}
-import oathdigital.gameplay.powers.action.GiantPythonCard
-import oathdigital.gameplay.powers.setup.EdificeSetupSupport
-import oathdigital.gameplay.powers.travel.ForbiddenForestCard
-import oathdigital.model._
+import distantlands.gameplay.powers.action.GiantPythonCard
+import distantlands.gameplay.powers.setup.EdificeSetupSupport
+import distantlands.gameplay.powers.travel.ForbiddenForestCard
+import distantlands.model._
 
 /** A persistent rule that guards some cards against non-persistent powers
   * and placements (catalog batch 10, slice 1): Giant Python's "Other cards
@@ -280,12 +280,12 @@ In `ForbiddenForest.scala`, replace the doc comment's last sentence ("The ruined
 
 - [ ] **Step 6: Run the suites and check they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.poweruse.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.poweruse.*"`
 Expected: PASS, including every existing `GiantPythonRestrictionSuite` test.
 
 - [ ] **Step 7: Regenerate the snapshots**
 
-Run: `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite oathdigital.gameplay.powers.UnimplementedPowersSuite"`
+Run: `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite distantlands.gameplay.powers.UnimplementedPowersSuite"`
 
 Then `git diff src/test/resources`. Expected:
 - `declared-keys.txt` gains exactly `edifice.e29.ruined no-placing-here = ...` and `edifice.e29.ruined no-powers-here = ...`.
@@ -293,7 +293,7 @@ Then `git diff src/test/resources`. Expected:
 
 - [ ] **Step 8: Run the restriction and travel suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.* oathdigital.gameplay.PhaseMenuSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.* distantlands.gameplay.PhaseMenuSuite"`
 Expected: PASS.
 
 - [ ] **Step 9: Commit**
@@ -321,7 +321,7 @@ EOF
 **Files:**
 - Create: `src/main/scala/distantlands/gameplay/roles/CouncilSeat.scala`
 - Modify: `src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala` (remove `CouncilSeatCard`)
-- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (import `oathdigital.gameplay.roles.CouncilSeatCard`)
+- Modify: `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala` (import `distantlands.gameplay.roles.CouncilSeatCard`)
 - Modify: `src/main/scala/distantlands/gameplay/roles/Citizenship.scala:35-36`
 - Modify: `src/main/scala/distantlands/gameplay/powers/campaign/GrandScepterPlan.scala`
 - Modify: `src/main/scala/distantlands/gameplay/phases/ActOffers.scala`
@@ -345,13 +345,13 @@ EOF
 Create `src/test/scala/distantlands/gameplay/roles/CouncilSeatSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.roles
+package distantlands.gameplay.roles
 
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{Look, MenuPlay, Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{Look, MenuPlay, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** Council Seat (card 123): "If you're a Citizen, you cannot be exiled,
   * even by yourself." (catalog batch 10, slice 1, ruling 8). Every exile
@@ -419,7 +419,7 @@ class CouncilSeatSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Write the failing Grand Scepter tests**
 
-Append to `GrandScepterPlanSuite.scala`, and import `oathdigital.gameplay.roles.{CouncilSeat, CouncilSeatCard}`:
+Append to `GrandScepterPlanSuite.scala`, and import `distantlands.gameplay.roles.{CouncilSeat, CouncilSeatCard}`:
 
 ```scala
   /** As `chancellorRaidsCitizen`, with the Citizen holding Council Seat
@@ -450,7 +450,7 @@ If adding an adviser to the rival changes the Campaign's dice or plans (for exam
 
 - [ ] **Step 3: Run the tests and check they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.roles.CouncilSeatSuite oathdigital.gameplay.powers.campaign.GrandScepterPlanSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.roles.CouncilSeatSuite distantlands.gameplay.powers.campaign.GrandScepterPlanSuite"`
 Expected: compile failure, `Not found: CouncilSeatCard`.
 
 - [ ] **Step 4: Write `CouncilSeat`**
@@ -458,12 +458,12 @@ Expected: compile failure, `Not found: CouncilSeatCard`.
 Remove `CouncilSeatCard` from `HoldingOrderDenizens.scala`. Remove that file's imports that are now unused; `-Werror` will name them. Create `src/main/scala/distantlands/gameplay/roles/CouncilSeat.scala`:
 
 ```scala
-package oathdigital.gameplay.roles
+package distantlands.gameplay.roles
 
-import oathdigital.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
-import oathdigital.gameplay.PowerAccess
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower}
-import oathdigital.model._
+import distantlands.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
+import distantlands.gameplay.PowerAccess
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower}
+import distantlands.model._
 
 object CouncilSeatCard extends Denizen(DenizenId("123"), "Council Seat", Suit.Order) with Locked with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.council-seat"),
@@ -500,9 +500,9 @@ case object CouncilSeat extends ContributingPower:
     else option
 ```
 
-In `NewFoundations.scala`, add `import oathdigital.gameplay.roles.CouncilSeatCard`. The `CouncilSeatCard,` entry at line 59 stays where it is.
+In `NewFoundations.scala`, add `import distantlands.gameplay.roles.CouncilSeatCard`. The `CouncilSeatCard,` entry at line 59 stays where it is.
 
-In `WalkerPowerCatalog.scala`, add `Vector(CouncilSeat) ++` next to the `NonPersistentPowerRestriction` line, and import `oathdigital.gameplay.roles.CouncilSeat`.
+In `WalkerPowerCatalog.scala`, add `Vector(CouncilSeat) ++` next to the `NonPersistentPowerRestriction` line, and import `distantlands.gameplay.roles.CouncilSeat`.
 
 `PowerAccess` is `private[gameplay]`, which `gameplay.roles` reaches.
 
@@ -536,7 +536,7 @@ In `ActOffers.scala`, add after `offeredTo`:
     else plain
 ```
 
-Import `oathdigital.gameplay.roles.CouncilSeat`. In `PhaseMenu.offers`, inside the `acting` builder (line 131), replace `DecisionOption.Button(offer.ref, offer.label)` with `ActOffers.button(ready, actor, offer)`.
+Import `distantlands.gameplay.roles.CouncilSeat`. In `PhaseMenu.offers`, inside the `acting` builder (line 131), replace `DecisionOption.Button(offer.ref, offer.label)` with `ActOffers.button(ready, actor, offer)`.
 
 - [ ] **Step 7: Warn in the Grand Scepter's plan and its question**
 
@@ -574,16 +574,16 @@ In `GrandScepterPlan.scala`:
         else Vector(Note(id, _ => Some(spared(card, NoteArg.Player(enemy)))))))
 ```
 
-Import `oathdigital.gameplay.roles.CouncilSeat`. Update the scaladoc: "Against a Citizen holding Council Seat faceup, the plan and the exile carry the Seat's warning, and the exile leaves them a Citizen ('Did not exile p2.')."
+Import `distantlands.gameplay.roles.CouncilSeat`. Update the scaladoc: "Against a Citizen holding Council Seat faceup, the plan and the exile carry the Seat's warning, and the exile leaves them a Citizen ('Did not exile p2.')."
 
 - [ ] **Step 8: Run the tests and check they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.roles.* oathdigital.gameplay.powers.campaign.GrandScepterPlanSuite oathdigital.gameplay.SelfExileSuite oathdigital.gameplay.PhaseMenuSuite oathdigital.application.RoleChangesScenarioSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.roles.* distantlands.gameplay.powers.campaign.GrandScepterPlanSuite distantlands.gameplay.SelfExileSuite distantlands.gameplay.PhaseMenuSuite distantlands.application.RoleChangesScenarioSuite"`
 Expected: PASS.
 
 - [ ] **Step 9: Regenerate the unimplemented snapshot**
 
-Run: `UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.UnimplementedPowersSuite"`
+Run: `UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.UnimplementedPowersSuite"`
 Expected diff: `unimplemented.txt` loses exactly `denizen.council-seat`.
 
 - [ ] **Step 10: Commit**
@@ -622,14 +622,14 @@ EOF
 Create `src/test/scala/distantlands/gameplay/powers/rest/NaysayersSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.rest
+package distantlands.gameplay.powers.rest
 
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{Look, PhasePowerHarness, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{Look, PhasePowerHarness, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
 
 /** Naysayers (card 21): "REST: If any Exile is the Oathkeeper or Usurper,
   * take [favor] from the Chancellor." (catalog batch 10, slice 1). */
@@ -683,7 +683,7 @@ class NaysayersSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it and check it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.rest.NaysayersSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.rest.NaysayersSuite"`
 Expected: compile failure, `Not found: Naysayers`.
 
 - [ ] **Step 3: Write `Naysayers`**
@@ -691,12 +691,12 @@ Expected: compile failure, `Not found: Naysayers`.
 Remove `NaysayersCard` from `HoldingDiscordDenizens.scala`. Create `src/main/scala/distantlands/gameplay/powers/rest/Naysayers.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.rest
+package distantlands.gameplay.powers.rest
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
   PrintedPower}
-import oathdigital.gameplay.powerresolver.PhasePower
-import oathdigital.model._
+import distantlands.gameplay.powerresolver.PhasePower
+import distantlands.model._
 
 object NaysayersCard extends Denizen(DenizenId("21"), "Naysayers", Suit.Discord) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.naysayers"),
@@ -759,12 +759,12 @@ In `PhasePowerCatalog.scala`, change `Vector(Insomnia) ++` to `Vector(Insomnia, 
 
 - [ ] **Step 4: Run the suite and check it passes**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.rest.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.rest.*"`
 Expected: PASS.
 
 - [ ] **Step 5: Regenerate the snapshots**
 
-Run: `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite oathdigital.gameplay.powers.UnimplementedPowersSuite"`
+Run: `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite distantlands.gameplay.powers.UnimplementedPowersSuite"`
 Expected diff:
 - `declared-keys.txt` gains exactly `denizen.naysayers used = Took 1 favor from {0}.`
 - `unimplemented.txt` loses exactly `denizen.naysayers`.
@@ -807,16 +807,16 @@ EOF
 Create `src/test/scala/distantlands/gameplay/powers/action/ImperialSealSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite}
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{Look, PhasePowerHarness, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{Look, PhasePowerHarness, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
 
 /** Imperial Seal (R26): "ACTION: If no Imperial pawns are at your site,
   * move any number of Imperial warbands from your site to any Imperial
@@ -902,7 +902,7 @@ class ImperialSealSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it and check it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.ImperialSealSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.ImperialSealSuite"`
 Expected: compile failure, `Not found: ImperialSeal`.
 
 - [ ] **Step 3: Add `imperialSites`**
@@ -925,12 +925,12 @@ In `SiteRulers.scala`, after `protectedAt`:
 Remove `ImperialSealCard` from `HoldingRelics.scala`. Create `src/main/scala/distantlands/gameplay/powers/action/ImperialSeal.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{ExecutableCatalog, PrintedPower, Relic}
-import oathdigital.gameplay.SiteRulers
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.catalog.{ExecutableCatalog, PrintedPower, Relic}
+import distantlands.gameplay.SiteRulers
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 object ImperialSealCard extends Relic(RelicId("R26"), "Imperial Seal", value = 35, defense = 2):
   val power = PrintedPower(PowerId("relic.imperial-seal"),
@@ -1038,18 +1038,18 @@ case object ImperialSeal extends PaidAction(ImperialSealCard.power):
   yield line
 ```
 
-Import `oathdigital.gameplay.NoteSupport`. Check `states.previous`'s shape in `GiantPython.movedNote`, which destructures `(before, _) <- states.previous`. Check whether `NotePart.Plural` counts a `NoteArg.Number`; its doc says it does.
+Import `distantlands.gameplay.NoteSupport`. Check `states.previous`'s shape in `GiantPython.movedNote`, which destructures `(before, _) <- states.previous`. Check whether `NotePart.Plural` counts a `NoteArg.Number`; its doc says it does.
 
 In `PhasePowerCatalog.scala`, add `ImperialSeal` to the `Vector[PhasePower](WaysideInn, ...)` list. The `action._` import already reaches it, or add it to the named `action` import.
 
 - [ ] **Step 5: Run the suite and check it passes**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.ImperialSealSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.ImperialSealSuite"`
 Expected: PASS.
 
 - [ ] **Step 6: Regenerate the snapshots**
 
-Run: `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite oathdigital.gameplay.powers.UnimplementedPowersSuite"`
+Run: `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite distantlands.gameplay.powers.UnimplementedPowersSuite"`
 Expected diff:
 - `declared-keys.txt` gains exactly the two `relic.imperial-seal` lines.
 - `unimplemented.txt` loses exactly `relic.imperial-seal`.

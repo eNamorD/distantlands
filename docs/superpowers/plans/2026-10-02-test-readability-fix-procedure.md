@@ -38,10 +38,10 @@ Shared-fixture rows (IDs `00-…`) name a helper instead of a test.
 - **Use the testkit accessors**, never `.get`, `.toOption.get`,
   `.left.toOption.get`, `asInstanceOf` or a `val Ready(x) = …: @unchecked`
   extract:
-  - `oathdigital.testkit.Unwrap` (all three test trees): `accepted(either)`,
+  - `distantlands.testkit.Unwrap` (all three test trees): `accepted(either)`,
     `rejected(either)`, `present(option, "what was expected")`,
     `as[T](value)`.
-  - `oathdigital.testkit.Outcomes` (root): `ready(state)`, `parked(outcome)`,
+  - `distantlands.testkit.Outcomes` (root): `ready(state)`, `parked(outcome)`,
     `finished(outcome)`, `assertWireRoundTrips(events)`.
   - `Look` reads (root): `boardWarbands`, `cardsAt`, `discardAfter`,
     `forceKind`, and the existing reads.
@@ -79,9 +79,9 @@ The controller creates one worktree per task off local `main` (other
 sessions move `main`, and the remote lags it):
 
 ```bash
-cd /Users/roman/projects/oathdigital
+cd /Users/roman/projects/distantlands
 git worktree add .worktrees/readability-<task> -b readability-<task> main
-ln -s /Users/roman/projects/oathdigital/.tooling .worktrees/readability-<task>/.tooling
+ln -s /Users/roman/projects/distantlands/.tooling .worktrees/readability-<task>/.tooling
 ```
 
 `<task>` is the task's short name from the plan, for example `04-2`.
@@ -102,10 +102,10 @@ runs both.
 Work file by file. After each file, run its suite:
 
 ```bash
-./sbtw "root/testOnly oathdigital.gameplay.powers.action.ArmedMobSuite"
+./sbtw "root/testOnly distantlands.gameplay.powers.action.ArmedMobSuite"
 ```
 
-(frontend suites: `./sbtw "frontend/testOnly oathdigital.frontend.<Suite>"`).
+(frontend suites: `./sbtw "frontend/testOnly distantlands.frontend.<Suite>"`).
 A shared-fixture change runs every caller's suite, or the whole root test.
 
 Commit the fixes when every row in the task is done and the gate passes
@@ -142,7 +142,7 @@ unless a row says so.
 ```bash
 ./sbtw root/test 2>&1 | tee /tmp/readability-<task>-root-after.log | grep -E 'Passed: Total|Failed: Total|\[error\]' | tail -3
 ./sbtw frontend/test 2>&1 | tee /tmp/readability-<task>-frontend-after.log | grep -E 'Passed: Total|Failed: Total|\[error\]' | tail -3
-python3 /Users/roman/projects/oathdigital/.superpowers/readability/frozen.py <base> HEAD
+python3 /Users/roman/projects/distantlands/.superpowers/readability/frozen.py <base> HEAD
 ```
 
 Both test runs green. The test totals equal the "before" totals, except for

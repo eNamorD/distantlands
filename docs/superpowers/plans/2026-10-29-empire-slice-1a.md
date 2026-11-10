@@ -90,10 +90,10 @@ builder-declared askable options, following Palanquin's Toll Roads ask.
 - [ ] **Step 1: Write the failing test**
 
 ```scala
-package oathdigital.model
+package distantlands.model
 
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2, p3}
 
 class SiteRulingPlayerSuite extends munit.FunSuite:
   private val dunes = "Dunes"
@@ -105,12 +105,12 @@ class SiteRulingPlayerSuite extends munit.FunSuite:
   private def rulerOfDunes(table: Table): Option[SiteRuler] =
     val ready = table.ready
     SiteRule.rulingPlayer(ready,
-      oathdigital.testkit.CatalogNames.site(dunes))
+      distantlands.testkit.CatalogNames.site(dunes))
 
   test("the Empire's sites keep the Empire as their raw ruler"):
     val ready = empireAtDunes.ready
     val site = ready.game.current.map.sites(
-      oathdigital.testkit.CatalogNames.site(dunes))
+      distantlands.testkit.CatalogNames.site(dunes))
     assertEquals(SiteRule.ruler(site.forces, ready.game.current.players),
       Right(SiteRuler.Empire))
 
@@ -146,7 +146,7 @@ class SiteRulingPlayerSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.model.SiteRulingPlayerSuite"`
+Run: `./sbtw "testOnly distantlands.model.SiteRulingPlayerSuite"`
 Expected: compile failure: `imperial`, `rulingPlayer`, `Imperials` and
 `hasVisionSlot` are not members.
 
@@ -168,7 +168,7 @@ enum Role(val isImperial: Boolean):
 Create `Imperials.scala`:
 
 ```scala
-package oathdigital.model
+package distantlands.model
 
 /** The roles of the players at the table (Empire phase design, "Role").
   * A role lives on the lineage; every read of who is Imperial, or who is
@@ -253,7 +253,7 @@ In `Table.scala`, add after `warbandsAt`:
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `./sbtw "testOnly oathdigital.model.SiteRulingPlayerSuite"`
+Run: `./sbtw "testOnly distantlands.model.SiteRulingPlayerSuite"`
 Expected: PASS, 7 tests.
 
 - [ ] **Step 5: Commit**
@@ -291,11 +291,11 @@ site's force, not its ruling player: `GreatMarketRules.scala:125`,
 - [ ] **Step 1: Write the failing tests**
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
 
 class EmpireRulerSuite extends munit.FunSuite:
   private val dunes = CatalogNames.site("Dunes")
@@ -352,7 +352,7 @@ warbands:
 
 - [ ] **Step 2: Run tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.EmpireRulerSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.EmpireRulerSuite"`
 Expected: compile failure on `protectedAt`; after a stub, the ruled-sites
 tests fail with empty sets.
 
@@ -508,7 +508,7 @@ turn, through `PowerAccess.ruledSites`."
 
 - [ ] **Step 4: Run tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.EmpireRulerSuite oathdigital.gameplay.powers.* oathdigital.application.HallOfMinistersConsentServiceSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.EmpireRulerSuite distantlands.gameplay.powers.* distantlands.application.HallOfMinistersConsentServiceSuite"`
 Expected: PASS, including every existing power suite.
 
 - [ ] **Step 5: Commit**
@@ -539,13 +539,13 @@ git commit -m "feat(empire): read every site ruler through the turn-aware resolv
 - [ ] **Step 1: Write the failing tests**
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.phases.rest.BeginRestProcedure
-import oathdigital.model._
-import oathdigital.model.OathEvent._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.phases.rest.BeginRestProcedure
+import distantlands.model._
+import distantlands.model.OathEvent._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2, p3}
 
 class EmpireTurnSuite extends munit.FunSuite:
   /** p2 is the Chancellor and p3 a Citizen; p1, the first player, is an
@@ -574,7 +574,7 @@ class EmpireTurnSuite extends munit.FunSuite:
   test("Rest accepts an Imperial player"):
     val ready = chancellorSecondInSeat.turn(p2, Phase.Act).ready
     assertEquals(BeginRestProcedure.validateSupportedState(
-      oathdigital.gameplay.setup.FirstGameSetupFixture.catalog, ready),
+      distantlands.gameplay.setup.FirstGameSetupFixture.catalog, ready),
       Right(()))
 ```
 
@@ -590,18 +590,18 @@ In `src/test/scala/distantlands/model/DomainValidationSuite.scala`:
     // Built with Table steps, then validated: the state breaks a rule
     // on purpose. Becoming a Citizen flips the title back to its
     // Oathkeeper side (Empire slice 3), so no rule can reach it.
-    val usurperCitizen = oathdigital.testkit.Table.start
-      .imperial(oathdigital.testkit.Table.p1, oathdigital.testkit.Table.p2)
-      .oathkeeper(Some(oathdigital.testkit.Table.p2), TitleSide.Usurper)
+    val usurperCitizen = distantlands.testkit.Table.start
+      .imperial(distantlands.testkit.Table.p1, distantlands.testkit.Table.p2)
+      .oathkeeper(Some(distantlands.testkit.Table.p2), TitleSide.Usurper)
       .ready.game
     assertEquals(DomainValidation.validate(usurperCitizen)
       .collect { case problem: DomainProblem.ImperialUsurper => problem },
-      Vector(DomainProblem.ImperialUsurper(oathdigital.testkit.Table.p2)))
+      Vector(DomainProblem.ImperialUsurper(distantlands.testkit.Table.p2)))
 
   test("an Imperial player may hold the Oathkeeper side"):
-    val oathkeeperCitizen = oathdigital.testkit.Table.start
-      .imperial(oathdigital.testkit.Table.p1, oathdigital.testkit.Table.p2)
-      .oathkeeper(Some(oathdigital.testkit.Table.p2))
+    val oathkeeperCitizen = distantlands.testkit.Table.start
+      .imperial(distantlands.testkit.Table.p1, distantlands.testkit.Table.p2)
+      .oathkeeper(Some(distantlands.testkit.Table.p2))
       .ready.game
     assert(!DomainValidation.validate(oathkeeperCitizen)
       .exists(_.isInstanceOf[DomainProblem.ImperialUsurper]))
@@ -617,7 +617,7 @@ profile.
 
 - [ ] **Step 2: Run tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.EmpireTurnSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.EmpireTurnSuite"`
 Expected: compile failure on `TurnOrder`.
 
 - [ ] **Step 3: Write the implementation**
@@ -625,9 +625,9 @@ Expected: compile failure on `TurnOrder`.
 `TurnOrder.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The order of a round (CR p. 17): from the Chancellor, or from the first
   * player when there is none. */
@@ -754,7 +754,7 @@ role clause:
 
 - [ ] **Step 4: Run tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.model.DomainValidationSuite oathdigital.gameplay.EmpireTurnSuite oathdigital.gameplay.StateBasedEvaluationSuite oathdigital.gameplay.MinorActionsSuite oathdigital.gameplay.powers.whenplayed.*"`
+Run: `./sbtw "testOnly distantlands.model.DomainValidationSuite distantlands.gameplay.EmpireTurnSuite distantlands.gameplay.StateBasedEvaluationSuite distantlands.gameplay.MinorActionsSuite distantlands.gameplay.powers.whenplayed.*"`
 Expected: PASS (Dissent and Revelation read `turnOrder`).
 
 - [ ] **Step 5: Commit**
@@ -839,7 +839,7 @@ slot" (the suite's `atAncientCity`, `slotsOf`, `options`, `pile`, `spot`,
 
 - [ ] **Step 2: Run tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.oathkeeper.OathkeeperRulesSuite oathdigital.gameplay.CardSlotsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.oathkeeper.OathkeeperRulesSuite distantlands.gameplay.CardSlotsSuite"`
 Expected: the Supremacy tests fail (the Empire's sites count for no one),
 the Vision test fails (the slot is available).
 
@@ -848,9 +848,9 @@ the Vision test fails (the slot is available).
 `SupremacySites.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Each player's count toward Supremacy, for the Oathkeeper title and the
   * Vision of Conquest (Steward of Imperial Domains, CR p. 35): an Exile's
@@ -982,7 +982,7 @@ Use the name the enclosing method gives its `ReadyGame` parameter.
 
 - [ ] **Step 4: Run tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.oathkeeper.* oathdigital.gameplay.CardSlotsSuite oathdigital.gameplay.StateBasedEvaluationSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.oathkeeper.* distantlands.gameplay.CardSlotsSuite distantlands.gameplay.StateBasedEvaluationSuite"`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -1011,10 +1011,10 @@ git commit -m "feat(empire): count the Empire for Supremacy and keep Visions off
 - [ ] **Step 1: Write the failing test**
 
 ```scala
-package oathdigital.gameplay.phases.rest
+package distantlands.gameplay.phases.rest
 
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2, p3}
 
 class ImperialSupplySuite extends munit.FunSuite:
   /** p1 is the Chancellor and p2 a Citizen. */
@@ -1052,7 +1052,7 @@ class ImperialSupplySuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.phases.rest.ImperialSupplySuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.phases.rest.ImperialSupplySuite"`
 Expected: compile failure on `ChancellorSupply` and `supplyRules`.
 
 - [ ] **Step 3: Write the implementation**
@@ -1124,7 +1124,7 @@ Chancellor's Supply and add their own unspent Supply
 
 - [ ] **Step 4: Run tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.phases.rest.* oathdigital.gameplay.PhaseMenuSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.phases.rest.* distantlands.gameplay.PhaseMenuSuite"`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -1213,7 +1213,7 @@ parked decision moves on to the amount decision. A second test: p1 answers
 
 - [ ] **Step 2: Run tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.MinorActionsSuite oathdigital.application.ChancellorsEyeConsentServiceSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.MinorActionsSuite distantlands.application.ChancellorsEyeConsentServiceSuite"`
 Expected: the Citizen's move to the site fails ("You do not rule your
 site"), and the askable assertion fails.
 
@@ -1222,9 +1222,9 @@ site"), and the askable assertion fails.
 `ImperialLaws.scala`:
 
 ```scala
-package oathdigital.gameplay.actions
+package distantlands.gameplay.actions
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The Imperial laws that need another player's consent (CR p. 35). A law
   * is not a card, so it is named here for the consent panels, and its
@@ -1357,7 +1357,7 @@ file's sorted position.
 
 - [ ] **Step 4: Run tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.MinorActionsSuite oathdigital.application.ChancellorsEyeConsentServiceSuite oathdigital.application.*Consent* oathdigital.gameplay.powers.DeclaredNotesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.MinorActionsSuite distantlands.application.ChancellorsEyeConsentServiceSuite distantlands.application.*Consent* distantlands.gameplay.powers.DeclaredNotesSuite"`
 (substitute the golden-keys suite's real name).
 Expected: PASS.
 
@@ -1396,17 +1396,17 @@ git commit -m "feat(empire): move Imperial warbands, asking the Chancellor's con
 - [ ] **Step 1: Write the failing test**
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.minor.WarbandTransfers
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.actions.minor.WarbandTransfers
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2, p3}
 
 class WarbandTransfersSuite extends munit.FunSuite:
   private val rules = new OathRules(
-    oathdigital.gameplay.setup.FirstGameSetupFixture.catalog)
+    distantlands.gameplay.setup.FirstGameSetupFixture.catalog)
 
   /** p1 is the Chancellor and p2 a Citizen, both at Broken Peaks on p1's
     * turn; p1's board holds 5 warbands and p2's 2. */
@@ -1442,7 +1442,7 @@ suite does. Add a `LogScripts` entry following the Move Warbands script at
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.WarbandTransfersSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.WarbandTransfersSuite"`
 Expected: compile failure on `ActionRef.TransferWarbands`.
 
 - [ ] **Step 3: Write the implementation**
@@ -1457,13 +1457,13 @@ right after `MoveWarbands`:
 `WarbandTransfers.scala`:
 
 ```scala
-package oathdigital.gameplay.actions.minor
+package distantlands.gameplay.actions.minor
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.{ImperialLaws, ProcedureNotes}
-import oathdigital.gameplay.operations.NoteSupport
-import oathdigital.model._
-import oathdigital.model.OathViolation._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.{ImperialLaws, ProcedureNotes}
+import distantlands.gameplay.operations.NoteSupport
+import distantlands.model._
+import distantlands.model.OathViolation._
 
 /** Warband Transfers (CR p. 35): as a minor action, an Imperial player
   * moves warbands to or from another Imperial player's board, when that
@@ -1638,7 +1638,7 @@ disabled with "Only an Imperial player transfers warbands".
 
 - [ ] **Step 4: Run tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.WarbandTransfersSuite oathdigital.model.ProcedureRefSuite oathdigital.gameplay.PhaseMenuSuite oathdigital.application.PhasePowerMenuSuite oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.WarbandTransfersSuite distantlands.model.ProcedureRefSuite distantlands.gameplay.PhaseMenuSuite distantlands.application.PhasePowerMenuSuite distantlands.application.gamelog.*"`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -1701,7 +1701,7 @@ from the board's bands, not the game's.
 
 - [ ] **Step 2: Run tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.application.* oathdigital.protocol.ProjectionProtocolSuite" frontend/test`
+Run: `./sbtw "testOnly distantlands.application.* distantlands.protocol.ProjectionProtocolSuite" frontend/test`
 Expected: compile failures on `supplyBands` and `readsTrack`.
 
 - [ ] **Step 3: Write the implementation**
@@ -1763,7 +1763,7 @@ other arguments as they are).
 
 - [ ] **Step 4: Run tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.application.* oathdigital.protocol.*" frontend/test`
+Run: `./sbtw "testOnly distantlands.application.* distantlands.protocol.*" frontend/test`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -1805,7 +1805,7 @@ Assert the board, Supply and favor numbers after each command.
 
 - [ ] **Step 2: Run it**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.EmpireInPlayScenarioSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.EmpireInPlayScenarioSuite"`
 Expected: PASS. A failure here points at the task whose behaviour it
 checks; fix it there.
 

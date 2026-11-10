@@ -103,7 +103,7 @@ The product owner settled these on 2026-10-16. They replace the slice 15 entry o
   - Nothing under `gameplay/actions` imports `gameplay/powers`.
   - Engine files under `gameplay/walker` and `gameplay/operations` never name a power, in code or comments.
 - **Line width.** Scala lines stay at or under 80 characters.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Stage explicit paths only; never `git add -A`. Re-check `git log --oneline -1` before any amend, reset or rebase.
 - **Worktree.** Work in a git worktree.
   - `EnterWorktree` branches from `origin`, which lags local `main`. Fast-forward the new branch to local `main` first (`git merge --ff-only main`).
@@ -121,8 +121,8 @@ The product owner settled these on 2026-10-16. They replace the slice 15 entry o
   - To read a parked decision, use `ParkedNode.of(state, catalog, ...)` and match `ParkedNode.Decision(_, decide, _)`, as `WardOfSilenceSuite.parkedOptions` and `TravelFixture.parkedDecision` do. Pass both the walker and the phase power catalogs.
   - `ActPowerHarness.rulesWithPrintedRestrictions()` has every production walker and phase power. `ActPowerHarness.use` and `answer` act as p1.
   - A consent answer is remembered with `ConsentState(answers = Map(key -> ConsentAnswer.Granted.by(p)), turn = Some(ConsentTurn.of(ready)))`, as `NarrowPassConsentSuite.remembering` does.
-- **Note keys** are declared through a `NoteSet`. Regenerate `src/test/resources/notes/declared-keys.txt` with `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"` when a task adds keys (Tasks 2 and 5).
-- **The unimplemented-powers snapshot** is `src/test/resources/powers/unimplemented.txt`. Regenerate it with `UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.UnimplementedPowersSuite"`, and check that the diff drops only `denizen.palanquin`.
+- **Note keys** are declared through a `NoteSet`. Regenerate `src/test/resources/notes/declared-keys.txt` with `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"` when a task adds keys (Tasks 2 and 5).
+- **The unimplemented-powers snapshot** is `src/test/resources/powers/unimplemented.txt`. Regenerate it with `UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.UnimplementedPowersSuite"`, and check that the diff drops only `denizen.palanquin`.
 - **Names, exactly:**
   - `QueuedProcedure.sender: Option[PlayerId]` (last field, default `None`) in `model/GameState.scala`; wire field `senderId`.
   - `TravelProcedure.queuedDestination(state, actor): Option[SiteId]` and `TravelProcedure.queuedAnswers(state): Vector[Answered]`.
@@ -156,19 +156,19 @@ The product owner settled these on 2026-10-16. They replace the slice 15 entry o
 - [ ] **Step 1: Write the failing tests**
 
 ```scala
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ProcedureDequeued, QueuedStart}
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{Look, Outcomes}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, rejected}
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.actions.travel.TravelProcedure
+import distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ProcedureDequeued, QueuedStart}
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Look, Outcomes}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, rejected}
 
 /** A Travel a power sends a player on: to the site its entry names, with
   * no destination question, and past the sender's own waivable
@@ -251,7 +251,7 @@ class SentTravelSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.travel.SentTravelSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.travel.SentTravelSuite"`
 Expected: compile failure on `sender`.
 
 - [ ] **Step 3: Add the sender**
@@ -384,12 +384,12 @@ Update its doc: the sender's own waivable restrictions do not block a walk sent 
 
 - [ ] **Step 6: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.travel.SentTravelSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.travel.SentTravelSuite"`
 Expected: PASS.
 
 If "a bandit-held Narrow Pass refuses a sent Travel" fails because `QueuedStart.refusal` accepts the start, the preview does not run the tree-level restriction check that `startNow` runs (`checkRestrictions`). Add the same check to `QueuedStart.priced`, on the `startingFrom` state, before the simulation, and run again.
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.travel.*" "testOnly oathdigital.gameplay.OffTurnWalkSuite" "testOnly oathdigital.serialization.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.travel.*" "testOnly distantlands.gameplay.OffTurnWalkSuite" "testOnly distantlands.serialization.*"`
 Expected: PASS.
 
 - [ ] **Step 7: Commit**
@@ -427,20 +427,20 @@ Add `QueuedStart.scala` to the list if Step 6 changed it.
 - [ ] **Step 1: Write the failing tests**
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.powerresolver.QueuedStarts
-import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.travel.{BrassArmyMoves, TravelFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ProcedureDequeued, WalkerPowers}
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes,
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.powerresolver.QueuedStarts
+import distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
+import distantlands.gameplay.powers.travel.{BrassArmyMoves, TravelFixture}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ProcedureDequeued, WalkerPowers}
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes,
   ParkedNode, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
 
 /** Palanquin: the user is placed where the target could travel, and the
   * target travels there, off turn and for no Supply (catalog batch 8,
@@ -592,7 +592,7 @@ Check the `ParkedNode.of` parameter names and the `Table.relic` and `adviser` si
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.PalanquinSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.PalanquinSuite"`
 Expected: compile failure on `Palanquin`.
 
 - [ ] **Step 3: Write Palanquin**
@@ -602,13 +602,13 @@ Remove `PalanquinCard` from `HoldingOrderDenizens.scala`, dropping any import le
 Create `gameplay/powers/action/Palanquin.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{AdviserOnly, Denizen, PrintedPower}
-import oathdigital.gameplay.PowerAccess
-import oathdigital.gameplay.powerresolver.QueuedStarts
-import oathdigital.gameplay.powers.{NoteSupport, PowerAnswers}
-import oathdigital.model._
+import distantlands.catalog.{AdviserOnly, Denizen, PrintedPower}
+import distantlands.gameplay.PowerAccess
+import distantlands.gameplay.powerresolver.QueuedStarts
+import distantlands.gameplay.powers.{NoteSupport, PowerAnswers}
+import distantlands.model._
 
 object PalanquinCard extends Denizen(DenizenId("107"), "Palanquin",
     Suit.Order) with AdviserOnly:
@@ -791,10 +791,10 @@ Update its doc: with nobody at the site holding a faceup secret, the Act menu re
 
 - [ ] **Step 5: Regenerate the snapshots and run the tests**
 
-Run: `UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.UnimplementedPowersSuite"`, then `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"`.
+Run: `UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.UnimplementedPowersSuite"`, then `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"`.
 Expected: the unimplemented diff drops only `denizen.palanquin`. The note-key diff adds Palanquin's `used` key.
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.*" "testOnly oathdigital.gameplay.powers.UnimplementedPowersSuite" "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.*" "testOnly distantlands.gameplay.powers.UnimplementedPowersSuite" "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"`
 Expected: PASS.
 
 - [ ] **Step 6: Commit**
@@ -830,15 +830,15 @@ git commit -m "feat(action): Palanquin sends a player at your site where you go"
 - [ ] **Step 1: Write the failing tests**
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.powerresolver.QueuedStarts
-import oathdigital.gameplay.powers.PhasePowerCatalog
-import oathdigital.gameplay.powers.travel.{NarrowPassSite, TravelFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.actions.travel.TravelProcedure
+import distantlands.gameplay.powerresolver.QueuedStarts
+import distantlands.gameplay.powers.PhasePowerCatalog
+import distantlands.gameplay.powers.travel.{NarrowPassSite, TravelFixture}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.Table.{p1, p2, p3}
 
 /** What a queued start waits on when only waivable restrictions refuse it
   * (catalog batch 8, slice 15, ruling 7). */
@@ -892,7 +892,7 @@ class QueuedStartConsentSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.QueuedStartConsentSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.QueuedStartConsentSuite"`
 Expected: compile failure on `QueuedStart.consent`.
 
 - [ ] **Step 3: Add the verdict to `QueuedStarts`**
@@ -1040,7 +1040,7 @@ Keep the existing doc and add one sentence: the consent verdict is kept the same
 
 - [ ] **Step 7: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.QueuedStartConsentSuite" "testOnly oathdigital.gameplay.powers.action.*" "testOnly oathdigital.gameplay.walker.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.QueuedStartConsentSuite" "testOnly distantlands.gameplay.powers.action.*" "testOnly distantlands.gameplay.walker.*"`
 Expected: PASS.
 
 - [ ] **Step 8: Commit**
@@ -1141,7 +1141,7 @@ Add to `ConsentStateSuite` (reuse its turn and player helpers; read the suite's 
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.model.ConsentStateSuite"`
+Run: `./sbtw "testOnly distantlands.model.ConsentStateSuite"`
 Expected: compile failure on `alternative`.
 
 - [ ] **Step 3: Change the model**
@@ -1240,7 +1240,7 @@ Replace `answered` and `grantedBy`:
 
 - [ ] **Step 4: Run the model tests**
 
-Run: `./sbtw "testOnly oathdigital.model.ConsentStateSuite" "testOnly oathdigital.gameplay.consent.*" "testOnly oathdigital.application.*Consent*"`
+Run: `./sbtw "testOnly distantlands.model.ConsentStateSuite" "testOnly distantlands.gameplay.consent.*" "testOnly distantlands.application.*Consent*"`
 Expected: PASS.
 
 - [ ] **Step 5: Wire, command and desk**
@@ -1429,18 +1429,18 @@ Add `CardInspection.scala`, the wire suite and the panel suite to the list if th
 - [ ] **Step 1: Write the failing gameplay tests**
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.travel.{NarrowPassSite, TollRoads,
+import distantlands.gameplay.actions.travel.TravelProcedure
+import distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
+import distantlands.gameplay.powers.travel.{NarrowPassSite, TollRoads,
   TravelFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes,
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes,
   ParkedNode, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
 
 /** Palanquin's destinations that wait on consent: Toll Roads' payer or
   * ruler, a Pass's ruler, and the user's own toll (catalog batch 8, slice
@@ -1583,7 +1583,7 @@ For the bandit-ruled case, add one more test built the way `TollRoadsSuite`'s ba
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.PalanquinConsentSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.PalanquinConsentSuite"`
 Expected: compile failure on `TollRoads.payerId`.
 
 - [ ] **Step 3: Toll Roads for a sent Travel**
@@ -1900,7 +1900,7 @@ In `narrowAt`'s `Left(refused)` branch, `val asks = declaredAsks(decide) ++ asks
 
 - [ ] **Step 6: Run the gameplay tests**
 
-Run: `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"`, then `./sbtw "testOnly oathdigital.gameplay.powers.action.*" "testOnly oathdigital.gameplay.powers.travel.*" "testOnly oathdigital.gameplay.walker.*"`
+Run: `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"`, then `./sbtw "testOnly distantlands.gameplay.powers.action.*" "testOnly distantlands.gameplay.powers.travel.*" "testOnly distantlands.gameplay.walker.*"`
 Expected: PASS. The note-key diff adds only the nine Toll Roads keys.
 
 - [ ] **Step 7: Prompt, log and projection**
@@ -1913,17 +1913,17 @@ Expected: PASS. The note-key diff adds only the nine Toll Roads keys.
 - [ ] **Step 8: Write the service and client tests**
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.application.gamelog.LogScripts.{formatter, texts}
-import oathdigital.gameplay.powers.action.{Palanquin, PalanquinCard}
-import oathdigital.gameplay.powers.travel.{TollRoads, TravelFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.protocol.projection._
-import oathdigital.testkit.{Look, MenuPlay, Outcomes}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.application.gamelog.LogScripts.{formatter, texts}
+import distantlands.gameplay.powers.action.{Palanquin, PalanquinCard}
+import distantlands.gameplay.powers.travel.{TollRoads, TravelFixture}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.protocol.projection._
+import distantlands.testkit.{Look, MenuPlay, Outcomes}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** Palanquin's toll asked of the target or the ruler, through the service
   * (catalog batch 8, slice 15, rulings 8, 13, 14 and 17). */
@@ -2066,13 +2066,13 @@ Add `TollRoadsSent.scala` and the panel suite if this task created or changed th
 - [ ] **Step 1: Write the script and the failing tests**
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.gameplay.powers.action.{Palanquin, PalanquinCard}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{CatalogNames, MenuPlay, Table}
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.powers.action.{Palanquin, PalanquinCard}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.testkit.{CatalogNames, MenuPlay, Table}
+import distantlands.testkit.Table.{p1, p2}
 import LogScripts.atTable
 
 /** Journaled Palanquin uses, for the Game Log suites (catalog batch 8,
@@ -2096,9 +2096,9 @@ object PalanquinLogScripts:
 ```
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.testkit.Table.p2
+import distantlands.testkit.Table.p2
 import LogScripts._
 import PalanquinLogScripts._
 
@@ -2128,7 +2128,7 @@ If the Travel from Ancient City to Buried Giant is not legal on the quiet table,
 
 - [ ] **Step 2: Run them**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogPalanquinSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogPalanquinSuite"`
 Expected: PASS. If the Palanquin line reads differently (for example a "Chose" line appears because `narratedDecisions` misses a decision), fix the power, not the test.
 
 - [ ] **Step 3: Commit**

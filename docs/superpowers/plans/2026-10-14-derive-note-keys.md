@@ -40,12 +40,12 @@ The baseline every later task is measured against. It must be committed before a
 It follows `GameLogGoldenSuite`'s established pattern exactly: an env var rewrites the fixture, and a rewritten fixture is reviewed before it is committed. Create `src/test/scala/distantlands/gameplay/powers/DeclaredNoteKeysSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
 import java.nio.file.{Files, Path, Paths}
-import oathdigital.gameplay.actions.RuleNotes
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model.{NoteKey, PowerId}
+import distantlands.gameplay.actions.RuleNotes
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model.{NoteKey, PowerId}
 
 /** Every power's declared note keys, exactly. Note keys are journaled in
   * `PowerNoted` events and the log looks a saved game's wording up by key,
@@ -88,13 +88,13 @@ class DeclaredNoteKeysSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to verify it fails for the right reason**
 
-Run: `./sbtw 'testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite'`
+Run: `./sbtw 'testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite'`
 
 Expected: FAIL on the first test with "missing snapshot src/test/resources/notes/declared-keys.txt; run with NOTE_KEYS_SNAPSHOT=write and review it". The second test must PASS. If the second test fails, a power id is duplicated across the two catalogs — stop and report it, because it means two powers share a wordings slot today.
 
 - [ ] **Step 3: Generate the snapshot**
 
-Run: `NOTE_KEYS_SNAPSHOT=write ./sbtw 'testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite'`
+Run: `NOTE_KEYS_SNAPSHOT=write ./sbtw 'testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite'`
 
 - [ ] **Step 4: Review the generated snapshot before trusting it**
 
@@ -181,7 +181,7 @@ Independent of every later task. All 12 powers whose card says "At end, discard"
 
 - [ ] **Step 1: Run the snapshot test to confirm a clean start**
 
-Run: `./sbtw 'testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite'`
+Run: `./sbtw 'testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite'`
 
 Expected: PASS. If it fails here, Task 1 is not committed — stop.
 
@@ -190,10 +190,10 @@ Expected: PASS. If it fails here, Task 1 is not committed — stop.
 `BattlePlan` (`campaign/BattlePlan.scala:47`) already defaults `later` to `Map.empty`. Create `src/main/scala/distantlands/gameplay/powers/campaign/DiscardedAtEnd.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.model.{DenizenId, NoteKey, Operation, PowerWindow}
+import distantlands.catalog.ExecutableCatalog
+import distantlands.model.{DenizenId, NoteKey, Operation, PowerWindow}
 
 /** A battle plan whose card says "At end, discard": the card goes to a
   * discard pile once the Campaign has resolved, whoever won, and the plan
@@ -268,7 +268,7 @@ Watch the imports: a file that no longer names `PlanDiscard`, `NoteKey`, `PowerW
 
 - [ ] **Step 5: Run the snapshot and the campaign suites**
 
-Run: `./sbtw 'testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite oathdigital.gameplay.CampaignPowersSuite'`
+Run: `./sbtw 'testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite distantlands.gameplay.CampaignPowersSuite'`
 
 Expected: PASS, with the snapshot byte-identical. A snapshot diff here means a key was dropped or reordered into a different sort position — the sort makes order irrelevant, so any diff is a real dropped or added key. Fix it before going on.
 
@@ -338,7 +338,7 @@ and `override def planNoteKeys: Vector[NoteKey] = Vector(Lancers.doubled)`.
 
 - [ ] **Step 9: Run the snapshot and the campaign suites again**
 
-Run: `./sbtw 'testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite oathdigital.gameplay.CampaignPowersSuite'`
+Run: `./sbtw 'testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite distantlands.gameplay.CampaignPowersSuite'`
 
 Expected: PASS, snapshot byte-identical.
 
@@ -396,7 +396,7 @@ MSG
 Create `src/test/scala/distantlands/model/NoteSetSuite.scala`:
 
 ```scala
-package oathdigital.model
+package distantlands.model
 
 class NoteSetSuite extends munit.FunSuite:
   private val sentence = Vector(NotePart.Text("Took it."))
@@ -434,7 +434,7 @@ class NoteSetSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw 'testOnly oathdigital.model.NoteSetSuite'`
+Run: `./sbtw 'testOnly distantlands.model.NoteSetSuite'`
 
 Expected: FAIL to compile, "Not found: NoteSet".
 
@@ -484,7 +484,7 @@ object NoteSet:
 
 - [ ] **Step 4: Run the test to verify it passes**
 
-Run: `./sbtw 'testOnly oathdigital.model.NoteSetSuite'`
+Run: `./sbtw 'testOnly distantlands.model.NoteSetSuite'`
 
 Expected: PASS, four tests.
 
@@ -511,11 +511,11 @@ MSG
 The union of walker powers, phase powers and `RuleNotes.all` is derived by hand in `NoteWordings.default` (`application/gamelog/NoteWordings.scala:33-40`) and again in two test suites. `application` sits downstream of `gameplay`, so the walker cannot reach `NoteWordings`; the union moves to `gameplay`. Create `src/test/scala/distantlands/gameplay/powers/DeclaredNotesSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.gameplay.actions.RuleNotes
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model.PowerId
+import distantlands.gameplay.actions.RuleNotes
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model.PowerId
 
 class DeclaredNotesSuite extends munit.FunSuite:
   private val declared = DeclaredNotes.of(catalog)
@@ -537,7 +537,7 @@ class DeclaredNotesSuite extends munit.FunSuite:
 
 - [ ] **Step 7: Run it to verify it fails**
 
-Run: `./sbtw 'testOnly oathdigital.gameplay.powers.DeclaredNotesSuite'`
+Run: `./sbtw 'testOnly distantlands.gameplay.powers.DeclaredNotesSuite'`
 
 Expected: FAIL to compile, "Not found: DeclaredNotes".
 
@@ -546,11 +546,11 @@ Expected: FAIL to compile, "Not found: DeclaredNotes".
 Create `src/main/scala/distantlands/gameplay/powers/DeclaredNotes.scala`:
 
 ```scala
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.RuleNotes
-import oathdigital.model.{NoteKey, PowerId}
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.RuleNotes
+import distantlands.model.{NoteKey, PowerId}
 
 /** Every note key the catalog declares, by power (derive note keys design,
   * "One declared set union"). The walker reads it to reject a note no power
@@ -575,7 +575,7 @@ object DeclaredNotes:
 
 - [ ] **Step 9: Run the test to verify it passes**
 
-Run: `./sbtw 'testOnly oathdigital.gameplay.powers.DeclaredNotesSuite'`
+Run: `./sbtw 'testOnly distantlands.gameplay.powers.DeclaredNotesSuite'`
 
 Expected: PASS, four tests.
 
@@ -607,7 +607,7 @@ Keep `listings` and the cross-catalog test that reads it. That test is about cat
 
 - [ ] **Step 11: Run the snapshot and the log suites**
 
-Run: `./sbtw 'testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite oathdigital.application.gamelog.GameLogGoldenSuite'`
+Run: `./sbtw 'testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite distantlands.application.gamelog.GameLogGoldenSuite'`
 
 Expected: PASS, snapshot byte-identical, every golden log unchanged. A golden diff means `NoteWordings.default` lost a source or a narrated decision — compare the three maps, not the keys.
 
@@ -638,11 +638,11 @@ MSG
 Create `src/test/scala/distantlands/gameplay/walker/UndeclaredNoteSuite.scala`. It asserts the check directly, because reaching it through a real walk needs a power that is deliberately broken:
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.powers.DeclaredNotes
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model.{NoteArg, PowerId, PowerNote, PowerSourceRef}
+import distantlands.gameplay.powers.DeclaredNotes
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model.{NoteArg, PowerId, PowerNote, PowerSourceRef}
 
 /** A note whose key no power declares has no wording, so the Game Log would
   * render nothing for it. The walker refuses to journal it instead (derive
@@ -650,11 +650,11 @@ import oathdigital.model.{NoteArg, PowerId, PowerNote, PowerSourceRef}
 class UndeclaredNoteSuite extends munit.FunSuite:
   private val declared = DeclaredNotes.of(catalog)
   private val power = PowerId("denizen.warning-signals")
-  private val source = PowerSourceRef.Card(oathdigital.model.DenizenId("25"))
+  private val source = PowerSourceRef.Card(distantlands.model.DenizenId("25"))
 
   test("a declared key is journaled"):
     val note = PowerNote(source, "redistributed",
-      Vector(NoteArg.Player(oathdigital.model.PlayerId("red"))))
+      Vector(NoteArg.Player(distantlands.model.PlayerId("red"))))
     assertEquals(
       NoteCheck.journal(declared, power, note, covers = false).map(_.note),
       Some(note))
@@ -670,7 +670,7 @@ class UndeclaredNoteSuite extends munit.FunSuite:
 
 - [ ] **Step 14: Run it to verify it fails**
 
-Run: `./sbtw 'testOnly oathdigital.gameplay.walker.UndeclaredNoteSuite'`
+Run: `./sbtw 'testOnly distantlands.gameplay.walker.UndeclaredNoteSuite'`
 
 Expected: FAIL to compile, "Not found: NoteCheck".
 
@@ -679,10 +679,10 @@ Expected: FAIL to compile, "Not found: NoteCheck".
 `PowerNoted` is built at three places — `ProcedureWalker.scala:303`, `AdviserArrivalPass.scala:53` and `BurnTakes.scala:35` — so the check goes in one helper the three call. Add `src/main/scala/distantlands/gameplay/walker/NoteCheck.scala`:
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.powers.DeclaredNotes
-import oathdigital.model.{PowerId, PowerNote}
+import distantlands.gameplay.powers.DeclaredNotes
+import distantlands.model.{PowerId, PowerNote}
 
 /** Journals a note only if its power declares its key (derive note keys
   * design, decisions 5 and 6). A note with no declared key has no wording,
@@ -713,7 +713,7 @@ private[walker] object NoteCheck:
 
 - [ ] **Step 16: Run the test to verify it passes**
 
-Run: `./sbtw 'testOnly oathdigital.gameplay.walker.UndeclaredNoteSuite'`
+Run: `./sbtw 'testOnly distantlands.gameplay.walker.UndeclaredNoteSuite'`
 
 Expected: PASS, two tests.
 
@@ -772,7 +772,7 @@ and in the class replace `override def noteKeys: Vector[NoteKey] = Vector(burned
 
 - [ ] **Step 20: Run the snapshot and both card suites**
 
-Run: `./sbtw 'testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite oathdigital.gameplay.powers.economy.DefameSuite oathdigital.gameplay.CampaignPowersSuite'`
+Run: `./sbtw 'testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite distantlands.gameplay.powers.economy.DefameSuite distantlands.gameplay.CampaignPowersSuite'`
 
 Expected: PASS, snapshot byte-identical.
 
@@ -816,7 +816,7 @@ The mechanical bulk: every power that owns its keys outright and has an id of it
 Run:
 
 ```bash
-cd /Users/roman/projects/oathdigital
+cd /Users/roman/projects/distantlands
 grep -rln 'def noteKeys' --include='*.scala' src/main/scala/distantlands/gameplay/powers \
   | while read -r f; do
       if ! grep -A4 'def noteKeys' "$f" | grep -qE '[A-Z][A-Za-z]+\.[a-z][A-Za-z]*'; then
@@ -851,13 +851,13 @@ Four rules, each of which the snapshot will catch if broken:
 
 - [ ] **Step 3: Run the snapshot after each directory**
 
-Run: `./sbtw 'testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite'`
+Run: `./sbtw 'testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite'`
 
 Expected: PASS, byte-identical. A diff names the power and the key: either a key was dropped (`notes` declared below it, or a `lazy val`) or a name string was changed.
 
 - [ ] **Step 4: Run the directory's own suites**
 
-Run: `./sbtw 'testOnly oathdigital.gameplay.powers.<directory>.*'`
+Run: `./sbtw 'testOnly distantlands.gameplay.powers.<directory>.*'`
 
 Expected: PASS.
 
@@ -917,7 +917,7 @@ Task 4's conversion was scripted, and the script refused any file outside the on
 Run:
 
 ```bash
-cd /Users/roman/projects/oathdigital
+cd /Users/roman/projects/distantlands
 comm -13 <(sort /tmp/own-keys.txt) \
   <(grep -rln 'def noteKeys' --include='*.scala' \
       src/main/scala/distantlands/gameplay/powers | sort) \
@@ -958,7 +958,7 @@ Watch for the case where a power borrowed a key *and* declared the owner's whole
 
 - [ ] **Step 4: Run the snapshot after each batch**
 
-Run: `./sbtw 'testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite'`
+Run: `./sbtw 'testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite'`
 
 Expected: PASS, byte-identical. Convert in batches of one directory and run this between batches; a diff here most often means an `include` was forgotten, which drops every borrowed key at once and is loud.
 
@@ -984,24 +984,24 @@ MSG
 The five helpers that build the note themselves can demand the inclusion in their signature. Create `src/test/scala/distantlands/gameplay/powers/campaign/PlanDiscardEvidenceSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.model.NoteSet
+import distantlands.model.NoteSet
 
 class PlanDiscardEvidenceSuite extends munit.FunSuite:
   test("a set that includes PlanDiscard's notes can prove it"):
-    val notes = NoteSet(oathdigital.model.PowerId("test.plan"))
+    val notes = NoteSet(distantlands.model.PowerId("test.plan"))
     notes.include(PlanDiscard.notes)
     assert(PlanDiscard.borrowedBy(notes).isDefined)
 
   test("a set that does not include them cannot"):
-    val notes = NoteSet(oathdigital.model.PowerId("test.other"))
+    val notes = NoteSet(distantlands.model.PowerId("test.other"))
     assertEquals(PlanDiscard.borrowedBy(notes), None)
 ```
 
 - [ ] **Step 7: Run it to verify it fails**
 
-Run: `./sbtw 'testOnly oathdigital.gameplay.powers.campaign.PlanDiscardEvidenceSuite'`
+Run: `./sbtw 'testOnly distantlands.gameplay.powers.campaign.PlanDiscardEvidenceSuite'`
 
 Expected: FAIL to compile, "value borrowedBy is not a member".
 
@@ -1021,7 +1021,7 @@ object Borrowed:
       set.declared.exists(_.name == key.name)))(new Borrowed[A](set))
 ```
 
-`NoteSet` needs `declared` to be reachable from `Borrowed`, which it is: both are in `oathdigital.model`.
+`NoteSet` needs `declared` to be reachable from `Borrowed`, which it is: both are in `distantlands.model`.
 
 In `PlanDiscard`, add the accessor and require the evidence:
 
@@ -1049,7 +1049,7 @@ where `planNotes` is a new abstract `def planNotes: NoteSet` on the trait that e
 
 - [ ] **Step 9: Run the evidence test to verify it passes**
 
-Run: `./sbtw 'testOnly oathdigital.gameplay.powers.campaign.PlanDiscardEvidenceSuite'`
+Run: `./sbtw 'testOnly distantlands.gameplay.powers.campaign.PlanDiscardEvidenceSuite'`
 
 Expected: PASS, two tests.
 
@@ -1098,14 +1098,14 @@ With every key created through a set, the bare constructor is the only way back 
 
 **Interfaces:**
 - Consumes: every companion's `notes.key(...)` from Tasks 3 to 5.
-- Produces: nothing. `NoteKey.apply` is no longer callable outside `oathdigital.model`.
+- Produces: nothing. `NoteKey.apply` is no longer callable outside `distantlands.model`.
 
 - [ ] **Step 1: Confirm nothing outside the model builds a key directly**
 
 Run:
 
 ```bash
-cd /Users/roman/projects/oathdigital
+cd /Users/roman/projects/distantlands
 grep -rn 'NoteKey(' --include='*.scala' src/main | grep -v 'src/main/scala/distantlands/model/PowerNotes.scala'
 ```
 

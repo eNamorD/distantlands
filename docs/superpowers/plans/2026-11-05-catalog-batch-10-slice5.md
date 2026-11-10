@@ -53,7 +53,7 @@ This is the fifth of 14 slice plans, written against `0.2.0-alpha` at `53959740`
   - `./sbtw clean coverage test coverageReport`, with statement coverage of at least 92%
   - `python3 scripts/check-architecture.py`, which caps files at 800 lines and enforces the layer import rules
   - `python3 scripts/check-markdown-links.py`
-- **Snapshots:** regenerate with `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.*"`, then read the diff. Commit only the lines the task explains. Neither power writes a line, so `declared-keys.txt` must not change.
+- **Snapshots:** regenerate with `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.*"`, then read the diff. Commit only the lines the task explains. Neither power writes a line, so `declared-keys.txt` must not change.
 - **Log lines:** none. Terrain changes a Supply amount, which the payment's own line shows, as the printed Coast and Island do.
 - **Test helpers:** a helper's name states what it builds (memory: "Descriptive helper names").
 - **Edifices are denizens** (memory): nothing in this slice depends on it, but do not add a card-type check.
@@ -73,7 +73,7 @@ This is the fifth of 14 slice plans, written against `0.2.0-alpha` at `53959740`
 **Interfaces:**
 - Consumes: `EdificeSetupSupport.siteOf(ready, edifice, side): Option[SiteId]`; `TravelRoute.pawnMove`, `TravelRoute.adjustSupply`, `TravelRoute.PawnMove`; `TravelFixture` (`board`, `on`, `candidates`, `travel`, the named sites).
 - Produces:
-  - `object GrandCanalCard extends Edifice(EdificeId("E03"), Suit.Discord)` in package `oathdigital.gameplay.powers.travel`, with `intact.power` and `ruined.power` unchanged.
+  - `object GrandCanalCard extends Edifice(EdificeId("E03"), Suit.Discord)` in package `distantlands.gameplay.powers.travel`, with `intact.power` and `ruined.power` unchanged.
   - `sealed trait LiveTerrain extends ContributingPower { def side: EdificeSide; final def source; final def site(ready: ReadyGame): Option[SiteId] }`.
   - `case object GrandCanal extends LiveTerrain`.
   - `private[travel] object TravelTerrain { def coastSites(ready: ReadyGame): Set[SiteId]; def coastOrIslandSites(ready: ReadyGame): Set[SiteId]; def coastRoute(ready: ReadyGame, route: TravelRoute.PawnMove): Boolean; def ignoredOnCoastRoute(other: ContributingPower): Boolean }`.
@@ -87,13 +87,13 @@ The Travel board (`TravelFixture`): the Cradle holds `cradlePlains` (Buried Gian
 Create `src/test/scala/distantlands/gameplay/powers/travel/GrandCanalSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.gameplay.powers.PowerFixture
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, Look, Outcomes}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.powers.PowerFixture
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, Look, Outcomes}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Unwrap.accepted
 
 /** Grand Canal and Lost Lagoon (E03, catalog batch 10, slice 5): the site
   * of the face in play also has the Coast power (the Canal) or the Island
@@ -160,31 +160,31 @@ class GrandCanalSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.travel.GrandCanalSuite"`
-Expected: compile failure, "Not found: GrandCanalCard" (the card still lives in `oathdigital.catalog.holding`).
+Run: `./sbtw "testOnly distantlands.gameplay.powers.travel.GrandCanalSuite"`
+Expected: compile failure, "Not found: GrandCanalCard" (the card still lives in `distantlands.catalog.holding`).
 
 - [ ] **Step 3: Move the card and add the Canal**
 
 In `HoldingEdifices.scala`, delete the whole `object GrandCanalCard` (lines 10-23). `ModifierMark` and `MajorActionType` are then unused there, so the imports become:
 
 ```scala
-import oathdigital.catalog.{Edifice, EdificeFace, Locked, PrintedPower}
-import oathdigital.model.{Cost, EdificeId, PowerId, Suit}
+import distantlands.catalog.{Edifice, EdificeFace, Locked, PrintedPower}
+import distantlands.model.{Cost, EdificeId, PowerId, Suit}
 ```
 
-Check with `grep -n "ModifierMark\|MajorActionType" src/main/scala/distantlands/catalog/holding/HoldingEdifices.scala`; it must print nothing after the edit. `NewFoundations.scala` already imports `oathdigital.gameplay.powers.travel._`, so its `GrandCanalCard` entry needs no change.
+Check with `grep -n "ModifierMark\|MajorActionType" src/main/scala/distantlands/catalog/holding/HoldingEdifices.scala`; it must print nothing after the edit. `NewFoundations.scala` already imports `distantlands.gameplay.powers.travel._`, so its `GrandCanalCard` entry needs no change.
 
 Create `src/main/scala/distantlands/gameplay/powers/travel/GrandCanal.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.catalog.{Edifice, EdificeFace, Locked, ModifierMark,
+import distantlands.catalog.{Edifice, EdificeFace, Locked, ModifierMark,
   PrintedPower}
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerCtx, Transform}
-import oathdigital.gameplay.powers.setup.EdificeSetupSupport
-import oathdigital.model._
+import distantlands.gameplay.powers.setup.EdificeSetupSupport
+import distantlands.model._
 
 object GrandCanalCard extends Edifice(EdificeId("E03"), Suit.Discord):
   object intact extends EdificeFace("Grand Canal") with Locked:
@@ -246,7 +246,7 @@ case object GrandCanal extends LiveTerrain:
 
 In `TravelSitePowers.scala`:
 
-Add `ReadyGame` to the `oathdigital.model` import list.
+Add `ReadyGame` to the `distantlands.model` import list.
 
 Add, after `object TravelRoute`:
 
@@ -342,16 +342,16 @@ In `WalkerPowerCatalog.scala`, change line 80 from `TravelSitePowers.all ++` to:
       Vector(GrandCanal) ++
 ```
 
-`GrandCanal` resolves through the file's wildcard import, `oathdigital.gameplay.powers.travel._`.
+`GrandCanal` resolves through the file's wildcard import, `distantlands.gameplay.powers.travel._`.
 
 - [ ] **Step 6: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.travel.* oathdigital.gameplay.TravelSitePowersSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.travel.* distantlands.gameplay.TravelSitePowersSuite"`
 Expected: PASS. The Travel modifier suites, both Narrow Pass consent suites and `TravelSitePowersSuite` prove the printed terrain is unchanged.
 
 - [ ] **Step 7: Regenerate the snapshots**
 
-Run: `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.*"`, then `git diff src/test/resources`.
+Run: `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.*"`, then `git diff src/test/resources`.
 Expected: `unimplemented.txt` drops exactly `edifice.e03.intact`. `declared-keys.txt` is unchanged.
 
 - [ ] **Step 8: Commit**
@@ -396,10 +396,10 @@ EOF
 Add these imports to `GrandCanalSuite.scala`:
 
 ```scala
-import oathdigital.gameplay.powerresolver.{ContributingPower,
+import distantlands.gameplay.powerresolver.{ContributingPower,
   ContributionCollector, PowerCtx, PowerWindowIndex}
-import oathdigital.gameplay.powers.search.ErrandBoyCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.powers.search.ErrandBoyCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 ```
 
 Add these members and tests to the class:
@@ -489,7 +489,7 @@ If `on(...)(_.edifice(...))` in the flip test leaves two E03 states, stop: `Tabl
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.travel.GrandCanalSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.travel.GrandCanalSuite"`
 Expected: compile failure, "Not found: LostLagoon".
 
 - [ ] **Step 3: Add the Lagoon**
@@ -570,12 +570,12 @@ In its doc, after "every power whose source is a site is dropped from the fold."
 
 - [ ] **Step 5: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.travel.* oathdigital.gameplay.TravelSitePowersSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.travel.* distantlands.gameplay.TravelSitePowersSuite"`
 Expected: PASS.
 
 - [ ] **Step 6: Regenerate the snapshots**
 
-Run: `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.*"`, then `git diff src/test/resources`.
+Run: `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.*"`, then `git diff src/test/resources`.
 Expected: `unimplemented.txt` drops exactly `edifice.e03.ruined`. `declared-keys.txt` is unchanged.
 
 - [ ] **Step 7: Update the spec and the roadmap**

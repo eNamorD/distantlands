@@ -33,7 +33,7 @@
 - Import rules:
   - `gameplay` never imports `application`, `serialization` or `server`.
   - A walker power (anything under `gameplay/powers`) never imports `gameplay.walker`. Importing `gameplay.actions.cardplay.CardPlayProcedure` is allowed; Silver Tongue does.
-- Never touch the live database `var/oathdigital`.
+- Never touch the live database `var/distantlands`.
 - Other sessions commit to `main` while you work. Stage explicit paths only; never `git add -A`. Re-check `git log --oneline -1` before any amend, reset or rebase.
 - Work in a git worktree:
   - `EnterWorktree` branches from `origin`, which lags local `main`. Fast-forward the new branch to local `main` first.
@@ -91,16 +91,16 @@
 Create `src/test/scala/distantlands/gameplay/powers/action/OracleSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.powers.{CardStaging, NoteText, PhasePowerCatalog,
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.powers.{CardStaging, NoteText, PhasePowerCatalog,
   PowerFixture, TargetsFixture, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.ParkedNode
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.ParkedNode
 
 class OracleSuite extends munit.FunSuite:
   import PowerFixture._
@@ -241,7 +241,7 @@ class OracleSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the suite to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.OracleSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.OracleSuite"`
 Expected: compile failure, `Not found: Oracle`.
 
 - [ ] **Step 3: Write Oracle**
@@ -249,12 +249,12 @@ Expected: compile failure, `Not found: Oracle`.
 Create `src/main/scala/distantlands/gameplay/powers/action/Oracle.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.powers.CatalogCards
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.powers.CatalogCards
+import distantlands.model._
 
 /** Oracle (denizen 160), site-only, ACTION: place 2 secrets on this card,
   * then draw the Vision closest to the top of the world deck and play or
@@ -323,13 +323,13 @@ If `-Werror` flags `catalog` as a private field clash with the inherited name or
 Replace `src/main/scala/distantlands/gameplay/powers/action/SelfActionPowers.scala` with:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.PhasePower
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.PhasePower
 
 /** The phase powers of catalog batch 2's slice 3, registered by
-  * [[oathdigital.gameplay.powers.PhasePowerCatalog]] through this one object,
+  * [[distantlands.gameplay.powers.PhasePowerCatalog]] through this one object,
   * like [[DiceAndRelicDrawPowers]]. Oracle plans card placement, so it needs
   * the catalog, and is omitted when its card is absent.
   */
@@ -349,14 +349,14 @@ Expected: no output.
 
 - [ ] **Step 5: Run the suite to verify it passes**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.OracleSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.OracleSuite"`
 Expected: PASS, 8 tests.
 
 If the unusable test fails because the fixture's secret staging differs (`withSecrets` sets both faceup and facedown counts), read `PaidAction`'s cost check and `ScryerSuite`'s "unusable" test before changing the assertion. The cost is 2 faceup secrets placed. If the Vow test finds `adviser-faceup` still offered, the restriction look-ahead does not reach the embedded subtree. Stop and report: that is a design question, not a test fix.
 
 - [ ] **Step 6: Run the power suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.* oathdigital.gameplay.BackendArchitectureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.* distantlands.gameplay.BackendArchitectureSuite"`
 Expected: PASS. `PowerNoteCatalogSuite` accepts both templates: `drew` starts with an argument and `noVision` with a capital letter.
 
 - [ ] **Step 7: Commit**
@@ -388,7 +388,7 @@ git commit -m "feat(powers): Oracle draws the first Vision and plays it as if se
 In `src/test/scala/distantlands/application/gamelog/LogScripts.scala`, add `Oracle` to the powers import:
 
 ```scala
-import oathdigital.gameplay.powers.action.{GamblingHall, Oracle, Wolves}
+import distantlands.gameplay.powers.action.{GamblingHall, Oracle, Wolves}
 ```
 
 Add this script after `wolves`:
@@ -460,7 +460,7 @@ Append to `src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuit
 
 - [ ] **Step 3: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogPowerLinesSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogPowerLinesSuite"`
 Expected: FAIL on the new test only: `all(drew + 1)` is not a "Played " line, because a `UsePower` run posts no placement line.
 
 If instead the script fails to build (for example, the arranged secrets are refused, or no Vision is drawn), fix the script's staging first. The arranged `Move` of secrets copies the Wolves script; the actor needs two faceup secrets.
@@ -487,7 +487,7 @@ with:
 
 - [ ] **Step 5: Write the golden logs and review them**
 
-Run: `GAMELOG_GOLDEN=write ./sbtw "testOnly oathdigital.application.gamelog.GameLogGoldenSuite"`
+Run: `GAMELOG_GOLDEN=write ./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite"`
 
 Then run: `git status --short src/test/resources/gamelog`
 Expected: exactly two new files, `oracle.actor.log` and `oracle.other.log`, and no modified golden. A modified golden means the `ActionLines` change altered another script's log. Revert that golden with `git checkout -- <file>` and find out why before continuing.
@@ -499,7 +499,7 @@ Read both new files line by line. Check:
 
 - [ ] **Step 6: Run the log suites**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.*"`
 Expected: PASS, including `GameLogGoldenSuite` for `oracle` and the property suites that run every named script.
 
 - [ ] **Step 7: Commit**
@@ -531,7 +531,7 @@ In `src/test/scala/distantlands/gameplay/powers/PowerImplementationStatusSuite.s
     assert(implemented(PowerId("denizen.oracle")))
 ```
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.PowerImplementationStatusSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.PowerImplementationStatusSuite"`
 Expected: PASS.
 
 - [ ] **Step 2: Record the slice in the roadmap**

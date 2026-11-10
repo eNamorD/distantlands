@@ -529,7 +529,7 @@ GET /games/{gameId}/api/log/{after}
 the whole log. The response carries `nextSequence` so the client can ask
 with it next time, the same cursor the state projection already carries.
 Anything outside `0..nextSequence` is a 400 `malformed`. The route uses
-the same `oath_seat` cookie authentication and private headers as the
+the same `distantlands_seat` cookie authentication and private headers as the
 projection route. It has no observer mode, as the projection route has
 none; observer formatting is exercised by the formatter's own tests.
 
@@ -575,7 +575,7 @@ the pane shows the single headline "Setup".
 
 ### Divider
 
-On load, the client reads `oath.log.seen.{gameId}.{seatId}` from
+On load, the client reads `distantlands.log.seen.{gameId}.{seatId}` from
 `localStorage`. If it holds a sequence lower than the last entry's, the client
 inserts a client-only line "Since you last looked" before the first entry
 with a higher sequence. Either way the pane opens at the bottom, on the
@@ -685,7 +685,7 @@ Server:
   formatter handles, including a declined negotiation, and a campaign.
 - **Six-player smoke read.** During the first slice, the completed six-player
   game `manual-1790205747051-112090` (1053 events) is formatted once from a
-  copy of `var/oathdigital` into scratch space for a person to read. Nothing
+  copy of `var/distantlands` into scratch space for a person to read. Nothing
   from it is committed.
 - **Golden tests.** The exact `LogEntry` vectors for each script, for the
   acting seat and for another seat.

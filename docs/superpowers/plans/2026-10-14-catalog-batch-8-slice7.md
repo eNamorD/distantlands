@@ -45,7 +45,7 @@ Where this plan quotes code, read the file as it is on `main` and apply the chan
   - Nothing under `gameplay/actions` imports `gameplay/powers`.
 - **Tree addresses.** No procedure tree gains, loses or moves a node. The site question lives inside the pass's existing payment `Branch`, so the pass keeps its two children.
 - **Line width.** Scala lines stay at or under 80 characters, as in the files around them. Re-wrap any line in this plan that comes out longer.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Other sessions commit to `main` while you work.
   - Stage explicit paths only; never `git add -A`. An untracked `src/test/scala/distantlands/gameplay/HiddenScopeProbeSuite.scala` belongs to another session; leave it alone.
   - Re-check `git log --oneline -1` before any amend, reset or rebase.
@@ -54,13 +54,13 @@ Where this plan quotes code, read the file as it is on `main` and apply the chan
   - Then symlink the main checkout's `.tooling` and `node_modules` into the worktree before the first `./sbtw`.
 - **Commit trailer:** the committing model's own `Co-Authored-By` line.
 - **Names, exactly:**
-  - In `oathdigital.gameplay.PowerAccess`:
+  - In `distantlands.gameplay.PowerAccess`:
     - `val asIfDecision: String = "modifier.as-if-site"`;
     - `def asIfSite(answered: Vector[Answered]): Option[SiteId]`;
     - `def presentSite(ready: ReadyGame, actor: PlayerId, answered: Vector[Answered]): Option[SiteId]`;
     - `locate` gains a last parameter, `answered: Vector[Answered] = Vector.empty`.
   - `ContributingPower.selectionQuestions(ready: ReadyGame, actor: PlayerId): Vector[Operation]`, empty by default.
-  - In `oathdigital.gameplay.powerresolver`, file `ModifierHost.scala`: `trait ModifierHost extends Operation` with `def startSelection: Vector[DecisionOptionRef]`.
+  - In `distantlands.gameplay.powerresolver`, file `ModifierHost.scala`: `trait ModifierHost extends Operation` with `def startSelection: Vector[DecisionOptionRef]`.
   - `ProcedureWalker.advance` gains a last parameter, `seed: Vector[Answered] = Vector.empty`.
   - `WalkerSimulation.preview` and `WalkerSimulation.refusal` gain a last parameter, `answered: Vector[Answered] = Vector.empty`.
   - `SelectedModifier.selectable(ready: ReadyGame, actor: PlayerId, answered: Vector[Answered]): Boolean`.
@@ -70,7 +70,7 @@ Where this plan quotes code, read the file as it is on `main` and apply the chan
     - `def relocated(catalog: ExecutableCatalog, ctx: PowerCtx, operations: Vector[Operation]): Vector[Operation]`;
     - `def cardsAt(catalog: ExecutableCatalog, ready: ReadyGame, site: SiteId): Vector[SiteDenizenState]`;
     - `inPawnRegion` gains a last parameter, `answered: Vector[Answered]`.
-  - In `oathdigital.gameplay.powers.economy`:
+  - In `distantlands.gameplay.powers.economy`:
     - file `ActingSite.scala`: `trait ActingSite extends SelectedModifier` and `object ActingSite`;
     - file `SmallFriends.scala`: `SmallFriendsCard`, moved out of `HoldingBeastDenizens`, and `final case class SmallFriends`;
     - file `FriendlyFamiliar.scala`: `FriendlyFamiliarCard`, moved out of `HoldingDiscordDenizens`, and `final case class FriendlyFamiliar`;
@@ -301,7 +301,7 @@ git commit -m "docs(batch8): slice 7 rulings: the as-if site, pick order, Secret
 
 - [ ] **Step 1: Write the failing tests**
 
-Append to `PowerAccessSuite` (package `oathdigital.gameplay`; it already imports `oathdigital.model._`, `CatalogNames` and `Table`; `card` is Errand Boy, `home` Ancient City and `far` Broken Peaks):
+Append to `PowerAccessSuite` (package `distantlands.gameplay`; it already imports `distantlands.model._`, `CatalogNames` and `Table`; `card` is Errand Boy, `home` Ancient City and `far` Broken Peaks):
 
 ```scala
   /** A plain Order denizen, at the pawn site. */
@@ -334,7 +334,7 @@ Append to `PowerAccessSuite` (package `oathdigital.gameplay`; it already imports
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.PowerAccessSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.PowerAccessSuite"`
 Expected: compile failure: `asIfDecision` is not a member of `PowerAccess`, and `locate` takes no fourth argument.
 
 - [ ] **Step 3: The as-if site in `PowerAccess`**
@@ -396,7 +396,7 @@ The rest of `locate` and `siteOf` stay as they are.
 
 - [ ] **Step 4: Run the tests to see them pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.PowerAccessSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.PowerAccessSuite"`
 Expected: PASS, every test of the suite.
 
 - [ ] **Step 5: `selectionQuestions` and `ModifierHost`**
@@ -414,9 +414,9 @@ In `ContributingPower.scala`, add after `selectionWindows`:
 Create `src/main/scala/distantlands/gameplay/powerresolver/ModifierHost.scala`:
 
 ```scala
-package oathdigital.gameplay.powerresolver
+package distantlands.gameplay.powerresolver
 
-import oathdigital.model.{DecisionOptionRef, Operation}
+import distantlands.model.{DecisionOptionRef, Operation}
 
 /** An action's modifier decision, as a power judged there finds it at
   * `PowerCtx.operation`. It names what the player selected when the action
@@ -446,7 +446,7 @@ In `ProcedureWalker.scala`, change `advance`:
 
 `advance` has no doc comment today; add one that says only the `seed` sentence.
 
-In `WalkerSimulation.scala`, add `Answered` to the `oathdigital.model` import, and change `refusal` and `preview`:
+In `WalkerSimulation.scala`, add `Answered` to the `distantlands.model` import, and change `refusal` and `preview`:
 
 ```scala
   def refusal(tree: Operation, state: ReadyGame, powers: WalkerPowers,
@@ -685,7 +685,7 @@ Add one sentence to the class docs of Map Library and Skilled Merchants: "A play
 
 - [ ] **Step 11: Compile and run the affected suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.PowerAccessSuite oathdigital.gameplay.powers.economy.* oathdigital.gameplay.walker.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.PowerAccessSuite distantlands.gameplay.powers.economy.* distantlands.gameplay.walker.*"`
 Expected: PASS. Nothing has an as-if answer yet, so every existing Trade, Muster and modifier test behaves as before.
 
 If the build reports another override of `selectable` or another caller of `inPawnRegion`, update it the same way.
@@ -739,21 +739,21 @@ git commit -m "feat(batch8): a modifier may place its user at an as-if site"
 Create `src/test/scala/distantlands/gameplay/powers/economy/SmallFriendsSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.PowerAccess
-import oathdigital.gameplay.actions.economy.TradeProcedure
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, MenuPlay,
+import distantlands.gameplay.PowerAccess
+import distantlands.gameplay.actions.economy.TradeProcedure
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, CatalogNames, Look, MenuPlay,
   Outcomes, PhasePowerHarness, PowerRules, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 class SmallFriendsSuite extends munit.FunSuite:
   private val friends = CatalogNames.denizen("Small Friends")
@@ -894,17 +894,17 @@ class SmallFriendsSuite extends munit.FunSuite:
 Create `src/test/scala/distantlands/gameplay/powers/economy/FriendlyFamiliarSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.PowerAccess
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look, MenuPlay, PhasePowerHarness,
+import distantlands.gameplay.PowerAccess
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{CatalogNames, Look, MenuPlay, PhasePowerHarness,
   PowerRules, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 class FriendlyFamiliarSuite extends munit.FunSuite:
   private val familiar = CatalogNames.denizen("Friendly Familiar")
@@ -1002,27 +1002,27 @@ If `awayNeighbour`'s `.get` fails because `away`'s region has only one site in p
 
 - [ ] **Step 3: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.SmallFriendsSuite oathdigital.gameplay.powers.economy.FriendlyFamiliarSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.economy.SmallFriendsSuite distantlands.gameplay.powers.economy.FriendlyFamiliarSuite"`
 Expected: compile failure: `SmallFriends` is not found.
 
 - [ ] **Step 4: Move the cards out of the holding files**
 
 Cut `SmallFriendsCard` from `HoldingBeastDenizens.scala` and `FriendlyFamiliarCard` from `HoldingDiscordDenizens.scala`. Paste each, unchanged, at the top of its new file below. Remove any import the holding files no longer use.
 
-In `NewFoundations.scala`, add `FriendlyFamiliarCard` and `SmallFriendsCard` to the `oathdigital.gameplay.powers.economy` import, in alphabetical order. The card lists already name them, and `oathdigital.catalog.holding._` no longer provides them.
+In `NewFoundations.scala`, add `FriendlyFamiliarCard` and `SmallFriendsCard` to the `distantlands.gameplay.powers.economy` import, in alphabetical order. The card lists already name them, and `distantlands.catalog.holding._` no longer provides them.
 
 - [ ] **Step 5: The shared trait**
 
 Create `src/main/scala/distantlands/gameplay/powers/economy/ActingSite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.PowerAccess
-import oathdigital.gameplay.powerresolver.{Contribution, ModifierPicks,
+import distantlands.gameplay.PowerAccess
+import distantlands.gameplay.powerresolver.{Contribution, ModifierPicks,
   OfferReason, PowerCtx, Transform}
-import oathdigital.gameplay.powers.{NoteSupport, SelectedModifier}
-import oathdigital.model._
+import distantlands.gameplay.powers.{NoteSupport, SelectedModifier}
+import distantlands.model._
 
 /** What Small Friends and Friendly Familiar share (catalog batch 8, slice
   * 7): a Trade modifier that, once picked and paid for, asks which site its
@@ -1115,11 +1115,11 @@ object ActingSite:
 Create `src/main/scala/distantlands/gameplay/powers/economy/SmallFriends.scala`. Start it with the package line, these imports, then the moved `SmallFriendsCard`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
   PrintedPower}
-import oathdigital.model._
+import distantlands.model._
 
 // SmallFriendsCard, moved here unchanged.
 
@@ -1151,11 +1151,11 @@ object SmallFriends:
 Create `src/main/scala/distantlands/gameplay/powers/economy/FriendlyFamiliar.scala`, the same way, with the moved `FriendlyFamiliarCard`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
   PrintedPower}
-import oathdigital.model._
+import distantlands.model._
 
 // FriendlyFamiliarCard, moved here unchanged.
 
@@ -1202,7 +1202,7 @@ In `PowerKindsCatalogSuite`, add to `modifiers`, after `"denizen.old-songs"`:
 
 - [ ] **Step 9: Run the tests to see them pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.SmallFriendsSuite oathdigital.gameplay.powers.economy.FriendlyFamiliarSuite oathdigital.gameplay.PowerKindsCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.economy.SmallFriendsSuite distantlands.gameplay.powers.economy.FriendlyFamiliarSuite distantlands.gameplay.PowerKindsCatalogSuite"`
 Expected: PASS, 10 new tests.
 
 If "Start stays available after the site" fails with Start unavailable, the seed does not reach a dry run. Check every call in `ModifierChoice.refusal` and `explained` from Task 2, Step 7.
@@ -1250,20 +1250,20 @@ git commit -m "feat(batch8): Small Friends and Friendly Familiar trade at anothe
 Create `src/test/scala/distantlands/gameplay/powers/economy/SecretSignalSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.ModifierPlay
-import oathdigital.gameplay.actions.economy.TradeProcedure
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, EconomyActions,
+import distantlands.gameplay.ModifierPlay
+import distantlands.gameplay.actions.economy.TradeProcedure
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, CatalogNames, EconomyActions,
   Look, Outcomes, PhasePowerHarness, PowerRules, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 class SecretSignalSuite extends munit.FunSuite:
   private val signal = CatalogNames.denizen("Secret Signal")
@@ -1361,7 +1361,7 @@ The last assertion of the Moving Market test checks that the walker dropped the 
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.SecretSignalSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.economy.SecretSignalSuite"`
 Expected: compile failure: `SecretSignal` is not found.
 
 - [ ] **Step 3: The shared record**
@@ -1369,9 +1369,9 @@ Expected: compile failure: `SecretSignal` is not found.
 Create `src/main/scala/distantlands/gameplay/powers/economy/TradeFavor.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.model.{Defer, DeferralKey, Gain, ReadyGame}
+import distantlands.model.{Defer, DeferralKey, Gain, ReadyGame}
 
 /** The favor a Trade's trader gains, held under one key as it runs, for a
   * power that counts it (Secret Signal). The counting power records the
@@ -1411,16 +1411,16 @@ Cut `SecretSignalCard` from `HoldingArcaneDenizens.scala`, removing any import t
 Create `src/main/scala/distantlands/gameplay/powers/economy/SecretSignal.scala`, with the moved card under the imports:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
   PrintedPower}
-import oathdigital.gameplay.actions.economy.TradeProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, Deferred,
+import distantlands.gameplay.actions.economy.TradeProcedure
+import distantlands.gameplay.powerresolver.{Contribution, Deferred,
   FoldPhase, ModifierHost, OfferReason, OperationRewrite, PowerCtx,
   Transform}
-import oathdigital.gameplay.powers.{NoteSupport, SelectedModifier}
-import oathdigital.model._
+import distantlands.gameplay.powers.{NoteSupport, SelectedModifier}
+import distantlands.model._
 
 // SecretSignalCard, moved here unchanged.
 
@@ -1504,7 +1504,7 @@ object SecretSignal:
     new SecretSignal(catalog)
 ```
 
-`TradeResource` is in `oathdigital.model`.
+`TradeResource` is in `distantlands.model`.
 
 - [ ] **Step 6: Register it**
 
@@ -1520,7 +1520,7 @@ In `PowerKindsCatalogSuite`, add `"denizen.secret-signal"` after `"denizen.frien
 
 - [ ] **Step 7: Run the tests to see them pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.SecretSignalSuite oathdigital.gameplay.powers.economy.MovingMarketSuite oathdigital.gameplay.PowerKindsCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.economy.SecretSignalSuite distantlands.gameplay.powers.economy.MovingMarketSuite distantlands.gameplay.PowerKindsCatalogSuite"`
 Expected: PASS. Moving Market's own tests pass unchanged: the held gain writes no line and is dropped at the Trade's end.
 
 - [ ] **Step 8: Run the whole server suite**

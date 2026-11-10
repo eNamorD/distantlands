@@ -72,10 +72,10 @@ The draft set as one immutable value with the three write methods, plus `Modifie
 Create `frontend/src/test/scala/distantlands/frontend/SessionDraftsSuite.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.model.PlayerColor
-import oathdigital.protocol.{MajorActionPreviewResponse, PreviewModifier}
+import distantlands.model.PlayerColor
+import distantlands.protocol.{MajorActionPreviewResponse, PreviewModifier}
 
 /** The draft set as a value: what `reconcile` keeps and drops, what `staged`
   * touches, and the exact slots each `FlowExit` clears (spec, "leave").
@@ -197,7 +197,7 @@ class SessionDraftsSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.SessionDraftsSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.SessionDraftsSuite"`
 Expected: compile error, `Not found: SessionDrafts`.
 
 - [ ] **Step 3: Change `ModifierWorkflow.reconcile` to take a context**
@@ -238,7 +238,7 @@ In `frontend/src/test/scala/distantlands/frontend/ModifierSelectionStateSuite.sc
 Create `frontend/src/main/scala/distantlands/frontend/SessionDrafts.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 /** The draft set (CONTEXT.md): everything a viewer has staged at the table
   * and not yet sent. One immutable value, bound to one game, seat and
@@ -339,7 +339,7 @@ private[frontend] enum FlowExit:
 
 - [ ] **Step 5: Run the suite and the frontend gate**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.SessionDraftsSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.SessionDraftsSuite"`
 Expected: 9 tests pass.
 
 Run: `./sbtw "frontend/test"`
@@ -389,9 +389,9 @@ Three narrow traits. `ServerUiView` extends `ActionControls` for the duration of
 Create `frontend/src/main/scala/distantlands/frontend/TableControls.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{GameIntent => GameCommand, PreviewModifier}
+import distantlands.protocol.{GameIntent => GameCommand, PreviewModifier}
 
 /** What a panel or the board may do to the session: stage a draft, send a
   * command, or hand over a board selection. Three members; a renderer reads
@@ -1031,10 +1031,10 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 Create `frontend/src/test/scala/distantlands/frontend/ActionPanePromptSuite.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.model.PlayerColor
-import oathdigital.protocol.MajorActionPreviewResponse
+import distantlands.model.PlayerColor
+import distantlands.protocol.MajorActionPreviewResponse
 import org.scalajs.dom
 
 /** The prompt the action pane reports is the text the old DOM scrape
@@ -1089,7 +1089,7 @@ class ActionPanePromptSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.ActionPanePromptSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.ActionPanePromptSuite"`
 Expected: compile error, `Not found: ActionPane` (or a signature mismatch on `actionsPanel`).
 
 - [ ] **Step 3: Migrate `ActionDecisionRenderer`**
@@ -1173,7 +1173,7 @@ Remove `currentPlayerId`, `currentGameId` and `modifierWorkflow` from `Recording
 
 - [ ] **Step 6: Run the suite and the gate**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.ActionPanePromptSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.ActionPanePromptSuite"`
 Expected: 3 tests pass.
 
 Run: `./sbtw "frontend/test"`
@@ -1230,7 +1230,7 @@ In `frontend/src/test/scala/distantlands/frontend/ServerModeUiSuite.scala`, afte
   test("a seat change clears the walker drafts before the interim render"):
     val browser = new TestBrowser("?gameId=g&playerId=red")
     def snapshot(sequence: Long, active: String): String =
-      oathdigital.protocol.projection.GameProjectionCodec.encode(
+      distantlands.protocol.projection.GameProjectionCodec.encode(
         GameProjection("g", sequence, "act", Some(active),
           Vector(GamePlayer("red", "Red", "Exile", PlayerColor.Red),
             GamePlayer("blue", "Blue", "Exile", PlayerColor.Blue)),
@@ -1260,7 +1260,7 @@ In `frontend/src/test/scala/distantlands/frontend/ServerModeUiSuite.scala`, afte
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.ServerModeUiSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.ServerModeUiSuite"`
 Expected: the new test fails on `partition-zones` being non-empty (the stale draft renders); every other test passes.
 
 - [ ] **Step 3: Replace the seven vars with one value**
@@ -1395,7 +1395,7 @@ The `ui` adapter:
 
 - [ ] **Step 4: Run the suite and the gate**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.ServerModeUiSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.ServerModeUiSuite"`
 Expected: the seat-change test now passes, and every other test still does.
 
 Run: `./sbtw "frontend/test"`
@@ -1454,9 +1454,9 @@ git mv frontend/src/test/scala/distantlands/frontend/RecordingServerUiView.scala
 Its content becomes:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{GameIntent => Intent, PreviewModifier}
+import distantlands.protocol.{GameIntent => Intent, PreviewModifier}
 
 /** An `ActionControls` that records what was staged and submitted instead
   * of touching a session, shared by every panel render suite. `drafts` is

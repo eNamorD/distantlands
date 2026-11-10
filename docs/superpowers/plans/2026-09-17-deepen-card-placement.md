@@ -33,7 +33,7 @@
 
 **Interfaces:** Produce `CardPlay.Choice(placement: SearchPlacement, replacements: Vector[CardId])` and `CardPlay.legalChoices(catalog: ExecutableCatalog, ready: ReadyGame, actor: PlayerId, card: WorldCardId, origin: CardPlay.Origin, faceupLimit: Int, facedownLimit: Int): Vector[CardPlay.Choice]`. `placement` is the base intent with `replace = None`.
 
-- [ ] **Step 1: Baseline.** Run `./sbtw 'testOnly oathdigital.gameplay.CardPlayProcedureSuite oathdigital.gameplay.powers.rest.SilverTongueSuite oathdigital.gameplay.SearchProcedureSuite oathdigital.gameplay.VisionsSuite'`; require pass before edits. Record existing placement-button order and full-area replacement order from the tests.
+- [ ] **Step 1: Baseline.** Run `./sbtw 'testOnly distantlands.gameplay.CardPlayProcedureSuite distantlands.gameplay.powers.rest.SilverTongueSuite distantlands.gameplay.SearchProcedureSuite distantlands.gameplay.VisionsSuite'`; require pass before edits. Record existing placement-button order and full-area replacement order from the tests.
 
 - [ ] **Step 2: Write a failing public-seam test.** In `CardPlayProcedureSuite`, add this test. In the existing full-adviser test, assert the faceup choice's replacement IDs equal the current advisers' IDs filtered by `CardPlay.plannedOperations(catalog, full, actor, card, SearchPlacement.Adviser(Orientation.FaceUp, Some(id)), CardPlay.Origin.TemporaryHand).isRight`, preserving their order. In the locked-adviser test, assert no faceup choice. Run the focused suite and require compilation failure because `legalChoices` does not exist.
 
@@ -140,7 +140,7 @@ val candidates = CardPlay.legalChoices(catalog, ready, actor, card,
 
   Leave decision construction, selected-answer lookup, selected replacement conversion, `BuildOps` revalidation, and `CardPlayed` hook in place. Remove now-unused local `player` and `VisionId`-specific candidate logic. Do not move presentation labels into `CardPlay`.
 
-- [ ] **Step 3: Focused gate.** Run `./sbtw 'testOnly oathdigital.gameplay.CardPlayProcedureSuite oathdigital.gameplay.powers.rest.SilverTongueSuite oathdigital.gameplay.SearchProcedureSuite oathdigital.gameplay.VisionsSuite oathdigital.application.GameApplicationServiceSuite'`; require pass. Confirm tests cover full/locked adviser areas, full site, Vision replacement, Conspiracy, facedown start, Silver Tongue, and persisted Search replay. Commit Task 2 files as `refactor(cardplay): render walker choices from placement rules`.
+- [ ] **Step 3: Focused gate.** Run `./sbtw 'testOnly distantlands.gameplay.CardPlayProcedureSuite distantlands.gameplay.powers.rest.SilverTongueSuite distantlands.gameplay.SearchProcedureSuite distantlands.gameplay.VisionsSuite distantlands.application.GameApplicationServiceSuite'`; require pass. Confirm tests cover full/locked adviser areas, full site, Vision replacement, Conspiracy, facedown start, Silver Tongue, and persisted Search replay. Commit Task 2 files as `refactor(cardplay): render walker choices from placement rules`.
 
 ### Task 3: Final behavior and architecture gate
 

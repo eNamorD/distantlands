@@ -48,7 +48,7 @@ The log line rules are in `docs/superpowers/specs/2026-09-26-power-log-lines-des
   - `gameplay` never imports `application`, `serialization` or `server`.
   - A walker power (anything under `gameplay/powers`) never imports `gameplay.walker`.
   - No power name appears in walker sources.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Other sessions commit to `main` while you work.
   - Stage explicit paths only; never `git add -A`.
   - Re-check `git log --oneline -1` before any amend, reset or rebase.
@@ -228,7 +228,7 @@ PY
 
 Replace `FILE` and `OBJECT` with the values the task gives. The new power file defines the object exactly as the holding file did (each task shows it). In the same step:
 
-- Add the object's name to the matching `import oathdigital.gameplay.powers.<package>.{...}` list in `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`.
+- Add the object's name to the matching `import distantlands.gameplay.powers.<package>.{...}` list in `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`.
   - Keep the list in alphabetical order, and rewrap lines at 80 columns.
   - `NewFoundations` already lists each card by name, and its wildcard `catalog.holding._` import no longer finds it.
 - If the holding file is left with an unused import, remove it.
@@ -264,14 +264,14 @@ Replace `FILE` and `OBJECT` with the values the task gives. The new power file d
 Create `src/test/scala/distantlands/gameplay/powers/campaign/ShieldWallSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Look}
 
 /** Shield Wall: a defender's plan that adds two defense dice, and kills its
   * user's whole force when they are defeated. */
@@ -377,16 +377,16 @@ class ShieldWallSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.ShieldWallSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.ShieldWallSuite"`
 Expected: compilation FAIL, `ShieldWall` not found.
 
 - [ ] **Step 3: Create `KillWholeForce.scala`**
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.powers.PlayerFacts
-import oathdigital.model._
+import distantlands.gameplay.powers.PlayerFacts
+import distantlands.model._
 
 /** The kill of a defeated side's whole force, after the Campaign's losses
   * (R4, from Sticky Fire). Sticky Fire kills its enemy's force this way when
@@ -449,7 +449,7 @@ private[campaign] object KillWholeForce:
 
 In `StickyFire.scala`:
 
-1. Change the import line `import oathdigital.gameplay.powers.{NoteSupport, PlayerFacts, PowerAnswers}` to `import oathdigital.gameplay.powers.{NoteSupport, PowerAnswers}`.
+1. Change the import line `import distantlands.gameplay.powers.{NoteSupport, PlayerFacts, PowerAnswers}` to `import distantlands.gameplay.powers.{NoteSupport, PowerAnswers}`.
 2. Delete the three private methods `burn`, `returnedToDefender` and `kills`, with their doc comments, and put this `burn` where the old one was. `burnNote`, `loserOf`, `ask` and `gives` stay as they are.
 
 ```scala
@@ -476,11 +476,11 @@ In `StickyFire.scala`:
 Run the move script with `FILE=src/main/scala/distantlands/catalog/holding/HoldingOrderDenizens.scala` and `OBJECT=ShieldWallCard`. Add `ShieldWallCard` to the `powers.campaign` import in `NewFoundations.scala`.
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, PrintedPower}
-import oathdigital.gameplay.powers.NoteSupport
-import oathdigital.model._
+import distantlands.catalog.{Denizen, PrintedPower}
+import distantlands.gameplay.powers.NoteSupport
+import distantlands.model._
 
 object ShieldWallCard extends Denizen(DenizenId("108"), "Shield Wall", Suit.Order):
   val power = PrintedPower(PowerId("denizen.shield-wall"),
@@ -549,7 +549,7 @@ In `PlanRules.scala`, append `++ Vector(ShieldWall)` to the end of the `forCatal
 
 - [ ] **Step 7: Run the suites to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.ShieldWallSuite oathdigital.gameplay.powers.campaign.StickyFireSuite oathdigital.gameplay.powers.campaign.HospitalSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.ShieldWallSuite distantlands.gameplay.powers.campaign.StickyFireSuite distantlands.gameplay.powers.campaign.HospitalSuite"`
 Expected: PASS. `StickyFireSuite` and `HospitalSuite` pass unchanged.
 
 - [ ] **Step 8: Commit**
@@ -601,15 +601,15 @@ git commit -m "feat(campaign): Shield Wall kills a defeated defender's whole for
 Create `src/test/scala/distantlands/gameplay/powers/campaign/BillowingFogSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseAmountAnswer
-import oathdigital.testkit.{CatalogNames, Look}
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseAmountAnswer
+import distantlands.testkit.{CatalogNames, Look}
 
 /** Billowing Fog: when its user is defeated, the defeat kills none of their
   * force, and the powers that kill all of it are ignored. */
@@ -734,14 +734,14 @@ class BillowingFogSuite extends munit.FunSuite:
 Create `src/test/scala/distantlands/gameplay/powers/campaign/TravelingDoctorSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Look}
 
 /** Traveling Doctor: Billowing Fog's rule, free, and discarded after a
   * Campaign its user lost. A bandit defender applies it and gains nothing
@@ -795,15 +795,15 @@ class TravelingDoctorSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.BillowingFogSuite oathdigital.gameplay.powers.campaign.TravelingDoctorSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.BillowingFogSuite distantlands.gameplay.powers.campaign.TravelingDoctorSuite"`
 Expected: compilation FAIL, `BillowingFog`, `TravelingDoctor` and `SparedForce` not found.
 
 - [ ] **Step 3: Create `LossRewrite.scala`**
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The core operations a Campaign window's children produce, rewritten one
   * at a time (R3, from Hospital's private tally). It reaches through
@@ -911,11 +911,11 @@ with
 - [ ] **Step 5: Create `SparedForce.scala`**
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.powerresolver.{ContributingPower, PowerCtx}
-import oathdigital.gameplay.powers.PlayerFacts
-import oathdigital.model._
+import distantlands.gameplay.powerresolver.{ContributingPower, PowerCtx}
+import distantlands.gameplay.powers.PlayerFacts
+import distantlands.model._
 
 /** Billowing Fog's and Traveling Doctor's shared rule: "If you're defeated,
   * kill no warbands in your force. Ignore powers that kill all of your
@@ -1026,11 +1026,11 @@ Then add `BillowingFogCard` and `TravelingDoctorCard` to the `powers.campaign` i
 Create `BillowingFog.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, PrintedPower}
-import oathdigital.gameplay.powerresolver.{ContributingPower, PowerCtx}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, PrintedPower}
+import distantlands.gameplay.powerresolver.{ContributingPower, PowerCtx}
+import distantlands.model._
 
 object BillowingFogCard extends Denizen(DenizenId("59"), "Billowing Fog", Suit.Arcane):
   val power = PrintedPower(PowerId("denizen.billowing-fog"),
@@ -1076,11 +1076,11 @@ case object BillowingFog extends BattlePlan:
 Create `TravelingDoctor.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.powerresolver.{ContributingPower, PowerCtx}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.powerresolver.{ContributingPower, PowerCtx}
+import distantlands.model._
 
 object TravelingDoctorCard extends Denizen(DenizenId("51"), "Traveling Doctor", Suit.Hearth):
   val power = PrintedPower(PowerId("denizen.traveling-doctor"),
@@ -1144,7 +1144,7 @@ In `PlanRules.scala`, append `++ Vector(BillowingFog) ++ Vector(TravelingDoctor.
 
 - [ ] **Step 8: Run the loss suites to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.BillowingFogSuite oathdigital.gameplay.powers.campaign.TravelingDoctorSuite oathdigital.gameplay.powers.campaign.HospitalSuite oathdigital.gameplay.powers.campaign.StickyFireSuite oathdigital.gameplay.powers.campaign.ShieldWallSuite oathdigital.gameplay.powers.campaign.WrestlersSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.BillowingFogSuite distantlands.gameplay.powers.campaign.TravelingDoctorSuite distantlands.gameplay.powers.campaign.HospitalSuite distantlands.gameplay.powers.campaign.StickyFireSuite distantlands.gameplay.powers.campaign.ShieldWallSuite distantlands.gameplay.powers.campaign.WrestlersSuite"`
 Expected: PASS. `HospitalSuite`, `StickyFireSuite` and `WrestlersSuite` pass unchanged.
 
 If "a defeated user ignores Sticky Fire" fails because Sticky Fire still asks, `ignores` is not reached. Check that Billowing Fog is discovered at `CampaignLosses`, which its `wrapping` entry declares. Do not change the collector.
@@ -1204,14 +1204,14 @@ Oracular Pig (R14) prints defense 2, as Cursed Cauldron does, and only an ACTION
 Create `src/test/scala/distantlands/gameplay/powers/campaign/CursedCauldronSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Look}
 
 /** Cursed Cauldron: a victorious user gains a warband per enemy warband that
   * died in the Campaign, net of those that came back. */
@@ -1296,7 +1296,7 @@ class CursedCauldronSuite extends munit.FunSuite:
 
 - [ ] **Step 3: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.CursedCauldronSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.CursedCauldronSuite"`
 Expected: compilation FAIL, `CursedCauldron` not found.
 
 - [ ] **Step 4: Add `Hospital.placeable`**
@@ -1332,11 +1332,11 @@ In `Hospital.scala`, replace the private `placement` method with these two:
 Run the move script with `FILE=src/main/scala/distantlands/catalog/holding/HoldingRelics.scala` and `OBJECT=CursedCauldronCard`. Add `CursedCauldronCard` to the `powers.campaign` import in `NewFoundations.scala`.
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{PrintedPower, Relic}
-import oathdigital.gameplay.powers.{NoteSupport, PlayerFacts}
-import oathdigital.model._
+import distantlands.catalog.{PrintedPower, Relic}
+import distantlands.gameplay.powers.{NoteSupport, PlayerFacts}
+import distantlands.model._
 
 object CursedCauldronCard extends Relic(RelicId("R02"), "Cursed Cauldron", value = 84, defense = 2):
   val power = PrintedPower(PowerId("relic.cursed-cauldron"),
@@ -1444,7 +1444,7 @@ In `PlanRules.scala`, append `++ Vector(CursedCauldron)` to the `forCatalog` cha
 
 - [ ] **Step 7: Run the Campaign suites to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.* oathdigital.gameplay.Campaign* oathdigital.gameplay.powers.targeting.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.* distantlands.gameplay.Campaign* distantlands.gameplay.powers.targeting.*"`
 Expected: PASS. Every suite that uses `raidBoard` passes unchanged with Oracular Pig.
 
 - [ ] **Step 8: Commit**
@@ -1485,15 +1485,15 @@ git commit -m "feat(campaign): Cursed Cauldron gains a warband per enemy warband
 Create `src/test/scala/distantlands/gameplay/powers/campaign/SaltTheEarthSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseAmountAnswer
-import oathdigital.testkit.CatalogNames
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseAmountAnswer
+import distantlands.testkit.CatalogNames
 
 /** Salt the Earth: an attacker who wins a Conquest buries every card at one
   * targeted site, relics included. */
@@ -1581,7 +1581,7 @@ class SaltTheEarthSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.SaltTheEarthSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.SaltTheEarthSuite"`
 Expected: compilation FAIL, `SaltTheEarth` not found.
 
 - [ ] **Step 3: Create `SaltTheEarth.scala` and move the card object**
@@ -1589,12 +1589,12 @@ Expected: compilation FAIL, `SaltTheEarth` not found.
 Run the move script with `FILE=src/main/scala/distantlands/catalog/holding/HoldingDiscordDenizens.scala` and `OBJECT=SaltTheEarthCard`. Add `SaltTheEarthCard` to the `powers.campaign` import in `NewFoundations.scala`.
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.actions.campaign.CampaignProcedure
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.actions.campaign.CampaignProcedure
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 object SaltTheEarthCard extends Denizen(DenizenId("89"), "Salt the Earth", Suit.Discord):
   val power = PrintedPower(PowerId("denizen.salt-the-earth"),
@@ -1721,7 +1721,7 @@ In `PlanRules.scala`, append `++ Vector(SaltTheEarth.forCatalog(catalog))` to th
 
 - [ ] **Step 5: Run the suite to verify it passes**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.SaltTheEarthSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.SaltTheEarthSuite"`
 Expected: PASS, 4 tests.
 
 If the first test fails because the facedown relic is not buried, `Bury` refuses a relic from a site. That is an engine change, so stop and report.
@@ -1768,14 +1768,14 @@ git commit -m "feat(campaign): Salt the Earth buries every card at a conquered s
 Create `src/test/scala/distantlands/gameplay/powers/campaign/SealingWardSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.testkit.CatalogNames
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.testkit.CatalogNames
 
 /** Sealing Ward: each of its holder's relics a Raid targets adds a defense
   * die, added when the pools are gathered. */
@@ -1825,13 +1825,13 @@ class SealingWardSuite extends munit.FunSuite:
 Create `src/test/scala/distantlands/gameplay/powers/campaign/HeraldSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Look}
 
 /** Herald: after another player campaigns against a player, its holder
   * gains a favor from a bank they choose. */
@@ -1913,7 +1913,7 @@ class HeraldSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.SealingWardSuite oathdigital.gameplay.powers.campaign.HeraldSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.SealingWardSuite distantlands.gameplay.powers.campaign.HeraldSuite"`
 Expected: compilation FAIL, `SealingWard` and `Herald` not found.
 
 - [ ] **Step 3: Create `SealingWard.scala` and move the card object**
@@ -1921,15 +1921,15 @@ Expected: compilation FAIL, `SealingWard` and `Herald` not found.
 Run the move script with `FILE=src/main/scala/distantlands/catalog/holding/HoldingArcaneDenizens.scala` and `OBJECT=SealingWardCard`. Add `SealingWardCard` to the `powers.campaign` import in `NewFoundations.scala`.
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog, Locked,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog, Locked,
   PrintedPower}
-import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignSetup}
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.gameplay.actions.campaign.{CampaignIds, CampaignSetup}
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   Transform}
-import oathdigital.gameplay.powers.CatalogResolution
-import oathdigital.model._
+import distantlands.gameplay.powers.CatalogResolution
+import distantlands.model._
 
 object SealingWardCard extends Denizen(DenizenId("72"), "Sealing Ward", Suit.Arcane) with Locked with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.sealing-ward"),
@@ -2012,16 +2012,16 @@ object SealingWard:
 Run the move script with `FILE=src/main/scala/distantlands/catalog/holding/HoldingHearthDenizens.scala` and `OBJECT=HeraldCard`. Add `HeraldCard` to the `powers.campaign` import in `NewFoundations.scala`.
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
   PrintedPower}
-import oathdigital.gameplay.actions.campaign.CampaignProcedure
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.gameplay.actions.campaign.CampaignProcedure
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   Transform}
-import oathdigital.gameplay.powers.{CatalogResolution, NoteSupport}
-import oathdigital.gameplay.powers.cardplay.FavorBankChoice
-import oathdigital.model._
+import distantlands.gameplay.powers.{CatalogResolution, NoteSupport}
+import distantlands.gameplay.powers.cardplay.FavorBankChoice
+import distantlands.model._
 
 object HeraldCard extends Denizen(DenizenId("143"), "Herald", Suit.Hearth) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.herald"),
@@ -2102,7 +2102,7 @@ object Herald:
 
 - [ ] **Step 6: Run the suites to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.SealingWardSuite oathdigital.gameplay.powers.campaign.HeraldSuite oathdigital.gameplay.PowerKindsCatalogSuite oathdigital.gameplay.CampaignRaidSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.SealingWardSuite distantlands.gameplay.powers.campaign.HeraldSuite distantlands.gameplay.PowerKindsCatalogSuite distantlands.gameplay.CampaignRaidSuite"`
 Expected: PASS.
 
 If the Sealing Ward's dice do not reach the pool, the Transform at `CampaignGatherPools` is not applied. That is the spec's first-use seam: stop and report, and do not change the walker.
@@ -2149,18 +2149,18 @@ git commit -m "feat(campaign): Sealing Ward adds defense dice for targeted relic
 Create `src/test/scala/distantlands/gameplay/powers/targeting/DiplomatSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.targeting
+package distantlands.gameplay.powers.targeting
 
-import oathdigital.gameplay.CampaignFixture
-import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignProcedure}
-import oathdigital.gameplay.powerresolver.{PowerCtx, Restriction}
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.CatalogNames
-import oathdigital.testkit.Unwrap.{accepted, as}
+import distantlands.gameplay.CampaignFixture
+import distantlands.gameplay.actions.campaign.{CampaignIds, CampaignProcedure}
+import distantlands.gameplay.powerresolver.{PowerCtx, Restriction}
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.testkit.CatalogNames
+import distantlands.testkit.Unwrap.{accepted, as}
 
 /** Diplomat: a player who rules no hearth card cannot Raid or Conquer its
   * holder. The kinds and defenders it blocks are hidden, and a Campaign left
@@ -2253,7 +2253,7 @@ class DiplomatSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.targeting.DiplomatSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.targeting.DiplomatSuite"`
 Expected: compilation FAIL, `Diplomat` not found.
 
 - [ ] **Step 3: Move `underway` to `FortressRule`'s companion**
@@ -2289,15 +2289,15 @@ In `FortressRules.scala`:
 Run the move script with `FILE=src/main/scala/distantlands/catalog/holding/HoldingHearthDenizens.scala` and `OBJECT=DiplomatCard`. Add `DiplomatCard` to the `powers.targeting` import in `NewFoundations.scala`.
 
 ```scala
-package oathdigital.gameplay.powers.targeting
+package distantlands.gameplay.powers.targeting
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
   PrintedPower}
-import oathdigital.gameplay.actions.campaign.CampaignSetup
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.gameplay.actions.campaign.CampaignSetup
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   OptionRestriction, PowerCtx, Restriction}
-import oathdigital.gameplay.powers.{CatalogResolution, RuledCards}
-import oathdigital.model._
+import distantlands.gameplay.powers.{CatalogResolution, RuledCards}
+import distantlands.model._
 
 object DiplomatCard extends Denizen(DenizenId("230"), "Diplomat", Suit.Hearth) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.diplomat"),
@@ -2399,7 +2399,7 @@ object Diplomat:
 
 - [ ] **Step 6: Run the targeting suites to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.targeting.* oathdigital.gameplay.PowerKindsCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.targeting.* distantlands.gameplay.PowerKindsCatalogSuite"`
 Expected: PASS. `FortressRulesSuite` passes unchanged.
 
 - [ ] **Step 7: Commit**

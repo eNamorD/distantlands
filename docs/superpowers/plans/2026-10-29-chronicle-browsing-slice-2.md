@@ -20,7 +20,7 @@
 
 - **Branch:** work in a worktree off `0.2.0-alpha`. Symlink the main checkout's `.tooling` and `node_modules` into it before running `./sbtw`. Merge back into `0.2.0-alpha` only when the user says so. Push nothing.
 - **Commits:** never `git add -A`; add the files you changed by name. End every commit message with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`.
-- **Storage keys:** `oath.chronicles` holds a JSON array of `{name, json, digest, summary, savedAt}`. `oath.chronicles.loaded` holds the loaded entry's name.
+- **Storage keys:** `distantlands.chronicles` holds a JSON array of `{name, json, digest, summary, savedAt}`. `distantlands.chronicles.loaded` holds the loaded entry's name.
 - **Names:** trimmed, 1 to 80 characters, and unique within a browser (exact match after trimming). The name is the identity; there is no other id.
 - **Refused storage:** the page says Chronicles cannot be kept in this browser. Import, export and game creation still work for the Chronicle on screen, which lasts until the page is left. An entry that does not parse is listed as "Unreadable" with only Delete.
 - **Automatic save:** look up the entry with the game's Chronicle name. If there is none, save the evolved Chronicle. If its digest equals the evolved digest, do nothing. If it equals the starting digest, replace it silently. If it is any other digest, ask at the table: save under a new name, or overwrite. The saved entry becomes the loaded Chronicle.
@@ -82,7 +82,7 @@ Open `GameRoutesSuite.scala` near line 50, where `server.get("/")` checks the de
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.server.ProductionFrontendRoutesSuite oathdigital.server.GameRoutesSuite"`
+Run: `./sbtw "testOnly distantlands.server.ProductionFrontendRoutesSuite distantlands.server.GameRoutesSuite"`
 Expected: FAIL, because `/new-game` answers 404.
 
 - [ ] **Step 3: Implement**
@@ -138,7 +138,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Test (new): `ChronicleStorageContract.scala`, `MemoryChronicleStorageSuite.scala`, `BrowserChronicleStorageSuite.scala`, `ChronicleShelfSuite.scala`, `ChronicleTextSuite.scala`, `ChronicleFixtures.scala`, all in `frontend/src/test/scala/distantlands/frontend/`
 
 **Interfaces:**
-- Consumes: `oathdigital.protocol.{ChronicleEntry, ChronicleSummary, ChronicleScore, ChronicleEntryCodec}` (shared).
+- Consumes: `distantlands.protocol.{ChronicleEntry, ChronicleSummary, ChronicleScore, ChronicleEntryCodec}` (shared).
 - Produces:
   - `trait ChronicleStorage { def read(key: String): Option[String]; def write(key: String, value: String): Boolean; def remove(key: String): Unit }`
   - `final class MemoryChronicleStorage(initial: Map[String, String] = Map.empty) extends ChronicleStorage { var values: Map[String, String] }`
@@ -156,7 +156,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 `ChronicleStorageContract.scala`. It follows `LogStoreContract`, plus refusal and removal:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 /** What every `ChronicleStorage` promises: a written key reads back, a
   * second write replaces the first, a removed or never-written key reads
@@ -170,27 +170,27 @@ private[frontend] abstract class ChronicleStorageContract extends munit.FunSuite
   private val fresh = FunFixture[ChronicleStorage](_ => make(), release)
 
   fresh.test("a key that was written reads back its value"): store =>
-    assert(store.write("oath.chronicles", "[]"))
-    assertEquals(store.read("oath.chronicles"), Some("[]"))
+    assert(store.write("distantlands.chronicles", "[]"))
+    assertEquals(store.read("distantlands.chronicles"), Some("[]"))
 
   fresh.test("a second write to a key replaces the first"): store =>
-    store.write("oath.chronicles.loaded", "Ashen Crown")
-    store.write("oath.chronicles.loaded", "Iron Vow")
-    assertEquals(store.read("oath.chronicles.loaded"), Some("Iron Vow"))
+    store.write("distantlands.chronicles.loaded", "Ashen Crown")
+    store.write("distantlands.chronicles.loaded", "Iron Vow")
+    assertEquals(store.read("distantlands.chronicles.loaded"), Some("Iron Vow"))
 
   fresh.test("a removed key reads as nothing"): store =>
-    store.write("oath.chronicles.loaded", "Ashen Crown")
-    store.remove("oath.chronicles.loaded")
-    assertEquals(store.read("oath.chronicles.loaded"), None)
+    store.write("distantlands.chronicles.loaded", "Ashen Crown")
+    store.remove("distantlands.chronicles.loaded")
+    assertEquals(store.read("distantlands.chronicles.loaded"), None)
 
   fresh.test("a key that was never written reads as nothing"): store =>
-    assertEquals(store.read("oath.chronicles"), None)
+    assertEquals(store.read("distantlands.chronicles"), None)
 ```
 
 `MemoryChronicleStorageSuite.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 class MemoryChronicleStorageSuite extends ChronicleStorageContract:
   protected def make(): ChronicleStorage = new MemoryChronicleStorage()
@@ -217,7 +217,7 @@ class MemoryChronicleStorageSuite extends ChronicleStorageContract:
 
   test("a storage that refuses writes, as a full one does, answers false"):
     // install a stand-in whose setItem throws only for keys other than the
-    // probe, then: assert(!store.write("oath.chronicles", "[]"))
+    // probe, then: assert(!store.write("distantlands.chronicles", "[]"))
 ```
 
 For the second test, write the stand-in the same way as `make()`. Its `setItem` throws `js.JavaScriptException("QuotaExceededError")` when `key != ChronicleStorage.Probe`. Name the restore helper after what it does, e.g. `putBackLocalStorage`, as `BrowserLogStoreSuite` does.
@@ -227,9 +227,9 @@ For the second test, write the stand-in the same way as `make()`. Its `setItem` 
 `ChronicleFixtures.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{ChronicleEntry, ChronicleScore, ChronicleSummary}
+import distantlands.protocol.{ChronicleEntry, ChronicleScore, ChronicleSummary}
 
 /** Chronicle entries and a fixed clock for the browsing suites. An entry's
   * JSON is a stand-in, `{"format":1,"name":…}`: the browser never reads a
@@ -258,11 +258,11 @@ private[frontend] object ChronicleFixtures:
     val shelf = new ChronicleShelf(storage, ChronicleFixtures.clock)
     val saved = accepted(shelf.put(ChronicleFixtures.entry("Ashen Crown")))
     assertEquals(saved.savedAt, ChronicleFixtures.savedAt)
-    val stored = ujson.read(storage.values("oath.chronicles")).arr.head.obj
+    val stored = ujson.read(storage.values("distantlands.chronicles")).arr.head.obj
     assertEquals(stored.keySet.toSet,
       Set("name", "json", "digest", "summary", "savedAt"))
     assertEquals(stored("name").str, "Ashen Crown")
-    assertEquals(storage.values("oath.chronicles.loaded"), "Ashen Crown")
+    assertEquals(storage.values("distantlands.chronicles.loaded"), "Ashen Crown")
     assertEquals(shelf.loaded.map(_.name), Some("Ashen Crown"))
 
   test("put under a saved name replaces that entry in place")
@@ -275,15 +275,15 @@ private[frontend] object ChronicleFixtures:
     // a storage whose write returns false: Left(ChronicleShelf.Refused)
 
   test("an element that does not parse is an Unreadable row"):
-    // values "oath.chronicles" = [<valid entry A>, {"name":7}]
+    // values "distantlands.chronicles" = [<valid entry A>, {"name":7}]
     // rows == Vector(Readable(0, A…), Unreadable(1))
 
   test("an entry whose name differs from its summary's is unreadable")
 
   test("a value that is not a JSON array is one Unreadable row, and " +
       "deleting it empties the list"):
-    // values "oath.chronicles" = "not json": rows == Vector(Unreadable(0));
-    // delete(0); storage.values("oath.chronicles") == "[]"
+    // values "distantlands.chronicles" = "not json": rows == Vector(Unreadable(0));
+    // delete(0); storage.values("distantlands.chronicles") == "[]"
 
   test("deleting the loaded entry clears the loaded Chronicle")
   test("deleting another entry keeps the loaded Chronicle")
@@ -308,7 +308,7 @@ private[frontend] object ChronicleFixtures:
   test("autoSave whose write is refused is Refused")
 ```
 
-Import `oathdigital.testkit.Unwrap.accepted`; `ServerModeHostFormSuite` already uses it. For the refusing storage, subclass `MemoryChronicleStorage` and override `write` to return `false`.
+Import `distantlands.testkit.Unwrap.accepted`; `ServerModeHostFormSuite` already uses it. For the refusing storage, subclass `MemoryChronicleStorage` and override `write` to return `false`.
 
 `ChronicleTextSuite.scala`:
 
@@ -336,13 +336,13 @@ Import `oathdigital.testkit.Unwrap.accepted`; `ServerModeHostFormSuite` already 
 
 - [ ] **Step 3: Run them to see them fail**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.MemoryChronicleStorageSuite oathdigital.frontend.BrowserChronicleStorageSuite oathdigital.frontend.ChronicleShelfSuite oathdigital.frontend.ChronicleTextSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.MemoryChronicleStorageSuite distantlands.frontend.BrowserChronicleStorageSuite distantlands.frontend.ChronicleShelfSuite distantlands.frontend.ChronicleTextSuite"`
 Expected: compile errors, because the types do not exist yet.
 
 - [ ] **Step 4: Implement `ChronicleStorage.scala`**
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 import org.scalajs.dom
 import scala.scalajs.js
@@ -371,7 +371,7 @@ private[frontend] class MemoryChronicleStorage(
 private[frontend] object ChronicleStorage:
   /** Written and removed once to learn whether the browser keeps anything:
     * some private windows have a `localStorage` that refuses every write. */
-  val Probe = "oath.chronicles.probe"
+  val Probe = "distantlands.chronicles.probe"
 
   /** The browser's `localStorage`, or nothing when the browser refuses it. */
   def browser: Option[ChronicleStorage] =
@@ -394,9 +394,9 @@ private[frontend] object ChronicleStorage:
 - [ ] **Step 5: Implement `ChronicleShelf.scala`**
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{ChronicleEntry, ChronicleEntryCodec}
+import distantlands.protocol.{ChronicleEntry, ChronicleEntryCodec}
 import scala.util.Try
 
 /** One stored Chronicle: the server's entry and when this browser saved it. */
@@ -422,8 +422,8 @@ private[frontend] enum AutoSave:
   case Conflict(existing: SavedChronicle)
   case Refused(reason: String)
 
-/** The browser's Chronicles: the list under `oath.chronicles` and the loaded
-  * entry's name under `oath.chronicles.loaded`. Every read goes to the
+/** The browser's Chronicles: the list under `distantlands.chronicles` and the loaded
+  * entry's name under `distantlands.chronicles.loaded`. Every read goes to the
   * storage, so two pages of one browser see each other's writes. */
 private[frontend] final class ChronicleShelf(storage: ChronicleStorage,
     now: () => String):
@@ -505,8 +505,8 @@ private[frontend] final class ChronicleShelf(storage: ChronicleStorage,
       case Some(existing) => AutoSave.Conflict(existing)
 
 private[frontend] object ChronicleShelf:
-  val ListKey = "oath.chronicles"
-  val LoadedKey = "oath.chronicles.loaded"
+  val ListKey = "distantlands.chronicles"
+  val LoadedKey = "distantlands.chronicles.loaded"
   /** The server's limit, `Chronicle.maxNameLength`. */
   val MaxNameLength = 80
   val Refused = "This browser refused to keep the Chronicle. Export it to " +
@@ -539,9 +539,9 @@ private[frontend] object ChronicleShelf:
 - [ ] **Step 6: Implement `ChronicleText.scala`**
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.ChronicleSummary
+import distantlands.protocol.ChronicleSummary
 
 /** How the Chronicle pages word a Chronicle's summary. */
 private[frontend] object ChronicleText:
@@ -607,7 +607,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 `FakeChronicleFiles.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 import org.scalajs.dom
 import scala.collection.mutable.ArrayBuffer
@@ -634,7 +634,7 @@ private[frontend] final class FakeChronicleFiles(
 `FakePageHistory.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -747,15 +747,15 @@ The `Future.successful` here needs no execution context.
 
 - [ ] **Step 3: Run them to see them fail**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.ChronicleClientSuite oathdigital.frontend.ChronicleFilesSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.ChronicleClientSuite distantlands.frontend.ChronicleFilesSuite"`
 Expected: compile errors.
 
 - [ ] **Step 4: Implement `ChronicleClient.scala`**
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{ChronicleConvertRequest,
+import distantlands.protocol.{ChronicleConvertRequest,
   ChronicleConvertRequestCodec, ChronicleConvertResponse,
   ChronicleConvertResponseCodec, ChronicleEntry}
 import scala.concurrent.Future
@@ -800,7 +800,7 @@ If `GameClientFailure.HttpFailure.message` is not the server's message, read `Ga
 - [ ] **Step 5: Implement `ChronicleDevices.scala`**
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 import org.scalajs.dom
 import scala.concurrent.Future
@@ -1002,15 +1002,15 @@ To read a hover note, use the attribute `HoverTip` sets. Look for `Attribute` in
 
 - [ ] **Step 3: Run them to see them fail**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.ChronicleTransferSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.ChronicleTransferSuite"`
 Expected: compile errors.
 
 - [ ] **Step 4: Implement `ChronicleTransfer.scala`**
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{ChronicleConvertRequest, ChronicleEntry}
+import distantlands.protocol.{ChronicleConvertRequest, ChronicleEntry}
 import org.scalajs.dom
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import ServerUiSupport.{button, element, text, textField}
@@ -1241,7 +1241,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
   test("Load makes an entry the loaded Chronicle")
     // click the load-chronicle of "Iron Vow": chronicle-loaded-name "Iron Vow";
-    // storage.values("oath.chronicles.loaded") == "Iron Vow"
+    // storage.values("distantlands.chronicles.loaded") == "Iron Vow"
 
   test("Delete asks first; Keep leaves the entry")
   test("confirmed Delete of the loaded entry clears the loaded Chronicle")
@@ -1265,13 +1265,13 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.ChroniclePageSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.ChroniclePageSuite"`
 Expected: compile errors.
 
 - [ ] **Step 3: Implement `ChroniclePage.scala`**
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 import org.scalajs.dom
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
@@ -1292,7 +1292,7 @@ private[frontend] object ChroniclePage:
       choose: HostChronicle => Unit): Unit =
     def redraw(): Unit = render(mount, shelf, kept, client, files, choose)
     mount.textContent = ""
-    mount.appendChild(text("h1", "", "Oath Digital"))
+    mount.appendChild(text("h1", "", "Distant Lands"))
     if !kept then
       val notice = text("p", "status chronicle-storage-refused",
         "Chronicles cannot be kept in this browser. A Chronicle you import " +
@@ -1516,15 +1516,15 @@ Change `startHostForm` so it passes `devices = ChronicleFixtures.devices()` to `
 
 - [ ] **Step 3: Run them to see them fail**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.ChroniclePagesSuite oathdigital.frontend.ServerModeHostFormSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.ChroniclePagesSuite distantlands.frontend.ServerModeHostFormSuite"`
 Expected: compile errors.
 
 - [ ] **Step 4: Implement `ChroniclePages.scala`**
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.TrustedGameCreateResponse
+import distantlands.protocol.TrustedGameCreateResponse
 import org.scalajs.dom
 
 /** The two start pages (Chronicle browsing design, "Browser"): the
@@ -1696,7 +1696,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Test (new): `TableChronicleSuite.scala`. Modify: `ServerModeSessionSuite.scala` (one wiring test)
 
 **Interfaces:**
-- Consumes: from Tasks 2-4, `ChronicleShelf.autoSave`, `AutoSave`, `ChronicleClient.rename`, `ChronicleTransfer.exportControls` and `textField`. From the shared protocol, `oathdigital.protocol.projection.ChronicleProjection(name, startingDigest, evolved)`.
+- Consumes: from Tasks 2-4, `ChronicleShelf.autoSave`, `AutoSave`, `ChronicleClient.rename`, `ChronicleTransfer.exportControls` and `textField`. From the shared protocol, `distantlands.protocol.projection.ChronicleProjection(name, startingDigest, evolved)`.
 - Produces:
   - `final class TableChronicle(mount: dom.Element, shelf: Option[ChronicleShelf], client: ChronicleClient, files: ChronicleFiles, repaint: () => Unit) { def section(chronicle: Option[ChronicleProjection]): Option[dom.Element] }`
   - `TableScreen(shell, view, controls, session, chronicle: Option[TableChronicle] = None)`
@@ -1747,20 +1747,20 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
   test("a refused write shows the shelf's reason")
 ```
 
-Add one wiring test to `ServerModeSessionSuite`. Open a trusted game whose projection carries an evolved Chronicle: use `encodedGame` with `.copy(chronicle = Some(ChronicleProjection("Ashen Crown", "d-1", Some(ChronicleFixtures.entry("Ashen Crown", "d-2")))))`, extending `encodedGame` with a `chronicle` parameter. Pass `devices = ChronicleFixtures.devices(storage = Some(storage))` to `Main.start`. Assert that `table-chronicle` shows in the action pane and that `storage.values("oath.chronicles")` holds digest `d-2`.
+Add one wiring test to `ServerModeSessionSuite`. Open a trusted game whose projection carries an evolved Chronicle: use `encodedGame` with `.copy(chronicle = Some(ChronicleProjection("Ashen Crown", "d-1", Some(ChronicleFixtures.entry("Ashen Crown", "d-2")))))`, extending `encodedGame` with a `chronicle` parameter. Pass `devices = ChronicleFixtures.devices(storage = Some(storage))` to `Main.start`. Assert that `table-chronicle` shows in the action pane and that `storage.values("distantlands.chronicles")` holds digest `d-2`.
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.TableChronicleSuite oathdigital.frontend.ServerModeSessionSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.TableChronicleSuite distantlands.frontend.ServerModeSessionSuite"`
 Expected: compile errors.
 
 - [ ] **Step 3: Implement `TableChronicle.scala`**
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.ChronicleEntry
-import oathdigital.protocol.projection.ChronicleProjection
+import distantlands.protocol.ChronicleEntry
+import distantlands.protocol.projection.ChronicleProjection
 import org.scalajs.dom
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import ServerUiSupport.{button, element, text, textField}
@@ -1949,7 +1949,7 @@ browser pages, storage, import and export, and the automatic save.
 - ROADMAP:
   - Tick **Saved-campaign browsing**. Replace its "Slice 1 landed…" sub-bullet with: `Landed in two slices: the server side, then the Chronicle page, player selection, browser storage, JSON and TTS import and export, and the automatic save at the table. Starting game 2 from an evolved Chronicle waits for the Empire phase.`
   - Tick **Chronicle import and export**. Change its sub-bullet's last sentence to `Import and export in the UI landed with Saved-campaign browsing.`
-- In `implementation-traceability.md`, find the "Full campaign serialization and migration" row. Append this sentence to its evidence cell: `Browsers keep Chronicles as canonical JSON under oath.chronicles and save the evolved Chronicle when the game's projection carries it (frontend ChronicleShelfSuite, TableChronicleSuite).` Leave the status as **Partial**: starting game 2 is still missing.
+- In `implementation-traceability.md`, find the "Full campaign serialization and migration" row. Append this sentence to its evidence cell: `Browsers keep Chronicles as canonical JSON under distantlands.chronicles and save the evolved Chronicle when the game's projection carries it (frontend ChronicleShelfSuite, TableChronicleSuite).` Leave the status as **Partial**: starting game 2 is still missing.
 
 - [ ] **Step 4: Commit**
 

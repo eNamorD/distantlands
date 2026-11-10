@@ -41,7 +41,7 @@ moves for denizens; this plan follows its patterns.
 - The reviewed-catalog stubs (`ActionPowers`, `MusterPowers`, `RestPowers`,
   `NegotiationPowers`, `CampaignPowers`, `RecoverPowers`) are not touched;
   they belong to the reviewed-catalog cleanup item.
-- Never touch the live database `var/oathdigital`.
+- Never touch the live database `var/distantlands`.
 - Gates at the end of every task: `./sbtw test frontend/test`,
   `python3 scripts/check-architecture.py`,
   `python3 scripts/check-markdown-links.py`.
@@ -215,10 +215,10 @@ def remove(src, pkg, names):
 **Interfaces:**
 - Consumes: nothing from other tasks.
 - Produces: the 36 card objects in their new packages, for example
-  `oathdigital.gameplay.powers.campaign.StickyFireCard`,
-  `oathdigital.gameplay.powers.setup.GreatMarketCard`,
-  `oathdigital.gameplay.operations.TheGrandScepterCard` and
-  `oathdigital.gameplay.operations.HallOfMinistersCard`. Task 2's script
+  `distantlands.gameplay.powers.campaign.StickyFireCard`,
+  `distantlands.gameplay.powers.setup.GreatMarketCard`,
+  `distantlands.gameplay.operations.TheGrandScepterCard` and
+  `distantlands.gameplay.operations.HallOfMinistersCard`. Task 2's script
   finds every `object …Card extends Relic(` or `extends Edifice(` under
   `gameplay/`.
 
@@ -236,7 +236,7 @@ In `CardCatalogSuite.scala`, replace the test
     // operation restrictions, not as registered powers.
     val restrictions = Set[CardId](RelicId("grand-scepter"), EdificeId("E16"))
     def held(card: AnyRef): Boolean =
-      card.getClass.getPackageName == "oathdigital.catalog.holding"
+      card.getClass.getPackageName == "distantlands.catalog.holding"
     def implemented(id: CardId, printed: Vector[PrintedPower]): Boolean =
       restrictions(id) || printed.exists(power => registered(power.id))
     val misplaced =
@@ -253,15 +253,15 @@ In `CardCatalogSuite.scala`, replace the test
 and change the suite's imports to:
 
 ```scala
-import oathdigital.catalog.{AdviserOnly, ExecutableCatalog, Locked,
+import distantlands.catalog.{AdviserOnly, ExecutableCatalog, Locked,
   PrintedPower, PrintsPowers, SiteOnly}
-import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
-import oathdigital.model.{CardId, EdificeId, PowerId, RelicId}
+import distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
+import distantlands.model.{CardId, EdificeId, PowerId, RelicId}
 ```
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.cards.CardCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.cards.CardCatalogSuite"`
 Expected: FAIL in `a card leaves the holding files once it is implemented`,
 listing the 36 names (Sticky Fire … The Grand Scepter, Great Market … Oaken
 Fortress, Hall of Ministers). The other 10 tests pass.
@@ -332,7 +332,7 @@ DEST = {
     "ProvingGroundsCard": P + "setup/ProvingGroundsRules.scala",
     "OakenFortressCard": P + "targeting/FortressRules.scala",
 }
-HOLDING = "oathdigital.catalog.holding"
+HOLDING = "distantlands.catalog.holding"
 TRAITS = ("AdviserOnly", "Locked", "SiteOnly")
 KINDS = {"Relic": ({"PrintedPower", "Relic"}, {"Cost", "PowerId", "RelicId"}),
          "Edifice": ({"Edifice", "EdificeFace", "PrintedPower"},
@@ -353,7 +353,7 @@ for kind, name in (("Relic", "HoldingRelics"), ("Edifice", "HoldingEdifices")):
     if not s.endswith("\n"):
         s += "\n"
     used = {t for t in TRAITS if re.search(rf"\bwith {t}\b", s)}
-    s = imports.remove(s, "oathdigital.catalog", set(TRAITS) - used)
+    s = imports.remove(s, "distantlands.catalog", set(TRAITS) - used)
     open(f, "w").write(s)
 assert set(blocks) == set(DEST), set(DEST) - set(blocks)
 
@@ -370,8 +370,8 @@ for card, rel in DEST.items():
     s = "\n".join(lines)
     catalog_names, model_names = KINDS[kind]
     used = {t for t in TRAITS if re.search(rf"\bwith {t}\b", block)}
-    s = imports.add(s, "oathdigital.catalog", catalog_names | used)
-    s = imports.add(s, "oathdigital.model", model_names)
+    s = imports.add(s, "distantlands.catalog", catalog_names | used)
+    s = imports.add(s, "distantlands.model", model_names)
     package_of[card] = re.search(r"^package (\S+)", s, re.M).group(1)
     open(dest, "w").write(s)
 
@@ -413,20 +413,20 @@ print(f"moved {len(blocks)} cards; updated {touched} files")
 
 Run `git diff --stat` and spot-check:
 - `ClayRattle.scala` gains `object ClayRattleCard` below its imports and
-  loses `import oathdigital.catalog.holding.ClayRattleCard`.
+  loses `import distantlands.catalog.holding.ClayRattleCard`.
 - `MurkyFountain.scala` imports `MarbleFountainsCard` from
-  `oathdigital.gameplay.powers.wake`.
+  `distantlands.gameplay.powers.wake`.
 - `OperationRestrictions.scala` loses its holding import (the scepter is now
   in the same package).
 - `FirstGameChronicleGeneratorSuite.scala` and
   `GameServerGatewaySubmitBeginSuite.scala` import
-  `oathdigital.gameplay.operations.TheGrandScepterCard` and use the bare name.
-- `NewFoundations.scala` gains `import oathdigital.gameplay.operations.{…}`,
+  `distantlands.gameplay.operations.TheGrandScepterCard` and use the bare name.
+- `NewFoundations.scala` gains `import distantlands.gameplay.operations.{…}`,
   `…powers.setup.{…}` and the new names in the existing package imports.
 
 - [ ] **Step 5: Run the suite to see it pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.cards.CardCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.cards.CardCatalogSuite"`
 Expected: PASS, 11 tests.
 
 - [ ] **Step 6: Run the gates**
@@ -493,7 +493,7 @@ In `CardCatalogSuite.scala`, replace the test
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.cards.CardCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.cards.CardCatalogSuite"`
 Expected: FAIL in `card powers are registered whichever cards a catalog
 lists`: the left set lacks the 21 relic and edifice powers found through
 `CatalogCards`. The other 10 tests pass.
@@ -544,11 +544,11 @@ FOR = re.compile(r"  def forCatalog\(catalog: ExecutableCatalog\): "
                  r"Option\[(?P<cls>\w+)\] =\s*"
                  r"CatalogCards\.(?:relic|edifice)\(catalog, id\)\s*"
                  r"\.map\(new (?P=cls)\(_(?P<cat>, catalog)?\)\)\n")
-PRUNE = (("oathdigital.gameplay.powers", "CatalogCards"),
-         ("oathdigital.catalog", "ExecutableCatalog"),
-         ("oathdigital.model", "RelicId"),
-         ("oathdigital.model", "EdificeId"),
-         ("oathdigital.gameplay.setup.FirstGameSetupFixture", "catalog"))
+PRUNE = (("distantlands.gameplay.powers", "CatalogCards"),
+         ("distantlands.catalog", "ExecutableCatalog"),
+         ("distantlands.model", "RelicId"),
+         ("distantlands.model", "EdificeId"),
+         ("distantlands.gameplay.setup.FirstGameSetupFixture", "catalog"))
 
 
 def header_end(lines, start):
@@ -859,7 +859,7 @@ Spot-check:
 
 - [ ] **Step 5: Run the suite to see it pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.cards.CardCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.cards.CardCatalogSuite"`
 Expected: PASS, 11 tests.
 
 - [ ] **Step 6: Run the gates**
@@ -895,7 +895,7 @@ git commit -m "refactor(powers): relic and edifice powers name their cards"
 
 **Interfaces:**
 - Consumes: Task 1's `TheGrandScepterCard` and `HallOfMinistersCard` in
-  `oathdigital.gameplay.operations`.
+  `distantlands.gameplay.operations`.
 - Produces: `case object GrandScepter extends OperationRestriction` with
   `val relic: RelicId`, and `case object HallOfMinisters extends
   OperationRestriction`. `OperationRestrictions.printed` for any catalog is
@@ -919,15 +919,15 @@ In `OperationRestrictionsSuite.scala`, replace the test
 and change its operations import to:
 
 ```scala
-import oathdigital.gameplay.operations.{GrandScepter, HallOfMinisters,
+import distantlands.gameplay.operations.{GrandScepter, HallOfMinisters,
   LockedCards, OperationPipeline, OperationPolicy, OperationRestrictions}
 ```
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OperationRestrictionsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.OperationRestrictionsSuite"`
 Expected: FAIL to compile: `Found: …HallOfMinisters.type, Required:
-oathdigital.model.OperationRestriction` (both are still case classes, so
+distantlands.model.OperationRestriction` (both are still case classes, so
 their companions are not restrictions).
 
 - [ ] **Step 3: Save and run the restriction script**
@@ -979,10 +979,10 @@ case object GrandScepter extends OperationRestriction:
 """)])
 
 edit(O + "HallOfMinisters.scala", [
-("""import oathdigital.catalog.{Edifice, EdificeFace, ExecutableCatalog, Locked,
+("""import distantlands.catalog.{Edifice, EdificeFace, ExecutableCatalog, Locked,
   PrintedPower}
 """,
-"""import oathdigital.catalog.{Edifice, EdificeFace, Locked, PrintedPower}
+"""import distantlands.catalog.{Edifice, EdificeFace, Locked, PrintedPower}
 """),
 ("""  * cannot discard them. The actor is the discard's own acting player; a
   * Vision's discard names none, so it is the active player's.
@@ -1037,7 +1037,7 @@ edit(O + "OperationRestrictions.scala", [
 """)])
 
 edit(T + "OperationResolutionSuite.scala", [
-("""import oathdigital.gameplay.setup.FirstGameSetupFixture
+("""import distantlands.gameplay.setup.FirstGameSetupFixture
 """, ""),
 ("""    val restriction = HallOfMinisters(FirstGameSetupFixture.catalog)
 """,
@@ -1048,7 +1048,7 @@ print("restrictions declared by their cards")
 
 - [ ] **Step 4: Run the suite to see it pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OperationRestrictionsSuite oathdigital.gameplay.OperationResolutionSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.OperationRestrictionsSuite distantlands.gameplay.OperationResolutionSuite"`
 Expected: PASS.
 
 - [ ] **Step 5: Tick the ROADMAP**

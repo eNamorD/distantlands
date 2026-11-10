@@ -35,7 +35,7 @@
 - `-Werror` with `-Wunused:imports,privates,locals,implicits,nowarn`. An unused import or private member, or a non-exhaustive match over a sealed type, fails the build.
 - Production Scala files stay at or under 800 lines (`BackendArchitectureSuite`, `scripts/check-architecture.py`).
 - Import rules: `gameplay` never imports `application`, `serialization` or `server`. A power under `gameplay/powers` never imports `gameplay.walker`.
-- Never touch the live database `var/oathdigital`.
+- Never touch the live database `var/distantlands`.
 - Other sessions commit to `main` while you work. Stage explicit paths only; never `git add -A`. Re-check `git log --oneline -1` before any amend, reset or rebase.
 - Work in a git worktree branched from local `main`, with the main checkout's `.tooling` symlinked in before the first `./sbtw`.
 - Commit trailer: the committing model's own `Co-Authored-By` line.
@@ -111,12 +111,12 @@
 Create `src/test/scala/distantlands/gameplay/powers/action/SpoiledSuppliesSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture,
+import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture,
   TargetsFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 class SpoiledSuppliesSuite extends munit.FunSuite:
   import PowerFixture._
@@ -198,12 +198,12 @@ class SpoiledSuppliesSuite extends munit.FunSuite:
 Create `src/test/scala/distantlands/gameplay/powers/action/CharmingFriendSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture,
+import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture,
   TargetsFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 class CharmingFriendSuite extends munit.FunSuite:
   import PowerFixture._
@@ -308,7 +308,7 @@ class CharmingFriendSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the suites to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.SpoiledSuppliesSuite oathdigital.gameplay.powers.action.CharmingFriendSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.SpoiledSuppliesSuite distantlands.gameplay.powers.action.CharmingFriendSuite"`
 Expected: compilation fails: `SpoiledSupplies` and `CharmingFriend` are not found.
 
 - [ ] **Step 3: Write Spoiled Supplies**
@@ -316,11 +316,11 @@ Expected: compilation fails: `SpoiledSupplies` and `CharmingFriend` are not foun
 Create `src/main/scala/distantlands/gameplay/powers/action/SpoiledSupplies.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.PowerAccess
-import oathdigital.gameplay.powers.NoteSupport
-import oathdigital.model._
+import distantlands.gameplay.PowerAccess
+import distantlands.gameplay.powers.NoteSupport
+import distantlands.model._
 
 /** Spoiled Supplies (card 228), ACTION: place 1 favor on this card, then
   * every enemy whose pawn is at the player's site loses 1 Supply. Every game
@@ -371,11 +371,11 @@ case object SpoiledSupplies extends PaidAction("denizen.spoiled-supplies",
 Create `src/main/scala/distantlands/gameplay/powers/action/CharmingFriend.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.PowerAccess
-import oathdigital.gameplay.powers.{NoteSupport, PowerAnswers}
-import oathdigital.model._
+import distantlands.gameplay.PowerAccess
+import distantlands.gameplay.powers.{NoteSupport, PowerAnswers}
+import distantlands.model._
 
 /** Charming Friend (card 131, adviser-only), ACTION: place 1 secret on this
   * card, then take 1 favor from a player whose pawn is at the player's site.
@@ -450,12 +450,12 @@ case object CharmingFriend extends PaidAction("denizen.charming-friend",
 Create `src/main/scala/distantlands/gameplay/powers/action/OtherActionPowers.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powerresolver.PhasePower
+import distantlands.gameplay.powerresolver.PhasePower
 
 /** The phase powers of catalog batch 2's slice 4, actions on others,
-  * registered by [[oathdigital.gameplay.powers.PhasePowerCatalog]] through
+  * registered by [[distantlands.gameplay.powers.PhasePowerCatalog]] through
   * this one object, like [[SelfActionPowers]].
   */
 object OtherActionPowers:
@@ -463,10 +463,10 @@ object OtherActionPowers:
     Vector[PhasePower](SpoiledSupplies, CharmingFriend)
 ```
 
-In `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`, add `OtherActionPowers` to the `oathdigital.gameplay.powers.action` import, keeping it alphabetical:
+In `src/main/scala/distantlands/gameplay/powers/PhasePowerCatalog.scala`, add `OtherActionPowers` to the `distantlands.gameplay.powers.action` import, keeping it alphabetical:
 
 ```scala
-import oathdigital.gameplay.powers.action.{DiceAndRelicDrawPowers, Elders, MagicWaterskin, MovementPowers, OtherActionPowers, SelfActionPowers, TargetPowers, WaysideInn}
+import distantlands.gameplay.powers.action.{DiceAndRelicDrawPowers, Elders, MagicWaterskin, MovementPowers, OtherActionPowers, SelfActionPowers, TargetPowers, WaysideInn}
 ```
 
 and replace:
@@ -484,14 +484,14 @@ with:
 
 - [ ] **Step 6: Run the suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.SpoiledSuppliesSuite oathdigital.gameplay.powers.action.CharmingFriendSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.SpoiledSuppliesSuite distantlands.gameplay.powers.action.CharmingFriendSuite"`
 Expected: PASS, 15 tests.
 
 If the walker refuses the `SpendSupply` of a player who is not acting, stop and report it: that is an engine gap the plan did not foresee, not something to work around inside the power.
 
 - [ ] **Step 7: Run the power suites and the architecture suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.* oathdigital.gameplay.BackendArchitectureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.* distantlands.gameplay.BackendArchitectureSuite"`
 Expected: PASS. `PowerNoteCatalogSuite` checks the new templates.
 
 - [ ] **Step 8: Commit**
@@ -524,12 +524,12 @@ git commit -m "feat(powers): Spoiled Supplies and Charming Friend act on players
 Create `src/test/scala/distantlands/gameplay/powers/action/SiegeEnginesSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog, PlayerFacts,
+import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog, PlayerFacts,
   PowerFixture, TargetsFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 class SiegeEnginesSuite extends munit.FunSuite:
   import PowerFixture._
@@ -650,7 +650,7 @@ class SiegeEnginesSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the suite to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.SiegeEnginesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.SiegeEnginesSuite"`
 Expected: compilation fails: `SiegeEngines` is not found.
 
 - [ ] **Step 3: Write Siege Engines**
@@ -658,11 +658,11 @@ Expected: compilation fails: `SiegeEngines` is not found.
 Create `src/main/scala/distantlands/gameplay/powers/action/SiegeEngines.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.PowerAccess
-import oathdigital.gameplay.powers.{NoteSupport, PowerAnswers}
-import oathdigital.model._
+import distantlands.gameplay.PowerAccess
+import distantlands.gameplay.powers.{NoteSupport, PowerAnswers}
+import distantlands.model._
 
 /** Siege Engines (card 116), ACTION: place 1 favor on this card, then kill
   * two warbands, even the player's own, at any one site in the region of the
@@ -759,14 +759,14 @@ In `OtherActionPowers.scala`, replace `Vector[PhasePower](SpoiledSupplies, Charm
 
 - [ ] **Step 4: Run the suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.SiegeEnginesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.SiegeEnginesSuite"`
 Expected: PASS, 9 tests.
 
 If "the emptied site fills with bandits" fails because no refill ran after the power, stop and report it: the ruling relies on the post-action refill, and a `UsePower` run that skips it is an engine gap.
 
 - [ ] **Step 5: Run the power suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.*"`
 Expected: PASS.
 
 - [ ] **Step 6: Commit**
@@ -796,12 +796,12 @@ git commit -m "feat(powers): Siege Engines kills two warbands at a site in your 
 Create `src/test/scala/distantlands/gameplay/powers/action/BookOfRecordsSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture,
+import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture,
   TargetsFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 class BookOfRecordsSuite extends munit.FunSuite:
   import PowerFixture._
@@ -931,7 +931,7 @@ class BookOfRecordsSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the suite to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.BookOfRecordsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.BookOfRecordsSuite"`
 Expected: compilation fails: `BookOfRecords` is not found.
 
 - [ ] **Step 3: Write Book of Records**
@@ -939,12 +939,12 @@ Expected: compilation fails: `BookOfRecords` is not found.
 Create `src/main/scala/distantlands/gameplay/powers/action/BookOfRecords.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.PowerAccess
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.gameplay.powers.{NoteSupport, PowerAnswers}
-import oathdigital.model._
+import distantlands.gameplay.PowerAccess
+import distantlands.gameplay.actions.BannerRules
+import distantlands.gameplay.powers.{NoteSupport, PowerAnswers}
+import distantlands.model._
 
 /** Book of Records (relic R19), ACTION: place 1 secret on this card and burn
   * 2, then take two favor or two secrets from a banner held by a player whose
@@ -1042,12 +1042,12 @@ In `OtherActionPowers.scala`, replace `Vector[PhasePower](SpoiledSupplies, Charm
 
 - [ ] **Step 4: Run the suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.BookOfRecordsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.BookOfRecordsSuite"`
 Expected: PASS, 10 tests.
 
 - [ ] **Step 5: Run the power suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.*"`
 Expected: PASS.
 
 - [ ] **Step 6: Commit**
@@ -1080,12 +1080,12 @@ git commit -m "feat(powers): Book of Records takes from a banner held at your si
 Create `src/test/scala/distantlands/gameplay/powers/action/BarbedNetSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture,
+import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture,
   TargetsFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 class BarbedNetSuite extends munit.FunSuite:
   import PowerFixture._
@@ -1190,7 +1190,7 @@ class BarbedNetSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the suite to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.BarbedNetSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.BarbedNetSuite"`
 Expected: compilation fails: `BarbedNet` is not found.
 
 - [ ] **Step 3: Write Barbed Net**
@@ -1198,11 +1198,11 @@ Expected: compilation fails: `BarbedNet` is not found.
 Create `src/main/scala/distantlands/gameplay/powers/action/BarbedNet.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.PowerAccess
-import oathdigital.gameplay.powers.{NoteSupport, PowerAnswers}
-import oathdigital.model._
+import distantlands.gameplay.PowerAccess
+import distantlands.gameplay.powers.{NoteSupport, PowerAnswers}
+import distantlands.model._
 
 /** Barbed Net (relic R36), ACTION: burn 3 secrets, then take a relic from
   * the player's site. The player may keep it facedown; the existing minor
@@ -1295,15 +1295,15 @@ In `OtherActionPowers.scala`, replace `Vector[PhasePower](SpoiledSupplies, Charm
 
 - [ ] **Step 4: Run the suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.BarbedNetSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.BarbedNetSuite"`
 Expected: PASS, 7 tests.
 
 - [ ] **Step 5: Write the failing log test**
 
-In `src/test/scala/distantlands/application/gamelog/LogScripts.scala`, add `BarbedNet` to the `oathdigital.gameplay.powers.action` import:
+In `src/test/scala/distantlands/application/gamelog/LogScripts.scala`, add `BarbedNet` to the `distantlands.gameplay.powers.action` import:
 
 ```scala
-import oathdigital.gameplay.powers.action.{BarbedNet, GamblingHall, Oracle,
+import distantlands.gameplay.powers.action.{BarbedNet, GamblingHall, Oracle,
   Wolves}
 ```
 
@@ -1386,15 +1386,15 @@ In `src/test/scala/distantlands/application/gamelog/GameLogPowerLinesSuite.scala
 
 - [ ] **Step 6: Run the log test to see the golden check fail**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogPowerLinesSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogPowerLinesSuite"`
 Expected: PASS for the new test. If it fails, fix the power or the script, not the assertions.
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogGoldenSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite"`
 Expected: FAIL: `barbed-net.actor.log` and `barbed-net.other.log` do not exist.
 
 - [ ] **Step 7: Write the golden logs and review them**
 
-Run: `GAMELOG_GOLDEN=write ./sbtw "testOnly oathdigital.application.gamelog.GameLogGoldenSuite"`
+Run: `GAMELOG_GOLDEN=write ./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite"`
 
 Read both new files in full. Check:
 - The actor's log reads "Barbed Net: {actor} peeked at the relics at {site}: …", names every relic at the site, then a "chose" line for the relic, then "Barbed Net: {actor} took [relic] facedown from {site}." naming the relic.
@@ -1404,7 +1404,7 @@ Read both new files in full. Check:
 
 - [ ] **Step 8: Run the log suites**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.*"`
 Expected: PASS.
 
 - [ ] **Step 9: Commit**
@@ -1440,7 +1440,7 @@ In `src/test/scala/distantlands/gameplay/powers/PowerImplementationStatusSuite.s
       .foreach(id => assert(implemented(PowerId(id)), id))
 ```
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.PowerImplementationStatusSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.PowerImplementationStatusSuite"`
 Expected: PASS.
 
 - [ ] **Step 2: Record the slice in the roadmap**

@@ -76,9 +76,9 @@ The printed text for the five Visions. Pure data in the shared module; the proje
 Create `shared/src/test/scala/distantlands/protocol/VisionCardPresentationSuite.scala`:
 
 ```scala
-package oathdigital.protocol
+package distantlands.protocol
 
-import oathdigital.protocol.projection.VisionCardPresentation
+import distantlands.protocol.projection.VisionCardPresentation
 
 /** The five Visions as they are printed. The text is card text: it is asserted
   * verbatim here so a reword has to be a deliberate edit to this suite.
@@ -123,7 +123,7 @@ class VisionCardPresentationSuite extends munit.FunSuite {
 
 - [x] **Step 2: Run it to make sure it fails**
 
-Run: `./sbtw "sharedJVM/testOnly oathdigital.protocol.VisionCardPresentationSuite"`
+Run: `./sbtw "sharedJVM/testOnly distantlands.protocol.VisionCardPresentationSuite"`
 Expected: FAIL — the current text reads "Win if you uniquely rule the most sites, and rule at least one site."
 
 - [x] **Step 3: Replace the five entries**
@@ -158,7 +158,7 @@ object VisionCardPresentation {
 
 - [x] **Step 4: Run the shared test to verify it passes**
 
-Run: `./sbtw "sharedJVM/testOnly oathdigital.protocol.VisionCardPresentationSuite"`
+Run: `./sbtw "sharedJVM/testOnly distantlands.protocol.VisionCardPresentationSuite"`
 Expected: PASS
 
 - [x] **Step 5: Write the failing frontend rendering test**
@@ -167,7 +167,7 @@ Append to `frontend/src/test/scala/distantlands/frontend/RulesTextRendererSuite.
 
 ```scala
   test("Conspiracy renders as two paragraphs with both banner glyphs") {
-    val text = oathdigital.protocol.projection.VisionCardPresentation
+    val text = distantlands.protocol.projection.VisionCardPresentation
       .byId("vision:conspiracy").rulesText
     val blocks = RulesTextRenderer.powers(text)
     assertEquals(blocks.size, 2)
@@ -182,7 +182,7 @@ If `dom` is not already imported in that file, add `import org.scalajs.dom` at t
 
 - [x] **Step 6: Run it**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.RulesTextRendererSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.RulesTextRendererSuite"`
 Expected: PASS. `RulesTextRenderer` already splits on blank lines and renders `[token]` glyphs, so this test is a guard on the new text, not a request for new behaviour. If the glyph `aria-label`s differ from `favor`/`secret`, read `TokenSprite.label` and assert what it actually returns rather than changing the renderer.
 
 - [x] **Step 7: Run the gate**
@@ -254,7 +254,7 @@ Add to `src/test/scala/distantlands/gameplay/VisionPlaySuite.scala`. Use the sui
 
 - [x] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.VisionPlaySuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.VisionPlaySuite"`
 Expected: FAIL — the first with four options, the second because the walk parks again on `cardplay.replace.vision.*`.
 
 - [x] **Step 3: Narrow the Vision's placement options**
@@ -307,7 +307,7 @@ In `CardPlay.planVision`, the `Origin.TemporaryHand if orientation == Orientatio
 
 - [x] **Step 5: Run the suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.VisionPlaySuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.VisionPlaySuite"`
 Expected: PASS. If the second test still parks, check `CardPlay.legalChoices`: with the placement now directly legal, `direct` is true and `optional` is false, so `replacements` is `Vector.empty` and `CardPlayProcedure` builds no `Decide` for it.
 
 - [x] **Step 6: Run the gate**
@@ -355,9 +355,9 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 Create `shared/src/test/scala/distantlands/protocol/OathkeeperPresentationSuite.scala`:
 
 ```scala
-package oathdigital.protocol
+package distantlands.protocol
 
-import oathdigital.protocol.projection.OathkeeperPresentation
+import distantlands.protocol.projection.OathkeeperPresentation
 
 /** The Oath as the four goal cards print it: the title, the goal the
   * Oathkeeper holds it by, and the successor clause on the purple band.
@@ -384,14 +384,14 @@ class OathkeeperPresentationSuite extends munit.FunSuite {
 
   test("the map covers every goal the model declares") {
     assertEquals(OathkeeperPresentation.byGoal.keySet,
-      oathdigital.model.OathkeeperGoal.all.map(_.key).toSet)
+      distantlands.model.OathkeeperGoal.all.map(_.key).toSet)
   }
 }
 ```
 
 - [x] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "sharedJVM/testOnly oathdigital.protocol.OathkeeperPresentationSuite"`
+Run: `./sbtw "sharedJVM/testOnly distantlands.protocol.OathkeeperPresentationSuite"`
 Expected: FAIL — `OathkeeperPresentation` does not exist.
 
 - [x] **Step 3: Write the presentation map**
@@ -399,7 +399,7 @@ Expected: FAIL — `OathkeeperPresentation` does not exist.
 Create `shared/src/main/scala/distantlands/protocol/projection/OathkeeperPresentation.scala`:
 
 ```scala
-package oathdigital.protocol.projection
+package distantlands.protocol.projection
 
 /** The Oath in play, as its goal card is printed: the title, what the
   * Oathkeeper holds it by, and the successor clause on the card's band.
@@ -434,7 +434,7 @@ object OathkeeperPresentation {
 
 - [x] **Step 4: Run the shared test to verify it passes**
 
-Run: `./sbtw "sharedJVM/testOnly oathdigital.protocol.OathkeeperPresentationSuite"`
+Run: `./sbtw "sharedJVM/testOnly distantlands.protocol.OathkeeperPresentationSuite"`
 Expected: PASS
 
 - [x] **Step 5: Write the failing overlay test**
@@ -472,7 +472,7 @@ If the existing suite drives Escape through a different node or handler, copy wh
 
 - [x] **Step 6: Run it to verify it fails**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.CardInspectionOverlaySuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.CardInspectionOverlaySuite"`
 Expected: FAIL — `showText` is not a member of `CardInspectionOverlay`.
 
 - [x] **Step 7: Add the text mode**
@@ -521,7 +521,7 @@ In `CardInspectionOverlay`, extract the open/focus tail the two modes share and 
 Replace the body of `frontend/src/main/scala/distantlands/frontend/CardInspection.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 import org.scalajs.dom
 
@@ -580,7 +580,7 @@ In `frontend/src/main/scala/distantlands/frontend/WorldBoardRenderer.scala`, del
 ```scala
    value.oathkeeper.foreach(oath =>
      section.appendChild(text("p", "oathkeeper-status",
-       s"${oathdigital.protocol.projection.OathkeeperPresentation.title(oath.goal)} · " +
+       s"${distantlands.protocol.projection.OathkeeperPresentation.title(oath.goal)} · " +
          s"${oath.side.capitalize}: ${oath.holderPlayerId.getOrElse("unheld")}")))
 ```
 
@@ -588,12 +588,12 @@ Leave the identity-line `badge.setAttribute("title", ...)` call alone for now �
 
 ```scala
          badge.setAttribute("title",
-           oathdigital.protocol.projection.OathkeeperPresentation.title(oath.goal))
+           distantlands.protocol.projection.OathkeeperPresentation.title(oath.goal))
 ```
 
 - [x] **Step 11: Run the frontend suites**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.CardInspectionOverlaySuite oathdigital.frontend.PlayerBoardSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.CardInspectionOverlaySuite distantlands.frontend.PlayerBoardSuite"`
 Expected: PASS. If `PlayerBoardSuite` asserted the string `Oath of The People`, change the expectation to `Oathkeeper of the People` — that is the point of this task.
 
 - [x] **Step 12: Run the gate**
@@ -680,7 +680,7 @@ The `data-card-id` attribute in the third assertion is what `CardFace.render` wr
 
 - [x] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.PlayerBoardSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.PlayerBoardSuite"`
 Expected: FAIL — there is no `.player-slots` element.
 
 - [x] **Step 3: Build the slots row**
@@ -698,7 +698,7 @@ In `WorldBoardRenderer`, replace the badge block inside the identity line (lines
      val slots = element("div", "player-slots")
      value.oathkeeper.filter(_.holderPlayerId.contains(player.playerId))
        .foreach { oath =>
-         val presented = oathdigital.protocol.projection
+         val presented = distantlands.protocol.projection
            .OathkeeperPresentation.byGoal.get(oath.goal)
          val pill = button(oath.side.capitalize, s"player-title title-${oath.side}")
          val title = presented.fold(oath.goal)(_.title)
@@ -748,7 +748,7 @@ Append to `frontend/styles.css`, next to the existing `.player-title` rules:
 
 - [x] **Step 5: Run the test to verify it passes**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.PlayerBoardSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.PlayerBoardSuite"`
 Expected: PASS
 
 - [x] **Step 6: Run the gate**
@@ -807,7 +807,7 @@ Match the suite's existing imports and its way of reaching `ActionProjectionCode
 
 - [x] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "sharedJVM/testOnly oathdigital.protocol.ProjectionProtocolSuite"`
+Run: `./sbtw "sharedJVM/testOnly distantlands.protocol.ProjectionProtocolSuite"`
 Expected: FAIL — `subjectCards` is not a member of `WalkerDecisionProjection`.
 
 - [x] **Step 3: Add the field and its codec keys**
@@ -862,7 +862,7 @@ In `ActionProjectionCodec.scala`, add the key to both sides:
 
 - [x] **Step 4: Run the codec test to verify it passes**
 
-Run: `./sbtw "sharedJVM/testOnly oathdigital.protocol.ProjectionProtocolSuite"`
+Run: `./sbtw "sharedJVM/testOnly distantlands.protocol.ProjectionProtocolSuite"`
 Expected: PASS
 
 - [x] **Step 5: Write the failing projector test**
@@ -896,7 +896,7 @@ The second case reaches the projector only if the opponent is a co-owner of the 
 
 - [x] **Step 6: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.application.WalkerDecisionProjectorSuite"`
+Run: `./sbtw "testOnly distantlands.application.WalkerDecisionProjectorSuite"`
 Expected: FAIL — `subjectCards` is empty.
 
 - [x] **Step 7: Fill it in the projector**
@@ -953,7 +953,7 @@ Confirm the id spelling before writing the parse: `CardPlayProcedure` builds `s"
 
 - [x] **Step 8: Run the projector test**
 
-Run: `./sbtw "testOnly oathdigital.application.WalkerDecisionProjectorSuite"`
+Run: `./sbtw "testOnly distantlands.application.WalkerDecisionProjectorSuite"`
 Expected: PASS
 
 - [x] **Step 9: Write the failing frontend test**
@@ -985,7 +985,7 @@ Add to `frontend/src/test/scala/distantlands/frontend/WalkerChoicePanelRenderSui
 
 - [x] **Step 10: Run it to verify it fails**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.WalkerChoicePanelRenderSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.WalkerChoicePanelRenderSuite"`
 Expected: FAIL — no `.decision-subject` element.
 
 - [x] **Step 11: Draw the subjects**
@@ -1018,7 +1018,7 @@ Add to `frontend/styles.css`, beside `.decision-cards`:
 
 - [x] **Step 12: Run the frontend test**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.WalkerChoicePanelRenderSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.WalkerChoicePanelRenderSuite"`
 Expected: PASS
 
 - [x] **Step 13: Run the gate**
@@ -1069,7 +1069,7 @@ Add to `shared/src/test/scala/distantlands/protocol/CommandProtocolSuite.scala`,
 
 ```scala
   test("a preview modifier round-trips its card and the action it modifies") {
-    val card = oathdigital.protocol.projection.CardDetailsProjection(
+    val card = distantlands.protocol.projection.CardDetailsProjection(
       "denizen:vow-of-peace", "denizen", "Vow of Peace",
       suit = Some("order"), orientation = Some("face-up"))
     val response = MajorActionPreviewResponse(4L, "travel",
@@ -1083,12 +1083,12 @@ Add to `shared/src/test/scala/distantlands/protocol/CommandProtocolSuite.scala`,
 
 - [x] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "sharedJVM/testOnly oathdigital.protocol.CommandProtocolSuite"`
+Run: `./sbtw "sharedJVM/testOnly distantlands.protocol.CommandProtocolSuite"`
 Expected: FAIL — `PreviewModifier` takes three arguments.
 
 - [x] **Step 3: Widen the card codec's visibility**
 
-The preview codec lives in `oathdigital.protocol` and the card codec in `oathdigital.protocol.projection`; both already fail with `ProtocolDecodeFailure`, so only visibility is in the way. Change two declarations:
+The preview codec lives in `distantlands.protocol` and the card codec in `distantlands.protocol.projection`; both already fail with `ProtocolDecodeFailure`, so only visibility is in the way. Change two declarations:
 
 - `shared/.../projection/ProjectionCodecSupport.scala:6`: `private[projection] object ProjectionCodecSupport` → `private[protocol] object ProjectionCodecSupport`
 - `shared/.../projection/WorldProjectionCodec.scala:5`: `private[projection] object WorldProjectionCodec` → `private[protocol] object WorldProjectionCodec`
@@ -1098,7 +1098,7 @@ The preview codec lives in `oathdigital.protocol` and the card codec in `oathdig
 In `MajorActionPreviewProtocol.scala`:
 
 ```scala
-import oathdigital.protocol.projection.CardDetailsProjection
+import distantlands.protocol.projection.CardDetailsProjection
 
 /** One offered modifier. `description` is the human sentence for the option --
   * the printed card's name where there is a card -- and never the handler id.
@@ -1118,7 +1118,7 @@ In `encodeResponse`, the modifiers block becomes:
       "sourceKey" -> v.sourceKey, "handlerId" -> v.handlerId,
       "description" -> v.description,
       "card" -> v.card.fold[ujson.Value](ujson.Null)(
-        oathdigital.protocol.projection.WorldProjectionCodec.encodeCard),
+        distantlands.protocol.projection.WorldProjectionCodec.encodeCard),
       "modifies" -> v.modifies.fold[ujson.Value](ujson.Null)(ujson.Str(_))))),
 ```
 
@@ -1131,7 +1131,7 @@ and in `decodeResponse`:
           description <- nonEmpty(value, "description", s"$path.description")
           card <- value.value.get("card") match {
             case None | Some(ujson.Null) => Right(None)
-            case Some(raw) => oathdigital.protocol.projection
+            case Some(raw) => distantlands.protocol.projection
               .WorldProjectionCodec.decodeCard(raw, s"$path.card").map(Some(_))
           }
           modifies <- value.value.get("modifies") match {
@@ -1146,7 +1146,7 @@ This codec is hand-rolled and does not use `exact(...)`, so no key set needs upd
 
 - [x] **Step 5: Run the codec test**
 
-Run: `./sbtw "sharedJVM/testOnly oathdigital.protocol.CommandProtocolSuite"`
+Run: `./sbtw "sharedJVM/testOnly distantlands.protocol.CommandProtocolSuite"`
 Expected: PASS
 
 - [x] **Step 6: Describe the modifiers server-side**
@@ -1154,11 +1154,11 @@ Expected: PASS
 Create `src/main/scala/distantlands/application/PreviewModifierDescriptions.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.powerresolver.Power
-import oathdigital.model._
-import oathdigital.protocol.PreviewModifier
+import distantlands.gameplay.powerresolver.Power
+import distantlands.model._
+import distantlands.protocol.PreviewModifier
 
 /** What an offered modifier is, for the panel that orders them: the card it is
   * printed on and the major action it modifies.
@@ -1206,7 +1206,7 @@ private[application] final class PreviewModifierDescriptions(
 }
 ```
 
-If `presentation.cardDetails` is not visible from this package, mirror the accessor `WalkerDecisionProjector` uses (`GamePresentationProjector.cardDetails`) — both classes are in `oathdigital.application`, so it already is.
+If `presentation.cardDetails` is not visible from this package, mirror the accessor `WalkerDecisionProjector` uses (`GamePresentationProjector.cardDetails`) — both classes are in `distantlands.application`, so it already is.
 
 - [x] **Step 7: Carry the descriptions through the preview result**
 
@@ -1282,7 +1282,7 @@ Add to `frontend/src/test/scala/distantlands/frontend/ModifierSelectionStateSuit
 
 - [x] **Step 11: Run it to verify it fails**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.ModifierSelectionStateSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.ModifierSelectionStateSuite"`
 Expected: FAIL — the option is a plain button labelled with the handler id.
 
 - [x] **Step 12: Render the option as a card**
@@ -1345,7 +1345,7 @@ Add to `frontend/styles.css`:
 
 - [x] **Step 13: Run the frontend test**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.ModifierSelectionStateSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.ModifierSelectionStateSuite"`
 Expected: PASS
 
 - [x] **Step 14: Run the gate**
@@ -1397,7 +1397,7 @@ Add to `src/test/scala/distantlands/gameplay/CampaignPlansSuite.scala`:
 
 ```scala
   test("a plan's badge names the side or sides that may use it") {
-    import oathdigital.model.CampaignPlanSide._
+    import distantlands.model.CampaignPlanSide._
     assertEquals(CampaignPlans.badgeOf(Set(Attacker)), Some("Attack Plan"))
     assertEquals(CampaignPlans.badgeOf(Set(Defender)), Some("Defense Plan"))
     assertEquals(CampaignPlans.badgeOf(Set(Attacker, Defender)),
@@ -1418,7 +1418,7 @@ Add to `src/test/scala/distantlands/gameplay/CampaignPlansSuite.scala`:
 
 - [x] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CampaignPlansSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.CampaignPlansSuite"`
 Expected: FAIL — `badgeOf` and `Badged` do not exist.
 
 - [x] **Step 3: Let an offer carry its sides**
@@ -1495,7 +1495,7 @@ In `CampaignPlans`:
 
 - [x] **Step 6: Run the engine test**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CampaignPlansSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.CampaignPlansSuite"`
 Expected: PASS
 
 - [x] **Step 7: Write the failing projection test**
@@ -1518,7 +1518,7 @@ Use whatever `ready`/`owner` fixture the suite already builds with a relic in pl
 
 - [x] **Step 8: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.application.WalkerDecisionProjectorSuite"`
+Run: `./sbtw "testOnly distantlands.application.WalkerDecisionProjectorSuite"`
 Expected: FAIL — `badge` is not a member of `DecisionOptionProjection`.
 
 - [x] **Step 9: Add the wire field**
@@ -1582,7 +1582,7 @@ The other `row(...)` call sites keep their current arguments — `badge` default
 
 - [x] **Step 11: Run the projector test**
 
-Run: `./sbtw "testOnly oathdigital.application.WalkerDecisionProjectorSuite"`
+Run: `./sbtw "testOnly distantlands.application.WalkerDecisionProjectorSuite"`
 Expected: PASS
 
 - [x] **Step 12: Write the failing frontend test**
@@ -1615,7 +1615,7 @@ Add to `frontend/src/test/scala/distantlands/frontend/WalkerChoicePanelRenderSui
 
 - [x] **Step 13: Run it to verify it fails**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.WalkerChoicePanelRenderSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.WalkerChoicePanelRenderSuite"`
 Expected: FAIL — `DecisionOptionState` takes five arguments and no chip is drawn.
 
 - [x] **Step 14: Draw the card and the chip**
@@ -1670,7 +1670,7 @@ Add to `frontend/styles.css`:
 
 - [x] **Step 15: Run the frontend test**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.WalkerChoicePanelRenderSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.WalkerChoicePanelRenderSuite"`
 Expected: PASS
 
 - [x] **Step 16: Run the gate**
@@ -1725,7 +1725,7 @@ Build `campaignWithOnePlanPlayed` from the suite's existing Campaign fixture by 
 
 - [x] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.application.WalkerDecisionProjectorSuite"`
+Run: `./sbtw "testOnly distantlands.application.WalkerDecisionProjectorSuite"`
 Expected: FAIL — `answeredOptions` is not a member.
 
 - [x] **Step 3: Add the wire field**
@@ -1795,7 +1795,7 @@ and the resolver:
 
 - [x] **Step 5: Run the projector test**
 
-Run: `./sbtw "testOnly oathdigital.application.WalkerDecisionProjectorSuite"`
+Run: `./sbtw "testOnly distantlands.application.WalkerDecisionProjectorSuite"`
 Expected: PASS
 
 - [x] **Step 6: Write the failing frontend test**
@@ -1826,7 +1826,7 @@ Add to `frontend/src/test/scala/distantlands/frontend/WalkerChoicePanelRenderSui
 
 - [x] **Step 7: Run it to verify it fails**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.WalkerChoicePanelRenderSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.WalkerChoicePanelRenderSuite"`
 Expected: FAIL — no `.plans-played` element.
 
 - [x] **Step 8: Draw the strip**
@@ -1857,7 +1857,7 @@ Add to `frontend/styles.css`:
 
 - [x] **Step 9: Run the frontend test**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.WalkerChoicePanelRenderSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.WalkerChoicePanelRenderSuite"`
 Expected: PASS
 
 - [x] **Step 10: Run the gate**
@@ -1902,7 +1902,7 @@ Mid-walk roll feedback exists only for Recover, gated on `procedure == ActionRef
 - Consumes: `WalkerDecisionProjection` (Tasks 5 and 8 added keys to its `exact(...)` sets; this task changes the nested roll payload's keys, not those).
 - Produces:
   - `WalkerRollOutcomeProjection(pool: String, faces: Vector[String], score: Int, target: Option[Int] = None, detail: Vector[String] = Vector.empty)` — wire keys `pool`, `faces`, `score`, `target`, `detail`. `difficulty` is gone.
-  - `final case class WalkerRollFeedback(pool: PoolKey, target: Option[Int] = None, detail: Vector[String] = Vector.empty)` in `oathdigital.gameplay.walker`.
+  - `final case class WalkerRollFeedback(pool: PoolKey, target: Option[Int] = None, detail: Vector[String] = Vector.empty)` in `distantlands.gameplay.walker`.
   - `WalkerProcedureRegistry.Entry.rollFeedback: (ExecutableCatalog, ReadyGame, PlayerId, String) => Option[WalkerRollFeedback]`, defaulting to `(_, _, _, _) => None`.
   - `CampaignBattle.sacrificeHeading(max: Int): String` — one argument, the prompt alone.
 
@@ -1921,7 +1921,7 @@ Replace the two `sacrificeHeading` cases in `src/test/scala/distantlands/gamepla
 
 - [x] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CampaignBattleSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.CampaignBattleSuite"`
 Expected: FAIL — `sacrificeHeading` takes four arguments.
 
 - [x] **Step 3: Reduce the heading to the prompt**
@@ -1955,7 +1955,7 @@ Update `CampaignProcedureSuite.scala:419` to the one-argument call. If `AttackDi
 
 - [x] **Step 4: Run the engine suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CampaignBattleSuite oathdigital.gameplay.CampaignProcedureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.CampaignBattleSuite distantlands.gameplay.CampaignProcedureSuite"`
 Expected: PASS
 
 - [x] **Step 5: Write the failing feedback test**
@@ -1986,7 +1986,7 @@ Build `campaignAtSacrifice` from `CampaignFixture` by rolling the attack pool wi
 
 - [x] **Step 6: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.application.WalkerDecisionProjectorSuite"`
+Run: `./sbtw "testOnly distantlands.application.WalkerDecisionProjectorSuite"`
 Expected: FAIL — `pool` is not a member of `WalkerRollOutcomeProjection`, and a Campaign projects no outcome at all.
 
 - [x] **Step 7: Reshape the wire payload**
@@ -2038,9 +2038,9 @@ In `ActionProjectionCodec.scala`:
 Create `src/main/scala/distantlands/gameplay/walker/WalkerRollFeedback.scala`:
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.model.PoolKey
+import distantlands.model.PoolKey
 
 /** The roll a parked decision wants shown beside it: which pool, the number
   * the score is measured against where there is one, and any consequence the
@@ -2229,7 +2229,7 @@ In `frontend/src/test/scala/distantlands/frontend/RecoverPanelSuite.scala`, upda
 
 - [x] **Step 13: Run them to verify they fail**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.WalkerSelectionPanelsSuite oathdigital.frontend.RecoverPanelSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.WalkerSelectionPanelsSuite distantlands.frontend.RecoverPanelSuite"`
 Expected: FAIL — `WalkerRollOutcomeState` takes three arguments and the amount panel draws no dice.
 
 - [x] **Step 14: Make the roll feedback generic and reuse it**
@@ -2309,7 +2309,7 @@ The rest of `renderAmount` is unchanged.
 
 - [x] **Step 16: Run the frontend tests**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.WalkerSelectionPanelsSuite oathdigital.frontend.RecoverPanelSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.WalkerSelectionPanelsSuite distantlands.frontend.RecoverPanelSuite"`
 Expected: PASS
 
 - [x] **Step 17: Run the gate**

@@ -51,7 +51,7 @@ This is the second of 14 slice plans, written against `0.2.0-alpha` at `f28e3f48
 - Test: `src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala`
 
 **Interfaces:**
-- Produces: `case object AdvanceRound extends PrimitiveOperation` in `oathdigital.model`, with `required = true`.
+- Produces: `case object AdvanceRound extends PrimitiveOperation` in `distantlands.model`, with `required = true`.
 - Produces: `Table.roundMarkerAt(n: Int): Table` and `Table.usurperLimiter(onTrack: Boolean): Table`.
 
 - [ ] **Step 1: Add the Table helpers**
@@ -119,7 +119,7 @@ In `WalkerOperationWireSuite.scala`, after the test "recorded Visions Drawn adva
 
 - [ ] **Step 4: Run the tests to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OperationExecutorSuite oathdigital.serialization.WalkerOperationWireSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.OperationExecutorSuite distantlands.serialization.WalkerOperationWireSuite"`
 Expected: compile error, `Not found: AdvanceRound`.
 
 - [ ] **Step 5: Add the operation**
@@ -171,7 +171,7 @@ In `WalkerOperationCodec.scala`:
 
 - [ ] **Step 7: Run the tests to see them pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OperationExecutorSuite oathdigital.serialization.WalkerOperationWireSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.OperationExecutorSuite distantlands.serialization.WalkerOperationWireSuite"`
 Expected: PASS.
 
 - [ ] **Step 8: Commit**
@@ -213,7 +213,7 @@ EOF
 
 **Interfaces:**
 - Consumes: `AdvanceRound` and `Table.roundMarkerAt`, `Table.usurperLimiter` from Task 1.
-- Produces: `GreatClockCard` in `oathdigital.gameplay.powers.setup`; `RoundMarker.advance(ready): Vector[CoreOperation]`, `RoundMarker.reached(states: NoteStates): Option[Int]`; `case object GreatClock extends PaidAction` with `val LastSpace: String`; `case object BrokenClock extends RuinedSetupRule`.
+- Produces: `GreatClockCard` in `distantlands.gameplay.powers.setup`; `RoundMarker.advance(ready): Vector[CoreOperation]`, `RoundMarker.reached(states: NoteStates): Option[Int]`; `case object GreatClock extends PaidAction` with `val LastSpace: String`; `case object BrokenClock extends RuinedSetupRule`.
 
 - [ ] **Step 1: Move the card**
 
@@ -222,8 +222,8 @@ Delete `object GreatClockCard` (lines 86 to 99) from `HoldingEdifices.scala`. Pa
 In `SaltTheEarthSuite.scala`, line 3 becomes:
 
 ```scala
-import oathdigital.catalog.holding.SearchPartyCard
-import oathdigital.gameplay.powers.setup.GreatClockCard
+import distantlands.catalog.holding.SearchPartyCard
+import distantlands.gameplay.powers.setup.GreatClockCard
 ```
 
 - [ ] **Step 2: Write the failing Broken Clock tests**
@@ -255,20 +255,20 @@ In `RuinedSetupRulesSuite.scala`, add a section at the end of the class:
 Create `src/test/scala/distantlands/gameplay/powers/action/GreatClockSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture}
-import oathdigital.gameplay.powers.setup.GreatClockCard
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.model.OathEvent.{EndDieRolled, RoundEnded}
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{Look, MenuPlay, PhasePowerHarness, Table}
-import oathdigital.testkit.Outcomes.{assertWireRoundTrips, ready}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture}
+import distantlands.gameplay.powers.setup.GreatClockCard
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.model.OathEvent.{EndDieRolled, RoundEnded}
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Look, MenuPlay, PhasePowerHarness, Table}
+import distantlands.testkit.Outcomes.{assertWireRoundTrips, ready}
+import distantlands.testkit.Unwrap.accepted
 
 /** Great Clock (catalog batch 10, slice 2): advance the round marker once,
   * if possible, without the end die. */
@@ -343,7 +343,7 @@ class GreatClockSuite extends munit.FunSuite:
 
 - [ ] **Step 4: Run the tests to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.GreatClockSuite oathdigital.gameplay.powers.setup.RuinedSetupRulesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.GreatClockSuite distantlands.gameplay.powers.setup.RuinedSetupRulesSuite"`
 Expected: compile error, `Not found: GreatClock` and `Not found: BrokenClock`.
 
 - [ ] **Step 5: Add `RoundMarker` and Broken Clock**
@@ -406,12 +406,12 @@ In `WalkerPowerCatalog.scala:116`, register it beside the others: `RuinedSchool,
 Create `src/main/scala/distantlands/gameplay/powers/action/GreatClock.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.QueuedStarts
-import oathdigital.gameplay.powers.setup.{GreatClockCard, RoundMarker}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.QueuedStarts
+import distantlands.gameplay.powers.setup.{GreatClockCard, RoundMarker}
+import distantlands.model._
 
 /** Great Clock (E12, intact), ACTION: advance the round marker once, if
   * possible. "Do not roll the round die. This cannot end the game."
@@ -451,7 +451,7 @@ In `OtherActionPowers.scala:19`: `ForestHorn, GiantsRampage, GreatClock,`.
 
 - [ ] **Step 7: Run the tests to see them pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.GreatClockSuite oathdigital.gameplay.powers.setup.RuinedSetupRulesSuite oathdigital.gameplay.powers.campaign.SaltTheEarthSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.GreatClockSuite distantlands.gameplay.powers.setup.RuinedSetupRulesSuite distantlands.gameplay.powers.campaign.SaltTheEarthSuite"`
 Expected: PASS.
 
 - [ ] **Step 8: Regenerate the snapshots**

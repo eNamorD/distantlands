@@ -86,8 +86,8 @@ Tabletop Simulator (TTS) string.
 
 ### Storage
 
-- `oath.chronicles`: a list of `{name, json, digest, summary, savedAt}`.
-- `oath.chronicles.loaded`: the loaded entry's name.
+- `distantlands.chronicles`: a list of `{name, json, digest, summary, savedAt}`.
+- `distantlands.chronicles.loaded`: the loaded entry's name.
 - If storage refuses, the page says Chronicles cannot be kept in this browser;
   export still works for the Chronicle on screen. An entry that does not parse
   is listed as "Unreadable" with only Delete.

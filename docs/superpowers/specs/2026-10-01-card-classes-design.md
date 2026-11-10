@@ -37,7 +37,7 @@ Scala becomes the only source of truth for card facts. Three payoffs:
   transcriptions under `reference/catalog-ingestion/` stay as source evidence,
   and its README says the pipeline is retired.
 
-### Types (package `oathdigital.catalog`)
+### Types (package `distantlands.catalog`)
 
 - `PrintedPower(id: PowerId, persistent: Boolean, cost: Cost, text: String)`.
   `cost` is the leading run of `[favor]`, `[secret]`, `[favor-burnt]` and
@@ -142,8 +142,8 @@ case object Storyteller extends PaidAction(StorytellerCard.power)
 
 ### Removed with the JSON
 
-- `--catalog-path` and `OATH_CATALOG_PATH`. An unknown flag fails startup.
-  Updated with them: `ServerConfig`, `OathServer`, `ServerRuntime`, the
+- `--catalog-path` and `DLQ_CATALOG_PATH`. An unknown flag fails startup.
+  Updated with them: `ServerConfig`, `DistantLandsServer`, `ServerRuntime`, the
   `build.sbt` package mapping, the launcher extra-defines,
   `verifyPackageMappings`, `scripts/smoke-packaged-distribution.sh`,
   `scripts/verify-alpha-release.sh`, `.claude/launch.json`, the README and

@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- `BackendArchitectureSuite` applies: production files stay at or under 800 lines; no power name appears in `gameplay/walker` or `gameplay/operations` sources (a lowercase substring scan of every class that `extends PhasePower` or `ContributingPower`); a power imports nothing from `oathdigital.gameplay.walker`; no direct state writes (`copy(advisers =`, `temporaryHands.updated(` and similar) under `gameplay/powers`.
+- `BackendArchitectureSuite` applies: production files stay at or under 800 lines; no power name appears in `gameplay/walker` or `gameplay/operations` sources (a lowercase substring scan of every class that `extends PhasePower` or `ContributingPower`); a power imports nothing from `distantlands.gameplay.walker`; no direct state writes (`copy(advisers =`, `temporaryHands.updated(` and similar) under `gameplay/powers`.
 - A power is declared solely by a `PhasePower`. No engine code is added for it, and no engine file is edited.
 - Commit messages end with `Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>`. Code, comments, commits and docs are normal prose.
 - Run the suite with `./sbtw test`. Run one suite with `./sbtw "testOnly <fully.qualified.Suite>"`.
@@ -68,15 +68,15 @@ Ruling: cost 1 secret placed. Choose one player board, yours included, and kill 
 `src/test/scala/distantlands/gameplay/powers/TargetsFixture.scala`:
 
 ```scala
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.application.{GameProjector, LoadedGame}
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.phases.PhasePowerProcedure
-import oathdigital.gameplay.powerresolver.PhasePower
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.protocol.projection.{DecisionQueryProjection, PlayerBoardProjection}
+import distantlands.application.{GameProjector, LoadedGame}
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.phases.PhasePowerProcedure
+import distantlands.gameplay.powerresolver.PhasePower
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.protocol.projection.{DecisionQueryProjection, PlayerBoardProjection}
 
 /** Staging and driving shared by the slice 1c suites. `PowerFixture` (slice
   * 1a) stays untouched so that parallel slices do not collide on it.
@@ -183,11 +183,11 @@ object TargetsFixture {
 `src/test/scala/distantlands/gameplay/powers/action/WolvesSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.{PhasePowerCatalog, PlayerFacts, PowerFixture, TargetsFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.powers.{PhasePowerCatalog, PlayerFacts, PowerFixture, TargetsFixture}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 class WolvesSuite extends munit.FunSuite {
   import PowerFixture._
@@ -270,7 +270,7 @@ class WolvesSuite extends munit.FunSuite {
 
 - [ ] **Step 3: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.WolvesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.WolvesSuite"`
 Expected: FAIL to compile, `not found: value Wolves`. The fixture itself compiles.
 
 - [ ] **Step 4: Write `PowerAnswers` and Wolves**
@@ -278,9 +278,9 @@ Expected: FAIL to compile, `not found: value Wolves`. The fixture itself compile
 `src/main/scala/distantlands/gameplay/powers/PowerAnswers.scala`:
 
 ```scala
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Reads of the answers a power's own decisions recorded in the pending
   * tree. A power's effect is a `BuildOps`, which runs after the answer is
@@ -305,10 +305,10 @@ object PowerAnswers {
 `src/main/scala/distantlands/gameplay/powers/action/Wolves.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.{PlayerFacts, PowerAnswers}
-import oathdigital.model._
+import distantlands.gameplay.powers.{PlayerFacts, PowerAnswers}
+import distantlands.model._
 
 /** Wolves (card 39), ACTION: place 1 secret on this card, then kill one
   * warband on any one player board, the acting player's included. A board
@@ -346,7 +346,7 @@ case object Wolves extends PaidAction("denizen.wolves", Cost(secret = 1)) {
 `PhasePowerCatalog.scala`: import `Wolves` and add the new powers on their own line after the slice 1a vector:
 
 ```scala
-import oathdigital.gameplay.powers.action.{Elders, MagicWaterskin, WaysideInn, Wolves}
+import distantlands.gameplay.powers.action.{Elders, MagicWaterskin, WaysideInn, Wolves}
 ```
 ```scala
     PhasePowers(SilverTongue.forCatalog(catalog).toVector ++
@@ -356,7 +356,7 @@ import oathdigital.gameplay.powers.action.{Elders, MagicWaterskin, WaysideInn, W
 
 - [ ] **Step 5: Run the Wolves suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.WolvesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.WolvesSuite"`
 Expected: PASS. If the replay assertion fails, compare `replayed(...)` with `done.state` field by field: the likely cause is a state written outside a recorded operation, which is a bug in the power. If `warbandBank` is off by one, read the `PowerFixture.warbandBank` derivation (supply less boards and sites) before changing the power.
 
 - [ ] **Step 6: Commit**
@@ -390,11 +390,11 @@ The decision is asked exactly when at least two banks are non-empty and more tha
 `src/test/scala/distantlands/gameplay/powers/action/AlchemistSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.{PhasePowerCatalog, PowerFixture, TargetsFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.powers.{PhasePowerCatalog, PowerFixture, TargetsFixture}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 class AlchemistSuite extends munit.FunSuite {
   import PowerFixture._
@@ -504,7 +504,7 @@ class AlchemistSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.AlchemistSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.AlchemistSuite"`
 Expected: FAIL to compile, `not found: value Alchemist`.
 
 - [ ] **Step 3: Write Alchemist**
@@ -512,10 +512,10 @@ Expected: FAIL to compile, `not found: value Alchemist`.
 `src/main/scala/distantlands/gameplay/powers/action/Alchemist.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 /** Alchemist (card 9), ACTION: place 1 secret on this card and burn 1, then
   * gain 4 favor from any bank or banks.
@@ -573,7 +573,7 @@ case object Alchemist extends PaidAction("denizen.alchemist",
 
 - [ ] **Step 4: Run the suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.AlchemistSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.AlchemistSuite"`
 Expected: PASS. If an answer is rejected with "leaving nothing to decide", the query is malformed. Read `DecisionQueries.wellFormed`: the `choosing` condition must match its "fewer than two variable slots" and "maximums already make the total" rules, and the fix is in `choosing`, not in the validator.
 
 - [ ] **Step 5: Commit**
@@ -607,11 +607,11 @@ The mixed-orientation case needs the three-operation batch from "What planning f
 `src/test/scala/distantlands/gameplay/powers/action/SleightOfHandSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.{PhasePowerCatalog, PowerFixture, TargetsFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.powers.{PhasePowerCatalog, PowerFixture, TargetsFixture}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 class SleightOfHandSuite extends munit.FunSuite {
   import PowerFixture._
@@ -730,7 +730,7 @@ class SleightOfHandSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.SleightOfHandSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.SleightOfHandSuite"`
 Expected: FAIL to compile, `not found: value SleightOfHand`.
 
 - [ ] **Step 3: Write Sleight of Hand**
@@ -738,11 +738,11 @@ Expected: FAIL to compile, `not found: value SleightOfHand`.
 `src/main/scala/distantlands/gameplay/powers/action/SleightOfHand.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.PowerAccess
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.gameplay.PowerAccess
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 /** Sleight of Hand (card 17), ACTION: place 1 favor on this card, then take
   * one secret from a player whose pawn is at your site and who holds two or
@@ -817,7 +817,7 @@ case object SleightOfHand extends PaidAction("denizen.sleight-of-hand",
 
 - [ ] **Step 4: Run the suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.SleightOfHandSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.SleightOfHandSuite"`
 Expected: PASS. If the mixed-target test fails with `AmbiguousSecretOrientation`, the flips did not run first: check the order of the three operations. If `others(base)(1)` throws, the first game seats fewer than three players, so read `FirstGameSetupFixture.participants` and adapt the fixture, not the power.
 
 - [ ] **Step 5: Commit**
@@ -851,11 +851,11 @@ The printed text says "a denizen at your site". The approved ruling adds the edi
 `src/test/scala/distantlands/gameplay/powers/action/CrystalVialSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.{PhasePowerCatalog, PowerFixture, TargetsFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.powers.{PhasePowerCatalog, PowerFixture, TargetsFixture}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 class CrystalVialSuite extends munit.FunSuite {
   import PowerFixture._
@@ -1017,7 +1017,7 @@ class CrystalVialSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.CrystalVialSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.CrystalVialSuite"`
 Expected: FAIL to compile, `not found: value CrystalVial`.
 
 - [ ] **Step 3: Write Crystal Vial**
@@ -1025,12 +1025,12 @@ Expected: FAIL to compile, `not found: value CrystalVial`.
 `src/main/scala/distantlands/gameplay/powers/action/CrystalVial.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.PowerAccess
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.PowerAccess
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 /** Crystal Vial (relic R21), ACTION: place 1 secret on this relic and burn
   * 1, then bury an adviser of yours (a denizen or a Vision, in either
@@ -1111,7 +1111,7 @@ object CrystalVial {
 
 - [ ] **Step 4: Run the suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.CrystalVialSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.CrystalVialSuite"`
 Expected: PASS. If `EdificeId("E15")` is not in the edifice deck, `withEdifice` fails fast: take it from the site that holds it instead, keeping the inventory whole. If the last site of the map is not empty after `bare`, check that `bare` moved every card to its deck.
 
 - [ ] **Step 5: Commit**
@@ -1145,11 +1145,11 @@ The log line is not implemented: no player-visible action log exists (ROADMAP, P
 `src/test/scala/distantlands/gameplay/powers/action/IvoryEyeSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.{PhasePowerCatalog, PowerFixture, TargetsFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.powers.{PhasePowerCatalog, PowerFixture, TargetsFixture}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 class IvoryEyeSuite extends munit.FunSuite {
   import PowerFixture._
@@ -1212,7 +1212,7 @@ class IvoryEyeSuite extends munit.FunSuite {
   test("the peeked adviser is named to the actor and to nobody else") {
     val t = use(staged, IvoryEye, source).toOption.get
     val card = firstAdviser(staged, target).value
-    def named(board: oathdigital.protocol.projection.PlayerBoardProjection) =
+    def named(board: distantlands.protocol.projection.PlayerBoardProjection) =
       board.advisers.exists(c => c.cardId == card && !c.hidden)
     assert(!named(boardOf(t, actor, target)))
     val done = answer(t, actor, IvoryEye.decisionId, peekAt(target, 0))
@@ -1268,7 +1268,7 @@ class IvoryEyeSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.IvoryEyeSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.IvoryEyeSuite"`
 Expected: FAIL to compile, `not found: value IvoryEye`.
 
 - [ ] **Step 3: Write Ivory Eye**
@@ -1276,10 +1276,10 @@ Expected: FAIL to compile, `not found: value IvoryEye`.
 `src/main/scala/distantlands/gameplay/powers/action/IvoryEye.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 /** Ivory Eye (relic R16), ACTION: place 1 secret on this relic, then peek at
   * any facedown adviser, a Vision included, of any player, the acting
@@ -1352,7 +1352,7 @@ case object IvoryEye extends PaidAction("relic.ivory-eye", Cost(secret = 1)) {
 
 - [ ] **Step 4: Run the suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.IvoryEyeSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.IvoryEyeSuite"`
 Expected: PASS. If "the peeked adviser is named" fails at `boardOf(done, actor, target)`, read `GamePresentationProjector.knownToViewer`: it matches `knowledge.advisers` by `id.value`, and the `Peek` must have been recorded (check `done.events` holds a `WalkerStepRecorded` with a `Peek`). If the projection of the decision is missing (`offered` is `None`), an option was rejected as unpresentable: every option must be a `Button`.
 
 - [ ] **Step 5: Commit**
@@ -1386,11 +1386,11 @@ The take is `Take` (site to play area) followed by `Flip` to facedown. The disca
 `src/test/scala/distantlands/gameplay/powers/wake/HornedMaskSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.wake
+package distantlands.gameplay.powers.wake
 
-import oathdigital.gameplay.powers.{PhasePowerCatalog, PowerFixture, TargetsFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.powers.{PhasePowerCatalog, PowerFixture, TargetsFixture}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 class HornedMaskSuite extends munit.FunSuite {
   import PowerFixture._
@@ -1543,7 +1543,7 @@ class HornedMaskSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.wake.HornedMaskSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.wake.HornedMaskSuite"`
 Expected: FAIL to compile, `not found: value HornedMask`.
 
 - [ ] **Step 3: Write Horned Mask**
@@ -1551,13 +1551,13 @@ Expected: FAIL to compile, `not found: value HornedMask`.
 `src/main/scala/distantlands/gameplay/powers/wake/HornedMask.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.wake
+package distantlands.gameplay.powers.wake
 
-import oathdigital.catalog.{CardRestrictions, ExecutableCatalog}
-import oathdigital.gameplay.PowerAccess
-import oathdigital.gameplay.powerresolver.PhasePower
-import oathdigital.gameplay.powers.{PlayerFacts, PowerAnswers}
-import oathdigital.model._
+import distantlands.catalog.{CardRestrictions, ExecutableCatalog}
+import distantlands.gameplay.PowerAccess
+import distantlands.gameplay.powerresolver.PhasePower
+import distantlands.gameplay.powers.{PlayerFacts, PowerAnswers}
+import distantlands.model._
 
 /** Horned Mask (relic R06), WAKE: take a non-edifice denizen from your pawn's
   * site as a facedown adviser. The engine records the once-per-turn use.
@@ -1718,7 +1718,7 @@ object HornedMask {
 
 - [ ] **Step 4: Run the suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.wake.HornedMaskSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.wake.HornedMaskSuite"`
 Expected: PASS. If a card in `locked` (28, 15, 133) is absent from the world deck, `giveAdviser` adds it (nothing to remove). If the `Take` is rejected, read the `OperationError`: a card that carries resources must return them first, which `returnsOf` does. If `discardable` offers a locked card, compare `lockedAdviser` with `CardRestrictions.LockedAdviserOnly` in the catalog for the ids used.
 
 - [ ] **Step 5: Commit**

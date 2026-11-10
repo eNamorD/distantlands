@@ -53,7 +53,7 @@ The design was written before slices 10 part 2 to 15 landed. These choices fit t
   - Engine files under `gameplay/walker` and `gameplay/operations` never name a power, in code or comments.
   - `PowerUseStep` lives in `gameplay/powerresolver`, which both the walker and the powers may import.
 - **Line width.** Scala lines stay at or under 80 characters.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Stage explicit paths only; never `git add -A`. Re-check `git log --oneline -1` before any amend, reset or rebase.
 - **Worktree.** Work in a git worktree.
   - `EnterWorktree` branches from `origin`, which lags local `main`. Fast-forward the new branch to local `main` first (`git merge --ff-only main`).
@@ -71,7 +71,7 @@ The design was written before slices 10 part 2 to 15 landed. These choices fit t
   - A use's key is `ConsentKey(refusing power, user, PowerUseRules.useKey, PowerUseRules.target(use))`. For a denizen, `PowerUseRules.target` is `DecisionOptionRef.Denizen(card)`.
   - In the service, a Travel is `ParkedServiceFixture.travelTo(service, gameId, sequence, actor, site)`. If the start parks on the modifier decision, answer it with `ModifierPicks.start` first, as `ModifierPlay.started` does.
   - Service logs read `texts(formatter.format(present(accepted(service.history(gameId)), "a stored game").steps, Some(viewer)))`, with `formatter` and `texts` from `gamelog.LogScripts`. Player names in the log are their ids ("p2").
-- **Note keys** are declared through a `NoteSet`. Regenerate `src/test/resources/notes/declared-keys.txt` with `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"` when a task adds keys (Task 1).
+- **Note keys** are declared through a `NoteSet`. Regenerate `src/test/resources/notes/declared-keys.txt` with `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"` when a task adds keys (Task 1).
 - **Names, exactly:**
   - `PowerUseStep` in `gameplay/powerresolver/PowerUseStep.scala`: `use` (`Button("use")`), `skip` (`Button("skip")`), `decisionId(power)` (`"power-use.<power id>"`), `isDecision(id)`, `answer(answered, power)` and `staysDeactivated` (note key `stays-deactivated`).
   - `PowerUseRules.raised(ready, use, restrictions)` and `PowerUseRules.waivable(use, refusals)`.
@@ -114,7 +114,7 @@ The design was written before slices 10 part 2 to 15 landed. These choices fit t
 
 In `AutomaticUseSuite.scala`, keep the existing tests. Change the expected park in "a park inside an automatic use resumes at the same decision" from `Vector("0", "0")` to `Vector("0", "1", "0")`: the effect is now the node's second child.
 
-Add these imports: `oathdigital.gameplay.operations.PowerUseRules`, `oathdigital.gameplay.powerresolver.PowerUseStep`, `oathdigital.testkit.Table.p2` (beside `p1`) and `oathdigital.testkit.Unwrap.present`.
+Add these imports: `distantlands.gameplay.operations.PowerUseRules`, `distantlands.gameplay.powerresolver.PowerUseStep`, `distantlands.testkit.Table.p2` (beside `p1`) and `distantlands.testkit.Unwrap.present`.
 
 Add, after `RefusesTestPowerWithoutFavor`:
 
@@ -287,7 +287,7 @@ Add the tests:
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.AutomaticUseSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.AutomaticUseSuite"`
 Expected: it fails to compile: `PowerUseStep` and `ParkedUses` do not exist yet.
 
 - [ ] **Step 3: Add `PowerUseStep`**
@@ -295,9 +295,9 @@ Expected: it fails to compile: `PowerUseStep` and `ParkedUses` do not exist yet.
 Create `src/main/scala/distantlands/gameplay/powerresolver/PowerUseStep.scala`:
 
 ```scala
-package oathdigital.gameplay.powerresolver
+package distantlands.gameplay.powerresolver
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The question an automatic power's use waits on when only waivable
   * restrictions refuse it (automatic power consent design, "The power-use
@@ -387,12 +387,12 @@ and, after `quiet`:
 Replace the body of `walker/AutomaticUses.scala` with:
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.operations.PowerUseRules
-import oathdigital.gameplay.powerresolver.{PowerUse, PowerUseRefusal,
+import distantlands.gameplay.operations.PowerUseRules
+import distantlands.gameplay.powerresolver.{PowerUse, PowerUseRefusal,
   PowerUseStep}
-import oathdigital.model._
+import distantlands.model._
 
 /** How the walker resolves an [[AutomaticUse]] (catalog batch 8, slice
   * 10; automatic power consent design). Every walker path that resolves
@@ -516,10 +516,10 @@ Add to `WalkerPowerGather`, after `leafAt`:
 Create `src/main/scala/distantlands/gameplay/walker/ParkedUses.scala`:
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.powerresolver.PowerUseStep
-import oathdigital.model.{AutomaticUse, Operation, PendingTree, ReadyGame}
+import distantlands.gameplay.powerresolver.PowerUseStep
+import distantlands.model.{AutomaticUse, Operation, PendingTree, ReadyGame}
 
 /** The automatic use whose power-use step a walk is parked at (automatic
   * power consent design, "Reaching the step"): the step is the first
@@ -553,7 +553,7 @@ In `CityWall`, after `placingAsked`:
   val staysDeactivated: NoteKey = notes.borrow(PowerUseStep.staysDeactivated)
 ```
 
-Do the same in `SpellBreaker` (after `asked`) and in the `ForestCouncil` companion (after `placingAsked`). Import `oathdigital.gameplay.powerresolver.PowerUseStep` in each, joining the existing `powerresolver` import.
+Do the same in `SpellBreaker` (after `asked`) and in the `ForestCouncil` companion (after `placingAsked`). Import `distantlands.gameplay.powerresolver.PowerUseStep` in each, joining the existing `powerresolver` import.
 
 - [ ] **Step 11: Update the `AutomaticUse` Scaladoc**
 
@@ -570,10 +570,10 @@ Slice 10 refused silently when a player ruled the refusing card. Now the walk pa
 
 - [ ] **Step 13: Regenerate the note keys and run the suites**
 
-Run: `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"`
+Run: `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"`
 Expected: the snapshot gains `stays-deactivated` under City Wall, Spell Breaker and Forest Council, and nothing else changes.
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.* oathdigital.gameplay.powers.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.* distantlands.gameplay.powers.*"`
 Expected: PASS.
 
 Run: `./sbtw "test"`
@@ -623,16 +623,16 @@ git commit -m "feat(batch8): a waivably refused automatic power waits at its ste
 Create `AutomaticUseConsentServiceSuite.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.operations.PowerUseRules
-import oathdigital.gameplay.powerresolver.PowerUseStep
-import oathdigital.gameplay.powers.poweruse.CityWall
-import oathdigital.gameplay.powers.travel.{TravelFixture, Tyrant, TyrantCard}
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Outcomes}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.gameplay.operations.PowerUseRules
+import distantlands.gameplay.powerresolver.PowerUseStep
+import distantlands.gameplay.powers.poweruse.CityWall
+import distantlands.gameplay.powers.travel.{TravelFixture, Tyrant, TyrantCard}
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Look, Outcomes}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** City Wall's ruler decides whether an enemy's Tyrant works, through the
   * service (automatic power consent design, user story and rulings 2, 5
@@ -759,7 +759,7 @@ In `ConsentEventWireSuite`, add a round-trip test for a `ConsentRequested` whose
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.application.AutomaticUseConsentServiceSuite oathdigital.serialization.ConsentEventWireSuite"`
+Run: `./sbtw "testOnly distantlands.application.AutomaticUseConsentServiceSuite distantlands.serialization.ConsentEventWireSuite"`
 Expected: it fails to compile on `ConsentUse` and `ConsentRequest.use`.
 
 - [ ] **Step 3: Add `ConsentUse` and the request's `use`**
@@ -813,7 +813,7 @@ In `OathRulesWalker`, after `grantAnswers`, and import `ParkedUses` from `gamepl
 
 - [ ] **Step 6: Open, settle and answer in the desk**
 
-In `ConsentDesk.scala`, import `oathdigital.gameplay.powerresolver.PowerUseStep`.
+In `ConsentDesk.scala`, import `distantlands.gameplay.powerresolver.PowerUseStep`.
 
 Add after `request`:
 
@@ -920,7 +920,7 @@ Add to its Scaladoc (write one if there is none): "A walk that parks at an autom
 
 - [ ] **Step 8: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.application.AutomaticUseConsentServiceSuite oathdigital.serialization.ConsentEventWireSuite oathdigital.application.*Consent*"`
+Run: `./sbtw "testOnly distantlands.application.AutomaticUseConsentServiceSuite distantlands.serialization.ConsentEventWireSuite distantlands.application.*Consent*"`
 Expected: PASS.
 
 - [ ] **Step 9: Run the server suite**
@@ -960,16 +960,16 @@ git commit -m "feat(batch8): the refusing card's ruler decides whether an automa
 Create `AutomaticUseUndoSuite.scala`. Each suite keeps its own fixtures, as the consent suites do, so the board and the helpers repeat Task 2's:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.powers.action.{Palanquin, PalanquinCard}
-import oathdigital.gameplay.powers.travel.{TravelFixture, TyrantCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, MenuPlay, Outcomes}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.gameplay.actions.travel.TravelProcedure
+import distantlands.gameplay.powers.action.{Palanquin, PalanquinCard}
+import distantlands.gameplay.powers.travel.{TravelFixture, TyrantCard}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Look, MenuPlay, Outcomes}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** Undo and Redo around an automatic power's request (automatic power
   * consent design, "Undo coupling" and ruling 9). */
@@ -1108,7 +1108,7 @@ class AutomaticUseUndoSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.application.AutomaticUseUndoSuite"`
+Run: `./sbtw "testOnly distantlands.application.AutomaticUseUndoSuite"`
 Expected: FAIL. The waiting Undo is answered by the plain withdrawal, which leaves the walk parked at the step, and the answered Undo takes back only the answer's batch.
 
 - [ ] **Step 3: Add `UndoCoupling`**
@@ -1116,9 +1116,9 @@ Expected: FAIL. The waiting Undo is answered by the plain withdrawal, which leav
 Create `src/main/scala/distantlands/application/UndoCoupling.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.model.OathState
+import distantlands.model.OathState
 
 /** The batches one Undo or one Redo moves (automatic power consent
   * design, "Undo coupling"). Neither stops at a position parked at an
@@ -1275,7 +1275,7 @@ Keep the `redo` and `logRevision` lines as they are.
 
 - [ ] **Step 6: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.application.*"`
+Run: `./sbtw "testOnly distantlands.application.*"`
 Expected: PASS, the existing undo suites included.
 
 - [ ] **Step 7: Commit**
@@ -1310,7 +1310,7 @@ git commit -m "feat(batch8): undo takes an automatic power's answer back with th
 
 - [ ] **Step 1: Write the failing projection and log tests**
 
-In `ConsentProjectionSuite`, import `oathdigital.gameplay.powers.poweruse.CityWall` and `oathdigital.gameplay.powers.travel.TravelFixture`, and add:
+In `ConsentProjectionSuite`, import `distantlands.gameplay.powers.poweruse.CityWall` and `distantlands.gameplay.powers.travel.TravelFixture`, and add:
 
 ```scala
   /** p1 holds Tyrant faceup at the Cradle's plains; City Wall stands at
@@ -1363,15 +1363,15 @@ then:
 Create `GameLogAutomaticUseSuite.scala`:
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.application.{ConsentFixture, GameAccepted,
+import distantlands.application.{ConsentFixture, GameAccepted,
   GameApplicationService, GameCommand, ParkedServiceFixture}
-import oathdigital.gameplay.powers.travel.TravelFixture
-import oathdigital.model._
-import oathdigital.testkit.CatalogNames
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.gameplay.powers.travel.TravelFixture
+import distantlands.model._
+import distantlands.testkit.CatalogNames
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.{accepted, present}
 import LogScripts.{formatter, texts}
 
 /** The Game Log of City Wall's ruler deciding on an enemy's Tyrant
@@ -1490,7 +1490,7 @@ Match the existing waiting test's way of reading the waiting line if it reads a 
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.application.ConsentProjectionSuite oathdigital.application.gamelog.GameLogAutomaticUseSuite" "sharedJVM/testOnly oathdigital.protocol.ProjectionProtocolSuite" "frontend/testOnly oathdigital.frontend.ConsentPromptPanelSuite"`
+Run: `./sbtw "testOnly distantlands.application.ConsentProjectionSuite distantlands.application.gamelog.GameLogAutomaticUseSuite" "sharedJVM/testOnly distantlands.protocol.ProjectionProtocolSuite" "frontend/testOnly distantlands.frontend.ConsentPromptPanelSuite"`
 Expected: it fails to compile on the `use` fields. Use the shared project's name as `build.sbt` declares it.
 
 - [ ] **Step 3: Add `use` to the projections**
@@ -1559,7 +1559,7 @@ Replace the `ConsentAnswered` case:
 
 Update the class Scaladoc: an automatic power's request names its refusing cards and granters, and its answers say whether the power worked.
 
-In `DetailLines.crossCutting`, add `|| PowerUseStep.isDecision(decisionId)`, importing `oathdigital.gameplay.powerresolver.PowerUseStep`, so the step's answer posts no "Chose" line: the consent lines tell it.
+In `DetailLines.crossCutting`, add `|| PowerUseStep.isDecision(decisionId)`, importing `distantlands.gameplay.powerresolver.PowerUseStep`, so the step's answer posts no "Chose" line: the consent lines tell it.
 
 - [ ] **Step 6: Word the client's prompt and waiting line**
 
@@ -1651,22 +1651,22 @@ Replace "Tyrant arriving at its site, ruled by an enemy, kills nothing" with two
       PowerUseStep.decisionId(Tyrant.id))
 ```
 
-Import `oathdigital.gameplay.powerresolver.PowerUseStep` and `oathdigital.gameplay.powers.travel.Tyrant`.
+Import `distantlands.gameplay.powerresolver.PowerUseStep` and `distantlands.gameplay.powers.travel.Tyrant`.
 
 Create `HungerConsentServiceSuite.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.application.gamelog.LogScripts.{formatter, texts}
-import oathdigital.gameplay.powers.poweruse.{CityWall, ForestCouncil}
-import oathdigital.gameplay.powers.travel.TravelFixture
-import oathdigital.gameplay.powers.wake.{Hunger, HungerCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, MenuPlay, Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.application.gamelog.LogScripts.{formatter, texts}
+import distantlands.gameplay.powers.poweruse.{CityWall, ForestCouncil}
+import distantlands.gameplay.powers.travel.TravelFixture
+import distantlands.gameplay.powers.wake.{Hunger, HungerCard}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Look, MenuPlay, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** Hunger refused by City Wall and Forest Council: every ruler is asked
   * at once, and the first deactivation settles it (automatic power
@@ -1764,12 +1764,12 @@ class HungerConsentServiceSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.poweruse.CityWallSuite oathdigital.application.HungerConsentServiceSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.poweruse.CityWallSuite distantlands.application.HungerConsentServiceSuite"`
 Expected: FAIL. `due` drops a Hunger that a player-ruled City Wall refuses, so no request opens.
 
 - [ ] **Step 3: Wrap Hunger**
 
-In `ForcedWakeProcedure`, import `oathdigital.gameplay.operations.PowerUseRules` and `oathdigital.gameplay.powerresolver.PowerUse`.
+In `ForcedWakeProcedure`, import `distantlands.gameplay.operations.PowerUseRules` and `distantlands.gameplay.powerresolver.PowerUse`.
 
 Replace `due`'s refusal check with `!deactivatedUnasked(catalog, ready, player, power, found, powers)`, and add:
 
@@ -1845,24 +1845,24 @@ In `AppendedAutomaticUses`, move the fold into `nodes`, and let `at` read it:
 Create `AutomaticUseStepWiringSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.poweruse
+package distantlands.gameplay.powers.poweruse
 
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.operations.PowerUseRules
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.operations.PowerUseRules
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerUse, PowerUseRefusal, PowerUseRestriction, PowerUseStep}
-import oathdigital.gameplay.powers.economy.{VowOfBeastkin,
+import distantlands.gameplay.powers.economy.{VowOfBeastkin,
   VowOfWanderingMuster}
-import oathdigital.gameplay.powers.travel.{Hospitality, Tyrant}
-import oathdigital.gameplay.powers.whenplayed.{ConspiracyWhenPlayed,
+import distantlands.gameplay.powers.travel.{Hospitality, Tyrant}
+import distantlands.gameplay.powers.whenplayed.{ConspiracyWhenPlayed,
   ThreateningRoar, ThreateningRoarCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ParkedUses, PowerNoted, ProcedureWalker,
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ParkedUses, PowerNoted, ProcedureWalker,
   WalkerOutcome, WalkerPowers}
-import oathdigital.model._
-import oathdigital.testkit.{AppendedAutomaticUses, CatalogNames, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.model._
+import distantlands.testkit.{AppendedAutomaticUses, CatalogNames, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** Every wrapped automatic power waits at its own step when only a
   * waivable refusal stops it, and stays deactivated by a refusal
@@ -2013,7 +2013,7 @@ The existing bandit test reads the board after the walk with `.treeless`; if `Lo
 
 - [ ] **Step 6: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.* oathdigital.gameplay.phases.* oathdigital.application.HungerConsentServiceSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.* distantlands.gameplay.phases.* distantlands.application.HungerConsentServiceSuite"`
 Expected: PASS. `HungerSuite` still passes: with no refusing card, Hunger's node is allowed.
 
 - [ ] **Step 7: Commit**

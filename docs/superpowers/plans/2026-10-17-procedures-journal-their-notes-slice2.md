@@ -44,7 +44,7 @@ eighteen procedure rules and leaves the other six plus `usePowerLines`.
 - **`model` may not import `application`, `gameplay`, `persistence`,
   `serialization` or `server`.**
 - **Golden logs: the rendered line never changes, the sequence may.** Run
-  `./sbtw "testOnly oathdigital.application.gamelog.GameLogGoldenSuite"`.
+  `./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite"`.
   Each migration task moves its line onto the `PowerNoted` event, so the
   entry's `sequence` and `ordinal` shift and nothing else may. Set
   `GAMELOG_GOLDEN=write` only in a migration task, and read the `git diff`
@@ -82,7 +82,7 @@ eighteen procedure rules and leaves the other six plus `usePowerLines`.
   only that a named key is one the procedure declares.
 - **`src/test/resources/notes/declared-keys.txt` is expected to change** in
   every migration task. Rewrite it with
-  `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"`
+  `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"`
   and read the diff: it must add exactly the task's keys and change nothing
   else.
 - **`GameLogPropertiesSuite`'s `noting` assertion rises by one per task.** It
@@ -143,13 +143,13 @@ registry entry — which is already in `application/gamelog` — declares it.
 Create `src/test/scala/distantlands/application/gamelog/ProcedureNoteLinesSuite.scala`:
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.gameplay.actions.economy.MusterProcedure
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.protocol.projection.{LogKind, LogSpan}
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.actions.economy.MusterProcedure
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.protocol.projection.{LogKind, LogSpan}
 import LogSpan.Text
 
 /** What a migrated procedure's line reads, on the branches no golden script
@@ -190,7 +190,7 @@ class ProcedureNoteLinesSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.ProcedureNoteLinesSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.ProcedureNoteLinesSuite"`
 Expected: FAIL to compile, `value noteKind is not a member of ProcedureLog`.
 
 - [ ] **Step 3: Give `ActionLineSource.Notes` its kinds**
@@ -198,7 +198,7 @@ Expected: FAIL to compile, `value noteKind is not a member of ProcedureLog`.
 In `ProcedureLog.scala`, add `LogKind` to the projection import:
 
 ```scala
-import oathdigital.protocol.projection.{LogKind, LogSpan}
+import distantlands.protocol.projection.{LogKind, LogSpan}
 ```
 
 Replace the `Notes` case of `ActionLineSource`:
@@ -300,7 +300,7 @@ In `GameLogPropertiesSuite.scala`, `Notes` is no longer a singleton:
 
 - [ ] **Step 7: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.ProcedureNoteLinesSuite oathdigital.application.gamelog.GameLogPropertiesSuite oathdigital.application.gamelog.GameLogGoldenSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.ProcedureNoteLinesSuite distantlands.application.gamelog.GameLogPropertiesSuite distantlands.application.gamelog.GameLogGoldenSuite"`
 Expected: PASS, and the golden files untouched — no note changed kind here.
 
 - [ ] **Step 8: Record the two amendments in the design**
@@ -399,11 +399,11 @@ MSGEOF
 - [ ] **Step 1: Declare Travel's key**
 
 In `TravelProcedure.scala`, add the import and the set. The object already
-imports `oathdigital.model._`, so `NoteSet`, `NoteKey`, `NotePart`,
+imports `distantlands.model._`, so `NoteSet`, `NoteKey`, `NotePart`,
 `NoteArg`, `Note` and `ActionRef` are in scope.
 
 ```scala
-import oathdigital.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.actions.ProcedureNotes
 ```
 
 After `private val startLabel = "Start Travel"`:
@@ -453,7 +453,7 @@ Replace `routeTree`:
 In `ProcedureNotes.scala`, add an arm above the wildcard and the import:
 
 ```scala
-import oathdigital.gameplay.actions.travel.TravelProcedure
+import distantlands.gameplay.actions.travel.TravelProcedure
 ```
 
 ```scala
@@ -506,7 +506,7 @@ The order is `ProcedureRef.all`'s: `Travel` precedes `Muster` in
 - [ ] **Step 7: Rewrite the snapshot and the goldens, then read both diffs**
 
 ```bash
-NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"
+NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"
 git diff src/test/resources/notes/declared-keys.txt
 ```
 
@@ -514,7 +514,7 @@ Expected: exactly one added line,
 `procedure.travel travelled = Travelled to {0}`.
 
 ```bash
-GAMELOG_GOLDEN=write ./sbtw "testOnly oathdigital.application.gamelog.GameLogGoldenSuite"
+GAMELOG_GOLDEN=write ./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite"
 git diff src/test/resources/gamelog/
 ```
 
@@ -571,12 +571,12 @@ Both Take Wealth goldens take favor. Append to
 and the import:
 
 ```scala
-import oathdigital.gameplay.phases.wake.TakeWealthProcedure
+import distantlands.gameplay.phases.wake.TakeWealthProcedure
 ```
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.ProcedureNoteLinesSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.ProcedureNoteLinesSuite"`
 Expected: FAIL to compile, `value tookSecret is not a member of TakeWealthProcedure`.
 
 - [ ] **Step 3: Declare the two keys**
@@ -584,8 +584,8 @@ Expected: FAIL to compile, `value tookSecret is not a member of TakeWealthProced
 In `TakeWealthProcedure.scala`:
 
 ```scala
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.gameplay.powers.NoteSupport
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.powers.NoteSupport
 ```
 
 After `object TakeWealthProcedure:`:
@@ -634,7 +634,7 @@ Replace `tree`:
 - [ ] **Step 5: Register, switch the entry, delete the rule**
 
 In `ProcedureNotes.scala`, with
-`import oathdigital.gameplay.phases.wake.TakeWealthProcedure`:
+`import distantlands.gameplay.phases.wake.TakeWealthProcedure`:
 
 ```scala
       case ActionRef.TakeWealth => TakeWealthProcedure.noteKeys
@@ -661,8 +661,8 @@ companion's `resource` still serves `challengeLines`, `bannerLines` and
 - [ ] **Step 7: Rewrite the snapshot and the goldens, then read both diffs**
 
 ```bash
-NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"
-GAMELOG_GOLDEN=write ./sbtw "testOnly oathdigital.application.gamelog.GameLogGoldenSuite"
+NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"
+GAMELOG_GOLDEN=write ./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite"
 git diff src/test/resources/
 ```
 
@@ -738,13 +738,13 @@ golden proves.
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.ProcedureNoteLinesSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.ProcedureNoteLinesSuite"`
 Expected: FAIL to compile, `value paidSecrets is not a member of ForgeProcedure`.
 
 - [ ] **Step 3: Declare the four keys**
 
-In `ForgeProcedure.scala`, add `import oathdigital.gameplay.actions.ProcedureNotes`
-and `import oathdigital.gameplay.powers.NoteSupport`, and after
+In `ForgeProcedure.scala`, add `import distantlands.gameplay.actions.ProcedureNotes`
+and `import distantlands.gameplay.powers.NoteSupport`, and after
 `val assignmentDecisionId`:
 
 ```scala
@@ -826,7 +826,7 @@ and add, as members of the object beside `forging`:
 - [ ] **Step 5: Register, switch the entry, delete the rule**
 
 In `ProcedureNotes.scala`, with
-`import oathdigital.gameplay.actions.forge.ForgeProcedure`:
+`import distantlands.gameplay.actions.forge.ForgeProcedure`:
 
 ```scala
       case ActionRef.Forge => ForgeProcedure.noteKeys
@@ -845,7 +845,7 @@ In `ProcedureLog.scala`:
 In `ActionLines.scala`, delete `forgeLines` (lines 122-145). Compile and
 remove whatever import that orphans — `Play` and `CardDeck.Relic` are
 matched nowhere else in the file, but both arrive through
-`oathdigital.model._`, so expect no import change.
+`distantlands.model._`, so expect no import change.
 
 - [ ] **Step 6: Raise the count**
 
@@ -857,8 +857,8 @@ matched nowhere else in the file, but both arrive through
 - [ ] **Step 7: Rewrite the snapshot and the goldens, then read both diffs**
 
 ```bash
-NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"
-GAMELOG_GOLDEN=write ./sbtw "testOnly oathdigital.application.gamelog.GameLogGoldenSuite"
+NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"
+GAMELOG_GOLDEN=write ./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite"
 git diff src/test/resources/
 ```
 
@@ -944,13 +944,13 @@ golden concatenates; assert them as they come rather than merged.
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.ProcedureNoteLinesSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.ProcedureNoteLinesSuite"`
 Expected: FAIL to compile, `value tookFromPlayerWithFavor is not a member of ChallengeProcedure`.
 
 - [ ] **Step 3: Declare the four keys**
 
-In `ChallengeProcedure.scala`, add `import oathdigital.gameplay.actions.ProcedureNotes`
-and `import oathdigital.gameplay.powers.NoteSupport`, and after
+In `ChallengeProcedure.scala`, add `import distantlands.gameplay.actions.ProcedureNotes`
+and `import distantlands.gameplay.powers.NoteSupport`, and after
 `val startLabel`:
 
 ```scala
@@ -1025,7 +1025,7 @@ and add beside `payment`:
 - [ ] **Step 5: Register, switch the entry, delete the rule**
 
 In `ProcedureNotes.scala`, with
-`import oathdigital.gameplay.actions.challenge.ChallengeProcedure`:
+`import distantlands.gameplay.actions.challenge.ChallengeProcedure`:
 
 ```scala
       case ActionRef.Challenge => ChallengeProcedure.noteKeys
@@ -1055,8 +1055,8 @@ caller-less helper `paidOnto` (lines 354-362).
 - [ ] **Step 7: Rewrite the snapshot and the goldens, then read both diffs**
 
 ```bash
-NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"
-GAMELOG_GOLDEN=write ./sbtw "testOnly oathdigital.application.gamelog.GameLogGoldenSuite"
+NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"
+GAMELOG_GOLDEN=write ./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite"
 git diff src/test/resources/
 ```
 
@@ -1112,14 +1112,14 @@ The banners script places favor. Append to `ProcedureNoteLinesSuite.scala`:
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.ProcedureNoteLinesSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.ProcedureNoteLinesSuite"`
 Expected: FAIL to compile, `value placedSecrets is not a member of PlaceBannerResourceProcedure`.
 
 - [ ] **Step 3: Declare the two keys**
 
 In `PlaceBannerResourceProcedure.scala`, add
-`import oathdigital.gameplay.actions.ProcedureNotes` and
-`import oathdigital.gameplay.powers.NoteSupport`, and after
+`import distantlands.gameplay.actions.ProcedureNotes` and
+`import distantlands.gameplay.powers.NoteSupport`, and after
 `val amountDecisionId`:
 
 ```scala
@@ -1177,7 +1177,7 @@ Replace `placement`:
 - [ ] **Step 5: Register, switch the entry, delete the rule**
 
 In `ProcedureNotes.scala`, with
-`import oathdigital.gameplay.actions.challenge.PlaceBannerResourceProcedure`:
+`import distantlands.gameplay.actions.challenge.PlaceBannerResourceProcedure`:
 
 ```scala
       case ActionRef.PlaceBannerResource =>
@@ -1207,8 +1207,8 @@ In `ActionLines.scala`, delete `bannerLines` (lines 165-174).
 - [ ] **Step 7: Rewrite the snapshot and the goldens, then read both diffs**
 
 ```bash
-NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"
-GAMELOG_GOLDEN=write ./sbtw "testOnly oathdigital.application.gamelog.GameLogGoldenSuite"
+NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"
+GAMELOG_GOLDEN=write ./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite"
 git diff src/test/resources/
 ```
 
@@ -1254,7 +1254,7 @@ task adds the first; Tasks 8 and 9 add the others to the same object.
 - [ ] **Step 1: Declare the key**
 
 In `MinorActionProcedures.scala`, add
-`import oathdigital.gameplay.actions.ProcedureNotes`, and after the
+`import distantlands.gameplay.actions.ProcedureNotes`, and after the
 `toBoard` value:
 
 ```scala
@@ -1300,7 +1300,7 @@ Replace `peekTree`:
 - [ ] **Step 3: Register, switch the entry, delete the rule**
 
 In `ProcedureNotes.scala`, with
-`import oathdigital.gameplay.actions.minor.MinorActionProcedures`:
+`import distantlands.gameplay.actions.minor.MinorActionProcedures`:
 
 ```scala
       case ActionRef.PeekSiteRelics => MinorActionProcedures.peekKeys
@@ -1328,8 +1328,8 @@ remove.
 - [ ] **Step 5: Rewrite the snapshot and the golden, then read both diffs**
 
 ```bash
-NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"
-GAMELOG_GOLDEN=write ./sbtw "testOnly oathdigital.application.gamelog.GameLogGoldenSuite"
+NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"
+GAMELOG_GOLDEN=write ./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite"
 git diff src/test/resources/
 ```
 
@@ -1455,8 +1455,8 @@ In `ActionLines.scala`, delete `revealLines` (lines 187-194).
 - [ ] **Step 5: Rewrite the snapshot and the golden, then read both diffs**
 
 ```bash
-NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"
-GAMELOG_GOLDEN=write ./sbtw "testOnly oathdigital.application.gamelog.GameLogGoldenSuite"
+NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"
+GAMELOG_GOLDEN=write ./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite"
 git diff src/test/resources/
 ```
 
@@ -1501,7 +1501,7 @@ uncovered-branch test.
 - [ ] **Step 1: Declare the two keys**
 
 In `MinorActionProcedures.scala`, add
-`import oathdigital.gameplay.powers.NoteSupport`, and beside the other two
+`import distantlands.gameplay.powers.NoteSupport`, and beside the other two
 sets:
 
 ```scala
@@ -1589,8 +1589,8 @@ the file's last use of `plural` from within the class; the companion's
 - [ ] **Step 5: Rewrite the snapshot and the golden, then read both diffs**
 
 ```bash
-NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"
-GAMELOG_GOLDEN=write ./sbtw "testOnly oathdigital.application.gamelog.GameLogGoldenSuite"
+NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"
+GAMELOG_GOLDEN=write ./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite"
 git diff src/test/resources/
 ```
 
@@ -1654,17 +1654,17 @@ No script passes the title to the bank. Append to
       OathkeeperProcedure.passedToBank), LogKind.Trigger)
 ```
 
-with `import oathdigital.gameplay.oathkeeper.OathkeeperProcedure`.
+with `import distantlands.gameplay.oathkeeper.OathkeeperProcedure`.
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.ProcedureNoteLinesSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.ProcedureNoteLinesSuite"`
 Expected: FAIL to compile, `value passedToBank is not a member of OathkeeperProcedure`.
 
 - [ ] **Step 3: Declare the two keys**
 
 In `OathkeeperProcedure.scala`, add
-`import oathdigital.gameplay.actions.ProcedureNotes`, and after
+`import distantlands.gameplay.actions.ProcedureNotes`, and after
 `val recipientDecisionId`:
 
 ```scala
@@ -1726,7 +1726,7 @@ and add to the object:
 - [ ] **Step 5: Register, switch the entry, delete the rule**
 
 In `ProcedureNotes.scala`, with
-`import oathdigital.gameplay.oathkeeper.OathkeeperProcedure`:
+`import distantlands.gameplay.oathkeeper.OathkeeperProcedure`:
 
 ```scala
       case TriggeredProcedureRef.Oathkeeper => OathkeeperProcedure.noteKeys
@@ -1765,8 +1765,8 @@ the file's only `Posted(LogKind.Trigger, …)`; `LogKind` is still used by
 - [ ] **Step 7: Rewrite the snapshot and the goldens, then read both diffs**
 
 ```bash
-NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"
-GAMELOG_GOLDEN=write ./sbtw "testOnly oathdigital.application.gamelog.GameLogGoldenSuite"
+NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"
+GAMELOG_GOLDEN=write ./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite"
 git diff src/test/resources/
 ```
 
@@ -1817,18 +1817,18 @@ Append to `ProcedureNoteLinesSuite.scala`:
       FinishRestProcedure.supplyIncreased), LogKind.Delta)
 ```
 
-with `import oathdigital.gameplay.phases.rest.FinishRestProcedure`.
+with `import distantlands.gameplay.phases.rest.FinishRestProcedure`.
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.ProcedureNoteLinesSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.ProcedureNoteLinesSuite"`
 Expected: FAIL to compile, `value supplyIncreased is not a member of FinishRestProcedure`.
 
 - [ ] **Step 3: Declare the key**
 
 In `FinishRestProcedure.scala`, add
-`import oathdigital.gameplay.actions.ProcedureNotes` and
-`import oathdigital.gameplay.powers.NoteSupport`, and after
+`import distantlands.gameplay.actions.ProcedureNotes` and
+`import distantlands.gameplay.powers.NoteSupport`, and after
 `val ExileSupply`:
 
 ```scala
@@ -1872,14 +1872,14 @@ Replace the `yield` of `build`:
 - [ ] **Step 5: Register, switch the entry, delete the rule**
 
 In `ProcedureNotes.scala`, with
-`import oathdigital.gameplay.phases.rest.FinishRestProcedure`:
+`import distantlands.gameplay.phases.rest.FinishRestProcedure`:
 
 ```scala
       case PhaseTransitionRef.FinishRest => FinishRestProcedure.noteKeys
 ```
 
 In `ProcedureLog.scala`, add
-`import oathdigital.gameplay.phases.rest.FinishRestProcedure` and:
+`import distantlands.gameplay.phases.rest.FinishRestProcedure` and:
 
 ```scala
     // A Supply refresh is a delta, not an action, and stands outside any
@@ -1908,8 +1908,8 @@ places after every `ActionRef` and before every `TriggeredProcedureRef`:
 - [ ] **Step 7: Rewrite the snapshot and the goldens, then read both diffs**
 
 ```bash
-NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"
-GAMELOG_GOLDEN=write ./sbtw "testOnly oathdigital.application.gamelog.GameLogGoldenSuite"
+NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"
+GAMELOG_GOLDEN=write ./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite"
 git diff src/test/resources/
 ```
 
@@ -2010,11 +2010,11 @@ viewer cannot identify are all unplayed. Append to
       LogKind.Action)
 ```
 
-with `import oathdigital.gameplay.actions.negotiation.NegotiationProcedure`.
+with `import distantlands.gameplay.actions.negotiation.NegotiationProcedure`.
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.ProcedureNoteLinesSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.ProcedureNoteLinesSuite"`
 Expected: FAIL to compile, `value gaveCard is not a member of NegotiationProcedure`.
 
 - [ ] **Step 3: Give `NegotiationDeal` the negotiator list in answered order**
@@ -2047,8 +2047,8 @@ one definition. Replace `participants` in `NegotiationDeal.scala`:
 - [ ] **Step 4: Declare the six keys**
 
 In `NegotiationProcedure.scala`, add
-`import oathdigital.gameplay.actions.ProcedureNotes` and
-`import oathdigital.model.DecisionAnswer.DeclineDeal`, and after
+`import distantlands.gameplay.actions.ProcedureNotes` and
+`import distantlands.model.DecisionAnswer.DeclineDeal`, and after
 `object NegotiationProcedure:`:
 
 ```scala
@@ -2145,14 +2145,14 @@ and add to the object:
 - [ ] **Step 6: Register, switch the entry, delete the rule and its file**
 
 In `ProcedureNotes.scala`, with
-`import oathdigital.gameplay.actions.negotiation.NegotiationProcedure`:
+`import distantlands.gameplay.actions.negotiation.NegotiationProcedure`:
 
 ```scala
       case ActionRef.Negotiation => NegotiationProcedure.noteKeys
 ```
 
 In `ProcedureLog.scala`, add
-`import oathdigital.gameplay.actions.negotiation.NegotiationProcedure` and:
+`import distantlands.gameplay.actions.negotiation.NegotiationProcedure` and:
 
 ```scala
     // Every Negotiation line tells its own decision. The settlement lines
@@ -2185,8 +2185,8 @@ Then delete `src/main/scala/distantlands/application/gamelog/NegotiationLines.sc
 - [ ] **Step 8: Rewrite the snapshot and the goldens, then read all three diffs**
 
 ```bash
-NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"
-GAMELOG_GOLDEN=write ./sbtw "testOnly oathdigital.application.gamelog.GameLogGoldenSuite"
+NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"
+GAMELOG_GOLDEN=write ./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite"
 git diff src/test/resources/
 ```
 
@@ -2264,17 +2264,17 @@ line is unplayed. Append to `ProcedureNoteLinesSuite.scala`:
       SetupProcedure.revealedCard), LogKind.Decision)
 ```
 
-with `import oathdigital.gameplay.setup.SetupProcedure`.
+with `import distantlands.gameplay.setup.SetupProcedure`.
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.ProcedureNoteLinesSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.ProcedureNoteLinesSuite"`
 Expected: FAIL to compile, `value revealedCard is not a member of SetupProcedure`.
 
 - [ ] **Step 3: Declare the three keys**
 
 In `SetupProcedure.scala`, add
-`import oathdigital.gameplay.actions.ProcedureNotes`, and after
+`import distantlands.gameplay.actions.ProcedureNotes`, and after
 `val adviserDiscardKey`:
 
 ```scala
@@ -2403,13 +2403,13 @@ note and the operation read it one way. Replace `revealCards` and `reveal`:
 - [ ] **Step 6: Register, switch the entry, delete the rule and its file**
 
 In `ProcedureNotes.scala`, with
-`import oathdigital.gameplay.setup.SetupProcedure`:
+`import distantlands.gameplay.setup.SetupProcedure`:
 
 ```scala
       case TriggeredProcedureRef.Setup => SetupProcedure.noteKeys
 ```
 
-In `ProcedureLog.scala`, add `import oathdigital.gameplay.setup.SetupProcedure`
+In `ProcedureLog.scala`, add `import distantlands.gameplay.setup.SetupProcedure`
 and:
 
 ```scala
@@ -2439,8 +2439,8 @@ In `ActionLines.scala`, delete `setupLines` (lines 54-56) and the field
 - [ ] **Step 8: Rewrite the snapshot and the golden, then read both diffs**
 
 ```bash
-NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"
-GAMELOG_GOLDEN=write ./sbtw "testOnly oathdigital.application.gamelog.GameLogGoldenSuite"
+NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"
+GAMELOG_GOLDEN=write ./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite"
 git diff src/test/resources/
 ```
 

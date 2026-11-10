@@ -35,7 +35,7 @@
   - No power name appears in walker sources, in any case, not even in a comment.
   - Nothing under `gameplay/actions` imports `gameplay/powers`.
 - **Line width.** Scala lines stay at or under 80 characters, as in the files around them. Re-wrap any line in this plan that comes out longer.
-- **Never touch the live database `var/oathdigital`.** A browser check runs a scratch server on port 8081 through Bash, never `preview_start`.
+- **Never touch the live database `var/distantlands`.** A browser check runs a scratch server on port 8081 through Bash, never `preview_start`.
 - **Concurrent sessions.** Other sessions commit to `main` while you work.
   - Stage explicit paths only; never `git add -A`.
   - Re-check `git log --oneline -1` before any amend, reset or rebase.
@@ -115,16 +115,16 @@ This task turns the switch and fixes every suite the switch breaks, so that its 
 Create `src/test/scala/distantlands/gameplay/powers/travel/TravelModifierChoiceSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.gameplay.ModifierPlay
-import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.powers.PowerFixture
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look, Outcomes}
-import oathdigital.testkit.Unwrap.{accepted, rejected}
+import distantlands.gameplay.ModifierPlay
+import distantlands.gameplay.actions.travel.TravelProcedure
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.powers.PowerFixture
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{CatalogNames, Look, Outcomes}
+import distantlands.testkit.Unwrap.{accepted, rejected}
 
 /** Travel asks for its modifiers inside the walk (modifier walker design,
   * slice 2). */
@@ -190,9 +190,9 @@ class TravelModifierChoiceSuite extends munit.FunSuite:
 
 Add these members to `TravelFixture` (`src/test/scala/distantlands/gameplay/powers/travel/TravelFixture.scala`). Its new imports are:
 
-- `oathdigital.gameplay.powerresolver.ModifierPicks`.
-- `ParkedNode`, added to the existing `oathdigital.testkit.{...}` import.
-- `oathdigital.testkit.Unwrap.accepted`.
+- `distantlands.gameplay.powerresolver.ModifierPicks`.
+- `ParkedNode`, added to the existing `distantlands.testkit.{...}` import.
+- `distantlands.testkit.Unwrap.accepted`.
 
 ```scala
   /** Travel's modifier decision, `travel.modifiers`. */
@@ -216,7 +216,7 @@ Add these members to `TravelFixture` (`src/test/scala/distantlands/gameplay/powe
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.travel.TravelModifierChoiceSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.travel.TravelModifierChoiceSuite"`
 
 Expected:
 - "with no modifier to pick" passes.
@@ -227,7 +227,7 @@ Expected:
 In `TravelProcedure.scala`, change the walker import to:
 
 ```scala
-import oathdigital.gameplay.walker.{ModifierChoice, WalkerPowers,
+import distantlands.gameplay.walker.{ModifierChoice, WalkerPowers,
   WalkerSimulation}
 ```
 
@@ -350,7 +350,7 @@ In `ForestPaths.scala`, replace "Selecting Forest Paths places the favor at the 
 
 - [ ] **Step 4: Run the new suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.travel.TravelModifierChoiceSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.travel.TravelModifierChoiceSuite"`
 
 Expected: PASS, 5 tests.
 
@@ -442,10 +442,10 @@ The modifier decision is not asked when nothing can be picked, so the Travel sta
 
 `TentsSuite` needs four new imports:
 
-- `oathdigital.gameplay.ModifierPlay`.
-- `oathdigital.gameplay.actions.travel.TravelProcedure`.
-- `oathdigital.model.OathState.Ready`.
-- `oathdigital.testkit.Unwrap.accepted`, which is already imported.
+- `distantlands.gameplay.ModifierPlay`.
+- `distantlands.gameplay.actions.travel.TravelProcedure`.
+- `distantlands.model.OathState.Ready`.
+- `distantlands.testkit.Unwrap.accepted`, which is already imported.
 
 Drop `Refusals` from the import if nothing else in the suite uses it.
 
@@ -478,7 +478,7 @@ Drop `Refusals` from the import if nothing else in the suite uses it.
       Orientation.FaceDown)), TravelProcedure.destinationDecisionId)
 ```
 
-Each of these suites imports `oathdigital.gameplay.actions.travel.TravelProcedure` if it does not already, and drops `Refusals` if that was its last use.
+Each of these suites imports `distantlands.gameplay.actions.travel.TravelProcedure` if it does not already, and drops `Refusals` if that was its last use.
 
 - [ ] **Step 8: Start the other Travel suites through the decision**
 
@@ -491,7 +491,7 @@ Each of these suites imports `oathdigital.gameplay.actions.travel.TravelProcedur
       modifiers, powers))
 ```
 
-Import `oathdigital.gameplay.ModifierPlay`. The `PlacementPicks.parkedOptions` line stays.
+Import `distantlands.gameplay.ModifierPlay`. The `PlacementPicks.parkedOptions` line stays.
 
 `FollowUpSupplyWaiverSuite`, "a queued Travel with Special Envoy enters Rest, and the queued Campaign still starts there":
 
@@ -501,7 +501,7 @@ Import `oathdigital.gameplay.ModifierPlay`. The `PlacementPicks.parkedOptions` l
       Vector(SpecialEnvoy.id)))
 ```
 
-The suite is in `oathdigital.gameplay`, so `ModifierPlay` needs no import.
+The suite is in `distantlands.gameplay`, so `ModifierPlay` needs no import.
 
 `TravelDestinationRowsSuite.rows`:
 
@@ -511,7 +511,7 @@ The suite is in `oathdigital.gameplay`, so `ModifierPlay` needs no import.
       modifiers))
 ```
 
-Import `oathdigital.gameplay.ModifierPlay`.
+Import `distantlands.gameplay.ModifierPlay`.
 
 `ModifierStartControlsSuite`: replace the first Travel test with:
 
@@ -542,7 +542,7 @@ Import `oathdigital.gameplay.ModifierPlay`.
     ModifierPicks.decisionId(PowerWindow.TravelModifierSelection)
 ```
 
-Import `oathdigital.gameplay.actions.travel.TravelProcedure`. The suite's `parked` helper, from slice 1, serves both actions. If `assertStarts` is now unused, delete it.
+Import `distantlands.gameplay.actions.travel.TravelProcedure`. The suite's `parked` helper, from slice 1, serves both actions. If `assertStarts` is now unused, delete it.
 
 `SelectedModifierSuite`: replace "a cost is paid at the root of the action's tree, and only for a costed modifier" with:
 
@@ -642,7 +642,7 @@ Add to `UndoServiceSuite`:
     assertEquals(undone.state, withTents.state)
 ```
 
-Imports: `oathdigital.gameplay.ModifierPlay` and `oathdigital.gameplay.powers.travel.Tents`.
+Imports: `distantlands.gameplay.ModifierPlay` and `distantlands.gameplay.powers.travel.Tents`.
 
 - [ ] **Step 2: A script that picks Tents**
 
@@ -670,10 +670,10 @@ Add to `LogScripts`, after `facedownWithCry`:
     Script("tents", service, p1)
 ```
 
-Change `import oathdigital.gameplay.ModifierPlay` to `import oathdigital.gameplay.{ModifierPlay, TravelPlay}`. Then add:
+Change `import distantlands.gameplay.ModifierPlay` to `import distantlands.gameplay.{ModifierPlay, TravelPlay}`. Then add:
 
-- `import oathdigital.gameplay.actions.travel.TravelProcedure`.
-- `import oathdigital.gameplay.powers.travel.Tents`.
+- `import distantlands.gameplay.actions.travel.TravelProcedure`.
+- `import distantlands.gameplay.powers.travel.Tents`.
 
 - [ ] **Step 3: The start line names the pick**
 
@@ -694,7 +694,7 @@ Add to `GameLogStartLineSuite`:
 
 - [ ] **Step 4: Run them**
 
-Run: `./sbtw "testOnly oathdigital.application.UndoServiceSuite oathdigital.application.gamelog.GameLogStartLineSuite"`
+Run: `./sbtw "testOnly distantlands.application.UndoServiceSuite distantlands.application.gamelog.GameLogStartLineSuite"`
 
 Expected: PASS.
 
@@ -739,7 +739,7 @@ Then make "confirming leaves the flow and sends the folded submission without a 
 - Replace each `"travel"` in it with `"muster"`.
 - Replace `travel` with a new `private val muster = GameCommand.StartWalker("muster", Vector.empty)`, declared beside `travel`.
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.ModifierFlowSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.ModifierFlowSuite"`
 
 Expected: FAIL. "a Travel start goes out directly" sees a preview request.
 
@@ -794,7 +794,7 @@ All must pass.
 
 - [ ] **Step 6: Browser check on a scratch database**
 
-Follow the memory recipe (`preview-start-hits-live-db`). Never use `preview_start`, and never open `var/oathdigital`.
+Follow the memory recipe (`preview-start-hits-live-db`). Never use `preview_start`, and never open `var/distantlands`.
 
 1. Seed a scratch HSQLDB in the scratchpad from `FirstGameSetupFixture.initialSituation().endingWake(p2)`. Arrange Tents as p2's adviser (`Play` onto `Location.PlayArea(p2)`) and 1 favor (`Gain.Favor`).
 2. Run the server on port 8081 through Bash, in the background.

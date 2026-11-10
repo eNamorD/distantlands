@@ -1,14 +1,14 @@
 # Alpha data, backup, restore, and upgrade policy
 
-Oath Digital uses a file-backed HSQLDB database. Treat the complete directory
+Distant Lands uses a file-backed HSQLDB database. Treat the complete directory
 containing the configured database prefix as one unit. For example, when
-`OATH_DATABASE_PATH=/home/alex/oathdigital-data/alpha-1/database`, the data
-directory is `/home/alex/oathdigital-data/alpha-1`, not one selected
+`DLQ_DATABASE_PATH=/home/alex/distantlands-data/alpha-1/database`, the data
+directory is `/home/alex/distantlands-data/alpha-1`, not one selected
 `database.*` file.
 
 **Never copy, restore, or move a live HSQLDB data directory.** Stop Oath
 Digital, wait for the process or container to exit, and confirm the
-`Oath Digital database closed` log line first. A partial or live copy is not a
+`Distant Lands database closed` log line first. A partial or live copy is not a
 supported backup.
 
 Saved Chronicles are not in the database. The start page keeps them in the
@@ -38,9 +38,9 @@ Stop the server first. These commands copy one exact stopped directory to a
 dated backup:
 
 ```sh
-mkdir -p /home/alex/oathdigital-backups
-cp -Rp /home/alex/oathdigital-data/alpha-1 \
-  /home/alex/oathdigital-backups/alpha-1-2026-09-09
+mkdir -p /home/alex/distantlands-backups
+cp -Rp /home/alex/distantlands-data/alpha-1 \
+  /home/alex/distantlands-backups/alpha-1-2026-09-09
 ```
 
 Record the application version and archive checksum next to the backup. To
@@ -48,15 +48,15 @@ restore, keep the current directory as a reversible fallback and copy the
 complete backup into its place:
 
 ```sh
-mv /home/alex/oathdigital-data/alpha-1 \
-  /home/alex/oathdigital-data/alpha-1.before-restore-2026-09-09
-cp -Rp /home/alex/oathdigital-backups/alpha-1-2026-09-09 \
-  /home/alex/oathdigital-data/alpha-1
+mv /home/alex/distantlands-data/alpha-1 \
+  /home/alex/distantlands-data/alpha-1.before-restore-2026-09-09
+cp -Rp /home/alex/distantlands-backups/alpha-1-2026-09-09 \
+  /home/alex/distantlands-data/alpha-1
 ```
 
 Start the exact release recorded with that backup and point
-`OATH_DATABASE_PATH` at
-`/home/alex/oathdigital-data/alpha-1/database`. Do not start a different
+`DLQ_DATABASE_PATH` at
+`/home/alex/distantlands-data/alpha-1/database`. Do not start a different
 release against the restored directory unless its release notes explicitly
 allow that input format.
 
@@ -65,15 +65,15 @@ allow that input format.
 Stop the server first. Run these commands in PowerShell:
 
 ```powershell
-New-Item -ItemType Directory -Force -Path D:\OathDigitalBackups
-Copy-Item -Recurse -LiteralPath C:\OathDigitalData\alpha-1 -Destination D:\OathDigitalBackups\alpha-1-2026-09-09
+New-Item -ItemType Directory -Force -Path D:\DistantLandsBackups
+Copy-Item -Recurse -LiteralPath C:\DistantLandsData\alpha-1 -Destination D:\DistantLandsBackups\alpha-1-2026-09-09
 ```
 
 Restore to a reversible replacement and use the matching application release:
 
 ```powershell
-Move-Item -LiteralPath C:\OathDigitalData\alpha-1 -Destination C:\OathDigitalData\alpha-1.before-restore-2026-09-09
-Copy-Item -Recurse -LiteralPath D:\OathDigitalBackups\alpha-1-2026-09-09 -Destination C:\OathDigitalData\alpha-1
+Move-Item -LiteralPath C:\DistantLandsData\alpha-1 -Destination C:\DistantLandsData\alpha-1.before-restore-2026-09-09
+Copy-Item -Recurse -LiteralPath D:\DistantLandsBackups\alpha-1-2026-09-09 -Destination C:\DistantLandsData\alpha-1
 ```
 
 ## Named-volume backup and restore
@@ -81,14 +81,14 @@ Copy-Item -Recurse -LiteralPath D:\OathDigitalBackups\alpha-1-2026-09-09 -Destin
 Stop and remove the application container but keep its named volume:
 
 ```sh
-docker stop --time 15 oathdigital
-docker rm oathdigital
-mkdir -p "$PWD/oathdigital-backups"
+docker stop --time 15 distantlands
+docker rm distantlands
+mkdir -p "$PWD/distantlands-backups"
 docker run --rm \
-  --volume oathdigital-data:/source:ro \
-  --volume "$PWD/oathdigital-backups":/backup \
+  --volume distantlands-data:/source:ro \
+  --volume "$PWD/distantlands-backups":/backup \
   alpine:3.20 \
-  tar -czf /backup/oathdigital-data-2026-09-09.tgz -C /source .
+  tar -czf /backup/distantlands-data-2026-09-09.tgz -C /source .
 ```
 
 The helper image must be available locally or pulled from its trusted registry.
@@ -97,19 +97,19 @@ The volume is mounted read-only during backup.
 Restore into a new named volume so the old one remains untouched:
 
 ```sh
-export OATH_IMAGE_REFERENCE='ghcr.io/<owner>/<repository>:v0.1.0-alpha.1'
-docker pull "$OATH_IMAGE_REFERENCE"
-docker volume create oathdigital-data-restored-2026-09-09
+export DLQ_IMAGE_REFERENCE='ghcr.io/<owner>/<repository>:v0.1.0-alpha.1'
+docker pull "$DLQ_IMAGE_REFERENCE"
+docker volume create distantlands-data-restored-2026-09-09
 docker run --rm \
-  --volume oathdigital-data-restored-2026-09-09:/target \
-  --volume "$PWD/oathdigital-backups":/backup:ro \
+  --volume distantlands-data-restored-2026-09-09:/target \
+  --volume "$PWD/distantlands-backups":/backup:ro \
   alpine:3.20 \
-  tar -xzf /backup/oathdigital-data-2026-09-09.tgz -C /target
-docker run --detach --name oathdigital \
+  tar -xzf /backup/distantlands-data-2026-09-09.tgz -C /target
+docker run --detach --name distantlands \
   --publish 8080:8080 \
-  --env OATH_PUBLIC_BASE_URL=http://192.168.1.20:8080 \
-  --volume oathdigital-data-restored-2026-09-09:/var/lib/oathdigital \
-  "$OATH_IMAGE_REFERENCE"
+  --env DLQ_PUBLIC_BASE_URL=http://192.168.1.20:8080 \
+  --volume distantlands-data-restored-2026-09-09:/var/lib/distantlands \
+  "$DLQ_IMAGE_REFERENCE"
 ```
 
 Use the exact image release recorded with the backup. If the GHCR package is
@@ -117,7 +117,7 @@ private, authenticate with the access granted by the release operator before
 `docker pull`; [alpha releases](releases.md#ghcr-access-for-hosts) explains the
 visibility choices.
 
-Keep `oathdigital-data` until the restored copy has passed acceptance. Docker's
+Keep `distantlands-data` until the restored copy has passed acceptance. Docker's
 official [volume backup and restore guidance](https://docs.docker.com/engine/storage/volumes/#back-up-restore-or-migrate-data-volumes)
 uses the same stopped-volume and helper-container model.
 
@@ -144,16 +144,16 @@ A reset means selecting a fresh data location, not deleting the old one. For an
 archive on Linux or macOS:
 
 ```sh
-mv /home/alex/oathdigital-data/alpha-1 \
-  /home/alex/oathdigital-data/alpha-1.before-reset-2026-09-09
-mkdir -p /home/alex/oathdigital-data/alpha-1
+mv /home/alex/distantlands-data/alpha-1 \
+  /home/alex/distantlands-data/alpha-1.before-reset-2026-09-09
+mkdir -p /home/alex/distantlands-data/alpha-1
 ```
 
 For Windows PowerShell:
 
 ```powershell
-Move-Item -LiteralPath C:\OathDigitalData\alpha-1 -Destination C:\OathDigitalData\alpha-1.before-reset-2026-09-09
-New-Item -ItemType Directory -Force -Path C:\OathDigitalData\alpha-1
+Move-Item -LiteralPath C:\DistantLandsData\alpha-1 -Destination C:\DistantLandsData\alpha-1.before-reset-2026-09-09
+New-Item -ItemType Directory -Force -Path C:\DistantLandsData\alpha-1
 ```
 
 For Docker, create a new named volume and start the next container with that

@@ -90,24 +90,24 @@ Chancellor's side. So the Campaign keeps its own question.
 
 - [ ] **Step 1: Write the failing tests**
 
-The test lives in package `oathdigital.gameplay.actions.campaign` because
+The test lives in package `distantlands.gameplay.actions.campaign` because
 `CampaignTargets` is `private[campaign]`. Create the directory
 `src/test/scala/distantlands/gameplay/actions/campaign/`.
 
 ```scala
-package oathdigital.gameplay.actions.campaign
+package distantlands.gameplay.actions.campaign
 
-import oathdigital.gameplay.CampaignFixture
-import oathdigital.gameplay.CampaignFixture.{Board, board, on}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ParkedDecisionAssertions, ProcedureWalker,
+import distantlands.gameplay.CampaignFixture
+import distantlands.gameplay.CampaignFixture.{Board, board, on}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ParkedDecisionAssertions, ProcedureWalker,
   WalkerPowers, WalkerProcedureRegistry}
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Outcomes.ready
-import oathdigital.testkit.Unwrap.{accepted, as, present}
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Outcomes.ready
+import distantlands.testkit.Unwrap.{accepted, as, present}
 
 /** Imperial Infighting (CR p. 35): who defends the Empire's sites, which
   * Imperial player may target them, and Imperial players raiding each
@@ -233,7 +233,7 @@ edit that `Table.imperial` uses (`Table.scala`, around line 284).
 
 - [ ] **Step 2: Run them to see the defender tests fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.actions.campaign.ImperialInfightingSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.actions.campaign.ImperialInfightingSuite"`
 Expected: FAIL. "the Chancellor defends every site the Empire holds"
 gets `None`; the Exile and Citizen Conquest tests get `None` or no
 Conquest. The raid tests and the "no Chancellor" test may already pass;
@@ -264,12 +264,12 @@ In `CampaignSetup.scala`, replace `defenderAt` and its comment:
         case _ => None
 ```
 
-`Imperials` is in `oathdigital.model`, which the file already imports with
-`oathdigital.model._`.
+`Imperials` is in `distantlands.model`, which the file already imports with
+`distantlands.model._`.
 
 - [ ] **Step 4: Run the suite and the Campaign suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.actions.campaign.ImperialInfightingSuite oathdigital.gameplay.Campaign* oathdigital.gameplay.powers.campaign.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.actions.campaign.ImperialInfightingSuite distantlands.gameplay.Campaign* distantlands.gameplay.powers.campaign.*"`
 Expected: PASS. No all-Exile Campaign test changes, because no all-Exile
 board has a purple site.
 
@@ -305,17 +305,17 @@ git commit -m "feat(empire): the Chancellor defends Imperial sites in a Campaign
 - [ ] **Step 1: Write the failing tests**
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.CampaignFixture.{Board, on, rules,
+import distantlands.gameplay.CampaignFixture.{Board, on, rules,
   withAdviserFor}
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.campaign.PlanDriver.{awaits, commit,
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.campaign.PlanDriver.{awaits, commit,
   losingDice, winningDice}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseAmountAnswer
-import oathdigital.testkit.{CatalogNames, Look}
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseAmountAnswer
+import distantlands.testkit.{CatalogNames, Look}
+import distantlands.testkit.Table.{p1, p2, p3}
 
 /** Whole Campaigns with Imperial players (Empire slice 1b-i): every
   * warband a Campaign places, kills or sacrifices is of its owner's kind,
@@ -400,7 +400,7 @@ and p3 at a third site, so only the pawn the test moves is there.
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.ImperialCampaignBattleSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.ImperialCampaignBattleSuite"`
 Expected: FAIL. The placement, Raid-loss and Wrestlers tests fail with an
 operation refused for the wrong warband kind (an Exile kind moved from or
 killed on an Imperial board), or with the wrong recorded `Kill`. The
@@ -475,7 +475,7 @@ player's own warbands" where it does.
 
 - [ ] **Step 4: Run the suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.ImperialCampaignBattleSuite oathdigital.gameplay.Campaign* oathdigital.gameplay.powers.campaign.* oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.ImperialCampaignBattleSuite distantlands.gameplay.Campaign* distantlands.gameplay.powers.campaign.* distantlands.application.gamelog.*"`
 Expected: PASS. The golden Campaign logs do not change: every all-Exile
 player's kind is still their lineage's.
 
@@ -526,7 +526,7 @@ Add to `SiegeEnginesSuite`, after the bandits test:
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.SiegeEnginesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.SiegeEnginesSuite"`
 Expected: FAIL: the notes are `Vector()`, since purple warbands have no
 single owner.
 
@@ -588,7 +588,7 @@ Match the link style R8 uses; if R8 has no link, drop it from R9 too.
 
 - [ ] **Step 5: Run the suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.* oathdigital.gameplay.powers.campaign.MilitaryParadeSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.* distantlands.gameplay.powers.campaign.MilitaryParadeSuite"`
 Expected: PASS.
 
 Run: `python3 scripts/check-markdown-links.py`
@@ -616,7 +616,7 @@ Add any note-catalog test file you changed in Step 3 to the `git add`.
 
 **Interfaces:**
 - Consumes: Tasks 1 and 2; `Table.service(campaignDice = ...)`,
-  `oathdigital.testkit.Dice.raid`, `MenuPlay.starting`,
+  `distantlands.testkit.Dice.raid`, `MenuPlay.starting`,
   `GameCommand.ResolveWalker`, `TreeDecision`, `Look`, `Outcomes.ready`.
 - Produces: nothing later tasks use.
 
@@ -626,17 +626,17 @@ Model it on `EmpireInPlayScenarioSuite` (same imports, same
 `accepted(service.handle(...))` chain).
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.application._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.setup.FirstGameSetupFixture
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
-import oathdigital.testkit.{CatalogNames, Dice, Look, MenuPlay, Outcomes,
+import distantlands.application._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.setup.FirstGameSetupFixture
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
+import distantlands.testkit.{CatalogNames, Dice, Look, MenuPlay, Outcomes,
   Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
 
 /** A Citizen conquers an Imperial site and leaves it to the bandits
   * (Imperial Infighting, CR p. 35), played through the service. */
@@ -699,7 +699,7 @@ unused): `-Werror` rejects them.
 
 - [ ] **Step 2: Run it**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.EmpireCampaignScenarioSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.EmpireCampaignScenarioSuite"`
 Expected: PASS. A failure points at Task 1 (no Conquest, or the wrong
 defender) or Task 2 (a refused warband move); fix it there.
 

@@ -21,8 +21,8 @@ Detail lines skip every operation or answer that an action line already narrates
 
 - `-Werror` with `-Wunused:imports,privates,locals,implicits,nowarn` on both projects. An unused import or private member fails the build.
 - Production Scala files stay at or under 800 lines (`scripts/check-architecture.py`).
-- `shared/src/main` may import only `oathdigital.protocol`. `application` must not import `persistence`, `serialization` or `server`. `gameplay` must not import `application` or `protocol`.
-- Never touch the live database `var/oathdigital`. Browser checks use a scratch copy only.
+- `shared/src/main` may import only `distantlands.protocol`. `application` must not import `persistence`, `serialization` or `server`. `gameplay` must not import `application` or `protocol`.
+- Never touch the live database `var/distantlands`. Browser checks use a scratch copy only.
 - Other sessions commit to `main` while you work. Stage explicit paths only; never `git add -A`. Never commit `node_modules`, `.tooling` or `target`. Work in a git worktree, and symlink the main checkout's `.tooling` into it before the first `./sbtw`.
 - Commit trailer: the committing model's own `Co-Authored-By` line.
 - Voice: past-tense verbs, and the subject is left out when the actor of the run does the thing. Another player's deed names that player. The formatter never emits an operation's or event's class name, and never a raw decision key.
@@ -143,11 +143,11 @@ These were settled while planning (2026-09-26). The user chose the first one; th
 Create `src/test/scala/distantlands/application/CardKnowledgeSuite.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.operations.OperationExecutor
-import oathdigital.gameplay.setup.FirstGameSetupFixture.{catalog, initialReady}
-import oathdigital.model._
+import distantlands.gameplay.operations.OperationExecutor
+import distantlands.gameplay.setup.FirstGameSetupFixture.{catalog, initialReady}
+import distantlands.model._
 
 /** Knowledge follows the card (spec, "Knowledge follows the card"). The
   * board and the log read knowledge through the same `identifiesAt`, so
@@ -220,7 +220,7 @@ If the first game's starting adviser is a Vision rather than a Denizen for `owne
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.application.CardKnowledgeSuite"`
+Run: `./sbtw "testOnly distantlands.application.CardKnowledgeSuite"`
 Expected: the tests fail on the assertions, not in compilation:
 - "a player who gives a face-down relic away still knows it": `knows(given, owner, relic)` is false.
 - "a site peeker still knows …": the peeker is not identified after the take.
@@ -231,9 +231,9 @@ Expected: the tests fail on the assertions, not in compilation:
 Create `src/main/scala/distantlands/gameplay/operations/CardKnowledgeMoves.scala`:
 
 ```scala
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Knowledge follows the card (Game Log design, "Knowledge follows the
   * card"). A player who knew a card keeps knowing it when it moves; a card
@@ -306,7 +306,7 @@ In `CardMovementOperations.applyCardMoves`, change the final `yield inserted` to
 
 - [ ] **Step 4: Run the suite, then the whole server suite**
 
-Run: `./sbtw "testOnly oathdigital.application.CardKnowledgeSuite"`
+Run: `./sbtw "testOnly distantlands.application.CardKnowledgeSuite"`
 Expected: 4 tests pass.
 Run: `./sbtw test`
 Expected: everything passes. Record the server count as this plan's baseline plus 4. If a board-redaction test now fails because a giver or a site peeker sees a card, read it: that test pinned the bug this task fixes. Change its expectation, and name the spec section in a comment.
@@ -341,7 +341,7 @@ git commit -m "fix(rules): knowledge of a card follows it when it moves"
 Create `src/test/scala/distantlands/application/gamelog/GameLogDecisionSuite.scala`:
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
 import LogScripts._
 
@@ -376,7 +376,7 @@ class GameLogDecisionSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogDecisionSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogDecisionSuite"`
 Expected: compilation failure, `Not found: DetailLines`.
 
 - [ ] **Step 3: Add `parkedDecide`, the words helpers, and `ChoiceWords`**
@@ -414,10 +414,10 @@ In `LogWords` (class body):
 Create `src/main/scala/distantlands/application/gamelog/ChoiceWords.scala`:
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.application.WalkerDecisionProjector
-import oathdigital.model._
+import distantlands.application.WalkerDecisionProjector
+import distantlands.model._
 import LogSpan.Text
 
 /** A chosen option as the log names it: a player, site, card or banner as
@@ -470,18 +470,18 @@ private[gamelog] final class ChoiceWords(words: LogWords,
 Create `src/main/scala/distantlands/application/gamelog/DetailLines.scala`:
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.gameplay.actions.challenge.{ChallengeProcedure,
+import distantlands.gameplay.actions.challenge.{ChallengeProcedure,
   PlaceBannerResourceProcedure}
-import oathdigital.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
-import oathdigital.gameplay.actions.forge.ForgeProcedure
-import oathdigital.gameplay.actions.recover.RecoverProcedure
-import oathdigital.gameplay.actions.search.SearchProcedure
-import oathdigital.gameplay.oathkeeper.OathkeeperProcedure
-import oathdigital.gameplay.walker.{ChoicePayload, WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{ChooseManyAnswer, ChooseOneAnswer}
+import distantlands.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
+import distantlands.gameplay.actions.forge.ForgeProcedure
+import distantlands.gameplay.actions.recover.RecoverProcedure
+import distantlands.gameplay.actions.search.SearchProcedure
+import distantlands.gameplay.oathkeeper.OathkeeperProcedure
+import distantlands.gameplay.walker.{ChoicePayload, WalkerStepRecorded}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{ChooseManyAnswer, ChooseOneAnswer}
 
 /** The detail lines of a walker run (spec, "Detail lines"): decisions, rolls
   * and deltas, between a start line and the action line that closes the
@@ -539,7 +539,7 @@ In `GameLogFormatter`, add these fields beside the others:
   private val details = new DetailLines(words, choices)
 ```
 
-Also add `import oathdigital.application.WalkerDecisionProjector`.
+Also add `import distantlands.application.WalkerDecisionProjector`.
 
 A power that asks its own question parks before it records any effect. Slice 1 anchors "Used {card}" at the first effect step, so that power's "Chose …" line would come before its "Used …" line. The source card is known from the start, so a decision answer also anchors "Used". In `ActionLines.effect`, add this case before `case _ => false`:
 
@@ -561,7 +561,7 @@ Action lines precede detail lines within one event, so "Used" posts first. In `w
 
 - [ ] **Step 5: Run the suites**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.*"`
 Expected: `GameLogDecisionSuite` passes (3 tests), and every Slice 1 log suite still passes, the properties suite included.
 
 - [ ] **Step 6: Commit**
@@ -594,9 +594,9 @@ git commit -m "feat(log): decisions post Chose lines naming what the player was 
 Create `src/test/scala/distantlands/application/gamelog/GameLogDetailSuite.scala`:
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.model._
+import distantlands.model._
 import LogScripts._
 
 class GameLogDetailSuite extends munit.FunSuite:
@@ -623,7 +623,7 @@ class GameLogDetailSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogDetailSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogDetailSuite"`
 Expected: compilation failure, `value Dice is not a member of object LogSpan`.
 
 - [ ] **Step 3: Add the span, the face names and the roll line**
@@ -672,7 +672,7 @@ In `object LogWords`:
     case DefenseDieFace.Doubler => "doubler"
 ```
 
-In `DetailLines`, make `lines` return `decision(...) ++ roll(journal, at)`. Add `RollPayload` to the walker import and `oathdigital.gameplay.actions.campaign.CampaignIds` to the imports, then add:
+In `DetailLines`, make `lines` return `decision(...) ++ roll(journal, at)`. Add `RollPayload` to the walker import and `distantlands.gameplay.actions.campaign.CampaignIds` to the imports, then add:
 
 ```scala
   private def roll(journal: LogJournal, at: Int): Vector[Posted] =
@@ -704,7 +704,7 @@ In `LogProjectionDtos.scala`, extend the `LogSpanWire` field comments: `kind` ga
 
 - [ ] **Step 4: Run the server test**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogDetailSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogDetailSuite"`
 Expected: PASS.
 
 - [ ] **Step 5: Write the failing codec and pane tests**
@@ -740,7 +740,7 @@ In `GameLogPaneSuite`, add:
 
 - [ ] **Step 6: Run them to verify they fail**
 
-Run: `./sbtw "sharedJVM/testOnly *LogPageCodecSuite" "frontend/testOnly oathdigital.frontend.GameLogPaneSuite"`. If the shared suites run under the root project, use `"testOnly *LogPageCodecSuite"` instead; see how Slice 1's Task 9 ran it.
+Run: `./sbtw "sharedJVM/testOnly *LogPageCodecSuite" "frontend/testOnly distantlands.frontend.GameLogPaneSuite"`. If the shared suites run under the root project, use `"testOnly *LogPageCodecSuite"` instead; see how Slice 1's Task 9 ran it.
 Expected: the codec case passes already (kinds are open). The pane case fails: no `.die-faces` element.
 
 - [ ] **Step 7: Draw dice in the pane**
@@ -759,7 +759,7 @@ In `GameLogPane.spanNode`, add before the fallback:
 
 - [ ] **Step 8: Run both, then commit**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.GameLogPaneSuite"` and the codec suite.
+Run: `./sbtw "frontend/testOnly distantlands.frontend.GameLogPaneSuite"` and the codec suite.
 Expected: PASS.
 
 ```bash
@@ -815,12 +815,12 @@ Add to `GameLogDetailSuite`:
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogDetailSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogDetailSuite"`
 Expected: the gain, Search placement and Search discard tests fail; the other two pass for now.
 
 - [ ] **Step 3: Implement the delta lines**
 
-In `DetailLines`, make `lines` return `decision(...) ++ roll(journal, at) ++ deltas(journal, run, at, viewer)`. Add `Draw`, `Discard`, `Bury`, `Peek`, `Reveal`, `Gain` and `Move` to what `oathdigital.model._` already covers, and `GamePresentationProjector` from `oathdigital.application` for `orientationOf`. Then add:
+In `DetailLines`, make `lines` return `decision(...) ++ roll(journal, at) ++ deltas(journal, run, at, viewer)`. Add `Draw`, `Discard`, `Bury`, `Peek`, `Reveal`, `Gain` and `Move` to what `distantlands.model._` already covers, and `GamePresentationProjector` from `distantlands.application` for `orientationOf`. Then add:
 
 ```scala
   /** Resource and card changes inside a run, in batch order. Consecutive
@@ -957,7 +957,7 @@ In `search`, the single-card rule becomes: post at the placement answer, or at c
 
 - [ ] **Step 5: Run the log suites**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.*"`
 Expected: all pass, the properties suite included.
 
 - [ ] **Step 6: Commit**
@@ -1004,11 +1004,11 @@ Add `revealRelic` to `all`.
 Create `src/test/scala/distantlands/application/gamelog/GameLogEventSuite.scala`:
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.engine.{RecordedEvent, ReplayStep}
-import oathdigital.gameplay.operations.OperationExecutor
-import oathdigital.model._
+import distantlands.engine.{RecordedEvent, ReplayStep}
+import distantlands.gameplay.operations.OperationExecutor
+import distantlands.model._
 import LogScripts._
 
 class GameLogEventSuite extends munit.FunSuite:
@@ -1081,7 +1081,7 @@ class GameLogEventSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogEventSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogEventSuite"`
 Expected: all three fail, because the formatter posts nothing for these events.
 
 - [ ] **Step 3: Implement `EventLines` and wire it in**
@@ -1089,9 +1089,9 @@ Expected: all three fail, because the formatter posts nothing for these events.
 Create `src/main/scala/distantlands/application/gamelog/EventLines.scala`:
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.model._
+import distantlands.model._
 import LogSpan.Text
 
 /** The events that happen outside any walker run (spec, "Detail lines"):
@@ -1141,7 +1141,7 @@ In `GameLogFormatter`, add `private val events = new EventLines(words)`. Replace
 
 - [ ] **Step 4: Run the log suites**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.*"`
 Expected: all pass, the properties suite over `revealRelic` included.
 
 - [ ] **Step 5: Commit**
@@ -1168,9 +1168,9 @@ git commit -m "feat(log): minor actions and state-based triggers post lines"
 Create `src/test/scala/distantlands/application/gamelog/GameLogSetupSuite.scala`:
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.model._
+import distantlands.model._
 import LogScripts._
 
 class GameLogSetupSuite extends munit.FunSuite:
@@ -1199,7 +1199,7 @@ class GameLogSetupSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogSetupSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogSetupSuite"`
 Expected: both fail, with no setup lines.
 
 - [ ] **Step 3: Implement**
@@ -1207,9 +1207,9 @@ Expected: both fail, with no setup lines.
 Create `src/main/scala/distantlands/application/gamelog/SetupLines.scala`:
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.model._
+import distantlands.model._
 import LogSpan.Text
 
 /** Setup's lines (spec, "Setup lines"): one per pawn placed and one per
@@ -1238,7 +1238,7 @@ In `ActionLines`, add `private val setup = new SetupLines(words)` and replace `c
 
 - [ ] **Step 4: Run the log suites and commit**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.*"`
 Expected: all pass.
 
 ```bash
@@ -1264,7 +1264,7 @@ git commit -m "feat(log): setup posts each pawn placement and each kept adviser"
 
 - [ ] **Step 1: Write the failing tests**
 
-Add to `LogScripts`, beside the other negotiation scripts, with imports `NegotiationDisclosure`, `NegotiationDisclosureRef` and `NegotiationTerms` from `oathdigital.model` (already covered by `oathdigital.model._`):
+Add to `LogScripts`, beside the other negotiation scripts, with imports `NegotiationDisclosure`, `NegotiationDisclosureRef` and `NegotiationTerms` from `distantlands.model` (already covered by `distantlands.model._`):
 
 ```scala
   /** The partner shows the actor its facedown starting adviser. */
@@ -1315,7 +1315,7 @@ Add to `GameLogExchangeSuite`:
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogExchangeSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogExchangeSuite"`
 Expected: the two new tests fail, with no settlement lines.
 
 - [ ] **Step 3: Implement `slotted` and `NegotiationLines`**
@@ -1344,13 +1344,13 @@ In `LogWords` (class body):
 Create `src/main/scala/distantlands/application/gamelog/NegotiationLines.scala`. Move `negotiation` and `negotiators` from `ActionLines` verbatim, make `lines` the entry point, and add the settlement:
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.gameplay.actions.negotiation.NegotiationDeal
-import oathdigital.gameplay.walker.{ChoicePayload, WalkerCompleted,
+import distantlands.gameplay.actions.negotiation.NegotiationDeal
+import distantlands.gameplay.walker.{ChoicePayload, WalkerCompleted,
   WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{ChooseManyAnswer, DeclineDeal}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{ChooseManyAnswer, DeclineDeal}
 import ActionLines.{action, isDelta}
 import LogSpan.Text
 
@@ -1395,7 +1395,7 @@ The settlement batch is one event, so the settlement lines follow "Negotiated wi
 
 - [ ] **Step 4: Run the log suites and commit**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.*"`
 Expected: all pass. The leak test now also covers `negotiationDisclosed`, and a slot phrase is a `Text` span, so it passes.
 
 ```bash
@@ -1423,7 +1423,7 @@ git commit -m "feat(log): a negotiation's settlement posts each transfer and dis
 
 - [ ] **Step 1: Write the failing tests**
 
-Add to `LogScripts` (import `oathdigital.gameplay.actions.campaign.CampaignIds`, and `ChooseAmountAnswer`, `ChooseOneAnswer` from `DecisionAnswer`):
+Add to `LogScripts` (import `distantlands.gameplay.actions.campaign.CampaignIds`, and `ChooseAmountAnswer`, `ChooseOneAnswer` from `DecisionAnswer`):
 
 ```scala
   /** Attack dice all swords, defense dice all blank. */
@@ -1460,19 +1460,19 @@ Add to `LogScripts` (import `oathdigital.gameplay.actions.campaign.CampaignIds`,
     Script("raid", service, actor)
 ```
 
-Add `raid` to `all`, and import `Park` from `oathdigital.testkit`.
+Add `raid` to `all`, and import `Park` from `distantlands.testkit`.
 
 Create `src/test/scala/distantlands/application/gamelog/GameLogCampaignSuite.scala`:
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.engine.{RecordedEvent, ReplayStep}
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.walker.{ChoicePayload, DeltaMeaning,
+import distantlands.engine.{RecordedEvent, ReplayStep}
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.walker.{ChoicePayload, DeltaMeaning,
   WalkerCompleted, WalkerStepPayload, WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
 import LogScripts._
 
 class GameLogCampaignSuite extends munit.FunSuite:
@@ -1567,15 +1567,15 @@ class GameLogCampaignSuite extends munit.FunSuite:
       !line.contains("campaign.plan-applied")), shown)
 ```
 
-Add `CampaignPlans` to the test's `oathdigital.gameplay.actions.campaign` import.
+Add `CampaignPlans` to the test's `distantlands.gameplay.actions.campaign` import.
 
 Add the round-trip test for the inverse, in `src/test/scala/distantlands/gameplay/CampaignPlansSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.campaign.CampaignPlans
-import oathdigital.model._
+import distantlands.gameplay.actions.campaign.CampaignPlans
+import distantlands.model._
 
 class CampaignPlansSuite extends munit.FunSuite:
   test("a bandit's applied-plan marker reads back to the plan's source"):
@@ -1591,7 +1591,7 @@ class CampaignPlansSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogCampaignSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogCampaignSuite"`
 Expected: compilation failure, `value markedRef is not a member of object CampaignPlans`. After Step 3's first part adds it, run again:
 - The Raid test fails at "Targets:".
 - The player plan test fails at "activated". Its reveal line already comes from Task 4's `DetailLines`.
@@ -1616,20 +1616,20 @@ In `CampaignPlans`, beside `appliedMarker`, add its inverse, so the one place th
   private val MarkerPrefix = "campaign.plan-applied."
 ```
 
-Change `appliedMarker` to build its key from `MarkerPrefix` too: `PoolKey(s"$MarkerPrefix${ref.kind}.${ref.wireId}")`. Run `./sbtw "testOnly oathdigital.gameplay.CampaignPlansSuite"`; expected PASS.
+Change `appliedMarker` to build its key from `MarkerPrefix` too: `PoolKey(s"$MarkerPrefix${ref.kind}.${ref.wireId}")`. Run `./sbtw "testOnly distantlands.gameplay.CampaignPlansSuite"`; expected PASS.
 
 Create `src/main/scala/distantlands/application/gamelog/CampaignLines.scala`:
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.campaign.{CampaignBattle, CampaignIds,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.campaign.{CampaignBattle, CampaignIds,
   CampaignPlans, CampaignSetup}
-import oathdigital.gameplay.walker.{ChoicePayload, WalkerCompleted,
+import distantlands.gameplay.walker.{ChoicePayload, WalkerCompleted,
   WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
 import ActionLines.{action, plural}
 import LogSpan.Text
 
@@ -1826,7 +1826,7 @@ In `ActionLines`, change the constructor to `ActionLines(words: LogWords, choice
 
 - [ ] **Step 4: Run the log suites**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.*"`
 Expected: all pass, Slice 1's "Campaign: a start line naming kind and defender, and the winner" included. If the Raid test's order check fails, print `all` and compare it with the anchors in "Decisions this plan makes", item 4. A line in the wrong place means its rule reads the wrong event. Fix the rule, not the test.
 
 - [ ] **Step 5: Commit**
@@ -1900,7 +1900,7 @@ git commit -m "refactor: the campaign result panel leaves the Actions pane for t
 
 - [ ] **Step 1: Write the modifier script and its failing test**
 
-Add to `LogScripts` (import `oathdigital.gameplay.powers.search.Augury`):
+Add to `LogScripts` (import `distantlands.gameplay.powers.search.Augury`):
 
 ```scala
   /** Augury, a free Search modifier, stands at the actor's site; the Search
@@ -1952,7 +1952,7 @@ Add to `GameLogStartLineSuite`:
     assert(start.endsWith("−2 Supply"), start)
 ```
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogStartLineSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogStartLineSuite"`
 Expected: PASS. Slice 1 built the modifier path without a script for it. If the start line reads anything but "Started Search with Augury", read `StartLines.modifiers` and fix it there.
 
 - [ ] **Step 2: Write the golden renderer and suite**
@@ -1960,7 +1960,7 @@ Expected: PASS. Slice 1 built the modifier path without a script for it. If the 
 Create `src/test/scala/distantlands/application/gamelog/GoldenLog.scala`:
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
 /** An exact, readable rendering of log entries for golden files: one line
   * per entry, `sequence.ordinal kind depth` then every span, a typed span in
@@ -1985,7 +1985,7 @@ object GoldenLog:
 Create `src/test/scala/distantlands/application/gamelog/GameLogGoldenSuite.scala`:
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
 import java.nio.file.{Files, Path, Paths}
 import LogScripts._
@@ -2019,9 +2019,9 @@ class GameLogGoldenSuite extends munit.FunSuite:
 
 - [ ] **Step 3: Run the suite to verify it fails, then write the goldens**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogGoldenSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite"`
 Expected: every test fails with "missing golden".
-Run: `GAMELOG_GOLDEN=write ./sbtw "testOnly oathdigital.application.gamelog.GameLogGoldenSuite"`
+Run: `GAMELOG_GOLDEN=write ./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite"`
 Expected: 38 files are written under `src/test/resources/gamelog/`.
 
 - [ ] **Step 4: Review every golden against the spec, with Impeccable's clarify pass**
@@ -2038,7 +2038,7 @@ A wrong line is a formatter bug. Fix the rule in `main`, rewrite with `GAMELOG_G
 
 - [ ] **Step 5: Run the log suites and commit**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.*"`
 Expected: all pass, the properties suite included. It now also covers `augury`, `raid`, `revealRelic` and `negotiationDisclosed`.
 
 ```bash
@@ -2064,7 +2064,7 @@ Run `~/.claude/skills/impeccable/scripts/impeccable context --target frontend/sr
 
 - [ ] **Step 2: Serve the worktree's build against a scratch database, and look once**
 
-Copy `var/oathdigital` to a scratch directory and never open the live one. Serve this worktree's build on a free port, the way Slice 1's verification did (port 8093, stopped afterwards). The main checkout's server shows only main's code. Open a seat on the six-player game `manual-1790205747051-112090` and, in one batch, capture:
+Copy `var/distantlands` to a scratch directory and never open the live one. Serve this worktree's build on a free port, the way Slice 1's verification did (port 8093, stopped afterwards). The main checkout's server shows only main's code. Open a seat on the six-player game `manual-1790205747051-112090` and, in one batch, capture:
 - the Log pane at the table's normal size: a Campaign with dice, a Negotiation settlement, a Setup block;
 - the Actions pane after a Campaign: the result panel must be gone, with no empty gap where it was.
 

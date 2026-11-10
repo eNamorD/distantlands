@@ -78,12 +78,12 @@ Keep the file. Task 7 reads it.
 Create `src/test/scala/distantlands/application/GenesisServiceSuite.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.p1
 
 /** A service seeded with a start state: its streams begin there instead of
   * at `GameStarted`. Tests only; see the service and log start-states
@@ -110,8 +110,8 @@ class GenesisServiceSuite extends munit.FunSuite:
   test("a started genesis refuses Begin"):
     val (service, _) = Table.start.service()
     assert(service.handle("g", 0L, GameCommand.Begin(
-      oathdigital.gameplay.setup.FirstGameSetupFixture.chronicle,
-      oathdigital.gameplay.setup.FirstGameSetupFixture.orders)).isLeft)
+      distantlands.gameplay.setup.FirstGameSetupFixture.chronicle,
+      distantlands.gameplay.setup.FirstGameSetupFixture.orders)).isLeft)
 
   test("without a genesis, a missing stream still accepts only Begin"):
     val service = new GameApplicationService(catalog,
@@ -151,7 +151,7 @@ In `GameApplicationService.scala`:
           : Either[OathViolation, OathState] = rules.evolve(state, event))
 ```
 
-  Add `EventEvolution` to the existing `oathdigital.engine` import.
+  Add `EventEvolution` to the existing `distantlands.engine` import.
 
 - In `load`, replace `case None => Right(None)` with:
 
@@ -182,9 +182,9 @@ In `GameApplicationService.scala`:
 In `Table.scala`, add these imports:
 
 ```scala
-import oathdigital.application.{CampaignDicePort, DefenseDicePort,
+import distantlands.application.{CampaignDicePort, DefenseDicePort,
   GameApplicationService, InMemoryEventStreamRepository}
-import oathdigital.gameplay.phases.rest.WarExhaustionRandomPort
+import distantlands.gameplay.phases.rest.WarExhaustionRandomPort
 ```
 
 Then replace `situation` with:
@@ -240,10 +240,10 @@ Expected: 4 passed.
 In `GameLogHeadlineSuite.scala`, add these imports:
 
 ```scala
-import oathdigital.application.GameCommand
-import oathdigital.testkit.{Situation, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.application.GameCommand
+import distantlands.testkit.{Situation, Table}
+import distantlands.testkit.Table.p1
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 ```
 
 Then add:
@@ -299,7 +299,7 @@ Expected: PASS.
 
 - [ ] **Step 8: Adapters agree from a table; a mismatched service is refused**
 
-In `SituationSuite.scala`, add `import oathdigital.testkit.Table.p1` and these tests:
+In `SituationSuite.scala`, add `import distantlands.testkit.Table.p1` and these tests:
 
 ```scala
   test("the rules and journaled adapters agree from a table"):
@@ -622,7 +622,7 @@ Suite fixes:
 - `GameLogHeadlineSuite:24` expected `"Setup", "Round 1"` from `round`. It now expects the opening `"Round 1", "<p1>'s turn", "Wake"`.
 - `GameLogStartLineSuite` follows `round` and `augury` unchanged. Only its expectations of seats change.
 
-- [ ] **Step 1:** Move the scripts one row at a time. After each one, run `./sbtw "root/testOnly oathdigital.application.gamelog.*"`. The golden suite fails until Step 2.
+- [ ] **Step 1:** Move the scripts one row at a time. After each one, run `./sbtw "root/testOnly distantlands.application.gamelog.*"`. The golden suite fails until Step 2.
 - [ ] **Step 2:** Rewrite and review the ten scripts' goldens.
 - [ ] **Step 3:** Run the gate and commit with the message `test: start the action log scripts from tables`.
 

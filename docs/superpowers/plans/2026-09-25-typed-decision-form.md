@@ -17,7 +17,7 @@
 - Unchanged, and to be checked in the diff: the model's `DecisionQuery`; `DecisionAnswerWire` and `CommandNestedCodecs`; `DecisionAnswerCodec` and its eight journal tag constants; the durable journal format; every projected string and label; option and section order; which surface a form reaches; rendered DOM.
 - The six form spellings stay `choose-one`, `choose-many`, `choose-amount`, `partition`, `distribute`, `negotiate`, and the discriminator key stays `"form"` — deliberately not the `"kind"` its two neighbours in `ActionProjectionCodec` use, because **form** is the word `CONTEXT.md` gives the concept. Say so in the codec's doc comment so a later reader does not "fix" it.
 - Per-case `exact` sets are what makes the strictness real. Each case's `exact` set is `"form"` plus exactly the keys that case's `encode` writes, and nothing else.
-- `shared/src/main` may import only `oathdigital.protocol` (`scripts/check-architecture.py`). The new cases need nothing else; do not reach for a `model` type.
+- `shared/src/main` may import only `distantlands.protocol` (`scripts/check-architecture.py`). The new cases need nothing else; do not reach for a `model` type.
 - `-Werror` with `-Wunused:imports,privates,locals,implicits,nowarn` on both projects: every match over the new trait must be total at the point of the commit, and an import or private member the retyped code no longer uses fails the build. Treat the compiler as the authority on the edit list — the file lists below are what inspection found and are not guaranteed complete.
 - Production files stay under 800 lines (`scripts/check-architecture.py`). `ActionProjectionDtos.scala` is 298 and `ActionProjectionCodec.scala` is 336 today; the codec grows most, so extract the section and slot encode/decode helpers rather than inlining them six times.
 - Commit trailer: the committing model's own `Co-Authored-By` line.
@@ -26,7 +26,7 @@
 
 ### Amendments this plan makes to the spec
 
-1. **The agreement test is a pair over one test-only table, not a single test.** No compilation unit sees both sides: `src/test` is JVM and cannot see `oathdigital.frontend`; `frontend/src/test` is Scala.js and cannot see `oathdigital.application`; `shared/src/test/scala` is a test source directory of *both* (`build.sbt:40`, `build.sbt:268`) and so must compile against neither. That impossibility is the defect the slice removes. Until then the two sides agree through a test-only table in `shared/src/test`, which is deliberately not shared with `DecisionAnswerCodec`'s journal tags.
+1. **The agreement test is a pair over one test-only table, not a single test.** No compilation unit sees both sides: `src/test` is JVM and cannot see `distantlands.frontend`; `frontend/src/test` is Scala.js and cannot see `distantlands.application`; `shared/src/test/scala` is a test source directory of *both* (`build.sbt:40`, `build.sbt:268`) and so must compile against neither. That impossibility is the defect the slice removes. Until then the two sides agree through a test-only table in `shared/src/test`, which is deliberately not shared with `DecisionAnswerCodec`'s journal tags.
 2. **Two more suites need logic edits** than the spec's Verification section lists: `AlchemistSuite` (`src/test/.../powers/action/AlchemistSuite.scala:66-70` asserts `query.form`, `query.slots` and `(query.minTotal, query.maxTotal)` on the projection) and `DicePowerDecisionProjectionSuite` (`:36-53` reads `projection.query.get.options`, which the trait renames to `offeredOptions`).
 3. **`Surface.Selection` loses its `form` field.** It existed only to remember which of the two forms the query was; the query's own type now says. `Surface.Selection(decision, query)` where `query: SelectionForm`.
 4. **Two confirm-label call sites become literals.** `partitionConfirmLabel(query)` is `query.confirmLabel.getOrElse("Confirm")`, and it is called today on a choose-many (`WalkerSelectionPanels.renderMany`) and on a choose-one (`WalkerPanelSupport.renderBoardPanel`) — neither of which the projector ever gives a confirm label. Under the new type those two read the literal `"Confirm"`, which is byte-identical output. `DistributePanelRenderer` reads the required `String` directly.
@@ -52,7 +52,7 @@ Commit 1. It must be able to fail today, which is why it is separate and first: 
 Create `shared/src/test/scala/distantlands/protocol/DecisionFormVocabulary.scala`:
 
 ```scala
-package oathdigital.protocol
+package distantlands.protocol
 
 /** The projection wire's form vocabulary, as data, for the one commit in
   * which it is not a type.
@@ -62,8 +62,8 @@ package oathdigital.protocol
   * structural, and this table is deleted with the last reader.
   *
   * It lives here because no single compilation unit sees both sides:
-  * `src/test` cannot see `oathdigital.frontend`, `frontend/src/test` cannot
-  * see `oathdigital.application`, and `shared/src/test/scala` -- a test
+  * `src/test` cannot see `distantlands.frontend`, `frontend/src/test` cannot
+  * see `distantlands.application`, and `shared/src/test/scala` -- a test
   * source directory of both projects -- must compile against neither. That
   * is the defect: today the two vocabularies can only agree by convention.
   * Until the type exists they agree through this table, and adding a seventh
@@ -91,9 +91,9 @@ object DecisionFormVocabulary:
 Create `frontend/src/test/scala/distantlands/frontend/DecisionFormAgreementSuite.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.DecisionFormVocabulary
+import distantlands.protocol.DecisionFormVocabulary
 import ParkedDecision.DecisionForm
 
 /** The client half of the vocabulary pin: the set of forms this client
@@ -120,7 +120,7 @@ class DecisionFormAgreementSuite extends munit.FunSuite:
 
 - [ ] **Step 3: The backend half**
 
-Add one test to `src/test/scala/distantlands/application/WalkerDecisionProjectorSuite.scala`, after `"a parked choose-amount projects its bounds and confirm label"`. Add `import oathdigital.protocol.DecisionFormVocabulary` to the file's imports; everything else it needs comes from the existing `oathdigital.model._`.
+Add one test to `src/test/scala/distantlands/application/WalkerDecisionProjectorSuite.scala`, after `"a parked choose-amount projects its bounds and confirm label"`. Add `import distantlands.protocol.DecisionFormVocabulary` to the file's imports; everything else it needs comes from the existing `distantlands.model._`.
 
 ```scala
   /** The projector half of the vocabulary pin: every shape the model can
@@ -158,7 +158,7 @@ and add a comment pointing at `NegotiationDealProjectionSuite:46`, which already
 
 - [ ] **Step 4: Run both suites**
 
-Run: `./sbtw "testOnly oathdigital.application.WalkerDecisionProjectorSuite" "frontend/testOnly oathdigital.frontend.DecisionFormAgreementSuite"`
+Run: `./sbtw "testOnly distantlands.application.WalkerDecisionProjectorSuite" "frontend/testOnly distantlands.frontend.DecisionFormAgreementSuite"`
 Expected: green. If the frontend assertion fails, the vocabularies already disagree — stop and report it; that is a live defect, not a test bug.
 
 - [ ] **Step 5: Run the full gate and record the baseline**
@@ -403,7 +403,7 @@ In `ActionProjectionCodec.scala`, replace `encodeDecisionQuery`/`decodeDecisionQ
         deal <- decodeDeal(dealRaw, s"$path.deal")
         heading <- optionalString(value, "heading", path)
       yield DecisionQueryProjection.Negotiate(deal, heading)
-      case other => Left(oathdigital.protocol.ProtocolDecodeFailure
+      case other => Left(distantlands.protocol.ProtocolDecodeFailure
         .UnknownVariant(s"$path.form", s"unknown decision form '$other'"))
     ): Result[DecisionQueryProjection]
   yield query
@@ -832,7 +832,7 @@ In `GameJson.decodeProjection`:
       case error => GameClientFailure.DecodeFailure(error.path, error.message)
 ```
 
-Add `ProtocolDecodeFailure` to the file's `oathdigital.protocol` import list. Leave the preview decode at `:191-193` as a plain `DecodeFailure`: a preview response is not the table's position, and a stale bundle will have already failed on a projection.
+Add `ProtocolDecodeFailure` to the file's `distantlands.protocol` import list. Leave the preview decode at `:191-193` as a plain `DecodeFailure`: a preview response is not the table's position, and a stale bundle will have already failed on a projection.
 
 - [ ] **Step 2: The session owns the decision**
 
@@ -1012,7 +1012,7 @@ python3 scripts/check-architecture.py && python3 scripts/check-markdown-links.py
 ./sbtw clean coverage test coverageReport frontend/test
 ```
 
-Expected: both suites green, the link succeeds, the architecture check passes (no production file over 800 lines; `shared/src/main` importing only `oathdigital.protocol`), the markdown link check passes, and coverage stays at or above the 86.8 floor. If coverage dips, the gap is a case whose `offeredOptions` or codec arm nothing reaches — add the missing round trip rather than lowering the ratchet.
+Expected: both suites green, the link succeeds, the architecture check passes (no production file over 800 lines; `shared/src/main` importing only `distantlands.protocol`), the markdown link check passes, and coverage stays at or above the 86.8 floor. If coverage dips, the gap is a case whose `offeredOptions` or codec arm nothing reaches — add the missing round trip rather than lowering the ratchet.
 
 - [ ] **Step 5: Inspect the diff**
 

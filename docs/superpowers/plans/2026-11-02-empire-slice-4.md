@@ -107,7 +107,7 @@ Use a deterministic `ChronicleRandomPort` whose `shuffle` is `identity` for seat
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.application.*FirstGamePlan*"`
+Run: `./sbtw "testOnly distantlands.application.*FirstGamePlan*"`
 Expected: FAIL to compile (`dealOrder` takes no `drawers`).
 
 - [ ] **Step 3: Implement**
@@ -167,7 +167,7 @@ Fix every other `dealOrder` caller (`grep -rn "dealOrder(" src`): first games pa
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.application.*"`
+Run: `./sbtw "testOnly distantlands.application.*"`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -277,7 +277,7 @@ In `ChronicleEndToEndSuite`, the test "game start refuses the crowned Chancellor
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.setup.GameStartRulesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.setup.GameStartRulesSuite"`
 Expected: FAIL, "a non-empty world requires the Empire".
 
 - [ ] **Step 3: Implement**
@@ -327,7 +327,7 @@ A Chronicle with no Chancellor but Citizens, or a `world`, also refuses as Empir
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.setup.* oathdigital.gameplay.chronicle.ChronicleEndToEndSuite oathdigital.application.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.setup.* distantlands.gameplay.chronicle.ChronicleEndToEndSuite distantlands.application.*"`
 Expected: PASS. The later-game tests pass with the first-game table for now; Task 3 builds the Empire's.
 
 - [ ] **Step 5: Commit**
@@ -401,7 +401,7 @@ Write each fixture value out in the suite: pick concrete sites with `CatalogName
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.setup.LaterGameSetupSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.setup.LaterGameSetupSuite"`
 Expected: FAIL, the Empire's sites hold bandits.
 
 - [ ] **Step 3: Implement**
@@ -439,7 +439,7 @@ Keep `FirstGameSetupMaterializer` under 800 lines; if the Empire path pushes it 
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.setup.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.setup.*"`
 Expected: PASS, including every first-game test unchanged.
 
 - [ ] **Step 5: Commit**
@@ -542,7 +542,7 @@ Check the banner field names (`banners.peoplesFavor`) and the `oathkeeper` field
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.setup.LaterGameSetupSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.setup.LaterGameSetupSuite"`
 Expected: FAIL, no Grand Scepter on the Chancellor.
 
 - [ ] **Step 3: Implement**
@@ -563,7 +563,7 @@ Expected: FAIL, no Grand Scepter on the Chancellor.
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.setup.* oathdigital.gameplay.chronicle.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.setup.* distantlands.gameplay.chronicle.*"`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -639,7 +639,7 @@ Also assert that p2's projection of the parked Reliquary decision is suppressed 
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.setup.* oathdigital.application.GamePresentationProjectorSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.setup.* distantlands.application.GamePresentationProjectorSuite"`
 Expected: FAIL, the first decision is the pawn placement.
 
 - [ ] **Step 3: Implement**
@@ -807,7 +807,7 @@ Add a `later-game-setup` golden log of that Setup if the golden suites cover fir
 
 - [ ] **Step 2: Run it**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.chronicle.ChronicleEndToEndSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.chronicle.ChronicleEndToEndSuite"`
 Expected: PASS. A failure here is a defect in Tasks 1 to 5; fix it there, with a unit test in that task's suite.
 
 - [ ] **Step 3: Commit**

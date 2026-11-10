@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- `BackendArchitectureSuite` and `scripts/check-architecture.py` apply: production files stay at or under 800 lines; no power name appears in `gameplay/walker` or `gameplay/operations` sources; a power imports nothing from `oathdigital.gameplay.walker`; no direct state write (`copy(advisers =`, `temporaryHands.updated(` and similar) under `gameplay/powers`.
+- `BackendArchitectureSuite` and `scripts/check-architecture.py` apply: production files stay at or under 800 lines; no power name appears in `gameplay/walker` or `gameplay/operations` sources; a power imports nothing from `distantlands.gameplay.walker`; no direct state write (`copy(advisers =`, `temporaryHands.updated(` and similar) under `gameplay/powers`.
 - A power is declared solely by a `ContributingPower` (all sixteen here; none is a `PhasePower`). Engine changes are only those named in "Engine changes" below.
 - A decision id is unique per power and lives under a prefix the registry already maps to a continuation, or under the prefix Task 13 adds for a Muster.
 - A selected modifier that has a cost pays it at the very start of its action, whenever the player selects the modifier, whether or not the modifier then has an effect: the player owns that choice (product decision). Selecting several modifiers validates all of their payments together (Tasks 6 and 7), so a combination the player cannot pay is refused at selection.
@@ -120,15 +120,15 @@ A card played to a site or as a faceup adviser visits the faceup window (today's
 Create `src/test/scala/distantlands/gameplay/CardPlayHooksSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.catalog.CardRestrictions
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower, Transform}
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers, WalkerStepRecorded}
-import oathdigital.model._
+import distantlands.catalog.CardRestrictions
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower, Transform}
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers, WalkerStepRecorded}
+import distantlands.model._
 
 /** The played-card windows: a faceup play and a facedown play each visit their
   * own window, and a discard visits neither.
@@ -330,7 +330,7 @@ CardPlayedFaceup(dazzleId, RuleSourceRef.Adviser(actor, dazzleId))
 - [ ] **Step 2: Run them to verify they fail**
 
 Run: `./sbtw "Test/compile"`
-Expected: FAIL to compile, for example `value ActionCardPlayedFaceup is not a member of object oathdigital.model.PowerWindow`.
+Expected: FAIL to compile, for example `value ActionCardPlayedFaceup is not a member of object distantlands.model.PowerWindow`.
 
 - [ ] **Step 3: Implement**
 
@@ -562,7 +562,7 @@ Map(PowerWindow.ActionCardPlayedFaceup ->
 
 - [ ] **Step 4: Run the task's suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CardPlayHooksSuite oathdigital.gameplay.ProcedureWalkerSuite oathdigital.gameplay.CardPlayProcedureSuite oathdigital.gameplay.SearchProcedureSuite oathdigital.gameplay.powers.whenplayed.DazzleSuite oathdigital.gameplay.powers.whenplayed.ConspiracyWhenPlayedSuite oathdigital.gameplay.BackendArchitectureSuite oathdigital.gameplay.RuleResolutionSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.CardPlayHooksSuite distantlands.gameplay.ProcedureWalkerSuite distantlands.gameplay.CardPlayProcedureSuite distantlands.gameplay.SearchProcedureSuite distantlands.gameplay.powers.whenplayed.DazzleSuite distantlands.gameplay.powers.whenplayed.ConspiracyWhenPlayedSuite distantlands.gameplay.BackendArchitectureSuite distantlands.gameplay.RuleResolutionSuite"`
 Expected: PASS (117 tests in these suites and the ones they touch).
 
 - [ ] **Step 5: Run the whole suite and the architecture check**
@@ -600,15 +600,15 @@ The new test file `PlacementFixture` is used again in Tasks 3 and 4. It builds a
 Create `src/test/scala/distantlands/gameplay/PlacementFixture.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.catalog.CardRestrictions
-import oathdigital.gameplay.actions.PlacementRules
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower, Transform}
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers}
-import oathdigital.model._
+import distantlands.catalog.CardRestrictions
+import distantlands.gameplay.actions.PlacementRules
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower, Transform}
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers}
+import distantlands.model._
 
 /** Staging and driving shared by the card-play placement suites. The powers
   * built here are test doubles: they change `PlacementRules` and nothing else.
@@ -707,15 +707,15 @@ object PlacementFixture {
 Create `src/test/scala/distantlands/gameplay/PlacementRulesSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.PlacementRules
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.powers.AdviserLimit
-import oathdigital.gameplay.powers.rest.SilverTongue
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.walker.{WalkerOutcome, WalkerPowers}
-import oathdigital.model._
+import distantlands.gameplay.actions.PlacementRules
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.powers.AdviserLimit
+import distantlands.gameplay.powers.rest.SilverTongue
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.walker.{WalkerOutcome, WalkerPowers}
+import distantlands.model._
 
 /** `PlacementRules`: the adviser limits a card play is planned under, and how
   * two contributors to them compose. The powers here are test doubles.
@@ -840,16 +840,16 @@ CardPlay.Origin.FacedownAdviser)
 - [ ] **Step 2: Run them to verify they fail**
 
 Run: `./sbtw "Test/compile"`
-Expected: FAIL to compile, for example `not enough arguments for method legalChoices: (catalog: oathdigital.catalog.ExecutableCatalog, ready: oathdigital.model.ReadyGame, actor: oathdigital.model.PlayerId, card: oathdigital.model.WorldCardId, origin: oathdigital.gameplay.actions.CardPlay.Origin, faceupLimit: Int, facedownLimit: Int): Vector[oathdigital.gameplay.actions.CardPlay.Choice].`.
+Expected: FAIL to compile, for example `not enough arguments for method legalChoices: (catalog: distantlands.catalog.ExecutableCatalog, ready: distantlands.model.ReadyGame, actor: distantlands.model.PlayerId, card: distantlands.model.WorldCardId, origin: distantlands.gameplay.actions.CardPlay.Origin, faceupLimit: Int, facedownLimit: Int): Vector[distantlands.gameplay.actions.CardPlay.Choice].`.
 
 - [ ] **Step 3: Implement**
 
 Create `src/main/scala/distantlands/gameplay/actions/PlacementRules.scala`:
 
 ```scala
-package oathdigital.gameplay.actions
+package distantlands.gameplay.actions
 
-import oathdigital.model.Orientation
+import distantlands.model.Orientation
 
 /** The rules a card play is planned under. A power changes them through the
   * `SearchPlayAdviser` window, and card play reads nothing else, so the play
@@ -898,12 +898,12 @@ object PlacementRules {
 Create `src/main/scala/distantlands/gameplay/powers/AdviserLimit.scala`:
 
 ```scala
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.PlacementRules
-import oathdigital.gameplay.powers.rest.SilverTongue
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.PlacementRules
+import distantlands.gameplay.powers.rest.SilverTongue
+import distantlands.model._
 
 /** How many advisers a player may hold, for a power that adds an adviser
   * outside card play (Horned Mask).
@@ -1057,13 +1057,13 @@ with:
 In `src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala`, replace:
 
 ```scala
-import oathdigital.gameplay.actions.CardPlay
+import distantlands.gameplay.actions.CardPlay
 ```
 
 with:
 
 ```scala
-import oathdigital.gameplay.actions.{CardPlay, PlacementRules}
+import distantlands.gameplay.actions.{CardPlay, PlacementRules}
 ```
 
 In `src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scala`, replace:
@@ -1254,14 +1254,14 @@ object SilverTongue {
 In `src/main/scala/distantlands/gameplay/powers/wake/HornedMask.scala`, replace:
 
 ```scala
-import oathdigital.gameplay.PowerAccess
+import distantlands.gameplay.PowerAccess
 ```
 
 with:
 
 ```scala
-import oathdigital.gameplay.PowerAccess
-import oathdigital.gameplay.actions.CardPlay
+import distantlands.gameplay.PowerAccess
+import distantlands.gameplay.actions.CardPlay
 ```
 
 In `src/main/scala/distantlands/gameplay/powers/wake/HornedMask.scala`, replace:
@@ -1295,7 +1295,7 @@ with nothing: delete it.
 
 - [ ] **Step 4: Run the task's suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.PlacementRulesSuite oathdigital.gameplay.CardPlayProcedureSuite oathdigital.gameplay.CardPlayHooksSuite oathdigital.gameplay.powers.rest.SilverTongueSuite oathdigital.gameplay.powers.AdviserLimitSuite oathdigital.gameplay.powers.wake.HornedMaskSuite oathdigital.gameplay.SearchProcedureSuite oathdigital.gameplay.PendingWalkerRulesSuite oathdigital.application.PendingWalkerInvariantSuite oathdigital.gameplay.BackendArchitectureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.PlacementRulesSuite distantlands.gameplay.CardPlayProcedureSuite distantlands.gameplay.CardPlayHooksSuite distantlands.gameplay.powers.rest.SilverTongueSuite distantlands.gameplay.powers.AdviserLimitSuite distantlands.gameplay.powers.wake.HornedMaskSuite distantlands.gameplay.SearchProcedureSuite distantlands.gameplay.PendingWalkerRulesSuite distantlands.application.PendingWalkerInvariantSuite distantlands.gameplay.BackendArchitectureSuite"`
 Expected: PASS (92 tests in these suites and the ones they touch).
 
 - [ ] **Step 5: Run the whole suite and the architecture check**
@@ -1337,7 +1337,7 @@ The product owner asked for locked cards to be handled generically. Where lockin
 Create `src/test/scala/distantlands/gameplay/DiscardRestrictionsCoverageSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
 import java.nio.file.{Files, Paths}
 
@@ -1392,14 +1392,14 @@ class DiscardRestrictionsCoverageSuite extends munit.FunSuite {
 Create `src/test/scala/distantlands/gameplay/DiscardRestrictionsSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.catalog.CardRestrictions
-import oathdigital.gameplay.actions.CardPlay
-import oathdigital.gameplay.operations.DiscardRestrictions
-import oathdigital.gameplay.powers.CardStaging
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model._
+import distantlands.catalog.CardRestrictions
+import distantlands.gameplay.actions.CardPlay
+import distantlands.gameplay.operations.DiscardRestrictions
+import distantlands.gameplay.powers.CardStaging
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model._
 
 /** The discard restrictions: a locked denizen, an intact edifice and a
   * modifier selected for the running action cannot be discarded, whichever
@@ -1556,9 +1556,9 @@ class DiscardRestrictionsSuite extends munit.FunSuite {
 Create `src/test/scala/distantlands/gameplay/powers/CardStaging.scala`:
 
 ```scala
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Takes a card out of wherever the first game put it, so a fixture can place
   * it somewhere else without leaving a duplicate. `PowerFixture` removes a card
@@ -1599,10 +1599,10 @@ Expected: the new tests FAIL.
 Create `src/main/scala/distantlands/gameplay/operations/DiscardRestrictions.scala`:
 
 ```scala
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.catalog.{CardRestrictions, ExecutableCatalog}
-import oathdigital.model._
+import distantlands.catalog.{CardRestrictions, ExecutableCatalog}
+import distantlands.model._
 
 /** Catalog-backed restrictions on discarding a card, for the acting player.
   * Every path that discards a card in play attaches one (see
@@ -1813,19 +1813,19 @@ with:
 In `src/main/scala/distantlands/gameplay/powers/wake/HornedMask.scala`, replace:
 
 ```scala
-import oathdigital.gameplay.actions.CardPlay
+import distantlands.gameplay.actions.CardPlay
 ```
 
 with:
 
 ```scala
-import oathdigital.gameplay.actions.CardPlay
-import oathdigital.gameplay.operations.DiscardRestrictions
+import distantlands.gameplay.actions.CardPlay
+import distantlands.gameplay.operations.DiscardRestrictions
 ```
 
 - [ ] **Step 4: Run the task's suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.DiscardRestrictionsSuite oathdigital.gameplay.DiscardRestrictionsCoverageSuite oathdigital.gameplay.CardPlayProcedureSuite oathdigital.gameplay.PlacementRulesSuite oathdigital.gameplay.powers.wake.HornedMaskSuite oathdigital.gameplay.powers.whenplayed.DazzleSuite oathdigital.gameplay.SearchProcedureSuite oathdigital.gameplay.BackendArchitectureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.DiscardRestrictionsSuite distantlands.gameplay.DiscardRestrictionsCoverageSuite distantlands.gameplay.CardPlayProcedureSuite distantlands.gameplay.PlacementRulesSuite distantlands.gameplay.powers.wake.HornedMaskSuite distantlands.gameplay.powers.whenplayed.DazzleSuite distantlands.gameplay.SearchProcedureSuite distantlands.gameplay.BackendArchitectureSuite"`
 Expected: PASS (86 tests in these suites and the ones they touch).
 
 - [ ] **Step 5: Run the whole suite and the architecture check**
@@ -1860,13 +1860,13 @@ Ruling for the (slice 4) Mob power: a play to a site may first discard one card 
 Create `src/test/scala/distantlands/gameplay/SiteDiscardFirstSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.{CardPlay, PlacementRules}
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.walker.{WalkerOutcome, WalkerPowers}
-import oathdigital.model._
+import distantlands.gameplay.actions.{CardPlay, PlacementRules}
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.walker.{WalkerOutcome, WalkerPowers}
+import distantlands.model._
 
 /** `PlacementRules.siteDiscardFirst`: a play to a site may first discard one
   * card of the site's card list, at any capacity. No real power sets it yet
@@ -2039,7 +2039,7 @@ class SiteDiscardFirstSuite extends munit.FunSuite {
 - [ ] **Step 2: Run them to verify they fail**
 
 Run: `./sbtw "Test/compile"`
-Expected: FAIL to compile, for example `value noReplacement is not a member of object oathdigital.gameplay.actions.cardplay.CardPlayProcedure`.
+Expected: FAIL to compile, for example `value noReplacement is not a member of object distantlands.gameplay.actions.cardplay.CardPlayProcedure`.
 
 - [ ] **Step 3: Implement**
 
@@ -2240,7 +2240,7 @@ with:
 
 - [ ] **Step 4: Run the task's suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.SiteDiscardFirstSuite oathdigital.gameplay.PlacementRulesSuite oathdigital.gameplay.CardPlayProcedureSuite oathdigital.gameplay.CardPlayHooksSuite oathdigital.gameplay.SearchProcedureSuite oathdigital.gameplay.powers.rest.SilverTongueSuite oathdigital.gameplay.PendingWalkerRulesSuite oathdigital.application.PendingWalkerInvariantSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.SiteDiscardFirstSuite distantlands.gameplay.PlacementRulesSuite distantlands.gameplay.CardPlayProcedureSuite distantlands.gameplay.CardPlayHooksSuite distantlands.gameplay.SearchProcedureSuite distantlands.gameplay.powers.rest.SilverTongueSuite distantlands.gameplay.PendingWalkerRulesSuite distantlands.application.PendingWalkerInvariantSuite"`
 Expected: PASS (55 tests in these suites and the ones they touch).
 
 - [ ] **Step 5: Run the whole suite and the architecture check**
@@ -2283,16 +2283,16 @@ Follow "Recording a sub-slice" below for 2a, then run `./sbtw test`, `python3 sc
 Create `src/test/scala/distantlands/gameplay/EnclosingProcedureSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
 import scala.collection.mutable.ArrayBuffer
 
-import oathdigital.gameplay.actions.economy.MusterProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower, PowerCtx}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
+import distantlands.gameplay.actions.economy.MusterProcedure
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower, PowerCtx}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.model.OathState.Ready
 
 /** `PowerCtx.procedure`: the procedure a window is walked for. */
 class EnclosingProcedureSuite extends munit.FunSuite {
@@ -2350,20 +2350,20 @@ class EnclosingProcedureSuite extends munit.FunSuite {
 - [ ] **Step 2: Run them to verify they fail**
 
 Run: `./sbtw "Test/compile"`
-Expected: FAIL to compile, for example `value procedure is not a member of oathdigital.gameplay.powerresolver.PowerCtx`.
+Expected: FAIL to compile, for example `value procedure is not a member of distantlands.gameplay.powerresolver.PowerCtx`.
 
 - [ ] **Step 3: Implement**
 
 In `src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala`, replace:
 
 ```scala
-import oathdigital.model.{DecisionOptionRef, OathViolation, Operation, PlayerId, PowerId, PowerResolution, PowerWindow, ReadyGame, RuleSourceRef}
+import distantlands.model.{DecisionOptionRef, OathViolation, Operation, PlayerId, PowerId, PowerResolution, PowerWindow, ReadyGame, RuleSourceRef}
 ```
 
 with:
 
 ```scala
-import oathdigital.model.{DecisionOptionRef, OathViolation, Operation, PlayerId, PowerId, PowerResolution, PowerWindow, ProcedureRef, ReadyGame, RuleSourceRef}
+import distantlands.model.{DecisionOptionRef, OathViolation, Operation, PlayerId, PowerId, PowerResolution, PowerWindow, ProcedureRef, ReadyGame, RuleSourceRef}
 ```
 
 In `src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala`, replace:
@@ -2400,7 +2400,7 @@ with:
 ```scala
       dice: WalkerDice,
       /** The procedure of the parked position being resumed. */
-      procedure: Option[oathdigital.model.ProcedureRef]
+      procedure: Option[distantlands.model.ProcedureRef]
   )
 ```
 
@@ -2455,7 +2455,7 @@ with:
 
 ```scala
       activePlayer: PlayerId, powers: WalkerPowers, path: Vector[String],
-      ops: Vector[Operation], procedure: Option[oathdigital.model.ProcedureRef])
+      ops: Vector[Operation], procedure: Option[distantlands.model.ProcedureRef])
       : (Vector[Operation], Vector[PowerId]) =
 ```
 
@@ -2546,7 +2546,7 @@ with:
 
 - [ ] **Step 4: Run the task's suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.EnclosingProcedureSuite oathdigital.gameplay.ProcedureWalkerSuite oathdigital.gameplay.ContributingPowerSuite oathdigital.gameplay.ContributionCollectorSuite oathdigital.gameplay.OathRulesWalkerPowerSuite oathdigital.gameplay.OptionRestrictionSuite oathdigital.gameplay.CatacombsContributionSuite oathdigital.gameplay.TravelSitePowersSuite oathdigital.gameplay.BackendArchitectureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.EnclosingProcedureSuite distantlands.gameplay.ProcedureWalkerSuite distantlands.gameplay.ContributingPowerSuite distantlands.gameplay.ContributionCollectorSuite distantlands.gameplay.OathRulesWalkerPowerSuite distantlands.gameplay.OptionRestrictionSuite distantlands.gameplay.CatacombsContributionSuite distantlands.gameplay.TravelSitePowersSuite distantlands.gameplay.BackendArchitectureSuite"`
 Expected: PASS (121 tests in these suites and the ones they touch).
 
 - [ ] **Step 5: Run the whole suite and the architecture check**
@@ -2583,14 +2583,14 @@ The refusal happens in `validateModifiers`, which `startWalker` calls before any
 Create `src/test/scala/distantlands/gameplay/SelectionPaymentsSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.setup.FirstGameSetupRules
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.setup.FirstGameSetupRules
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.model.OathState.Ready
 
 /** Selecting modifiers refuses a combination the player cannot pay, at
   * selection, because every selected modifier pays at the start of its action.
@@ -2653,7 +2653,7 @@ class SelectionPaymentsSuite extends munit.FunSuite {
   test("Catacombs states its secret as a selection payment") {
     val setup = new FirstGameSetupRules(catalog)
     val fixture = CatacombsContributionSuite.reliclessSite(setup, secrets = 1)
-    val power = oathdigital.gameplay.powers.recover.CatacombsContribution
+    val power = distantlands.gameplay.powers.recover.CatacombsContribution
       .forCatalog(catalog).get
     assertEquals(power.selectionPayments(fixture.ready, fixture.actor).size, 1)
     val rules = new OathRules(catalog, walkerPowerCatalog = WalkerPowers(
@@ -2665,7 +2665,7 @@ class SelectionPaymentsSuite extends munit.FunSuite {
   test("Catacombs with no faceup secret is refused at selection, not mid-action") {
     val setup = new FirstGameSetupRules(catalog)
     val fixture = CatacombsContributionSuite.reliclessSite(setup, secrets = 0)
-    val power = oathdigital.gameplay.powers.recover.CatacombsContribution
+    val power = distantlands.gameplay.powers.recover.CatacombsContribution
       .forCatalog(catalog).get
     val rules = new OathRules(catalog, walkerPowerCatalog = WalkerPowers(
       Vector(power)))
@@ -2680,20 +2680,20 @@ class SelectionPaymentsSuite extends munit.FunSuite {
 - [ ] **Step 2: Run them to verify they fail**
 
 Run: `./sbtw "Test/compile"`
-Expected: FAIL to compile, for example `value selectionPayments is not a member of oathdigital.gameplay.powers.recover.CatacombsContribution`.
+Expected: FAIL to compile, for example `value selectionPayments is not a member of distantlands.gameplay.powers.recover.CatacombsContribution`.
 
 - [ ] **Step 3: Implement**
 
 In `src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala`, replace:
 
 ```scala
-import oathdigital.model.{DecisionOptionRef,
+import distantlands.model.{DecisionOptionRef,
 ```
 
 with:
 
 ```scala
-import oathdigital.model.{CoreOperation, DecisionOptionRef,
+import distantlands.model.{CoreOperation, DecisionOptionRef,
 ```
 
 In `src/main/scala/distantlands/gameplay/powerresolver/ContributingPower.scala`, replace:
@@ -2718,14 +2718,14 @@ with:
 In `src/main/scala/distantlands/gameplay/OathRulesWalker.scala`, replace:
 
 ```scala
-import oathdigital.gameplay.powerresolver.{ContributingPower, PowerCtx, PhasePowers}
+import distantlands.gameplay.powerresolver.{ContributingPower, PowerCtx, PhasePowers}
 ```
 
 with:
 
 ```scala
-import oathdigital.gameplay.operations.{OperationPipeline, OperationPolicy}
-import oathdigital.gameplay.powerresolver.{ContributingPower, PowerCtx, PhasePowers}
+import distantlands.gameplay.operations.{OperationPipeline, OperationPolicy}
+import distantlands.gameplay.powerresolver.{ContributingPower, PowerCtx, PhasePowers}
 ```
 
 In `src/main/scala/distantlands/gameplay/OathRulesWalker.scala`, replace:
@@ -2778,7 +2778,7 @@ with:
 
 - [ ] **Step 4: Run the task's suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.SelectionPaymentsSuite oathdigital.gameplay.CatacombsContributionSuite oathdigital.gameplay.OathRulesWalkerPowerSuite oathdigital.gameplay.RecoverEligibilitySuite oathdigital.gameplay.ContributingPowerSuite oathdigital.application.PendingWalkerInvariantSuite oathdigital.gameplay.BackendArchitectureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.SelectionPaymentsSuite distantlands.gameplay.CatacombsContributionSuite distantlands.gameplay.OathRulesWalkerPowerSuite distantlands.gameplay.RecoverEligibilitySuite distantlands.gameplay.ContributingPowerSuite distantlands.application.PendingWalkerInvariantSuite distantlands.gameplay.BackendArchitectureSuite"`
 Expected: PASS (70 tests in these suites and the ones they touch).
 
 - [ ] **Step 5: Run the whole suite and the architecture check**
@@ -2818,13 +2818,13 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 Create `src/test/scala/distantlands/gameplay/powers/SearchFixture.scala`:
 
 ```scala
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.actions.search.SearchProcedure
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.actions.search.SearchProcedure
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.OathState.Ready
 
 /** Drives a real Search through the rules, with the production walker powers,
   * for the suites of the modifiers and triggers that act on it. It builds on
@@ -2870,7 +2870,7 @@ object SearchFixture {
     val powered = WalkerPowerCatalog.default(catalog).powers.map(_.id).toSet
     catalog.denizens.filter(d => d.suit == suit &&
       !d.powers.exists(power => powered(power.id)) &&
-      d.restrictions == oathdigital.catalog.CardRestrictions.Unrestricted)
+      d.restrictions == distantlands.catalog.CardRestrictions.Unrestricted)
       .map(d => DenizenId(d.id.value)).filter(id =>
         index.get(id).forall(_.location.container ==
           CardContainer.Deck(CardDeck.World)))
@@ -2946,11 +2946,11 @@ object SearchFixture {
 Create `src/test/scala/distantlands/gameplay/powers/SelectedModifierSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.gameplay.powerresolver.{Contribution, PowerCtx}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.powerresolver.{Contribution, PowerCtx}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 /** The kit every selected modifier stands on: it is offered only for its own
   * action, only when the player may use its card and can pay for it, and it
@@ -2965,7 +2965,7 @@ class SelectedModifierSuite extends munit.FunSuite {
   private final case class Probe(cardId: CardId, override val cost: Cost,
       actions: Set[MajorActionType], idValue: String = "denizen.tents")
       extends SelectedModifier {
-    def catalog = oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
+    def catalog = distantlands.gameplay.setup.FirstGameSetupFixture.catalog
     def id: PowerId = PowerId(idValue)
     def effects: Map[PowerWindow, Vector[Contribution]] = Map.empty
   }
@@ -3047,14 +3047,14 @@ class SelectedModifierSuite extends munit.FunSuite {
 
   test("a payment and an effect at the same window keep the payment first") {
     val both = new SelectedModifier {
-      def catalog = oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
+      def catalog = distantlands.gameplay.setup.FirstGameSetupFixture.catalog
       def cardId: CardId = card
       def id: PowerId = PowerId("denizen.tents")
       def actions: Set[MajorActionType] = travel
       override def cost: Cost = Cost(favor = 1)
       def effects: Map[PowerWindow, Vector[Contribution]] = Map(
         PowerWindow.TravelActionEligibility ->
-          Vector(oathdigital.gameplay.powerresolver.Transform((_, ops) => ops)))
+          Vector(distantlands.gameplay.powerresolver.Transform((_, ops) => ops)))
     }
     assertEquals(both.contributions(PowerWindow.TravelActionEligibility).size, 2)
   }
@@ -3074,13 +3074,13 @@ class SelectedModifierSuite extends munit.FunSuite {
 Create `src/test/scala/distantlands/gameplay/powers/cardplay/GossipSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.powers.{PowerFixture, SearchFixture, TargetsFixture}
-import oathdigital.gameplay.powers.action.PaidActionHarness
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.powers.{PowerFixture, SearchFixture, TargetsFixture}
+import distantlands.gameplay.powers.action.PaidActionHarness
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 class GossipSuite extends munit.FunSuite {
   import PowerFixture._
@@ -3158,7 +3158,7 @@ class GossipSuite extends munit.FunSuite {
   }
 
   private object WalkerPowerCatalogHas {
-    def gossip: Boolean = oathdigital.gameplay.powers.WalkerPowerCatalog
+    def gossip: Boolean = distantlands.gameplay.powers.WalkerPowerCatalog
       .default(catalog).powers.exists(_.id == Gossip.id)
   }
 }
@@ -3167,14 +3167,14 @@ class GossipSuite extends munit.FunSuite {
 Create `src/test/scala/distantlands/gameplay/powers/cardplay/WelcomingPartySuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.gameplay.powers.{PowerFixture, SearchFixture}
-import oathdigital.gameplay.powers.action.PaidActionHarness
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.powers.{PowerFixture, SearchFixture}
+import distantlands.gameplay.powers.action.PaidActionHarness
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 class WelcomingPartySuite extends munit.FunSuite {
   import PowerFixture._
@@ -3282,14 +3282,14 @@ class WelcomingPartySuite extends munit.FunSuite {
 Create `src/test/scala/distantlands/gameplay/powers/cardplay/WildCrySuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.gameplay.powers.{CardStaging, PlayerFacts, PowerFixture, SearchFixture}
-import oathdigital.gameplay.powers.action.PaidActionHarness
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers, WalkerStepRecorded}
-import oathdigital.model._
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.powers.{CardStaging, PlayerFacts, PowerFixture, SearchFixture}
+import distantlands.gameplay.powers.action.PaidActionHarness
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers, WalkerStepRecorded}
+import distantlands.model._
 
 class WildCrySuite extends munit.FunSuite {
   import PowerFixture._
@@ -3435,10 +3435,10 @@ Expected: FAIL to compile, for example `not found: type SelectedModifier`.
 Create `src/main/scala/distantlands/gameplay/powers/CatalogCards.scala`:
 
 ```scala
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.model._
 
 /** Which card prints a power, read from the catalog. `None` for a catalog
   * without the card (a test stub), so a power whose card is absent is omitted
@@ -3463,13 +3463,13 @@ object CatalogCards {
 Create `src/main/scala/distantlands/gameplay/powers/SelectedModifier.scala`:
 
 ```scala
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.PowerAccess
-import oathdigital.gameplay.operations.Costs
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower, PowerCtx, Transform}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.PowerAccess
+import distantlands.gameplay.operations.Costs
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower, PowerCtx, Transform}
+import distantlands.model._
 
 /** A power the player selects in a command's `modifiers` at the start of a
   * major action, and that then applies to that action for free unless it names
@@ -3593,10 +3593,10 @@ object SelectedModifier {
 Create `src/main/scala/distantlands/gameplay/powers/cardplay/CardPlayTriggers.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.ContributingPower
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.ContributingPower
 
 /** The powers that trigger when a card is played, registered together. A power
   * whose card is absent from `catalog` is omitted.
@@ -3612,12 +3612,12 @@ object CardPlayTriggers {
 Create `src/main/scala/distantlands/gameplay/powers/cardplay/Gossip.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution, PowerCtx, Transform}
-import oathdigital.gameplay.powers.{CatalogCards, CatalogResolution}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution, PowerCtx, Transform}
+import distantlands.gameplay.powers.{CatalogCards, CatalogResolution}
+import distantlands.model._
 
 /** Gossip (card 99), a persistent rule of a faceup adviser: when any other
   * player places an adviser facedown, a denizen or a Vision, the holder gains 1
@@ -3664,12 +3664,12 @@ object Gossip {
 Create `src/main/scala/distantlands/gameplay/powers/cardplay/WelcomingParty.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.{Contribution, PowerCtx, Transform}
-import oathdigital.gameplay.powers.{CatalogCards, SelectedModifier}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.{Contribution, PowerCtx, Transform}
+import distantlands.gameplay.powers.{CatalogCards, SelectedModifier}
+import distantlands.model._
 
 /** Welcoming Party (card 50), a selected Search modifier: if you play a
   * denizen faceup when it is first drawn, gain 1 favor from the Hearth bank.
@@ -3715,12 +3715,12 @@ object WelcomingParty {
 Create `src/main/scala/distantlands/gameplay/powers/cardplay/WildCry.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.{Contribution, PowerCtx, Transform}
-import oathdigital.gameplay.powers.{CatalogCards, PlayerFacts, SelectedModifier}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.{Contribution, PowerCtx, Transform}
+import distantlands.gameplay.powers.{CatalogCards, PlayerFacts, SelectedModifier}
+import distantlands.model._
 
 /** Wild Cry (card 189), a selected Search modifier: when you play a beast
   * denizen faceup, to a site or as a faceup adviser, gain 1 Supply and 2
@@ -3765,14 +3765,14 @@ object WildCry {
 In `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`, replace:
 
 ```scala
-import oathdigital.gameplay.powers.campaign.VowOfPeaceContribution
+import distantlands.gameplay.powers.campaign.VowOfPeaceContribution
 ```
 
 with:
 
 ```scala
-import oathdigital.gameplay.powers.campaign.VowOfPeaceContribution
-import oathdigital.gameplay.powers.cardplay.CardPlayTriggers
+import distantlands.gameplay.powers.campaign.VowOfPeaceContribution
+import distantlands.gameplay.powers.cardplay.CardPlayTriggers
 ```
 
 In `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`, replace:
@@ -3790,7 +3790,7 @@ with:
 
 - [ ] **Step 4: Run the task's suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.SelectedModifierSuite oathdigital.gameplay.powers.cardplay.WildCrySuite oathdigital.gameplay.powers.cardplay.WelcomingPartySuite oathdigital.gameplay.powers.cardplay.GossipSuite oathdigital.gameplay.PowerKindsCatalogSuite oathdigital.gameplay.BackendArchitectureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.SelectedModifierSuite distantlands.gameplay.powers.cardplay.WildCrySuite distantlands.gameplay.powers.cardplay.WelcomingPartySuite distantlands.gameplay.powers.cardplay.GossipSuite distantlands.gameplay.PowerKindsCatalogSuite distantlands.gameplay.BackendArchitectureSuite"`
 Expected: PASS (67 tests in these suites and the ones they touch).
 
 - [ ] **Step 5: Run the whole suite and the architecture check**
@@ -3842,11 +3842,11 @@ The two engine edits are `ignores` and the fix from "Beyond E6, E7 and E9" item 
 Create `src/test/scala/distantlands/gameplay/ContributionIgnoresSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.powerresolver.{Contribution, ContributionCollector, ContributingPower, PowerCtx, Transform}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.initialReady
-import oathdigital.model._
+import distantlands.gameplay.powerresolver.{Contribution, ContributionCollector, ContributingPower, PowerCtx, Transform}
+import distantlands.gameplay.setup.FirstGameSetupFixture.initialReady
+import distantlands.model._
 
 /** The named ignore is decided with the context the powers are gathered in, so
   * a power can ignore another only for the node at hand. `shouldIgnore` (with no
@@ -3914,12 +3914,12 @@ class ContributionIgnoresSuite extends munit.FunSuite {
 Create `src/test/scala/distantlands/gameplay/powers/travel/DragonskinDrumSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.gameplay.powers.{PlayerFacts, PowerFixture}
-import oathdigital.gameplay.powers.action.PaidActionHarness
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.powers.{PlayerFacts, PowerFixture}
+import distantlands.gameplay.powers.action.PaidActionHarness
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 class DragonskinDrumSuite extends munit.FunSuite {
   import PowerFixture._
@@ -3971,14 +3971,14 @@ class DragonskinDrumSuite extends munit.FunSuite {
 Create `src/test/scala/distantlands/gameplay/powers/travel/ForestPathsSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.catalog.CardRestrictions
-import oathdigital.gameplay.powers.PowerFixture
-import oathdigital.gameplay.powers.action.PaidActionHarness
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.OathViolation.TravelPassBlocked
+import distantlands.catalog.CardRestrictions
+import distantlands.gameplay.powers.PowerFixture
+import distantlands.gameplay.powers.action.PaidActionHarness
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.OathViolation.TravelPassBlocked
 
 class ForestPathsSuite extends munit.FunSuite {
   import PowerFixture._
@@ -4060,12 +4060,12 @@ class ForestPathsSuite extends munit.FunSuite {
 Create `src/test/scala/distantlands/gameplay/powers/travel/GraspingVinesSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.gameplay.powers.{PowerFixture, TargetsFixture}
-import oathdigital.gameplay.powers.action.PaidActionHarness
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.powers.{PowerFixture, TargetsFixture}
+import distantlands.gameplay.powers.action.PaidActionHarness
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 class GraspingVinesSuite extends munit.FunSuite {
   import PowerFixture._
@@ -4140,12 +4140,12 @@ class GraspingVinesSuite extends munit.FunSuite {
 Create `src/test/scala/distantlands/gameplay/powers/travel/TentsSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.gameplay.powers.PowerFixture
-import oathdigital.gameplay.powers.action.PaidActionHarness
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.powers.PowerFixture
+import distantlands.gameplay.powers.action.PaidActionHarness
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 class TentsSuite extends munit.FunSuite {
   import PowerFixture._
@@ -4244,12 +4244,12 @@ class TentsSuite extends munit.FunSuite {
 Create `src/test/scala/distantlands/gameplay/powers/travel/TollRoadsSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.gameplay.powers.{PowerFixture, TargetsFixture}
-import oathdigital.gameplay.powers.action.PaidActionHarness
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.powers.{PowerFixture, TargetsFixture}
+import distantlands.gameplay.powers.action.PaidActionHarness
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 class TollRoadsSuite extends munit.FunSuite {
   import PowerFixture._
@@ -4332,15 +4332,15 @@ class TollRoadsSuite extends munit.FunSuite {
 Create `src/test/scala/distantlands/gameplay/powers/travel/TravelFixture.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.powers.{CardStaging, PowerFixture, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.actions.travel.TravelProcedure
+import distantlands.gameplay.powers.{CardStaging, PowerFixture, WalkerPowerCatalog}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.model.OathState.Ready
 
 /** A Travel board for the modifiers and rules of Travel: the map of
   * `TravelProcedureSuite`, with named sites, every site ruled by bandits, and
@@ -4471,12 +4471,12 @@ Expected: FAIL to compile, for example `not found: value DragonskinDrum`.
 Create `src/main/scala/distantlands/gameplay/powers/travel/DragonskinDrum.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.{Contribution, PowerCtx, Transform}
-import oathdigital.gameplay.powers.{CatalogCards, PlayerFacts, SelectedModifier}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.{Contribution, PowerCtx, Transform}
+import distantlands.gameplay.powers.{CatalogCards, PlayerFacts, SelectedModifier}
+import distantlands.model._
 
 /** Dragonskin Drum (relic R20), a selected Travel modifier: after traveling,
   * gain one warband. The gain follows the pawn's move in the same cost node, so
@@ -4512,12 +4512,12 @@ object DragonskinDrum {
 Create `src/main/scala/distantlands/gameplay/powers/travel/ForestPaths.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution, PowerCtx, Transform}
-import oathdigital.gameplay.powers.{CatalogCards, SelectedModifier}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution, PowerCtx, Transform}
+import distantlands.gameplay.powers.{CatalogCards, SelectedModifier}
+import distantlands.model._
 
 /** Forest Paths (card 43), a selected Travel modifier. Cost: 1 favor placed on
   * the card. If the destination holds a beast denizen or edifice, Travel costs
@@ -4576,12 +4576,12 @@ object ForestPaths {
 Create `src/main/scala/distantlands/gameplay/powers/travel/GraspingVines.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution, PowerCtx, Transform}
-import oathdigital.gameplay.powers.{CatalogCards, CatalogResolution}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution, PowerCtx, Transform}
+import distantlands.gameplay.powers.{CatalogCards, CatalogResolution}
+import distantlands.model._
 
 /** Grasping Vines (card 178), a persistent rule of a faceup site card: an enemy
   * traveling from a site ruled by the Vines' ruler kills one warband on their
@@ -4627,12 +4627,12 @@ object GraspingVines {
 Create `src/main/scala/distantlands/gameplay/powers/travel/Tents.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.{Contribution, PowerCtx, Transform}
-import oathdigital.gameplay.powers.{CatalogCards, SelectedModifier}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.{Contribution, PowerCtx, Transform}
+import distantlands.gameplay.powers.{CatalogCards, SelectedModifier}
+import distantlands.model._
 
 /** Tents (card 29), a selected Travel modifier. Cost: 1 favor placed on the
   * card. If the destination is in the region of the pawn's current site, Travel
@@ -4678,12 +4678,12 @@ object Tents {
 Create `src/main/scala/distantlands/gameplay/powers/travel/TollRoads.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution, PowerCtx, Transform}
-import oathdigital.gameplay.powers.{CatalogCards, CatalogResolution}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution, PowerCtx, Transform}
+import distantlands.gameplay.powers.{CatalogCards, CatalogResolution}
+import distantlands.model._
 
 /** Toll Roads (card 118), a persistent rule of a faceup site card: enemies
   * cannot travel to a site ruled by Toll Roads' ruler unless they give 1 favor
@@ -4735,10 +4735,10 @@ object TollRoads {
 Create `src/main/scala/distantlands/gameplay/powers/travel/TravelModifiers.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.ContributingPower
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.ContributingPower
 
 /** The Travel modifiers and rules that are not terrain, registered together. A
   * power whose card is absent from `catalog` is omitted. Terrain is
@@ -4757,10 +4757,10 @@ object TravelModifiers {
 Create `src/main/scala/distantlands/gameplay/powers/travel/TravelPayments.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.gameplay.powers.PlayerFacts
-import oathdigital.model._
+import distantlands.gameplay.powers.PlayerFacts
+import distantlands.model._
 
 /** Reads and rewrites the cost node of a Travel that several powers share. */
 private[travel] object TravelPayments {
@@ -4863,13 +4863,13 @@ with:
 In `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`, replace:
 
 ```scala
-import oathdigital.gameplay.powers.travel.TravelSitePowers
+import distantlands.gameplay.powers.travel.TravelSitePowers
 ```
 
 with:
 
 ```scala
-import oathdigital.gameplay.powers.travel.{TravelModifiers, TravelSitePowers}
+import distantlands.gameplay.powers.travel.{TravelModifiers, TravelSitePowers}
 ```
 
 In `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`, replace:
@@ -4929,7 +4929,7 @@ with:
 
 - [ ] **Step 4: Run the task's suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.ContributionIgnoresSuite oathdigital.gameplay.ContributionCollectorSuite oathdigital.gameplay.powers.travel.TentsSuite oathdigital.gameplay.powers.travel.ForestPathsSuite oathdigital.gameplay.powers.travel.DragonskinDrumSuite oathdigital.gameplay.powers.travel.TollRoadsSuite oathdigital.gameplay.powers.travel.GraspingVinesSuite oathdigital.gameplay.TravelProcedureSuite oathdigital.gameplay.TravelSitePowersSuite oathdigital.gameplay.BackendArchitectureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.ContributionIgnoresSuite distantlands.gameplay.ContributionCollectorSuite distantlands.gameplay.powers.travel.TentsSuite distantlands.gameplay.powers.travel.ForestPathsSuite distantlands.gameplay.powers.travel.DragonskinDrumSuite distantlands.gameplay.powers.travel.TollRoadsSuite distantlands.gameplay.powers.travel.GraspingVinesSuite distantlands.gameplay.TravelProcedureSuite distantlands.gameplay.TravelSitePowersSuite distantlands.gameplay.BackendArchitectureSuite"`
 Expected: PASS (96 tests in these suites and the ones they touch).
 
 - [ ] **Step 5: Run the whole suite and the architecture check**
@@ -4976,15 +4976,15 @@ Follow "Recording a sub-slice" below for 2c and commit with `docs: record slice 
 Create `src/test/scala/distantlands/gameplay/powers/economy/CupOfPlentySuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.EconomyFixture
-import oathdigital.gameplay.actions.economy.TradeProcedure
-import oathdigital.gameplay.powers.{PowerFixture, SearchFixture}
-import oathdigital.gameplay.powers.action.PaidActionHarness
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
+import distantlands.gameplay.EconomyFixture
+import distantlands.gameplay.actions.economy.TradeProcedure
+import distantlands.gameplay.powers.{PowerFixture, SearchFixture}
+import distantlands.gameplay.powers.action.PaidActionHarness
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.OathState.Ready
 
 class CupOfPlentySuite extends munit.FunSuite {
   import EconomyFixture._
@@ -5067,15 +5067,15 @@ class CupOfPlentySuite extends munit.FunSuite {
 Create `src/test/scala/distantlands/gameplay/powers/economy/RowdyPubSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.EconomyFixture
-import oathdigital.gameplay.actions.economy.MusterProcedure
-import oathdigital.gameplay.powers.{CardStaging, MusterPowers, PowerFixture, SearchFixture}
-import oathdigital.gameplay.powers.action.PaidActionHarness
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
+import distantlands.gameplay.EconomyFixture
+import distantlands.gameplay.actions.economy.MusterProcedure
+import distantlands.gameplay.powers.{CardStaging, MusterPowers, PowerFixture, SearchFixture}
+import distantlands.gameplay.powers.action.PaidActionHarness
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.OathState.Ready
 
 class RowdyPubSuite extends munit.FunSuite {
   import EconomyFixture._
@@ -5161,16 +5161,16 @@ class RowdyPubSuite extends munit.FunSuite {
 Create `src/test/scala/distantlands/gameplay/powers/recover/RelicWorshipSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.recover
+package distantlands.gameplay.powers.recover
 
-import oathdigital.gameplay.CatacombsContributionSuite
-import oathdigital.gameplay.actions.recover.RecoverProcedure
-import oathdigital.gameplay.powers.{CardStaging, PowerFixture, SearchFixture}
-import oathdigital.gameplay.powers.action.PaidActionHarness
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.setup.FirstGameSetupRules
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
+import distantlands.gameplay.CatacombsContributionSuite
+import distantlands.gameplay.actions.recover.RecoverProcedure
+import distantlands.gameplay.powers.{CardStaging, PowerFixture, SearchFixture}
+import distantlands.gameplay.powers.action.PaidActionHarness
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.setup.FirstGameSetupRules
+import distantlands.model._
+import distantlands.model.OathState.Ready
 
 class RelicWorshipSuite extends munit.FunSuite {
   import SearchFixture.rules
@@ -5234,7 +5234,7 @@ class RelicWorshipSuite extends munit.FunSuite {
     // The dice-pool change every Recover starts with does not round-trip the
     // wire (its window is not kept), so it is left out of the check.
     assert(PaidActionHarness.wireRoundTrips(events.filterNot {
-      case step: oathdigital.gameplay.walker.WalkerStepRecorded =>
+      case step: distantlands.gameplay.walker.WalkerStepRecorded =>
         step.ops.exists(_.isInstanceOf[ModifyDicePool])
       case _ => false
     }))
@@ -5312,13 +5312,13 @@ class RelicWorshipSuite extends munit.FunSuite {
 Create `src/test/scala/distantlands/gameplay/powers/search/AugurySuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.powers.{CardStaging, PowerFixture, SearchFixture}
-import oathdigital.gameplay.powers.action.PaidActionHarness
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.powers.{CardStaging, PowerFixture, SearchFixture}
+import distantlands.gameplay.powers.action.PaidActionHarness
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 class AugurySuite extends munit.FunSuite {
   import PowerFixture._
@@ -5407,12 +5407,12 @@ class AugurySuite extends munit.FunSuite {
 Create `src/test/scala/distantlands/gameplay/powers/search/TruthfulHarpSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.powers.{CardStaging, PowerFixture, SearchFixture, TargetsFixture}
-import oathdigital.gameplay.powers.action.PaidActionHarness
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.powers.{CardStaging, PowerFixture, SearchFixture, TargetsFixture}
+import distantlands.gameplay.powers.action.PaidActionHarness
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 class TruthfulHarpSuite extends munit.FunSuite {
   import PowerFixture._
@@ -5504,13 +5504,13 @@ Expected: FAIL to compile, for example `not found: value CupOfPlenty`.
 Create `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`:
 
 ```scala
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.ContributingPower
-import oathdigital.gameplay.powers.economy.{CupOfPlenty, RowdyPub}
-import oathdigital.gameplay.powers.recover.RelicWorship
-import oathdigital.gameplay.powers.search.{Augury, TruthfulHarp}
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.ContributingPower
+import distantlands.gameplay.powers.economy.{CupOfPlenty, RowdyPub}
+import distantlands.gameplay.powers.recover.RelicWorship
+import distantlands.gameplay.powers.search.{Augury, TruthfulHarp}
 
 /** The Search, Trade, Muster and Recover modifiers, registered together. A
   * power whose card is absent from `catalog` is omitted.
@@ -5528,13 +5528,13 @@ object ActionModifiers {
 Create `src/main/scala/distantlands/gameplay/powers/economy/CupOfPlenty.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.economy.{MusterSource, TradeProcedure}
-import oathdigital.gameplay.powerresolver.{Contribution, Transform}
-import oathdigital.gameplay.powers.{CatalogCards, PowerAnswers, SelectedModifier}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.economy.{MusterSource, TradeProcedure}
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.gameplay.powers.{CatalogCards, PowerAnswers, SelectedModifier}
+import distantlands.model._
 
 /** The Cup of Plenty (relic R07), a selected Trade modifier: trading with a
   * card whose suit differs from every faceup adviser the player holds costs no
@@ -5591,13 +5591,13 @@ object CupOfPlenty {
 Create `src/main/scala/distantlands/gameplay/powers/economy/RowdyPub.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.economy.MusterProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, Transform}
-import oathdigital.gameplay.powers.{CatalogCards, PlayerFacts, PowerAnswers, SelectedModifier}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.economy.MusterProcedure
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.gameplay.powers.{CatalogCards, PlayerFacts, PowerAnswers, SelectedModifier}
+import distantlands.model._
 
 /** Rowdy Pub (card 144), a selected Muster modifier: mustering from Rowdy Pub
   * gains one more warband, on top of the bonus for matching advisers.
@@ -5635,12 +5635,12 @@ object RowdyPub {
 Create `src/main/scala/distantlands/gameplay/powers/recover/RelicWorship.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.recover
+package distantlands.gameplay.powers.recover
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.{Contribution, Transform}
-import oathdigital.gameplay.powers.{CatalogCards, SelectedModifier}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.gameplay.powers.{CatalogCards, SelectedModifier}
+import distantlands.model._
 
 /** Relic Worship (card 173), a selected Recover modifier. Cost: 1 secret placed
   * on the card. After recovering a relic, gain 2 Supply.
@@ -5677,12 +5677,12 @@ object RelicWorship {
 Create `src/main/scala/distantlands/gameplay/powers/search/Augury.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.{Contribution, Transform}
-import oathdigital.gameplay.powers.{CatalogCards, SelectedModifier}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.gameplay.powers.{CatalogCards, SelectedModifier}
+import distantlands.model._
 
 /** Augury (card 56), a selected Search modifier: a Search from the world deck
   * or a regional discard draws one more card. The draw still stops after a
@@ -5710,10 +5710,10 @@ object Augury {
 Create `src/main/scala/distantlands/gameplay/powers/search/DrawExtension.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.actions.SearchRules
-import oathdigital.model._
+import distantlands.gameplay.actions.SearchRules
+import distantlands.model._
 
 /** How a Search modifier makes the draw take more cards.
   *
@@ -5770,12 +5770,12 @@ private[search] object DrawExtension {
 Create `src/main/scala/distantlands/gameplay/powers/search/TruthfulHarp.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.{Contribution, Transform}
-import oathdigital.gameplay.powers.{CatalogCards, SelectedModifier}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.gameplay.powers.{CatalogCards, SelectedModifier}
+import distantlands.model._
 
 /** The Truthful Harp (relic R04), a selected Search modifier: a Search draws 2
   * more cards, and every card drawn is revealed while it is in the player's
@@ -5880,7 +5880,7 @@ with:
 
 - [ ] **Step 4: Run the task's suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.search.AugurySuite oathdigital.gameplay.powers.search.TruthfulHarpSuite oathdigital.gameplay.powers.economy.CupOfPlentySuite oathdigital.gameplay.powers.economy.RowdyPubSuite oathdigital.gameplay.powers.recover.RelicWorshipSuite oathdigital.gameplay.SearchProcedureSuite oathdigital.gameplay.SearchSuite oathdigital.gameplay.RuleResolutionSuite oathdigital.gameplay.BackendArchitectureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.search.AugurySuite distantlands.gameplay.powers.search.TruthfulHarpSuite distantlands.gameplay.powers.economy.CupOfPlentySuite distantlands.gameplay.powers.economy.RowdyPubSuite distantlands.gameplay.powers.recover.RelicWorshipSuite distantlands.gameplay.SearchProcedureSuite distantlands.gameplay.SearchSuite distantlands.gameplay.RuleResolutionSuite distantlands.gameplay.BackendArchitectureSuite"`
 Expected: PASS (74 tests in these suites and the ones they touch).
 
 - [ ] **Step 5: Run the whole suite and the architecture check**
@@ -5923,13 +5923,13 @@ Conspiracy's effects insisted on an answer whenever a legal target existed. A po
 Create `src/test/scala/distantlands/gameplay/powers/whenplayed/ConspiracyTargetWindowSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower, Transform}
-import oathdigital.gameplay.powers.PowerFixture
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers}
-import oathdigital.model._
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower, Transform}
+import distantlands.gameplay.powers.PowerFixture
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers}
+import distantlands.model._
 
 /** The window on Conspiracy's target decision: a power can remove targets, and
   * when it removes every one the decision is not asked and nothing is taken.
@@ -6029,7 +6029,7 @@ class ConspiracyTargetWindowSuite extends munit.FunSuite {
 - [ ] **Step 2: Run them to verify they fail**
 
 Run: `./sbtw "Test/compile"`
-Expected: FAIL to compile, for example `value ConspiracyTargetSelection is not a member of object oathdigital.model.PowerWindow`.
+Expected: FAIL to compile, for example `value ConspiracyTargetSelection is not a member of object distantlands.model.PowerWindow`.
 
 - [ ] **Step 3: Implement**
 
@@ -6085,7 +6085,7 @@ with:
 
 - [ ] **Step 4: Run the task's suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.whenplayed.ConspiracyTargetWindowSuite oathdigital.gameplay.powers.whenplayed.ConspiracyWhenPlayedSuite oathdigital.gameplay.SearchProcedureSuite oathdigital.gameplay.BackendArchitectureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.whenplayed.ConspiracyTargetWindowSuite distantlands.gameplay.powers.whenplayed.ConspiracyWhenPlayedSuite distantlands.gameplay.SearchProcedureSuite distantlands.gameplay.BackendArchitectureSuite"`
 Expected: PASS (46 tests in these suites and the ones they touch).
 
 - [ ] **Step 5: Run the whole suite and the architecture check**
@@ -6124,18 +6124,18 @@ All three are persistent rules.
 Create `src/test/scala/distantlands/gameplay/powers/targeting/CircletOfCommandSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.targeting
+package distantlands.gameplay.powers.targeting
 
-import oathdigital.gameplay.{CampaignFixture, ChallengeFixture}
-import oathdigital.gameplay.CampaignFixture.raidBoard
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.gameplay.powers.{CardStaging, PowerFixture, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.gameplay.{CampaignFixture, ChallengeFixture}
+import distantlands.gameplay.CampaignFixture.raidBoard
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.powers.{CardStaging, PowerFixture, WalkerPowerCatalog}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
 
 class CircletOfCommandSuite extends munit.FunSuite {
   import TargetingFixture._
@@ -6271,7 +6271,7 @@ class CircletOfCommandSuite extends munit.FunSuite {
       PowerWindow.CampaignTargetSelection, Vector.empty,
       Decide("x", PowerFixture.actor, DecisionQuery.ChooseOne(Vector.empty)))
     val restriction = power.contributions(PowerWindow.CampaignTargetSelection)
-      .head.asInstanceOf[oathdigital.gameplay.powerresolver.OptionRestriction]
+      .head.asInstanceOf[distantlands.gameplay.powerresolver.OptionRestriction]
     assertEquals(restriction.fn(ctx, DecisionOptionRef.Site(SiteId("s"))), None)
   }
 }
@@ -6280,16 +6280,16 @@ class CircletOfCommandSuite extends munit.FunSuite {
 Create `src/test/scala/distantlands/gameplay/powers/targeting/FortressRulesSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.targeting
+package distantlands.gameplay.powers.targeting
 
-import oathdigital.gameplay.{CampaignFixture, ChallengeFixture}
-import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignProcedure}
-import oathdigital.gameplay.powerresolver.{PowerCtx, Restriction}
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.gameplay.{CampaignFixture, ChallengeFixture}
+import distantlands.gameplay.actions.campaign.{CampaignIds, CampaignProcedure}
+import distantlands.gameplay.powerresolver.{PowerCtx, Restriction}
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
 
 class FortressRulesSuite extends munit.FunSuite {
   import CampaignFixture._
@@ -6454,14 +6454,14 @@ class FortressRulesSuite extends munit.FunSuite {
 Create `src/test/scala/distantlands/gameplay/powers/targeting/TargetingFixture.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.targeting
+package distantlands.gameplay.powers.targeting
 
-import oathdigital.gameplay.{CampaignFixture, OathRules}
-import oathdigital.gameplay.powers.{CardStaging, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerPowers, WalkerProcedureRegistry}
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
+import distantlands.gameplay.{CampaignFixture, OathRules}
+import distantlands.gameplay.powers.{CardStaging, WalkerPowerCatalog}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerPowers, WalkerProcedureRegistry}
+import distantlands.model._
+import distantlands.model.OathState.Ready
 
 /** Shared staging and reading for the suites of the rules that keep a player
   * from being targeted.
@@ -6548,13 +6548,13 @@ Expected: FAIL to compile, for example `not found: value CircletOfCommand`.
 Create `src/main/scala/distantlands/gameplay/powers/targeting/CircletOfCommand.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.targeting
+package distantlands.gameplay.powers.targeting
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution, OptionRestriction, PowerCtx, Transform}
-import oathdigital.gameplay.powers.{CatalogCards, CatalogResolution}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.BannerRules
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution, OptionRestriction, PowerCtx, Transform}
+import distantlands.gameplay.powers.{CatalogCards, CatalogResolution}
+import distantlands.model._
 
 /** The Circlet of Command (relic R15), a persistent rule of a faceup relic:
   * players other than the holder cannot target the holder's banners, or the
@@ -6639,14 +6639,14 @@ object CircletOfCommand {
 Create `src/main/scala/distantlands/gameplay/powers/targeting/FortressRules.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.targeting
+package distantlands.gameplay.powers.targeting
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignSetup}
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution, OptionRestriction, PowerCtx, Restriction}
-import oathdigital.gameplay.powers.{CatalogCards, CatalogResolution}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.BannerRules
+import distantlands.gameplay.actions.campaign.{CampaignIds, CampaignSetup}
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution, OptionRestriction, PowerCtx, Restriction}
+import distantlands.gameplay.powers.{CatalogCards, CatalogResolution}
+import distantlands.model._
 
 /** A rule of the Fortress edifice (E28) that keeps a player from being the
   * target of a Challenge or a Raid. A Conquest is not affected. Each face is a
@@ -6808,10 +6808,10 @@ object RottingFortress {
 Create `src/main/scala/distantlands/gameplay/powers/targeting/TargetProtections.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.targeting
+package distantlands.gameplay.powers.targeting
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.ContributingPower
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.ContributingPower
 
 /** The persistent rules that keep a player from being targeted by a Raid, a
   * Challenge or a Conspiracy, registered together. A power whose card is absent
@@ -6828,14 +6828,14 @@ object TargetProtections {
 In `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`, replace:
 
 ```scala
-import oathdigital.gameplay.powers.rest.{LeagueTreatyContribution, SilverTongue}
+import distantlands.gameplay.powers.rest.{LeagueTreatyContribution, SilverTongue}
 ```
 
 with:
 
 ```scala
-import oathdigital.gameplay.powers.rest.{LeagueTreatyContribution, SilverTongue}
-import oathdigital.gameplay.powers.targeting.TargetProtections
+import distantlands.gameplay.powers.rest.{LeagueTreatyContribution, SilverTongue}
+import distantlands.gameplay.powers.targeting.TargetProtections
 ```
 
 In `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`, replace:
@@ -6853,7 +6853,7 @@ with:
 
 - [ ] **Step 4: Run the task's suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.targeting.CircletOfCommandSuite oathdigital.gameplay.powers.targeting.FortressRulesSuite oathdigital.gameplay.PowerKindsCatalogSuite oathdigital.gameplay.CampaignProcedureSuite oathdigital.gameplay.CampaignRaidSuite oathdigital.gameplay.CampaignSetupSuite oathdigital.gameplay.ChallengeProcedureSuite oathdigital.gameplay.OptionRestrictionSuite oathdigital.gameplay.BackendArchitectureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.targeting.CircletOfCommandSuite distantlands.gameplay.powers.targeting.FortressRulesSuite distantlands.gameplay.PowerKindsCatalogSuite distantlands.gameplay.CampaignProcedureSuite distantlands.gameplay.CampaignRaidSuite distantlands.gameplay.CampaignSetupSuite distantlands.gameplay.ChallengeProcedureSuite distantlands.gameplay.OptionRestrictionSuite distantlands.gameplay.BackendArchitectureSuite"`
 Expected: PASS (112 tests in these suites and the ones they touch).
 
 - [ ] **Step 5: Run the whole suite and the architecture check**
@@ -6896,12 +6896,12 @@ This answers the product owner's question, "does the Restriction not catch the C
 Create `src/test/scala/distantlands/gameplay/RestrictionAnswersSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower, PowerCtx, Restriction, Transform}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.initialReady
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerPowers}
-import oathdigital.model._
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower, PowerCtx, Restriction, Transform}
+import distantlands.gameplay.setup.FirstGameSetupFixture.initialReady
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerPowers}
+import distantlands.model._
 
 /** The restriction traversal selects a `Branch` with the answers recorded so
   * far, so a Restriction hooked inside a subtree that only exists once a
@@ -6979,20 +6979,20 @@ class RestrictionAnswersSuite extends munit.FunSuite {
 - [ ] **Step 2: Run them to verify they fail**
 
 Run: `./sbtw "Test/compile"`
-Expected: FAIL to compile, for example `too many arguments (found 5, expected 4) for method restrictionViolations: (tree: oathdigital.model.Operation, powers: oathdigital.gameplay.walker.WalkerPowers, state: oathdigital.model.ReadyGame, activePlayer: oathdigital.model.PlayerId): Vector[oathdigital.model.OathViolation]`.
+Expected: FAIL to compile, for example `too many arguments (found 5, expected 4) for method restrictionViolations: (tree: distantlands.model.Operation, powers: distantlands.gameplay.walker.WalkerPowers, state: distantlands.model.ReadyGame, activePlayer: distantlands.model.PlayerId): Vector[distantlands.model.OathViolation]`.
 
 - [ ] **Step 3: Implement**
 
 In `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala`, replace:
 
 ```scala
-import oathdigital.model.{Branch, Decide,
+import distantlands.model.{Branch, Decide,
 ```
 
 with:
 
 ```scala
-import oathdigital.model.{Answered, Branch, Decide,
+import distantlands.model.{Answered, Branch, Decide,
 ```
 
 In `src/main/scala/distantlands/gameplay/walker/WalkerPowerGather.scala`, replace:
@@ -7057,7 +7057,7 @@ with:
 ```scala
   def restrictionViolations(tree: Operation, powers: WalkerPowers,
       state: ReadyGame, activePlayer: PlayerId,
-      answered: Vector[oathdigital.model.Answered] = Vector.empty)
+      answered: Vector[distantlands.model.Answered] = Vector.empty)
       : Vector[OathViolation] = WalkerPowerGather.restrictionViolations(tree,
     powers, state, activePlayer, answered)
 ```
@@ -7123,7 +7123,7 @@ with:
 
 - [ ] **Step 4: Run the task's suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.RestrictionAnswersSuite oathdigital.gameplay.OathRulesWalkerPowerSuite oathdigital.gameplay.ProcedureWalkerSuite oathdigital.gameplay.OptionRestrictionSuite oathdigital.gameplay.CampaignProcedureSuite oathdigital.gameplay.ChallengeProcedureSuite oathdigital.gameplay.SearchProcedureSuite oathdigital.gameplay.MusterProcedureSuite oathdigital.gameplay.PendingWalkerRulesSuite oathdigital.gameplay.BackendArchitectureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.RestrictionAnswersSuite distantlands.gameplay.OathRulesWalkerPowerSuite distantlands.gameplay.ProcedureWalkerSuite distantlands.gameplay.OptionRestrictionSuite distantlands.gameplay.CampaignProcedureSuite distantlands.gameplay.ChallengeProcedureSuite distantlands.gameplay.SearchProcedureSuite distantlands.gameplay.MusterProcedureSuite distantlands.gameplay.PendingWalkerRulesSuite distantlands.gameplay.BackendArchitectureSuite"`
 Expected: PASS (161 tests in these suites and the ones they touch).
 
 - [ ] **Step 5: Run the whole suite and the architecture check**
@@ -7161,19 +7161,19 @@ With Task 12, a restriction on the whole Campaign applies to the nested one: ans
 Create `src/test/scala/distantlands/gameplay/powers/economy/KnightsErrantSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.{CampaignFixture, EconomyFixture, OathRules}
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.actions.economy.MusterProcedure
-import oathdigital.gameplay.powers.{CardStaging, PowerFixture, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.targeting.TargetingFixture
-import oathdigital.gameplay.powers.action.PaidActionHarness
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerPowers, WalkerProcedureRegistry}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{ChooseManyAnswer, ChooseAmountAnswer, ChooseOneAnswer}
-import oathdigital.model.OathState.Ready
+import distantlands.gameplay.{CampaignFixture, EconomyFixture, OathRules}
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.actions.economy.MusterProcedure
+import distantlands.gameplay.powers.{CardStaging, PowerFixture, WalkerPowerCatalog}
+import distantlands.gameplay.powers.targeting.TargetingFixture
+import distantlands.gameplay.powers.action.PaidActionHarness
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerPowers, WalkerProcedureRegistry}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{ChooseManyAnswer, ChooseAmountAnswer, ChooseOneAnswer}
+import distantlands.model.OathState.Ready
 
 class KnightsErrantSuite extends munit.FunSuite {
   import EconomyFixture.plainId
@@ -7395,13 +7395,13 @@ Expected: FAIL to compile, for example `not found: value KnightsErrant`.
 Create `src/main/scala/distantlands/gameplay/powers/economy/KnightsErrant.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.campaign.{CampaignProcedure, CampaignSetup}
-import oathdigital.gameplay.powerresolver.{Contribution, PowerCtx, Transform}
-import oathdigital.gameplay.powers.{CatalogCards, PowerAnswers, SelectedModifier}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.campaign.{CampaignProcedure, CampaignSetup}
+import distantlands.gameplay.powerresolver.{Contribution, PowerCtx, Transform}
+import distantlands.gameplay.powers.{CatalogCards, PowerAnswers, SelectedModifier}
+import distantlands.model._
 
 /** Knights Errant (card 120), a selected Muster modifier: after mustering, you
   * may campaign, spending no Supply.
@@ -7477,14 +7477,14 @@ object KnightsErrant {
 In `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`, replace:
 
 ```scala
-import oathdigital.gameplay.powers.campaign.VowOfPeaceContribution
+import distantlands.gameplay.powers.campaign.VowOfPeaceContribution
 ```
 
 with:
 
 ```scala
-import oathdigital.gameplay.powers.campaign.VowOfPeaceContribution
-import oathdigital.gameplay.powers.economy.KnightsErrant
+import distantlands.gameplay.powers.campaign.VowOfPeaceContribution
+import distantlands.gameplay.powers.economy.KnightsErrant
 ```
 
 In `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`, replace:
@@ -7537,7 +7537,7 @@ with:
 
 - [ ] **Step 4: Run the task's suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.KnightsErrantSuite oathdigital.gameplay.powers.targeting.FortressRulesSuite oathdigital.gameplay.MusterProcedureSuite oathdigital.gameplay.EconomyWalkerSuite oathdigital.gameplay.CampaignProcedureSuite oathdigital.gameplay.CampaignPowersSuite oathdigital.gameplay.walker.WalkerProcedureRegistrySuite oathdigital.gameplay.BackendArchitectureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.economy.KnightsErrantSuite distantlands.gameplay.powers.targeting.FortressRulesSuite distantlands.gameplay.MusterProcedureSuite distantlands.gameplay.EconomyWalkerSuite distantlands.gameplay.CampaignProcedureSuite distantlands.gameplay.CampaignPowersSuite distantlands.gameplay.walker.WalkerProcedureRegistrySuite distantlands.gameplay.BackendArchitectureSuite"`
 Expected: PASS (120 tests in these suites and the ones they touch).
 
 - [ ] **Step 5: Run the whole suite and the architecture check**

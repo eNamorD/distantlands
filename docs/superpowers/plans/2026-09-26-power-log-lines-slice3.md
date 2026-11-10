@@ -26,7 +26,7 @@
 - Import rules:
   - `gameplay` never imports `application`, `serialization` or `server`.
   - A walker power (anything under `gameplay/powers`) never imports `gameplay.walker`.
-- Never touch the live database `var/oathdigital`.
+- Never touch the live database `var/distantlands`.
 - Other sessions commit to `main` while you work. Stage explicit paths only; never `git add -A`. Re-check `git log --oneline -1` before any amend, reset or rebase.
 - Work in a git worktree:
   - `EnterWorktree` branches from `origin`, which lags local `main`. Fast-forward the new branch to local `main` first.
@@ -136,7 +136,7 @@ In `VowOfObedienceSuite.scala`, add after the test "the Conspiracy is a Vision, 
       orientation = Orientation.FaceDown))), Vector.empty)
 ```
 
-In `SecretPoliceSuite.scala`, add `NoteText` to the `oathdigital.gameplay.powers` import, and add at the end:
+In `SecretPoliceSuite.scala`, add `NoteText` to the `distantlands.gameplay.powers` import, and add at the end:
 
 ```scala
   private def hidden(from: OathTransition): Vector[NoteText.Said] =
@@ -153,7 +153,7 @@ In `SecretPoliceSuite.scala`, add `NoteText` to the `oathdigital.gameplay.powers
       Vector.empty)
 ```
 
-In `SacredGroundSuite.scala`, add `NoteText` to the `oathdigital.gameplay.powers` import, and add at the end:
+In `SacredGroundSuite.scala`, add `NoteText` to the `distantlands.gameplay.powers` import, and add at the end:
 
 ```scala
   private def hidden(from: OathTransition): Vector[NoteText.Said] =
@@ -171,7 +171,7 @@ In `SacredGroundSuite.scala`, add `NoteText` to the `oathdigital.gameplay.powers
 
 - [ ] **Step 3: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.cardplay.VowOfObedienceSuite oathdigital.gameplay.powers.cardplay.SecretPoliceSuite oathdigital.gameplay.powers.cardplay.SacredGroundSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.cardplay.VowOfObedienceSuite distantlands.gameplay.powers.cardplay.SecretPoliceSuite distantlands.gameplay.powers.cardplay.SacredGroundSuite"`
 Expected: the three "hidden faceup placement" tests FAIL, each with an empty vector where one `Said` was expected. The "reads no line" tests pass.
 
 - [ ] **Step 4: Declare the shared key in `VisionPlay`**
@@ -191,7 +191,7 @@ In `VisionPlay.scala`, add inside the object, after `forbidden`:
       NoteArg.Player(ctx.activePlayer)))
 ```
 
-The file already imports `PowerCtx` and `oathdigital.model._`, which covers `NoteKey`, `NotePart`, `CardId`, `PowerNote`, `PowerSourceRef` and `NoteArg`.
+The file already imports `PowerCtx` and `distantlands.model._`, which covers `NoteKey`, `NotePart`, `CardId`, `PowerNote`, `PowerSourceRef` and `NoteArg`.
 
 - [ ] **Step 5: Give each Vision power its note**
 
@@ -232,7 +232,7 @@ Add a sentence to each class's doc comment: "When the look-ahead hides a faceup 
 
 - [ ] **Step 6: Run the tests to verify they pass**
 
-Run: the Step 3 command, then `./sbtw "testOnly oathdigital.gameplay.powers.PowerNoteCatalogSuite oathdigital.application.gamelog.*"`.
+Run: the Step 3 command, then `./sbtw "testOnly distantlands.gameplay.powers.PowerNoteCatalogSuite distantlands.application.gamelog.*"`.
 Expected: all PASS. If a golden log under `src/test/resources/gamelog/` now differs, stop: no script in this plan plays a forbidden Vision, so a difference is a bug.
 
 - [ ] **Step 7: Commit**
@@ -256,7 +256,7 @@ git commit -m "feat(powers): the Vision rules say why a faceup placement is miss
 
 - [ ] **Step 1: Write the failing tests**
 
-In `FortressRulesSuite.scala`, add `import oathdigital.gameplay.powers.NoteText` and, at the end of the class:
+In `FortressRulesSuite.scala`, add `import distantlands.gameplay.powers.NoteText` and, at the end of the class:
 
 ```scala
   // ---- Lines ----
@@ -308,7 +308,7 @@ In `FortressRulesSuite.scala`, add `import oathdigital.gameplay.powers.NoteText`
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.targeting.FortressRulesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.targeting.FortressRulesSuite"`
 Expected: the four tests that expect a line FAIL with an empty vector. "a Fortress that protects nobody writes nothing" passes.
 
 - [ ] **Step 3: Write the notes**
@@ -387,7 +387,7 @@ The hooks ignore their unused `ctx` or `ref` parameter. `-Wunused` does not flag
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.targeting.* oathdigital.gameplay.powers.PowerNoteCatalogSuite oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.targeting.* distantlands.gameplay.powers.PowerNoteCatalogSuite distantlands.application.gamelog.*"`
 Expected: all PASS, the golden logs unchanged.
 
 - [ ] **Step 5: Commit**
@@ -426,7 +426,7 @@ Fix what it confirms before Task 3.
 
 In `CircletOfCommandSuite.scala`:
 
-1. Add `NoteText` to the `oathdigital.gameplay.powers` import.
+1. Add `NoteText` to the `distantlands.gameplay.powers` import.
 2. Replace `raidTargets` with a function returning the transition that parks on the targets, and a wrapper for its options:
 
    ```scala
@@ -515,7 +515,7 @@ In `CircletOfCommandSuite.scala`:
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.targeting.CircletOfCommandSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.targeting.CircletOfCommandSuite"`
 Expected: the three new tests FAIL with empty vectors where lines were expected. The existing tests pass.
 
 - [ ] **Step 3: Write the notes**
@@ -591,7 +591,7 @@ In `CircletOfCommand.scala`:
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.targeting.* oathdigital.gameplay.powers.whenplayed.* oathdigital.gameplay.powers.PowerNoteCatalogSuite oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.targeting.* distantlands.gameplay.powers.whenplayed.* distantlands.gameplay.powers.PowerNoteCatalogSuite distantlands.application.gamelog.*"`
 Expected: all PASS.
 
 - [ ] **Step 5: Commit**
@@ -617,7 +617,7 @@ git commit -m "feat(powers): the Circlet of Command says whose things it protect
 
 - [ ] **Step 1: Write the failing tests**
 
-In `CampaignPowersSuite.scala`, add `import oathdigital.gameplay.powers.NoteText`. After the Narrow Pass test "a Pass that is not in play forbids nothing", add:
+In `CampaignPowersSuite.scala`, add `import distantlands.gameplay.powers.NoteText`. After the Narrow Pass test "a Pass that is not in play forbids nothing", add:
 
 ```scala
   /** The notes the Pass writes when the walk parks on `options`. */
@@ -642,7 +642,7 @@ The first test expects two notes because two sites are hidden (`ordered(3)` and 
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CampaignPowersSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.CampaignPowersSuite"`
 Expected: "each site the Pass hides …" FAILS with an empty vector. The other passes.
 
 - [ ] **Step 3: Write the note**
@@ -684,7 +684,7 @@ object NarrowPassSitePower:
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CampaignPowersSuite oathdigital.gameplay.powers.PowerNoteCatalogSuite oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.CampaignPowersSuite distantlands.gameplay.powers.PowerNoteCatalogSuite distantlands.application.gamelog.*"`
 Expected: all PASS.
 
 - [ ] **Step 5: Amend the spec**

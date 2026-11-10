@@ -21,11 +21,11 @@
 
 **Commands and workflow**
 - Tests:
-  - one suite: `./sbtw "root/testOnly oathdigital.gameplay.RestSuite"`
+  - one suite: `./sbtw "root/testOnly distantlands.gameplay.RestSuite"`
   - all root tests: `./sbtw root/test`
   - all frontend tests: `./sbtw frontend/test`
 - Keep a full-run log with `./sbtw root/test 2>&1 | tee <scratchpad>/root-<step>.log`. The last line reads `Passed: Total N, Failed 0, ...`.
-- CPU time: `python3 <scratchpad>/timing.py '.' <log>` sums munit's per-test times. The script is in the session scratchpad; if it is missing, recreate it from its docstring. It sums the trailing `N.NNNs` of every `  + ` line under an `oathdigital.…:` suite header, with ANSI codes stripped.
+- CPU time: `python3 <scratchpad>/timing.py '.' <log>` sums munit's per-test times. The script is in the session scratchpad; if it is missing, recreate it from its docstring. It sums the trailing `N.NNNs` of every `  + ` line under a `distantlands.…:` suite header, with ANSI codes stripped.
 - The build uses `-Werror`, so an unused import fails compilation. Remove imports that a deletion leaves unused.
 - Never use `preview_start`: it hits the live DB.
 - Never stage or commit `docs/ROADMAP.md`.
@@ -68,7 +68,7 @@
 - Modify: `docs/superpowers/specs/2026-09-27-prune-low-value-tests-ledger.md` (add a Progress table under the intro)
 
 - [ ] **Step 1: Create the worktree.** Use `EnterWorktree` with the branch `test/prune-low-value`. It must fork from local `main`; check that `git merge-base HEAD main` equals `git rev-parse main`.
-- [ ] **Step 2: Link the tooling.** Run `ln -s /Users/roman/projects/oathdigital/.tooling .tooling` in the worktree root. `.tooling` is gitignored.
+- [ ] **Step 2: Link the tooling.** Run `ln -s /Users/roman/projects/distantlands/.tooling .tooling` in the worktree root. `.tooling` is gitignored.
 - [ ] **Step 3: Run the baseline.**
 
 ```bash
@@ -127,7 +127,7 @@ Each unit below is one commit. For each unit:
    - Delete `TypedRuleHandler` and `RuleRegistry` from `src/main/scala/distantlands/gameplay/RuleResolution.scala`. If nothing else remains in the file, delete the file.
    - Delete the tests `RuleResolutionSuite` "registry lookup is explicit and unknown relevant handlers are safe" and "resolution ordering is priority source identity then handler ID".
 4. **The presentation package**
-   - Grep: `grep -rn "oathdigital.presentation\|VisualResolver\|PresentationExample\|ViewId\|BoardView" src/main shared/src frontend/src/main`
+   - Grep: `grep -rn "distantlands.presentation\|VisualResolver\|PresentationExample\|ViewId\|BoardView" src/main shared/src frontend/src/main`
    - Delete `src/main/scala/distantlands/presentation/`.
    - Delete `src/test/scala/distantlands/presentation/VisualResolverSuite.scala`.
    - Delete the test `OpaqueIdSuite` "ViewId keeps its validation and prints raw".
@@ -158,7 +158,7 @@ Each unit below is one commit. For each unit:
 
 - [ ] **Step 1:** Units 1–3 (gameplay), one commit each. Commit message style: `refactor(operations): delete the unused OperationShadow`.
 - [ ] **Step 2:** Units 4–5 (model), one commit each.
-- [ ] **Step 3:** Unit 6 (trusted seats). Run `./sbtw "root/testOnly oathdigital.server.* oathdigital.persistence.* oathdigital.application.MembershipAuthorizationServiceSuite"`. Expected: PASS.
+- [ ] **Step 3:** Unit 6 (trusted seats). Run `./sbtw "root/testOnly distantlands.server.* distantlands.persistence.* distantlands.application.MembershipAuthorizationServiceSuite"`. Expected: PASS.
 - [ ] **Step 4:** Units 7–9, one commit each.
 - [ ] **Step 5:** Run `./sbtw root/test` and `./sbtw frontend/test`. Expected: `Failed 0`. Add a Progress row "Task 1" and commit the ledger.
 - [ ] **Step 6: Review checkpoint.** Dispatch a review subagent, never on a higher model or effort than yours. Prompt: check each Task 1 commit against the spec's dead-code rule. Re-run each grep and confirm no caller remains, no production behavior was removed, and the reseeded trusted-seat tests still exercise `resolveTrustedSeat`. Apply its fixes before Task 2.
@@ -174,10 +174,10 @@ Each unit below is one commit. For each unit:
 - [ ] **Step 1: Write the uniqueness test.**
 
 ```scala
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model.PowerId
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model.PowerId
 
 /** Every production power is registered once per catalog, so a card's power
   * cannot fire twice. The per-power suites prove presence by running each
@@ -199,7 +199,7 @@ class PowerCatalogUniquenessSuite extends munit.FunSuite:
       Vector.empty)
 ```
 
-- [ ] **Step 2: Run it.** `./sbtw "root/testOnly oathdigital.gameplay.powers.PowerCatalogUniquenessSuite"`. Expected: PASS.
+- [ ] **Step 2: Run it.** `./sbtw "root/testOnly distantlands.gameplay.powers.PowerCatalogUniquenessSuite"`. Expected: PASS.
   - If it fails, a real duplicate exists. Read why before going on: a card with two legitimate contributions under one id is a finding for the user, not something to hide.
 - [ ] **Step 3: Mutation check.**
   - Append ` :+ TakeWealthLimit` a second time at the end of `WalkerPowerCatalog.default`.

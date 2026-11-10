@@ -9,7 +9,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Restructure the Oath Digital engine around a single validator + derived power registry so powers are authorable in <20 lines per power with the engine untouched, ending with an MVP power set (2 banners, 30 denizens, ~15 relics) implemented on the new framework.
+**Goal:** Restructure the Distant Lands engine around a single validator + derived power registry so powers are authorable in <20 lines per power with the engine untouched, ending with an MVP power set (2 banners, 30 denizens, ~15 relics) implemented on the new framework.
 
 **Architecture:** One `OperationValidator` (3 rule partitions: generic op-shape, power restriction predicates, per-action policy allowlist) runs on the final operation batch before the `OperationExecutor` applies it; powers are thin objects registered in the static `PowerRegistry` keyed by `PowerWindow`; active-power set is derived per query from board state (no registration events); recorded events stay semantic, and power-path events additionally record their final op batch for replay (no re-derivation of powers at replay). Dice pools stay derived (never state); battle-plan effects stay typed data; prompting is modeled as split powers (phase A opens a decision window without state change, phase B resolves it).
 
@@ -327,7 +327,7 @@ Expected: no matches.
 
 - [ ] **Step 3: Confirm behavior untouched — restart dev server and smoke-check a live game**
 
-Run (background): `./sbtw "runMain oathdigital.server.OathServer var/oathdigital docs/catalog/new-foundations-component-catalog.json"`
+Run (background): `./sbtw "runMain distantlands.server.DistantLandsServer var/distantlands docs/catalog/new-foundations-component-catalog.json"`
 Then GET `http://127.0.0.1:8080/health` → `ok`. Post one benign command to the manual test game (`manual-1788482797070-427915`, nextSequence per its current stream) and confirm a 200 and the expected event append — e.g. replaying the negotiation state must still offer the same `legalControls` as before the refactor.
 
 - [ ] **Step 4: Phase-1 complete note**

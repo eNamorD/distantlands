@@ -5,7 +5,7 @@ Status: implemented 2026-09-24. Stage A: 21 implicit sites converted to
 given/using (18 `implicit val` values, 3 `(implicit ...)` parameter
 lists), 1 extension, 1 package object. Stage B: 7 of 7 ids opaque
 (dropped: none). Stage C: 49 of 49 flat families converted, kept sealed:
-`Phase` (two `private[oathdigital]` cases), the nine `PowerWindow`
+`Phase` (two `private[distantlands]` cases), the nine `PowerWindow`
 sub-families (`SearchWindow`, `TravelWindow`, `CampaignWindow`,
 `MusterWindow`, `TradeWindow`, `ForgeWindow`, `RecoverWindow`,
 `ChallengeWindow`, `OtherWindow`; cases live in the parent companion).
@@ -43,7 +43,7 @@ Measured on 2026-09-24, after the warning cleanup merge (`d832f08c`):
 - 669 Scala files, about 84,000 lines, across `src`, `frontend/src` and
   `shared`.
 - Implicits: 16 `implicit val` or `implicit` parameter sites, all
-  `ActorSystem[Nothing]` or `ExecutionContext` values in `OathServer` and
+  `ActorSystem[Nothing]` or `ExecutionContext` values in `DistantLandsServer` and
   the server route suites; one `private implicit final class
   TakeThrough` in `gameplay/actions/Search.scala`.
 - One package object, `frontend/src/main/scala/distantlands/frontend/package.scala`,
@@ -85,9 +85,9 @@ Branch `modernize-givens`, three commits.
    `extension [A](values: Vector[A]) def takeThrough(...)` with the same
    body; call sites do not change.
 3. `package object frontend` becomes top-level `type` and `val`
-   definitions under `package oathdigital.frontend`, in the same file
+   definitions under `package distantlands.frontend`, in the same file
    renamed to `frontend.scala`. Importers do not change:
-   `oathdigital.frontend.GameProjection` resolves as before.
+   `distantlands.frontend.GameProjection` resolves as before.
 
 Gate: the full gate below. No coverage change is expected.
 

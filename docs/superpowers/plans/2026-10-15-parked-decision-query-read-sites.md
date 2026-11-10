@@ -552,7 +552,7 @@ Append to `BackendArchitectureSuite.scala`, immediately after the catalog-id tes
 - [ ] **Step 2: Run it**
 
 ```bash
-./sbtw "testOnly oathdigital.gameplay.BackendArchitectureSuite"
+./sbtw "testOnly distantlands.gameplay.BackendArchitectureSuite"
 ```
 
 Expected: PASS. A failure lists `path:line` for each site Task 1 missed — migrate those, then re-run.
@@ -570,7 +570,7 @@ t = t.replace("case one: DecisionQuery.ChooseOne => one.options",
               "case DecisionQuery.ChooseOne(options, _, _) => options", 1)
 p.write_text(t)
 EOF
-./sbtw "testOnly oathdigital.gameplay.BackendArchitectureSuite"
+./sbtw "testOnly distantlands.gameplay.BackendArchitectureSuite"
 ```
 
 Expected: FAIL, naming `src/test/scala/distantlands/testkit/PlacementPicks.scala` and its line. A pass here means the matcher never reached test sources — fix it before continuing.
@@ -579,7 +579,7 @@ Expected: FAIL, naming `src/test/scala/distantlands/testkit/PlacementPicks.scala
 
 ```bash
 git checkout -- src/test/scala/distantlands/testkit/PlacementPicks.scala
-./sbtw "testOnly oathdigital.gameplay.BackendArchitectureSuite"
+./sbtw "testOnly distantlands.gameplay.BackendArchitectureSuite"
 ```
 
 Expected: PASS again.
@@ -620,7 +620,7 @@ if a pinned file is renamed out from under the allowlist, which an emptied
 - [ ] **Step 6: Run it**
 
 ```bash
-./sbtw "testOnly oathdigital.gameplay.BackendArchitectureSuite"
+./sbtw "testOnly distantlands.gameplay.BackendArchitectureSuite"
 ```
 
 Expected: PASS, both tests.
@@ -636,7 +636,7 @@ t = t.replace("case DecisionQuery.ChooseOne(options, heading, confirmVerb) =>",
               "case DecisionQuery.ChooseOne(options, heading, _) =>", 1)
 p.write_text(t)
 EOF
-./sbtw "testOnly oathdigital.gameplay.BackendArchitectureSuite"
+./sbtw "testOnly distantlands.gameplay.BackendArchitectureSuite"
 ```
 
 Expected: FAIL on the pinning test, naming `WalkerDecisionProjector.scala:278`.

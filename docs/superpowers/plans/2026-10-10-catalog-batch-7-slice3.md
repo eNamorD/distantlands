@@ -39,7 +39,7 @@ Slices 1 and 2 were written from plans, and their executors may have adapted nam
   - No power name appears in walker sources.
   - Nothing under `gameplay/actions` imports `gameplay/powers`.
 - **Line width.** Scala lines stay at or under 80 characters, as in the files around them. Re-wrap any line in this plan that comes out longer.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Other sessions commit to `main` while you work.
   - Stage explicit paths only; never `git add -A`.
   - Re-check `git log --oneline -1` before any amend, reset or rebase.
@@ -286,7 +286,7 @@ In `WalkerOperationWireSuite`, test "every CoreOperation variant round-trips thr
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.operations.RollOperationsSuite oathdigital.serialization.WalkerOperationWireSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.operations.RollOperationsSuite distantlands.serialization.WalkerOperationWireSuite"`
 Expected: compile failure, `Not found: SetDieFaces` and `value setFaces is not a member`.
 
 - [ ] **Step 3: Add the operation**
@@ -382,7 +382,7 @@ Expected: 800 or fewer.
 
 - [ ] **Step 5: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.operations.RollOperationsSuite oathdigital.serialization.WalkerOperationWireSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.operations.RollOperationsSuite distantlands.serialization.WalkerOperationWireSuite"`
 Expected: PASS.
 
 Then run `./sbtw test`. Every `CoreOperation` match the compiler checks for exhaustiveness now covers `SetDieFaces`; if one does not, add the arm it reports beside that match's `Reroll` arm.
@@ -411,9 +411,9 @@ git commit -m "feat(dice): a fixed-faces operation, set before a roll"
 **Interfaces:**
 - Consumes: `BattlePlan`, `PlanContext`, `CampaignPlanOffer`, `CampaignPlanEffect`, `PlanDriver` (tests), `Burn.secrets`, `Table.darkestSecret(holder, secrets)` (tests).
 - Produces:
-  - `final case class PlanAmount(decisionId: String, query: DecisionQuery, amountOf: DecisionAnswer => Option[Int], effects: Int => Vector[CampaignPlanEffect])` in `oathdigital.model`.
+  - `final case class PlanAmount(decisionId: String, query: DecisionQuery, amountOf: DecisionAnswer => Option[Int], effects: Int => Vector[CampaignPlanEffect])` in `distantlands.model`.
   - `CampaignPlanOffer.amount: Option[PlanAmount] = None`.
-  - `object PlanAmounts` in `oathdigital.gameplay.actions.campaign`, with `range(decisionId: String, min: Int, max: Int, heading: String, confirm: String)(effects: Int => Vector[CampaignPlanEffect]): PlanAmount` and `chosen(pending: PendingTree, amount: PlanAmount): Option[Int]`.
+  - `object PlanAmounts` in `distantlands.gameplay.actions.campaign`, with `range(decisionId: String, min: Int, max: Int, heading: String, confirm: String)(effects: Int => Vector[CampaignPlanEffect]): PlanAmount` and `chosen(pending: PendingTree, amount: PlanAmount): Option[Int]`.
   - `case object UnstableSummon extends BattlePlan`, with `decisionId`, `heading`, `confirm`, `noBanner` and `burned`.
 
 - [ ] **Step 1: Write the failing test**
@@ -421,15 +421,15 @@ git commit -m "feat(dice): a fixed-faces operation, set before a roll"
 Create `src/test/scala/distantlands/gameplay/powers/campaign/UnstableSummonSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseAmountAnswer
-import oathdigital.testkit.{CatalogNames, Look}
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseAmountAnswer
+import distantlands.testkit.{CatalogNames, Look}
 
 /** Unstable Summon: a free attacker's plan that burns X secrets from the
   * Darkest Secret its user holds for X attack dice. It is the first plan
@@ -501,7 +501,7 @@ class UnstableSummonSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the test to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.UnstableSummonSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.UnstableSummonSuite"`
 Expected: compile failure, `Not found: UnstableSummon`.
 
 - [ ] **Step 3: Add the amount to the model**
@@ -543,9 +543,9 @@ and add the field after `alone`:
 Create `src/main/scala/distantlands/gameplay/actions/campaign/PlanAmounts.scala`:
 
 ```scala
-package oathdigital.gameplay.actions.campaign
+package distantlands.gameplay.actions.campaign
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The amounts battle plans ask for (`PlanAmount`), and the read of the
   * answer (catalog batch 7, slice 3). */
@@ -614,11 +614,11 @@ In `CampaignPlanApplication.scala`:
 Delete `object UnstableSummonCard` from `HoldingDiscordDenizens.scala`. Create `src/main/scala/distantlands/gameplay/powers/campaign/UnstableSummon.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, PrintedPower}
-import oathdigital.gameplay.actions.campaign.{CampaignProcedure, PlanAmounts}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, PrintedPower}
+import distantlands.gameplay.actions.campaign.{CampaignProcedure, PlanAmounts}
+import distantlands.model._
 
 object UnstableSummonCard extends Denizen(DenizenId("225"),
     "Unstable Summon", Suit.Discord):
@@ -684,7 +684,7 @@ case object UnstableSummon extends BattlePlan:
 
 - [ ] **Step 7: Register it**
 
-In `NewFoundations.scala`, add `UnstableSummonCard` to the `import oathdigital.gameplay.powers.campaign.{…}` list, keeping it in alphabetical order where the list is.
+In `NewFoundations.scala`, add `UnstableSummonCard` to the `import distantlands.gameplay.powers.campaign.{…}` list, keeping it in alphabetical order where the list is.
 
 In `PlanRules.scala`, add after `Vector(MasterAtArms.forCatalog(catalog)) ++`:
 
@@ -696,7 +696,7 @@ and append to the object's doc comment's list, before ` and Herald`: `, Unstable
 
 - [ ] **Step 8: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.* oathdigital.gameplay.CampaignPlanWindowSuite oathdigital.catalog.* oathdigital.gameplay.cards.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.* distantlands.gameplay.CampaignPlanWindowSuite distantlands.catalog.* distantlands.gameplay.cards.*"`
 Expected: PASS.
 
 - [ ] **Step 9: Commit**
@@ -744,23 +744,23 @@ In `PricedOptionProjectionSuite`, append:
 Create `src/test/scala/distantlands/gameplay/powers/campaign/ArcaneArmorSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.actions.dice.RerollChoice
-import oathdigital.gameplay.powerresolver.{FoldPhase, Transform}
-import oathdigital.gameplay.powers.{NoteText, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{RollPayload, WalkerPowers,
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.actions.dice.RerollChoice
+import distantlands.gameplay.powerresolver.{FoldPhase, Transform}
+import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{RollPayload, WalkerPowers,
   WalkerStepRecorded}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseAmountAnswer
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look}
-import oathdigital.testkit.PowerStubs.ContributingStub
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseAmountAnswer
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{CatalogNames, Look}
+import distantlands.testkit.PowerStubs.ContributingStub
 
 /** Arcane Armor: a defender's plan costing X secrets, which sets X defense
   * dice to double shields at the defense roll, before the rest are rolled.
@@ -933,7 +933,7 @@ class ArcaneArmorSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.ArcaneArmorSuite oathdigital.application.PricedOptionProjectionSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.ArcaneArmorSuite distantlands.application.PricedOptionProjectionSuite"`
 Expected: compile failure, `Not found: ArcaneArmor` and `secretsX`.
 
 - [ ] **Step 3: Price an amount that costs secrets**
@@ -1030,13 +1030,13 @@ In `CampaignPlanApplication.scala`:
 Delete `object ArcaneArmorCard` from `HoldingArcaneDenizens.scala`. Create `src/main/scala/distantlands/gameplay/powers/campaign/ArcaneArmor.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, PrintedPower}
-import oathdigital.gameplay.actions.campaign.{CampaignIds,
+import distantlands.catalog.{Denizen, PrintedPower}
+import distantlands.gameplay.actions.campaign.{CampaignIds,
   CampaignProcedure, PlanAmounts}
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 object ArcaneArmorCard extends Denizen(DenizenId("206"), "Arcane Armor",
     Suit.Arcane):
@@ -1122,7 +1122,7 @@ case object ArcaneArmor extends BattlePlan:
 
 - [ ] **Step 6: Register it**
 
-In `NewFoundations.scala`, add `ArcaneArmorCard` to the `import oathdigital.gameplay.powers.campaign.{…}` list.
+In `NewFoundations.scala`, add `ArcaneArmorCard` to the `import distantlands.gameplay.powers.campaign.{…}` list.
 
 In `PlanRules.scala`, add after `Vector(UnstableSummon) ++`:
 
@@ -1134,7 +1134,7 @@ and append to the doc comment's list, before ` and Herald`: `, Arcane Armor (def
 
 - [ ] **Step 7: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.* oathdigital.gameplay.powers.dice.* oathdigital.gameplay.CampaignPlanWindowSuite oathdigital.application.PricedOptionProjectionSuite oathdigital.catalog.* oathdigital.gameplay.cards.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.* distantlands.gameplay.powers.dice.* distantlands.gameplay.CampaignPlanWindowSuite distantlands.application.PricedOptionProjectionSuite distantlands.catalog.* distantlands.gameplay.cards.*"`
 Expected: PASS.
 
 - [ ] **Step 8: Commit**
@@ -1173,14 +1173,14 @@ Mountain Giant now offers a plan, so `PlanDriver.planless` refuses it. Search Pa
 Create `src/test/scala/distantlands/gameplay/powers/campaign/MountainGiantSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.{CampaignIds, PlanAmounts}
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.{CampaignIds, PlanAmounts}
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Look}
 
 /** Mountain Giant: a plan for either side costing a secret, then one or
   * three attack dice, added or removed. It is discarded after the
@@ -1274,7 +1274,7 @@ class MountainGiantSuite extends munit.FunSuite:
 
 - [ ] **Step 3: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.MountainGiantSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.MountainGiantSuite"`
 Expected: compile failure, `Not found: MountainGiant` and `value button is not a member`.
 
 - [ ] **Step 4: Add the choice builder**
@@ -1305,12 +1305,12 @@ In `PlanAmounts.scala`, add:
 Delete `object MountainGiantCard` from `HoldingNomadDenizens.scala`. Create `src/main/scala/distantlands/gameplay/powers/campaign/MountainGiant.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.actions.campaign.{CampaignProcedure, PlanAmounts}
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.actions.campaign.{CampaignProcedure, PlanAmounts}
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 object MountainGiantCard extends Denizen(DenizenId("155"), "Mountain Giant",
     Suit.Nomad):
@@ -1410,7 +1410,7 @@ object MountainGiant:
 
 - [ ] **Step 6: Register it**
 
-In `NewFoundations.scala`, add `MountainGiantCard` to the `import oathdigital.gameplay.powers.campaign.{…}` list.
+In `NewFoundations.scala`, add `MountainGiantCard` to the `import distantlands.gameplay.powers.campaign.{…}` list.
 
 In `PlanRules.scala`, add after `Vector(ArcaneArmor) ++`:
 
@@ -1422,7 +1422,7 @@ and append to the doc comment's list, before ` and Herald`: `, Mountain Giant (a
 
 - [ ] **Step 7: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.* oathdigital.gameplay.CampaignPlanWindowSuite oathdigital.catalog.* oathdigital.gameplay.cards.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.* distantlands.gameplay.CampaignPlanWindowSuite distantlands.catalog.* distantlands.gameplay.cards.*"`
 Expected: PASS.
 
 Then run `./sbtw test`. If another suite fails because one of this slice's three cards now offers a plan where the suite used it as a plain card, swap in another card the same way as Step 1 (`PlanDriver.planlessCard` checks the choice), and list the suite in your report.

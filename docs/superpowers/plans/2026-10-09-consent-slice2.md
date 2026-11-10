@@ -44,7 +44,7 @@ The code forced these, or the spec left them open. Task 3 records each one in th
   - The ordinary reason stays `no-target`, `Cannot target other sites in the region.`
   - Every other id, command, event, log line and UI string is slice 1's. The request line for a campaign target reads `Asked p2 for consent to ignore Narrow Pass and select Deep Woods.`
 - **Rulings** (spec, "Rulings"). These apply: 2 (no consent inside a Campaign except the Pass's own clause), 3, 4, 5, 6, 8, 10, 12, 13, 14 and 15–19. There is still only one waivable power, so ruling 9's several granters cannot arise.
-- **Never touch the live database `var/oathdigital`.** Never run `preview_start`.
+- **Never touch the live database `var/distantlands`.** Never run `preview_start`.
 - **Concurrent sessions.** Other sessions commit to `main` while you work. Stage explicit paths only; never `git add -A`. Re-check `git log --oneline -1` before any amend, reset or rebase.
 - **Worktree.** Work in a git worktree on branch `feat/consent-slice2`.
   - `EnterWorktree` branches from `origin`, which lags local `main`, so fast-forward the new branch to local `main` first (`git merge --ff-only main`).
@@ -52,8 +52,8 @@ The code forced these, or the spec left them open. Task 3 records each one in th
   - Copy `.superpowers/` from the main checkout if a ledger is in use.
 - **Commit trailer:** the committing model's own `Co-Authored-By` line.
 - **Verification commands:**
-  - One server suite: `./sbtw "testOnly oathdigital.gameplay.powers.travel.NarrowPassCampaignConsentSuite"` (any fully qualified suite name).
-  - One frontend suite: `./sbtw "frontend/testOnly oathdigital.frontend.ConsentAskingSuite"`.
+  - One server suite: `./sbtw "testOnly distantlands.gameplay.powers.travel.NarrowPassCampaignConsentSuite"` (any fully qualified suite name).
+  - One frontend suite: `./sbtw "frontend/testOnly distantlands.frontend.ConsentAskingSuite"`.
   - Whole server or frontend: `./sbtw test` or `./sbtw frontend/test`.
   - Full gate (Task 3):
     1. `./sbtw "test" "frontend/test"`
@@ -110,11 +110,11 @@ Modified:
 Create `src/test/scala/distantlands/gameplay/PassMap.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Table}
 
 /** The Narrow Pass's map. Cradle: Ancient City, Broken Peaks. Provinces:
   * the Pass, Buried Giant, Deep Woods. Hinterland: Desolate Shore, Dunes,
@@ -165,7 +165,7 @@ In the test "a Pass that is not in play forbids nothing", replace both uses of `
 
 - [ ] **Step 2: Run the moved tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CampaignPowersSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.CampaignPowersSuite"`
 Expected: PASS, the same 9 tests as before.
 
 - [ ] **Step 3: Write the Campaign fixture**
@@ -173,17 +173,17 @@ Expected: PASS, the same 9 tests as before.
 Create `src/test/scala/distantlands/gameplay/CampaignConsentFixture.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.powerresolver.ContributingPower
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ParkedNode, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.powerresolver.ContributingPower
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ParkedNode, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
 
 /** A Campaign the Narrow Pass bears on (consent design, slice 2), on
   * `PassMap`. In p1's Act, p1 stands at Ancient City, in the Cradle, which
@@ -247,18 +247,18 @@ If a `Table` step's name or parameter order differs (`boardWarbands`, `supply`, 
 Create `src/test/scala/distantlands/gameplay/powers/travel/NarrowPassCampaignConsentSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.gameplay.{CampaignConsentFixture, PassMap}
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.gameplay.{CampaignConsentFixture, PassMap}
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.actions.travel.TravelProcedure
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   OptionRestriction}
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerPowers}
-import oathdigital.model._
-import oathdigital.testkit.{Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerPowers}
+import distantlands.model._
+import distantlands.testkit.{Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** Which campaign targets the Narrow Pass makes askable (consent design,
   * ruling 2 and slice 2). The Pass's own campaign clause grants consent, so
@@ -381,7 +381,7 @@ class NarrowPassCampaignConsentSuite extends munit.FunSuite:
       case other => fail(s"expected a choose-one, got $other")
 ```
 
-Add to `ConsentPowersSuite.scala`, with the imports it needs (`ContributingPower`, `Contribution`, `OptionRestriction` and `Waiver` from `oathdigital.gameplay.powerresolver`; `NarrowPassSitePower` from `oathdigital.gameplay.powers.travel`):
+Add to `ConsentPowersSuite.scala`, with the imports it needs (`ContributingPower`, `Contribution`, `OptionRestriction` and `Waiver` from `distantlands.gameplay.powerresolver`; `NarrowPassSitePower` from `distantlands.gameplay.powers.travel`):
 
 ```scala
   /** A power waivable only on its options. */
@@ -401,7 +401,7 @@ Add to `ConsentPowersSuite.scala`, with the imports it needs (`ContributingPower
 
 - [ ] **Step 5: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.travel.NarrowPassCampaignConsentSuite oathdigital.gameplay.powers.ConsentPowersSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.travel.NarrowPassCampaignConsentSuite distantlands.gameplay.powers.ConsentPowersSuite"`
 Expected: compilation FAILS. `OptionRestriction` takes no third argument, and `NarrowPassSitePower.noTargetConsent` does not exist.
 
 - [ ] **Step 6: Give `OptionRestriction` a waiver**
@@ -431,7 +431,7 @@ final case class OptionRestriction(
 
 In `WalkerPowerGather.scala`:
 
-1. Add `Waiver` to the `oathdigital.gameplay.powerresolver` import.
+1. Add `Waiver` to the `distantlands.gameplay.powerresolver` import.
 2. Below `Attributed`, add:
 
 ```scala
@@ -616,12 +616,12 @@ If `PricedOptions` is then unused in the file, delete it from the import. Add an
 
 - [ ] **Step 10: Run the new suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.travel.NarrowPassCampaignConsentSuite oathdigital.gameplay.powers.ConsentPowersSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.travel.NarrowPassCampaignConsentSuite distantlands.gameplay.powers.ConsentPowersSuite"`
 Expected: PASS, 10 and 5 tests.
 
 - [ ] **Step 11: Run the neighbours, then the whole server**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CampaignPowersSuite oathdigital.gameplay.powers.travel.NarrowPassConsentSuite oathdigital.gameplay.powers.targeting.* oathdigital.application.Consent*"`
+Run: `./sbtw "testOnly distantlands.gameplay.CampaignPowersSuite distantlands.gameplay.powers.travel.NarrowPassConsentSuite distantlands.gameplay.powers.targeting.* distantlands.application.Consent*"`
 Expected: PASS. The fixture board's bandit-held Pass still forbids with `no-target`.
 
 Run: `./sbtw test`
@@ -661,21 +661,21 @@ git commit -m "feat(consent): let the Narrow Pass's ruler waive it for a campaig
 Create `src/test/scala/distantlands/application/CampaignConsentServiceSuite.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.CampaignConsentFixture
-import oathdigital.gameplay.CampaignConsentFixture.{deepWoodsRef,
+import distantlands.gameplay.CampaignConsentFixture
+import distantlands.gameplay.CampaignConsentFixture.{deepWoodsRef,
   passRuledByP2}
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.travel.NarrowPassSite
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.OathEvent.{ConsentAnswered, ConsentPreferenceSet,
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.travel.NarrowPassSite
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.OathEvent.{ConsentAnswered, ConsentPreferenceSet,
   ConsentRequested}
-import oathdigital.protocol.projection.ConsentAskProjection
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.protocol.projection.ConsentAskProjection
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** Asking for consent at a Campaign's targets through the service (consent
   * design, slice 2): a grant opens the target, and the campaigner goes on
@@ -775,7 +775,7 @@ class CampaignConsentServiceSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.application.CampaignConsentServiceSuite"`
+Run: `./sbtw "testOnly distantlands.application.CampaignConsentServiceSuite"`
 Expected: 3 FAIL, 2 PASS.
 - The tests for Yes, Always Allow and undo FAIL: the answer is rejected, because `ConsentDesk.settled` answers the choose-many targets with a choose-one answer.
 - The No and projection tests PASS on Task 1's work.
@@ -829,7 +829,7 @@ In `ConsentDesk.scala`, `settled`:
 
 - [ ] **Step 4: Run the suite and the slice 1 suites**
 
-Run: `./sbtw "testOnly oathdigital.application.CampaignConsentServiceSuite oathdigital.application.Consent*"`
+Run: `./sbtw "testOnly distantlands.application.CampaignConsentServiceSuite distantlands.application.Consent*"`
 Expected: PASS. Slice 1's Travel grant still moves the pawn, because its destination is a choose-one.
 
 - [ ] **Step 5: Commit**
@@ -893,7 +893,7 @@ Add to `ConsentAskingSuite.scala`:
 
 - [ ] **Step 2: Run it**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.ConsentAskingSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.ConsentAskingSuite"`
 Expected: PASS. The board path already treats an askable option alike at a choose-one and a choose-many.
 
 If it fails, the failure names the path that mishandles a choose-many. Fix that path in `BoardOptions.scala` or `BoardSelectionDraft.scala`, following how the choose-one path treats `OptionState.Askable`. Then rerun.

@@ -11,7 +11,7 @@ runs. Modules declare trees; they do not run them.
 ## Layout
 
 ```text
-oathdigital/gameplay/
+distantlands/gameplay/
   OathRules.scala          aggregate: evolve, begin game, route commands
   OathRulesWalker.scala    walker commands: start, resolve, consent
   OathDriver.scala         what runs between walks: queue, action boundary,

@@ -99,7 +99,7 @@ Append to `SessionDraftsSuite` (before the final `empty has no context` test). T
 
 - [ ] **Step 2: Run the suite to verify it fails**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.SessionDraftsSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.SessionDraftsSuite"`
 Expected: compile error, `FlowStep` not found.
 
 - [ ] **Step 3: Implement `step` and the enums**
@@ -154,11 +154,11 @@ private[frontend] enum TargetsEntry:
   case NoTargets
 ```
 
-Add `import oathdigital.protocol.PreviewModifier` at the top of `SessionDrafts.scala` (the file has no protocol import today).
+Add `import distantlands.protocol.PreviewModifier` at the top of `SessionDrafts.scala` (the file has no protocol import today).
 
 - [ ] **Step 4: Run the suite to verify it passes**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.SessionDraftsSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.SessionDraftsSuite"`
 Expected: all tests pass (10 existing + 6 new).
 
 - [ ] **Step 5: Commit**
@@ -186,9 +186,9 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 - [ ] **Step 1: Write the failing suite**
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{GameIntent, MajorActionPreviewResponse, PreviewModifier}
+import distantlands.protocol.{GameIntent, MajorActionPreviewResponse, PreviewModifier}
 
 /** `fromPreview` is the one constructor both flow entries use: stage by the
   * response, fingerprint by its shape, selection carried through reconcile.
@@ -233,7 +233,7 @@ class ModifierWorkflowSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the suite to verify it fails**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.ModifierWorkflowSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.ModifierWorkflowSuite"`
 Expected: compile error, `fromPreview` is not a member.
 
 - [ ] **Step 3: Implement `fromPreview`**
@@ -260,7 +260,7 @@ In the `ModifierWorkflow` companion, after `targeted`:
 
 - [ ] **Step 4: Run the suite to verify it passes**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.ModifierWorkflowSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.ModifierWorkflowSuite"`
 Expected: 3 tests pass.
 
 - [ ] **Step 5: Call it from both flow entries in `ServerModeUi`**
@@ -325,10 +325,10 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 The fake host answers previews through a `Promise`, so a test lands the response after the flow has registered its callback. Callbacks on the Scala.js queue run first in, first out, so a future mapped after `answer` sees the flow's effects.
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.model.PlayerColor
-import oathdigital.protocol.{GameIntent => GameCommand, MajorActionPreviewRequest,
+import distantlands.model.PlayerColor
+import distantlands.protocol.{GameIntent => GameCommand, MajorActionPreviewRequest,
   MajorActionPreviewResponse, ModifierInvocation, PreviewModifier}
 
 import scala.concurrent.{Future, Promise}
@@ -615,21 +615,21 @@ class ModifierFlowSuite extends munit.FunSuite:
     ui.handleSelection(BoardSelectionResult.Submit(travel,
       Vector(BoardTargetRef.Site("site:woods"))))
     assertEquals(host.sent, Vector(GameCommand.StartWalker("travel", Vector("h.a"),
-      Vector(oathdigital.protocol.WalkerStartArgWire("site", "site:woods"))) -> Vector.empty))
+      Vector(distantlands.protocol.WalkerStartArgWire("site", "site:woods"))) -> Vector.empty))
     assertEquals(host.currentDrafts.modifiers, None)
 ```
 
 - [ ] **Step 2: Run the suite to verify it fails**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.ModifierFlowSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.ModifierFlowSuite"`
 Expected: compile error, `FlowHost` not found.
 
 - [ ] **Step 3: Write `ModifierFlow.scala`**
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{GameIntent => GameCommand, _}
+import distantlands.protocol.{GameIntent => GameCommand, _}
 import ServerUiSupport.commandForSelection
 
 import scala.concurrent.Future
@@ -777,7 +777,7 @@ private[frontend] final class ModifierFlow(host: FlowHost) extends ActionControl
 
 - [ ] **Step 4: Run the suite to verify it passes**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.ModifierFlowSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.ModifierFlowSuite"`
 Expected: 19 tests pass. If `fold[TargetsEntry]` or the tuple pattern in the `for` fails to compile, fix the type ascription; do not change the logic.
 
 - [ ] **Step 5: Wire `ServerModeUi` to the module**
@@ -869,7 +869,7 @@ Add to `ServerModeUiSuite` after the seat-change test. The suite already imports
     */
   test("a previewed major action orders its modifier and posts the ordered command"):
     val browser = new TestBrowser("?gameId=g&playerId=red")
-    val projection = oathdigital.protocol.projection.GameProjectionCodec.encode(
+    val projection = distantlands.protocol.projection.GameProjectionCodec.encode(
       GameProjection("g", 1L, "act-action-selection", Some("red"),
         Vector(GamePlayer("red", "Red", "Exile", PlayerColor.Red)),
         Vector.empty, Vector.empty, Vector("beginRecover"), ready = true,
@@ -912,7 +912,7 @@ Add to `ServerModeUiSuite` after the seat-change test. The suite already imports
 
 - [ ] **Step 2: Run the test to verify it passes against the wired module**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.ServerModeUiSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.ServerModeUiSuite"`
 Expected: PASS. This test is written after the move, so it passes first time; its value is that it fails if `host.preview`, `host.send` or `host.redraw` is miswired. To see it fail, temporarily make `redraw()` in the host a no-op: the `modifier-confirm` assertion fails. Revert before committing.
 
 - [ ] **Step 3: Add the glossary sentence**

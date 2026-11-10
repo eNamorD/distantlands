@@ -49,10 +49,10 @@ object Phase {
   case object Wake extends Phase { val key = "wake" }
   case object Act extends Phase { val key = "act" }
   case object Rest extends Phase { val key = "rest" }
-  private[oathdigital] case object RoundEnd extends Phase {
+  private[distantlands] case object RoundEnd extends Phase {
     val key = "round-end"
   }
-  private[oathdigital] case object WarExhaustion extends Phase {
+  private[distantlands] case object WarExhaustion extends Phase {
     val key = "war-exhaustion"
   }
 
@@ -79,14 +79,14 @@ In `src/main/scala/distantlands/model/GameEventProtocol.scala`, delete `FirstGam
       extends OathEvent
 ```
 
-Remove the now-dead `import` of nothing extra is needed (`Chronicle`/`SetupOrders` are both in `oathdigital.model`, already wildcard-imported).
+Remove the now-dead `import` of nothing extra is needed (`Chronicle`/`SetupOrders` are both in `distantlands.model`, already wildcard-imported).
 
 - [ ] **Step 3: Add `SetupOrders`, slim `FirstGameSetupPlan`, delete `FirstGameSetupCommand`**
 
 Rewrite `src/main/scala/distantlands/model/Setup.scala` in full:
 
 ```scala
-package oathdigital.model
+package distantlands.model
 
 final case class PlayerColor(value: String) {
   require(value.trim.nonEmpty, "player color must not be blank")
@@ -238,7 +238,7 @@ Expected: a list of non-exhaustive-match warnings-as-errors (this project promot
 - [ ] **Step 10: Write the `GameStarted` shape test**
 
 ```scala
-package oathdigital.model
+package distantlands.model
 
 class GameStartedSuite extends munit.FunSuite {
   private val participant = FirstGameParticipant(
@@ -263,7 +263,7 @@ class GameStartedSuite extends munit.FunSuite {
 
 - [ ] **Step 11: Run the new suite**
 
-Run: `./sbtw "testOnly oathdigital.model.GameStartedSuite"`
+Run: `./sbtw "testOnly distantlands.model.GameStartedSuite"`
 Expected: PASS. The project will not fully compile again until Tasks 2-7 land (Step 9 above), so do not run the full suite yet.
 
 - [ ] **Step 12: Commit**
@@ -329,7 +329,7 @@ Use whatever this suite's existing helper produces a runnable `ready`/`catalog` 
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.operations.OperationStateMutationSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.operations.OperationStateMutationSuite"`
 Expected: FAIL on the first new test with `IncompatibleLocation`.
 
 - [ ] **Step 3: Extend `movePawn`**
@@ -411,7 +411,7 @@ Note `located` reads from `state.pawnSites` (the fold's running snapshot, seeded
 
 - [ ] **Step 5: Run the suite again**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.operations.OperationStateMutationSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.operations.OperationStateMutationSuite"`
 Expected: PASS.
 
 - [ ] **Step 6: Commit**
@@ -470,9 +470,9 @@ This is the only change this file needs: called with `placements = Vector.empty,
 Rewrite `src/main/scala/distantlands/gameplay/setup/FirstGameSetup.scala` in full, deleting `FirstGameSetupRules` and every import it alone needed:
 
 ```scala
-package oathdigital.gameplay.setup
+package distantlands.gameplay.setup
 
-import oathdigital.model.VisionId
+import distantlands.model.VisionId
 
 object FirstGameRulesData {
   val visions: Vector[VisionId] = Vector(
@@ -488,11 +488,11 @@ object FirstGameRulesData {
 - [ ] **Step 3: Write `GameStartRules`**
 
 ```scala
-package oathdigital.gameplay.setup
+package distantlands.gameplay.setup
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.model._
-import oathdigital.model.OathViolation._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.model._
+import distantlands.model.OathViolation._
 
 /**
  * Builds the initial `ReadyGame` a `GameStarted` event evolves into
@@ -661,10 +661,10 @@ object GameStartRules {
 Base the fixture on `FirstGameSetupFixture.catalog` (already used by `GeneratedFirstGamePlanFactorySuite`) so the 24-site/255-denizen/48-relic catalog facts are real. Cover, at minimum:
 
 ```scala
-package oathdigital.gameplay.setup
+package distantlands.gameplay.setup
 
-import oathdigital.gameplay.setup.FirstGameSetupFixture
-import oathdigital.model._
+import distantlands.gameplay.setup.FirstGameSetupFixture
+import distantlands.model._
 
 class GameStartRulesSuite extends munit.FunSuite {
   private val catalog = FirstGameSetupFixture.catalog
@@ -719,7 +719,7 @@ Adjust the Chronicle-construction comment to whatever fixture the codebase alrea
 
 - [ ] **Step 5: Run the new suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.setup.GameStartRulesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.setup.GameStartRulesSuite"`
 Expected: PASS. The project as a whole still will not compile (Tasks 4-7 remain); this is expected until Task 7 finishes.
 
 - [ ] **Step 6: Commit**
@@ -749,10 +749,10 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 - [ ] **Step 1: Write the failing turn-order/discard test**
 
 ```scala
-package oathdigital.gameplay.setup
+package distantlands.gameplay.setup
 
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerPowers}
-import oathdigital.model._
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerPowers}
+import distantlands.model._
 
 class SetupProcedureSuite extends munit.FunSuite {
   private val catalog = FirstGameSetupFixture.catalog
@@ -767,7 +767,7 @@ class SetupProcedureSuite extends munit.FunSuite {
     val parked1 = ProcedureWalker.advance(ready, tree, None, WalkerPowers.empty)
       .toOption.get
     val pending1 = parked1 match {
-      case oathdigital.gameplay.walker.WalkerOutcome.Parked(pending, _) => pending
+      case distantlands.gameplay.walker.WalkerOutcome.Parked(pending, _) => pending
       case other => fail(s"expected a park, got $other")
     }
     val decide1 = ProcedureWalker.parkedDecide(ready, tree, pending1,
@@ -799,17 +799,17 @@ Look at `RecoverProcedureSuite.scala` or `ChallengeProcedureSuite.scala` for the
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.setup.SetupProcedureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.setup.SetupProcedureSuite"`
 Expected: FAIL to compile (`SetupProcedure` does not exist yet).
 
 - [ ] **Step 3: Write `SetupProcedure`**
 
 ```scala
-package oathdigital.gameplay.setup
+package distantlands.gameplay.setup
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.model._
-import oathdigital.model.OathViolation._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.model._
+import distantlands.model.OathViolation._
 
 /**
  * Declared Setup procedure tree for the walker (2026-09-21 Chronicle
@@ -944,7 +944,7 @@ object SetupProcedure {
 
 - [ ] **Step 4: Run the suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.setup.SetupProcedureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.setup.SetupProcedureSuite"`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -1007,7 +1007,7 @@ In `src/main/scala/distantlands/application/Authorization.scala`, delete `placeP
 
 - [ ] **Step 5: Register `TriggeredProcedureRef.Setup` in the walker registry**
 
-In `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala`, add an import for `oathdigital.gameplay.setup.SetupProcedure` and an entry alongside `TriggeredProcedureRef.Oathkeeper`:
+In `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala`, add an import for `distantlands.gameplay.setup.SetupProcedure` and an entry alongside `TriggeredProcedureRef.Oathkeeper`:
 
 ```scala
     TriggeredProcedureRef.Setup -> Entry(
@@ -1028,14 +1028,14 @@ In `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala`, 
 
 In `src/main/scala/distantlands/gameplay/OathRules.scala`:
 
-- Delete `private val setup = new FirstGameSetupRules(catalog)` and its import of `oathdigital.gameplay.setup.FirstGameSetupRules`.
+- Delete `private val setup = new FirstGameSetupRules(catalog)` and its import of `distantlands.gameplay.setup.FirstGameSetupRules`.
 - Replace the fallback `case setupEvent => setup.evolve(state, setupEvent)` at the bottom of `evolve`'s match with an explicit case (the match is now exhaustive without a fallback, so remove the `setupEvent =>` wildcard entirely and add):
 
 ```scala
       case GameStarted(chronicle, orders) =>
         state match {
           case NoGame =>
-            oathdigital.gameplay.setup.GameStartRules
+            distantlands.gameplay.setup.GameStartRules
               .evolve(catalog, chronicle, orders).map(Ready)
           case _ => Left(GameAlreadyExists)
         }
@@ -1057,7 +1057,7 @@ In `src/main/scala/distantlands/gameplay/OathRules.scala`:
       for {
         started <- GameplayTransition(state, Vector(event),
           OathContinue.AwaitingSetupPawn(orders.firstPlayer,
-            DecisionId(oathdigital.gameplay.setup.SetupProcedure
+            DecisionId(distantlands.gameplay.setup.SetupProcedure
               .pawnDecisionId(orders.firstPlayer))))(evolve)
         withSetup <- startTriggered(started, TriggeredProcedureRef.Setup)
       } yield withSetup
@@ -1065,7 +1065,7 @@ In `src/main/scala/distantlands/gameplay/OathRules.scala`:
   }
 ```
 
-Check the file's existing imports for `oathdigital.model.OathEvent._`/`OathState._` (already present per the file's header) so `GameStarted`/`NoGame`/`Ready` resolve unqualified; only the two `oathdigital.gameplay.setup.*` references need their full path (or add an import instead, matching this file's existing style -- check whether it already imports specific `gameplay.setup` members before choosing).
+Check the file's existing imports for `distantlands.model.OathEvent._`/`OathState._` (already present per the file's header) so `GameStarted`/`NoGame`/`Ready` resolve unqualified; only the two `distantlands.gameplay.setup.*` references need their full path (or add an import instead, matching this file's existing style -- check whether it already imports specific `gameplay.setup` members before choosing).
 
 - [ ] **Step 7: Verify `continuationIn` needs no change**
 
@@ -1114,10 +1114,10 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 Rewrite `src/main/scala/distantlands/application/ChronicleFirstGamePlan.scala` in full:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.setup.FirstGameRulesData
-import oathdigital.model._
+import distantlands.gameplay.setup.FirstGameRulesData
+import distantlands.model._
 
 /**
  * Derives the concrete per-game deal (2026-09-21 Chronicle design, slice 2):
@@ -1226,7 +1226,7 @@ prepared <- service.prepareBootstrap(gameId, chronicle, config)
 
 ```bash
 ./sbtw compile
-./sbtw "testOnly oathdigital.application.*"
+./sbtw "testOnly distantlands.application.*"
 ```
 
 Expected: PASS (server suites are covered in Task 7, since they also touch the deleted routes/commands).
@@ -1340,10 +1340,10 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 - [ ] **Step 1: Write the full-journey suite**
 
 ```scala
-package oathdigital.gameplay.setup
+package distantlands.gameplay.setup
 
-import oathdigital.gameplay.OathRules
-import oathdigital.model._
+import distantlands.gameplay.OathRules
+import distantlands.model._
 
 class GameStartToWakeSuite extends munit.FunSuite {
   private val catalog = FirstGameSetupFixture.catalog
@@ -1393,7 +1393,7 @@ class GameStartToWakeSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run it**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.setup.GameStartToWakeSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.setup.GameStartToWakeSuite"`
 Expected: PASS.
 
 - [ ] **Step 3: Commit**
@@ -1421,7 +1421,7 @@ python3 scripts/check-architecture.py
 python3 scripts/check-markdown-links.py
 ```
 
-Expected: everything passes. If `check-architecture.py` reports a forbidden import, check which task introduced it against the Global Constraints' layering rule (in particular: `SetupOrders`/`Chronicle` must stay reachable from `model` alone, so `GameStartRules`/`SetupProcedure` must never import `oathdigital.application`).
+Expected: everything passes. If `check-architecture.py` reports a forbidden import, check which task introduced it against the Global Constraints' layering rule (in particular: `SetupOrders`/`Chronicle` must stay reachable from `model` alone, so `GameStartRules`/`SetupProcedure` must never import `distantlands.application`).
 
 - [ ] **Step 2: Record slice 2 as done**
 

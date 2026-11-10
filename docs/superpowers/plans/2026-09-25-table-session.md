@@ -46,10 +46,10 @@
 Create `frontend/src/test/scala/distantlands/frontend/TableSessionSuite.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.model.PlayerColor
-import oathdigital.protocol.{GameIntent => GameCommand, MajorActionPreviewRequest,
+import distantlands.model.PlayerColor
+import distantlands.protocol.{GameIntent => GameCommand, MajorActionPreviewRequest,
   MajorActionPreviewResponse, ModifierInvocation}
 
 import scala.concurrent.{Future, Promise}
@@ -367,7 +367,7 @@ class TableSessionSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the suite to verify it fails**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.TableSessionSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.TableSessionSuite"`
 Expected: compile error, `Navigation` / `TableSession` not found.
 
 - [ ] **Step 3: Write `TableView`**
@@ -375,7 +375,7 @@ Expected: compile error, `Navigation` / `TableSession` not found.
 Create `frontend/src/main/scala/distantlands/frontend/TableScreen.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 /** What the table screen reads: the displayed position, the failure to
   * show, the draft set, and who is looking. Read-only. The names repeat
@@ -400,9 +400,9 @@ private[frontend] trait TableView:
 Every function body below is the one in today's `ServerModeUi.start`, with four rewrites and nothing else: `render()` → `redraw()`; `polling.foreach(_.x(...))` / `polling.exists(_.x(...))` → `polling.x(...)` (the poller is built in the constructor, so it is never absent); `updateSessionUrl()` → `showSession()`; `fixedSeat` → `trusted`, `recovery(error)` → `TableSession.needsSeatLink(trusted, error)`. Keep `open`'s `accept(coordinator.capture, _)` exactly as written: the placeholder reads `capture` when the load lands, as today.
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{GameIntent => GameCommand, _}
+import distantlands.protocol.{GameIntent => GameCommand, _}
 
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 
@@ -650,7 +650,7 @@ private[frontend] object TableSession:
 
 - [ ] **Step 5: Run the suite to verify it passes**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.TableSessionSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.TableSessionSuite"`
 Expected: 15 tests pass. `ServerModeUi` still compiles on its own locals at this point.
 
 - [ ] **Step 6: Prove the `capture` test bites**
@@ -662,7 +662,7 @@ Temporarily change `coordinator.recordSnapshotSuccess(coordinator.capture)` in `
 Replace `frontend/src/main/scala/distantlands/frontend/ServerModeUi.scala` with the following. `render` keeps its body; its reads go through `view` (the session as a `TableView`), `ui` is the flow over the session, and the Reconnect button calls `session.reconnectSession()`.
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 import ServerUiSupport._
 
@@ -769,7 +769,7 @@ private[frontend] final class BrowserNavigation(leave: () => Unit) extends Navig
     leave()
 ```
 
-The `oathdigital.protocol` and `JSExecutionContext` imports are gone: nothing left in the file names a protocol type or registers a `Future` callback. `updateUrl` resolves through `import ServerUiSupport._`.
+The `distantlands.protocol` and `JSExecutionContext` imports are gone: nothing left in the file names a protocol type or registers a `Future` callback. `updateUrl` resolves through `import ServerUiSupport._`.
 
 - [ ] **Step 8: Run the frontend suite**
 
@@ -970,7 +970,7 @@ Add after "a stale-position submit empties the drafts, reloads, and keeps the no
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.TableSessionSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.TableSessionSuite"`
 Expected: FAIL, `redraws` equals `before` (no redraw until the reload lands).
 
 - [ ] **Step 3: Redraw in the branch**
@@ -1044,7 +1044,7 @@ Add after "the flow's preview carries the session's game and seat":
 
 - [ ] **Step 2: Run them to verify the first fails**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.TableSessionSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.TableSessionSuite"`
 Expected: "a preview answered after the session changed never lands" FAILS (the future completed); "a preview answered under the same session lands" passes.
 
 - [ ] **Step 3: Guard `preview`**

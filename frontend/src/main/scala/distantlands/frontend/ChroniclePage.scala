@@ -23,7 +23,7 @@ private[frontend] object ChroniclePage:
       if mount.querySelector(".chronicle-page-title") != null then
         render(mount, shelf, kept, client, files, choose)
     mount.textContent = ""
-    mount.appendChild(text("h1", "chronicle-page-title", "Oath Digital"))
+    mount.appendChild(text("h1", "chronicle-page-title", "Distant Lands"))
     if !kept then
       val notice = text("p", "status chronicle-storage-refused",
         "Chronicles cannot be kept in this browser. A Chronicle you import " +

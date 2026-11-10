@@ -145,7 +145,7 @@ rulings R10, R11, R12 and R16).
 - [ ] **Step 1: Write the failing state test**
 
 ```scala
-package oathdigital.model
+package distantlands.model
 
 class PlanAidStateSuite extends munit.FunSuite:
   private val p1 = PlayerId("p1")
@@ -178,7 +178,7 @@ class PlanAidStateSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it and see it fail to compile**
 
-Run: `./sbtw "testOnly oathdigital.model.PlanAidStateSuite"`
+Run: `./sbtw "testOnly distantlands.model.PlanAidStateSuite"`
 Expected: compile errors, because `AidWindow`, `AidOffer` and `PlanAidState` are not found.
 
 - [ ] **Step 3: Write the model**
@@ -186,7 +186,7 @@ Expected: compile errors, because `AidWindow`, `AidOffer` and `PlanAidState` are
 `src/main/scala/distantlands/model/PlanAid.scala`:
 
 ```scala
-package oathdigital.model
+package distantlands.model
 
 /** Favor and secrets an Imperial ally offers towards another Imperial
   * player's battle plans (Imperial Tactics, CR p. 35; Empire phase design,
@@ -290,10 +290,10 @@ Inside `object OathEvent`, after the consent cases:
 `src/main/scala/distantlands/gameplay/aid/PlanAidEvolution.scala`:
 
 ```scala
-package oathdigital.gameplay.aid
+package distantlands.gameplay.aid
 
-import oathdigital.model._
-import oathdigital.model.OathEvent.{PlanAidCleared, PlanAidSaved}
+import distantlands.model._
+import distantlands.model.OathEvent.{PlanAidCleared, PlanAidSaved}
 
 /** Evolves the Imperial Tactics facts into `ReadyGame.planAid`. The desk
   * validated each offer when it was saved, so replay only records it. */
@@ -314,11 +314,11 @@ In `OathRules.evolve`, after the `ConsentEvent` arm:
         case _ => Left(GameNotStarted)
 ```
 
-Then import `oathdigital.gameplay.aid.PlanAidEvolution`.
+Then import `distantlands.gameplay.aid.PlanAidEvolution`.
 
 - [ ] **Step 4: Run the state test**
 
-Run: `./sbtw "testOnly oathdigital.model.PlanAidStateSuite"`
+Run: `./sbtw "testOnly distantlands.model.PlanAidStateSuite"`
 Expected: PASS.
 
 - [ ] **Step 5: Write the failing wire and journal tests**
@@ -354,7 +354,7 @@ In the `JournalFold.carried` suite, add a test. Build a target `Ready` state wit
 
 - [ ] **Step 6: Run them and see them fail**
 
-Run: `./sbtw "testOnly oathdigital.serialization.PlanAidEventWireSuite"`
+Run: `./sbtw "testOnly distantlands.serialization.PlanAidEventWireSuite"`
 Expected: FAIL, because an unknown event cannot be encoded.
 
 - [ ] **Step 7: Write the codec and the journal arms**
@@ -362,10 +362,10 @@ Expected: FAIL, because an unknown event cannot be encoded.
 `src/main/scala/distantlands/serialization/PlanAidEventCodec.scala`. It follows `ConsentEventCodec.scala`: it is the same kind of trait over `GameEventJsonSupport`, and it uses `DecisionAnswerCodec.encodeRef` and the ref decoder that `consentDecode` uses for `target`.
 
 ```scala
-package oathdigital.serialization
+package distantlands.serialization
 
-import oathdigital.model._
-import oathdigital.model.OathEvent.{PlanAidCleared, PlanAidSaved}
+import distantlands.model._
+import distantlands.model.OathEvent.{PlanAidCleared, PlanAidSaved}
 
 /** The Imperial Tactics facts (Empire phase design, "1b-ii"). */
 private[serialization] trait PlanAidEventCodec { this: GameEventJsonSupport =>
@@ -430,7 +430,7 @@ Then update its doc comment: offers, like consent grants, outlive the rewind.
 
 - [ ] **Step 8: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.serialization.PlanAidEventWireSuite oathdigital.model.PlanAidStateSuite oathdigital.application.JournalFold*"`
+Run: `./sbtw "testOnly distantlands.serialization.PlanAidEventWireSuite distantlands.model.PlanAidStateSuite distantlands.application.JournalFold*"`
 Expected: PASS.
 
 - [ ] **Step 9: Commit**
@@ -463,7 +463,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 **Interfaces:**
 - Consumes: Task 1's model.
-- Produces (object `oathdigital.gameplay.actions.campaign.PlanAid`):
+- Produces (object `distantlands.gameplay.actions.campaign.PlanAid`):
   - `darkestSecret`, `yewStaff` and `peoplesFavor: DecisionOptionRef`
   - `window(ready, actor, side, user): Option[AidWindow]`, which is `Some` only for an Imperial user
   - `allies(ready, user): Vector[PlayerId]`: the other Imperial players, in turn order starting after the user
@@ -521,17 +521,17 @@ If the table seats players in another order, recompute the literal from `TurnOrd
 
 - [ ] **Step 2: Run them and see them fail to compile**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.actions.campaign.PlanAidSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.actions.campaign.PlanAidSuite"`
 Expected: compile errors, because `PlanAid` is not found.
 
 - [ ] **Step 3: Write the read model**
 
 ```scala
-package oathdigital.gameplay.actions.campaign
+package distantlands.gameplay.actions.campaign
 
-import oathdigital.gameplay.TurnOrder
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.model._
+import distantlands.gameplay.TurnOrder
+import distantlands.gameplay.actions.BannerRules
+import distantlands.model._
 
 /** What Imperial Tactics lends a plan's user (CR p. 35; Empire phase
   * design, "1b-ii"; rulings R10 to R12 and R16).
@@ -741,7 +741,7 @@ Add one test each for `meetsAlone` and `lentNeed`: an unlent Darkest Secret is n
 
 - [ ] **Step 4: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.actions.campaign.PlanAidSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.actions.campaign.PlanAidSuite"`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -858,7 +858,7 @@ Each test writes its setup in full; the helper names below say what they build.
 
 - [ ] **Step 2: Run them and see them fail to compile**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.ImperialTacticsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.ImperialTacticsSuite"`
 Expected: compile errors, because `ImperialTactics`, `DecisionOption.Lent` and `PlanNeed` are not found.
 
 - [ ] **Step 3: Extend the model**
@@ -974,10 +974,10 @@ Then extend the members:
 `ImperialTactics.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower}
-import oathdigital.model._
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower}
+import distantlands.model._
 
 /** Imperial Tactics (CR p. 35): an Imperial player may use battle plans an
   * ally lends and meet requirements with an ally's. The rule hooks no
@@ -1093,7 +1093,7 @@ In the `listed` map, check `attackerUsed(CampaignPlans.refOf(offered.offer.sourc
 
 - [ ] **Step 8: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.* oathdigital.gameplay.actions.campaign.* oathdigital.notes.DeclaredNoteKeysSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.* distantlands.gameplay.actions.campaign.* distantlands.notes.DeclaredNoteKeysSuite"`
 
 Use `DeclaredNoteKeysSuite`'s real package.
 
@@ -1192,7 +1192,7 @@ Add one more test: a surcharge (Gleaming Armor held by the attacker) on a lent p
 
 - [ ] **Step 2: Run them and see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.ImperialTacticsPaymentSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.ImperialTacticsPaymentSuite"`
 Expected: FAIL. p3 pays everything, and no markers are written.
 
 - [ ] **Step 3: Split the application's payments**
@@ -1312,7 +1312,7 @@ Update the doc comment: an ally who lent the People's Favor keeps it met until t
 
 - [ ] **Step 5: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.* oathdigital.gameplay.actions.campaign.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.* distantlands.gameplay.actions.campaign.*"`
 Expected: PASS, and every existing plan suite still passes.
 
 - [ ] **Step 6: Commit**
@@ -1369,7 +1369,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 - [ ] **Step 2: Run them and see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.ImperialTacticsWindowSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.ImperialTacticsWindowSuite"`
 Expected: FAIL. The first two tests find the window skipped.
 
 - [ ] **Step 3: Open the window for aid**
@@ -1401,7 +1401,7 @@ Add a bullet to the class comment: an Imperial user's window is asked when some 
 
 - [ ] **Step 4: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.* oathdigital.gameplay.actions.campaign.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.* distantlands.gameplay.actions.campaign.*"`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -1495,7 +1495,7 @@ Write `rejected` like the consent service suites' rejection helper. Spell each t
 
 - [ ] **Step 2: Run them and see them fail to compile**
 
-Run: `./sbtw "testOnly oathdigital.application.PlanAidServiceSuite"`
+Run: `./sbtw "testOnly distantlands.application.PlanAidServiceSuite"`
 Expected: compile errors, because `SavePlanAid` is not found.
 
 - [ ] **Step 3: The rules' reads**
@@ -1542,12 +1542,12 @@ If `CampaignPlanSide` is not an `enum` with `values`, list `Vector(CampaignPlanS
 `src/main/scala/distantlands/application/PlanAidDesk.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.actions.campaign.PlanAid
-import oathdigital.model._
-import oathdigital.model.OathEvent.{PlanAidCleared, PlanAidSaved}
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.actions.campaign.PlanAid
+import distantlands.model._
+import distantlands.model.OathEvent.{PlanAidCleared, PlanAidSaved}
 
 /** The Imperial Tactics command (Empire phase design, "1b-ii"): an ally's
   * whole offer, accepted at any time while an Imperial user's plan
@@ -1686,7 +1686,7 @@ Rename `consentBatch` only if the compiler or a reviewer asks for it. Its body f
 
 - [ ] **Step 5: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.application.PlanAid* oathdigital.application.GameApplicationService* oathdigital.server.GameHttpWireSuite" "shared/testOnly oathdigital.protocol.CommandProtocolSuite"`
+Run: `./sbtw "testOnly distantlands.application.PlanAid* distantlands.application.GameApplicationService* distantlands.server.GameHttpWireSuite" "shared/testOnly distantlands.protocol.CommandProtocolSuite"`
 
 If the shared project has another sbt name, use that.
 
@@ -1739,7 +1739,7 @@ Player and card words come from `LogWords`, the way `GameLogConsentSuite` render
 
 - [ ] **Step 2: Run them and see them fail**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogPlanAidSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogPlanAidSuite"`
 Expected: FAIL, because no line is posted.
 
 - [ ] **Step 3: Write the lines**
@@ -1765,7 +1765,7 @@ Dispatch it in `GameLogFormatter`: construct it at line 49 beside `consent`, and
 
 - [ ] **Step 4: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.*"`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -1798,7 +1798,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Produces:
 
 ```scala
-package oathdigital.protocol.projection
+package distantlands.protocol.projection
 
 /** An Imperial ally's view of another Imperial player's open plan window
   * (Empire phase design, "Offer panel"): what they may offer, drawn as
@@ -1839,18 +1839,18 @@ The new field is `GameProjection.planAidPrompt: Option[PlanAidPromptProjection] 
 
 - [ ] **Step 2: Run them and see them fail to compile**
 
-Run: `./sbtw "testOnly oathdigital.application.PlanAidProjectionSuite"`
+Run: `./sbtw "testOnly distantlands.application.PlanAidProjectionSuite"`
 Expected: compile errors, because `planAidPrompt` is not found.
 
 - [ ] **Step 3: Write the projector**
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.actions.campaign.PlanAid
-import oathdigital.model._
-import oathdigital.protocol.projection.{GameProjection => _, _}
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.actions.campaign.PlanAid
+import distantlands.model._
+import distantlands.protocol.projection.{GameProjection => _, _}
 
 /** The offer panel's projection for an Imperial ally while another
   * Imperial player's plan window is parked (Empire phase design, "Offer
@@ -1903,7 +1903,7 @@ DTO codec: add `"planAidPrompt"`. It is written only when set, and on decode a m
 
 - [ ] **Step 4: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.application.*Projection*"`, plus the shared codec suite.
+Run: `./sbtw "testOnly distantlands.application.*Projection*"`, plus the shared codec suite.
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -1978,15 +1978,15 @@ The panel, as approved:
 
 - [ ] **Step 2: Run them and see them fail to compile**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.PlanAidDraftSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.PlanAidDraftSuite"`
 Expected: compile errors.
 
 - [ ] **Step 3: Write the draft**
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{GameIntent => GameCommand, WalkerStartArgWire}
+import distantlands.protocol.{GameIntent => GameCommand, WalkerStartArgWire}
 
 /** An Imperial ally's offer as they build it (Empire phase design, "Offer
   * panel"): keys are `kind:id`, as the prompt and the board spell them. It
@@ -2169,7 +2169,7 @@ Use the existing suite's `resolve` helper and its log and state readers, and the
 
 - [ ] **Step 2: Run it**
 
-Run: `./sbtw "testOnly oathdigital.application.ImperialTacticsScenarioSuite"`
+Run: `./sbtw "testOnly distantlands.application.ImperialTacticsScenarioSuite"`
 Expected: PASS. If it fails, the failure is in an earlier task's code: fix it there and add the missing unit test.
 
 - [ ] **Step 3: Docs**

@@ -54,7 +54,7 @@
   - Nothing under `gameplay/actions` imports `gameplay/powers`.
 - **Tree addresses.** Roving Terror's tree keeps its three nodes. Only its decision's options change.
 - **Line width.** Scala lines stay at or under 80 characters.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Stage explicit paths only; never `git add -A`. Re-check `git log --oneline -1` before any amend, reset or rebase.
 - **Worktree.** Work in a git worktree.
   - `EnterWorktree` branches from `origin`, which lags local `main`. Fast-forward the new branch to local `main` first (`git merge --ff-only main`).
@@ -66,7 +66,7 @@
   - To read a parked decision, match `ParkedNode.Decision(_, decide, _)` and compare `decide.decisionId`. The case's first field is the procedure, not the decision id. `SpellBreakerOfferSuite.jinxAtRecoverReroll` shows the pattern.
   - A plan window, a reroll choice or a non-Act phase menu is not asked when it has nothing usable or askable to offer. A test that expects to see a refused option there needs one other usable option on the board to keep the question open. `SpellBreakerOfferSuite`'s first test adds Battle Honors for this.
 - **Log lines omit the actor.** Giant Python's lines name the card and the site only.
-- **Note keys** are declared through a `NoteSet`, as plain `val`s after the set. Regenerate `src/test/resources/notes/declared-keys.txt` with `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"`. Check that the diff adds only the keys named in the task.
+- **Note keys** are declared through a `NoteSet`, as plain `val`s after the set. Regenerate `src/test/resources/notes/declared-keys.txt` with `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"`. Check that the diff adds only the keys named in the task.
 - **Words, exactly:**
   - Giant Python's heading: "Giant Python: move to which slot?"
   - Roving Terror's heading: "Roving Terror: move to which slot?"
@@ -122,18 +122,18 @@ In `HallOfMinistersConsentSuite` and `HallOfMinistersConsentServiceSuite`, Rovin
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.RovingTerrorSuite oathdigital.gameplay.operations.HallOfMinistersConsentSuite oathdigital.application.HallOfMinistersConsentServiceSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.RovingTerrorSuite distantlands.gameplay.operations.HallOfMinistersConsentSuite distantlands.application.HallOfMinistersConsentServiceSuite"`
 Expected: the tests that read options or answer fail, because Roving Terror still offers the cards themselves.
 
 - [ ] **Step 3: Create `SiteSlotMoves.scala`**
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.SiteRulers
-import oathdigital.gameplay.actions.cardplay.CardSlots
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.SiteRulers
+import distantlands.gameplay.actions.cardplay.CardSlots
+import distantlands.model._
 
 /** Where a site card that moves itself may go (Giant Python, Roving Terror;
   * catalog batch 8, slice 10): `slot` at `site`, replacing `replaced` with
@@ -237,7 +237,7 @@ Drop the imports this leaves unused.
 
 - [ ] **Step 5: Run the suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.* oathdigital.gameplay.operations.HallOfMinistersConsentSuite oathdigital.application.HallOfMinistersConsentServiceSuite oathdigital.gameplay.powers.poweruse.* oathdigital.application.WalkerDecisionProjectorSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.* distantlands.gameplay.operations.HallOfMinistersConsentSuite distantlands.application.HallOfMinistersConsentServiceSuite distantlands.gameplay.powers.poweruse.* distantlands.application.WalkerDecisionProjectorSuite"`
 Expected: all pass. RovingTerrorSuite has 6 tests.
 
 The projection of a `Replacing` site slot names the card it replaces, as card play's does. If a Game Log or projection test pins Roving Terror's options as denizens, update it to slots.
@@ -272,15 +272,15 @@ git commit -m "feat(batch8): Roving Terror asks which slot to move to"
 Create `src/test/scala/distantlands/gameplay/powers/action/GiantPythonSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 /** Giant Python's ACTION (card 186): "If you hold the Darkest Secret, move
   * Giant Python to another site, and you may discard a card there first."
@@ -365,7 +365,7 @@ class GiantPythonSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.GiantPythonSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.GiantPythonSuite"`
 Expected: compilation fails, because `GiantPython` does not exist.
 
 - [ ] **Step 3: Create `GiantPython.scala`**
@@ -373,14 +373,14 @@ Expected: compilation fails, because `GiantPython` does not exist.
 Move `GiantPythonCard` here unchanged and remove it from `HoldingBeastDenizens.scala`.
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower,
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower,
   SiteOnly}
-import oathdigital.gameplay.SiteRulers
-import oathdigital.gameplay.powers.{NoteSupport, PowerAnswers}
-import oathdigital.gameplay.powers.banner.CardPowerBanners
-import oathdigital.model._
+import distantlands.gameplay.SiteRulers
+import distantlands.gameplay.powers.{NoteSupport, PowerAnswers}
+import distantlands.gameplay.powers.banner.CardPowerBanners
+import distantlands.model._
 
 object GiantPythonCard extends Denizen(DenizenId("186"), "Giant Python", Suit.Beast) with SiteOnly:
   val action = PrintedPower(PowerId("denizen.giant-python.action"),
@@ -487,7 +487,7 @@ If `usable` is not where the harness checks a phase power's gate, use the gate `
 
 - [ ] **Step 5: Run the suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.* oathdigital.gameplay.BackendArchitectureSuite oathdigital.gameplay.powers.DeclaredNoteKeysSuite oathdigital.gameplay.PhasePowerSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.* distantlands.gameplay.BackendArchitectureSuite distantlands.gameplay.powers.DeclaredNoteKeysSuite distantlands.gameplay.PhasePowerSuite"`
 Expected: all pass. GiantPythonSuite has 5 tests.
 
 - [ ] **Step 6: Commit**
@@ -517,14 +517,14 @@ git commit -m "feat(batch8): Giant Python moves to a slot it picks"
 Create `src/test/scala/distantlands/gameplay/powers/poweruse/GiantPythonRestrictionSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.poweruse
+package distantlands.gameplay.powers.poweruse
 
-import oathdigital.gameplay.powerresolver.PowerUse
-import oathdigital.gameplay.powers.action.RovingTerror
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, MenuPlay, Table}
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.powerresolver.PowerUse
+import distantlands.gameplay.powers.action.RovingTerror
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, MenuPlay, Table}
+import distantlands.testkit.Table.{p1, p2}
 
 /** Giant Python's restriction (card 186): "Other cards at this site cannot
   * be used for non-persistent powers or placing [favor] / [secret]."
@@ -595,19 +595,19 @@ If `menuOptionFor` builds a different shell, compare against `DecisionOption.for
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.poweruse.GiantPythonRestrictionSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.poweruse.GiantPythonRestrictionSuite"`
 Expected: compilation fails, because `GiantPythonRestriction` does not exist.
 
 - [ ] **Step 3: Create `GiantPythonRestriction.scala`**
 
 ```scala
-package oathdigital.gameplay.powers.poweruse
+package distantlands.gameplay.powers.poweruse
 
-import oathdigital.gameplay.SiteRulers
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower,
+import distantlands.gameplay.SiteRulers
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower,
   PowerUse, PowerUseRefusal, PowerUseRestriction}
-import oathdigital.gameplay.powers.action.GiantPythonCard
-import oathdigital.model._
+import distantlands.gameplay.powers.action.GiantPythonCard
+import distantlands.model._
 
 /** Giant Python's restriction (card 186, site-only): "Other cards at this
   * site cannot be used for non-persistent powers or placing [favor] /
@@ -678,7 +678,7 @@ case object GiantPythonRestriction extends ContributingPower
 
 - [ ] **Step 5: Run the suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.poweruse.* oathdigital.gameplay.powers.action.* oathdigital.gameplay.PowerKindsCatalogSuite oathdigital.gameplay.BackendArchitectureSuite oathdigital.gameplay.powers.DeclaredNoteKeysSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.poweruse.* distantlands.gameplay.powers.action.* distantlands.gameplay.PowerKindsCatalogSuite distantlands.gameplay.BackendArchitectureSuite distantlands.gameplay.powers.DeclaredNoteKeysSuite"`
 Expected: all pass. GiantPythonRestrictionSuite has 5 tests.
 
 - [ ] **Step 6: Commit**

@@ -39,7 +39,7 @@ Where this plan quotes code, read the file as it is on `main` and apply the chan
   - No power name appears in walker sources.
   - Nothing under `gameplay/actions` imports `gameplay/powers`.
 - **Line width.** Scala lines stay at or under 80 characters, as in the files around them. Re-wrap any line in this plan that comes out longer.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Other sessions commit to `main` while you work.
   - Stage explicit paths only; never `git add -A`.
   - Re-check `git log --oneline -1` before any amend, reset or rebase.
@@ -245,15 +245,15 @@ This is the slice's riskiest seam, so it comes first. If its first test cannot p
 - [ ] **Step 1: Write the failing tests**
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.WalkerDiceFixture.scripted
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseAmountAnswer
-import oathdigital.testkit.{CatalogNames, Look}
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.WalkerDiceFixture.scripted
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseAmountAnswer
+import distantlands.testkit.{CatalogNames, Look}
 
 /** Careful Plans: one favor placed, and the defender rolls before the
   * attacker; the sacrifice stays after the attack roll. */
@@ -320,7 +320,7 @@ class CarefulPlansSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.CarefulPlansSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.CarefulPlansSuite"`
 Expected: compile failure, `CarefulPlans` not found.
 
 - [ ] **Step 3: Write the plan**
@@ -328,11 +328,11 @@ Expected: compile failure, `CarefulPlans` not found.
 Delete `CarefulPlansCard` from `HoldingOrderDenizens.scala`, and create `CarefulPlans.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, PrintedPower}
-import oathdigital.gameplay.powerresolver.Transform
-import oathdigital.model._
+import distantlands.catalog.{Denizen, PrintedPower}
+import distantlands.gameplay.powerresolver.Transform
+import distantlands.model._
 
 object CarefulPlansCard extends Denizen(DenizenId("254"), "Careful Plans",
     Suit.Order):
@@ -397,11 +397,11 @@ case object CarefulPlans extends BattlePlan:
     afterOutcome = false).nonEmpty
 ```
 
-Register it in `PlanRewrites.forCatalog`: `Vector(PeaceEnvoy, WildMounts.forCatalog(catalog), CarefulPlans)`. Add `CarefulPlansCard` to the `oathdigital.gameplay.powers.campaign` import in `NewFoundations.scala`.
+Register it in `PlanRewrites.forCatalog`: `Vector(PeaceEnvoy, WildMounts.forCatalog(catalog), CarefulPlans)`. Add `CarefulPlansCard` to the `distantlands.gameplay.powers.campaign` import in `NewFoundations.scala`.
 
 - [ ] **Step 4: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.* oathdigital.gameplay.Campaign* oathdigital.catalog.* oathdigital.gameplay.cards.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.* distantlands.gameplay.Campaign* distantlands.catalog.* distantlands.gameplay.cards.*"`
 Expected: PASS. Every Campaign suite now walks the battle inside the branch, so a failure elsewhere means the reshape broke something: fix it before going on.
 
 - [ ] **Step 5: Commit**
@@ -458,13 +458,13 @@ and a test at the end:
 Create `WeepingBannerSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Look}
 
 /** Weeping Banner: a defender's relic plan, a secret placed, under which
   * each skull kills two warbands. */
@@ -536,7 +536,7 @@ class WeepingBannerSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.AttackScoreSuite oathdigital.gameplay.powers.campaign.WeepingBannerSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.AttackScoreSuite distantlands.gameplay.powers.campaign.WeepingBannerSuite"`
 Expected: compile failure, `WeepingBanner` not found.
 
 - [ ] **Step 3: Score the skull kills**
@@ -574,10 +574,10 @@ Add to the end of `AttackScore.changes`:
 Delete `WeepingBannerCard` from `HoldingRelics.scala`. In `docs/catalog/reference/new-foundations-component-catalog.json`, change `"id": "relic.keeping-banner"` to `"id": "relic.weeping-banner"`. Create `WeepingBanner.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{PrintedPower, Relic}
-import oathdigital.model._
+import distantlands.catalog.{PrintedPower, Relic}
+import distantlands.model._
 
 object WeepingBannerCard extends Relic(RelicId("R42"), "Weeping Banner",
     value = 63, defense = 2):
@@ -623,7 +623,7 @@ Register it in `PlanRules.forCatalog` after `Vector(FearsomeGeneral) ++`: `Vecto
 
 - [ ] **Step 5: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.* oathdigital.catalog.* oathdigital.gameplay.cards.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.* distantlands.catalog.* distantlands.gameplay.cards.*"`
 Expected: PASS. A catalog suite that compares the holding catalog with the reference JSON passes once both carry `relic.weeping-banner`; if one names the old id elsewhere, rename it there too.
 
 - [ ] **Step 6: Commit**
@@ -709,15 +709,15 @@ In `GameLogCampaignSuite`, add `ChooseAmountAnswer` to the `DecisionAnswer` impo
 Create `ZealotsSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseAmountAnswer
-import oathdigital.testkit.{CatalogNames, Look}
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseAmountAnswer
+import distantlands.testkit.{CatalogNames, Look}
 
 /** Zealots: one favor placed; while the defending force is larger when it
   * is chosen, each sacrificed warband adds three. */
@@ -802,7 +802,7 @@ class ZealotsSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.ZealotsSuite oathdigital.gameplay.CampaignBattleSuite oathdigital.serialization.CampaignResultCodecSuite oathdigital.application.gamelog.GameLogCampaignSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.ZealotsSuite distantlands.gameplay.CampaignBattleSuite distantlands.serialization.CampaignResultCodecSuite distantlands.application.gamelog.GameLogCampaignSuite"`
 Expected: compile failure, `Zealots` and `sacrificeWorth` not found.
 
 - [ ] **Step 3: The model**
@@ -898,11 +898,11 @@ In `CampaignLines.scala`, the sacrifice arm becomes:
 Delete `ZealotsCard` from `HoldingDiscordDenizens.scala`, and create `Zealots.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, PrintedPower}
-import oathdigital.gameplay.actions.campaign.{CampaignBattle, CampaignIds}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, PrintedPower}
+import distantlands.gameplay.actions.campaign.{CampaignBattle, CampaignIds}
+import distantlands.model._
 
 object ZealotsCard extends Denizen(DenizenId("87"), "Zealots", Suit.Discord):
   val power = PrintedPower(PowerId("denizen.zealots"),
@@ -963,7 +963,7 @@ Register it in `SimplePlans.forCatalog`, last: `Vector(Zealots)`. Add `ZealotsCa
 
 - [ ] **Step 7: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.* oathdigital.gameplay.Campaign* oathdigital.serialization.* oathdigital.application.gamelog.* oathdigital.catalog.* oathdigital.gameplay.cards.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.* distantlands.gameplay.Campaign* distantlands.serialization.* distantlands.application.gamelog.* distantlands.catalog.* distantlands.gameplay.cards.*"`
 Expected: PASS.
 
 - [ ] **Step 8: Commit**
@@ -991,14 +991,14 @@ git commit -m "feat(batch7): Zealots makes each sacrificed warband add three"
 - [ ] **Step 1: Write the failing tests**
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Look}
 
 /** Bear Traps: a free defender's plan that removes an attack die and kills
   * a warband on the attacker's board, beyond the committed force. */
@@ -1054,7 +1054,7 @@ class BearTrapsSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.BearTrapsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.BearTrapsSuite"`
 Expected: compile failure, `BearTraps` not found.
 
 - [ ] **Step 3: Write the plan**
@@ -1062,12 +1062,12 @@ Expected: compile failure, `BearTraps` not found.
 Delete `BearTrapsCard` from `HoldingOrderDenizens.scala`, and create `BearTraps.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, PrintedPower}
-import oathdigital.gameplay.actions.campaign.CampaignSetup
-import oathdigital.gameplay.powers.PlayerFacts
-import oathdigital.model._
+import distantlands.catalog.{Denizen, PrintedPower}
+import distantlands.gameplay.actions.campaign.CampaignSetup
+import distantlands.gameplay.powers.PlayerFacts
+import distantlands.model._
 
 object BearTrapsCard extends Denizen(DenizenId("3"), "Bear Traps", Suit.Order):
   val power = PrintedPower(PowerId("denizen.bear-traps"),
@@ -1132,7 +1132,7 @@ Register it in `SimplePlans.forCatalog`, last: `Vector(BearTraps)`. Add `BearTra
 
 - [ ] **Step 4: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.* oathdigital.catalog.* oathdigital.gameplay.cards.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.* distantlands.catalog.* distantlands.gameplay.cards.*"`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -1160,16 +1160,16 @@ git commit -m "feat(batch7): Bear Traps removes a die and kills from the board"
 - [ ] **Step 1: Write the failing tests**
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.CardPlay
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.CardPlay
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Look}
 
 /** Signal Trees: a secret placed; the top three cards of the user's
   * region's discard pile are revealed and discarded, for two attack dice
@@ -1266,7 +1266,7 @@ class SignalTreesSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.SignalTreesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.SignalTreesSuite"`
 Expected: compile failure, `SignalTrees` not found.
 
 - [ ] **Step 3: Write the plan**
@@ -1274,13 +1274,13 @@ Expected: compile failure, `SignalTrees` not found.
 Delete `SignalTreesCard` from `HoldingBeastDenizens.scala`, and create `SignalTrees.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.PowerAccess
-import oathdigital.gameplay.actions.CardPlay
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.PowerAccess
+import distantlands.gameplay.actions.CardPlay
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.model._
 
 object SignalTreesCard extends Denizen(DenizenId("217"), "Signal Trees",
     Suit.Beast):
@@ -1416,7 +1416,7 @@ Register it in `SimplePlans.forCatalog`, last: `Vector(SignalTrees.forCatalog(ca
 
 - [ ] **Step 4: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.* oathdigital.gameplay.powers.whenplayed.CallForHelpSuite oathdigital.catalog.* oathdigital.gameplay.cards.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.* distantlands.gameplay.powers.whenplayed.CallForHelpSuite distantlands.catalog.* distantlands.gameplay.cards.*"`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -1445,15 +1445,15 @@ git commit -m "feat(batch7): Signal Trees reveals discards for Beast dice"
 - [ ] **Step 1: Write the failing tests**
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Look}
 
 /** Hearts and Minds: three favor placed; the defender wins without a roll,
   * and the card is discarded after the Campaign unless its user holds the
@@ -1503,7 +1503,7 @@ class HeartsAndMindsSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.HeartsAndMindsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.HeartsAndMindsSuite"`
 Expected: compile failure, `HeartsAndMinds` not found.
 
 - [ ] **Step 3: A silent victory**
@@ -1534,11 +1534,11 @@ In its doc, replace `(Peace Envoy; Hearts and Minds can reuse it)` with `(Peace 
 Delete `HeartsAndMindsCard` from `HoldingHearthDenizens.scala` and drop `SiteOnly` from that file's import. Create `HeartsAndMinds.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
+import distantlands.gameplay.actions.BannerRules
+import distantlands.model._
 
 object HeartsAndMindsCard extends Denizen(DenizenId("138"),
     "Hearts and Minds", Suit.Hearth) with SiteOnly:
@@ -1598,7 +1598,7 @@ Register it in `PlanRewrites.forCatalog`: `Vector(PeaceEnvoy, WildMounts.forCata
 
 - [ ] **Step 5: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.* oathdigital.catalog.* oathdigital.gameplay.cards.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.* distantlands.catalog.* distantlands.gameplay.cards.*"`
 Expected: PASS, `PeaceEnvoySuite` included.
 
 - [ ] **Step 6: Commit**

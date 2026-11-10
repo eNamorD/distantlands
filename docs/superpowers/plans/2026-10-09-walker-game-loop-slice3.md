@@ -32,7 +32,7 @@
   - No power name appears in walker or `gameplay/operations` sources. `gameplay/actions` may import a power, as `TravelRules` does.
 - **Line width.** Scala lines this plan writes stay at or under 80 characters, as in the files around them. Re-wrap any line that comes out longer.
 - **Indentation in lists.** A code block inside a list item is indented two extra spaces for the list. Drop those two when you copy it.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Other sessions commit to `main` while you work.
   - Stage explicit paths only; never `git add -A`.
   - Re-check `git log --oneline -1` before any amend, reset or rebase.
@@ -121,8 +121,8 @@ The procedures exist, run, replay and post their lines. The legacy commands stil
 - Modify tests: `src/test/scala/distantlands/gameplay/MinorActionsSuite.scala`, `src/test/scala/distantlands/model/ProcedureRefSuite.scala`, `src/test/scala/distantlands/application/gamelog/LogScripts.scala`, `src/test/scala/distantlands/application/gamelog/GameLogEventSuite.scala`
 
 **Interfaces:**
-- Produces, in `oathdigital.model.ActionRef`: `PeekSiteRelics` (key `"peek-site-relics"`), `RevealOwnedRelic` (`"reveal-owned-relic"`) and `MoveWarbands` (`"move-warbands"`), appended to `ActionRef.all` in that order.
-- Produces, in `oathdigital.gameplay.actions.minor`:
+- Produces, in `distantlands.model.ActionRef`: `PeekSiteRelics` (key `"peek-site-relics"`), `RevealOwnedRelic` (`"reveal-owned-relic"`) and `MoveWarbands` (`"move-warbands"`), appended to `ActionRef.all` in that order.
+- Produces, in `distantlands.gameplay.actions.minor`:
 
   ```scala
   object MinorActionProcedures:
@@ -184,14 +184,14 @@ In the "Slices" section, append to item 3 ("**The minor actions.** ..."): " Thei
 In `src/test/scala/distantlands/gameplay/MinorActionsSuite.scala`, keep every existing test for now. Add these imports:
 
 ```scala
-import oathdigital.gameplay.actions.minor.MinorActionProcedures
-import oathdigital.gameplay.actions.minor.MinorActionProcedures.{toBoard,
+import distantlands.gameplay.actions.minor.MinorActionProcedures
+import distantlands.gameplay.actions.minor.MinorActionProcedures.{toBoard,
   toSite}
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.economy.VowOfWandering
-import oathdigital.gameplay.walker.ActionBoundaryRan
-import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
-import oathdigital.testkit.{ParkedNode, PowerStubs}
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.economy.VowOfWandering
+import distantlands.gameplay.walker.ActionBoundaryRan
+import distantlands.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
+import distantlands.testkit.{ParkedNode, PowerStubs}
 ```
 
 Add these helpers after `base`:
@@ -380,7 +380,7 @@ In `src/test/scala/distantlands/model/ProcedureRefSuite.scala`, extend the hand 
 
 - [ ] **Step 4: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.MinorActionsSuite oathdigital.model.ProcedureRefSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.MinorActionsSuite distantlands.model.ProcedureRefSuite"`
 Expected: compile errors: `PeekSiteRelics` is not a member of `ActionRef`, and `MinorActionProcedures` is not found.
 
 - [ ] **Step 5: The procedure references**
@@ -411,13 +411,13 @@ Append them to `ActionRef.all`:
 Create `src/main/scala/distantlands/gameplay/actions/minor/MinorActionProcedures.scala`:
 
 ```scala
-package oathdigital.gameplay.actions.minor
+package distantlands.gameplay.actions.minor
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.OathLifecycle
-import oathdigital.gameplay.powers.economy.VowOfWandering
-import oathdigital.model._
-import oathdigital.model.OathViolation.{InvalidEventOrder,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.OathLifecycle
+import distantlands.gameplay.powers.economy.VowOfWandering
+import distantlands.model._
+import distantlands.model.OathViolation.{InvalidEventOrder,
   MinorActionUnavailable, PawnSiteMissing}
 
 /** The three minor actions that were legacy commands (walker-driven game
@@ -619,7 +619,7 @@ Notes:
 
 - [ ] **Step 7: Register them**
 
-In `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala`, import `oathdigital.gameplay.actions.minor.MinorActionProcedures`. After the `ActionRef.Campaign` entry, add:
+In `src/main/scala/distantlands/gameplay/walker/WalkerProcedureRegistry.scala`, import `distantlands.gameplay.actions.minor.MinorActionProcedures`. After the `ActionRef.Campaign` entry, add:
 
 ```scala
     /** The legacy minor actions (walker-driven game loop design, slice 3).
@@ -701,12 +701,12 @@ In `src/main/scala/distantlands/application/gamelog/DetailLines.scala`, keep the
 
 - [ ] **Step 9: Run the rules tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.MinorActionsSuite oathdigital.model.ProcedureRefSuite oathdigital.gameplay.walker.WalkerProcedureRegistrySuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.MinorActionsSuite distantlands.model.ProcedureRefSuite distantlands.gameplay.walker.WalkerProcedureRegistrySuite"`
 Expected: PASS.
 
 - [ ] **Step 10: The Game Log scripts and tests**
 
-In `src/test/scala/distantlands/application/gamelog/LogScripts.scala`, import `oathdigital.gameplay.actions.minor.MinorActionProcedures`. After `revealRelic`, add:
+In `src/test/scala/distantlands/application/gamelog/LogScripts.scala`, import `distantlands.gameplay.actions.minor.MinorActionProcedures`. After `revealRelic`, add:
 
 ```scala
   /** p1 peeks at Broken Peaks, where Sticky Fire lies. p2 and p3 stand
@@ -776,7 +776,7 @@ In `src/test/scala/distantlands/application/gamelog/GameLogEventSuite.scala`, ad
     assertEquals(moves.map(_.section).distinct.size, 2)
 ```
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.*"`
 Expected: PASS. If a new script fails a `GameLogPropertiesSuite` property, the failure names the property; fix the procedure or the line, not the property.
 
 - [ ] **Step 11: Run everything**
@@ -852,7 +852,7 @@ In `frontend/src/test/scala/distantlands/frontend/ActionOptionRowSuite.scala`:
       Vector(GameCommand.StartWalker("move-warbands")))
   ```
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.ActionOptionRowSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.ActionOptionRowSuite"`
 Expected: FAIL: the minor rows still show the warband count rows, and the click submits `MoveWarbands`.
 
 - [ ] **Step 2: The frontend buttons start the procedures**
@@ -881,7 +881,7 @@ In `frontend/src/main/scala/distantlands/frontend/ActionDecisionRenderer.scala`,
 
 `MinorActionsProjection` keeps its fields; slice 4 deletes it with the panel.
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.ActionOptionRowSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.ActionOptionRowSuite"`
 Expected: PASS.
 
 - [ ] **Step 3: Delete the commands and intents**

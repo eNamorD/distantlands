@@ -47,7 +47,7 @@ Both power vocabularies coexist until the batch migration retires the legacy one
 
 **Interfaces:**
 - Consumes: `PowerWindow`, `PowerId`, `RuleSourceRef` (`gameplay/powerresolver/PowerModel.scala`), `Operation` (`gameplay/operations/Operation.scala`), `OathViolation`, `ReadyGame`, `PlayerId`.
-- Produces, all in package `oathdigital.gameplay.powerresolver`:
+- Produces, all in package `distantlands.gameplay.powerresolver`:
   - `final case class PowerCtx(state: ReadyGame, actor: PlayerId, source: RuleSourceRef, window: PowerWindow, nodePath: Vector[String])` — everything a contribution may read. It carries no mutable state and no catalog.
   - `sealed trait Contribution extends Product with Serializable`
   - `final case class Transform(fn: (PowerCtx, Vector[Operation]) => Vector[Operation]) extends Contribution`
@@ -58,7 +58,7 @@ Both power vocabularies coexist until the batch migration retires the legacy one
 
 A `Transform` receives and returns the hooked node's **children vector**, never the whole tree — whole-action restructure is explicitly out of scope (spec decision 9). A `Restriction` receives the whole action tree root, because Vow-of-Peace-style powers reject an action wholesale (same decision).
 
-- [ ] **Step 1: failing test** in `ContributingPowerSuite`: (a) `sortKey` orders two powers with equal priority by `source.stableKey`, then by `id.value` — assert the exact sorted vector for three fixtures whose keys interleave; (b) a power declaring only `id`/`source`/`contributions` compiles and reports `priority == 0`, `applicable(ctx) == true`, `shouldIgnore(anyId) == false`. Run `./sbtw "testOnly oathdigital.gameplay.ContributingPowerSuite"`; expected FAIL — `ContributingPower` does not exist.
+- [ ] **Step 1: failing test** in `ContributingPowerSuite`: (a) `sortKey` orders two powers with equal priority by `source.stableKey`, then by `id.value` — assert the exact sorted vector for three fixtures whose keys interleave; (b) a power declaring only `id`/`source`/`contributions` compiles and reports `priority == 0`, `applicable(ctx) == true`, `shouldIgnore(anyId) == false`. Run `./sbtw "testOnly distantlands.gameplay.ContributingPowerSuite"`; expected FAIL — `ContributingPower` does not exist.
 - [ ] **Step 2: implement** the file exactly as specified above. No collector logic here — this task is vocabulary only.
 - [ ] **Step 3:** re-run the focused suite; expected PASS.
 - [ ] **Step 4:** run `./sbtw "test"` and `python3 scripts/check-architecture.py`; both green.
@@ -93,7 +93,7 @@ A `Transform` receives and returns the hooked node's **children vector**, never 
   - A ignores B and B ignores C: C survives (no transitivity — B's vote counts even though B was dropped);
   - two powers with interleaved sort keys produce transforms in `sortKey` order, asserted as an exact vector;
   - a power declaring both a `Transform` and a `Restriction` at the same window lands one in each output and its id once in `order`.
-  Run `./sbtw "testOnly oathdigital.gameplay.ContributionCollectorSuite"`; expected FAIL — `ContributionCollector` does not exist.
+  Run `./sbtw "testOnly distantlands.gameplay.ContributionCollectorSuite"`; expected FAIL — `ContributionCollector` does not exist.
 - [ ] **Step 2: implement** `ContributionCollector`. It is pure: no state reads beyond the `PowerCtx` it is handed, no catalog lookups, no walker imports.
 - [ ] **Step 3:** re-run the focused suite; expected PASS.
 - [ ] **Step 4:** `./sbtw "test"` and `python3 scripts/check-architecture.py` green.

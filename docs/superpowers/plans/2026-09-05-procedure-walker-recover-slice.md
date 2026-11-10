@@ -41,7 +41,7 @@
 
 Note: `CoreOperation` today lives in `CoreOperations.scala` with `def primitives`. This task re-roots it under `Operation` and rewires the ~12 composite case classes (`Draw`, `Discard.*`, `Exchange`, `Gain.*`, `Give`, `PayCost`, `Kill`, `Play`, `Replace`, `Reveal`, `Sacrifice`, `Swap`, `Take`, `Burn.*`) so their `children` equal their old `primitives` vectors. Primitive cases (`Move`, `Peek`, `Flip`, `FlipSecrets`, `AdjustSupply`, `Bury`) extend `PrimitiveOperation` unchanged.
 
-- [ ] **Step 1: Write the failing test** — new `OperationTreeSuite.scala` (package `oathdigital.gameplay.operations`):
+- [ ] **Step 1: Write the failing test** — new `OperationTreeSuite.scala` (package `distantlands.gameplay.operations`):
 
 ```scala
 class OperationTreeSuite extends munit.FunSuite {
@@ -63,14 +63,14 @@ Verify compile fails: `Operation` undefined.
 
 - [ ] **Step 2: Run to confirm fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.operations.OperationTreeSuite"` — FAIL (missing `Operation`).
+Run: `./sbtw "testOnly distantlands.gameplay.operations.OperationTreeSuite"` — FAIL (missing `Operation`).
 
 - [ ] **Step 3: Create `Operation.scala`**
 
 ```scala
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.gameplay.powerresolver.PowerWindow
+import distantlands.gameplay.powerresolver.PowerWindow
 
 sealed trait Operation {
   def window: Option[PowerWindow] = None
@@ -94,7 +94,7 @@ Run `./sbtw "Test/compile"` and change call sites to `Operation.flatten(...)` wh
 
 - [ ] **Step 6: Test green + full gate**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.operations.OperationTreeSuite"` then full gate. Both green.
+Run: `./sbtw "testOnly distantlands.gameplay.operations.OperationTreeSuite"` then full gate. Both green.
 
 - [ ] **Step 7: Commit**
 
@@ -129,7 +129,7 @@ git commit -m "refactor(operations): unify Operation ADT with children accessor"
 
 Because `PendingTree` is stored in `CurrentGameState`, keep `PendingProcedure` alongside for legacy actions this slice (dual pending: `pending: Option[PendingProcedure]`, `walkerPending: Option[PendingTree]`). Do not delete legacy `pending`.
 
-- [ ] **Step 1: Failing test** in `WalkerStateSuite` (package `oathdigital.gameplay`): constructing a `ReadyGame` with a `PendingTree` + a pool slot compiles and reads back; `Operation.flatten(Decide(...))` returns itself; `Repeat(guard = _ => false, body = ...)` flattens to `body`'s leaves (guard false → body still flattened by the accessor, unrolling is walker's job).
+- [ ] **Step 1: Failing test** in `WalkerStateSuite` (package `distantlands.gameplay`): constructing a `ReadyGame` with a `PendingTree` + a pool slot compiles and reads back; `Operation.flatten(Decide(...))` returns itself; `Repeat(guard = _ => false, body = ...)` flattens to `body`'s leaves (guard false → body still flattened by the accessor, unrolling is walker's job).
 - [ ] **Step 2: fail → Step 3: implement** new model types + leaves (leaf `children = Vector(this)`).
 - [ ] **Step 4: pass → Step 5: commit** `feat(walker): Decide/Roll/pool leaves and PendingTree state`.
 

@@ -71,7 +71,7 @@ git commit -m "docs: amend decision 2 for action-level composite Operations"
   - `trait WindowContext { def activePowers: Vector[PowerId] }`-style minimal marker (each window family extends with its own data).
 
 - [ ] **Step 1: Write failing test** (in `PowerResolverSuite.scala` or new `SuppressionRegistrySuite.scala`): register a dominant suppressing two others with a condition; assert `suppress` returns suppressed ids when condition true, empty otherwise.
-- [ ] **Step 2: Run to verify fail**: `./sbtw "testOnly oathdigital.gameplay.*Suppression*"` → FAIL (missing symbols).
+- [ ] **Step 2: Run to verify fail**: `./sbtw "testOnly distantlands.gameplay.*Suppression*"` → FAIL (missing symbols).
 - [ ] **Step 3: Implement** `PowerContributions.scala` per interfaces above.
 - [ ] **Step 4: Pass + commit.**
 

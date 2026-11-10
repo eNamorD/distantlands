@@ -35,7 +35,7 @@ Task 1 amends both with the rulings made at plan time, so read them after Task 1
   - `gameplay` never imports `application`, `serialization` or `server`.
   - A walker power (anything under `gameplay/powers`) never imports `gameplay.walker`.
   - No power name appears in walker sources.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Other sessions commit to `main` while you work.
   - Stage explicit paths only; never `git add -A`.
   - Re-check `git log --oneline -1` before any amend, reset or rebase.
@@ -253,15 +253,15 @@ git commit -m "docs(spec): settle how Vow of Wandering stops each placement"
 Create `src/test/scala/distantlands/gameplay/powers/economy/VowOfWanderingSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, EconomyActions,
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, CatalogNames, EconomyActions,
   Look, PowerRules, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2}
 
 class VowOfWanderingSuite extends munit.FunSuite:
   private val vow = CatalogNames.denizen("Vow of Wandering")
@@ -333,13 +333,13 @@ In `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`, add afte
 ```scala
   test("Vow of Wandering's Muster power is automatic whatever its flag"):
     assertEquals(flag("denizen.vow-of-wandering.muster"), Some(false))
-    assertEquals(oathdigital.gameplay.powers.economy.VowOfWanderingMuster
+    assertEquals(distantlands.gameplay.powers.economy.VowOfWanderingMuster
       .resolution, PowerResolution.Automatic)
 ```
 
 - [ ] **Step 2: Run the tests to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.VowOfWanderingSuite oathdigital.gameplay.PowerKindsCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.economy.VowOfWanderingSuite distantlands.gameplay.PowerKindsCatalogSuite"`
 Expected: compile failure, `Not found: VowOfWanderingMuster`.
 
 - [ ] **Step 3: Create the shared helper**
@@ -347,10 +347,10 @@ Expected: compile failure, `Not found: VowOfWanderingMuster`.
 Create `src/main/scala/distantlands/gameplay/powers/economy/ExtraWarbands.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.powers.NoteSupport
-import oathdigital.model._
+import distantlands.gameplay.powers.NoteSupport
+import distantlands.model._
 
 /** A vow's warbands added to a Muster's own gain (Vow of Beastkin, Vow of
   * Wandering), with the vow's line right after the gain: "Gained {n} more
@@ -395,7 +395,7 @@ private[economy] object ExtraWarbands:
 
 In `src/main/scala/distantlands/gameplay/powers/economy/VowOfBeastkin.scala`:
 
-- Delete the import line `import oathdigital.gameplay.powers.NoteSupport`.
+- Delete the import line `import distantlands.gameplay.powers.NoteSupport`.
 - Replace the `MusterGain` entry of `contributions`:
 
 ```scala
@@ -438,12 +438,12 @@ Delete the `object VowOfWanderingCard ...` block (8 lines, from `object VowOfWan
 Create `src/main/scala/distantlands/gameplay/powers/economy/VowOfWandering.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerCtx, Transform}
-import oathdigital.model._
+import distantlands.model._
 
 object VowOfWanderingCard extends Denizen(DenizenId("247"), "Vow of Wandering", Suit.Nomad) with Locked with AdviserOnly:
   val muster = PrintedPower(PowerId("denizen.vow-of-wandering.muster"),
@@ -502,7 +502,7 @@ In `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`:
 
 - [ ] **Step 7: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.VowOfWanderingSuite oathdigital.gameplay.powers.economy.VowOfBeastkinSuite oathdigital.gameplay.PowerKindsCatalogSuite oathdigital.gameplay.cards.CardCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.economy.VowOfWanderingSuite distantlands.gameplay.powers.economy.VowOfBeastkinSuite distantlands.gameplay.PowerKindsCatalogSuite distantlands.gameplay.cards.CardCatalogSuite"`
 Expected: all pass. `CardCatalogSuite` checks that the card left the holding files.
 
 - [ ] **Step 8: Commit**
@@ -621,16 +621,16 @@ In `src/test/scala/distantlands/gameplay/powers/economy/VowOfWanderingSuite.scal
 Create `src/test/scala/distantlands/gameplay/powers/economy/VowOfWanderingConquestSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.CampaignFixture
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver.{Run, awaits, commit,
+import distantlands.gameplay.CampaignFixture
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver.{Run, awaits, commit,
   parked, winningDice}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
-import oathdigital.testkit.{CatalogNames, Look}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.{ChooseAmountAnswer, ChooseOneAnswer}
+import distantlands.testkit.{CatalogNames, Look}
 
 /** Vow of Wandering after a Conquest victory: the placement question is not
   * asked, and the survivors stay on the board. */
@@ -674,7 +674,7 @@ class VowOfWanderingConquestSuite extends munit.FunSuite:
 
 In `src/test/scala/distantlands/gameplay/MinorActionsSuite.scala`:
 
-- Change the import `import oathdigital.testkit.{CatalogNames, Journal, Look, Outcomes, PlacementPicks, Table}` to `import oathdigital.testkit.{CatalogNames, Journal, Look, Outcomes, PlacementPicks, PowerRules, Table}`.
+- Change the import `import distantlands.testkit.{CatalogNames, Journal, Look, Outcomes, PlacementPicks, Table}` to `import distantlands.testkit.{CatalogNames, Journal, Look, Outcomes, PlacementPicks, PowerRules, Table}`.
 - In the test "minor actions run under the global restrictions", replace the expected value:
 
 ```scala
@@ -713,7 +713,7 @@ In `src/test/scala/distantlands/gameplay/PowerKindsCatalogSuite.scala`, change t
 
 - [ ] **Step 4: Run the tests to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.VowOfWandering* oathdigital.gameplay.MinorActionsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.economy.VowOfWandering* distantlands.gameplay.MinorActionsSuite"`
 Expected: compile failure, `Not found: VowOfWandering`.
 
 - [ ] **Step 5: Add the rule to `VowOfWandering.scala`**
@@ -723,11 +723,11 @@ In `src/main/scala/distantlands/gameplay/powers/economy/VowOfWandering.scala`:
 - Replace the imports with:
 
 ```scala
-import oathdigital.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerCtx, Transform}
-import oathdigital.model._
+import distantlands.model._
 ```
 
 - In `VowOfWanderingMuster`, replace `holds(ctx.state, ctx.activePlayer)` with `VowOfWandering.holds(ctx.state, ctx.activePlayer)`, and delete its private `holds` method.
@@ -873,7 +873,7 @@ with:
 
 - [ ] **Step 8: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.VowOfWandering* oathdigital.gameplay.MinorActionsSuite oathdigital.gameplay.PowerKindsCatalogSuite oathdigital.gameplay.CampaignProcedureSuite oathdigital.gameplay.cards.CardCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.economy.VowOfWandering* distantlands.gameplay.MinorActionsSuite distantlands.gameplay.PowerKindsCatalogSuite distantlands.gameplay.CampaignProcedureSuite distantlands.gameplay.cards.CardCatalogSuite"`
 Expected: all pass.
 
 If the Citizen test fails because `Look(...).forceKind` or the lineage copy does not compile, check the lineage case class in `src/main/scala/distantlands/model/` (`RecoverProcedureSuite` changes a role the same way) and keep the test's intent.
@@ -898,7 +898,7 @@ git commit -m "feat(economy): Vow of Wandering keeps its holder's warbands off s
 - Modify: the five matching suites under `src/test/scala/distantlands/gameplay/powers/`
 
 **Interfaces:**
-- Consumes: `VowOfWandering.holds(ready, player)`, `VowOfWandering.forbidden` and `VowOfWandering.cardId` from Task 3. Import `oathdigital.gameplay.powers.economy.VowOfWandering` in each production file.
+- Consumes: `VowOfWandering.holds(ready, player)`, `VowOfWandering.forbidden` and `VowOfWandering.cardId` from Task 3. Import `distantlands.gameplay.powers.economy.VowOfWandering` in each production file.
 
 These suites drive one power at a time. Each power reads the Vow from the state, so the Vow need not be registered in the suite.
 
@@ -912,7 +912,7 @@ Each test below uses this expected line; declare it in each suite that uses it:
     "Vow of Wandering forbids placing warbands on sites.", covers = false)
 ```
 
-**`gameplay/powers/whenplayed/GarrisonSuite.scala`.** Add `import oathdigital.gameplay.powers.NoteText`. Add the two declarations above, and append:
+**`gameplay/powers/whenplayed/GarrisonSuite.scala`.** Add `import distantlands.gameplay.powers.NoteText`. Add the two declarations above, and append:
 
 ```scala
   test("a holder of Vow of Wandering gains the warbands but places none"):
@@ -935,7 +935,7 @@ Each test below uses this expected line; declare it in each suite that uses it:
     assertEquals(said(power, done.events), Vector(forbidden))
 ```
 
-**`gameplay/powers/whenplayed/KeyToTheCitySuite.scala`.** Add `CatalogNames` to the `oathdigital.testkit` import. Add the two declarations above, and append:
+**`gameplay/powers/whenplayed/KeyToTheCitySuite.scala`.** Add `CatalogNames` to the `distantlands.testkit` import. Add the two declarations above, and append:
 
 ```scala
   test("a holder of Vow of Wandering kills and gains, but places nothing"):
@@ -949,7 +949,7 @@ Each test below uses this expected line; declare it in each suite that uses it:
     assertJournalRebuilds(ready, done.events, done.treeless)
 ```
 
-**`gameplay/powers/whenplayed/BanditPrinceSuite.scala`.** Add `CatalogNames` to the `oathdigital.testkit` import. Add the two declarations above, and append:
+**`gameplay/powers/whenplayed/BanditPrinceSuite.scala`.** Add `CatalogNames` to the `distantlands.testkit` import. Add the two declarations above, and append:
 
 ```scala
   test("a holder of Vow of Wandering is not asked, and the bandits stay"):
@@ -997,7 +997,7 @@ Each test below uses this expected line; declare it in each suite that uses it:
 
 - [ ] **Step 2: Run the tests to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.whenplayed.GarrisonSuite oathdigital.gameplay.powers.whenplayed.KeyToTheCitySuite oathdigital.gameplay.powers.whenplayed.BanditPrinceSuite oathdigital.gameplay.powers.action.BallotBoxSuite oathdigital.gameplay.powers.campaign.HospitalSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.whenplayed.GarrisonSuite distantlands.gameplay.powers.whenplayed.KeyToTheCitySuite distantlands.gameplay.powers.whenplayed.BanditPrinceSuite distantlands.gameplay.powers.action.BallotBoxSuite distantlands.gameplay.powers.campaign.HospitalSuite"`
 Expected: the six new tests fail.
 - Garrison places a warband, or parks on its question.
 - Key to the City writes "had no warband to place."
@@ -1009,7 +1009,7 @@ The old tests pass.
 
 - [ ] **Step 3: Garrison**
 
-In `Garrison.scala`, add `import oathdigital.gameplay.powers.economy.VowOfWandering`. Replace `effect`:
+In `Garrison.scala`, add `import distantlands.gameplay.powers.economy.VowOfWandering`. Replace `effect`:
 
 ```scala
   def effect(ctx: PowerCtx): Vector[Operation] =
@@ -1047,7 +1047,7 @@ The three siblings keep their places, so a parked Garrison question resumes at t
 
 - [ ] **Step 4: Key to the City**
 
-In `KeyToTheCity.scala`, add `import oathdigital.gameplay.powers.economy.VowOfWandering`.
+In `KeyToTheCity.scala`, add `import distantlands.gameplay.powers.economy.VowOfWandering`.
 
 - Change `noteKeys` to `Vector(killed, bandits, placed, unplaced, guarded, VowOfWandering.forbidden)`.
 - In `steps`, replace the last two entries of the `case None` vector:
@@ -1086,7 +1086,7 @@ with:
 
 - [ ] **Step 5: Bandit Prince**
 
-In `BanditPrince.scala`, add `import oathdigital.gameplay.powers.economy.VowOfWandering`.
+In `BanditPrince.scala`, add `import distantlands.gameplay.powers.economy.VowOfWandering`.
 
 - Change `noteKeys` to `Vector(replaced, none, VowOfWandering.forbidden)`.
 - In `effect`, after the `if sites.isEmpty then ...` branch, add:
@@ -1100,7 +1100,7 @@ In `BanditPrince.scala`, add `import oathdigital.gameplay.powers.economy.VowOfWa
 
 - [ ] **Step 6: Ballot Box**
 
-In `BallotBox.scala`, add `import oathdigital.gameplay.powers.economy.VowOfWandering`.
+In `BallotBox.scala`, add `import distantlands.gameplay.powers.economy.VowOfWandering`.
 
 - Change `noteKeys` to `Vector(replaced, replacedBandits, removed, removedBandits, unmatched, empty, VowOfWandering.forbidden)`.
 - In `vote`, replace the `case Some((kind, count)) => Vector(` branch with:
@@ -1127,7 +1127,7 @@ In `BallotBox.scala`, add `import oathdigital.gameplay.powers.economy.VowOfWande
 
 - [ ] **Step 7: Hospital**
 
-In `Hospital.scala`, add `import oathdigital.gameplay.powers.economy.VowOfWandering`.
+In `Hospital.scala`, add `import distantlands.gameplay.powers.economy.VowOfWandering`.
 
 - In `placeable`, after `if SiteRulers.rulerOf(ready, site).contains(SiteRuler.Player(user))`, add `if !VowOfWandering.holds(ready, user)`.
 - Change its doc comment's first sentence to "How many saved warbands the placement moves to Hospital's site: none unless `user` rules it now and holds no Vow of Wandering, and no more than their supply holds."
@@ -1137,7 +1137,7 @@ Cursed Cauldron reads `placeable`, so it counts the holder's dead as staying dea
 
 - [ ] **Step 8: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.whenplayed.* oathdigital.gameplay.powers.action.BallotBoxSuite oathdigital.gameplay.powers.campaign.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.whenplayed.* distantlands.gameplay.powers.action.BallotBoxSuite distantlands.gameplay.powers.campaign.*"`
 Expected: all pass.
 
 - [ ] **Step 9: Commit**
@@ -1212,7 +1212,7 @@ git commit -m "feat(powers): card powers that place warbands respect Vow of Wand
 
 - [ ] **Step 2: Run the tests to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.MessengerSuite oathdigital.gameplay.powers.campaign.WarningSignalsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.MessengerSuite distantlands.gameplay.powers.campaign.WarningSignalsSuite"`
 Expected: the three new tests fail.
 - The refused answers are accepted, or are refused with a wider range.
 - The stuck Messenger parks on its question.
@@ -1265,12 +1265,12 @@ with:
 
 - [ ] **Step 4: Pass `toSites` from both callers**
 
-In `Messenger.scala`, add `import oathdigital.gameplay.powers.economy.VowOfWandering`. In `build`, after the `val (board, sites) = ...` line, add `val toSites = !VowOfWandering.holds(live, player)`. Then:
+In `Messenger.scala`, add `import distantlands.gameplay.powers.economy.VowOfWandering`. In `build`, after the `val (board, sites) = ...` line, add `val toSites = !VowOfWandering.holds(live, player)`. Then:
 
 - Change `if !WarbandArrangement.movable(board, sites) then` to `if !WarbandArrangement.movable(board, sites, toSites) then`.
 - Change the query's heading argument to end with `"keeps, and each site keeps at least one", toSites)),`.
 
-In `WarningSignals.scala`, add `import oathdigital.gameplay.powers.economy.VowOfWandering`. In `rearrange`, after the `val (board, sites) = ...` line, add `val toSites = !VowOfWandering.holds(ready, user)`. Then:
+In `WarningSignals.scala`, add `import distantlands.gameplay.powers.economy.VowOfWandering`. In `rearrange`, after the `val (board, sites) = ...` line, add `val toSites = !VowOfWandering.holds(ready, user)`. Then:
 
 - Change `if !WarbandArrangement.movable(board, sites) then Vector.empty` to `if !WarbandArrangement.movable(board, sites, toSites) then Vector.empty`.
 - Change the query's heading argument to end with `"holds the ones no site keeps, and each site keeps at least one", toSites)),`.
@@ -1279,7 +1279,7 @@ Run `grep -rn "WarbandArrangement\.\(movable\|query\)" src` and check that no ot
 
 - [ ] **Step 5: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.MessengerSuite oathdigital.gameplay.powers.campaign.WarningSignalsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.MessengerSuite distantlands.gameplay.powers.campaign.WarningSignalsSuite"`
 Expected: all pass.
 
 - [ ] **Step 6: Commit**

@@ -68,7 +68,7 @@ private[frontend] object TrustedHostUi:
       event.preventDefault()
       if !backLink.disabled then back()
     mount.appendChild(backLink)
-    mount.appendChild(text("h1", "", "Create an Oath Digital game"))
+    mount.appendChild(text("h1", "", "Create an Oath game"))
     val imperial = roles(chronicle)
     def label(color: PlayerColor): String =
       name(color) + imperial.get(color).fold("")(role => s", ${role.capitalize}")

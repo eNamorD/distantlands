@@ -38,7 +38,7 @@ Read both sections before starting, and `docs/superpowers/specs/2026-10-08-conse
   - Nothing under `gameplay/actions` imports `gameplay/powers`.
 - **Pattern rule.** No `_` placeholder in a `DecisionQuery` form pattern. Bind typed: `case one: DecisionQuery.ChooseOne => one.options`.
 - **Line width.** Scala lines stay at or under 80 characters.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Other sessions commit to `main` while you work.
   - Stage explicit paths only; never `git add -A`.
   - Re-check `git log --oneline -1` before any amend, reset or rebase.
@@ -89,13 +89,13 @@ Read both sections before starting, and `docs/superpowers/specs/2026-10-08-conse
 Create `src/test/scala/distantlands/gameplay/walker/EmptyChoicesSuite.scala`. Each tree asks one choose-one, `test.pick`, over two buttons, then runs a required batch that refuses any answer naming a button `refused` holds. With both refused the search empties the question.
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** A choose-one passed when empty parks on a Continue button when the
   * search leaves it nothing, its options shown with their reasons; a
@@ -197,7 +197,7 @@ If `Outcomes.parked` or `ProcedureWalker.resolve` take other arguments on `main`
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.EmptyChoicesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.EmptyChoicesSuite"`
 Expected: compilation fails, because `Decide.Pass` does not exist.
 
 - [ ] **Step 3: Add `Decide.Pass`**
@@ -228,9 +228,9 @@ A companion object does not stop the case class's synthesized `apply` and `unapp
 - [ ] **Step 4: Create `EmptyChoices.scala`**
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.model.{Decide, DecisionOption, DecisionOptionRef,
+import distantlands.model.{Decide, DecisionOption, DecisionOptionRef,
   DecisionQuery, OptionReason}
 
 /** The Continue screen of a choose-one passed when empty (catalog batch 8,
@@ -327,7 +327,7 @@ In `DetailLines.decision`, beside the `Inspect.Done` case:
         case ChooseOneAnswer(Decide.Pass) => Vector.empty
 ```
 
-Import `Decide` where the file does not already import `oathdigital.model._`.
+Import `Decide` where the file does not already import `distantlands.model._`.
 
 In `PhasePowerHarness`, after `answer`:
 
@@ -341,7 +341,7 @@ In `PhasePowerHarness`, after `answer`:
 
 - [ ] **Step 7: Run the suites and move the hidden-only tests onto Continue**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.* oathdigital.gameplay.powers.action.* oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.* distantlands.gameplay.powers.action.* distantlands.application.gamelog.*"`
 Expected: `EmptyChoicesSuite` passes with 6 tests. Some power tests fail.
 
 A test fails where a power builds its question but the search hides every option: until now the decision passed and the action ended at once. It now parks on the Continue screen. Rewrite each such test: assert the walk awaits the power's decision, press Continue with `continuedPast`, then keep every assertion it made about the result and the line. The known ones:
@@ -449,7 +449,7 @@ Update each class comment that says "With no candidate nothing is asked", "the q
 
 - [ ] **Step 2: Run the suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.* oathdigital.gameplay.operations.* oathdigital.application.HallOfMinistersConsentServiceSuite oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.* distantlands.gameplay.operations.* distantlands.application.HallOfMinistersConsentServiceSuite distantlands.application.gamelog.*"`
 Expected: some power tests fail where no candidate existed and nothing was asked.
 
 - [ ] **Step 3: Move the no-candidate tests onto Continue**

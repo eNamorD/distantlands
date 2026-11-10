@@ -70,7 +70,7 @@ Where this plan quotes code, read the file as it is on `main` and apply the chan
   - Nothing under `gameplay/actions` imports `gameplay/powers`.
 - **No tree changes.** No procedure tree gains, loses or moves a node. A `Burn` or `PayCost` that a power claims runs as one batch at its own address.
 - **Line width.** Scala lines stay at or under 80 characters, as in the files around them. Re-wrap any line in this plan that comes out longer.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Other sessions commit to `main` while you work.
   - Stage explicit paths only; never `git add -A`.
   - Re-check `git log --oneline -1` before any amend, reset or rebase.
@@ -81,13 +81,13 @@ Where this plan quotes code, read the file as it is on `main` and apply the chan
 - **Names, exactly:**
   - `PositionedLocation.side: Option[SecretSide]` (default `None`) and `Take.sourceSide: Option[SecretSide]` (default `None`, last parameter).
   - `Burn.by: Option[PlayerId]`. The factories are `Burn.favor(amount, from, by)` and `Burn.secrets(amount, from, by)`, with `by` required and no default.
-  - In `oathdigital.gameplay.powerresolver`, file `BurnTake.scala`:
+  - In `distantlands.gameplay.powerresolver`, file `BurnTake.scala`:
     - `Burnt(resource: Piece.Counted, from: PositionedLocation, by: PlayerId)`;
     - `BurnTake(taker: PlayerId, line: (PlayerId, Int, PlayerId) => PowerNote)`.
   - `ContributingPower.takesBurn(ready: ReadyGame, burnt: Burnt): Option[BurnTake]`.
-  - In `oathdigital.gameplay.walker`, the `private[walker]` object `BurnTakes`, with `replace`, `takes`, `Swapped` and `Taken`.
-  - In `oathdigital.serialization`, the `private[serialization]` trait `PositionWire`.
-  - In `oathdigital.gameplay.powers.burn`, file `BurnVows.scala`:
+  - In `distantlands.gameplay.walker`, the `private[walker]` object `BurnTakes`, with `replace`, `takes`, `Swapped` and `Taken`.
+  - In `distantlands.serialization`, the `private[serialization]` trait `PositionWire`.
+  - In `distantlands.gameplay.powers.burn`, file `BurnVows.scala`:
     - `BurnVow` (sealed abstract class);
     - `VowOfSilence` and `VowOfDivision` (case objects);
     - `VowOfSilenceCard` and `VowOfDivisionCard`.
@@ -436,7 +436,7 @@ In `WalkerOperationWireSuite`, after "a Take's leaving operations round trip, an
 
 - [ ] **Step 2: Run them to see them fail.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OperationExecutorSuite oathdigital.serialization.WalkerOperationWireSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.OperationExecutorSuite distantlands.serialization.WalkerOperationWireSuite"`
 Expected: FAIL to compile: `side` and `sourceSide` are not parameters.
 
 - [ ] **Step 3: Give a position its side.** In `CoreOperations.scala`, replace `PositionedLocation` with:
@@ -541,14 +541,14 @@ Add one sentence to `Take`'s doc comment: "`sourceSide` names the side of the se
     }
 ```
 
-Add `SecretSide` to the file's `oathdigital.model` import.
+Add `SecretSide` to the file's `distantlands.model` import.
 
 - [ ] **Step 5: Record a side.** Create `PositionWire.scala`. Its first two methods are moved out of `WalkerOperationCodec`, and the codec deletes its private copies:
 
 ```scala
-package oathdigital.serialization
+package distantlands.serialization
 
-import oathdigital.model.SecretSide
+import distantlands.model.SecretSide
 
 /** Wire spellings for the side of a secret move (catalog batch 8, slice 5),
   * split out of `WalkerOperationCodec` to keep it under the 800-line bound.
@@ -664,7 +664,7 @@ Keep the test's state assertions as they are. They still hold: 0 faceup and 1 fa
 
 - [ ] **Step 8: Run the tests.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OperationExecutorSuite oathdigital.serialization.* oathdigital.gameplay.powers.campaign.* oathdigital.gameplay.powers.action.* oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.OperationExecutorSuite distantlands.serialization.* distantlands.gameplay.powers.campaign.* distantlands.gameplay.powers.action.* distantlands.application.gamelog.*"`
 Expected: PASS, including the two new tests.
 
 - [ ] **Step 9: Commit.** Stage every file Steps 3 to 7 changed, by name: `git status --short` lists them. Then:
@@ -720,7 +720,7 @@ Nothing reads `by` yet, so the game plays exactly as before.
 
 - [ ] **Step 2: Run it to see it fail.**
 
-Run: `./sbtw "testOnly oathdigital.serialization.WalkerOperationWireSuite"`
+Run: `./sbtw "testOnly distantlands.serialization.WalkerOperationWireSuite"`
 Expected: FAIL to compile: `Burn.favor` takes two arguments.
 
 - [ ] **Step 3: Give `Burn` its burner.** In `CoreOperations.scala`, replace the `Burn` doc comment, trait and object with:
@@ -988,7 +988,7 @@ The rest of `summon` stays as it is. Add `PlayerId` to `UnstableSummon`'s import
 
 - [ ] **Step 7: Run the affected suites.**
 
-Run: `./sbtw "testOnly oathdigital.serialization.* oathdigital.gameplay.OperationExecutorSuite oathdigital.gameplay.CoreOperationsSuite oathdigital.gameplay.OperationResolutionSuite oathdigital.gameplay.powers.* oathdigital.gameplay.CampaignRaidSuite oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.serialization.* distantlands.gameplay.OperationExecutorSuite distantlands.gameplay.CoreOperationsSuite distantlands.gameplay.OperationResolutionSuite distantlands.gameplay.powers.* distantlands.gameplay.CampaignRaidSuite distantlands.application.gamelog.*"`
 Expected: PASS, including the new codec test.
 
 - [ ] **Step 8: Commit.** Stage every file Steps 1 to 6 changed, by name: `git status --short` lists them. Then:
@@ -1019,14 +1019,14 @@ git commit -m "feat(batch8): every burn names its burner"
 - [ ] **Step 1: Write the failing tests.** Create `BurnTakesSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.powerresolver.{BurnTake, Burnt,
+import distantlands.gameplay.powerresolver.{BurnTake, Burnt,
   ContributingPower, Contribution}
-import oathdigital.model._
-import oathdigital.testkit.{Look, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.model._
+import distantlands.testkit.{Look, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 class BurnTakesSuite extends munit.FunSuite:
   /** A test power: claims for p1 every burn another player makes. Its line
@@ -1115,15 +1115,15 @@ class BurnTakesSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run them to see them fail.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.BurnTakesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.BurnTakesSuite"`
 Expected: FAIL to compile: `BurnTake`, `Burnt` and `takesBurn` are not found.
 
 - [ ] **Step 3: Add the claim.** Create `BurnTake.scala`:
 
 ```scala
-package oathdigital.gameplay.powerresolver
+package distantlands.gameplay.powerresolver
 
-import oathdigital.model.{Piece, PlayerId, PositionedLocation, PowerNote}
+import distantlands.model.{Piece, PlayerId, PositionedLocation, PowerNote}
 
 /** Favor or secrets a player burns: how many, where from, and who burns
   * them (catalog batch 8, "A burn's actor"). A cost's burnt portion is its
@@ -1149,11 +1149,11 @@ In `ContributingPower`, after `onArrival`, add:
 - [ ] **Step 4: Replace the claimed burns.** Create `BurnTakes.scala`:
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.powerresolver.{BurnTake, Burnt,
+import distantlands.gameplay.powerresolver.{BurnTake, Burnt,
   ContributingPower}
-import oathdigital.model.{Burn, CoreOperation, Location, PayCost, Piece,
+import distantlands.model.{Burn, CoreOperation, Location, PayCost, Piece,
   PlayerId, PositionedLocation, PowerId, ReadyGame, SecretSide, Take}
 
 /** The burns that powers take (catalog batch 8, "A burn's actor"). Before a
@@ -1317,7 +1317,7 @@ private[walker] object BurnTakes:
     }
 ```
 
-Import `OperationRun` from `oathdigital.gameplay.operations`. Extend `recordBatch`'s doc comment: "Each burn a power claims is first replaced by a `Take` ([[BurnTakes]]), and the claims' lines follow the step."
+Import `OperationRun` from `distantlands.gameplay.operations`. Extend `recordBatch`'s doc comment: "Each burn a power claims is first replaced by a `Take` ([[BurnTakes]]), and the claims' lines follow the step."
 
 - [ ] **Step 6: Run a claimed burn or cost in the tree whole.** In `ProcedureWalker.walkComposite`, add a case before the existing body, which moves into the `case _` arm unchanged:
 
@@ -1335,11 +1335,11 @@ Import `OperationRun` from `oathdigital.gameplay.operations`. Extend `recordBatc
         // the existing body: `required`, `runs` and `walkFolded`
 ```
 
-Add `Burn` and `PayCost` to `ProcedureWalker`'s `oathdigital.model` import.
+Add `Burn` and `PayCost` to `ProcedureWalker`'s `distantlands.model` import.
 
 - [ ] **Step 7: Run the tests.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.* oathdigital.gameplay.CampaignRaidSuite oathdigital.gameplay.powers.action.* oathdigital.gameplay.powers.campaign.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.* distantlands.gameplay.CampaignRaidSuite distantlands.gameplay.powers.action.* distantlands.gameplay.powers.campaign.*"`
 Expected: PASS. No production power claims a burn yet, so every existing suite reads as before.
 
 - [ ] **Step 8: Commit.**
@@ -1368,32 +1368,32 @@ git commit -m "feat(batch8): a burn a power claims becomes a Take to its taker"
 - Produces: `VowOfSilence`, `VowOfDivision`, `BurnVow.holderOf(ready): Option[PlayerId]`, each Vow's `taken` and `takenBy`, and `VowOfSilence.forbidden`.
 
 - [ ] **Step 1: Move the cards.** Cut `VowOfSilenceCard` out of `HoldingArcaneDenizens.scala` and `VowOfDivisionCard` out of `HoldingDiscordDenizens.scala`.
-  - Vow of Silence was the only `Locked` card in `HoldingArcaneDenizens.scala`, so drop `Locked` from that file's `oathdigital.catalog` import.
+  - Vow of Silence was the only `Locked` card in `HoldingArcaneDenizens.scala`, so drop `Locked` from that file's `distantlands.catalog` import.
   - `HoldingDiscordDenizens.scala` still uses `Locked` and `AdviserOnly`, so its imports stay.
 
-In `NewFoundations.scala`, add `import oathdigital.gameplay.powers.burn.{VowOfDivisionCard, VowOfSilenceCard}`. The `holding._` wildcard no longer supplies them.
+In `NewFoundations.scala`, add `import distantlands.gameplay.powers.burn.{VowOfDivisionCard, VowOfSilenceCard}`. The `holding._` wildcard no longer supplies them.
 
 - [ ] **Step 2: Write the failing tests.** Create `VowOfSilenceSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.burn
+package distantlands.gameplay.powers.burn
 
-import oathdigital.gameplay.CampaignFixture.{on, raidBoard, rules,
+import distantlands.gameplay.CampaignFixture.{on, raidBoard, rules,
   withAdviser, withAdviserFor}
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.action.DemonTail
-import oathdigital.gameplay.powers.campaign.PlanDriver.{awaits, commit,
+import distantlands.gameplay.actions.BannerRules
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.action.DemonTail
+import distantlands.gameplay.powers.campaign.PlanDriver.{awaits, commit,
   winningDice}
-import oathdigital.gameplay.powers.targeting.TargetingFixture
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, MenuPlay,
+import distantlands.gameplay.powers.targeting.TargetingFixture
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, CatalogNames, Look, MenuPlay,
   Outcomes, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 class VowOfSilenceSuite extends munit.FunSuite:
   private val vow = CatalogNames.denizen("Vow of Silence")
@@ -1513,21 +1513,21 @@ class VowOfSilenceSuite extends munit.FunSuite:
 Create `VowOfDivisionSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.burn
+package distantlands.gameplay.powers.burn
 
-import oathdigital.gameplay.CampaignFixture.{raidBoard, rules,
+import distantlands.gameplay.CampaignFixture.{raidBoard, rules,
   withAdviserFor}
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver.{awaits, commit,
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver.{awaits, commit,
   winningDice}
-import oathdigital.gameplay.powers.targeting.TargetingFixture
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, MenuPlay,
+import distantlands.gameplay.powers.targeting.TargetingFixture
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, CatalogNames, Look, MenuPlay,
   Outcomes}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2}
 
 class VowOfDivisionSuite extends munit.FunSuite:
   private val vow = CatalogNames.denizen("Vow of Division")
@@ -1583,17 +1583,17 @@ In `PowerKindsCatalogSuite`, add `"denizen.vow-of-silence"` and `"denizen.vow-of
 
 - [ ] **Step 3: Run them to see them fail.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.burn.* oathdigital.gameplay.PowerKindsCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.burn.* distantlands.gameplay.PowerKindsCatalogSuite"`
 Expected: FAIL to compile: `VowOfSilence` and `VowOfDivision` are not found.
 
 - [ ] **Step 4: Write the Vows.** Create `BurnVows.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.burn
+package distantlands.gameplay.powers.burn
 
-import oathdigital.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
-import oathdigital.gameplay.powerresolver._
-import oathdigital.model._
+import distantlands.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
+import distantlands.gameplay.powerresolver._
+import distantlands.model._
 
 object VowOfSilenceCard extends Denizen(DenizenId("74"), "Vow of Silence", Suit.Arcane) with Locked with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.vow-of-silence"),
@@ -1737,12 +1737,12 @@ The card objects keep their long first lines, as in the holding files they came 
 
 - [ ] **Step 5: Register the Vows.** In `WalkerPowerCatalog.default`:
   - Add `Vector(VowOfSilence, VowOfDivision) ++` right after `Vector(VowOfPeaceContribution) ++`.
-  - Import them with `import oathdigital.gameplay.powers.burn.{VowOfDivision, VowOfSilence}`.
+  - Import them with `import distantlands.gameplay.powers.burn.{VowOfDivision, VowOfSilence}`.
   - Add this to the doc comment, after the Vow of Peace sentence: "Vow of Silence and Vow of Division claim enemies' burns whenever the walker runs a batch, and are inert at the Challenge until a Challenge walks its windows."
 
 - [ ] **Step 6: Run the tests.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.burn.* oathdigital.gameplay.PowerKindsCatalogSuite oathdigital.gameplay.powers.PowerNoteCatalogSuite oathdigital.gameplay.powers.PowerImplementationStatusSuite oathdigital.gameplay.powers.targeting.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.burn.* distantlands.gameplay.PowerKindsCatalogSuite distantlands.gameplay.powers.PowerNoteCatalogSuite distantlands.gameplay.powers.PowerImplementationStatusSuite distantlands.gameplay.powers.targeting.*"`
 Expected: PASS.
 
 Stop and report, without changing the tests, in either of these cases:

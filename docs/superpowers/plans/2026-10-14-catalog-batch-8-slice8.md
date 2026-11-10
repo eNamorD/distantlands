@@ -6,7 +6,7 @@
 
 **Architecture:**
 
-- **One effective suit.** A new `oathdigital.gameplay.EffectiveSuit` replaces `AdviserSuits`.
+- **One effective suit.** A new `distantlands.gameplay.EffectiveSuit` replaces `AdviserSuits`.
   - `EffectiveSuit.of` gives a card's suit as the rules see it: Discord for a faceup adviser of a player who has Pledge to Discord faceup, otherwise the printed suit.
   - `EffectiveSuit.traded` gives the suit of a Trade's or Muster's source card: Discord when the walk's answers pick Spiteful Mirror, otherwise `of`.
   - `EffectiveSuit.count` counts a player's faceup advisers of a suit, Marriage as two (`weight`).
@@ -49,10 +49,10 @@ Where this plan quotes code, read the file as it is on `main` and apply the chan
   - `gameplay` never imports `application`, `serialization` or `server`.
   - A walker power (anything under `gameplay/powers`) never imports `gameplay.walker`. Test suites may.
   - Nothing under `gameplay/actions` imports `gameplay/powers`.
-  - `oathdigital.gameplay.EffectiveSuit` imports neither `gameplay/actions` nor `gameplay/powers`. It may import `gameplay.powerresolver.ModifierPicks`.
+  - `distantlands.gameplay.EffectiveSuit` imports neither `gameplay/actions` nor `gameplay/powers`. It may import `gameplay.powerresolver.ModifierPicks`.
 - **Tree addresses.** No procedure tree gains, loses or moves a node. Spiteful Mirror's line is a `Note` a transform adds inside an existing window. Family Wagon's question is a trigger follow-up, which the walker addresses under the batch's own node.
 - **Line width.** Scala lines stay at or under 80 characters, as in the files around them. Re-wrap any line in this plan that comes out longer.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Other sessions commit to `main` while you work.
   - Stage explicit paths only; never `git add -A`. An untracked `src/test/scala/distantlands/gameplay/HiddenScopeProbeSuite.scala` belongs to another session; leave it alone.
   - Re-check `git log --oneline -1` before any amend, reset or rebase.
@@ -61,7 +61,7 @@ Where this plan quotes code, read the file as it is on `main` and apply the chan
   - Then symlink the main checkout's `.tooling` and `node_modules` into the worktree before the first `./sbtw`.
 - **Commit trailer:** the committing model's own `Co-Authored-By` line.
 - **Names, exactly:**
-  - File `src/main/scala/distantlands/gameplay/EffectiveSuit.scala`, package `oathdigital.gameplay`:
+  - File `src/main/scala/distantlands/gameplay/EffectiveSuit.scala`, package `distantlands.gameplay`:
     - `object MarriageCard`, moved from `gameplay/actions/economy/AdviserSuits.scala`;
     - `object PledgeToDiscordCard`, moved from `catalog/holding/HoldingDiscordDenizens.scala`;
     - `object SpitefulMirrorCard`, moved from `catalog/holding/HoldingRelics.scala`;
@@ -75,7 +75,7 @@ Where this plan quotes code, read the file as it is on `main` and apply the chan
   - `MusterSource.resolve` gains a last parameter, `answered: Vector[Answered] = Vector.empty`.
   - `EnemyPlans.suitOf(catalog: ExecutableCatalog, ready: ReadyGame, ref: DecisionOptionRef): Option[Suit]`.
   - `FavorBySuit.counts(catalog: ExecutableCatalog, ready: ReadyGame, cards: Vector[CardId]): Vector[(Suit, Int)]`.
-  - In `oathdigital.gameplay.powers.economy`:
+  - In `distantlands.gameplay.powers.economy`:
     - file `PledgeToDiscord.scala`: `case object PledgeToDiscord extends ContributingPower`;
     - file `SpitefulMirror.scala`: `final case class SpitefulMirror` and `object SpitefulMirror` with `val id`, `val useRef: PowerUseRef`, `val acting: NoteKey` and `def forCatalog`.
   - In `SuitOnlyAdvisers`:
@@ -297,17 +297,17 @@ git mv src/test/scala/distantlands/gameplay/AdviserSuitsSuite.scala \
 Replace the file's content with:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.operations.PayCostSettlement
-import oathdigital.gameplay.phases.RestCleanupPlan
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.powers.RuledCards
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{CatalogNames, Table}
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.operations.PayCostSettlement
+import distantlands.gameplay.phases.RestCleanupPlan
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.powers.RuledCards
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.testkit.{CatalogNames, Table}
+import distantlands.testkit.Table.{p1, p2}
 
 /** `EffectiveSuit`: a card's suit as the rules see it. A faceup Marriage
   * counts as two advisers of its suit (catalog batch 5 rulings, "Counts as
@@ -402,7 +402,7 @@ class EffectiveSuitSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the suite to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.EffectiveSuitSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.EffectiveSuitSuite"`
 Expected: compilation fails, because `EffectiveSuit` does not exist.
 
 - [ ] **Step 3: Create `EffectiveSuit.scala`**
@@ -410,12 +410,12 @@ Expected: compilation fails, because `EffectiveSuit` does not exist.
 Cut `MarriageCard` out of `gameplay/actions/economy/AdviserSuits.scala`, `PledgeToDiscordCard` out of `HoldingDiscordDenizens.scala`, and `SpitefulMirrorCard` out of `HoldingRelics.scala`. Paste each, unchanged, into the new file below, and delete `AdviserSuits.scala`.
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog, Locked,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog, Locked,
   PrintedPower, Relic}
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.model._
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.model._
 
 // MarriageCard, PledgeToDiscordCard and SpitefulMirrorCard, moved here
 // unchanged.
@@ -494,15 +494,15 @@ Remove any import `HoldingDiscordDenizens.scala` and `HoldingRelics.scala` no lo
 
 - [ ] **Step 4: Point the imports at the moved cards**
 
-- `Marriage.scala`: `import oathdigital.gameplay.MarriageCard`. In its doc, `AdviserSuits.weight` becomes `EffectiveSuit.weight`.
-- `NewFoundations.scala`: replace `import oathdigital.gameplay.actions.economy.MarriageCard` with:
+- `Marriage.scala`: `import distantlands.gameplay.MarriageCard`. In its doc, `AdviserSuits.weight` becomes `EffectiveSuit.weight`.
+- `NewFoundations.scala`: replace `import distantlands.gameplay.actions.economy.MarriageCard` with:
 
 ```scala
-import oathdigital.gameplay.{MarriageCard, PledgeToDiscordCard,
+import distantlands.gameplay.{MarriageCard, PledgeToDiscordCard,
   SpitefulMirrorCard}
 ```
 
-`oathdigital.catalog.holding._` no longer provides the two moved cards. The card lists already name them.
+`distantlands.catalog.holding._` no longer provides the two moved cards. The card lists already name them.
 
 - [ ] **Step 5: The Trade and Muster source**
 
@@ -516,7 +516,7 @@ In `MusterSource.scala`:
 
 - Add to `resolve`'s doc: "The suit is the one the action reads (`EffectiveSuit.traded`): Discord once Spiteful Mirror is picked in `answered`."
 - `matching` becomes `EffectiveSuit.count(catalog, state, actor, suit)`, and its doc names `EffectiveSuit` in place of `AdviserSuits`.
-- Add `import oathdigital.gameplay.EffectiveSuit`.
+- Add `import distantlands.gameplay.EffectiveSuit`.
 
 In `EconomyTree.scala`, `afterSource` gains a last parameter, `answered: Vector[Answered]`, passed to `MusterSource.resolve`. The `Branch` in `afterModifiers` passes `pending.answered`:
 
@@ -536,7 +536,7 @@ In `EconomyTree.scala`, `afterSource` gains a last parameter, `answered: Vector[
       EffectiveSuit.of(catalog, ready, card).contains(suit))
 ```
 
-and `count` maps `EffectiveSuit.weight`. Replace the import of `AdviserSuits` with `import oathdigital.gameplay.{EffectiveSuit, SiteRulers}`. In the docs, `AdviserSuits.weight` becomes `EffectiveSuit.weight`. Add to the object's doc: "An adviser's suit is its effective suit (`EffectiveSuit`), so a Pledge to Discord holder rules its advisers as Discord."
+and `count` maps `EffectiveSuit.weight`. Replace the import of `AdviserSuits` with `import distantlands.gameplay.{EffectiveSuit, SiteRulers}`. In the docs, `AdviserSuits.weight` becomes `EffectiveSuit.weight`. Add to the object's doc: "An adviser's suit is its effective suit (`EffectiveSuit`), so a Pledge to Discord holder rules its advisers as Discord."
 
 `RestCleanup.scala`, in `RestCleanupPlan.derive`: `catalog.suitOf(card.id)` becomes `EffectiveSuit.of(catalog, ready, card.id)`. Import it with `PlayerResourceSources`. In the two docs, "printed suit bank" becomes "suit bank (`EffectiveSuit`: a Pledge to Discord holder's advisers return to Discord)".
 
@@ -554,13 +554,13 @@ and `count` maps `EffectiveSuit.weight`. Replace the import of `AdviserSuits` wi
         else Right(pay.copy(matchingBank = bank, offTurn = true))
 ```
 
-Add `import oathdigital.gameplay.EffectiveSuit`. Add to the object's doc: "A payment onto a faceup adviser of a Pledge to Discord holder settles to the Discord bank, whatever bank the caller named: the caller has no state to read."
+Add `import distantlands.gameplay.EffectiveSuit`. Add to the object's doc: "A payment onto a faceup adviser of a Pledge to Discord holder settles to the Discord bank, whatever bank the caller named: the caller has no state to read."
 
 `CardPlay.scala`, in `selectedDiscard`: `catalog.suitOf(id)` becomes `EffectiveSuit.of(catalog, ready, id)`. The replaced adviser is read before it leaves.
 
 - [ ] **Step 7: Run the suite, then everything**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.EffectiveSuitSuite oathdigital.gameplay.MusterProcedureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.EffectiveSuitSuite distantlands.gameplay.MusterProcedureSuite"`
 Expected: PASS, 6 new tests.
 
 Run: `./sbtw test`
@@ -606,21 +606,21 @@ git commit -m "feat(batch8): one effective suit for advisers and traded cards"
 Create `src/test/scala/distantlands/gameplay/powers/economy/PledgeToDiscordSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.actions.economy.TradeProcedure
-import oathdigital.gameplay.powers.{PowerFixture, SearchFixture}
-import oathdigital.gameplay.powers.action.HonorGuard
-import oathdigital.gameplay.powers.cardplay.WildCry
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look, MenuPlay, PhasePowerHarness,
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.actions.economy.TradeProcedure
+import distantlands.gameplay.powers.{PowerFixture, SearchFixture}
+import distantlands.gameplay.powers.action.HonorGuard
+import distantlands.gameplay.powers.cardplay.WildCry
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{CatalogNames, Look, MenuPlay, PhasePowerHarness,
   PowerRules, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** Pledge to Discord (catalog batch 8, slice 8): every reader of its
   * holder's faceup adviser suits sees Discord. One test per kind of
@@ -696,12 +696,12 @@ Read `PhasePowerHarness` for `use`, `useAndAnswer`, `UsedAndAnswered` and `after
 
 - [ ] **Step 2: Run the suite to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.PledgeToDiscordSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.economy.PledgeToDiscordSuite"`
 Expected: the Trade test passes already: `matching` reads `EffectiveSuit` since Task 2. The Honor Guard test fails, with no option offered or with the favor in the Order bank. The Wild Cry test fails with Supply 4 after the faceup play.
 
 - [ ] **Step 3: Route every adviser reader through `EffectiveSuit`**
 
-In each file below, add `import oathdigital.gameplay.EffectiveSuit`, merging it into an existing `oathdigital.gameplay.{...}` import where one exists. Then make the change. `ready` is the `ReadyGame` already in scope at each site.
+In each file below, add `import distantlands.gameplay.EffectiveSuit`, merging it into an existing `distantlands.gameplay.{...}` import where one exists. Then make the change. `ready` is the `ReadyGame` already in scope at each site.
 
 The source readers of a Trade or Muster, which read `traded` with the walk's answers:
 
@@ -793,11 +793,11 @@ Any other line reads an adviser: route it through `EffectiveSuit` and say so in 
 Create `src/main/scala/distantlands/gameplay/powers/economy/PledgeToDiscord.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.PledgeToDiscordCard
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution}
-import oathdigital.model._
+import distantlands.gameplay.PledgeToDiscordCard
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution}
+import distantlands.model._
 
 /** Pledge to Discord (card 223, adviser-only, locked): "Your advisers all
   * have the [suit-discord] suit instead of their printed suit. Marriage
@@ -819,7 +819,7 @@ In `PowerKindsCatalogSuite`, add `"denizen.pledge-to-discord"` to `persistentRul
 
 - [ ] **Step 6: Run the tests to see them pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.PledgeToDiscordSuite oathdigital.gameplay.PowerKindsCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.economy.PledgeToDiscordSuite distantlands.gameplay.PowerKindsCatalogSuite"`
 Expected: PASS, 3 new tests.
 
 Run: `./sbtw test`
@@ -856,15 +856,15 @@ git commit -m "feat(batch8): Pledge to Discord makes its holder's advisers Disco
 Create `src/test/scala/distantlands/gameplay/powers/cardplay/FamilyWagonPledgeSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.powers.{NoteText, PowerFixture, SearchFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.PartitionAnswer
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.powers.{NoteText, PowerFixture, SearchFixture}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.DecisionAnswer.PartitionAnswer
+import distantlands.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import distantlands.testkit.Unwrap.accepted
 
 /** Family Wagon beside Pledge to Discord (catalog batch 8 rulings, slice
   * 8): what goes whatever the order is buried at once, then the active
@@ -937,14 +937,14 @@ class FamilyWagonPledgeSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the suite to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.cardplay.FamilyWagonPledgeSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.cardplay.FamilyWagonPledgeSuite"`
 Expected: compilation fails, because `pledgeDecisionId`, `buryKey`, `keepKey` and `pledgeHeading` do not exist.
 
 - [ ] **Step 3: Make `SuitOnlyAdvisers` a trigger**
 
 In `SuitOnlyAdvisers.scala`:
 
-1. The trait extends `ExecutedTrigger` in place of `ContributingPower`. Import `ExecutedBatch` and `ExecutedTrigger` from `powerresolver`, and drop `ContributingPower` from that import if nothing else uses it. Import `oathdigital.gameplay.{EffectiveSuit, PledgeToDiscordCard}`.
+1. The trait extends `ExecutedTrigger` in place of `ContributingPower`. Import `ExecutedBatch` and `ExecutedTrigger` from `powerresolver`, and drop `ContributingPower` from that import if nothing else uses it. Import `distantlands.gameplay.{EffectiveSuit, PledgeToDiscordCard}`.
 
 2. Add the members:
 
@@ -1119,7 +1119,7 @@ In `VowOfUnionAdvisers.scala`, the same with `VowOfUnionCard.name` and `"power.v
 
 - [ ] **Step 5: Run the tests to see them pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.cardplay.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.cardplay.*"`
 Expected: PASS, 3 new tests. `FamilyWagonSuite`, `FamilyWagonArrivalsSuite` and `VowOfUnionAdvisersSuite` pass unchanged.
 
 Run: `./sbtw test`
@@ -1155,20 +1155,20 @@ git commit -m "feat(batch8): Family Wagon asks when Pledge to Discord is buried"
 Create `src/test/scala/distantlands/gameplay/powers/economy/SpitefulMirrorSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.powers.{NoteText, SearchFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, MenuPlay,
+import distantlands.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.powers.{NoteText, SearchFixture}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, CatalogNames, Look, MenuPlay,
   Outcomes, PhasePowerHarness, PowerRules, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 class SpitefulMirrorSuite extends munit.FunSuite:
   private val mirror = CatalogNames.relic("Spiteful Mirror")
@@ -1302,7 +1302,7 @@ If a walk does not start by itself after the last pick, because another modifier
 
 - [ ] **Step 2: Run the suite to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.SpitefulMirrorSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.economy.SpitefulMirrorSuite"`
 Expected: compilation fails, because `SpitefulMirror` does not exist.
 
 - [ ] **Step 3: Let a modifier price its own pick**
@@ -1322,14 +1322,14 @@ Add to its doc, or above it: "A modifier whose price depends on the state, such 
 Create `src/main/scala/distantlands/gameplay/powers/economy/SpitefulMirror.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.{PowerAccess, SpitefulMirrorCard}
-import oathdigital.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
-import oathdigital.gameplay.powerresolver.{Contribution, Transform}
-import oathdigital.gameplay.powers.{NoteSupport, SelectedModifier}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.{PowerAccess, SpitefulMirrorCard}
+import distantlands.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.gameplay.powers.{NoteSupport, SelectedModifier}
+import distantlands.model._
 
 /** Spiteful Mirror (relic R41), a selected Trade and Muster modifier:
   * "[secret] This turn, you may act as if any cards you use to trade or
@@ -1412,7 +1412,7 @@ In `PowerKindsCatalogSuite`, add `"relic.spiteful-mirror"` to `modifiers`, after
 
 - [ ] **Step 6: Run the tests to see them pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.SpitefulMirrorSuite oathdigital.gameplay.PowerKindsCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.economy.SpitefulMirrorSuite distantlands.gameplay.PowerKindsCatalogSuite"`
 Expected: PASS, 6 new tests.
 
 If the line test finds no note, the `Note` may not see the source answer in `states.answered`. Check `NoteStates` and how `Defame`'s note reads its answer.

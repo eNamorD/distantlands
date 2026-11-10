@@ -193,7 +193,7 @@ Inventoried at `1cd65b43` (slice 3 merged; slice 4 planned, not built).
 - Test: `src/test/scala/distantlands/application/gamelog/ProcedureNoteLinesSuite.scala`
 
 **Interfaces:**
-- Produces, in `oathdigital.model`:
+- Produces, in `distantlands.model`:
   - `final case class DrawNomadFavor(player: PlayerId, amount: Int) extends CoreOperation`, required, whose one child is `Move(Piece.Favor(amount), FavorBank(Nomad), PlayArea(player))` with no mover;
   - `case object NoteArg.ToNomadBank extends NoteArg`.
 - Wire kinds: operation `"draw-nomad-favor"` (`playerId`, `amount`); note
@@ -245,7 +245,7 @@ case is tested on the spans directly.
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.serialization.WalkerOperationWireSuite oathdigital.serialization.LogNoteWireSuite oathdigital.application.gamelog.ProcedureNoteLinesSuite"`
+Run: `./sbtw "testOnly distantlands.serialization.WalkerOperationWireSuite distantlands.serialization.LogNoteWireSuite distantlands.application.gamelog.ProcedureNoteLinesSuite"`
 Expected: compile errors: `DrawNomadFavor` and `ToNomadBank` are not found.
 
 - [ ] **Step 3: Add the operation**
@@ -360,7 +360,7 @@ lacks the case. Give it the empty reading there too.
 
 - [ ] **Step 7: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.serialization.* oathdigital.application.gamelog.ProcedureNoteLinesSuite"`
+Run: `./sbtw "testOnly distantlands.serialization.* distantlands.application.gamelog.ProcedureNoteLinesSuite"`
 Expected: PASS.
 
 - [ ] **Step 8: Commit**
@@ -392,7 +392,7 @@ Add any other file that `-Werror` made you touch in Steps 3 and 6.
 
 **Interfaces:**
 - Consumes: `DrawNomadFavor` (Task 1).
-- Produces, in `oathdigital.gameplay`:
+- Produces, in `distantlands.gameplay`:
   - `object VowOfKinshipCard` (moved; same id, name, suit, traits and power);
   - `private[gameplay] object KinshipRule` with
     `holds(ready: ReadyGame, player: PlayerId): Boolean`,
@@ -407,12 +407,12 @@ Add any other file that `-Werror` made you touch in Steps 3 and 6.
 Create `src/test/scala/distantlands/gameplay/VowOfKinshipCreditSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.operations.{OperationPipeline, OperationPolicy}
-import oathdigital.model._
-import oathdigital.testkit.{Look, Table}
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.operations.{OperationPipeline, OperationPolicy}
+import distantlands.model._
+import distantlands.testkit.{Look, Table}
+import distantlands.testkit.Table.{p1, p2}
 
 /** Vow of Kinship's credit (catalog batch 11, slice 5, ruling 9): favor
   * bound for its holder's board lands in the Nomad bank, however it was
@@ -492,8 +492,8 @@ so the numbers hold. If `ReadyGame` has no `updateCurrent`, use the helper
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.VowOfKinshipCreditSuite"`
-Expected: compile errors: `VowOfKinshipCard` (in `oathdigital.gameplay`)
+Run: `./sbtw "testOnly distantlands.gameplay.VowOfKinshipCreditSuite"`
+Expected: compile errors: `VowOfKinshipCard` (in `distantlands.gameplay`)
 and `SpendableFavor` are not found.
 
 - [ ] **Step 3: Move the card and write the rule**
@@ -504,10 +504,10 @@ Delete `VowOfKinshipCard` from `HoldingNomadDenizens.scala` (lines
 Create `src/main/scala/distantlands/gameplay/VowOfKinship.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
-import oathdigital.model._
+import distantlands.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
+import distantlands.model._
 
 object VowOfKinshipCard extends Denizen(DenizenId("152"), "Vow of Kinship", Suit.Nomad) with Locked with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.vow-of-kinship"),
@@ -554,11 +554,11 @@ object SpendableFavor:
 ```
 
 In `NewFoundations.scala`, add `VowOfKinshipCard` to the
-`oathdigital.gameplay.{...}` import at lines 5-6.
+`distantlands.gameplay.{...}` import at lines 5-6.
 
 In `RuledCardsSuite`, `PledgeOfDefenseSuite`, `ImperialTacticsSuite` and
-`GreatCrusadeSuite`, import `oathdigital.gameplay.VowOfKinshipCard`
-instead of `oathdigital.catalog.holding.VowOfKinshipCard` (in
+`GreatCrusadeSuite`, import `distantlands.gameplay.VowOfKinshipCard`
+instead of `distantlands.catalog.holding.VowOfKinshipCard` (in
 `GreatCrusadeSuite`, keep `TheGatheringCard` from `catalog.holding`).
 
 - [ ] **Step 4: Redirect the credit in the executor**
@@ -590,7 +590,7 @@ and replace the `withFavor` fold with:
       }
 ```
 
-Import `oathdigital.gameplay.KinshipRule`.
+Import `distantlands.gameplay.KinshipRule`.
 
 In `OperationApplication.applyFamilies`, replace
 `resources <- ResourceOperations.applyCountedMoves(ready, leaves)` with:
@@ -602,7 +602,7 @@ In `OperationApplication.applyFamilies`, replace
 
 - [ ] **Step 5: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.VowOfKinshipCreditSuite oathdigital.gameplay.powers.RuledCardsSuite oathdigital.gameplay.powers.campaign.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.VowOfKinshipCreditSuite distantlands.gameplay.powers.RuledCardsSuite distantlands.gameplay.powers.campaign.*"`
 Expected: PASS. If one of the four suites of finding 9 now fails because
 the Vow, held as an adviser, sends a gain to the bank, give that suite
 `TravelingNegotiatorCard` (another adviser-only Nomad card in
@@ -642,7 +642,7 @@ EOF
 **Interfaces:**
 - Consumes: `DrawNomadFavor` (Task 1); `KinshipRule`, `SpendableFavor`,
   `VowOfKinshipCard` (Task 2).
-- Produces, in `oathdigital.gameplay`:
+- Produces, in `distantlands.gameplay`:
   - `object KinshipDraws` with
     `before(ready: ReadyGame, operations: Vector[CoreOperation]): Vector[CoreOperation]`
     and `spent(operation: CoreOperation, player: PlayerId): Int`.
@@ -653,13 +653,13 @@ EOF
 Create `src/test/scala/distantlands/gameplay/KinshipDrawsSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.powers.burn.{VowOfDivision, VowOfDivisionCard}
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerPowers}
-import oathdigital.model._
-import oathdigital.testkit.{Look, Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.powers.burn.{VowOfDivision, VowOfDivisionCard}
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerPowers}
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2}
 
 /** Vow of Kinship's draw (catalog batch 11, slice 5, ruling 9): before a
   * batch runs, a holder's spend that their board cannot cover draws the
@@ -755,7 +755,7 @@ In `RevelationSuite.scala`, add:
     assertJournalRebuilds(ready, walked.events, walked.end)
 ```
 
-Import `oathdigital.gameplay.VowOfKinshipCard`. The test does not assert
+Import `distantlands.gameplay.VowOfKinshipCard`. The test does not assert
 the line yet: it reads the bank's change only once Task 7 makes
 `NoteSupport.favor` count it, and Task 7 adds that assertion.
 
@@ -774,7 +774,7 @@ places only their board's favor (ruling 28)".
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.KinshipDrawsSuite oathdigital.gameplay.powers.whenplayed.RevelationSuite oathdigital.gameplay.powers.whenplayed.RoyalTaxSuite oathdigital.gameplay.powers.action.WhisperingLeavesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.KinshipDrawsSuite distantlands.gameplay.powers.whenplayed.RevelationSuite distantlands.gameplay.powers.whenplayed.RoyalTaxSuite distantlands.gameplay.powers.action.WhisperingLeavesSuite"`
 Expected: compile error: `KinshipDraws` is not found.
 
 - [ ] **Step 3: Mark the spender on cost moves**
@@ -845,7 +845,7 @@ instead of `NoteSupport.board(ready, player).map(_.favor)`:
 
 Find every other read of a player's board favor in `Revelation.scala` (the
 "nobody had favor" check) and read `SpendableFavor.of` there too. Import
-`oathdigital.gameplay.SpendableFavor`.
+`distantlands.gameplay.SpendableFavor`.
 
 In `WhisperingLeaves.give`, replace the `Give` with a move nobody makes
 (ruling 28: it is done to the chosen player, so it reads their board):
@@ -861,9 +861,9 @@ In `WhisperingLeaves.give`, replace the `Give` with a move nobody makes
 Create `src/main/scala/distantlands/gameplay/KinshipDraws.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Vow of Kinship's draw on the Nomad bank (catalog batch 11, slice 5,
   * ruling 9).
@@ -939,7 +939,7 @@ with
 
 Add one sentence to `recordBatch`'s doc comment, before "Each burn a
 power claims": "A Vow of Kinship holder's spends first draw on the Nomad
-bank ([[oathdigital.gameplay.KinshipDraws]])."
+bank ([[distantlands.gameplay.KinshipDraws]])."
 
 In `ModifierOffers.paying`, run the same pass on the dry run:
 
@@ -948,11 +948,11 @@ In `ModifierOffers.paying`, run the same pass on the dry run:
       OperationPolicy.Permissive,
 ```
 
-Import `oathdigital.gameplay.KinshipDraws` in both files.
+Import `distantlands.gameplay.KinshipDraws` in both files.
 
 - [ ] **Step 7: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.KinshipDrawsSuite oathdigital.gameplay.powers.whenplayed.* oathdigital.gameplay.powers.action.WhisperingLeavesSuite oathdigital.gameplay.powers.burn.* oathdigital.gameplay.walker.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.KinshipDrawsSuite distantlands.gameplay.powers.whenplayed.* distantlands.gameplay.powers.action.WhisperingLeavesSuite distantlands.gameplay.powers.burn.* distantlands.gameplay.walker.*"`
 Expected: PASS.
 
 Then run the whole suite once, since `PayCost`'s moves changed:
@@ -1015,18 +1015,18 @@ checks:
 Create `src/test/scala/distantlands/gameplay/SpendableFavorChecksSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.gameplay.actions.challenge.{ChallengeProcedure,
+import distantlands.gameplay.actions.BannerRules
+import distantlands.gameplay.actions.challenge.{ChallengeProcedure,
   PlaceBannerResourceProcedure}
-import oathdigital.gameplay.operations.Costs
-import oathdigital.gameplay.powers.RulerToll
-import oathdigital.gameplay.powers.economy.VowOfPoverty
-import oathdigital.gameplay.powers.travel.TollRoads
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.operations.Costs
+import distantlands.gameplay.powers.RulerToll
+import distantlands.gameplay.powers.economy.VowOfPoverty
+import distantlands.gameplay.powers.travel.TollRoads
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2}
 
 /** The checks of a spend read a Vow of Kinship holder's Nomad bank with
   * their board (catalog batch 11, rulings 9 and 26); Vow of Poverty's
@@ -1066,7 +1066,7 @@ class SpendableFavorChecksSuite extends munit.FunSuite:
 ```
 
 Import `VowOfPovertyCard` beside `VowOfPoverty`, and
-`oathdigital.gameplay.setup.FirstGameSetupFixture.catalog`.
+`distantlands.gameplay.setup.FirstGameSetupFixture.catalog`.
 
 The banner test needs p1 to hold the People's Favor with some favor on
 it. If `Table` has no `peoplesFavor` step, find the step other banner
@@ -1077,13 +1077,13 @@ ruling 27 against a later change.
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.SpendableFavorChecksSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.SpendableFavorChecksSuite"`
 Expected: compile error on the new `playerResources` signature, then,
 once you add a stub, failures on the cost, toll and banner assertions.
 
 - [ ] **Step 3: Read `SpendableFavor` at each spend check**
 
-Import `oathdigital.gameplay.SpendableFavor` in each file below. In each
+Import `distantlands.gameplay.SpendableFavor` in each file below. In each
 before/after, only the favor read changes.
 
 1. `PowerOperations.scala` (`Costs.plan`):
@@ -1146,7 +1146,7 @@ before/after, only the favor read changes.
     `ChallengeReach.scala:56`, `ChallengeProcedure.scala:89` and `:156`,
     `PlaceBannerResourceProcedure.scala:50` and `:108`. Each has the
     state in scope as `ready`, `state` or `ctx.state`. `BannerRules` is in
-    `gameplay.actions`, which may import `oathdigital.gameplay`.
+    `gameplay.actions`, which may import `distantlands.gameplay`.
 
 Then confirm none is left:
 
@@ -1223,17 +1223,17 @@ the expected path: the questions sit at `asked.0` to `asked.(n-1)`.
 Create `src/test/scala/distantlands/gameplay/powers/economy/VowOfKinshipSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.VowOfKinshipCard
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerPowers}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseAmountAnswer
-import oathdigital.testkit.{Look, Outcomes, Table}
-import oathdigital.testkit.Outcomes.{finished, parked}
-import oathdigital.testkit.ProcedureWalkerFixture.applyEvents
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.VowOfKinshipCard
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerPowers}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseAmountAnswer
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Outcomes.{finished, parked}
+import distantlands.testkit.ProcedureWalkerFixture.applyEvents
+import distantlands.testkit.Table.{p1, p2}
 
 /** Vow of Kinship's source question (catalog batch 11, ruling 10): with
   * favor on the holder's board and in the Nomad bank, a spend asks how
@@ -1323,7 +1323,7 @@ assertions.
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.BatchQuestionsSuite oathdigital.gameplay.powers.economy.VowOfKinshipSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.BatchQuestionsSuite distantlands.gameplay.powers.economy.VowOfKinshipSuite"`
 Expected: compile error: `VowOfKinship` is not found; the new
 `BatchQuestionsSuite` test fails (a plain leaf asks nothing yet).
 
@@ -1432,12 +1432,12 @@ composite's children are mistaken for questions.
 Create `src/main/scala/distantlands/gameplay/powers/economy/VowOfKinship.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.{KinshipDraws, KinshipRule, VowOfKinshipCard}
-import oathdigital.gameplay.powerresolver.{AsksBeforeBatch, BatchAsk,
+import distantlands.gameplay.{KinshipDraws, KinshipRule, VowOfKinshipCard}
+import distantlands.gameplay.powerresolver.{AsksBeforeBatch, BatchAsk,
   BatchContext, Contribution, Replacement}
-import oathdigital.model._
+import distantlands.model._
 
 /** Vow of Kinship (card 152, catalog batch 11, rulings 9, 10, 12 and 26 to
   * 29). The credit, the draw and the spend checks are rules
@@ -1517,14 +1517,14 @@ case object VowOfKinship extends AsksBeforeBatch:
 ```
 
 `KinshipRule` is `private[gameplay]`, and this file is in
-`oathdigital.gameplay.powers.economy`, inside `gameplay`, so it may read
+`distantlands.gameplay.powers.economy`, inside `gameplay`, so it may read
 it.
 
 - [ ] **Step 5: Register the card**
 
 1. In `WalkerPowerCatalog.contributing`, add `VowOfKinship` after
    `VowOfUnionAdvisers` in the vector that holds `FamilyWagon`. The file
-   imports `oathdigital.gameplay.powers.economy._` already.
+   imports `distantlands.gameplay.powers.economy._` already.
 2. In `src/test/resources/powers/unimplemented.txt`, delete the line
    `denizen.vow-of-kinship`.
 3. In `src/test/resources/notes/declared-keys.txt`, add these two lines in
@@ -1537,7 +1537,7 @@ denizen.vow-of-kinship spent-from-bank-off-turn = {0} spent {1} from the Nomad b
 
 - [ ] **Step 6: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.* oathdigital.gameplay.powers.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.* distantlands.gameplay.powers.*"`
 Expected: PASS, including the declared-keys and unimplemented checks.
 
 - [ ] **Step 7: Check the line bound**
@@ -1565,7 +1565,7 @@ checks:
 - the plain-leaf path in `runNarrowed`, `resumeAsked` and `resolveAt`,
   with a resume into a cost walked as its moves;
 - that a search never asks (slice 4 finding 7);
-- that `./sbtw "testOnly oathdigital.gameplay.walker.*"` passes.
+- that `./sbtw "testOnly distantlands.gameplay.walker.*"` passes.
 
 ---
 
@@ -1615,7 +1615,7 @@ copy the setup of a `SuitOnlyAdvisers` arrival test).
 
 - [ ] **Step 2: Run the test to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.VowOfKinshipSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.economy.VowOfKinshipSuite"`
 Expected: FAIL: the board still holds 3.
 
 - [ ] **Step 3: Follow arrivals**
@@ -1670,7 +1670,7 @@ denizen.vow-of-kinship moved-off-turn = {0} moved {1} to the Nomad bank.
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.*"`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -1706,13 +1706,13 @@ EOF
 Create `src/test/scala/distantlands/gameplay/powers/economy/VowOfKinshipLinesSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.{NoteSupport, VowOfKinshipCard}
-import oathdigital.gameplay.operations.{OperationPipeline, OperationPolicy}
-import oathdigital.model._
-import oathdigital.testkit.Table
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.{NoteSupport, VowOfKinshipCard}
+import distantlands.gameplay.operations.{OperationPipeline, OperationPolicy}
+import distantlands.model._
+import distantlands.testkit.Table
+import distantlands.testkit.Table.{p1, p2}
 
 /** A Vow of Kinship holder's favor lines (catalog batch 11, ruling 29):
   * they count the Nomad bank with the board, and a gain line says the
@@ -1770,7 +1770,7 @@ which counts the bank's change from this task on:
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.VowOfKinshipLinesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.economy.VowOfKinshipLinesSuite"`
 Expected: compile errors: `banked` and `toBank` are not found.
 
 - [ ] **Step 3: Count the bank and mark gains**
@@ -1924,14 +1924,14 @@ In `MasterOfDisguiseSuite.scala`, add:
     // p1 holds Master of Disguise and Vow of Kinship; p2 holds neither.
     // Disguised as p2, the Vow is lifted for the Trade.
     val lifted = disguiseHolderBesideWrestlers()
-      .adviser(p1, oathdigital.gameplay.VowOfKinshipCard).ready
+      .adviser(p1, distantlands.gameplay.VowOfKinshipCard).ready
     val liftedEnd = Outcomes.ready(disguisedAs(tradeForFavorBegun(lifted),
       p2))
     // ...finish the Trade as the suite's other disguised Trades do...
     assert(Look(liftedEnd).favor(p1) > 0)
     // p2 holds the Vow; disguised as p2, p1 acts with it.
     val lent = Table.from(disguiseHolderBesideWrestlers().ready)
-      .adviser(p2, oathdigital.gameplay.VowOfKinshipCard).ready
+      .adviser(p2, distantlands.gameplay.VowOfKinshipCard).ready
     val lentEnd = Outcomes.ready(disguisedAs(tradeForFavorBegun(lent), p2))
     assertEquals(Look(lentEnd).favor(p1), 0)
     assert(Look(lentEnd).bankFavor(Suit.Nomad) > 0)
@@ -1944,7 +1944,7 @@ the Trade gives, once you see the number.
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.WildPasturesSuite oathdigital.gameplay.powers.economy.MasterOfDisguiseSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.economy.WildPasturesSuite distantlands.gameplay.powers.economy.MasterOfDisguiseSuite"`
 Expected: Wild Pastures' new test fails (no question with an empty
 board). Master of Disguise's test may already pass, since Tasks 2 and 3
 read the as-if advisers; it pins the FAQ.
@@ -1964,7 +1964,7 @@ with
     if SpendableFavor.of(batch.ready, ruler) >= 1
 ```
 
-and import `oathdigital.gameplay.SpendableFavor`. Update the doc
+and import `distantlands.gameplay.SpendableFavor`. Update the doc
 comment's "while they have favor on their board" to "while they have
 favor they may spend". The pay answer's `Give` from the ruler's board
 draws on the bank through `KinshipDraws`, and the credit lands back in
@@ -1972,7 +1972,7 @@ it, so nothing moves.
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.economy.*"`
 Expected: PASS.
 
 - [ ] **Step 5: Close the docs**

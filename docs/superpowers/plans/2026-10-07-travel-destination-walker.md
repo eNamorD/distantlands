@@ -32,13 +32,13 @@
   - Legal control `beginTravel`; button label `Travel`, class `act-action travel-action`, section kind `travel`.
 - **Rulings** (spec, "Rulings"): modifiers stay before the start; a selected modifier's card payment is not in the badge; when a restriction and a shortfall both apply, the restriction's reason shows; Way Station asks even when one answer is left; every `travel.` decision is narrated.
 - **No CSS change.** The site badge reuses `.target-detail-badge`, which `frontend/styles.css` already places on a `.site` box. Impeccable is not needed.
-- **Never touch the live database `var/oathdigital`.** Never run `preview_start`.
+- **Never touch the live database `var/distantlands`.** Never run `preview_start`.
 - **Concurrent sessions.** Other sessions commit to `main` while you work. Stage explicit paths only; never `git add -A`. Re-check `git log --oneline -1` before any amend, reset or rebase.
 - **Worktree.** Work in a git worktree. `EnterWorktree` branches from `origin`, which lags local `main`: fast-forward the new branch to local `main` first (`git merge --ff-only main`). Symlink the main checkout's `.tooling` into the worktree before the first `./sbtw`. Copy `.superpowers/` from the main checkout if a ledger is in use.
 - **Commit trailer:** the committing model's own `Co-Authored-By` line.
 - **Verification commands:**
-  - One server suite: `./sbtw "testOnly oathdigital.gameplay.TravelProcedureSuite"`.
-  - One frontend suite: `./sbtw "frontend/testOnly oathdigital.frontend.ModifierFlowSuite"`.
+  - One server suite: `./sbtw "testOnly distantlands.gameplay.TravelProcedureSuite"`.
+  - One frontend suite: `./sbtw "frontend/testOnly distantlands.frontend.ModifierFlowSuite"`.
   - Whole server or frontend: `./sbtw test` or `./sbtw frontend/test`.
   - Full gate (Task 7): `./sbtw "test" "frontend/test"`, then `./sbtw frontend/fullOptJS`, then `python3 scripts/check-architecture.py && python3 scripts/check-markdown-links.py`, then `git diff --check`.
 
@@ -84,15 +84,15 @@ Append to `WalkerDecisionWireSuite` after the test "a parked Travel round trips 
       .map(_.event), Vector[OathEvent](park))
 ```
 
-Import `oathdigital.testkit.Unwrap.accepted` if the suite lacks it.
+Import `distantlands.testkit.Unwrap.accepted` if the suite lacks it.
 
 Create `src/test/scala/distantlands/gameplay/walker/WalkerStartFactsReplaySuite.scala`:
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Table}
 
 /** Start facts are restored by replay, checked against the recorded start on
   * every later park, and cleared when the walk completes (travel destination
@@ -127,7 +127,7 @@ class WalkerStartFactsReplaySuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.WalkerStartFactsReplaySuite oathdigital.serialization.WalkerDecisionWireSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.WalkerStartFactsReplaySuite distantlands.serialization.WalkerDecisionWireSuite"`
 Expected: compile failure, `WalkerParked` takes 5 arguments and `walkerStartFacts` is not a member.
 
 - [ ] **Step 3: Add the state field and the event field**
@@ -240,7 +240,7 @@ In `OathRulesWalker.scala`:
 
 - [ ] **Step 6: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.WalkerStartFactsReplaySuite oathdigital.serialization.WalkerDecisionWireSuite oathdigital.gameplay.WalkerReplayDriftSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.WalkerStartFactsReplaySuite distantlands.serialization.WalkerDecisionWireSuite distantlands.gameplay.WalkerReplayDriftSuite"`
 Expected: PASS.
 
 Then run `./sbtw test`. Expected: PASS. Any other 5-field `WalkerParked` pattern the compiler names gains a sixth binding `_`.
@@ -284,17 +284,17 @@ The engine change breaks every test that starts a Travel with a site, so this ta
   - `TravelProcedure.build` and `TravelProcedure.rebuild`: `(ExecutableCatalog, ReadyGame, PlayerId, Vector[DecisionOptionRef]) => Either[OathViolation, Operation]`.
   - `TravelProcedure.startFacts(catalog: ExecutableCatalog, state: ReadyGame, actor: PlayerId): Vector[DecisionOptionRef]`.
   - `TravelProcedure.candidates` keeps its signature for now (Task 3 deletes it), reading the preview.
-  - Test helper `oathdigital.gameplay.TravelPlay.travelled(rules: OathRules, state: OathState, actor: PlayerId, destination: SiteId, modifiers: Vector[PowerId] = Vector.empty): Either[OathViolation, OathTransition]` and `TravelPlay.destination(site: SiteId): DecisionAnswer`.
+  - Test helper `distantlands.gameplay.TravelPlay.travelled(rules: OathRules, state: OathState, actor: PlayerId, destination: SiteId, modifiers: Vector[PowerId] = Vector.empty): Either[OathViolation, OathTransition]` and `TravelPlay.destination(site: SiteId): DecisionAnswer`.
 
 - [ ] **Step 1: Write the test helper and the failing engine tests**
 
 Create `src/test/scala/distantlands/gameplay/TravelPlay.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.model._
+import distantlands.gameplay.actions.travel.TravelProcedure
+import distantlands.model._
 
 /** A Travel driven past its destination pick, for the suites that test what
   * a Travel does rather than the pick. */
@@ -331,11 +331,11 @@ In `ParkedServiceFixture`, add (with `TravelProcedure` and `TravelPlay` imported
 Create `src/test/scala/distantlands/application/TravelDestinationServiceSuite.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.model._
-import oathdigital.testkit.{Outcomes, Table}
-import oathdigital.testkit.Table.p1
+import distantlands.model._
+import distantlands.testkit.{Outcomes, Table}
+import distantlands.testkit.Table.p1
 
 /** The destination decision through the service: Undo in place of the old
   * Cancel (travel destination design, ruling 8). */
@@ -461,7 +461,7 @@ In the remaining tests, turn each `rules.startWalker(Ready(ready), ActionRef.Tra
 
 - [ ] **Step 2: Run the suite to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.TravelProcedureSuite oathdigital.application.TravelDestinationServiceSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.TravelProcedureSuite distantlands.application.TravelDestinationServiceSuite"`
 Expected: compile failure, `destinationDecisionId` and `rebuild` are not members of `TravelProcedure`.
 
 - [ ] **Step 3: Rewrite `TravelProcedure`**
@@ -469,14 +469,14 @@ Expected: compile failure, `destinationDecisionId` and `rebuild` are not members
 Replace the object (keep the file's package) with:
 
 ```scala
-package oathdigital.gameplay.actions.travel
+package distantlands.gameplay.actions.travel
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.TravelRules
-import oathdigital.gameplay.walker.{WalkerPowers, WalkerSimulation}
-import oathdigital.gameplay.walker.WalkerSimulation.PreviewedOption
-import oathdigital.gameplay.OathLifecycle
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.TravelRules
+import distantlands.gameplay.walker.{WalkerPowers, WalkerSimulation}
+import distantlands.gameplay.walker.WalkerSimulation.PreviewedOption
+import distantlands.gameplay.OathLifecycle
+import distantlands.model._
 
 /** Travel on the walker (travel destination design).
   *
@@ -638,7 +638,7 @@ In `TravelFixture.scala`, replace `candidates` and `travel` with:
     TravelPlay.travelled(rules, Ready(ready), actor, destination, modifiers)
 ```
 
-with `import oathdigital.gameplay.TravelPlay`. Task 3 deletes `TravelProcedure.candidates` and gives this helper its own preview.
+with `import distantlands.gameplay.TravelPlay`. Task 3 deletes `TravelProcedure.candidates` and gives this helper its own preview.
 
 - [ ] **Step 6: Run the server suite and move the other Travel starts**
 
@@ -694,23 +694,23 @@ git commit -m "feat(travel): ask the destination inside the walker"
 Create `src/test/scala/distantlands/application/TravelDestinationRowsSuite.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.TravelPlay
-import oathdigital.gameplay.powers.travel.{Tents, TravelFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.protocol.projection.DecisionOptionProjection
-import oathdigital.testkit.{CatalogNames, Outcomes, Table}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.gameplay.TravelPlay
+import distantlands.gameplay.powers.travel.{Tents, TravelFixture}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.protocol.projection.DecisionOptionProjection
+import distantlands.testkit.{CatalogNames, Outcomes, Table}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** What the parked destination decision shows each site as: its cost under
   * the selected modifiers, or why it cannot be reached (travel destination
   * design, rulings 3 and 4). */
 class TravelDestinationRowsSuite extends munit.FunSuite:
   import TravelFixture._
-  import oathdigital.gameplay.powers.PowerFixture.actor
+  import distantlands.gameplay.powers.PowerFixture.actor
 
   private val projector = new WalkerDecisionProjector(catalog,
     new GamePresentationProjector(catalog))
@@ -773,7 +773,7 @@ Before relying on them, check that the badge numbers match the fixture's printed
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.application.TravelDestinationRowsSuite"`
+Run: `./sbtw "testOnly distantlands.application.TravelDestinationRowsSuite"`
 Expected: FAIL. The rows have no badge, and the unaffordable site is missing, because the playable filter drops it.
 
 - [ ] **Step 3: Follow-up previews**
@@ -867,12 +867,12 @@ Update `playable`'s doc with one sentence: "A procedure that prices its options 
 Create `src/main/scala/distantlands/gameplay/actions/travel/TravelOptions.scala`:
 
 ```scala
-package oathdigital.gameplay.actions.travel
+package distantlands.gameplay.actions.travel
 
-import oathdigital.gameplay.walker.{WalkerPowers, WalkerSimulation}
-import oathdigital.gameplay.walker.WalkerSimulation.{PreviewOutcome,
+import distantlands.gameplay.walker.{WalkerPowers, WalkerSimulation}
+import distantlands.gameplay.walker.WalkerSimulation.{PreviewOutcome,
   PreviewedOption}
-import oathdigital.model._
+import distantlands.model._
 
 /** The destination decision as its player is shown it (travel destination
   * design, rulings 3 and 4): each destination the preview accepts badged with
@@ -1016,7 +1016,7 @@ In `TravelProcedureSuite`, `simulate(ready, destination, using)` becomes the sam
 
 - [ ] **Step 7: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.application.TravelDestinationRowsSuite oathdigital.gameplay.TravelProcedureSuite oathdigital.gameplay.powers.travel.*"`
+Run: `./sbtw "testOnly distantlands.application.TravelDestinationRowsSuite distantlands.gameplay.TravelProcedureSuite distantlands.gameplay.powers.travel.*"`
 Expected: PASS.
 
 Run: `./sbtw test`
@@ -1062,16 +1062,16 @@ Stage any other test the step changed by explicit path too.
 Create `WayStationSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.gameplay.powers.{NoteText, PowerFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.ParkedDecisionAssertions
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes,
+import distantlands.gameplay.powers.{NoteText, PowerFixture}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.ParkedDecisionAssertions
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes,
   Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Unwrap.accepted
 
 class WayStationSuite extends munit.FunSuite:
   import PowerFixture._
@@ -1182,22 +1182,22 @@ Append to `TravelDestinationRowsSuite`:
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.travel.WayStationSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.travel.WayStationSuite"`
 Expected: compile failure, `WayStation` is not defined.
 
 - [ ] **Step 3: Write the power**
 
-Move `WayStationCard` out of `HoldingNomadDenizens.scala` into the new file. Import it in `NewFoundations.scala` from `oathdigital.gameplay.powers.travel` beside `TollRoadsCard`. Create `WayStation.scala`:
+Move `WayStationCard` out of `HoldingNomadDenizens.scala` into the new file. Import it in `NewFoundations.scala` from `distantlands.gameplay.powers.travel` beside `TollRoadsCard`. Create `WayStation.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
-import oathdigital.gameplay.SiteRulers
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower, SiteOnly}
+import distantlands.gameplay.SiteRulers
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerCtx, Transform}
-import oathdigital.gameplay.powers.{CatalogResolution, PowerAnswers, RulerToll}
-import oathdigital.model._
+import distantlands.gameplay.powers.{CatalogResolution, PowerAnswers, RulerToll}
+import distantlands.model._
 
 object WayStationCard extends Denizen(DenizenId("169"), "Way Station", Suit.Nomad) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.way-station"),
@@ -1296,7 +1296,7 @@ Register it: append `Vector(WayStation.forCatalog(catalog)) ++` in `TravelModifi
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.travel.* oathdigital.application.TravelDestinationRowsSuite oathdigital.gameplay.PowerKindsCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.travel.* distantlands.application.TravelDestinationRowsSuite distantlands.gameplay.PowerKindsCatalogSuite"`
 Expected: PASS. The card catalog suite also counts implemented cards; run `./sbtw test` and update any count it names by one.
 
 - [ ] **Step 5: Commit**
@@ -1342,7 +1342,7 @@ Append to `TravelDestinationRowsSuite`:
     val started = accepted(rules.startWalker(Ready(ready), ActionRef.Travel,
       actor, Vector.empty))
     assert(!started.events.exists(_.isInstanceOf[
-      oathdigital.gameplay.walker.PowerNoted]))
+      distantlands.gameplay.walker.PowerNoted]))
 
   test("a destination both blocked and unaffordable gives the block"):
     // Dunes costs 2 from the Cradle, and Narrow Pass blocks it.
@@ -1354,7 +1354,7 @@ In `CardPlayReasonsSuite.assertSpotRefused`, the check becomes `shown.reason.exi
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.application.TravelDestinationRowsSuite oathdigital.application.CardPlayReasonsSuite"`
+Run: `./sbtw "testOnly distantlands.application.TravelDestinationRowsSuite distantlands.application.CardPlayReasonsSuite"`
 Expected: FAIL. The Narrow Pass row is missing (no note keeps it), and the Vision reason still names the actor.
 
 - [ ] **Step 3: Stop journaling hidden-option notes**
@@ -1467,12 +1467,12 @@ git commit -m "feat(walker): explain a hidden option on hover only, and Narrow P
 Create `frontend/src/test/scala/distantlands/frontend/TravelLaunchSuite.scala`. It follows `FacedownAdviserPickSuite` (the launch) and `BoardOptionsRenderSuite` (the board):
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.frontend.Dom.one
-import oathdigital.model.PlayerColor
-import oathdigital.protocol.{GameIntent => Intent}
-import oathdigital.testkit.Unwrap.as
+import distantlands.frontend.Dom.one
+import distantlands.model.PlayerColor
+import distantlands.protocol.{GameIntent => Intent}
+import distantlands.testkit.Unwrap.as
 import org.scalajs.dom
 
 /** Travel starts the walker with no destination, and the parked destination
@@ -1520,7 +1520,7 @@ If `WorldBoardRenderer.world` loses its `drafts` parameter in Step 4, drop the a
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.TravelLaunchSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.TravelLaunchSuite"`
 Expected: FAIL. No "Travel" button is drawn for `beginTravel`, and no badge is drawn for a site option.
 
 - [ ] **Step 3: Draw the control and the badge**

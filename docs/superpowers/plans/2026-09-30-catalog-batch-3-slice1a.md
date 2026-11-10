@@ -26,7 +26,7 @@
   - `gameplay` never imports `application`, `serialization` or `server`.
   - A walker power (anything under `gameplay/powers`) never imports `gameplay.walker`.
   - No power name appears in walker sources.
-- Never touch the live database `var/oathdigital`.
+- Never touch the live database `var/distantlands`.
 - Other sessions commit to `main` while you work. Stage explicit paths only; never `git add -A`. Re-check `git log --oneline -1` before any amend, reset or rebase.
 - Work in a git worktree:
   - `EnterWorktree` branches from `origin`, which lags local `main`. Fast-forward the new branch to local `main` first (`git merge --ff-only main`).
@@ -143,12 +143,12 @@ In `PlanDriver.scala`, inside `final case class Run`, after `def offered(actor: 
 Create `VillageConstableSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
 
 /** Village Constable: a free, site-only plan for two attack dice, added or
   * removed, unless the enemy holds the People's Favor. */
@@ -197,12 +197,12 @@ class VillageConstableSuite extends munit.FunSuite:
 Create `BannerBreakersSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
 
 /** Banner Breakers: a favor placed and a favor burnt for three attack dice,
   * offered only while the defender holds a banner. */
@@ -249,13 +249,13 @@ class BannerBreakersSuite extends munit.FunSuite:
 Create `RivalKhanSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
 
 /** Rival Khan: a free plan for four attack dice, added or removed, offered
   * only when the enemy has a faceup nomad adviser, and discarded after the
@@ -315,7 +315,7 @@ class RivalKhanSuite extends munit.FunSuite:
 
 - [ ] **Step 3: Run the suites to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.VillageConstableSuite oathdigital.gameplay.powers.campaign.BannerBreakersSuite oathdigital.gameplay.powers.campaign.RivalKhanSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.VillageConstableSuite distantlands.gameplay.powers.campaign.BannerBreakersSuite distantlands.gameplay.powers.campaign.RivalKhanSuite"`
 Expected: compilation fails on `RivalKhan` (not found).
 
 - [ ] **Step 4: Add the enemy reads to `PlanContext`**
@@ -323,8 +323,8 @@ Expected: compilation fails on `RivalKhan` (not found).
 In `PlanContext.scala`, add these imports beside the existing ones:
 
 ```scala
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.BannerRules
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.BannerRules
 ```
 
 Then, inside `final case class PlanContext`, after `def targetsIn`, add:
@@ -376,11 +376,11 @@ Leave its doc comment and companion object unchanged.
 Create `VillageConstable.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powers.CatalogCards
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powers.CatalogCards
+import distantlands.model._
 
 /** Village Constable (card 132), a battle plan for either side: "±2
   * [attack-die] unless your enemy has the People's Favor."
@@ -417,11 +417,11 @@ object VillageConstable:
 Create `BannerBreakers.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powers.CatalogCards
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powers.CatalogCards
+import distantlands.model._
 
 /** Banner Breakers (card 222), an attacker's battle plan: "[favor]
   * [favor-burnt] +3 [attack-die] if the defender has the Darkest Secret or
@@ -456,11 +456,11 @@ object BannerBreakers:
 Create `RivalKhan.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powers.CatalogCards
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powers.CatalogCards
+import distantlands.model._
 
 /** Rival Khan (card 156), a battle plan for either side: "±4 [attack-die] if
   * your enemy has a [suit-nomad] adviser. At end, discard Rival Khan."
@@ -536,7 +536,7 @@ In `PlanRules.scala`, change the doc comment's "Horse Archers and Storm Caller (
 
 - [ ] **Step 10: Run the suites to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.*"`
 Expected: PASS, including the unchanged `CrackedSageSuite` and the 12 new tests.
 
 - [ ] **Step 11: Commit**
@@ -580,12 +580,12 @@ These plans count something on the board for their dice.
 Create `CrackingGroundSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
 
 /** Cracking Ground: a free plan for one attack die per targeted site, added
   * or removed. */
@@ -626,13 +626,13 @@ class CrackingGroundSuite extends munit.FunSuite:
 Create `WalledGardenSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignPlans}
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.{CampaignIds, CampaignPlans}
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 /** Walled Garden: a free, site-only defender's plan for one defense die per
   * beast card at any site, offered only when its site is a Conquest target. */
@@ -685,12 +685,12 @@ class WalledGardenSuite extends munit.FunSuite:
 Create `BanditStandardSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
 
 /** Bandit Standard: a free attacker's plan from a faceup relic, for one attack
   * die per bandit warband in the region of the attacker's pawn, never against
@@ -736,7 +736,7 @@ class BanditStandardSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the suites to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.CrackingGroundSuite oathdigital.gameplay.powers.campaign.WalledGardenSuite oathdigital.gameplay.powers.campaign.BanditStandardSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.CrackingGroundSuite distantlands.gameplay.powers.campaign.WalledGardenSuite distantlands.gameplay.powers.campaign.BanditStandardSuite"`
 Expected: every test fails, because no plan is offered (`awaits` is false, or `pick` is refused with "was refused").
 
 - [ ] **Step 3: Write Cracking Ground**
@@ -744,11 +744,11 @@ Expected: every test fails, because no plan is offered (`awaits` is false, or `p
 Create `CrackingGround.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powers.CatalogCards
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powers.CatalogCards
+import distantlands.model._
 
 /** Cracking Ground (card 71), a battle plan for either side: "± [attack-die]
   * per site targeted."
@@ -782,11 +782,11 @@ object CrackingGround:
 Create `WalledGarden.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powers.CatalogCards
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powers.CatalogCards
+import distantlands.model._
 
 /** Walled Garden (card 195), a defender's battle plan: "+[defense-die] per
   * [suit-beast] at any sites if this site is targeted."
@@ -835,11 +835,11 @@ object WalledGarden:
 Create `BanditStandard.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powers.CatalogCards
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powers.CatalogCards
+import distantlands.model._
 
 /** Bandit Standard (relic R30), an attacker's battle plan: "+ [attack-die] for
   * each bandit in your region. This cannot be used while targeting sites ruled
@@ -896,7 +896,7 @@ after `BannerBreakers.forCatalog(catalog).toVector`, adding ` ++` to that line.
 
 - [ ] **Step 7: Run the suites to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.*"`
 Expected: PASS, with the 11 new tests.
 
 If `WalledGardenSuite`'s first test counts one die too many or too few, check which edifice `beastEdifice` found. Its ruined face must print no implemented power that changes the defense. If it does, pick the next beast edifice in the test (`catalog.edifices.filter(_.suit == Suit.Beast)`), and say so in the commit message.
@@ -936,12 +936,12 @@ These plans cost a favor placed, so a bandit defender never applies them.
 Create `ExtraProvisionsSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.{CampaignIds, CampaignPlans}
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.{CampaignIds, CampaignPlans}
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
 
 /** Extra Provisions: a defender's plan, a favor placed for one defense die. */
 class ExtraProvisionsSuite extends munit.FunSuite:
@@ -983,12 +983,12 @@ class ExtraProvisionsSuite extends munit.FunSuite:
 Create `EncirclementSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
 
 /** Encirclement: a favor placed for two attack dice, added or removed, offered
   * only while its user's force is strictly larger than the enemy's. */
@@ -1054,7 +1054,7 @@ class EncirclementSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the suites to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.ExtraProvisionsSuite oathdigital.gameplay.powers.campaign.EncirclementSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.ExtraProvisionsSuite distantlands.gameplay.powers.campaign.EncirclementSuite"`
 Expected: the offering tests fail, because no plan is offered. The "not offered" tests may already pass.
 
 - [ ] **Step 3: Write Extra Provisions**
@@ -1062,11 +1062,11 @@ Expected: the offering tests fail, because no plan is offered. The "not offered"
 Create `ExtraProvisions.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powers.CatalogCards
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powers.CatalogCards
+import distantlands.model._
 
 /** Extra Provisions (card 48), a defender's battle plan: "[favor] +
   * [defense-die]".
@@ -1096,12 +1096,12 @@ object ExtraProvisions:
 Create `Encirclement.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.campaign.CampaignBattle
-import oathdigital.gameplay.powers.CatalogCards
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.campaign.CampaignBattle
+import distantlands.gameplay.powers.CatalogCards
+import distantlands.model._
 
 /** Encirclement (card 124), a battle plan for either side: "[favor] ±2
   * [attack-die] if your force is larger than your enemy's."
@@ -1156,7 +1156,7 @@ In `SimplePlans.scala`, extend the doc comment's list so it ends "…, Cracking 
 
 - [ ] **Step 6: Run the suites to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.*"`
 Expected: PASS, with the 8 new tests.
 
 - [ ] **Step 7: Commit**

@@ -58,7 +58,7 @@ Modified, by task:
 
 Interfaces later tasks rely on:
 - `OperationRun.boxed(executed: Vector[CoreOperation]): Set[CardId]` (Task 1).
-- `DecisionOptionRef.RelicSlot(owner: PlayerId, slot: Int)`, kind `"relic-slot"`, wire id `"<owner>:<slot>"`; `DecisionOptionRef.Banner(banner: oathdigital.model.Banner)`, kind `"banner"`, wire id the banner key; `DecisionOption.RelicSlot(ref)` and `DecisionOption.Banner(ref)` (Task 2).
+- `DecisionOptionRef.RelicSlot(owner: PlayerId, slot: Int)`, kind `"relic-slot"`, wire id `"<owner>:<slot>"`; `DecisionOptionRef.Banner(banner: distantlands.model.Banner)`, kind `"banner"`, wire id the banner key; `DecisionOption.RelicSlot(ref)` and `DecisionOption.Banner(ref)` (Task 2).
 - `ConspiracyWhenPlayed.decisionId` (Task 3).
 
 ---
@@ -73,7 +73,7 @@ Interfaces later tasks rely on:
 - Test: `src/test/scala/distantlands/serialization/GameEventWireSuite.scala`
 
 **Interfaces:**
-- Consumes: `Move`, `Piece.Card`, `PositionedLocation`, `Location.Hand`, `Location.SharedBank` (existing, `oathdigital.model`).
+- Consumes: `Move`, `Piece.Card`, `PositionedLocation`, `Location.Hand`, `Location.SharedBank` (existing, `distantlands.model`).
 - Produces: `OperationRun.boxed(executed: Vector[CoreOperation]): Set[CardId]`, and the guarantee that a batch containing `Move(Piece.Card(vision), from, PositionedLocation(Location.SharedBank))` passes the pipeline's card-inventory check with that card gone from the game.
 
 - [ ] **Step 1: Write the failing tests**
@@ -81,8 +81,8 @@ Interfaces later tasks rely on:
 In `OperationPipelineSuite`, add these imports at the top (after the existing ones):
 
 ```scala
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.setup.FirstGameSetupFixture.initialReady
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.setup.FirstGameSetupFixture.initialReady
 ```
 
 and add these tests before the closing brace of the class:
@@ -164,11 +164,11 @@ In `GameEventWireSuite`, add this test after "reduced optional spend is canonica
   }
 ```
 
-If `Move`, `Piece`, `PositionedLocation` or `Location` are not already imported in `GameEventWireSuite`, add them to its `oathdigital.model` import.
+If `Move`, `Piece`, `PositionedLocation` or `Location` are not already imported in `GameEventWireSuite`, add them to its `distantlands.model` import.
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw -no-colors "testOnly oathdigital.gameplay.OperationPipelineSuite oathdigital.serialization.GameEventWireSuite"`
+Run: `./sbtw -no-colors "testOnly distantlands.gameplay.OperationPipelineSuite distantlands.serialization.GameEventWireSuite"`
 Expected: compile FAIL, "value boxed is not a member of object OperationRun", and once that is added, the two boxing tests fail with an `InvalidDestination` rejection.
 
 - [ ] **Step 3: Implement the mutation, the validator and the invariant allowance**
@@ -225,7 +225,7 @@ Run the two suites. If the boxing test now fails with a different rejection (for
 
 - [ ] **Step 4: Run the tests and the operation suites**
 
-Run: `./sbtw -no-colors "testOnly oathdigital.gameplay.OperationPipelineSuite oathdigital.serialization.GameEventWireSuite oathdigital.gameplay.OperationExecutorSuite oathdigital.gameplay.OperationValidatorSuite oathdigital.gameplay.OperationStateAdapterSuite oathdigital.gameplay.operations.OperationStateMutationSuite"`
+Run: `./sbtw -no-colors "testOnly distantlands.gameplay.OperationPipelineSuite distantlands.serialization.GameEventWireSuite distantlands.gameplay.OperationExecutorSuite distantlands.gameplay.OperationValidatorSuite distantlands.gameplay.OperationStateAdapterSuite distantlands.gameplay.operations.OperationStateMutationSuite"`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -253,8 +253,8 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 - Test: `src/test/scala/distantlands/application/WalkerDecisionProjectorSuite.scala`
 
 **Interfaces:**
-- Consumes: `DecisionOptionRef`, `DecisionOption`, `BannerRules.holder(current, banner): Option[PlayerId]` (`oathdigital.gameplay.actions`), `Banner.fromKey`, `Banner.all`.
-- Produces: `DecisionOptionRef.RelicSlot(owner: PlayerId, slot: Int)`, `DecisionOptionRef.Banner(banner: oathdigital.model.Banner)`, `DecisionOption.RelicSlot(ref)`, `DecisionOption.Banner(ref)`; `DecisionOption.forRef` covers both; `fromWire` parses both.
+- Consumes: `DecisionOptionRef`, `DecisionOption`, `BannerRules.holder(current, banner): Option[PlayerId]` (`distantlands.gameplay.actions`), `Banner.fromKey`, `Banner.all`.
+- Produces: `DecisionOptionRef.RelicSlot(owner: PlayerId, slot: Int)`, `DecisionOptionRef.Banner(banner: distantlands.model.Banner)`, `DecisionOption.RelicSlot(ref)`, `DecisionOption.Banner(ref)`; `DecisionOption.forRef` covers both; `fromWire` parses both.
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -262,7 +262,7 @@ Replace the body of `DecisionOptionRefSuite` (keep the existing three tests and 
 
 ```scala
   private val slot = DecisionOptionRef.RelicSlot(PlayerId("blue"), 2)
-  private val banner = DecisionOptionRef.Banner(oathdigital.model.Banner.DarkestSecret)
+  private val banner = DecisionOptionRef.Banner(distantlands.model.Banner.DarkestSecret)
 
   test("a relic slot spells itself as a kind and owner-and-index id and parses back") {
     assertEquals((slot.kind, slot.wireId), ("relic-slot", "blue:2"))
@@ -345,7 +345,7 @@ In `WalkerDecisionProjectorSuite`, add this test after "a declared option whose 
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw -no-colors "testOnly oathdigital.model.DecisionOptionRefSuite"`
+Run: `./sbtw -no-colors "testOnly distantlands.model.DecisionOptionRefSuite"`
 Expected: compile FAIL, "value RelicSlot is not a member of object DecisionOptionRef".
 
 - [ ] **Step 3: Implement the model change**
@@ -369,7 +369,7 @@ In `src/main/scala/distantlands/model/Decisions.scala`:
   /** A banner. It names no holder: who holds it is read from live state, so
     * an answer cannot name a holder that has since changed.
     */
-  final case class Banner(banner: oathdigital.model.Banner)
+  final case class Banner(banner: distantlands.model.Banner)
       extends DecisionOptionRef {
     val kind: String = "banner"
     def wireId: String = banner.key
@@ -384,7 +384,7 @@ In `src/main/scala/distantlands/model/Decisions.scala`:
         Option.when(at > 0)(wireId.take(at)).filter(_.trim.nonEmpty)
           .flatMap(owner => wireId.drop(at + 1).toIntOption
             .filter(_ >= 0).map(RelicSlot(PlayerId(owner), _)))
-      case "banner" => oathdigital.model.Banner.fromKey(wireId).map(Banner(_))
+      case "banner" => distantlands.model.Banner.fromKey(wireId).map(Banner(_))
 ```
 
 3. Change the two comments that say "nine variants" (on the `fromWire` doc and the `kind` doc, if present) to "eleven variants".
@@ -406,7 +406,7 @@ and in `forRef`, after the `Edifice` case, add:
 
 - [ ] **Step 4: Implement the projector cases**
 
-In `WalkerDecisionProjector.scala`, change the import `oathdigital.gameplay.actions.RecoverRules` to `oathdigital.gameplay.actions.{BannerRules, RecoverRules}`, and in `optionProjection` add these cases after `DecisionOption.Edifice`:
+In `WalkerDecisionProjector.scala`, change the import `distantlands.gameplay.actions.RecoverRules` to `distantlands.gameplay.actions.{BannerRules, RecoverRules}`, and in `optionProjection` add these cases after `DecisionOption.Edifice`:
 
 ```scala
       case DecisionOption.RelicSlot(slot) =>
@@ -422,7 +422,7 @@ In `WalkerDecisionProjector.scala`, change the import `oathdigital.gameplay.acti
 
 - [ ] **Step 5: Run the tests and the wider suites**
 
-Run: `./sbtw -no-colors "testOnly oathdigital.model.DecisionOptionRefSuite oathdigital.serialization.GameEventWireSuite oathdigital.application.WalkerDecisionProjectorSuite"`
+Run: `./sbtw -no-colors "testOnly distantlands.model.DecisionOptionRefSuite distantlands.serialization.GameEventWireSuite distantlands.application.WalkerDecisionProjectorSuite"`
 Expected: PASS. If the compiler reports a non-exhaustive match over `DecisionOption` or `DecisionOptionRef` in another file, add the two cases there in the same way (`git grep -n "DecisionOption.Edifice" src/main` lists the candidates).
 
 Then run `./sbtw -no-colors test` and expect PASS.
@@ -451,7 +451,7 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 - Test: `src/test/scala/distantlands/gameplay/CardPlayProcedureSuite.scala`, `src/test/scala/distantlands/gameplay/SearchProcedureSuite.scala`, `src/test/scala/distantlands/gameplay/VisionsSuite.scala` (migrate)
 
 **Interfaces:**
-- Consumes: Task 1's boxing `Move`; Task 2's `DecisionOptionRef.RelicSlot`/`Banner` and `DecisionOption.forRef`; `BannerRules.holder`, `BannerRules.resources`, `BannerRules.raidFavorReturn` (`oathdigital.gameplay.actions`); `Give`, `Burn.secrets`, `Move`, `Decide`, `BuildOps`, `CardPlayed`, `Transform`.
+- Consumes: Task 1's boxing `Move`; Task 2's `DecisionOptionRef.RelicSlot`/`Banner` and `DecisionOption.forRef`; `BannerRules.holder`, `BannerRules.resources`, `BannerRules.raidFavorReturn` (`distantlands.gameplay.actions`); `Give`, `Burn.secrets`, `Move`, `Decide`, `BuildOps`, `CardPlayed`, `Transform`.
 - Produces: `ConspiracyWhenPlayed` (`id = PowerId("vision.conspiracy")`, `decisionId = "cardplay.conspiracy.target"`), registered in `WalkerPowerCatalog.default`; `CardPlay.planVision` plans a faceup Conspiracy from either origin as no placement; the `CardPlayed` hook fires for it.
 
 - [ ] **Step 1: Write the failing power tests**
@@ -459,16 +459,16 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 Create `src/test/scala/distantlands/gameplay/powers/whenplayed/ConspiracyWhenPlayedSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.actions.{BannerRules, VisionRules}
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.operations.{OperationPipeline, OperationPolicy}
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome,
+import distantlands.gameplay.actions.{BannerRules, VisionRules}
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.operations.{OperationPipeline, OperationPolicy}
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerOutcome,
   WalkerPowers, WalkerStepRecorded}
-import oathdigital.model._
+import distantlands.model._
 
 class ConspiracyWhenPlayedSuite extends munit.FunSuite {
   private val powers = WalkerPowers(Vector(ConspiracyWhenPlayed))
@@ -682,13 +682,13 @@ class ConspiracyWhenPlayedSuite extends munit.FunSuite {
 Create `src/test/scala/distantlands/gameplay/VisionPlaySuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.application.{GameProjector, LoadedGame}
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model._
+import distantlands.application.{GameProjector, LoadedGame}
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model._
 
 class VisionPlaySuite extends munit.FunSuite {
   private val rules = new OathRules(catalog,
@@ -823,7 +823,7 @@ In `VisionsSuite`, delete the whole test named "a Conspiracy kept faceup from Se
 
 - [ ] **Step 4: Run the tests to verify they fail**
 
-Run: `./sbtw -no-colors "testOnly oathdigital.gameplay.powers.whenplayed.ConspiracyWhenPlayedSuite oathdigital.gameplay.VisionPlaySuite"`
+Run: `./sbtw -no-colors "testOnly distantlands.gameplay.powers.whenplayed.ConspiracyWhenPlayedSuite distantlands.gameplay.VisionPlaySuite"`
 Expected: compile FAIL, "not found: value ConspiracyWhenPlayed".
 
 - [ ] **Step 5: Implement the power**
@@ -831,11 +831,11 @@ Expected: compile FAIL, "not found: value ConspiracyWhenPlayed".
 Create `src/main/scala/distantlands/gameplay/powers/whenplayed/ConspiracyWhenPlayed.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.actions.{BannerRules, VisionRules}
-import oathdigital.gameplay.powerresolver._
-import oathdigital.model._
+import distantlands.gameplay.actions.{BannerRules, VisionRules}
+import distantlands.gameplay.powerresolver._
+import distantlands.model._
 
 /** Conspiracy: when played, take a relic or a banner from a player whose pawn
   * is at the actor's site, then return the card to the box.
@@ -954,7 +954,7 @@ case object ConspiracyWhenPlayed extends ContributingPower {
 }
 ```
 
-In `WalkerPowerCatalog.scala`, add `import oathdigital.gameplay.powers.whenplayed.{ConspiracyWhenPlayed, Dazzle}` in place of the `Dazzle` import, and change the catalog's last line from `Dazzle.forCatalog(catalog).toVector ++ ... :+ TakeWealthLimit)` to end with `:+ TakeWealthLimit :+ ConspiracyWhenPlayed)`. Add one sentence to the object's doc comment: "Conspiracy's power carries no catalog id (a Vision has no catalog powers), so like Take Wealth's limit it is always present and inert until a card play runs `ActionCardPlayed` for Conspiracy."
+In `WalkerPowerCatalog.scala`, add `import distantlands.gameplay.powers.whenplayed.{ConspiracyWhenPlayed, Dazzle}` in place of the `Dazzle` import, and change the catalog's last line from `Dazzle.forCatalog(catalog).toVector ++ ... :+ TakeWealthLimit)` to end with `:+ TakeWealthLimit :+ ConspiracyWhenPlayed)`. Add one sentence to the object's doc comment: "Conspiracy's power carries no catalog id (a Vision has no catalog powers), so like Take Wealth's limit it is always present and inert until a card play runs `ActionCardPlayed` for Conspiracy."
 
 - [ ] **Step 6: Switch card play to the power**
 
@@ -1068,7 +1068,7 @@ with
               .map(CardPlayed(card, _)).toVector
 ```
 
-and change the import `oathdigital.gameplay.actions.{CardPlay, VisionRules}` to `oathdigital.gameplay.actions.CardPlay` if `VisionRules` is no longer used in that file (`git grep -n VisionRules src/main/scala/distantlands/gameplay/actions/cardplay` says).
+and change the import `distantlands.gameplay.actions.{CardPlay, VisionRules}` to `distantlands.gameplay.actions.CardPlay` if `VisionRules` is no longer used in that file (`git grep -n VisionRules src/main/scala/distantlands/gameplay/actions/cardplay` says).
 
 - [ ] **Step 7: Delete `BeginConspiracy`**
 
@@ -1080,7 +1080,7 @@ Nothing produces it now. Delete, each exactly once (run `git grep -n BeginConspi
 
 - [ ] **Step 8: Run the tests**
 
-Run: `./sbtw -no-colors "testOnly oathdigital.gameplay.powers.whenplayed.ConspiracyWhenPlayedSuite oathdigital.gameplay.VisionPlaySuite oathdigital.gameplay.CardPlayProcedureSuite oathdigital.gameplay.SearchProcedureSuite oathdigital.gameplay.VisionsSuite"`
+Run: `./sbtw -no-colors "testOnly distantlands.gameplay.powers.whenplayed.ConspiracyWhenPlayedSuite distantlands.gameplay.VisionPlaySuite distantlands.gameplay.CardPlayProcedureSuite distantlands.gameplay.SearchProcedureSuite distantlands.gameplay.VisionsSuite"`
 Expected: PASS.
 
 If the replay assertion `assertEquals(replayed(f, done), after)` fails only on a field like `walkerPending`, compare with `DazzleSuite`'s identical assertion, which passes on the same walker; a real difference means the recorded operations are not the whole effect and must be fixed, not the assertion.
@@ -1236,7 +1236,7 @@ In `VisionPlaySuite`, add before the final `}`:
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw -no-colors "testOnly oathdigital.gameplay.CardPlayProcedureSuite oathdigital.gameplay.VisionPlaySuite oathdigital.gameplay.powers.whenplayed.ConspiracyWhenPlayedSuite"`
+Run: `./sbtw -no-colors "testOnly distantlands.gameplay.CardPlayProcedureSuite distantlands.gameplay.VisionPlaySuite distantlands.gameplay.powers.whenplayed.ConspiracyWhenPlayedSuite"`
 Expected: the three new tests FAIL with `UnsupportedMinorActionRule` (from `validateVisionPlay`) or an empty choice list.
 
 - [ ] **Step 3: Remove the unconditional rejection**
@@ -1261,7 +1261,7 @@ and in `plannedOperations` change `_ <- validateOrigin(catalog, player, card, pl
 
 - [ ] **Step 4: Run the tests and the card-play suites**
 
-Run: `./sbtw -no-colors "testOnly oathdigital.gameplay.CardPlayProcedureSuite oathdigital.gameplay.VisionPlaySuite oathdigital.gameplay.powers.whenplayed.ConspiracyWhenPlayedSuite oathdigital.gameplay.SearchProcedureSuite oathdigital.gameplay.MinorActionsSuite"`
+Run: `./sbtw -no-colors "testOnly distantlands.gameplay.CardPlayProcedureSuite distantlands.gameplay.VisionPlaySuite distantlands.gameplay.powers.whenplayed.ConspiracyWhenPlayedSuite distantlands.gameplay.SearchProcedureSuite distantlands.gameplay.MinorActionsSuite"`
 Expected: PASS. `MinorActionsSuite` still calls `MinorActionPowerSupport.validateInventory` directly; it is deleted in Task 6.
 
 Then `./sbtw -no-colors test`. Expected: PASS.
@@ -1298,7 +1298,7 @@ Nothing routes to `Visions.handle` after this task, and nothing in the client ca
 
 - [ ] **Step 1: Check the walker is the only route**
 
-Run: `./sbtw -no-colors "testOnly oathdigital.gameplay.VisionPlaySuite oathdigital.gameplay.powers.whenplayed.ConspiracyWhenPlayedSuite"`
+Run: `./sbtw -no-colors "testOnly distantlands.gameplay.VisionPlaySuite distantlands.gameplay.powers.whenplayed.ConspiracyWhenPlayedSuite"`
 Expected: PASS. If it fails, stop and fix Tasks 3 and 4 first: this task removes the only other route.
 
 - [ ] **Step 2: Delete the command surface**
@@ -1344,10 +1344,10 @@ cut("src/main/scala/distantlands/application/Authorization.scala",
 p = "src/main/scala/distantlands/application/GameIntentMapper.scala"
 remove(p, "      case Intent.RevealVision(id) => Right(actor.revealVision(VisionId(id)))\n"
           "      case Intent.PlayConspiracy(value) => option(value)(conspiracy).map(actor.playConspiracy)\n")
-cut(p, "  private def conspiracy(value: oathdigital.protocol.ConspiracyTarget)",
-    "  private def raid(value: oathdigital.protocol.CampaignRaidTarget)")
+cut(p, "  private def conspiracy(value: distantlands.protocol.ConspiracyTarget)",
+    "  private def raid(value: distantlands.protocol.CampaignRaidTarget)")
 p = "src/main/scala/distantlands/application/GameApplicationService.scala"
-remove(p, "import oathdigital.gameplay.actions.VisionCommand\n")
+remove(p, "import distantlands.gameplay.actions.VisionCommand\n")
 cut(p, "      case GameCommand.RevealVision(playerId, visionId) =>",
     "      case GameCommand.BeginNegotiation(playerId, participants) =>")
 remove("src/main/scala/distantlands/application/PendingProcedureProjector.scala",
@@ -1387,8 +1387,8 @@ cut(p, "  private def conspiracyTargetAction(", "  private def selection(")
 
 # Rules
 p = "src/main/scala/distantlands/gameplay/OathRules.scala"
-remove(p, "import oathdigital.gameplay.actions.{Visions, VisionCommand}",
-          "import oathdigital.gameplay.actions.Visions")
+remove(p, "import distantlands.gameplay.actions.{Visions, VisionCommand}",
+          "import distantlands.gameplay.actions.Visions")
 cut(p, "  def handle(state: OathState, command: VisionCommand)",
     "  def handle(state: OathState, command: NegotiationCommand)")
 
@@ -1413,7 +1413,7 @@ remove(p, "          \"vision\" -> rules.handle(state, VisionCommand.Reveal(acto
           "            FirstGameRulesData.visions.collectFirst { case id: VisionId => id }.get)),\n")
 p = "frontend/src/test/scala/distantlands/frontend/ProtocolTestCommands.scala"
 remove(p, "  def RevealVision(actor: String, id: String) = Intent.RevealVision(id)\n"
-          "  def PlayConspiracy(actor: String, target: Option[oathdigital.protocol.ConspiracyTarget]) = Intent.PlayConspiracy(target)\n")
+          "  def PlayConspiracy(actor: String, target: Option[distantlands.protocol.ConspiracyTarget]) = Intent.PlayConspiracy(target)\n")
 cut(p, "private[frontend] object ConspiracyTarget {", "private[frontend] object DecisionResolution {")
 cut("frontend/src/test/scala/distantlands/frontend/HttpGameClientSuite.scala",
     "  test(\"Vision and Conspiracy controls preserve opaque targets and pending decisions\") {",
@@ -1479,9 +1479,9 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 Create `src/main/scala/distantlands/gameplay/actions/VisionRules.scala`:
 
 ```scala
-package oathdigital.gameplay.actions
+package distantlands.gameplay.actions
 
-import oathdigital.model._
+import distantlands.model._
 
 object VisionRules {
   val Conquest = VisionId("vision:vision-of-conquest")
@@ -1500,7 +1500,7 @@ object VisionRules {
 }
 ```
 
-Then remove the same `object VisionRules { ... }` from `Visions.scala`, and run `./sbtw -no-colors compile`. Expected: PASS (the import path `oathdigital.gameplay.actions.VisionRules` is unchanged).
+Then remove the same `object VisionRules { ... }` from `Visions.scala`, and run `./sbtw -no-colors compile`. Expected: PASS (the import path `distantlands.gameplay.actions.VisionRules` is unchanged).
 
 - [ ] **Step 2: Delete the rules and their tests**
 
@@ -1508,7 +1508,7 @@ Then remove the same `object VisionRules { ... }` from `Visions.scala`, and run 
 git rm src/main/scala/distantlands/gameplay/actions/Visions.scala src/main/scala/distantlands/gameplay/actions/MinorActionPowerSupport.scala
 ```
 
-In `OathRules.scala`, delete the import `import oathdigital.gameplay.actions.Visions` and the three evolve cases:
+In `OathRules.scala`, delete the import `import distantlands.gameplay.actions.Visions` and the three evolve cases:
 
 ```scala
       case event: VisionRevealed => Visions.evolve(catalog, state, event)
@@ -1644,7 +1644,7 @@ In `OathkeeperProcedureSuite.scala`, in the test that builds a legacy pending pr
 
 ```scala
       pending = Some(PendingProcedure.Conspiracy(DecisionId("powered-vision"),
-        actor.player, oathdigital.gameplay.actions.VisionRules.Conspiracy,
+        actor.player, distantlands.gameplay.actions.VisionRules.Conspiracy,
         None))))
 ```
 

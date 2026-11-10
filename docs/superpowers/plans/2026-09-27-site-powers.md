@@ -24,7 +24,7 @@
   - `gameplay` never imports `application`, `serialization` or `server`.
   - A walker power (anything under `gameplay/powers`) never imports `gameplay.walker`.
   - Test code may import `gameplay.walker`.
-- Never touch the live database `var/oathdigital`.
+- Never touch the live database `var/distantlands`.
 - Other sessions commit to `main` while you work. Stage explicit paths only; never `git add -A`. Re-check `git log --oneline -1` before any amend, reset or rebase.
 - Work in a git worktree:
   - `EnterWorktree` branches from `origin`, which lags local `main`. Fast-forward the new branch to local `main` first.
@@ -100,11 +100,11 @@ Context you need:
 Create `src/test/scala/distantlands/gameplay/powers/wake/RiverFixture.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.wake
+package distantlands.gameplay.powers.wake
 
-import oathdigital.gameplay.powers.PowerFixture
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.powers.PowerFixture
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 /** Staging for the River. The first game has one River in play, Ancient
   * City, where the actor's pawn stands. `withRivers` puts more in play.
@@ -152,13 +152,13 @@ If `MapState`'s region fields are not named `cradle`, `provinces` and `hinterlan
 Create `src/test/scala/distantlands/gameplay/powers/wake/RiverSitePowerSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.wake
+package distantlands.gameplay.powers.wake
 
-import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture,
+import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture,
   TargetsFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerStepRecorded
-import oathdigital.model._
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerStepRecorded
+import distantlands.model._
 
 class RiverSitePowerSuite extends munit.FunSuite:
   import PowerFixture._
@@ -260,7 +260,7 @@ If `offered` projects a site option under a kind other than `"site"`, read `Deci
 
 - [ ] **Step 3: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.wake.RiverSitePowerSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.wake.RiverSitePowerSuite"`
 Expected: compilation fails, because `RiverSitePower` does not exist.
 
 - [ ] **Step 4: Add `noteSource` to `NotingPower`**
@@ -296,12 +296,12 @@ and `sourceOf` gains a case before `case other =>`:
 Create `src/main/scala/distantlands/gameplay/powers/wake/RiverSitePower.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.wake
+package distantlands.gameplay.powers.wake
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.PhasePower
-import oathdigital.gameplay.powers.action.PawnMoves
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.PhasePower
+import distantlands.gameplay.powers.action.PawnMoves
+import distantlands.model._
 
 /** The River site power (CR p. 31, NF p. 11), WAKE: "You may place your pawn
   * at another River. This is not a Travel action."
@@ -360,7 +360,7 @@ object RiverSitePower:
 
 - [ ] **Step 7: Register it**
 
-In `gameplay/powers/PhasePowerCatalog.scala`, add the import `oathdigital.gameplay.powers.wake.RiverSitePower` beside `MarbleFountains` (one import line: `import oathdigital.gameplay.powers.wake.{MarbleFountains, RiverSitePower}`), and append to the sum in `default`:
+In `gameplay/powers/PhasePowerCatalog.scala`, add the import `distantlands.gameplay.powers.wake.RiverSitePower` beside `MarbleFountains` (one import line: `import distantlands.gameplay.powers.wake.{MarbleFountains, RiverSitePower}`), and append to the sum in `default`:
 
 ```scala
       BannerFacePowers.phasePowers ++
@@ -369,7 +369,7 @@ In `gameplay/powers/PhasePowerCatalog.scala`, add the import `oathdigital.gamepl
 
 - [ ] **Step 8: Run the suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.wake.RiverSitePowerSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.wake.RiverSitePowerSuite"`
 Expected: all 10 tests pass.
 
 - [ ] **Step 9: Run the full server suite**
@@ -416,7 +416,7 @@ End the message body with the trailer.
 
 - [ ] **Step 1: Write the failing log tests**
 
-Append to `GameLogPowerLinesSuite` (it already imports `oathdigital.model._`, `LogScripts._` and `PowerNoted`):
+Append to `GameLogPowerLinesSuite` (it already imports `distantlands.model._`, `LogScripts._` and `PowerNoted`):
 
 ```scala
   test("a power that names its notes' source reads under that name, not its site"):
@@ -448,7 +448,7 @@ Append to `PhasePowerProjectorSuite`:
 
 ```scala
   test("a site's phase power is projected under its power's name and printed text"):
-    import oathdigital.gameplay.powers.wake.RiverFixture
+    import distantlands.gameplay.powers.wake.RiverFixture
     val ready = RiverFixture.staged()
     val actor = ready.game.current.turn.activePlayer
     val projected = projector.project("river", LoadedGame(Ready(ready), 30L), actor)
@@ -483,7 +483,7 @@ If `readyWorld` is not public, or the region projection's site list is not named
 
 - [ ] **Step 3: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogPowerLinesSuite oathdigital.application.PhasePowerProjectorSuite oathdigital.application.GamePresentationProjectorPrintedFacesSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogPowerLinesSuite distantlands.application.PhasePowerProjectorSuite distantlands.application.GamePresentationProjectorPrintedFacesSuite"`
 Expected: compilation fails on `NoteWordings.of(..., Some("River"))` and `wordings.source`.
 
 - [ ] **Step 4: Carry `noteSource` in `NoteWordings`**
@@ -541,7 +541,7 @@ with
 Create `src/main/scala/distantlands/application/SitePowerText.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
 /** Each site power's name and printed text (CR p. 31, NF p. 11), by the kind
   * its handler ends in: `site.riverbank.river` is a River. The six Homelands,
@@ -598,13 +598,13 @@ In `PhasePowerProjector.scala`, `printed` gains a case before `case _ => None`:
 ```scala
     case PowerSourceRef.Site(_) =>
       SitePowerText.of(SitePowerText.kindOf(power.value)).map(site =>
-        site.label -> oathdigital.catalog.CatalogPower(power,
+        site.label -> distantlands.catalog.CatalogPower(power,
           persistent = false, site.text))
 ```
 
 - [ ] **Step 8: Run the three suites**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogPowerLinesSuite oathdigital.application.PhasePowerProjectorSuite oathdigital.application.GamePresentationProjectorPrintedFacesSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogPowerLinesSuite distantlands.application.PhasePowerProjectorSuite distantlands.application.GamePresentationProjectorPrintedFacesSuite"`
 Expected: all pass.
 
 - [ ] **Step 9: Run the full server and frontend suites**
@@ -666,7 +666,7 @@ Context you need:
 
 - [ ] **Step 1: Let the fixture stage at another site**
 
-In `PlacementFixture.scala`, add the import `oathdigital.gameplay.actions.CardPlay` (the file already imports `PlacementRules` from that package: make it `import oathdigital.gameplay.actions.{CardPlay, PlacementRules}`).
+In `PlacementFixture.scala`, add the import `distantlands.gameplay.actions.CardPlay` (the file already imports `PlacementRules` from that package: make it `import distantlands.gameplay.actions.{CardPlay, PlacementRules}`).
 
 Give `staged` a third parameter and move the pawn with it. Replace its signature and the lines that pick the site and build the state:
 
@@ -704,11 +704,11 @@ Add after `staged`:
 Create `src/test/scala/distantlands/gameplay/HomelandRuleSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.CardPlay
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model._
+import distantlands.gameplay.actions.CardPlay
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model._
 
 /** The Homeland site power (CR p. 31): "When playing a card of its Homeland
   * suit to this site, you may discard a card from the site first (even one of
@@ -788,7 +788,7 @@ class HomelandRuleSuite extends munit.FunSuite:
 
 - [ ] **Step 3: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.HomelandRuleSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.HomelandRuleSuite"`
 Expected: compilation fails, because `CardPlay.homelandSuit` does not exist.
 
 - [ ] **Step 4: Read the Homeland from the site, and treat it as a permission**
@@ -948,7 +948,7 @@ The suite's `siteChoice` uses a suite-level `actor`; `staged` keeps the same act
 
 - [ ] **Step 7: Run the placement suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.HomelandRuleSuite oathdigital.gameplay.HomelandLineSuite oathdigital.gameplay.DiscardRestrictionsSuite oathdigital.gameplay.SiteDiscardFirstSuite oathdigital.gameplay.CardPlayProcedureSuite oathdigital.gameplay.powers.banner.PeoplesFavorMobSuite oathdigital.gameplay.powers.cardplay.SacredGroundSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.HomelandRuleSuite distantlands.gameplay.HomelandLineSuite distantlands.gameplay.DiscardRestrictionsSuite distantlands.gameplay.SiteDiscardFirstSuite distantlands.gameplay.CardPlayProcedureSuite distantlands.gameplay.powers.banner.PeoplesFavorMobSuite distantlands.gameplay.powers.cardplay.SacredGroundSuite"`
 Expected: all pass. If a suite outside this task's files fails because it staged a Homeland by edifice, report it before changing it.
 
 - [ ] **Step 8: Run the full server suite**

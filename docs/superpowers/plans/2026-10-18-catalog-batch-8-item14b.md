@@ -207,7 +207,7 @@ Run: `git diff`. Check that no string literal or log text changed, and that each
 
 - [ ] **Step 4: Run the touched suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.*"`. Expected: all pass.
+Run: `./sbtw "testOnly distantlands.gameplay.powers.*"`. Expected: all pass.
 
 - [ ] **Step 5: Commit**
 

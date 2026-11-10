@@ -41,7 +41,7 @@ Task 1 amends both with the rulings made at plan time, so read them after Task 1
   - No power name appears in walker sources.
   - Nothing under `gameplay/actions` imports `gameplay/powers`.
 - **Line width.** Scala lines stay at or under 80 characters, as in the files around them.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Other sessions commit to `main` while you work.
   - Stage explicit paths only; never `git add -A`.
   - Re-check `git log --oneline -1` before any amend, reset or rebase.
@@ -270,25 +270,25 @@ git commit -m "docs(spec): settle how slice 3 counts advisers after a play"
 
 **Interfaces:**
 - Produces:
-  - `oathdigital.gameplay.actions.economy.MarriageCard`
+  - `distantlands.gameplay.actions.economy.MarriageCard`
   - `AdviserSuits.weight(card: CardId): Int`
   - `AdviserSuits.count(catalog: ExecutableCatalog, ready: ReadyGame, player: PlayerId, suit: Suit): Int`
   - `RuledCards.count(catalog, ready, ruler: SiteRuler, suit: Suit): Int`
-  - `oathdigital.gameplay.powers.economy.Marriage` (a `case object`)
+  - `distantlands.gameplay.powers.economy.Marriage` (a `case object`)
 
 - [ ] **Step 1: Write the failing tests**
 
 Create `src/test/scala/distantlands/gameplay/AdviserSuitsSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.economy.AdviserSuits
-import oathdigital.gameplay.powers.RuledCards
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.actions.economy.AdviserSuits
+import distantlands.gameplay.powers.RuledCards
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Table}
+import distantlands.testkit.Table.p1
 
 /** `AdviserSuits`: a player's advisers counted by suit, a faceup Marriage
   * counting as two (catalog batch 5 rulings, "Counts as applies
@@ -371,7 +371,7 @@ In `PowerKindsCatalogSuite.scala`, add `"denizen.marriage"` to the end of `persi
 
 - [ ] **Step 2: Run the tests to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.AdviserSuitsSuite oathdigital.gameplay.MusterProcedureSuite oathdigital.gameplay.powers.whenplayed.TownMeetingSuite oathdigital.gameplay.powers.whenplayed.FabledFeastSuite oathdigital.gameplay.powers.campaign.MilitaryParadeSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.AdviserSuitsSuite distantlands.gameplay.MusterProcedureSuite distantlands.gameplay.powers.whenplayed.TownMeetingSuite distantlands.gameplay.powers.whenplayed.FabledFeastSuite distantlands.gameplay.powers.campaign.MilitaryParadeSuite"`
 Expected: compile failure: `AdviserSuits` and `RuledCards.count` are not found.
 
 - [ ] **Step 3: Create the count and move the card**
@@ -379,11 +379,11 @@ Expected: compile failure: `AdviserSuits` and `RuledCards.count` are not found.
 Delete `object MarriageCard ...` (its six lines) from `HoldingHearthDenizens.scala`. Create `src/main/scala/distantlands/gameplay/actions/economy/AdviserSuits.scala`:
 
 ```scala
-package oathdigital.gameplay.actions.economy
+package distantlands.gameplay.actions.economy
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog, Locked,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog, Locked,
   PrintedPower}
-import oathdigital.model._
+import distantlands.model._
 
 object MarriageCard extends Denizen(DenizenId("148"), "Marriage", Suit.Hearth) with Locked with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.marriage"),
@@ -427,7 +427,7 @@ In `MusterSource.scala`, replace the body and doc of `matching`:
       suit: Suit): Int = AdviserSuits.count(catalog, state, actor, suit)
 ```
 
-In `RuledCards.scala`, add the import `import oathdigital.gameplay.actions.economy.AdviserSuits` and append to the object:
+In `RuledCards.scala`, add the import `import distantlands.gameplay.actions.economy.AdviserSuits` and append to the object:
 
 ```scala
 
@@ -466,7 +466,7 @@ In `RuledCards.scala`, add the import `import oathdigital.gameplay.actions.econo
     context.cardsRuled(catalog, context.ruler, Suit.Nomad).filter(_ != card)
       .map(AdviserSuits.weight).sum + 1
   ```
-  Add `import oathdigital.gameplay.actions.economy.AdviserSuits`.
+  Add `import distantlands.gameplay.actions.economy.AdviserSuits`.
 - `NatureWorship.scala`, in `otherBeasts`: replace the `.count { ... }` block with
   ```scala
       .flatMap(_.advisers).collect {
@@ -493,11 +493,11 @@ In `RuledCards.scala`, add the import `import oathdigital.gameplay.actions.econo
 Create `src/main/scala/distantlands/gameplay/powers/economy/Marriage.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.actions.economy.MarriageCard
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution}
-import oathdigital.model._
+import distantlands.gameplay.actions.economy.MarriageCard
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution}
+import distantlands.model._
 
 /** Marriage (card 148, adviser-only, locked): "Marriage counts as two Hearth
   * advisers, but only counts as one toward your adviser limit."
@@ -513,13 +513,13 @@ case object Marriage extends ContributingPower:
   def contributions: Map[PowerWindow, Vector[Contribution]] = Map.empty
 ```
 
-In `WalkerPowerCatalog.scala`, add `import oathdigital.gameplay.powers.economy.Marriage` (merge it into the existing `economy.KnightsErrant` import as `economy.{KnightsErrant, Marriage}`), and add `Vector(Marriage) ++` after `Vector(KnightsErrant.forCatalog(catalog)) ++`.
+In `WalkerPowerCatalog.scala`, add `import distantlands.gameplay.powers.economy.Marriage` (merge it into the existing `economy.KnightsErrant` import as `economy.{KnightsErrant, Marriage}`), and add `Vector(Marriage) ++` after `Vector(KnightsErrant.forCatalog(catalog)) ++`.
 
-In `NewFoundations.scala`, import `MarriageCard` from `oathdigital.gameplay.actions.economy`. The wildcard `catalog.holding._` no longer supplies it. Keep its place in the denizen list.
+In `NewFoundations.scala`, import `MarriageCard` from `distantlands.gameplay.actions.economy`. The wildcard `catalog.holding._` no longer supplies it. Keep its place in the denizen list.
 
 - [ ] **Step 6: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.AdviserSuitsSuite oathdigital.gameplay.MusterProcedureSuite oathdigital.gameplay.powers.whenplayed.* oathdigital.gameplay.powers.campaign.* oathdigital.gameplay.PowerKindsCatalogSuite oathdigital.gameplay.cards.CardCatalogSuite oathdigital.gameplay.BackendArchitectureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.AdviserSuitsSuite distantlands.gameplay.MusterProcedureSuite distantlands.gameplay.powers.whenplayed.* distantlands.gameplay.powers.campaign.* distantlands.gameplay.PowerKindsCatalogSuite distantlands.gameplay.cards.CardCatalogSuite distantlands.gameplay.BackendArchitectureSuite"`
 Expected: PASS. `CardCatalogSuite` now finds Marriage implemented outside the holding files.
 
 - [ ] **Step 7: Commit**
@@ -541,7 +541,7 @@ git commit -m "feat(economy): Marriage counts as two advisers of its suit"
 - Modify: `src/test/scala/distantlands/gameplay/CardSlotsSuite.scala`
 
 **Interfaces:**
-- Produces, in `oathdigital.gameplay.actions`:
+- Produces, in `distantlands.gameplay.actions`:
   - `final case class AdviserFace(card: CardId, orientation: Orientation)`, with `AdviserFace.of(adviser: AdviserState): AdviserFace`
   - `CardPlayRules.limitWhileFaceUp(card: CardId, limit: Int): CardPlayRules`
   - `CardPlayRules.ignoreLimit(face: AdviserFace): CardPlayRules`
@@ -552,7 +552,7 @@ git commit -m "feat(economy): Marriage counts as two advisers of its suit"
 - [ ] **Step 1: Rewrite the rules tests**
 
 In `CardPlayRulesSuite.scala`:
-- Change the import `import oathdigital.gameplay.actions.CardPlayRules` to `import oathdigital.gameplay.actions.{AdviserFace, CardPlayRules}`.
+- Change the import `import distantlands.gameplay.actions.CardPlayRules` to `import distantlands.gameplay.actions.{AdviserFace, CardPlayRules}`.
 - Add the fields after `card`:
   ```scala
   private val tongue = CatalogNames.denizen("Silver Tongue")
@@ -593,12 +593,12 @@ In `CardPlayRulesSuite.scala`:
     assert(!rules.fits(four.updated(0, facedown(piper))))
 ```
 
-`CardPlayRulesSuite` already imports `oathdigital.model._`, which gives `CardId` and `Orientation`.
+`CardPlayRulesSuite` already imports `distantlands.model._`, which gives `CardId` and `Orientation`.
 
 - [ ] **Step 2: Rewrite and add the slot tests**
 
 In `CardSlotsSuite.scala`:
-- Change the first import to `import oathdigital.gameplay.actions.{AdviserFace, CardPlay, CardPlayRules, RuleNotes, VisionRules}`, wrapped to 80 columns.
+- Change the first import to `import distantlands.gameplay.actions.{AdviserFace, CardPlay, CardPlayRules, RuleNotes, VisionRules}`, wrapped to 80 columns.
 - Add the fields after `curfew`:
   ```scala
   /** Faceup, it does not count toward the adviser limit. */
@@ -668,7 +668,7 @@ In `CardSlotsSuite.scala`:
 
 - [ ] **Step 3: Run the tests to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CardPlayRulesSuite oathdigital.gameplay.CardSlotsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.CardPlayRulesSuite distantlands.gameplay.CardSlotsSuite"`
 Expected: compile failure: `AdviserFace`, `limitWhileFaceUp` and `ignoreLimit` are not members.
 
 - [ ] **Step 4: Rewrite `CardPlayRules`**
@@ -756,7 +756,7 @@ In `object CardPlayRules`, after `val default`, add:
 - [ ] **Step 5: Check the slots after the play**
 
 In `CardSlots.scala`:
-- Change the import to `import oathdigital.gameplay.actions.{AdviserFace, CardPlay, CardPlayRules, DiscardPermission, VisionRules}`, wrapped to 80 columns.
+- Change the import to `import distantlands.gameplay.actions.{AdviserFace, CardPlay, CardPlayRules, DiscardPermission, VisionRules}`, wrapped to 80 columns.
 - In the object's doc comment, replace the sentence `An adviser play offers the first empty slot below the limit or, with none, every held adviser marked Replace, and nothing at or past the limit.` with `An adviser play is checked against the advisers as they would be after it (`CardPlayRules.fits`): it offers a new slot when that fits, and only that; or else each held adviser marked Replace whose replacement fits, an adviser that does not count shown unavailable with its reason; and nothing when no replacement fits.` Rewrap to 80 columns.
 - Replace `adviserSlots` with:
 
@@ -839,7 +839,7 @@ Keep `limitFor` as it is. Replace `val contribution` with:
 
 - [ ] **Step 7: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CardPlayRulesSuite oathdigital.gameplay.CardSlotsSuite oathdigital.gameplay.powers.rest.* oathdigital.gameplay.powers.action.AssassinSuite oathdigital.gameplay.powers.wake.HornedMaskSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.CardPlayRulesSuite distantlands.gameplay.CardSlotsSuite distantlands.gameplay.powers.rest.* distantlands.gameplay.powers.action.AssassinSuite distantlands.gameplay.powers.wake.HornedMaskSuite"`
 Expected: PASS. The Silver Tongue, Insomnia and Assassin suites pass unchanged.
 
 If a suite name above does not exist, drop it from the command. Then run `./sbtw test` to find any other reader of the removed members, and stop and ask if one turns up outside the files listed.
@@ -877,18 +877,18 @@ git commit -m "feat(cardplay): check a play against the advisers after it"
 Create `src/test/scala/distantlands/gameplay/powers/cardplay/LostTapestrySuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.gameplay.actions.{CardPlayRules, VisionRules}
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome,
+import distantlands.gameplay.actions.{CardPlayRules, VisionRules}
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerOutcome,
   WalkerPowers}
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
-import oathdigital.testkit.Unwrap
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Table}
+import distantlands.testkit.Unwrap
+import distantlands.testkit.Unwrap.{accepted, present}
 
 class LostTapestrySuite extends munit.FunSuite:
   private val actor = Table.p1
@@ -950,7 +950,7 @@ class LostTapestrySuite extends munit.FunSuite:
 
 The parameter `as` would shadow `Unwrap.as`, so the suite calls it as `Unwrap.as`.
 
-In `AdviserLimitSuite.scala`, add the imports `import oathdigital.gameplay.actions.{AdviserFace, VisionRules}` and `import oathdigital.model.Orientation`, then at the end add:
+In `AdviserLimitSuite.scala`, add the imports `import distantlands.gameplay.actions.{AdviserFace, VisionRules}` and `import distantlands.model.Orientation`, then at the end add:
 
 ```scala
   test("a Lost Tapestry holder's facedown Visions do not count toward the " +
@@ -969,7 +969,7 @@ In `PowerKindsCatalogSuite.scala`, add `"relic.lost-tapestry"` to `persistentRul
 
 - [ ] **Step 2: Run the tests to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.cardplay.LostTapestrySuite oathdigital.gameplay.powers.AdviserLimitSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.cardplay.LostTapestrySuite distantlands.gameplay.powers.AdviserLimitSuite"`
 Expected: compile failure: `LostTapestry`, `AdviserLimit.ignored` and `AdviserLimit.towardLimit` are not found.
 
 - [ ] **Step 3: Create the card and its power**
@@ -977,14 +977,14 @@ Expected: compile failure: `LostTapestry`, `AdviserLimit.ignored` and `AdviserLi
 Delete `object LostTapestryCard ...` (its six lines) from `HoldingRelics.scala`. Create `src/main/scala/distantlands/gameplay/powers/cardplay/LostTapestry.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.catalog.{PrintedPower, Relic}
-import oathdigital.gameplay.actions.AdviserFace
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.catalog.{PrintedPower, Relic}
+import distantlands.gameplay.actions.AdviserFace
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   Transform}
-import oathdigital.model._
+import distantlands.model._
 
 object LostTapestryCard extends Relic(RelicId("R29"), "Lost Tapestry", value = 85, defense = 1):
   val power = PrintedPower(PowerId("relic.lost-tapestry"),
@@ -1044,7 +1044,7 @@ case object LostTapestry extends ContributingPower:
 
 - [ ] **Step 4: Teach `AdviserLimit` the count toward the limit**
 
-In `AdviserLimit.scala`, add the imports `import oathdigital.gameplay.actions.AdviserFace` and `import oathdigital.gameplay.powers.cardplay.LostTapestry`. Append to the object:
+In `AdviserLimit.scala`, add the imports `import distantlands.gameplay.actions.AdviserFace` and `import distantlands.gameplay.powers.cardplay.LostTapestry`. Append to the object:
 
 ```scala
 
@@ -1064,13 +1064,13 @@ Add a sentence to the object's doc comment: ``ignored` and `towardLimit` read th
 
 - [ ] **Step 5: Register it and import the card**
 
-In `WalkerPowerCatalog.scala`, add `import oathdigital.gameplay.powers.cardplay.LostTapestry` (merge it with the existing `cardplay.CardPlayTriggers` import as `cardplay.{CardPlayTriggers, LostTapestry}`). Add `Vector(LostTapestry) ++` after `Vector(Assassin.forCatalog(catalog)) ++`. Add a line to the doc comment's paragraph about adviser limits: `Lost Tapestry's and Pied Piper's exemptions are inert until Search walks `SearchPlayAdviser` too.`
+In `WalkerPowerCatalog.scala`, add `import distantlands.gameplay.powers.cardplay.LostTapestry` (merge it with the existing `cardplay.CardPlayTriggers` import as `cardplay.{CardPlayTriggers, LostTapestry}`). Add `Vector(LostTapestry) ++` after `Vector(Assassin.forCatalog(catalog)) ++`. Add a line to the doc comment's paragraph about adviser limits: `Lost Tapestry's and Pied Piper's exemptions are inert until Search walks `SearchPlayAdviser` too.`
 
-In `NewFoundations.scala`, import `LostTapestryCard` from `oathdigital.gameplay.powers.cardplay`. Keep its place in the relic list.
+In `NewFoundations.scala`, import `LostTapestryCard` from `distantlands.gameplay.powers.cardplay`. Keep its place in the relic list.
 
 - [ ] **Step 6: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.cardplay.LostTapestrySuite oathdigital.gameplay.powers.AdviserLimitSuite oathdigital.gameplay.PowerKindsCatalogSuite oathdigital.gameplay.cards.CardCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.cardplay.LostTapestrySuite distantlands.gameplay.powers.AdviserLimitSuite distantlands.gameplay.PowerKindsCatalogSuite distantlands.gameplay.cards.CardCatalogSuite"`
 Expected: PASS.
 
 - [ ] **Step 7: Commit**
@@ -1106,20 +1106,20 @@ git commit -m "feat(cardplay): Lost Tapestry keeps facedown Visions off the limi
 Create `src/test/scala/distantlands/gameplay/powers/action/PiedPiperSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.actions.CardPlayRules
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.powers.{NoteText, PowerFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome,
+import distantlands.gameplay.actions.CardPlayRules
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.powers.{NoteText, PowerFixture}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerOutcome,
   WalkerPowers}
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Unwrap
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Look, PhasePowerHarness, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Unwrap
+import distantlands.testkit.Unwrap.{accepted, present}
 
 class PiedPiperSuite extends munit.FunSuite:
   import PowerFixture._
@@ -1272,13 +1272,13 @@ In `PowerKindsCatalogSuite.scala`, after the test `Vow of Obedience's rule is au
   test("Pied Piper's limit is automatic whatever its flag: the flag is " +
       "false because of its ACTION"):
     assertEquals(flag("denizen.pied-piper"), Some(false))
-    assertEquals(oathdigital.gameplay.powers.action.PiedPiper.resolution,
+    assertEquals(distantlands.gameplay.powers.action.PiedPiper.resolution,
       PowerResolution.Automatic)
 ```
 
 - [ ] **Step 2: Run the tests to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.PiedPiperSuite oathdigital.gameplay.powers.AdviserLimitSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.PiedPiperSuite distantlands.gameplay.powers.AdviserLimitSuite"`
 Expected: compile failure: `PiedPiper` is not found.
 
 - [ ] **Step 3: Create the card and its power**
@@ -1286,15 +1286,15 @@ Expected: compile failure: `PiedPiper` is not found.
 Delete `object PiedPiperCard ...` (its seven lines) from `HoldingBeastDenizens.scala`. Create `src/main/scala/distantlands/gameplay/powers/action/PiedPiper.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{AdviserOnly, Denizen, PrintedPower}
-import oathdigital.gameplay.actions.AdviserFace
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.catalog.{AdviserOnly, Denizen, PrintedPower}
+import distantlands.gameplay.actions.AdviserFace
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   Transform}
-import oathdigital.gameplay.powers.{NoteSupport, PowerAnswers}
-import oathdigital.model._
+import distantlands.gameplay.powers.{NoteSupport, PowerAnswers}
+import distantlands.model._
 
 object PiedPiperCard extends Denizen(DenizenId("182"), "Pied Piper", Suit.Beast) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.pied-piper"),
@@ -1418,17 +1418,17 @@ If `Decide` or `BuildOps` takes its parameters under other names than Charming F
 
 - [ ] **Step 4: Let `AdviserLimit` read Pied Piper too**
 
-In `AdviserLimit.scala`, change the import `import oathdigital.gameplay.powers.action.Assassin` to `import oathdigital.gameplay.powers.action.{Assassin, PiedPiper}`. Replace the body of `ignored` with `PiedPiper.ignored(ready, player) ++ LostTapestry.ignored(ready, player)`, and its doc with `The advisers `player` holds that do not count toward the limit, as card play's rules mark them: a faceup Pied Piper, and a Lost Tapestry holder's facedown Visions.`
+In `AdviserLimit.scala`, change the import `import distantlands.gameplay.powers.action.Assassin` to `import distantlands.gameplay.powers.action.{Assassin, PiedPiper}`. Replace the body of `ignored` with `PiedPiper.ignored(ready, player) ++ LostTapestry.ignored(ready, player)`, and its doc with `The advisers `player` holds that do not count toward the limit, as card play's rules mark them: a faceup Pied Piper, and a Lost Tapestry holder's facedown Visions.`
 
 - [ ] **Step 5: Register it and import the card**
 
 - `OtherActionPowers.scala`: add `PiedPiper` to the end of the `Vector[PhasePower](SpoiledSupplies, CharmingFriend, ...)` list.
-- `WalkerPowerCatalog.scala`: change the import to `import oathdigital.gameplay.powers.action.{Assassin, PiedPiper}`, and add `Vector(PiedPiper) ++` after `Vector(LostTapestry) ++`.
-- `NewFoundations.scala`: import `PiedPiperCard` from `oathdigital.gameplay.powers.action`. Keep its place in the denizen list.
+- `WalkerPowerCatalog.scala`: change the import to `import distantlands.gameplay.powers.action.{Assassin, PiedPiper}`, and add `Vector(PiedPiper) ++` after `Vector(LostTapestry) ++`.
+- `NewFoundations.scala`: import `PiedPiperCard` from `distantlands.gameplay.powers.action`. Keep its place in the denizen list.
 
 - [ ] **Step 6: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.PiedPiperSuite oathdigital.gameplay.powers.AdviserLimitSuite oathdigital.gameplay.PowerKindsCatalogSuite oathdigital.gameplay.cards.CardCatalogSuite oathdigital.gameplay.BackendArchitectureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.PiedPiperSuite distantlands.gameplay.powers.AdviserLimitSuite distantlands.gameplay.PowerKindsCatalogSuite distantlands.gameplay.cards.CardCatalogSuite distantlands.gameplay.BackendArchitectureSuite"`
 Expected: PASS.
 
 - [ ] **Step 7: Commit**
@@ -1477,7 +1477,7 @@ In `HornedMaskSuite.scala`, add the field `private val piper = CatalogNames.deni
       Set[CardId](piper, elders, fresh, inn))
 ```
 
-In `AdviserLimitProjectionSuite.scala`, add the import `import oathdigital.gameplay.actions.VisionRules`, change `Table.{p1, p2}` to `Table.{p1, p2, p3}`, and add at the end:
+In `AdviserLimitProjectionSuite.scala`, add the import `import distantlands.gameplay.actions.VisionRules`, change `Table.{p1, p2}` to `Table.{p1, p2, p3}`, and add at the end:
 
 ```scala
   test("a board draws one more slot for each adviser that does not count"):
@@ -1493,13 +1493,13 @@ In `AdviserLimitProjectionSuite.scala`, add the import `import oathdigital.gamep
 
 - [ ] **Step 2: Run the tests to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.wake.HornedMaskSuite oathdigital.application.AdviserLimitProjectionSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.wake.HornedMaskSuite distantlands.application.AdviserLimitProjectionSuite"`
 Expected: FAIL. Horned Mask asks with Pied Piper available, and leaves no room beside two others. The boards show 3.
 
 - [ ] **Step 3: Read the count in Horned Mask**
 
 In `HornedMask.scala`:
-- Add `import oathdigital.gameplay.actions.{AdviserFace, CardPlayRules}`.
+- Add `import distantlands.gameplay.actions.{AdviserFace, CardPlayRules}`.
 - Replace `full`:
 
 ```scala
@@ -1538,7 +1538,7 @@ In `GamePresentationProjector.scala`, replace `AdviserLimit.of(catalog, ready, p
 
 - [ ] **Step 5: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.wake.HornedMaskSuite oathdigital.application.AdviserLimitProjectionSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.wake.HornedMaskSuite distantlands.application.AdviserLimitProjectionSuite"`
 Expected: PASS.
 
 - [ ] **Step 6: Commit**

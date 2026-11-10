@@ -138,7 +138,7 @@ configuration against a library's conventions. Not recommended.
 
 ### Option B: a Mirror-based deriver in the shared module
 
-A `WireCodec[A]` typeclass in `oathdigital.protocol`:
+A `WireCodec[A]` typeclass in `distantlands.protocol`:
 
 ```scala
 trait WireCodec[A]:

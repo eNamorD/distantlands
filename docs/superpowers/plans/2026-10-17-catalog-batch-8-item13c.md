@@ -51,7 +51,7 @@ Task 4 records these in the design.
   - Nothing under `gameplay/actions` imports `gameplay/powers`.
   - Engine files under `gameplay/walker` and `gameplay/operations` never name a power, in code or comments. Tasks 1 and 2 change `ProcedureWalker`, `WalkerReplay`, `ModifierChoice`, `OperationApplication` and `TurnStateOperations`. Their comments name no card.
 - **Line width.** Scala lines stay at or under 80 characters.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Stage explicit paths only; never `git add -A`. Re-check `git log --oneline -1` before any amend, reset or rebase. Leave the untracked `HiddenScopeProbeSuite.scala` alone.
 - **Worktree.** Work in a git worktree.
   - `EnterWorktree` branches from `origin`, which lags local `main`. Fast-forward the new branch to local `main` first (`git merge --ff-only main`).
@@ -78,22 +78,22 @@ Task 4 records these in the design.
 - Modify: `src/test/scala/distantlands/serialization/WalkerOperationWireSuite.scala` (after the deferral test, about line 483)
 
 **Interfaces:**
-- Produces: `CurrentGameState.walkerAsIfSite: Option[SiteId]` (default `None`); `final case class ActAsIf(site: SiteId) extends PrimitiveOperation` in `oathdigital.model`; wire kind `"act-as-if"` with field `"siteId"`.
+- Produces: `CurrentGameState.walkerAsIfSite: Option[SiteId]` (default `None`); `final case class ActAsIf(site: SiteId) extends PrimitiveOperation` in `distantlands.model`; wire kind `"act-as-if"` with field `"siteId"`.
 
 - [ ] **Step 1: Write the failing model test**
 
 Create `src/test/scala/distantlands/gameplay/ActAsIfSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.operations.{OperationPipeline, OperationPolicy}
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerCompleted}
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Outcomes}
-import oathdigital.testkit.Outcomes.{finished, parked, recorded}
-import oathdigital.testkit.ProcedureWalkerFixture._
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.operations.{OperationPipeline, OperationPolicy}
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerCompleted}
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Outcomes}
+import distantlands.testkit.Outcomes.{finished, parked, recorded}
+import distantlands.testkit.ProcedureWalkerFixture._
+import distantlands.testkit.Unwrap.accepted
 
 /** `ActAsIf` (catalog batch 8, item 13c): it records the site the walk's
   * actor acts as if at, a parked walk keeps it, and the walk's end clears
@@ -145,7 +145,7 @@ In `WalkerOperationWireSuite.scala`, after the test "a deferral and its take rou
 
 - [ ] **Step 3: Run the tests to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.ActAsIfSuite oathdigital.serialization.WalkerOperationWireSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.ActAsIfSuite distantlands.serialization.WalkerOperationWireSuite"`
 Expected: compilation fails with "Not found: ActAsIf" and "value walkerAsIfSite is not a member".
 
 - [ ] **Step 4: Add the field**
@@ -229,7 +229,7 @@ This keeps the file at 795 lines. In `gameplay/walker/WalkerReplay.scala`, in th
 
 - [ ] **Step 9: Run the tests to see them pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.ActAsIfSuite oathdigital.serialization.WalkerOperationWireSuite oathdigital.gameplay.DeferralSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.ActAsIfSuite distantlands.serialization.WalkerOperationWireSuite distantlands.gameplay.DeferralSuite"`
 Expected: PASS. If `-Werror` reports a non-exhaustive match over `CoreOperation` elsewhere, add `ActAsIf` beside `TakeDeferred` there and treat it the same way.
 
 - [ ] **Step 10: Commit**
@@ -327,14 +327,14 @@ and after `val end = Look(done.state)` add:
 
 - [ ] **Step 3: Run the tests to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.PowerAccessSuite oathdigital.gameplay.powers.economy.SmallFriendsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.PowerAccessSuite distantlands.gameplay.powers.economy.SmallFriendsSuite"`
 Expected: PowerAccessSuite fails to compile, since `presentSite` still takes `answered`. Once Steps 4 and 5 compile, SmallFriendsSuite's new assertion would fail without the `BuildOps` of Step 4.
 
 - [ ] **Step 4: ActingSite records the answer**
 
 In `ActingSite.scala`:
 
-- Change the import to `import oathdigital.gameplay.powers.{NoteSupport, PowerAnswers, SelectedModifier}`. Wrap it to stay within 80 characters.
+- Change the import to `import distantlands.gameplay.powers.{NoteSupport, PowerAnswers, SelectedModifier}`. Wrap it to stay within 80 characters.
 - Replace the first doc paragraph and the start of the second with:
 
 ```scala
@@ -532,7 +532,7 @@ Expected: every `asIfSite` call passes `(ready or ctx.state, actor)`; no call pa
 
 - [ ] **Step 10: Run the tests to see them pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.PowerAccessSuite oathdigital.gameplay.powers.SelectedModifierSuite oathdigital.gameplay.powers.economy.* oathdigital.gameplay.walker.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.PowerAccessSuite distantlands.gameplay.powers.SelectedModifierSuite distantlands.gameplay.powers.economy.* distantlands.gameplay.walker.*"`
 Expected: PASS. `SmallFriendsSuite`, `FriendlyFamiliarSuite`, `MapLibrarySuite`, `SkilledMerchantsSuite`, `SpitefulMirrorSuite` and `AwaitedReturnSuite` pass without changes beyond Step 2. If one fails, the move to state changed a behaviour. Find which reader differs before going on; do not edit the expected values.
 
 - [ ] **Step 11: Commit**
@@ -562,11 +562,11 @@ EOF
 
 In `CityWallSuite.scala`, extend the imports:
 
-- `import oathdigital.gameplay.{CampaignFixture, OathRules, PowerAccess}`
-- add `import oathdigital.gameplay.operations.{OperationPipeline, OperationPolicy}`
-- `import oathdigital.gameplay.powerresolver.{ModifierPicks, PowerUse, PowerUseStep}`
-- add `import oathdigital.model.DecisionAnswer.ChooseOneAnswer`
-- add `ActPowerHarness` and `PowerRules` to the `oathdigital.testkit` import.
+- `import distantlands.gameplay.{CampaignFixture, OathRules, PowerAccess}`
+- add `import distantlands.gameplay.operations.{OperationPipeline, OperationPolicy}`
+- `import distantlands.gameplay.powerresolver.{ModifierPicks, PowerUse, PowerUseStep}`
+- add `import distantlands.model.DecisionAnswer.ChooseOneAnswer`
+- add `ActPowerHarness` and `PowerRules` to the `distantlands.testkit` import.
 
 If `OathRules` becomes unused, the build says so; keep only what is used.
 
@@ -690,14 +690,14 @@ Add this section after the test "an attacker standing at City Wall's site but ca
 
 - [ ] **Step 2: Run the tests to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.poweruse.CityWallSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.poweruse.CityWallSuite"`
 Expected: FAIL. The first test sees Map Library "available" (City Wall reads the pawn at Deep Woods). The fourth sees it "askable" (City Wall reads the pawn at Ancient City). The second, third, fifth and sixth see no refusal where one is expected.
 
 - [ ] **Step 3: City Wall reads where the player acts from**
 
 In `CityWall.scala`:
 
-- Change the import to `import oathdigital.gameplay.{PowerAccess, SiteRulers}`.
+- Change the import to `import distantlands.gameplay.{PowerAccess, SiteRulers}`.
 - Replace the doc's sentences from "The site is the one the player acts from" to "(ROADMAP 13c)." with:
 
 ```scala
@@ -728,7 +728,7 @@ In `CityWall.scala`:
 
 - [ ] **Step 4: Run the tests to see them pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.poweruse.CityWallSuite oathdigital.gameplay.powers.economy.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.poweruse.CityWallSuite distantlands.gameplay.powers.economy.*"`
 Expected: PASS.
 
 If the bandit case's reason does not contain the text, print `reason` and compare it with `CityWall.usePlain`'s text. The projector renders a `Noted` reason from the note's parts. Keep the assertion on the plain text.

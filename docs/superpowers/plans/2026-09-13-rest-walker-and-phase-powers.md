@@ -14,7 +14,7 @@
 
 - Full gate green at every commit: `./sbtw "test" "frontend/test" "frontend/fastLinkJS" && python3 scripts/check-architecture.py && git diff --check`.
 - Every production Scala file stays at or under 800 lines (`BackendArchitectureSuite`, "all production Scala files stay bounded"). Watch: `frontend/.../ActionDecisionRenderer.scala` 734, `frontend/.../ServerUiSupport.scala` 712, `gameplay/operations/OperationValidator.scala` 688, `gameplay/walker/ProcedureWalker.scala` 674, `serialization/GameEventJsonSupport.scala` 658, `serialization/WalkerOperationCodec.scala` 623, `gameplay/operations/CoreOperations.scala` 596, `gameplay/operations/OperationStateMutation.scala` 573, `application/GameApplicationService.scala` 550, `gameplay/OathRulesWalker.scala` 453, `gameplay/OathRules.scala` 374, `gameplay/walker/WalkerProcedureRegistry.scala` 359. If a file would cross 800, split it in the same task.
-- `BackendArchitectureSuite` stays green without being weakened. `gameplay` imports no `application`, `persistence`, `presentation`, `protocol`, `serialization` or `server`. No source under `gameplay/walker` or `gameplay/operations` names a specific power. A power imports nothing from `oathdigital.gameplay.walker`.
+- `BackendArchitectureSuite` stays green without being weakened. `gameplay` imports no `application`, `persistence`, `presentation`, `protocol`, `serialization` or `server`. No source under `gameplay/walker` or `gameplay/operations` names a specific power. A power imports nothing from `distantlands.gameplay.walker`.
 - Replay applies recorded operations and events only. No contribution, `PhasePower.usable`, `PhasePower.build`, `DecisionQueries` check or turn-boundary evaluation runs at replay.
 - Old-journal compatibility is not a constraint. Deleting `RestStarted`, `RestCompleted` and the League Treaty events and wire types is expected; rewrite fixtures to the new spelling.
 - A walker procedure belongs to `turn.activePlayer`. Only a parked `Decide`'s owner may differ (League Treaty's ruler).
@@ -198,7 +198,7 @@ Append to `DecisionQuerySuite`, and add `DistributeAmount`, `DistributeSlot` and
 
 - [x] **Step 2: Run the suite to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.DecisionQuerySuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.DecisionQuerySuite"`
 Expected: compilation fails on `DecisionOptionRef.FavorBank`, `DistributeSlot` and `DecisionQuery.Distribute`.
 
 - [x] **Step 3: Add the vocabulary to `Decisions.scala`**
@@ -410,7 +410,7 @@ In `GameEventWireSuite`'s test "both generic walker decision answers round trip 
       DistributeAmount(DecisionOptionRef.FavorBank(Suit.Nomad), 3)))
 ```
 
-Change the suite's `DecisionAnswer` import to `import oathdigital.model.DecisionAnswer.{ChooseOneAnswer, DistributeAnswer, PartitionAnswer}`. Rename that test to "every generic walker decision answer round trips on the step and on the park". In "every option reference kind round trips through a recorded answer", add `DecisionOptionRef.FavorBank(Suit.Hearth)` to the reference list.
+Change the suite's `DecisionAnswer` import to `import distantlands.model.DecisionAnswer.{ChooseOneAnswer, DistributeAnswer, PartitionAnswer}`. Rename that test to "every generic walker decision answer round trips on the step and on the park". In "every option reference kind round trips through a recorded answer", add `DecisionOptionRef.FavorBank(Suit.Hearth)` to the reference list.
 
 - [x] **Step 6: Keep the projector total over the new cases**
 
@@ -435,7 +435,7 @@ In `WalkerDecisionProjector.scala`:
 
 - [x] **Step 7: Run the affected suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.DecisionQuerySuite oathdigital.serialization.GameEventWireSuite oathdigital.application.WalkerDecisionProjectorSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.DecisionQuerySuite distantlands.serialization.GameEventWireSuite distantlands.application.WalkerDecisionProjectorSuite"`
 Expected: PASS.
 
 - [x] **Step 8: Run the full gate and commit**
@@ -510,7 +510,7 @@ In `GameHttpWireSuite`, in the test that maps `GameIntent.ResolveWalker("forge.a
           DistributeAmount(DecisionOptionRef.FavorBank(Suit.Nomad), 3)))))))
 ```
 
-Change its import to `import oathdigital.model.DecisionAnswer.{ChooseOneAnswer, DistributeAnswer, PartitionAnswer}`.
+Change its import to `import distantlands.model.DecisionAnswer.{ChooseOneAnswer, DistributeAnswer, PartitionAnswer}`.
 
 - [x] **Step 2: Write the failing projection tests**
 
@@ -559,7 +559,7 @@ Add `DistributeSlot` and `Suit` to the suite's imports if its model import is no
 
 - [x] **Step 3: Run to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.server.GameHttpWireSuite oathdigital.application.WalkerDecisionProjectorSuite" "frontend/testOnly oathdigital.protocol.CommandProtocolSuite oathdigital.protocol.ProjectionProtocolSuite"`
+Run: `./sbtw "testOnly distantlands.server.GameHttpWireSuite distantlands.application.WalkerDecisionProjectorSuite" "frontend/testOnly distantlands.protocol.CommandProtocolSuite distantlands.protocol.ProjectionProtocolSuite"`
 Expected: compilation fails on `DistributeWire`, `DistributeAmountWire` and `DecisionSlotProjection`.
 
 - [x] **Step 4: Command wire**
@@ -736,7 +736,7 @@ In `WalkerDecisionProjector.queryProjection`, replace Task 1's `case _: Decision
 
 - [x] **Step 7: Run the affected suites**
 
-Run: `./sbtw "testOnly oathdigital.server.GameHttpWireSuite oathdigital.application.WalkerDecisionProjectorSuite" "frontend/testOnly oathdigital.protocol.CommandProtocolSuite oathdigital.protocol.ProjectionProtocolSuite"`
+Run: `./sbtw "testOnly distantlands.server.GameHttpWireSuite distantlands.application.WalkerDecisionProjectorSuite" "frontend/testOnly distantlands.protocol.CommandProtocolSuite distantlands.protocol.ProjectionProtocolSuite"`
 Expected: PASS.
 
 - [x] **Step 8: Run the full gate and commit**
@@ -778,7 +778,7 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 Create `DistributeDecisionStateSuite.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 /** The stepper interaction behind a parked distribution, with no idea what
   * it distributes: slots are opaque ids with bounds, and confirmation is
@@ -850,15 +850,15 @@ class DistributeDecisionStateSuite extends munit.FunSuite {
 
 - [x] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.DistributeDecisionStateSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.DistributeDecisionStateSuite"`
 Expected: compilation fails, because `DistributeDecisionState` is not defined.
 
 - [x] **Step 3: Implement `DistributeDecisionState.scala`**
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{DecisionAnswerWire, DistributeAmountWire,
+import distantlands.protocol.{DecisionAnswerWire, DistributeAmountWire,
   GameIntent => GameCommand}
 
 /** One slot's identity and bounds, as the stepper sees them. */
@@ -969,7 +969,7 @@ private[frontend] object WalkerDistributeDraft {
 
 - [x] **Step 4: Run the state suite**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.DistributeDecisionStateSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.DistributeDecisionStateSuite"`
 Expected: PASS.
 
 - [x] **Step 5: Move the recording view into a shared test file**
@@ -977,16 +977,16 @@ Expected: PASS.
 Delete `private final class RecordingView` (lines 253 to the end of the file) from `PartitionPanelRenderSuite.scala`. Its protocol import becomes:
 
 ```scala
-import oathdigital.protocol.{DecisionAnswerWire, DecisionPlacementWire,
+import distantlands.protocol.{DecisionAnswerWire, DecisionPlacementWire,
   GameIntent => Intent}
 ```
 
 Create `frontend/src/test/scala/distantlands/frontend/RecordingServerUiView.scala` with exactly:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{GameIntent => Intent, PreviewModifier}
+import distantlands.protocol.{GameIntent => Intent, PreviewModifier}
 
 /** A `ServerUiView` that records submissions and rerenders instead of
   * touching a server, shared by the walker panel render suites.
@@ -1068,9 +1068,9 @@ Implement the pair beside `currentWalkerPartition`:
 Create `DistributePanelRenderSuite.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{DecisionAnswerWire, DistributeAmountWire,
+import distantlands.protocol.{DecisionAnswerWire, DistributeAmountWire,
   GameIntent => Intent}
 import org.scalajs.dom
 import scala.scalajs.js
@@ -1178,13 +1178,13 @@ class DistributePanelRenderSuite extends munit.FunSuite {
 
 - [x] **Step 7: Run it to verify it fails**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.DistributePanelRenderSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.DistributePanelRenderSuite"`
 Expected: compilation fails, because `DistributePanelRenderer` is not defined.
 
 - [x] **Step 8: Implement `DistributePanelRenderer.scala`**
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 import org.scalajs.dom
 
@@ -1260,7 +1260,7 @@ In `ActionDecisionRenderer.scala`, after the `renderPartitionPanel` call:
 
 - [x] **Step 9: Run the frontend suites**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.DistributeDecisionStateSuite oathdigital.frontend.DistributePanelRenderSuite oathdigital.frontend.PartitionPanelRenderSuite oathdigital.frontend.ServerModeUiSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.DistributeDecisionStateSuite distantlands.frontend.DistributePanelRenderSuite distantlands.frontend.PartitionPanelRenderSuite distantlands.frontend.ServerModeUiSuite"`
 Expected: PASS.
 
 - [x] **Step 10: Run the full gate and commit**
@@ -1299,7 +1299,7 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 
 - [x] **Step 1: Write the failing mutation tests**
 
-Append to `OperationStateMutationSuite` (it already imports `oathdigital.model._` and has `ready` and `playerId`):
+Append to `OperationStateMutationSuite` (it already imports `distantlands.model._` and has `ready` and `playerId`):
 
 ```scala
   private def begin(ready: ReadyGame, operation: BeginTurn) =
@@ -1330,7 +1330,7 @@ Append to `OperationStateMutationSuite` (it already imports `oathdigital.model._
 
 - [x] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.operations.OperationStateMutationSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.operations.OperationStateMutationSuite"`
 Expected: compilation fails, because `BeginTurn` and `PowerSourceRef.Card` are not defined.
 
 - [x] **Step 3: Implement the primitive and the source**
@@ -1397,7 +1397,7 @@ Run `grep -rn "SetOathkeeper" --include='*.scala' src/main`. Every production ma
 
 - [x] **Step 4: Run the mutation suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.operations.OperationStateMutationSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.operations.OperationStateMutationSuite"`
 Expected: compilation fails in `WalkerOperationCodec` ("match may not be exhaustive": `BeginTurn` and `PowerSourceRef.Card`).
 
 - [x] **Step 5: Journal both in `WalkerOperationCodec.scala`**
@@ -1467,11 +1467,11 @@ In `GameEventWireSuite`'s "every CoreOperation variant round-trips through the w
       BeginTurn(other, Phase.RoundEnd),
 ```
 
-The suite imports `oathdigital.model._` and lists its operations explicitly (`import oathdigital.gameplay.operations.{AdjustSupply, BuildOps, Branch, Burn, ...}`); add `BeginTurn`, `EnterPhase` and `RecordPowerUse` to that list.
+The suite imports `distantlands.model._` and lists its operations explicitly (`import distantlands.gameplay.operations.{AdjustSupply, BuildOps, Branch, Burn, ...}`); add `BeginTurn`, `EnterPhase` and `RecordPowerUse` to that list.
 
 - [x] **Step 7: Run both suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.operations.OperationStateMutationSuite oathdigital.serialization.GameEventWireSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.operations.OperationStateMutationSuite distantlands.serialization.GameEventWireSuite"`
 Expected: PASS.
 
 - [x] **Step 8: Run the full gate and commit**
@@ -1510,7 +1510,7 @@ This task adds walker Begin Rest and Finish Rest beside the legacy commands. Pro
 - Consumes: `BeginTurn(player, phase)` (Task 4).
 - Produces:
   - `PhaseTransitionRef.BeginRest` (key `"begin-rest"`), `PhaseTransitionRef.FinishRest` (key `"finish-rest"`).
-  - `oathdigital.gameplay.phases.rest.WarExhaustionRandomPort` (moved, same members).
+  - `distantlands.gameplay.phases.rest.WarExhaustionRandomPort` (moved, same members).
   - `BeginRestProcedure.validateBegin(catalog, state: OathState, player): Either[OathViolation, ReadyGame]`, `BeginRestProcedure.validateSupportedState(catalog, ready): Either[OathViolation, Unit]`, `BeginRestProcedure.build(catalog, ready, player, args): Either[OathViolation, Operation]`.
   - `FinishRestProcedure.gate(catalog, ready, player): Either[OathViolation, ReadyGame]`, `FinishRestProcedure.build(...)` (the same shape as `BeginRestProcedure.build`), `FinishRestProcedure.ExileSupply: SupplyRules`, `FinishRestProcedure.turnOrder(ready): Vector[PlayerId]`.
   - `TurnBoundary.finishRound(catalog, transition, port): Either[OathViolation, OathTransition]`.
@@ -1523,16 +1523,16 @@ This task adds walker Begin Rest and Finish Rest beside the legacy commands. Pro
 `src/test/scala/distantlands/gameplay/RestWalkerSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.OathEvent.IgnoredRulesRecorded
-import oathdigital.gameplay.OathState.Ready
-import oathdigital.gameplay.phases.RestCommand
-import oathdigital.gameplay.phases.rest.WarExhaustionRandomPort
-import oathdigital.gameplay.setup.FirstGameSetupRules
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.walker.WalkerCompleted
-import oathdigital.model._
+import distantlands.gameplay.OathEvent.IgnoredRulesRecorded
+import distantlands.gameplay.OathState.Ready
+import distantlands.gameplay.phases.RestCommand
+import distantlands.gameplay.phases.rest.WarExhaustionRandomPort
+import distantlands.gameplay.setup.FirstGameSetupRules
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.walker.WalkerCompleted
+import distantlands.model._
 
 /** Walker Begin Rest and Finish Rest, driven through `startWalker` while the
   * commands still route to the legacy handlers (Task 7 switches them).
@@ -1657,8 +1657,8 @@ Add `PhaseTransitionRef` to that suite's model import.
 
 - [x] **Step 2: Run to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.RestWalkerSuite oathdigital.gameplay.walker.WalkerProcedureRegistrySuite"`
-Expected: compilation fails on `PhaseTransitionRef.BeginRest` and `oathdigital.gameplay.phases.rest`.
+Run: `./sbtw "testOnly distantlands.gameplay.RestWalkerSuite distantlands.gameplay.walker.WalkerProcedureRegistrySuite"`
+Expected: compilation fails on `PhaseTransitionRef.BeginRest` and `distantlands.gameplay.phases.rest`.
 
 - [x] **Step 3: Add the references and the continuation**
 
@@ -1685,18 +1685,18 @@ No production code matches exhaustively over `OathContinue`, so nothing else cha
 
 - [x] **Step 4: Create the Rest procedure package**
 
-`gameplay/phases/rest/WarExhaustionRandomPort.scala`: move the trait and its companion out of `Rest.scala` unchanged, under `package oathdigital.gameplay.phases.rest`. Update the import in `OathRules.scala` to `oathdigital.gameplay.phases.rest.WarExhaustionRandomPort`, the import at `GameApplicationService.scala:17`, the import at `RestSuite.scala:3-4`, and both inline `oathdigital.gameplay.phases.WarExhaustionRandomPort` references at `GameApplicationServiceSuite.scala:575,605`.
+`gameplay/phases/rest/WarExhaustionRandomPort.scala`: move the trait and its companion out of `Rest.scala` unchanged, under `package distantlands.gameplay.phases.rest`. Update the import in `OathRules.scala` to `distantlands.gameplay.phases.rest.WarExhaustionRandomPort`, the import at `GameApplicationService.scala:17`, the import at `RestSuite.scala:3-4`, and both inline `distantlands.gameplay.phases.WarExhaustionRandomPort` references at `GameApplicationServiceSuite.scala:575,605`.
 
 `gameplay/phases/rest/BeginRestProcedure.scala`:
 
 ```scala
-package oathdigital.gameplay.phases.rest
+package distantlands.gameplay.phases.rest
 
-import oathdigital.catalog.{CatalogHandlerInventory, ExecutableCatalog}
-import oathdigital.gameplay.operations.{EnterPhase, Operation, Sequence}
-import oathdigital.gameplay.{OathLifecycle, OathState, OathViolation, ReadyGame}
-import oathdigital.gameplay.OathViolation._
-import oathdigital.model._
+import distantlands.catalog.{CatalogHandlerInventory, ExecutableCatalog}
+import distantlands.gameplay.operations.{EnterPhase, Operation, Sequence}
+import distantlands.gameplay.{OathLifecycle, OathState, OathViolation, ReadyGame}
+import distantlands.gameplay.OathViolation._
+import distantlands.model._
 
 /** Begin Rest: the Act-phase gate and the phase change, nothing else.
   *
@@ -1745,17 +1745,17 @@ object BeginRestProcedure {
 `gameplay/phases/rest/FinishRestProcedure.scala`:
 
 ```scala
-package oathdigital.gameplay.phases.rest
+package distantlands.gameplay.phases.rest
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.{OathViolation, ReadyGame}
-import oathdigital.gameplay.OathViolation._
-import oathdigital.gameplay.operations.{AdjustSupply, BeginTurn, BuildOps,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.{OathViolation, ReadyGame}
+import distantlands.gameplay.OathViolation._
+import distantlands.gameplay.operations.{AdjustSupply, BeginTurn, BuildOps,
   CoreOperation, FlipSecrets, Location, Move, Operation, Piece,
   PositionedLocation, SecretSide, Sequence}
-import oathdigital.gameplay.phases.RestCleanupPlan
-import oathdigital.gameplay.powerresolver.PowerWindow
-import oathdigital.model._
+import distantlands.gameplay.phases.RestCleanupPlan
+import distantlands.gameplay.powerresolver.PowerWindow
+import distantlands.model._
 
 /** Finish Rest (rest-walker spec, `FinishRest`).
   *
@@ -1872,12 +1872,12 @@ object FinishRestProcedure {
 `gameplay/phases/rest/TurnBoundary.scala`:
 
 ```scala
-package oathdigital.gameplay.phases.rest
+package distantlands.gameplay.phases.rest
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.{OathContinue, OathTransition, OathViolation,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.{OathContinue, OathTransition, OathViolation,
   StateBasedEvaluation}
-import oathdigital.gameplay.OathState.Ready
+import distantlands.gameplay.OathState.Ready
 
 /** Round end after the last player's Rest, moved unchanged from
   * `Rest.finishRound`.
@@ -1908,17 +1908,17 @@ object TurnBoundary {
 
 In `Rest.scala`:
 
-- Delete `ExpectedHandlerInventory`, `ExileSupply`, `validateAllExileAndRules`, `turnOrder`, `finishRound` and the `WarExhaustionRandomPort` trait and companion (moved in Step 4). Import `oathdigital.gameplay.phases.rest.{BeginRestProcedure, FinishRestProcedure, TurnBoundary, WarExhaustionRandomPort}`.
+- Delete `ExpectedHandlerInventory`, `ExileSupply`, `validateAllExileAndRules`, `turnOrder`, `finishRound` and the `WarExhaustionRandomPort` trait and companion (moved in Step 4). Import `distantlands.gameplay.phases.rest.{BeginRestProcedure, FinishRestProcedure, TurnBoundary, WarExhaustionRandomPort}`.
 - `validateBegin` becomes `def validateBegin(catalog: ExecutableCatalog, state: OathState, playerId: PlayerId): Either[OathViolation, ReadyGame] = BeginRestProcedure.validateBegin(catalog, state, playerId)`.
 - `validateSupportedState` becomes `BeginRestProcedure.validateSupportedState(catalog, ready)`.
 - In `expected`, read `FinishRestProcedure.ExileSupply` and `FinishRestProcedure.turnOrder(ready)`. In `applyCompletion`, read `FinishRestProcedure.turnOrder(ready)`.
 - In `handle`'s `Finish` case, call `TurnBoundary.finishRound(catalog, rested, randomPort)`.
 
-`LegalActionProjector`: import `oathdigital.gameplay.phases.rest.BeginRestProcedure` in place of `phases.Rest`, and call `BeginRestProcedure.validateBegin(catalog, Ready(context.ready), active.player)` at line 127.
+`LegalActionProjector`: import `distantlands.gameplay.phases.rest.BeginRestProcedure` in place of `phases.Rest`, and call `BeginRestProcedure.validateBegin(catalog, Ready(context.ready), active.player)` at line 127.
 
 - [x] **Step 6: Registry entries and optional fallback kind**
 
-In `WalkerProcedureRegistry.scala`, import `oathdigital.gameplay.phases.rest.{BeginRestProcedure, FinishRestProcedure}` and add after the `EndWake` entry:
+In `WalkerProcedureRegistry.scala`, import `distantlands.gameplay.phases.rest.{BeginRestProcedure, FinishRestProcedure}` and add after the `EndWake` entry:
 
 ```scala
     /** Records the Rest timing's ignored-rule diagnostics, as the legacy
@@ -2059,11 +2059,11 @@ In `continuationIn`, add `case Phase.Rest => Right(OathContinue.AwaitingRestActi
     false
 ```
 
-Import `oathdigital.gameplay.phases.rest.TurnBoundary`. `enterWake` stays private: `turnBoundary` is a member of the same class.
+Import `distantlands.gameplay.phases.rest.TurnBoundary`. `enterWake` stays private: `turnBoundary` is a member of the same class.
 
 - [x] **Step 9: Run the suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.RestWalkerSuite oathdigital.gameplay.walker.WalkerProcedureRegistrySuite oathdigital.gameplay.RestSuite oathdigital.application.GameApplicationServiceSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.RestWalkerSuite distantlands.gameplay.walker.WalkerProcedureRegistrySuite distantlands.gameplay.RestSuite distantlands.application.GameApplicationServiceSuite"`
 Expected: PASS. `RestSuite` and `GameApplicationServiceSuite` are unchanged apart from imports and still exercise the legacy commands.
 
 - [x] **Step 10: Full gate and commit**
@@ -2103,13 +2103,13 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 `src/test/scala/distantlands/gameplay/powers/rest/LeagueTreatyFixture.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.rest
+package distantlands.gameplay.powers.rest
 
-import oathdigital.gameplay._
-import oathdigital.gameplay.OathState.Ready
-import oathdigital.gameplay.setup.FirstGameSetupRules
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model._
+import distantlands.gameplay._
+import distantlands.gameplay.OathState.Ready
+import distantlands.gameplay.setup.FirstGameSetupRules
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model._
 
 /** League Treaty arranged on a first-game Act state, shared with the
   * pending-walker invariant (Task 13).
@@ -2185,13 +2185,13 @@ object LeagueTreatyFixture {
 `LeagueTreatySuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.rest
+package distantlands.gameplay.powers.rest
 
-import oathdigital.gameplay._
-import oathdigital.gameplay.OathState.Ready
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.model._
+import distantlands.gameplay._
+import distantlands.gameplay.OathState.Ready
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.model._
 
 class LeagueTreatySuite extends munit.FunSuite {
   import LeagueTreatyFixture._
@@ -2290,7 +2290,7 @@ class LeagueTreatySuite extends munit.FunSuite {
 
 - [x] **Step 2: Run to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.rest.LeagueTreatySuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.rest.LeagueTreatySuite"`
 Expected: compilation fails on `LeagueTreatyContribution`.
 
 - [x] **Step 3: Widen the suit lookup**
@@ -2302,15 +2302,15 @@ In `RestCleanup.scala`, change `object RestCleanupPlan`'s `private def suitOf(ca
 `LeagueTreatyContribution.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.rest
+package distantlands.gameplay.powers.rest
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.{OathViolation, ReadyGame, RuleSourceRef, SiteRule,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.{OathViolation, ReadyGame, RuleSourceRef, SiteRule,
   SiteRuler}
-import oathdigital.gameplay.operations._
-import oathdigital.gameplay.phases.RestCleanupPlan
-import oathdigital.gameplay.powerresolver._
-import oathdigital.model._
+import distantlands.gameplay.operations._
+import distantlands.gameplay.phases.RestCleanupPlan
+import distantlands.gameplay.powerresolver._
+import distantlands.model._
 
 /** League Treaty (card 237): before Rest cleanup, the ruler of the treaty's
   * site may send the region's card favor to one bank instead of each card's
@@ -2465,7 +2465,7 @@ Add a sentence to its doc: League Treaty is inert until Finish Rest walks its `R
 
 - [x] **Step 6: Run the suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.rest.LeagueTreatySuite oathdigital.gameplay.RestSuite oathdigital.gameplay.BackendArchitectureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.rest.LeagueTreatySuite distantlands.gameplay.RestSuite distantlands.gameplay.BackendArchitectureSuite"`
 Expected: PASS.
 
 - [x] **Step 7: Full gate and commit**
@@ -2510,19 +2510,19 @@ This is the switch. After this commit `beginRest` and `finishRest` run only the 
 `src/test/scala/distantlands/application/ParkedServiceFixture.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.OathContinue
-import oathdigital.gameplay.OathState.Ready
-import oathdigital.gameplay.operations.{CoreOperation, Kill, Location, Move,
+import distantlands.gameplay.OathContinue
+import distantlands.gameplay.OathState.Ready
+import distantlands.gameplay.operations.{CoreOperation, Kill, Location, Move,
   Piece, PositionedLocation, StackPosition}
-import oathdigital.gameplay.setup.{FirstGameRulesData, FirstGameSetupPlan}
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.walker.DeltaMeaning.OperationApplied
-import oathdigital.gameplay.walker.WalkerStepPayload.DeltaRecorded
-import oathdigital.gameplay.walker.WalkerStepRecorded
-import oathdigital.model._
-import oathdigital.serialization.GameEventWire
+import distantlands.gameplay.setup.{FirstGameRulesData, FirstGameSetupPlan}
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.walker.DeltaMeaning.OperationApplied
+import distantlands.gameplay.walker.WalkerStepPayload.DeltaRecorded
+import distantlands.gameplay.walker.WalkerStepRecorded
+import distantlands.model._
+import distantlands.serialization.GameEventWire
 
 /** Real games parked on a walker through the application service.
   *
@@ -2588,7 +2588,7 @@ object ParkedServiceFixture {
     Move(Piece.Card(card), PositionedLocation(Location.Deck(CardDeck.World),
       StackPosition.Top), PositionedLocation(to), Some(orientation))
 
-  def cleared(ready: oathdigital.gameplay.ReadyGame, site: SiteId)
+  def cleared(ready: distantlands.gameplay.ReadyGame, site: SiteId)
       : Vector[CoreOperation] = ready.game.current.map.sites(site).forces match {
     case SiteForces.Occupied(kind, count) => Vector(Kill(Piece.Warbands(kind,
       count), PositionedLocation(Location.Site(site))))
@@ -2665,7 +2665,7 @@ Add to `GameApplicationServiceSuite`:
 
 - [x] **Step 3: Run to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.application.GameApplicationServiceSuite"`
+Run: `./sbtw "testOnly distantlands.application.GameApplicationServiceSuite"`
 Expected: FAIL in the new test. The fixture's `parked.continue` assertion reports `AwaitingRestPowerDecision` from the legacy handler, not `AwaitingRestDecision`.
 
 - [x] **Step 4: Route the commands**
@@ -2679,7 +2679,7 @@ Expected: FAIL in the new test. The fixture's `parked.continue` assertion report
         rules.startWalker(state, PhaseTransitionRef.FinishRest, playerId)
 ```
 
-`LegalActionProjector`: import `oathdigital.gameplay.phases.rest.FinishRestProcedure` and replace `case Phase.Rest => Vector("finishRest")` with:
+`LegalActionProjector`: import `distantlands.gameplay.phases.rest.FinishRestProcedure` and replace `case Phase.Rest => Vector("finishRest")` with:
 
 ```scala
         case Phase.Rest => Option.when(FinishRestProcedure.gate(catalog,
@@ -2691,13 +2691,13 @@ Expected: FAIL in the new test. The fixture's `parked.continue` assertion report
 `Rest.scala` becomes:
 
 ```scala
-package oathdigital.gameplay.phases
+package distantlands.gameplay.phases
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.{OathState, OathTransition, OathViolation}
-import oathdigital.gameplay.OathEvent.RestPowerEvent
-import oathdigital.gameplay.powers.rest.RestPowerIntegration
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.{OathState, OathTransition, OathViolation}
+import distantlands.gameplay.OathEvent.RestPowerEvent
+import distantlands.gameplay.powers.rest.RestPowerIntegration
+import distantlands.model._
 
 sealed trait RestCommand extends Product with Serializable
 object RestCommand {
@@ -2737,17 +2737,17 @@ In `RestWalkerSuite`, delete "walker Rest reaches the same game as legacy Begin 
 Replace its imports with:
 
 ```scala
-import oathdigital.gameplay.phases.RestCleanupPlan
-import oathdigital.gameplay.phases.rest.WarExhaustionRandomPort
-import oathdigital.gameplay.walker.WalkerCompleted
-import oathdigital.model._
-import oathdigital.gameplay.setup._
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.OathEvent.IgnoredRulesRecorded
-import oathdigital.gameplay.OathState.Ready
-import oathdigital.gameplay.OathViolation.{UnsupportedRestState,
+import distantlands.gameplay.phases.RestCleanupPlan
+import distantlands.gameplay.phases.rest.WarExhaustionRandomPort
+import distantlands.gameplay.walker.WalkerCompleted
+import distantlands.model._
+import distantlands.gameplay.setup._
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.OathEvent.IgnoredRulesRecorded
+import distantlands.gameplay.OathState.Ready
+import distantlands.gameplay.OathViolation.{UnsupportedRestState,
   UnsupportedRoundEndCatalogInventory, UnsupportedRuleCatalog}
-import oathdigital.catalog.CatalogPower
+import distantlands.catalog.CatalogPower
 ```
 
 Add under `act`:
@@ -2821,7 +2821,7 @@ Remove the now-unused `RestOutcomeMismatch` import and the `RestCompleted`/`Rest
 
 - [x] **Step 8: Run the Rest and service suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.RestSuite oathdigital.gameplay.RestWalkerSuite oathdigital.gameplay.StateBasedEvaluationSuite oathdigital.application.GameApplicationServiceSuite oathdigital.gameplay.powers.rest.LeagueTreatySuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.RestSuite distantlands.gameplay.RestWalkerSuite distantlands.gameplay.StateBasedEvaluationSuite distantlands.application.GameApplicationServiceSuite distantlands.gameplay.powers.rest.LeagueTreatySuite"`
 Expected: PASS.
 
 - [x] **Step 9: Full gate and commit**
@@ -2958,7 +2958,7 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 `src/test/scala/distantlands/model/ProcedureRefSuite.scala`:
 
 ```scala
-package oathdigital.model
+package distantlands.model
 
 class ProcedureRefSuite extends munit.FunSuite {
   private val use = ActionRef.UsePower(PowerId("denizen.silver-tongue"))
@@ -2981,14 +2981,14 @@ class ProcedureRefSuite extends munit.FunSuite {
 `src/test/scala/distantlands/gameplay/PhasePowerFixture.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.OathState.Ready
-import oathdigital.gameplay.operations.{BuildOps, Operation}
-import oathdigital.gameplay.powerresolver.PhasePower
-import oathdigital.gameplay.setup.FirstGameSetupRules
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model._
+import distantlands.gameplay.OathState.Ready
+import distantlands.gameplay.operations.{BuildOps, Operation}
+import distantlands.gameplay.powerresolver.PhasePower
+import distantlands.gameplay.setup.FirstGameSetupRules
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model._
 
 /** A synthetic phase power on the active player's faceup adviser, shared
   * by the engine suite and the projection suite (Task 11).
@@ -3041,15 +3041,15 @@ object PhasePowerFixture {
 `src/test/scala/distantlands/gameplay/PhasePowerSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.OathEvent.BanditsRefilled
-import oathdigital.gameplay.OathState.Ready
-import oathdigital.gameplay.operations.Decide
-import oathdigital.gameplay.phases.PhasePowerProcedure
-import oathdigital.gameplay.powerresolver.{PhasePower, PhasePowers}
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model._
+import distantlands.gameplay.OathEvent.BanditsRefilled
+import distantlands.gameplay.OathState.Ready
+import distantlands.gameplay.operations.Decide
+import distantlands.gameplay.phases.PhasePowerProcedure
+import distantlands.gameplay.powerresolver.{PhasePower, PhasePowers}
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model._
 
 /** Synthetic WAKE, ACTION and REST powers on a faceup adviser, injected
   * through `OathRules`, drive the generic phase power path end to end.
@@ -3194,7 +3194,7 @@ class PhasePowerSuite extends munit.FunSuite {
 
 - [x] **Step 3: Run both to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.model.ProcedureRefSuite oathdigital.gameplay.PhasePowerSuite"`
+Run: `./sbtw "testOnly distantlands.model.ProcedureRefSuite distantlands.gameplay.PhasePowerSuite"`
 Expected: compilation fails on `ActionRef.UsePower` and `PhasePower`.
 
 - [x] **Step 4: The contract, the reference and the continuation**
@@ -3202,11 +3202,11 @@ Expected: compilation fails on `ActionRef.UsePower` and `PhasePower`.
 `gameplay/powerresolver/PhasePower.scala`:
 
 ```scala
-package oathdigital.gameplay.powerresolver
+package distantlands.gameplay.powerresolver
 
-import oathdigital.gameplay.{OathViolation, ReadyGame}
-import oathdigital.gameplay.operations.Operation
-import oathdigital.model.{DecisionOptionRef, PlayerId, PowerId, PowerTiming}
+import distantlands.gameplay.{OathViolation, ReadyGame}
+import distantlands.gameplay.operations.Operation
+import distantlands.model.{DecisionOptionRef, PlayerId, PowerId, PowerTiming}
 
 /** A WAKE, ACTION or REST power a player uses as an action.
   *
@@ -3305,16 +3305,16 @@ In `PowerSupport.scala`, replace `accessible`'s body with `RuleSourceAccess.acce
 `gameplay/phases/PhasePowerProcedure.scala`:
 
 ```scala
-package oathdigital.gameplay.phases
+package distantlands.gameplay.phases
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.{IndexedRuleSource, OathViolation, ReadyGame,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.{IndexedRuleSource, OathViolation, ReadyGame,
   RuleSourceAccess, RuleSourceFace, RuleSourceIndex, RuleSourceRef, SiteRule,
   SiteRuler}
-import oathdigital.gameplay.OathViolation._
-import oathdigital.gameplay.operations.{Operation, RecordPowerUse, Sequence}
-import oathdigital.gameplay.powerresolver.{PhasePower, PhasePowers}
-import oathdigital.model._
+import distantlands.gameplay.OathViolation._
+import distantlands.gameplay.operations.{Operation, RecordPowerUse, Sequence}
+import distantlands.gameplay.powerresolver.{PhasePower, PhasePowers}
+import distantlands.model._
 
 /** Use Power (rest-walker spec, Phase powers).
   *
@@ -3458,10 +3458,10 @@ object PhasePowerProcedure {
 `gameplay/powers/PhasePowerCatalog.scala`:
 
 ```scala
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.PhasePowers
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.PhasePowers
 
 /** The production phase powers, beside [[WalkerPowerCatalog]]. A power whose
   * card is absent from `catalog` is omitted.
@@ -3551,7 +3551,7 @@ object PhasePowerCatalog {
 
 - [x] **Step 9: Run the suites**
 
-Run: `./sbtw "testOnly oathdigital.model.ProcedureRefSuite oathdigital.gameplay.PhasePowerSuite oathdigital.gameplay.walker.WalkerProcedureRegistrySuite oathdigital.serialization.GameEventWireSuite oathdigital.gameplay.BackendArchitectureSuite oathdigital.gameplay.RestSuite"`
+Run: `./sbtw "testOnly distantlands.model.ProcedureRefSuite distantlands.gameplay.PhasePowerSuite distantlands.gameplay.walker.WalkerProcedureRegistrySuite distantlands.serialization.GameEventWireSuite distantlands.gameplay.BackendArchitectureSuite distantlands.gameplay.RestSuite"`
 Expected: PASS.
 
 - [x] **Step 10: Full gate and commit**
@@ -3588,16 +3588,16 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 `SilverTongueSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.rest
+package distantlands.gameplay.powers.rest
 
-import oathdigital.gameplay._
-import oathdigital.gameplay.OathEvent.BanditsRefilled
-import oathdigital.gameplay.OathState.Ready
-import oathdigital.gameplay.phases.PhasePowerProcedure
-import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupRules
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model._
+import distantlands.gameplay._
+import distantlands.gameplay.OathEvent.BanditsRefilled
+import distantlands.gameplay.OathState.Ready
+import distantlands.gameplay.phases.PhasePowerProcedure
+import distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
+import distantlands.gameplay.setup.FirstGameSetupRules
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model._
 
 class SilverTongueSuite extends munit.FunSuite {
   private val rules = new OathRules(catalog,
@@ -3700,7 +3700,7 @@ In `RestSuite`'s "each relevant Rest handler records fallback diagnostics withou
 
 - [x] **Step 2: Run to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.rest.SilverTongueSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.rest.SilverTongueSuite"`
 Expected: compilation fails on `SilverTongue`.
 
 - [x] **Step 3: Implement Silver Tongue**
@@ -3708,14 +3708,14 @@ Expected: compilation fails on `SilverTongue`.
 `SilverTongue.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.rest
+package distantlands.gameplay.powers.rest
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.{OathViolation, ReadyGame, RuleSourceRef}
-import oathdigital.gameplay.operations._
-import oathdigital.gameplay.phases.RestCleanupPlan
-import oathdigital.gameplay.powerresolver._
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.{OathViolation, ReadyGame, RuleSourceRef}
+import distantlands.gameplay.operations._
+import distantlands.gameplay.phases.RestCleanupPlan
+import distantlands.gameplay.powerresolver._
+import distantlands.model._
 
 /** Silver Tongue (card 92): "You can only have two advisers. REST: Take a
   * favor from a favor bank matching a card at your site."
@@ -3823,7 +3823,7 @@ object SilverTongue {
 
 - [x] **Step 5: Run the suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.rest.SilverTongueSuite oathdigital.gameplay.RestSuite oathdigital.gameplay.PhasePowerSuite oathdigital.gameplay.BackendArchitectureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.rest.SilverTongueSuite distantlands.gameplay.RestSuite distantlands.gameplay.PhasePowerSuite distantlands.gameplay.BackendArchitectureSuite"`
 Expected: PASS. Moving a reviewed handler's window changes no catalog handler id, so neither fingerprint changes.
 
 - [x] **Step 6: Full gate and commit**
@@ -3881,13 +3881,13 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 Move Silver Tongue's arrangement into a shared test object. Create `src/test/scala/distantlands/gameplay/powers/rest/SilverTongueFixture.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.rest
+package distantlands.gameplay.powers.rest
 
-import oathdigital.gameplay._
-import oathdigital.gameplay.OathState.Ready
-import oathdigital.gameplay.setup.FirstGameSetupRules
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model._
+import distantlands.gameplay._
+import distantlands.gameplay.OathState.Ready
+import distantlands.gameplay.setup.FirstGameSetupRules
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model._
 
 /** Silver Tongue arranged in the Rest phase, shared by its own suite, the
   * projection suite and the pending-walker invariant (Task 13).
@@ -3938,18 +3938,18 @@ object SilverTongueFixture {
 }
 ```
 
-In `SilverTongueSuite`, delete the members `tongue`, `suitOf` and `arranged` and the import `oathdigital.gameplay.setup.FirstGameSetupRules`, and make `import SilverTongueFixture._` the first line of the class body. Every test in the suite then reads `tongue` and `arranged` from the fixture unchanged.
+In `SilverTongueSuite`, delete the members `tongue`, `suitOf` and `arranged` and the import `distantlands.gameplay.setup.FirstGameSetupRules`, and make `import SilverTongueFixture._` the first line of the class body. Every test in the suite then reads `tongue` and `arranged` from the fixture unchanged.
 
 `src/test/scala/distantlands/application/PhasePowerProjectorSuite.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.OathState.Ready
-import oathdigital.gameplay.powerresolver.PhasePowers
-import oathdigital.gameplay.powers.rest.{SilverTongue, SilverTongueFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model._
+import distantlands.gameplay.OathState.Ready
+import distantlands.gameplay.powerresolver.PhasePowers
+import distantlands.gameplay.powers.rest.{SilverTongue, SilverTongueFixture}
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model._
 
 class PhasePowerProjectorSuite extends munit.FunSuite {
   private val projector = new GameProjector(catalog)
@@ -3971,7 +3971,7 @@ class PhasePowerProjectorSuite extends munit.FunSuite {
   }
 
   test("a synthetic WAKE or ACTION power is projected and legal only in its phase") {
-    import oathdigital.gameplay.PhasePowerFixture.{TestPower, actor, card,
+    import distantlands.gameplay.PhasePowerFixture.{TestPower, actor, card,
       inPhase, powerId}
     val control = s"usePower:${powerId.value}:${card.value}"
     Vector(PowerTiming.Wake -> Phase.Wake, PowerTiming.Act -> Phase.Act).foreach {
@@ -3993,9 +3993,9 @@ class PhasePowerProjectorSuite extends munit.FunSuite {
 
   test("a phase power used from a held relic is projected and legal with the " +
       "relic's printed name and text") {
-    import oathdigital.gameplay.{IndexedRuleSource, RuleSourceIndex,
+    import distantlands.gameplay.{IndexedRuleSource, RuleSourceIndex,
       RuleSourceRef}
-    import oathdigital.gameplay.PhasePowerFixture.{TestPower, actor, base}
+    import distantlands.gameplay.PhasePowerFixture.{TestPower, actor, base}
     val current = base.game.current
     val relic = current.commonCards.relicDeck.find(id => catalog.relics.exists(
       r => r.id.value == id.value && r.powers.nonEmpty)).get
@@ -4032,23 +4032,23 @@ class PhasePowerProjectorSuite extends munit.FunSuite {
 }
 ```
 
-Add to `GameHttpWireSuite`, which already imports `GameCommand`, `GameIntentMapper` and `oathdigital.model._`:
+Add to `GameHttpWireSuite`, which already imports `GameCommand`, `GameIntentMapper` and `distantlands.model._`:
 
 ```scala
   test("the usePower intent binds to a UsePower command for the requester") {
     assertEquals(GameIntentMapper.bind(PlayerId("actor-1"),
-      oathdigital.protocol.GameIntent.UsePower("denizen.silver-tongue",
-        oathdigital.protocol.WalkerStartArgWire("denizen", "92"))),
+      distantlands.protocol.GameIntent.UsePower("denizen.silver-tongue",
+        distantlands.protocol.WalkerStartArgWire("denizen", "92"))),
       Right(GameCommand.UsePower(PlayerId("actor-1"),
         PowerId("denizen.silver-tongue"),
         DecisionOptionRef.Denizen(DenizenId("92")))))
     assertEquals(GameIntentMapper.bind(PlayerId("actor-1"),
-      oathdigital.protocol.GameIntent.UsePower("Not A Power",
-        oathdigital.protocol.WalkerStartArgWire("denizen", "92"))).left.toOption
+      distantlands.protocol.GameIntent.UsePower("Not A Power",
+        distantlands.protocol.WalkerStartArgWire("denizen", "92"))).left.toOption
       .map(_.path), Some("$.intent.powerId"))
     assert(GameIntentMapper.bind(PlayerId("actor-1"),
-      oathdigital.protocol.GameIntent.UsePower("denizen.silver-tongue",
-        oathdigital.protocol.WalkerStartArgWire("warband", "w1"))).isLeft)
+      distantlands.protocol.GameIntent.UsePower("denizen.silver-tongue",
+        distantlands.protocol.WalkerStartArgWire("warband", "w1"))).isLeft)
   }
 ```
 
@@ -4056,7 +4056,7 @@ Add to `GameHttpWireSuite`, which already imports `GameCommand`, `GameIntentMapp
 
 - [x] **Step 3: Run to verify they fail**
 
-Run: `./sbtw "frontend/testOnly oathdigital.protocol.CommandProtocolSuite oathdigital.protocol.ProjectionProtocolSuite" "testOnly oathdigital.application.PhasePowerProjectorSuite oathdigital.server.GameHttpWireSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.protocol.CommandProtocolSuite distantlands.protocol.ProjectionProtocolSuite" "testOnly distantlands.application.PhasePowerProjectorSuite distantlands.server.GameHttpWireSuite"`
 Expected: compilation fails on `UsePower` and `PhasePowerProjection`.
 
 - [x] **Step 4: Shared protocol**
@@ -4149,14 +4149,14 @@ final case class PhasePowerProjection(powerId: String,
 - `PhasePowerProjector.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.phases.PhasePowerProcedure
-import oathdigital.gameplay.powerresolver.PhasePowers
-import oathdigital.gameplay.powers.PhasePowerCatalog
-import oathdigital.model._
-import oathdigital.protocol.projection.PhasePowerProjection
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.phases.PhasePowerProcedure
+import distantlands.gameplay.powerresolver.PhasePowers
+import distantlands.gameplay.powers.PhasePowerCatalog
+import distantlands.model._
+import distantlands.protocol.projection.PhasePowerProjection
 
 /** The viewer's usable phase powers, and their `usePower` legal controls,
   * from the one usability function the start gate also asks.
@@ -4191,7 +4191,7 @@ private[application] final class PhasePowerProjector(catalog: ExecutableCatalog,
     * through that same catalog entry, so a usable source always resolves.
     */
   private def printed(card: CardId, power: PowerId)
-      : Option[(String, oathdigital.catalog.CatalogPower)] = card match {
+      : Option[(String, distantlands.catalog.CatalogPower)] = card match {
     case id: DenizenId => catalog.denizens.find(_.id.value == id.value)
       .flatMap(d => d.powers.find(_.id == power).map(d.name -> _))
     case id: RelicId => catalog.relics.find(_.id.value == id.value)
@@ -4220,7 +4220,7 @@ final class GameProjector(catalog: ExecutableCatalog, phasePowers: PhasePowers) 
     walkerDecisions, phasePowerProjector)
 ```
 
-   Keep `pendingProcedures` and `setupMaterializer` as they are, and import `oathdigital.gameplay.powerresolver.PhasePowers` and `oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}`. Every existing `new GameProjector(catalog)` keeps compiling through the auxiliary constructor.
+   Keep `pendingProcedures` and `setupMaterializer` as they are, and import `distantlands.gameplay.powerresolver.PhasePowers` and `distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}`. Every existing `new GameProjector(catalog)` keeps compiling through the auxiliary constructor.
 
    In the final `.copy(...)` at lines 156-159, add `phasePowers = phasePowerProjector.project(context)`. `context` is the `ScopedProjectionContext` that method already reads `context.ready` from.
 - `LegalActionProjector`: add the constructor parameter `phasePowers: PhasePowerProjector` after `walkerDecisions`. In `controls`:
@@ -4258,7 +4258,7 @@ Replace the whole `case None => current.turn.phase match { ... }` arm (after Tas
             "revealOwnedRelic"),
           Option.when(minor.exists(value => value.maxBoardToSite > 0 ||
             value.maxSiteToBoard > 0))("moveWarbands"),
-          Option.when(oathdigital.gameplay.actions.Negotiation
+          Option.when(distantlands.gameplay.actions.Negotiation
             .legalParticipants(context.ready, active.player).nonEmpty)("beginNegotiation")
         ).flatten ++ phasePowers.controls(context)
         case Phase.Rest => phasePowers.controls(context) ++ Option.when(
@@ -4274,7 +4274,7 @@ Existing tests that assert an exact `legalControls` vector keep passing: the def
 
 - [x] **Step 7: Run the suites**
 
-Run: `./sbtw "frontend/testOnly oathdigital.protocol.CommandProtocolSuite oathdigital.protocol.ProjectionProtocolSuite" "testOnly oathdigital.application.PhasePowerProjectorSuite oathdigital.application.GameApplicationServiceSuite oathdigital.gameplay.powers.rest.SilverTongueSuite oathdigital.server.GameHttpWireSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.protocol.CommandProtocolSuite distantlands.protocol.ProjectionProtocolSuite" "testOnly distantlands.application.PhasePowerProjectorSuite distantlands.application.GameApplicationServiceSuite distantlands.gameplay.powers.rest.SilverTongueSuite distantlands.server.GameHttpWireSuite"`
 Expected: PASS.
 
 - [x] **Step 8: Full gate and commit**
@@ -4318,8 +4318,8 @@ In `ServerModeUiSuite`, add `phasePowers: Vector[PhasePowerState] = Vector.empty
     val legal = projection(Set("usePower:denizen.silver-tongue:92", "finishRest"),
       phase = "rest", phasePowers = Vector(power))
     assertEquals(PhasePowerButtons.actions(legal), Vector(power ->
-      oathdigital.protocol.GameIntent.UsePower("denizen.silver-tongue",
-        oathdigital.protocol.WalkerStartArgWire("denizen", "92"))))
+      distantlands.protocol.GameIntent.UsePower("denizen.silver-tongue",
+        distantlands.protocol.WalkerStartArgWire("denizen", "92"))))
     assertEquals(PhasePowerButtons.actions(projection(Set("finishRest"),
       phase = "rest", phasePowers = Vector(power))), Vector.empty)
   }
@@ -4336,19 +4336,19 @@ In `ServerModeUiSuite`, add `phasePowers: Vector[PhasePowerState] = Vector.empty
 
 - [x] **Step 2: Run to verify it fails**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.ServerModeUiSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.ServerModeUiSuite"`
 Expected: compilation fails on `PhasePowerState`.
 
 - [x] **Step 3: Implement the buttons**
 
-`package.scala`: `type PhasePowerState = oathdigital.protocol.projection.PhasePowerProjection` and `val PhasePowerState = oathdigital.protocol.projection.PhasePowerProjection`, placed beside the other projection aliases.
+`package.scala`: `type PhasePowerState = distantlands.protocol.projection.PhasePowerProjection` and `val PhasePowerState = distantlands.protocol.projection.PhasePowerProjection`, placed beside the other projection aliases.
 
 `PhasePowerButtons.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{GameIntent => GameCommand, WalkerStartArgWire}
+import distantlands.protocol.{GameIntent => GameCommand, WalkerStartArgWire}
 import org.scalajs.dom
 
 /** One button per legal phase power, in Act, Wake and Rest alike. */
@@ -4407,7 +4407,7 @@ In `ActionDecisionRenderer`:
 
 - [x] **Step 4: Run the UI suite**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.ServerModeUiSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.ServerModeUiSuite"`
 Expected: PASS.
 
 - [x] **Step 5: Full gate and commit**
@@ -4443,7 +4443,7 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 
 - [x] **Step 1: Add the remaining parks to the fixture**
 
-Append to `ParkedServiceFixture` (add `oathdigital.gameplay.actions.recover.RecoverProcedure`, `oathdigital.gameplay.oathkeeper.OathkeeperProcedure`, `oathdigital.gameplay.operations.SetOathkeeper`, `oathdigital.gameplay.powers.rest.SilverTongue` and `oathdigital.gameplay.walker.WalkerParked` to its imports):
+Append to `ParkedServiceFixture` (add `distantlands.gameplay.actions.recover.RecoverProcedure`, `distantlands.gameplay.oathkeeper.OathkeeperProcedure`, `distantlands.gameplay.operations.SetOathkeeper`, `distantlands.gameplay.powers.rest.SilverTongue` and `distantlands.gameplay.walker.WalkerParked` to its imports):
 
 ```scala
   val silverTongueCard: DenizenId = DenizenId("92")
@@ -4561,7 +4561,7 @@ In `GameApplicationServiceSuite`, replace lines 1342-1409 of "an off-turn Oathke
 
 Delete the `assertEquals(parked.nextSequence, actEntered.nextSequence + parked.events.size)` assertion that follows: the fixture owns the End Wake command now. Keep every later assertion unchanged.
 
-Run: `./sbtw "testOnly oathdigital.application.GameApplicationServiceSuite"`
+Run: `./sbtw "testOnly distantlands.application.GameApplicationServiceSuite"`
 Expected: PASS, with no behavior change.
 
 - [x] **Step 2: Write the failing rules-level suite**
@@ -4569,18 +4569,18 @@ Expected: PASS, with no behavior change.
 `src/test/scala/distantlands/gameplay/PendingWalkerRulesSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.OathState.Ready
-import oathdigital.gameplay.actions.{CampaignCommand, ChallengeCommand,
+import distantlands.gameplay.OathState.Ready
+import distantlands.gameplay.actions.{CampaignCommand, ChallengeCommand,
   EconomyCommand, MinorActionCommand, NegotiationCommand, SearchCommand,
   VisionCommand}
-import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.rest.{LeagueTreatyFixture, SilverTongue,
+import distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
+import distantlands.gameplay.powers.rest.{LeagueTreatyFixture, SilverTongue,
   SilverTongueFixture}
-import oathdigital.gameplay.setup.FirstGameRulesData
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model._
+import distantlands.gameplay.setup.FirstGameRulesData
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model._
 
 /** The rules half of the pending-walker invariant: over a parked walker,
   * neither a walker start nor any legacy `handle` overload runs.
@@ -4651,7 +4651,7 @@ class PendingWalkerRulesSuite extends munit.FunSuite {
 
 - [x] **Step 3: Run to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.PendingWalkerRulesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.PendingWalkerRulesSuite"`
 Expected: FAIL on the legacy handles, which reject with their own gates' messages. The `startWalker` assertions already pass.
 
 - [x] **Step 4: Guard every `handle` overload**
@@ -4807,7 +4807,7 @@ No body changes: each overload's original body now sits one level deeper inside 
 
 - [x] **Step 5: Run the rules suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.PendingWalkerRulesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.PendingWalkerRulesSuite"`
 Expected: PASS.
 
 - [x] **Step 6: Write the service-level matrix**
@@ -4815,16 +4815,16 @@ Expected: PASS.
 `src/test/scala/distantlands/application/PendingWalkerInvariantSuite.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
 import java.nio.file.{Files, Paths}
-import oathdigital.gameplay.{OathContinue, TradeResource}
-import oathdigital.gameplay.actions.recover.RecoverProcedure
-import oathdigital.gameplay.oathkeeper.OathkeeperProcedure
-import oathdigital.gameplay.setup.FirstGameRulesData
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.gameplay.{OathContinue, TradeResource}
+import distantlands.gameplay.actions.recover.RecoverProcedure
+import distantlands.gameplay.oathkeeper.OathkeeperProcedure
+import distantlands.gameplay.setup.FirstGameRulesData
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
 
 /** The application half of the pending-walker invariant (spec, Testing).
   * Over each of the spec's four parked contexts, one instance of every
@@ -4971,7 +4971,7 @@ The application gate already refuses these commands (Correction 7), so this suit
 
 - [x] **Step 7: Run the matrix**
 
-Run: `./sbtw "testOnly oathdigital.application.PendingWalkerInvariantSuite"`
+Run: `./sbtw "testOnly distantlands.application.PendingWalkerInvariantSuite"`
 Expected: PASS.
 
 - [x] **Step 8: Full gate and commit**

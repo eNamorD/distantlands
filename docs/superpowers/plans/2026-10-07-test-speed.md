@@ -37,7 +37,7 @@ command's powers by window once per `WalkerPowers` instance, so
   and `-Wunused:imports`, so remove any import an edit leaves unused.
 - `scripts/check-architecture.py` caps production Scala files at 800 lines.
 - Work in one worktree: `git worktree add .worktrees/test-speed -b test-speed main`,
-  then `ln -s /Users/roman/projects/oathdigital/.tooling .worktrees/test-speed/.tooling`.
+  then `ln -s /Users/roman/projects/distantlands/.tooling .worktrees/test-speed/.tooling`.
   Merge into local main at the end (origin lags local main).
 - Never stage `docs/ROADMAP.md`.
 - Commit trailer: `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`.
@@ -72,7 +72,7 @@ command's powers by window once per `WalkerPowers` instance, so
       Runs the gate (root/test frontend/test), reports its wall-clock and
       CPU time, and ranks the root suites and tests by time.
 
-  scripts/profile-tests.py 'oathdigital.gameplay.powers.campaign.*'
+  scripts/profile-tests.py 'distantlands.gameplay.powers.campaign.*'
       Runs the matching root suites under Java Flight Recorder, ranks them,
       and lists the hottest frames.
 
@@ -160,7 +160,7 @@ def frames(recording, top):
     """Lists the hottest frames of the samples that ran project code.
 
     Self: the frame on top of the stack, whatever its package.
-    Inclusive: every oathdigital frame anywhere on the stack, once per sample."""
+    Inclusive: every distantlands frame anywhere on the stack, once per sample."""
     samples = OUT / "samples.json"
     with open(samples, "w", encoding="utf-8") as out:
         subprocess.run(
@@ -176,20 +176,20 @@ def frames(recording, top):
     for event in events:
         stack = event["values"].get("stackTrace") or {}
         names = [frame_name(frame) for frame in stack.get("frames", [])]
-        if not any(name.startswith("oathdigital.") for name in names):
+        if not any(name.startswith("distantlands.") for name in names):
             continue
         counted += 1
         leaf[names[0]] += 1
         for name in set(names):
-            if name.startswith("oathdigital."):
+            if name.startswith("distantlands."):
                 inclusive[name] += 1
     if counted == 0:
-        return ["No samples ran oathdigital code."]
-    lines = [f"Samples that ran oathdigital code: {counted}", "",
+        return ["No samples ran distantlands code."]
+    lines = [f"Samples that ran distantlands code: {counted}", "",
              f"Top {top} self frames:"]
     lines += [f"{count * 100 / counted:5.1f}%  {name}"
               for name, count in leaf.most_common(top)]
-    lines += ["", f"Top {top * 2} inclusive oathdigital frames:"]
+    lines += ["", f"Top {top * 2} inclusive distantlands frames:"]
     lines += [f"{count * 100 / counted:5.1f}%  {name}"
               for name, count in inclusive.most_common(top * 2)]
     return lines
@@ -248,10 +248,10 @@ Expected: usage text with "give either --gate or test filters", `exit=2`.
 
 - [ ] **Step 3: Profile the campaign suites**
 
-Run: `scripts/profile-tests.py 'oathdigital.gameplay.powers.campaign.*'`
+Run: `scripts/profile-tests.py 'distantlands.gameplay.powers.campaign.*'`
 Expected: exit 0; `target/profile/profile.txt` lists about 299 tests,
 `ProcedureWalker` frames high in the inclusive list, and
-`oathdigital.model.CardIndex$.from` near 26% inclusive. If the frame names
+`distantlands.model.CardIndex$.from` near 26% inclusive. If the frame names
 use another separator or the inclusive list is empty, fix `frame_name` and
 rerun. Do not proceed with an empty frames section.
 
@@ -264,7 +264,7 @@ tests and a summed suite time near 216 s. Gate wall clock near 46 s.
 
 - [ ] **Step 5: Run SearchBudget**
 
-Run: `./sbtw "Test/runMain oathdigital.gameplay.SearchBudget"`
+Run: `./sbtw "Test/runMain distantlands.gameplay.SearchBudget"`
 Expected: a line with "Campaign start" and "reading its park" timings.
 
 - [ ] **Step 6: Write the guide**
@@ -299,7 +299,7 @@ and they run in about 11 s.
 ## Profile some suites
 
 ```bash
-scripts/profile-tests.py 'oathdigital.gameplay.powers.campaign.*'
+scripts/profile-tests.py 'distantlands.gameplay.powers.campaign.*'
 ```
 
 The arguments are root `testOnly` filters. The script runs them under Java
@@ -310,7 +310,7 @@ count only samples that ran project code:
 - **Self frames** are the frames on top of the stack, in any package. A JDK
   frame here, such as `java.lang.ClassValue.getFromBackup`, names a cost that
   project code pays through a library call.
-- **Inclusive frames** are the `oathdigital` frames anywhere on the stack. A
+- **Inclusive frames** are the `distantlands` frames anywhere on the stack. A
   frame at 26% was on the stack in a quarter of the samples, so removing its
   work saves up to a quarter of the time.
 
@@ -327,7 +327,7 @@ time in `ProcedureWalker`.
 budget. Run it alongside a profile when a change touches the walker:
 
 ```bash
-./sbtw "Test/runMain oathdigital.gameplay.SearchBudget"
+./sbtw "Test/runMain distantlands.gameplay.SearchBudget"
 ```
 
 ## Reading numbers
@@ -456,7 +456,7 @@ In `CardIndex.scala`:
       .map(CardIndexProblem.MissingCard.apply)
    ```
 
-Run: `./sbtw "root/testOnly oathdigital.model.CardIndexSuite oathdigital.gameplay.OperationPipelineSuite oathdigital.gameplay.OperationExecutorSuite"`
+Run: `./sbtw "root/testOnly distantlands.model.CardIndexSuite distantlands.gameplay.OperationPipelineSuite distantlands.gameplay.OperationExecutorSuite"`
 Expected: PASS. (If a suite name is in another package, find it with
 `grep -rl "class CardIndexSuite\|class OperationPipelineSuite\|class OperationExecutorSuite" src/test`.)
 
@@ -499,11 +499,11 @@ Expected: no errors.
 
 - [ ] **Step 5: Measure**
 
-Run `scripts/profile-tests.py 'oathdigital.gameplay.powers.campaign.*'`,
+Run `scripts/profile-tests.py 'distantlands.gameplay.powers.campaign.*'`,
 `scripts/profile-tests.py --gate` and
-`./sbtw "Test/runMain oathdigital.gameplay.SearchBudget"`. Append the "After
+`./sbtw "Test/runMain distantlands.gameplay.SearchBudget"`. Append the "After
 Task 2" row and details to the Measurements section. Expected:
-`oathdigital.model.CardIndex$.scan` well below the baseline's
+`distantlands.model.CardIndex$.scan` well below the baseline's
 `CardIndex$.from` share. If `scan` is still above 10% inclusive, find its
 callers in `target/profile/samples.json` and record them in the details.
 
@@ -551,10 +551,10 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 `src/test/scala/distantlands/gameplay/PowerWindowIndexSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.powerresolver._
-import oathdigital.model.{PowerId, PowerWindow, RuleSourceRef}
+import distantlands.gameplay.powerresolver._
+import distantlands.model.{PowerId, PowerWindow, RuleSourceRef}
 
 /** The window index `gather` reads instead of asking every power for its
   * contributions on every call (test speed design, decision 5).
@@ -599,7 +599,7 @@ class PowerWindowIndexSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw "root/testOnly oathdigital.gameplay.PowerWindowIndexSuite"`
+Run: `./sbtw "root/testOnly distantlands.gameplay.PowerWindowIndexSuite"`
 Expected: compile error, "Not found: type PowerWindowIndex".
 
 - [ ] **Step 3: Write the index**
@@ -607,9 +607,9 @@ Expected: compile error, "Not found: type PowerWindowIndex".
 `src/main/scala/distantlands/gameplay/powerresolver/PowerWindowIndex.scala`:
 
 ```scala
-package oathdigital.gameplay.powerresolver
+package distantlands.gameplay.powerresolver
 
-import oathdigital.model.PowerWindow
+import distantlands.model.PowerWindow
 
 /** A power that hooks a window, with its contributions at that window. */
 final case class HookedPower(power: ContributingPower,
@@ -645,7 +645,7 @@ object PowerWindowIndex:
 
 - [ ] **Step 4: Run the test**
 
-Run: `./sbtw "root/testOnly oathdigital.gameplay.PowerWindowIndexSuite"`
+Run: `./sbtw "root/testOnly distantlands.gameplay.PowerWindowIndexSuite"`
 Expected: PASS, 1 test.
 
 - [ ] **Step 5: State the contract on `contributions`**
@@ -729,8 +729,8 @@ In `ContributionCollector.scala`:
 - [ ] **Step 7: Build the index on `WalkerPowers`**
 
 In `WalkerPowers.scala`, change the import
-`import oathdigital.gameplay.powerresolver.{ContributingPower, Restriction}`
-to `import oathdigital.gameplay.powerresolver.{ContributingPower, PowerWindowIndex}`,
+`import distantlands.gameplay.powerresolver.{ContributingPower, Restriction}`
+to `import distantlands.gameplay.powerresolver.{ContributingPower, PowerWindowIndex}`,
 and replace the `hasRestrictions` lazy val with:
 
 ```scala
@@ -782,9 +782,9 @@ Expected: no errors.
 
 - [ ] **Step 11: Measure**
 
-Run `scripts/profile-tests.py 'oathdigital.gameplay.powers.campaign.*'`,
+Run `scripts/profile-tests.py 'distantlands.gameplay.powers.campaign.*'`,
 `scripts/profile-tests.py --gate` and
-`./sbtw "Test/runMain oathdigital.gameplay.SearchBudget"`. Append the "After
+`./sbtw "Test/runMain distantlands.gameplay.SearchBudget"`. Append the "After
 Task 3" row and details to the Measurements section. Expected:
 `java.lang.ClassValue.getFromBackup` gone from the top self frames, and
 `ContributionCollector$.gather` below its baseline share.
@@ -807,7 +807,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ## Measurements
 
 Gate and summed suite time from `scripts/profile-tests.py --gate`. Frame
-shares from `scripts/profile-tests.py 'oathdigital.gameplay.powers.campaign.*'`
+shares from `scripts/profile-tests.py 'distantlands.gameplay.powers.campaign.*'`
 (inclusive, except `ClassValue`, which is self). SearchBudget is Campaign
 start / reading its park.
 

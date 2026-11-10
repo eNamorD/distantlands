@@ -86,7 +86,7 @@ The product owner settled these on 2026-10-16. They override the slice 12 entry 
   - A walker power (anything under `gameplay/powers`) never imports `gameplay.walker`.
   - Nothing under `gameplay/actions` imports `gameplay/powers`.
 - **Line width.** Scala lines stay at or under 80 characters.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Stage explicit paths only; never `git add -A`. Re-check `git log --oneline -1` before any amend, reset or rebase.
 - **Worktree.** Work in a git worktree.
   - `EnterWorktree` branches from `origin`, which lags local `main`. Fast-forward the new branch to local `main` first (`git merge --ff-only main`).
@@ -100,7 +100,7 @@ The product owner settled these on 2026-10-16. They override the slice 12 entry 
   - To read a parked decision, match `ParkedNode.Decision(_, decide, _)` and compare `decide.decisionId`. The case's first field is the procedure, not the decision id.
   - Board a site's ruler with `warbandsAt(site, player, 1)`, and assert the ruler (`PowerAccess.ruledSites`) before relying on it.
   - The quiet table (`Table.start`) holds no warbands, cards or relics at any site. p1's pawn is at Ancient City (Cradle, room for three, no Homeland). Deep Woods is the Beast Homeland with room for three, Broken Peaks has room for one, and Buried Giant has room for one. Read a site's region from `ready.game.current.map.regionOf(site)` rather than assuming it.
-- **Note keys** are declared through a `NoteSet`, as plain `val`s after the set. Regenerate `src/test/resources/notes/declared-keys.txt` with `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"`, and check that the diff holds only the keys the task names.
+- **Note keys** are declared through a `NoteSet`, as plain `val`s after the set. Regenerate `src/test/resources/notes/declared-keys.txt` with `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"`, and check that the diff holds only the keys the task names.
 - **Names, exactly:**
   - `DecisionOptionRef.SiteRelicSlot(site: SiteId, index: Int)`, kind `"site-relic-slot"`, wire id `"{site}:{index}"`. `DecisionOption.SiteRelicSlot(ref)`.
   - `DecisionOption.Burying(option: DecisionOption, card: CardId)`.
@@ -228,7 +228,7 @@ The suite's table fixture must hold one hidden relic at `woods`. Add it where th
 
 - [ ] **Step 2: Run them and watch them fail**
 
-Run: `./sbtw "testOnly oathdigital.model.DecisionOptionRefSuite oathdigital.application.SlotOptionRowsSuite" "frontend/testOnly oathdigital.frontend.BoardOptionsRenderSuite"`
+Run: `./sbtw "testOnly distantlands.model.DecisionOptionRefSuite distantlands.application.SlotOptionRowsSuite" "frontend/testOnly distantlands.frontend.BoardOptionsRenderSuite"`
 Expected: compile errors naming `SiteRelicSlot`.
 
 - [ ] **Step 3: The ref and the option**
@@ -381,7 +381,7 @@ The second one keeps its body; `knownRelics` is now the derived `def`.
 
 - [ ] **Step 8: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.model.DecisionOptionRefSuite oathdigital.application.*" "frontend/test" "sharedJVM/test"`. If the shared project has another name, take it from `build.sbt`.
+Run: `./sbtw "testOnly distantlands.model.DecisionOptionRefSuite distantlands.application.*" "frontend/test" "sharedJVM/test"`. If the shared project has another name, take it from `build.sbt`.
 Expected: all pass, with the 5 new server tests and 1 new frontend test.
 
 - [ ] **Step 9: Commit**
@@ -563,7 +563,7 @@ Use each suite's own site value, such as `home.value` in `CropRotationSuite`.
 
 - [ ] **Step 2: Run them and watch them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CardSlotsSuite oathdigital.gameplay.CardPlayProcedureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.CardSlotsSuite distantlands.gameplay.CardPlayProcedureSuite"`
 Expected: compile errors naming `openSites`, `PlaySites` and `SearchPlacement.Site`'s arity.
 
 - [ ] **Step 3: The placement and the rules**
@@ -906,7 +906,7 @@ In `PlacementPicks.scala`, no change is needed yet; Task 4 extends `replaces`.
 
 - [ ] **Step 7: Regenerate the note keys and run the tests**
 
-Run: `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"`
+Run: `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"`
 Expected diff in `declared-keys.txt`:
 - every `discard-first` line now reads `May discard a card at {0} first.`;
 - each `NoteSet` that includes `CardPlayRules.notes` gains a `bury-first = May bury a card at {0} first.` line.
@@ -981,19 +981,19 @@ In `SearchFixture.scala`, after `placeReplacing`:
 `BaronSuite.scala` follows `CropRotationSuite`'s shape:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.PowerAccess
-import oathdigital.gameplay.actions.CardPlayRules
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.powers.{NoteText, SearchFixture, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look,
+import distantlands.gameplay.PowerAccess
+import distantlands.gameplay.actions.CardPlayRules
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.powers.{NoteText, SearchFixture, WalkerPowerCatalog}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, CatalogNames, Look,
   PlacementPicks, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** Baron (card 250), a selected Search modifier: "You may play to any site
   * you rule, and you may discard a card from that site first." */
@@ -1084,19 +1084,19 @@ class BaronSuite extends munit.FunSuite:
 `NewGrowthSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.FacedownAdviserPlay
-import oathdigital.gameplay.actions.CardPlayRules
-import oathdigital.gameplay.powers.{NoteText, SearchFixture, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look,
+import distantlands.gameplay.FacedownAdviserPlay
+import distantlands.gameplay.actions.CardPlayRules
+import distantlands.gameplay.powers.{NoteText, SearchFixture, WalkerPowerCatalog}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, CatalogNames, Look,
   PlacementPicks, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 /** New Growth (card 188), a selected Search modifier: "You may play
   * [suit-beast] and [suit-hearth] cards to any site (that has space)." */
@@ -1206,7 +1206,7 @@ In `GameLogActionLineSuite.scala`:
 
 - [ ] **Step 3: Run them and watch them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.search.BaronSuite oathdigital.gameplay.powers.search.NewGrowthSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.search.BaronSuite distantlands.gameplay.powers.search.NewGrowthSuite"`
 Expected: compile errors naming `Baron` and `NewGrowth`.
 
 - [ ] **Step 4: The powers**
@@ -1216,16 +1216,16 @@ Move `BaronCard` from `HoldingOrderDenizens.scala` into `Baron.scala`, and `NewG
 `Baron.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.PowerAccess
-import oathdigital.gameplay.actions.{CardPlayRules, DiscardPermission,
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.PowerAccess
+import distantlands.gameplay.actions.{CardPlayRules, DiscardPermission,
   PlaySites}
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, Transform}
-import oathdigital.gameplay.powers.SelectedModifier
-import oathdigital.model._
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.gameplay.powers.SelectedModifier
+import distantlands.model._
 
 object BaronCard extends Denizen(DenizenId("250"), "Baron", Suit.Order):
   val power = PrintedPower(PowerId("denizen.baron"),
@@ -1280,15 +1280,15 @@ object Baron:
 `NewGrowth.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.EffectiveSuit
-import oathdigital.gameplay.actions.PlaySites
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, Transform}
-import oathdigital.gameplay.powers.SelectedModifier
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.EffectiveSuit
+import distantlands.gameplay.actions.PlaySites
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.gameplay.powers.SelectedModifier
+import distantlands.model._
 
 object NewGrowthCard extends Denizen(DenizenId("188"), "New Growth",
     Suit.Beast):
@@ -1338,10 +1338,10 @@ In `ActionModifiers.forCatalog`, add `Vector(Baron.forCatalog(catalog))` and `Ve
 
 - [ ] **Step 5: Regenerate the note keys and run the tests**
 
-Run: `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"`
+Run: `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"`
 Expected diff: `denizen.baron` gains its `discard-first` and `bury-first` lines; nothing else changes.
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.search.* oathdigital.application.gamelog.* oathdigital.gameplay.PowerKindsCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.search.* distantlands.application.gamelog.* distantlands.gameplay.PowerKindsCatalogSuite"`
 Expected: all pass, with 6 Baron, 5 New Growth and 1 log test new. If `PowerKindsCatalogSuite` lists the selected modifiers by id, add the two ids there.
 
 - [ ] **Step 6: Commit**
@@ -1560,7 +1560,7 @@ In `BoardOptionsRenderSuite.scala`:
 
 - [ ] **Step 2: Run them and watch them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CardSlotsSuite oathdigital.gameplay.CardPlayProcedureSuite oathdigital.application.SlotOptionRowsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.CardSlotsSuite distantlands.gameplay.CardPlayProcedureSuite distantlands.application.SlotOptionRowsSuite"`
 Expected: compile errors naming `Burying`, `testBury` and `replacedDecisionId`.
 
 - [ ] **Step 3: The option, the projection field and the badge**
@@ -1850,21 +1850,21 @@ git commit -m "feat(batch8): the Replace path accepts a bury"
 - [ ] **Step 1: Write the failing suite**
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.PlacementFixture
-import oathdigital.gameplay.actions.CardPlayRules
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.operations.AncientBloodline
-import oathdigital.gameplay.powers.{NoteText, SearchFixture, WalkerPowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look,
+import distantlands.gameplay.PlacementFixture
+import distantlands.gameplay.actions.CardPlayRules
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.operations.AncientBloodline
+import distantlands.gameplay.powers.{NoteText, SearchFixture, WalkerPowerCatalog}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, CatalogNames, Look,
   PlacementPicks, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** Forest Warden (card 218), a selected Search modifier: "If you play a
   * [suit-beast] card to a site, you may bury a card at the site first." */
@@ -1986,7 +1986,7 @@ The last test needs a projection helper. Add it to `PlacementFixture`, reading t
 
 - [ ] **Step 2: Run it and watch it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.search.ForestWardenSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.search.ForestWardenSuite"`
 Expected: compile errors naming `ForestWarden`.
 
 - [ ] **Step 3: The power**
@@ -1994,16 +1994,16 @@ Expected: compile errors naming `ForestWarden`.
 Move `ForestWardenCard` from `HoldingBeastDenizens.scala` into `ForestWarden.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.EffectiveSuit
-import oathdigital.gameplay.actions.{CardPlayRules, DiscardPermission,
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.EffectiveSuit
+import distantlands.gameplay.actions.{CardPlayRules, DiscardPermission,
   SiteRemoval}
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, Transform}
-import oathdigital.gameplay.powers.SelectedModifier
-import oathdigital.model._
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.gameplay.powers.SelectedModifier
+import distantlands.model._
 
 object ForestWardenCard extends Denizen(DenizenId("218"), "Forest Warden",
     Suit.Beast):
@@ -2057,10 +2057,10 @@ Register it in `ActionModifiers` after `NewGrowth`.
 
 - [ ] **Step 4: Regenerate the note keys and run the tests**
 
-Run: `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.DeclaredNoteKeysSuite"`
+Run: `NOTE_KEYS_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.DeclaredNoteKeysSuite"`
 Expected diff: `denizen.forest-warden` gains its `discard-first` and `bury-first` lines; nothing else changes.
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.search.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.search.*"`
 Expected: all pass, with the 6 new tests.
 
 - [ ] **Step 5: Commit**

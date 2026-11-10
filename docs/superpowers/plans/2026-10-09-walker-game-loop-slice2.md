@@ -30,7 +30,7 @@
   - No power name appears in walker or `gameplay/operations` sources.
 - **Line width.** Scala lines this plan writes stay at or under 80 characters, as in the files around them. Re-wrap any line that comes out longer.
 - **Indentation in lists.** A code block inside a list item is indented two extra spaces for the list. Drop those two when you copy it.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Other sessions commit to `main` while you work.
   - Stage explicit paths only; never `git add -A`.
   - Re-check `git log --oneline -1` before any amend, reset or rebase.
@@ -145,8 +145,8 @@ The menu exists and works when parked, but nothing parks it yet: the tests park 
 
 **Interfaces:**
 - Consumes: slice 1's `QueuedProcedure`, `QueueKind`, `QueueProcedure`, `QueuedStart.refusal`, and the registry's `walkerPowers` parameter.
-- Produces, in `oathdigital.model`: `TriggeredProcedureRef.WakeMenu` (key `"wake-menu"`) and `RestMenu` (key `"rest-menu"`).
-- Produces, in `oathdigital.gameplay.phases`:
+- Produces, in `distantlands.model`: `TriggeredProcedureRef.WakeMenu` (key `"wake-menu"`) and `RestMenu` (key `"rest-menu"`).
+- Produces, in `distantlands.gameplay.phases`:
 
   ```scala
   object PhaseMenu:
@@ -229,16 +229,16 @@ At the end of ruling 7, add: "(Its mechanism is replaced by plan-time ruling 1 o
 Create `src/test/scala/distantlands/testkit/MenuPlay.scala`:
 
 ```scala
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.application.{GameCommand, StartPayload, TreeDecision}
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.OathRules
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.powerresolver.PhasePowers
-import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
+import distantlands.application.{GameCommand, StartPayload, TreeDecision}
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.OathRules
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.powerresolver.PhasePowers
+import distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
 
 /** Picks from a phase menu as its player does (walker-driven game loop
   * design, "The menus"). */
@@ -297,26 +297,26 @@ In `src/test/scala/distantlands/testkit/Table.scala`, after `offering`:
       s"the $phase phase has no menu"))(menu => parkedWalker(menu.procedure))
 ```
 
-Import `oathdigital.gameplay.phases.PhaseMenu`. If `Table`'s field is not called `game`, use the field `update` passes to its function.
+Import `distantlands.gameplay.phases.PhaseMenu`. If `Table`'s field is not called `game`, use the field `update` passes to its function.
 
 - [ ] **Step 4: Write the failing rules tests**
 
 Create `src/test/scala/distantlands/gameplay/PhaseMenuSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.phases.{PhaseMenu, PhasePowerProcedure}
-import oathdigital.gameplay.phases.wake.TakeWealthProcedure
-import oathdigital.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.rest.Insomnia
-import oathdigital.gameplay.powers.wake.TakeWealthLimit
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ProcedureDequeued, WalkerCompleted}
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, MenuPlay, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.phases.{PhaseMenu, PhasePowerProcedure}
+import distantlands.gameplay.phases.wake.TakeWealthProcedure
+import distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
+import distantlands.gameplay.powers.rest.Insomnia
+import distantlands.gameplay.powers.wake.TakeWealthLimit
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ProcedureDequeued, WalkerCompleted}
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, MenuPlay, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
 
 /** A phase's menu (walker-driven game loop design, "The menus"), parked as
   * the driver leaves it. */
@@ -429,7 +429,7 @@ If `CatalogNames.denizen` returns a type that `DecisionOptionRef.Denizen` does n
 
 - [ ] **Step 5: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.PhaseMenuSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.PhaseMenuSuite"`
 Expected: FAIL to compile: `PhaseMenu` does not exist.
 
 - [ ] **Step 6: The procedure references**
@@ -452,13 +452,13 @@ Add both to `TriggeredProcedureRef.all`, after `FollowUpOffer`.
 Create `src/main/scala/distantlands/gameplay/phases/PhaseMenu.scala`:
 
 ```scala
-package oathdigital.gameplay.phases
+package distantlands.gameplay.phases
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.phases.wake.TakeWealthProcedure
-import oathdigital.gameplay.powerresolver.PhasePowers
-import oathdigital.gameplay.walker.{QueuedStart, WalkerPowers}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.phases.wake.TakeWealthProcedure
+import distantlands.gameplay.powerresolver.PhasePowers
+import distantlands.gameplay.walker.{QueuedStart, WalkerPowers}
+import distantlands.model._
 
 /** A phase's menu (walker-driven game loop design, "The menus"): one
   * decision over everything the active player may do now in Wake or Rest.
@@ -598,7 +598,7 @@ Check these against the code:
 - `DecisionQuery.ChooseOne`'s second field is `heading: Option[String]`.
 - `Decide` takes `presentation` by name.
 - `Branch`'s function returns `Vector[Operation]`. If `.toVector` gives a `Vector[QueueProcedure]` the compiler refuses, write `.toVector[Operation]`.
-- In Scala 3, the enum cases may refer to `Phase.Wake` inside an enum that also has a case named `Wake`, because the reference is qualified. If the compiler reports an ambiguity, write `oathdigital.model.Phase.Wake`.
+- In Scala 3, the enum cases may refer to `Phase.Wake` inside an enum that also has a case named `Wake`, because the reference is qualified. If the compiler reports an ambiguity, write `distantlands.model.Phase.Wake`.
 
 - [ ] **Step 8: Register it**
 
@@ -629,7 +629,7 @@ In `WalkerProcedureRegistry.scala`:
   ```
 
 - `isRegistered` also accepts `procedure` when `PhaseMenu.asking(procedure).nonEmpty`;
-- import `oathdigital.gameplay.phases.PhaseMenu`.
+- import `distantlands.gameplay.phases.PhaseMenu`.
 
 Route the builds:
 
@@ -653,7 +653,7 @@ Keep the comment slice 1 wrote above the arm if it says the same thing. Any othe
 
 - [ ] **Step 10: Run the rules tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.PhaseMenuSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.PhaseMenuSuite"`
 Expected: PASS.
 
 If "Take Wealth already used at this site says so" shows "Cannot take wealth now", check what `WalkerSimulation.refusal` returns for `TakeWealthLimit`'s restriction, and match it in `reason`.
@@ -663,14 +663,14 @@ If "Take Wealth already used at this site says so" shows "Cannot take wealth now
 Create `src/test/scala/distantlands/application/PhaseMenuServiceSuite.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.phases.wake.TakeWealthProcedure
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, MenuPlay, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.phases.wake.TakeWealthProcedure
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, MenuPlay, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
 
 /** A phase menu through the service (walker-driven game loop design,
   * rulings 11 and 12). */
@@ -735,7 +735,7 @@ Import `PhaseMenu`, `TakeWealthProcedure` and `MenuPlay`.
 Create `src/test/scala/distantlands/application/gamelog/GameLogPhaseMenuSuite.scala`:
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
 import LogScripts._
 
@@ -833,13 +833,13 @@ Add to `OathDriverSuite`:
     assertEquals(current(ended.state).walkerPending, None)
 ```
 
-Imports: `oathdigital.gameplay.phases.PhaseMenu`, `oathdigital.gameplay.powers.PhasePowerCatalog` and `oathdigital.testkit.MenuPlay`.
+Imports: `distantlands.gameplay.phases.PhaseMenu`, `distantlands.gameplay.powers.PhasePowerCatalog` and `distantlands.testkit.MenuPlay`.
 
 If the take in "Wake ends by itself" starts the Oathkeeper walk on this table, state the title holder so the take changes nothing: read `OathkeeperRules.outcome` for the table and report what you set.
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OathDriverSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.OathDriverSuite"`
 Expected: FAIL: "a Wake with an option left parks the Wake menu" finds no menu parked, and "Rest asks while a REST power is usable" finds no menu parked. The other two may pass already.
 
 - [ ] **Step 3: The driver starts the menu**
@@ -867,7 +867,7 @@ In `OathDriver.scala`, replace `phaseEnd`, `phasePowerUsable` and `wakeOptionOpe
 
 Update the class doc's step 3: "the phase's menu: in Wake and Rest, the menu, or the phase's ending when it is the only option available (ruling 3). Act parks nothing until its menu exists (slice 4)."
 
-Imports: add `oathdigital.gameplay.phases.PhaseMenu`. Remove `PhasePowerProcedure` and `TakeWealthProcedure` if nothing else in the file uses them; `ForcedWakeProcedure` stays.
+Imports: add `distantlands.gameplay.phases.PhaseMenu`. Remove `PhasePowerProcedure` and `TakeWealthProcedure` if nothing else in the file uses them; `ForcedWakeProcedure` stays.
 
 - [ ] **Step 4: A test situation settles at a menu**
 
@@ -914,7 +914,7 @@ Import `PhaseMenu` in both files.
 
 - [ ] **Step 5: Run the driver suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OathDriverSuite oathdigital.gameplay.PhaseMenuSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.OathDriverSuite distantlands.gameplay.PhaseMenuSuite"`
 Expected: PASS.
 
 - [ ] **Step 6: Run everything and update the expected changes**
@@ -988,7 +988,7 @@ Add to `WalkerChoicePanelRenderSuite`:
 
 Check `CardDetails`'s and `DecisionOptionState`'s parameter names and order in `frontend/.../GameProjection` or wherever the frontend aliases them. If `DecisionQueryState.ChooseOne` needs a heading, pass `heading = None`.
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.WalkerChoicePanelRenderSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.WalkerChoicePanelRenderSuite"`
 Expected: FAIL: the first assertion finds a null title.
 
 - [ ] **Step 2: The hover**

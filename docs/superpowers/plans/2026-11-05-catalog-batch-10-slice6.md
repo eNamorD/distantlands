@@ -60,7 +60,7 @@ This is the sixth of 14 slice plans, written against `0.2.0-alpha` at `d869897b`
   - `./sbtw clean coverage test coverageReport`, with statement coverage of at least 92%
   - `python3 scripts/check-architecture.py`, which caps files at 800 lines and enforces the layer import rules
   - `python3 scripts/check-markdown-links.py`
-- **Snapshots:** regenerate with `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.*"`, then read the diff. Commit only the lines the task explains.
+- **Snapshots:** regenerate with `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.*"`, then read the diff. Commit only the lines the task explains.
 - **Hidden information:**
   - The projection names a card in a discard pile only to a viewer whose `knowledge.advisers` records it (`GamePresentationProjector.identifiesCard`). `Look.knowsAdviser` reads the same record.
   - A card moved out of the Dispossessed was known to nobody, and stays unknown in the pile (`CardKnowledgeMoves`) until someone peeks.
@@ -118,7 +118,7 @@ In `WalkerOperationWireSuite.scala`, after `Shuffle(ShufflePile.Reliquary),` (li
       Shuffle(ShufflePile.Dispossessed, Some(Vector(denizen))),
 ```
 
-In `TableSuite.scala`, add a test. Import `oathdigital.gameplay.powers.action.ScryerCard` and `oathdigital.gameplay.powers.whenplayed.DazzleCard` if they are not imported yet:
+In `TableSuite.scala`, add a test. Import `distantlands.gameplay.powers.action.ScryerCard` and `distantlands.gameplay.powers.whenplayed.DazzleCard` if they are not imported yet:
 
 ```scala
   test("dispossessed holds exactly the named cards, and moves the cards it " +
@@ -134,7 +134,7 @@ In `TableSuite.scala`, add a test. Import `oathdigital.gameplay.powers.action.Sc
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.operations.ShuffleOperationSuite oathdigital.serialization.WalkerOperationWireSuite oathdigital.testkit.TableSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.operations.ShuffleOperationSuite distantlands.serialization.WalkerOperationWireSuite distantlands.testkit.TableSuite"`
 Expected: compile failure. `ShufflePile.Dispossessed` and `Table.dispossessed` do not exist.
 
 - [ ] **Step 3: Implement the pile**
@@ -182,7 +182,7 @@ In `Table.scala`, after `worldDeckBottom`, add:
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.operations.ShuffleOperationSuite oathdigital.serialization.WalkerOperationWireSuite oathdigital.testkit.TableSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.operations.ShuffleOperationSuite distantlands.serialization.WalkerOperationWireSuite distantlands.testkit.TableSuite"`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -219,8 +219,8 @@ EOF
 **Interfaces:**
 - Consumes: `ShufflePile.Dispossessed` and `Table.dispossessed` (Task 1); `PaidAction`; `EdificeSetupSupport.siteOf(ready, edifice, side): Option[SiteId]`; `ActPowerHarness.{rules, use, replayed}`; `WalkerDiceFixture.{shufflingBy, reversingShuffle}`; `PhasePowerHarness.backToActing`.
 - Produces:
-  - `object GreatSpireCard extends Edifice(EdificeId("E11"), Suit.Arcane)` in package `oathdigital.gameplay.powers.setup`, with both faces' text unchanged.
-  - `object DispossessedDraws` in package `oathdigital.gameplay.powers`:
+  - `object GreatSpireCard extends Edifice(EdificeId("E11"), Suit.Arcane)` in package `distantlands.gameplay.powers.setup`, with both faces' text unchanged.
+  - `object DispossessedDraws` in package `distantlands.gameplay.powers`:
     - `def shuffle: Shuffle`
     - `def toPile(ready: ReadyGame, region: Region, count: Int, by: Option[PlayerId]): Vector[CoreOperation]`
     - `def bottomDenizens(ready: ReadyGame, region: Region, count: Int): Vector[DenizenId]`
@@ -234,19 +234,19 @@ The quiet table (`PowerFixture.quietTable`): the regional discards are empty, an
 Create `src/test/scala/distantlands/gameplay/powers/action/GreatSpireSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.{OathRules, WalkerDiceFixture}
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.{NoteText, PowerFixture}
-import oathdigital.gameplay.powers.setup.GreatSpireCard
-import oathdigital.gameplay.powers.whenplayed.{BewitchCard, DazzleCard,
+import distantlands.gameplay.{OathRules, WalkerDiceFixture}
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.{NoteText, PowerFixture}
+import distantlands.gameplay.powers.setup.GreatSpireCard
+import distantlands.gameplay.powers.whenplayed.{BewitchCard, DazzleCard,
   ThreateningRoarCard}
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, Look, PhasePowerHarness, Table}
-import oathdigital.testkit.Outcomes.{assertWireRoundTrips, ready}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, Look, PhasePowerHarness, Table}
+import distantlands.testkit.Outcomes.{assertWireRoundTrips, ready}
+import distantlands.testkit.Unwrap.accepted
 
 /** Great Spire (E11 intact, catalog batch 10, slice 6): pay 1 secret, put
   * up to 3 shuffled Dispossessed cards on top of the Spire's region's
@@ -351,8 +351,8 @@ class GreatSpireSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.GreatSpireSuite"`
-Expected: compile failure. `GreatSpireCard` is not in `oathdigital.gameplay.powers.setup`, and `GreatSpire` does not exist.
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.GreatSpireSuite"`
+Expected: compile failure. `GreatSpireCard` is not in `distantlands.gameplay.powers.setup`, and `GreatSpire` does not exist.
 
 - [ ] **Step 3: Move the card**
 
@@ -363,9 +363,9 @@ Cut `object GreatSpireCard` (both faces, text unchanged) from `HoldingEdifices.s
 Create `src/main/scala/distantlands/gameplay/powers/DispossessedDraws.scala`:
 
 ```scala
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.model._
+import distantlands.model._
 
 /** Draws from the Dispossessed (catalog batch 10, slice 6): Great Spire,
   * Fallen Spire and Pilgrimage. A draw shuffles the Dispossessed, so the
@@ -410,12 +410,12 @@ object DispossessedDraws:
 Create `src/main/scala/distantlands/gameplay/powers/action/GreatSpire.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powers.DispossessedDraws
-import oathdigital.gameplay.powers.setup.{EdificeSetupSupport, GreatSpireCard}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powers.DispossessedDraws
+import distantlands.gameplay.powers.setup.{EdificeSetupSupport, GreatSpireCard}
+import distantlands.model._
 
 /** Great Spire (E11, intact), ACTION: place 1 secret on this card, add 3
   * random cards from the Dispossessed to this region's discard pile, then
@@ -475,12 +475,12 @@ In `OtherActionPowers.scala`, add `GreatSpire,` after `GreatClock,`.
 
 - [ ] **Step 6: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.GreatSpireSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.GreatSpireSuite"`
 Expected: PASS.
 
 - [ ] **Step 7: Regenerate the snapshots**
 
-Run: `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.*"`, then `git diff src/test/resources`.
+Run: `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.*"`, then `git diff src/test/resources`.
 Expected:
 - `unimplemented.txt` drops exactly `edifice.e11.intact`.
 - `declared-keys.txt` gains exactly the key `used` of `edifice.e11.intact`.
@@ -531,7 +531,7 @@ The Setup walk in `RuinedSetupRulesSuite` starts from `FirstGameSetupFixture.fre
 - [ ] **Step 1: Give the Setup driver a dice source**
 
 In `SetupWalkDriver.scala`:
-- Import `WalkerDice` with the other `oathdigital.gameplay.walker` names.
+- Import `WalkerDice` with the other `distantlands.gameplay.walker` names.
 - Add `dice: WalkerDice = WalkerDice.unavailable` after `powers: WalkerPowers` in `driveWithEvents`.
 - Pass `dice` as the fifth argument of `ProcedureWalker.advance` and the sixth of `ProcedureWalker.resolve`.
 - Leave `driveToCompletion` as it is.
@@ -540,10 +540,10 @@ In `SetupWalkDriver.scala`:
 
 In `RuinedSetupRulesSuite.scala`:
 - Add the imports:
-  - `oathdigital.gameplay.WalkerDiceFixture`
-  - `oathdigital.gameplay.walker.WalkerDice`, beside `WalkerPowers`
+  - `distantlands.gameplay.WalkerDiceFixture`
+  - `distantlands.gameplay.walker.WalkerDice`, beside `WalkerPowers`
   - `ScryerCard`, beside `EldersCard` and `MessengerCard`
-  - `oathdigital.gameplay.powers.whenplayed.{BewitchCard, DazzleCard, ThreateningRoarCard}`
+  - `distantlands.gameplay.powers.whenplayed.{BewitchCard, DazzleCard, ThreateningRoarCard}`
 - Change `finish` to take a dice source:
 
 ```scala
@@ -633,7 +633,7 @@ In `RuinedSetupRulesSuite.scala`:
 
 - [ ] **Step 3: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.setup.RuinedSetupRulesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.setup.RuinedSetupRulesSuite"`
 Expected: compile failure. `RuinedSetupSteps` and `FallenSpire` do not exist.
 
 - [ ] **Step 4: Split the rule and write Fallen Spire**
@@ -682,7 +682,7 @@ abstract class RuinedSetupRule extends RuinedSetupSteps:
     Vector(BuildOps((ready, _) => Right(build(ready, site))), note(site))
 ```
 
-In `RuinedSiteSetupRules.scala`, import `oathdigital.gameplay.powers.DispossessedDraws`, then append:
+In `RuinedSiteSetupRules.scala`, import `distantlands.gameplay.powers.DispossessedDraws`, then append:
 
 ```scala
 /** Fallen Spire (E11, ruined): "SETUP (END): Swap denizens in this region's
@@ -746,12 +746,12 @@ In `WalkerPowerCatalog.scala`, add `FallenSpire` after `BrokenClock` in the cont
 
 - [ ] **Step 5: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.setup.* oathdigital.gameplay.setup.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.setup.* distantlands.gameplay.setup.*"`
 Expected: PASS. The setup suites prove the split left the other ruined faces unchanged.
 
 - [ ] **Step 6: Regenerate the snapshots**
 
-Run: `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.*"`, then `git diff src/test/resources`.
+Run: `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.*"`, then `git diff src/test/resources`.
 Expected:
 - `unimplemented.txt` drops exactly `edifice.e11.ruined`.
 - `declared-keys.txt` gains exactly the key `swapped` of `edifice.e11.ruined`.
@@ -797,7 +797,7 @@ EOF
 Create `src/main/scala/distantlands/model/Pieces.scala` with this header:
 
 ```scala
-package oathdigital.model
+package distantlands.model
 
 /** The pieces an operation moves, and where in a location it moves them
   * from or to. Split out of `CoreOperations.scala`, which holds the sealed
@@ -818,14 +818,14 @@ Expected: success. The package is the same, so no import changes.
 Create `src/test/scala/distantlands/gameplay/operations/RemoveFromMapOperationSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.operations
+package distantlands.gameplay.operations
 
-import oathdigital.gameplay.powers.action.HomesteadersCard
-import oathdigital.gameplay.powers.setup.GreatClockCard
-import oathdigital.model._
-import oathdigital.testkit.{Look, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.powers.action.HomesteadersCard
+import distantlands.gameplay.powers.setup.GreatClockCard
+import distantlands.model._
+import distantlands.testkit.{Look, Table}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.accepted
 
 /** `RemoveFromMap` (catalog batch 10, slice 6): a card leaves the map for a
   * pile that holds no tokens. Its favor goes to its suit's bank and its
@@ -899,7 +899,7 @@ In `WalkerOperationWireSuite.scala`, after the `Discard.Relic(...)` entry (line 
 
 - [ ] **Step 3: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.operations.RemoveFromMapOperationSuite oathdigital.serialization.WalkerOperationWireSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.operations.RemoveFromMapOperationSuite distantlands.serialization.WalkerOperationWireSuite"`
 Expected: compile failure. `RemoveFromMap` does not exist.
 
 - [ ] **Step 4: Write the composite**
@@ -965,7 +965,7 @@ If the compiler names another exhaustive match over `CoreOperation`, handle `Rem
 
 - [ ] **Step 5: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.operations.* oathdigital.serialization.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.operations.* distantlands.serialization.*"`
 Expected: PASS.
 
 Run: `wc -l src/main/scala/distantlands/model/CoreOperations.scala`
@@ -1009,7 +1009,7 @@ If Step 5 needed changes to another file the compiler named, add it to the commi
   - `WhenPlayedHarness`: `hook`, `fire`, `question`, `resumeBy`, `replayed`, `assertJournalRebuilds`, `said`, `homeSite`, `p1AtHomeSite`
   - `LockedCards`, which holds through the harness's `OperationRestrictions.forCatalog(catalog)`
 - Produces:
-  - `object PilgrimageCard extends Denizen(DenizenId("161"), "Pilgrimage", Suit.Nomad) with AdviserOnly`, in package `oathdigital.gameplay.powers.whenplayed`, text unchanged.
+  - `object PilgrimageCard extends Denizen(DenizenId("161"), "Pilgrimage", Suit.Nomad) with AdviserOnly`, in package `distantlands.gameplay.powers.whenplayed`, text unchanged.
   - `case object Pilgrimage extends WhenPlayedPower`, with `val inspectDecisionId: String = "power.pilgrimage.inspect"`, `val used: NoteKey` and `val none: NoteKey`.
 
 A `BuildOps` that is not `required` skips an operation a restriction refuses and runs the rest. `RegionDiscard` relies on this, and so does Pilgrimage's removal step.
@@ -1019,20 +1019,20 @@ A `BuildOps` that is not `required` skips an operation a restriction refuses and
 Create `src/test/scala/distantlands/gameplay/powers/whenplayed/PilgrimageSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.WalkerDiceFixture
-import oathdigital.gameplay.operations.AncientBloodlineCard
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.action.{HomesteadersCard, ScryerCard}
-import oathdigital.gameplay.powers.campaign.WrestlersCard
-import oathdigital.gameplay.powers.economy.InitiationRiteCard
-import oathdigital.gameplay.powers.setup.{ForestHornCard, GreatClockCard}
-import oathdigital.gameplay.walker.{WalkerDice, WalkerOutcome}
-import oathdigital.model._
-import oathdigital.testkit.{Look, Outcomes, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.WalkerDiceFixture
+import distantlands.gameplay.operations.AncientBloodlineCard
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.action.{HomesteadersCard, ScryerCard}
+import distantlands.gameplay.powers.campaign.WrestlersCard
+import distantlands.gameplay.powers.economy.InitiationRiteCard
+import distantlands.gameplay.powers.setup.{ForestHornCard, GreatClockCard}
+import distantlands.gameplay.walker.{WalkerDice, WalkerOutcome}
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2, p3}
 
 /** Pilgrimage (card 161, catalog batch 10, slice 6), WHEN PLAYED: the
   * denizens at p1's site go to the Dispossessed, and as many shuffled
@@ -1165,7 +1165,7 @@ class PilgrimageSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.whenplayed.PilgrimageSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.whenplayed.PilgrimageSuite"`
 Expected: compile failure. `Pilgrimage` does not exist.
 
 - [ ] **Step 3: Write the power**
@@ -1175,13 +1175,13 @@ Cut `object PilgrimageCard` from `HoldingNomadDenizens.scala`. If an import ther
 Create `src/main/scala/distantlands/gameplay/powers/whenplayed/Pilgrimage.scala`. Paste `PilgrimageCard` under the imports, unchanged, then add the power:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
   PrintedPower}
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.gameplay.powers.DispossessedDraws
-import oathdigital.model._
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.powers.DispossessedDraws
+import distantlands.model._
 
 // PilgrimageCard goes here, unchanged.
 
@@ -1292,12 +1292,12 @@ In `WhenPlayedPowers.all`, add `Pilgrimage` after `RoyalAmbitions`.
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.whenplayed.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.whenplayed.*"`
 Expected: PASS.
 
 - [ ] **Step 5: Regenerate the snapshots**
 
-Run: `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.*"`, then `git diff src/test/resources`.
+Run: `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.*"`, then `git diff src/test/resources`.
 Expected:
 - `unimplemented.txt` drops exactly `denizen.pilgrimage`.
 - `declared-keys.txt` gains exactly the keys `used` and `used.none` of `denizen.pilgrimage`.

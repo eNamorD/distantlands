@@ -16,7 +16,7 @@ import distantlands.testkit.IdentityRepositoryStub
 import distantlands.testkit.Unwrap.accepted
 
 class SessionSecuritySuite extends munit.FunSuite:
-  private val cookieName = "oath_session"
+  private val cookieName = "distantlands_session"
 
   test("session cookie authentication accepts a live session and collapses " +
       "every failure to invalid"):

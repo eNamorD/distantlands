@@ -30,7 +30,7 @@
   - No power name appears in walker or `gameplay/operations` sources.
 - **Line width.** Scala lines this plan writes stay at or under 80 characters, as in the files around them. Re-wrap any line that comes out longer.
 - **Indentation in lists.** A code block inside a list item is indented two extra spaces for the list. Drop those two when you copy it.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Other sessions commit to `main` while you work.
   - Stage explicit paths only; never `git add -A`.
   - Re-check `git log --oneline -1` before any amend, reset or rebase.
@@ -138,7 +138,7 @@ A rename and retype. Behavior does not change: the queue still waits for `StartW
 - Modify tests: `FollowUpRulesSuite`, `FollowUpSupplyWaiverSuite`, `FollowUpReplaySuite`, `KnightsErrantSuite`, `HuntingPartySuite`, `SecondWindSuite`, `FollowUpProjectionSuite`, `FollowUpServiceSuite`, `GameLogFollowUpSuite`, `LogScripts`, `WalkerDecisionWireSuite`, `WalkerOperationWireSuite`, `CommandRejectionMessageSuite`
 
 **Interfaces:**
-- Produces, in `oathdigital.model`:
+- Produces, in `distantlands.model`:
 
   ```scala
   final case class QueuedProcedure(actor: PlayerId, procedure: StartableRef,
@@ -151,7 +151,7 @@ A rename and retype. Behavior does not change: the queue still waits for `StartW
   ```
 
   `CurrentGameState.queue: Vector[QueuedProcedure]` and `walkerEntry: Option[QueuedProcedure]`. `OathViolation.FollowUpPending(entry: QueuedProcedure)` until Task 4 deletes it.
-- Produces, in `oathdigital.gameplay.walker`: `ProcedureDequeued(entry: QueuedProcedure)` and `FollowUpSkipped(entry: QueuedProcedure)`, both `WalkerEvent`s.
+- Produces, in `distantlands.gameplay.walker`: `ProcedureDequeued(entry: QueuedProcedure)` and `FollowUpSkipped(entry: QueuedProcedure)`, both `WalkerEvent`s.
 - Produces, in `TurnStateOperations`: `def queueProcedure(ready: ReadyGame, entry: QueuedProcedure, atFront: Boolean): ReadyGame`.
 - Produces, in `FollowUpSupplyWaiver`: `def costWindow(procedure: StartableRef): Option[PowerWindow]`.
 - Wire: event type `walker.procedure-dequeued` with key `entry`; `walker.follow-up-skipped` with key `entry`; op kind `queue-procedure` with keys `entry` and `atFront`. An entry is `{"actorId", "procedure", "startArgs", "source"?, "kind"}`, `kind` being `"run"` or `"offer"`.
@@ -410,11 +410,11 @@ Add one test to `FollowUpReplaySuite`:
       atFront = true).game.current.queue, Vector(first, waiting))
 ```
 
-Use the suite's own `knights` source and imports; add `oathdigital.gameplay.operations.TurnStateOperations` if it is not imported.
+Use the suite's own `knights` source and imports; add `distantlands.gameplay.operations.TurnStateOperations` if it is not imported.
 
 - [ ] **Step 10: Run the follow-up suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.FollowUp* oathdigital.gameplay.walker.FollowUp* oathdigital.gameplay.powers.economy.KnightsErrantSuite oathdigital.gameplay.powers.search.HuntingPartySuite oathdigital.gameplay.powers.campaign.SecondWindSuite oathdigital.application.FollowUp* oathdigital.application.gamelog.GameLogFollowUpSuite oathdigital.serialization.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.FollowUp* distantlands.gameplay.walker.FollowUp* distantlands.gameplay.powers.economy.KnightsErrantSuite distantlands.gameplay.powers.search.HuntingPartySuite distantlands.gameplay.powers.campaign.SecondWindSuite distantlands.application.FollowUp* distantlands.application.gamelog.GameLogFollowUpSuite distantlands.serialization.*"`
 Expected: PASS.
 
 - [ ] **Step 11: Run everything**
@@ -471,7 +471,7 @@ Use the suite's `rules`, `knights` and imports; add `Look`, `Outcomes`, `Table` 
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.FollowUpSupplyWaiverSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.FollowUpSupplyWaiverSuite"`
 Expected: FAIL: `RecoverCost` does not exist.
 
 - [ ] **Step 3: Add the window and wrap the payment**
@@ -501,7 +501,7 @@ In `FollowUpSupplyWaiver.scala`, add `case ActionRef.Recover => Some(PowerWindow
 
 - [ ] **Step 4: Run the Recover and waiver suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.FollowUpSupplyWaiverSuite oathdigital.gameplay.RecoverProcedureSuite oathdigital.gameplay.powers.recover.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.FollowUpSupplyWaiverSuite distantlands.gameplay.RecoverProcedureSuite distantlands.gameplay.powers.recover.*"`
 Expected: PASS. A `RecoverProcedureSuite` test that lists the windows a Recover visits now also lists `RecoverCost`; update its expected list and report it. A test that reads a Recover step's `nodeId` may see the payment one level deeper; update it and report it.
 
 - [ ] **Step 5: Run everything and commit**
@@ -534,7 +534,7 @@ git commit -m "feat(recover): a cost window the follow-up waiver reaches"
 
 **Interfaces:**
 - Consumes: Task 1's `queue`, `walkerEntry`, `ProcedureDequeued`.
-- Produces, in `oathdigital.gameplay`:
+- Produces, in `distantlands.gameplay`:
 
   ```scala
   private[gameplay] enum Ended:
@@ -552,21 +552,21 @@ git commit -m "feat(recover): a cost window the follow-up waiver reaches"
 Create `src/test/scala/distantlands/gameplay/OathDriverSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.travel.TravelProcedure
-import oathdigital.gameplay.oathkeeper.OathkeeperProcedure
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.setup.FirstGameSetupFixture
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ActionBoundaryRan, FollowUpSkipped,
+import distantlands.gameplay.actions.travel.TravelProcedure
+import distantlands.gameplay.oathkeeper.OathkeeperProcedure
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.setup.FirstGameSetupFixture
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ActionBoundaryRan, FollowUpSkipped,
   WalkerCompleted}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Outcomes, TakeWealthFixture, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{CatalogNames, Outcomes, TakeWealthFixture, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
 
 /** What runs between walks (walker-driven game loop design, "The
   * driver"). */
@@ -636,7 +636,7 @@ class OathDriverSuite extends munit.FunSuite:
   test("a minor action runs the boundary"):
     val start = table.relicAt("Brass Horse", at = ancientCity).state
     val peeked = accepted(rules.handle(start,
-      oathdigital.gameplay.actions.MinorActionCommand.PeekSiteRelics(p1)))
+      distantlands.gameplay.actions.MinorActionCommand.PeekSiteRelics(p1)))
     assertEquals(boundaries(peeked.events), 1)
 
   test("the title walk hands back to the driver: Wake ends once the holder " +
@@ -683,7 +683,7 @@ In "Setup's end runs the first Wake's checks", `replayed` starts from `NoGame`. 
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OathDriverSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.OathDriverSuite"`
 Expected: FAIL to compile: `ActionBoundaryRan` and `boundaryDue` do not exist.
 
 - [ ] **Step 3: The flag and its event**
@@ -721,22 +721,22 @@ Wire: in `GameEventWire.scala`, `val ActionBoundaryRanType = "walker.action-boun
 Create `src/main/scala/distantlands/gameplay/OathDriver.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.engine.EventEvolution
-import oathdigital.gameplay.oathkeeper.{OathkeeperOutcome, OathkeeperRules}
-import oathdigital.gameplay.phases.PhasePowerProcedure
-import oathdigital.gameplay.phases.rest.{TurnBoundary,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.engine.EventEvolution
+import distantlands.gameplay.oathkeeper.{OathkeeperOutcome, OathkeeperRules}
+import distantlands.gameplay.phases.PhasePowerProcedure
+import distantlands.gameplay.phases.rest.{TurnBoundary,
   WarExhaustionRandomPort}
-import oathdigital.gameplay.phases.wake.{ForcedWakeProcedure,
+import distantlands.gameplay.phases.wake.{ForcedWakeProcedure,
   TakeWealthProcedure}
-import oathdigital.gameplay.powerresolver.PhasePowers
-import oathdigital.gameplay.walker.ActionBoundaryRan
-import oathdigital.model._
-import oathdigital.model.OathEvent._
-import oathdigital.model.OathState._
-import oathdigital.model.OathViolation._
+import distantlands.gameplay.powerresolver.PhasePowers
+import distantlands.gameplay.walker.ActionBoundaryRan
+import distantlands.model._
+import distantlands.model.OathEvent._
+import distantlands.model.OathState._
+import distantlands.model.OathViolation._
 
 /** What the driver was handed. */
 private[gameplay] enum Ended:
@@ -957,7 +957,7 @@ In `OathRulesWalker.scala`:
 
 - [ ] **Step 6: Run the driver suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.OathDriverSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.OathDriverSuite"`
 Expected: PASS.
 
 - [ ] **Step 7: Run everything and update the expected changes**
@@ -1010,8 +1010,8 @@ The driver dequeues the head. An `Offer` parks a `FollowUpOffer` decision: the a
 
 **Interfaces:**
 - Consumes: Tasks 1 and 3.
-- Produces, in `oathdigital.model`: `TriggeredProcedureRef.FollowUpOffer`, key `"follow-up-offer"`.
-- Produces, in `oathdigital.gameplay.walker`:
+- Produces, in `distantlands.model`: `TriggeredProcedureRef.FollowUpOffer`, key `"follow-up-offer"`.
+- Produces, in `distantlands.gameplay.walker`:
 
   ```scala
   object FollowUpOffer:
@@ -1037,10 +1037,10 @@ The driver dequeues the head. An `Offer` parks a `FollowUpOffer` decision: the a
 Create `src/test/scala/distantlands/gameplay/FollowUpPlay.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.walker.FollowUpOffer
-import oathdigital.model._
+import distantlands.gameplay.walker.FollowUpOffer
+import distantlands.model._
 
 /** Answers a follow-up offer as its player does (walker-driven game loop
   * design, ruling 6). */
@@ -1193,7 +1193,7 @@ Rewrite `src/test/scala/distantlands/gameplay/FollowUpRulesSuite.scala`. Keep it
       Left(OathViolation.WrongPlayer(p1, p2)))
 ```
 
-Imports: `oathdigital.gameplay.walker.{FollowUpOffer, FollowUpSkipped, ProcedureDequeued, WalkerCompleted}` and `oathdigital.testkit.ParkedNode`; drop `TravelProcedure` and `ChooseOneAnswer` if nothing else uses them.
+Imports: `distantlands.gameplay.walker.{FollowUpOffer, FollowUpSkipped, ProcedureDequeued, WalkerCompleted}` and `distantlands.testkit.ParkedNode`; drop `TravelProcedure` and `ChooseOneAnswer` if nothing else uses them.
 
 Add to `OathDriverSuite`, replacing the test "a walk that leaves an entry queued holds the boundary until Skip":
 
@@ -1223,7 +1223,7 @@ Its imports drop `FollowUpSkipped` if unused.
 
 - [ ] **Step 3: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.FollowUpRulesSuite oathdigital.gameplay.OathDriverSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.FollowUpRulesSuite distantlands.gameplay.OathDriverSuite"`
 Expected: FAIL to compile: `FollowUpOffer` does not exist.
 
 - [ ] **Step 4: The procedure reference**
@@ -1244,11 +1244,11 @@ and add `FollowUpOffer` to `TriggeredProcedureRef.all`.
 Create `src/main/scala/distantlands/gameplay/walker/QueuedStart.scala`:
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.PhasePowers
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.PhasePowers
+import distantlands.model._
 
 /** Whether a queued entry would start now (walker-driven game loop design,
   * plan-time ruling 4): the checks the driver's start of it runs, on the
@@ -1297,12 +1297,12 @@ Check `WalkerSimulation.previewParked`'s parameter list; pass only the four argu
 Create `src/main/scala/distantlands/gameplay/walker/FollowUpOffer.scala`:
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.campaign.CampaignProcedure
-import oathdigital.gameplay.powerresolver.PhasePowers
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.campaign.CampaignProcedure
+import distantlands.gameplay.powerresolver.PhasePowers
+import distantlands.model._
 
 /** A follow-up entry's question (walker-driven game loop design, ruling 6):
   * the action, for no Supply, or Skip. The driver starts it once it has
@@ -1500,7 +1500,7 @@ Delete `OathViolation.FollowUpPending` from `GameViolation.scala` and its messag
 
 - [ ] **Step 10: Run the rules tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.FollowUpRulesSuite oathdigital.gameplay.OathDriverSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.FollowUpRulesSuite distantlands.gameplay.OathDriverSuite"`
 Expected: the build fails in `application`, `shared` and `frontend` until Step 11. Do Step 11, then rerun: PASS.
 
 - [ ] **Step 11: The service, the commands and the panel**

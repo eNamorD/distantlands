@@ -44,7 +44,7 @@ Task 1 amends both with the rulings made at plan time, so read them after Task 1
   - No power name appears in walker sources.
   - Nothing under `gameplay/actions` imports `gameplay/powers`.
 - **Line width.** Scala lines stay at or under 80 characters, as in the files around them. Re-wrap any line in this plan that comes out longer.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Other sessions commit to `main` while you work.
   - Stage explicit paths only; never `git add -A`.
   - Re-check `git log --oneline -1` before any amend, reset or rebase.
@@ -121,7 +121,7 @@ Tasks 2 and 4 each move a card object from `src/main/scala/distantlands/catalog/
 
 1. Delete the card's `object ...Card extends Denizen(...)` block from the holding file. The block is the `object` line, its `val power`, its `val powers` and the blank line after it.
 2. Paste it unchanged at the top of the power's file. Each task shows the block.
-3. In `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`, add the card object to the `import oathdigital.gameplay.powers.campaign.{...}` list, after `TrueNamesCard`, wrapped at 80 columns. The `oathdigital.catalog.holding._` wildcard stops supplying it, so there is no ambiguity.
+3. In `src/main/scala/distantlands/gameplay/cards/NewFoundations.scala`, add the card object to the `import distantlands.gameplay.powers.campaign.{...}` list, after `TrueNamesCard`, wrapped at 80 columns. The `distantlands.catalog.holding._` wildcard stops supplying it, so there is no ambiguity.
 
 The holding files' imports stay as they are: other cards there still use each name.
 
@@ -272,14 +272,14 @@ The offer, the pawn rule, the gift and its price, "no other plans", and the defe
 Create `src/test/scala/distantlands/gameplay/powers/campaign/PeaceEnvoySuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Look}
 
 /** Peace Envoy: one favor placed and one favor given per defense die, used
   * with no other plan, while the enemy's pawn shares the user's site. */
@@ -386,7 +386,7 @@ class PeaceEnvoySuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the suite to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.PeaceEnvoySuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.PeaceEnvoySuite"`
 Expected: compile failure, `Not found: PeaceEnvoy`.
 
 - [ ] **Step 3: Price a favor `Give`**
@@ -426,13 +426,13 @@ Delete the `PeaceEnvoyCard` block from `src/main/scala/distantlands/catalog/hold
 Create `src/main/scala/distantlands/gameplay/powers/campaign/PeaceEnvoy.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, PrintedPower}
-import oathdigital.gameplay.actions.campaign.{CampaignAnswers, CampaignIds}
-import oathdigital.gameplay.powerresolver.{OptionRestriction, PowerCtx}
-import oathdigital.gameplay.powers.NoteSupport
-import oathdigital.model._
+import distantlands.catalog.{Denizen, PrintedPower}
+import distantlands.gameplay.actions.campaign.{CampaignAnswers, CampaignIds}
+import distantlands.gameplay.powerresolver.{OptionRestriction, PowerCtx}
+import distantlands.gameplay.powers.NoteSupport
+import distantlands.model._
 
 object PeaceEnvoyCard extends Denizen(DenizenId("125"), "Peace Envoy", Suit.Order):
   val power = PrintedPower(PowerId("denizen.peace-envoy"),
@@ -578,10 +578,10 @@ case object PeaceEnvoy extends BattlePlan:
 Create `src/main/scala/distantlands/gameplay/powers/campaign/PlanRewrites.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.ContributingPower
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.ContributingPower
 
 /** The battle plans that rewrite the Campaign around them (catalog batch
   * 6, slice 2), registered together: Peace Envoy decides the battle, and
@@ -598,7 +598,7 @@ In `src/main/scala/distantlands/gameplay/powers/WalkerPowerCatalog.scala`:
 - Make the campaign import
 
 ```scala
-import oathdigital.gameplay.powers.campaign.{BattlePlans, PlanRestrictions,
+import distantlands.gameplay.powers.campaign.{BattlePlans, PlanRestrictions,
   PlanRewrites, PlanRules, SimplePlans, VowOfPeaceContribution}
 ```
 
@@ -608,14 +608,14 @@ Task 4 uses `catalog` in `forCatalog`. Until then the parameter is unused, which
 
 - [ ] **Step 6: Run the suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.PeaceEnvoySuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.PeaceEnvoySuite"`
 Expected: 7 tests pass.
 
 If the shortfall test reads another sentence, check that the dry run's `Left` reaches `PlanPrice.shortfall`, as Insect Swarm's `InsufficientFavor` does. Do not change `shortfall`.
 
 - [ ] **Step 7: Run the Campaign suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.* oathdigital.gameplay.actions.campaign.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.* distantlands.gameplay.actions.campaign.*"`
 Expected: pass. No other plan's dry run records a favor `Give`, so no other price changes.
 
 - [ ] **Step 8: Commit**
@@ -710,7 +710,7 @@ The Raid may stop at a later Raid decision after `finishPlanWindows`. The losses
 
 - [ ] **Step 2: Run the suite to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.PeaceEnvoySuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.PeaceEnvoySuite"`
 Expected: the three new tests fail. For example, `done.winner` is `Some(false)` after the losing roll. The seven Task 2 tests still pass.
 
 - [ ] **Step 3: Write `VictoriousNow`**
@@ -718,9 +718,9 @@ Expected: the three new tests fail. For example, `done.winner` is `Some(false)` 
 Create `src/main/scala/distantlands/gameplay/powers/campaign/VictoriousNow.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.model._
+import distantlands.model._
 
 /** "You're victorious now" (Peace Envoy; Hearts and Minds can reuse it):
   * a used plan decides the battle for its user's side. Nothing is rolled
@@ -854,7 +854,7 @@ with
 
 - [ ] **Step 6: Run the suite and the Campaign suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.* oathdigital.gameplay.actions.campaign.* oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.* distantlands.gameplay.actions.campaign.* distantlands.application.gamelog.*"`
 Expected: pass. `PeaceEnvoySuite` has 10 tests.
 
 If the attacker's test parks on the sacrifice decision, check two things:
@@ -916,14 +916,14 @@ Spell Breaker is a site-only Nomad card, and the suite places `nomads(2)` at a s
 Create `src/test/scala/distantlands/gameplay/powers/campaign/WildMountsSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look}
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Look}
 
 /** Wild Mounts: a free plan that lets its user discard one Beast card they
   * rule instead of their Nomad battle plans at the end of the Campaign. */
@@ -1058,7 +1058,7 @@ If `planlessCard` fails for Giant Python or New Growth because one now has an im
 
 - [ ] **Step 3: Run the suite to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.WildMountsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.WildMountsSuite"`
 Expected: compile failure, `Not found: WildMounts`.
 
 - [ ] **Step 4: Mark the plan discards**
@@ -1112,7 +1112,7 @@ with
       })(discarded(PowerSourceRef.Card(card)))))))
 ```
 
-Then run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.*"`
+Then run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.*"`
 Expected: everything passes except `WildMountsSuite`, which does not compile yet. To get a clean run, move `WildMountsSuite.scala` aside for this run and restore it afterwards. Every plan that discards still discards, with its line.
 
 - [ ] **Step 5: Add the `rewrites` hook**
@@ -1167,13 +1167,13 @@ Delete the `WildMountsCard` block from `src/main/scala/distantlands/catalog/hold
 Create `src/main/scala/distantlands/gameplay/powers/campaign/WildMounts.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.{Denizen, ExecutableCatalog, PrintedPower}
-import oathdigital.gameplay.actions.campaign.CampaignProcedure
-import oathdigital.gameplay.powerresolver.Transform
-import oathdigital.gameplay.powers.{PowerAnswers, RuledCards}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, ExecutableCatalog, PrintedPower}
+import distantlands.gameplay.actions.campaign.CampaignProcedure
+import distantlands.gameplay.powerresolver.Transform
+import distantlands.gameplay.powers.{PowerAnswers, RuledCards}
+import distantlands.model._
 
 object WildMountsCard extends Denizen(DenizenId("153"), "Wild Mounts", Suit.Nomad):
   val power = PrintedPower(PowerId("denizen.wild-mounts"),
@@ -1343,7 +1343,7 @@ In `PlanRewrites.scala`, replace `    Vector(PeaceEnvoy)` with:
 
 - [ ] **Step 8: Run the suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.* oathdigital.gameplay.actions.campaign.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.* distantlands.gameplay.actions.campaign.*"`
 Expected: pass. `WildMountsSuite` has 8 tests, and `GreatCrusadeSuite` passes with Spell Breaker.
 
 If a test parks somewhere unexpected:

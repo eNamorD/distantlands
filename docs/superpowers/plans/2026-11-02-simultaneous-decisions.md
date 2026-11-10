@@ -122,7 +122,7 @@ A refactor with no behaviour change, except that `awaitedPlayer` goes and `await
 
 - [ ] **Step 2: Run it to see it fail.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CoOwnedDecideSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.CoOwnedDecideSuite"`
 Expected: compile error, `awaitedInSeatOrder` is not a member of `ProcedureWalker`.
 
 - [ ] **Step 3: Create `ParkedQueries.scala`.** Move the bodies and full doc comments of `parkedRoll`, `openDecisions`, `parkedDecide` and `awaitedPlayers` out of `ProcedureWalker` unchanged, except:
@@ -130,9 +130,9 @@ Expected: compile error, `awaitedInSeatOrder` is not a member of `ProcedureWalke
   - `awaitedInSeatOrder` is new.
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.model._
+import distantlands.model._
 
 /** What a parked walk waits on, read off the rebuilt tree: the open
   * decisions, a parked roll, and who may answer. Split out of
@@ -194,7 +194,7 @@ In `ProcedureWalker`, replace the moved block with one-line-doc forwarders:
 
 - [ ] **Step 5: Run the tests.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.*Walker* oathdigital.gameplay.CoOwnedDecideSuite oathdigital.application.WalkerDecisionProjectorSuite oathdigital.application.Negotiation*"`
+Run: `./sbtw "testOnly distantlands.gameplay.*Walker* distantlands.gameplay.CoOwnedDecideSuite distantlands.application.WalkerDecisionProjectorSuite distantlands.application.Negotiation*"`
 Expected: PASS.
 
 Run: `python3 scripts/check-architecture.py`
@@ -230,7 +230,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 **Interfaces:**
 - Consumes: the Task 1 forwarders and `awaitedInSeatOrder`.
 - Produces:
-  - `final case class Simultaneous(children: Vector[Operation]) extends Operation`, in package `oathdigital.model`;
+  - `final case class Simultaneous(children: Vector[Operation]) extends Operation`, in package `distantlands.model`;
   - `SimultaneousChildren.decideOf(child: Operation): Option[Decide]`;
   - `SimultaneousChildren.open(node: Simultaneous, answered: Vector[Answered]): Vector[(Int, Decide)]`;
   - `WalkerPowerGather.leavesAt(state, action, pending, powers): Vector[Operation]`;
@@ -240,12 +240,12 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - [ ] **Step 1: Write the failing tests.** Create `SimultaneousDecideSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.model.TestGameFixtures._
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerPowers}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model.TestGameFixtures._
 
 /** Two decisions open at once, answered in any order: the `Simultaneous`
   * node (simultaneous decisions design), exercised with a synthetic tree.
@@ -382,11 +382,11 @@ class SimultaneousDecideSuite extends munit.FunSuite:
 
   Check these names against the code before you run the suite:
   - `ProcedureWalker.applyRecorded`, `OathState.Ready`, `ReadyGame.banks.warbandSupply` and `OathViolation.WrongPlayer`.
-  - Fix import paths if the compiler disagrees: `WalkerOutcome` and `ProcedureWalker` are in `oathdigital.gameplay.walker`.
+  - Fix import paths if the compiler disagrees: `WalkerOutcome` and `ProcedureWalker` are in `distantlands.gameplay.walker`.
 
 - [ ] **Step 2: Run it to see it fail.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.SimultaneousDecideSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.SimultaneousDecideSuite"`
 Expected: compile error, `Simultaneous` not found.
 
 - [ ] **Step 3: Add the node to `Operation.scala`**, after `Branch`:
@@ -408,9 +408,9 @@ final case class Simultaneous(override val children: Vector[Operation])
 - [ ] **Step 4: Create `SimultaneousChildren.scala`.**
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The children of a [[Simultaneous]] node: each is a `Decide`, or a
   * `Sequence` that starts with one, and a child is open until the walk's
@@ -586,7 +586,7 @@ Update `parkedDecide`'s doc comment: "The one open decision, or `None` at a Roll
 
 - [ ] **Step 8: Run the tests.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.SimultaneousDecideSuite oathdigital.gameplay.CoOwnedDecideSuite oathdigital.gameplay.ProcedureWalker*"`
+Run: `./sbtw "testOnly distantlands.gameplay.SimultaneousDecideSuite distantlands.gameplay.CoOwnedDecideSuite distantlands.gameplay.ProcedureWalker*"`
 Expected: PASS.
 
 Run: `python3 scripts/check-architecture.py`
@@ -642,7 +642,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 - [ ] **Step 2: Run it to see it fail.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.SimultaneousDecideSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.SimultaneousDecideSuite"`
 Expected: compile error, `openDecision` is not a member.
 
 - [ ] **Step 3: Add `openDecision`.** In `ParkedQueries`:
@@ -680,7 +680,7 @@ In `ProcedureWalker`, add a forwarder in the Task 1 style.
 
 - [ ] **Step 5: Run the tests.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.* oathdigital.application.*Consent* oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.* distantlands.application.*Consent* distantlands.application.gamelog.*"`
 Expected: PASS. The golden logs are unchanged.
 
 - [ ] **Step 6: Commit.**
@@ -957,7 +957,7 @@ Add the `ParkedNode` import to the suite.
 
 - [ ] **Step 2: Run them to see them fail.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.chronicle.OfferCitizenshipSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.chronicle.OfferCitizenshipSuite"`
 Expected: FAIL. Only p2's decision is open, and p3's answer is rejected as not matching the parked Decide.
 
 - [ ] **Step 3: Wrap the answers.** In `OfferCitizenship.answers`:
@@ -979,7 +979,7 @@ In the object's doc comment, replace "each offered Exile answers in seat order, 
 
 - [ ] **Step 4: Run the Chronicle and log suites.**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.chronicle.* oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.chronicle.* distantlands.application.gamelog.*"`
 Expected: PASS, and the `throne-offered` golden log is unchanged (ruling P6).
 
 - [ ] **Step 5: Update the docs.**

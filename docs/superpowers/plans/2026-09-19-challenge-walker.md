@@ -59,7 +59,7 @@ Deleted at the end (Task 10): `gameplay/actions/Challenge.scala` (after `BannerR
 
 - [ ] **Step 1: Write the failing tests**
 
-Add to `DecisionQuerySuite` (imports `SiteId` from `oathdigital.model`; add `SiteId` to the existing import list):
+Add to `DecisionQuerySuite` (imports `SiteId` from `distantlands.model`; add `SiteId` to the existing import list):
 
 ```scala
   private def siteRef(id: String) = DecisionOptionRef.Site(SiteId(id))
@@ -114,7 +114,7 @@ Add to `GameEventWireSuite`:
 
 - [ ] **Step 2: Run to verify failure**
 
-Run: `./sbtw -no-colors "testOnly oathdigital.gameplay.walker.DecisionQuerySuite oathdigital.serialization.GameEventWireSuite"`
+Run: `./sbtw -no-colors "testOnly distantlands.gameplay.walker.DecisionQuerySuite distantlands.serialization.GameEventWireSuite"`
 Expected: FAIL to compile (`ChooseMany`, `ChooseManyAnswer` not found).
 
 - [ ] **Step 3: Implement**
@@ -194,7 +194,7 @@ in `decode`:
 
 - [ ] **Step 4: Run to verify pass**
 
-Run: `./sbtw -no-colors "testOnly oathdigital.gameplay.walker.DecisionQuerySuite oathdigital.serialization.GameEventWireSuite"`
+Run: `./sbtw -no-colors "testOnly distantlands.gameplay.walker.DecisionQuerySuite distantlands.serialization.GameEventWireSuite"`
 Expected: PASS. If the compiler reports a non-exhaustive match on `DecisionQuery` or `DecisionAnswer` elsewhere in `src/main` (`WalkerDecisionProjector.queryProjection`, `WalkerSimulation`), leave it for Task 3; if the warning is fatal, add a temporary `case _: DecisionQuery.ChooseMany => None` in `queryProjection` and remove it in Task 3.
 
 - [ ] **Step 5: Commit**
@@ -264,7 +264,7 @@ git commit -m "feat(walker): add the choose-many decision shape" -m "Co-Authored
 
 - [ ] **Step 2: Run to verify failure**
 
-Run: `./sbtw -no-colors "testOnly oathdigital.gameplay.walker.DecisionQuerySuite oathdigital.serialization.GameEventWireSuite"`
+Run: `./sbtw -no-colors "testOnly distantlands.gameplay.walker.DecisionQuerySuite distantlands.serialization.GameEventWireSuite"`
 Expected: FAIL to compile (`ChooseAmount` not found).
 
 - [ ] **Step 3: Implement**
@@ -332,7 +332,7 @@ decode:
 
 - [ ] **Step 4: Run to verify pass**
 
-Run: `./sbtw -no-colors "testOnly oathdigital.gameplay.walker.DecisionQuerySuite oathdigital.serialization.GameEventWireSuite"`
+Run: `./sbtw -no-colors "testOnly distantlands.gameplay.walker.DecisionQuerySuite distantlands.serialization.GameEventWireSuite"`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -358,7 +358,7 @@ git commit -m "feat(walker): add the choose-amount decision shape" -m "Co-Author
 
 - [ ] **Step 1: Write the failing tests**
 
-`CommandProtocolSuite`, add to the `ResolveWalker` vector (imports `DecisionOptionWire` via the existing `oathdigital.protocol._`):
+`CommandProtocolSuite`, add to the `ResolveWalker` vector (imports `DecisionOptionWire` via the existing `distantlands.protocol._`):
 
 ```scala
     ResolveWalker("challenge.ribbon-site", DecisionAnswerWire.ChooseManyWire(
@@ -455,7 +455,7 @@ In the existing test "a relic slot and a banner project from live state…", rep
 
 - [ ] **Step 2: Run to verify failure**
 
-Run: `./sbtw -no-colors "shared/testOnly oathdigital.protocol.*" "testOnly oathdigital.application.WalkerDecisionProjectorSuite"`
+Run: `./sbtw -no-colors "shared/testOnly distantlands.protocol.*" "testOnly distantlands.application.WalkerDecisionProjectorSuite"`
 Expected: FAIL to compile (`ChooseManyWire`, `count`, ... not found).
 
 - [ ] **Step 3: Implement**
@@ -515,7 +515,7 @@ and beside `decodeDecisionPlacement`:
   } yield DecisionOptionWire(optionKind, optionId) }
 ```
 
-`GameIntentMapper.decisionAnswer` (imports `ChooseManyAnswer`, `ChooseAmountAnswer` from `oathdigital.model.DecisionAnswer`):
+`GameIntentMapper.decisionAnswer` (imports `ChooseManyAnswer`, `ChooseAmountAnswer` from `distantlands.model.DecisionAnswer`):
 
 ```scala
     case DecisionAnswerWire.ChooseManyWire(options) =>
@@ -580,7 +580,7 @@ The Conspiracy decision's banner options gain the `Currently N resources` detail
 
 - [ ] **Step 4: Run to verify pass**
 
-Run: `./sbtw -no-colors "shared/testOnly oathdigital.protocol.*" "testOnly oathdigital.application.*" "testOnly oathdigital.gameplay.powers.whenplayed.*"`
+Run: `./sbtw -no-colors "shared/testOnly distantlands.protocol.*" "testOnly distantlands.application.*" "testOnly distantlands.gameplay.powers.whenplayed.*"`
 Expected: PASS. Fix any exhaustive-match warning-as-error the compiler reports on `DecisionAnswerWire`/`DecisionQuery` (search `DistributeWire` and `DecisionQuery.Distribute` in `src/main`, `shared/src/main`, `frontend/src/main`; the frontend is Task 4).
 
 - [ ] **Step 5: Commit**
@@ -608,9 +608,9 @@ git commit -m "feat(protocol): carry choose-many and choose-amount decisions end
 `WalkerSelectionDraftSuite.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{DecisionAnswerWire, DecisionOptionWire,
+import distantlands.protocol.{DecisionAnswerWire, DecisionOptionWire,
   GameIntent => Intent}
 
 class WalkerSelectionDraftSuite extends munit.FunSuite {
@@ -678,9 +678,9 @@ class WalkerSelectionDraftSuite extends munit.FunSuite {
 `WalkerSelectionPanelsSuite.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{DecisionAnswerWire, DecisionOptionWire,
+import distantlands.protocol.{DecisionAnswerWire, DecisionOptionWire,
   GameIntent => Intent}
 import org.scalajs.dom
 
@@ -771,7 +771,7 @@ class WalkerSelectionPanelsSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run to verify failure**
 
-Run: `./sbtw -no-colors "frontend/testOnly oathdigital.frontend.WalkerSelectionDraftSuite oathdigital.frontend.WalkerSelectionPanelsSuite"`
+Run: `./sbtw -no-colors "frontend/testOnly distantlands.frontend.WalkerSelectionDraftSuite distantlands.frontend.WalkerSelectionPanelsSuite"`
 Expected: FAIL to compile.
 
 - [ ] **Step 3: Implement**
@@ -779,9 +779,9 @@ Expected: FAIL to compile.
 `WalkerSelectionDraft.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{DecisionAnswerWire, DecisionOptionWire,
+import distantlands.protocol.{DecisionAnswerWire, DecisionOptionWire,
   GameIntent => GameCommand}
 
 /** A draft answer to a parked choose-many or choose-amount decision. Like
@@ -865,7 +865,7 @@ private[frontend] object WalkerSelectionDraft {
 `WalkerSelectionPanels.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 import org.scalajs.dom
 
@@ -1012,12 +1012,12 @@ git commit -m "feat(frontend): render choose-many and choose-amount decisions ge
 - Test: `src/test/scala/distantlands/model/ChallengeWindowsSuite.scala`
 
 **Interfaces:**
-- Produces: `PowerWindow.ChallengeBannerSelection`, `ChallengeAmountSelection`, `ChallengeCost`, `ChallengeRibbon`, `ChallengePlacement` (all `ChallengeWindow`); `PowerWindow.PlaceBannerResourceEligibility`, `PlaceBannerResourceBannerSelection`, `PlaceBannerResourceAmountSelection`, `PlaceBannerResourcePlacement` (all `OtherWindow`). `oathdigital.gameplay.actions.BannerRules` unchanged, in `BannerRules.scala`.
+- Produces: `PowerWindow.ChallengeBannerSelection`, `ChallengeAmountSelection`, `ChallengeCost`, `ChallengeRibbon`, `ChallengePlacement` (all `ChallengeWindow`); `PowerWindow.PlaceBannerResourceEligibility`, `PlaceBannerResourceBannerSelection`, `PlaceBannerResourceAmountSelection`, `PlaceBannerResourcePlacement` (all `OtherWindow`). `distantlands.gameplay.actions.BannerRules` unchanged, in `BannerRules.scala`.
 
 - [ ] **Step 1: Write the failing test**
 
 ```scala
-package oathdigital.model
+package distantlands.model
 
 class ChallengeWindowsSuite extends munit.FunSuite {
   test("Challenge windows carry the Challenge major action and stable keys") {
@@ -1053,7 +1053,7 @@ class ChallengeWindowsSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run to verify failure**
 
-Run: `./sbtw -no-colors "testOnly oathdigital.model.ChallengeWindowsSuite"`
+Run: `./sbtw -no-colors "testOnly distantlands.model.ChallengeWindowsSuite"`
 Expected: FAIL to compile.
 
 - [ ] **Step 3: Implement**
@@ -1096,15 +1096,15 @@ start = s.index('/** Shared printed banner invariants.')
 end = s.index('object Challenge {')
 rules = s[start:end].rstrip() + '\n'
 open('src/main/scala/distantlands/gameplay/actions/BannerRules.scala', 'w').write(
-  'package oathdigital.gameplay.actions\n\nimport oathdigital.model._\n\n' + rules)
+  'package distantlands.gameplay.actions\n\nimport distantlands.model._\n\n' + rules)
 open(p, 'w').write(s[:start] + s[end:])
 EOF
 ```
 
 - [ ] **Step 4: Run to verify pass**
 
-Run: `./sbtw -no-colors "testOnly oathdigital.model.ChallengeWindowsSuite oathdigital.gameplay.ChallengeSuite"`
-Expected: PASS (the legacy suite still compiles because `BannerRules` stays in package `oathdigital.gameplay.actions`).
+Run: `./sbtw -no-colors "testOnly distantlands.model.ChallengeWindowsSuite distantlands.gameplay.ChallengeSuite"`
+Expected: PASS (the legacy suite still compiles because `BannerRules` stays in package `distantlands.gameplay.actions`).
 
 - [ ] **Step 5: Commit**
 
@@ -1143,12 +1143,12 @@ Sequence(                                            // ChallengeActionEligibili
 `ChallengeFixture.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.setup._
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
+import distantlands.gameplay.setup._
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model._
+import distantlands.model.OathState.Ready
 
 /** The board the Challenge suites share: the active player in the Act phase
   * with chosen favor, secrets and Supply, and one banner in a chosen state.
@@ -1216,18 +1216,18 @@ object ChallengeFixture {
 `ChallengeProcedureSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.engine.{EventReplayEngine, RecordedEvent}
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.actions.challenge.ChallengeProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, ContributingPower, Transform}
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerParked,
+import distantlands.engine.{EventReplayEngine, RecordedEvent}
+import distantlands.gameplay.actions.BannerRules
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.actions.challenge.ChallengeProcedure
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower, Transform}
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerOutcome, WalkerParked,
   WalkerPowers}
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.model.OathViolation.NoPlayableOption
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.model.OathViolation.NoPlayableOption
 
 /** Challenge through the rules, as a client drives it: start, answer the
   * banner, answer the amount, and (Wandering Flame) the tied sites.
@@ -1483,11 +1483,11 @@ class ChallengeProcedureSuite extends munit.FunSuite {
 }
 ```
 
-(`setup`, `plan`, `sites`, `execute`, `catalog` come from `FirstGameSetupFixture._`; if `setup` is not exported there, add `private val setup = new FirstGameSetupRules(catalog)` with `import oathdigital.gameplay.setup.FirstGameSetupRules`, as `ChallengeSuite` does.)
+(`setup`, `plan`, `sites`, `execute`, `catalog` come from `FirstGameSetupFixture._`; if `setup` is not exported there, add `private val setup = new FirstGameSetupRules(catalog)` with `import distantlands.gameplay.setup.FirstGameSetupRules`, as `ChallengeSuite` does.)
 
 - [ ] **Step 2: Run to verify failure**
 
-Run: `./sbtw -no-colors "testOnly oathdigital.gameplay.ChallengeProcedureSuite"`
+Run: `./sbtw -no-colors "testOnly distantlands.gameplay.ChallengeProcedureSuite"`
 Expected: FAIL to compile (`ActionRef.Challenge` not found).
 
 - [ ] **Step 3: Implement**
@@ -1497,10 +1497,10 @@ Expected: FAIL to compile (`ActionRef.Challenge` not found).
 `ChallengeRibbon.scala`:
 
 ```scala
-package oathdigital.gameplay.actions.challenge
+package distantlands.gameplay.actions.challenge
 
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.model._
+import distantlands.gameplay.actions.BannerRules
+import distantlands.model._
 
 /** What a Challenge does with the challenged banner's resources before the
   * challenger pays, per banner (rule W: every state-derived effect is a
@@ -1583,12 +1583,12 @@ private[challenge] object ChallengeRibbon {
 `ChallengeProcedure.scala`:
 
 ```scala
-package oathdigital.gameplay.actions.challenge
+package distantlands.gameplay.actions.challenge
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.{OathLifecycle, PowerRuntime}
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.{OathLifecycle, PowerRuntime}
+import distantlands.gameplay.actions.BannerRules
+import distantlands.model._
 
 /** Challenge on the walker: spend one Supply, choose a banner, choose how many
   * resources replace it, return the banner's resources (the ribbon), then pay
@@ -1730,7 +1730,7 @@ object ChallengeProcedure {
 }
 ```
 
-`WalkerProcedureRegistry.scala`: import `oathdigital.gameplay.actions.challenge.ChallengeProcedure` and add after the Trade entry:
+`WalkerProcedureRegistry.scala`: import `distantlands.gameplay.actions.challenge.ChallengeProcedure` and add after the Trade entry:
 
 ```scala
     /** Challenge. Its first step spends the Supply, so a start runs an
@@ -1752,7 +1752,7 @@ Update `ActionValuesSuite` and `WalkerProcedureRegistrySuite` for the new ref (e
 
 - [ ] **Step 4: Run to verify pass**
 
-Run: `./sbtw -no-colors "testOnly oathdigital.gameplay.ChallengeProcedureSuite oathdigital.model.ActionValuesSuite oathdigital.gameplay.walker.WalkerProcedureRegistrySuite oathdigital.gameplay.BackendArchitectureSuite"`
+Run: `./sbtw -no-colors "testOnly distantlands.gameplay.ChallengeProcedureSuite distantlands.model.ActionValuesSuite distantlands.gameplay.walker.WalkerProcedureRegistrySuite distantlands.gameplay.BackendArchitectureSuite"`
 Expected: PASS. Debug order if a Wandering Flame test fails: print `parked.events.last`; a tie count off by one means `BannerRules.leastSites(current, Vector.empty)` read the banner secrets in its totals (it must not: it sums site tokens only).
 
 - [ ] **Step 5: Commit**
@@ -1778,11 +1778,11 @@ git commit -m "feat(challenge): run Challenge on the walker" -m "Co-Authored-By:
 - [ ] **Step 1: Write the failing test**
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.model.OathViolation.NoPlayableOption
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.model.OathViolation.NoPlayableOption
 
 class PlaceBannerResourceProcedureSuite extends munit.FunSuite {
   import ChallengeFixture._
@@ -1858,7 +1858,7 @@ class PlaceBannerResourceProcedureSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run to verify failure**
 
-Run: `./sbtw -no-colors "testOnly oathdigital.gameplay.PlaceBannerResourceProcedureSuite"`
+Run: `./sbtw -no-colors "testOnly distantlands.gameplay.PlaceBannerResourceProcedureSuite"`
 Expected: FAIL to compile.
 
 - [ ] **Step 3: Implement**
@@ -1868,12 +1868,12 @@ Expected: FAIL to compile.
 `PlaceBannerResourceProcedure.scala`:
 
 ```scala
-package oathdigital.gameplay.actions.challenge
+package distantlands.gameplay.actions.challenge
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.{OathLifecycle, PowerRuntime}
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.{OathLifecycle, PowerRuntime}
+import distantlands.gameplay.actions.BannerRules
+import distantlands.model._
 
 /** Place Banner Resource on the walker: the holder of a banner moves favor or
   * faceup secrets from their own board onto it, for no Supply. Takes no start
@@ -1978,7 +1978,7 @@ Update `ActionValuesSuite` and `WalkerProcedureRegistrySuite` for the new ref.
 
 - [ ] **Step 4: Run to verify pass**
 
-Run: `./sbtw -no-colors "testOnly oathdigital.gameplay.PlaceBannerResourceProcedureSuite oathdigital.model.ActionValuesSuite oathdigital.gameplay.walker.WalkerProcedureRegistrySuite oathdigital.gameplay.BackendArchitectureSuite"`
+Run: `./sbtw -no-colors "testOnly distantlands.gameplay.PlaceBannerResourceProcedureSuite distantlands.model.ActionValuesSuite distantlands.gameplay.walker.WalkerProcedureRegistrySuite distantlands.gameplay.BackendArchitectureSuite"`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -2004,7 +2004,7 @@ git commit -m "feat(challenge): run Place Banner Resource on the walker" -m "Co-
 
 - [ ] **Step 1: Write the failing tests**
 
-`WalkerPreviewSuite` (add; import `oathdigital.gameplay.ChallengeFixture`, `oathdigital.gameplay.powers.WalkerPowerCatalog` and `oathdigital.gameplay.setup.FirstGameSetupFixture.catalog` if the suite lacks them):
+`WalkerPreviewSuite` (add; import `distantlands.gameplay.ChallengeFixture`, `distantlands.gameplay.powers.WalkerPowerCatalog` and `distantlands.gameplay.setup.FirstGameSetupFixture.catalog` if the suite lacks them):
 
 ```scala
   test("starts is true for a tree a start would walk and false for one it rejects") {
@@ -2021,12 +2021,12 @@ git commit -m "feat(challenge): run Place Banner Resource on the walker" -m "Co-
 `ChallengeProjectionSuite.scala`:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.ChallengeFixture
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
+import distantlands.gameplay.ChallengeFixture
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model._
+import distantlands.model.OathState.Ready
 
 class ChallengeProjectionSuite extends munit.FunSuite {
   import ChallengeFixture._
@@ -2066,9 +2066,9 @@ class ChallengeProjectionSuite extends munit.FunSuite {
 `BannerControlsSuite.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.GameIntent
+import distantlands.protocol.GameIntent
 import org.scalajs.dom
 
 /** The Challenge and Place Banner Resource start controls at the DOM. */
@@ -2118,7 +2118,7 @@ class BannerControlsSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run to verify failure**
 
-Run: `./sbtw -no-colors "testOnly oathdigital.gameplay.walker.WalkerPreviewSuite oathdigital.application.ChallengeProjectionSuite" "frontend/testOnly oathdigital.frontend.BannerControlsSuite"`
+Run: `./sbtw -no-colors "testOnly distantlands.gameplay.walker.WalkerPreviewSuite distantlands.application.ChallengeProjectionSuite" "frontend/testOnly distantlands.frontend.BannerControlsSuite"`
 Expected: FAIL to compile.
 
 - [ ] **Step 3: Implement**
@@ -2141,7 +2141,7 @@ Expected: FAIL to compile.
     }.isRight
 ```
 
-`ChallengeProcedure` (add import `oathdigital.gameplay.walker.{WalkerPowers, WalkerSimulation}`):
+`ChallengeProcedure` (add import `distantlands.gameplay.walker.{WalkerPowers, WalkerSimulation}`):
 
 ```scala
   /** Whether Challenge could start now: the gates pass and the first walk
@@ -2168,7 +2168,7 @@ Expected: FAIL to compile.
       context.active.player, WalkerPowers.selected(walkerPowerCatalog, Vector.empty))
 ```
 
-(import `oathdigital.gameplay.actions.challenge.{ChallengeProcedure, PlaceBannerResourceProcedure}`). In the Act-phase control list replace the two legacy entries with:
+(import `distantlands.gameplay.actions.challenge.{ChallengeProcedure, PlaceBannerResourceProcedure}`). In the Act-phase control list replace the two legacy entries with:
 
 ```scala
           Option.when(challengeStartable(context))("beginChallenge"),
@@ -2180,9 +2180,9 @@ Delete the `val challenges = ChallengeRules.legal(...)...` block and the `select
 `BannerControls.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.{GameIntent => GameCommand}
+import distantlands.protocol.{GameIntent => GameCommand}
 import ServerUiSupport._
 
 /** The Act-phase start controls for Challenge and Place Banner Resource. Each
@@ -2242,13 +2242,13 @@ git commit -m "feat(challenge): offer Challenge and Place Banner Resource as sta
 - [ ] **Step 1: Write the parity suite**
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.application.{GameProjector, LoadedGame}
-import oathdigital.gameplay.actions.{BannerRules, ChallengeCommand}
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
+import distantlands.application.{GameProjector, LoadedGame}
+import distantlands.gameplay.actions.{BannerRules, ChallengeCommand}
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.model._
+import distantlands.model.OathState.Ready
 
 /** The legacy Challenge and the walker Challenge, run on the same board and
   * compared on the state they leave and on what each viewer is shown. Legacy
@@ -2396,7 +2396,7 @@ class ChallengeParitySuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run**
 
-Run: `./sbtw -no-colors "testOnly oathdigital.gameplay.ChallengeParitySuite"`
+Run: `./sbtw -no-colors "testOnly distantlands.gameplay.ChallengeParitySuite"`
 Expected: PASS. If a whole-field comparison fails on a field that legitimately differs (for example a journal-shaped field on `game.current`), narrow that one assertion to the differing field's meaning and note why in a comment; do not weaken the players, banners, map, banks or projection assertions. If `actor holds the banner` cannot be built through the fixture because `holder = Some(actor.player)` needs the actor id first, build the board with `ChallengeFixture.ready(resources = 2)` then set `peoplesFavor.holder` to `active(board)` with `updateCurrent`.
 
 - [ ] **Step 3: Commit**

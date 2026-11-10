@@ -30,14 +30,14 @@
 - Test: `src/test/scala/distantlands/model/ChronicleSuite.scala`
 
 **Interfaces:**
-- Produces: `final case class StoredSite(site: SiteId, items: Vector[CardId] = Vector.empty)` (requires `items.size <= 3`); `final case class Chronicle(atlasBox: Vector[StoredSite], world: Vector[StoredSite] = Vector.empty, worldDeck: Vector[DenizenId], relicDeck: Vector[RelicId], dispossessed: Vector[DenizenId] = Vector.empty, reliquary: Vector[RelicId] = Vector.empty, foundations: Map[FoundationNumber, FoundationState] = Map.empty, lineages: Vector[LineageState] = Vector.empty)`. Both live in `oathdigital.model` and use only types already defined there (`SiteId`, `CardId`, `DenizenId`, `RelicId`, `FoundationNumber`, `FoundationState`, `LineageState`).
+- Produces: `final case class StoredSite(site: SiteId, items: Vector[CardId] = Vector.empty)` (requires `items.size <= 3`); `final case class Chronicle(atlasBox: Vector[StoredSite], world: Vector[StoredSite] = Vector.empty, worldDeck: Vector[DenizenId], relicDeck: Vector[RelicId], dispossessed: Vector[DenizenId] = Vector.empty, reliquary: Vector[RelicId] = Vector.empty, foundations: Map[FoundationNumber, FoundationState] = Map.empty, lineages: Vector[LineageState] = Vector.empty)`. Both live in `distantlands.model` and use only types already defined there (`SiteId`, `CardId`, `DenizenId`, `RelicId`, `FoundationNumber`, `FoundationState`, `LineageState`).
 
 - [ ] **Step 1: Write the failing shape test**
 
 The fixture below is the decoded JSON that `chronicle-codec.js`'s own self-test produces for its `plain` sample string (https://github.com/harsch1/oath-nf-tts-scripts/blob/main/chronicle-codec.js, decoded with `node chronicle-codec.js decode`). It proves our model's shape fits the TTS export format; it does not parse the export-string format itself. The sample's card and site names are the TTS project's own strings, wrapped directly into our id types as placeholders -- translating between the two catalogs' ids is the deferred Chronicle codec follow-up, not this test's concern.
 
 ```scala
-package oathdigital.model
+package distantlands.model
 
 class ChronicleSuite extends munit.FunSuite {
   // atlasBox: 22 stored sites, four of them carrying 1-2 items (relics, in
@@ -153,13 +153,13 @@ class ChronicleSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run it to confirm it fails**
 
-Run: `./sbtw "testOnly oathdigital.model.ChronicleSuite"`
+Run: `./sbtw "testOnly distantlands.model.ChronicleSuite"`
 Expected: compile error -- `Chronicle` and `StoredSite` are not defined yet.
 
 - [ ] **Step 3: Implement the model**
 
 ```scala
-package oathdigital.model
+package distantlands.model
 
 /**
  * Up to three ordered items in storage at a site: denizens, relics or an
@@ -199,7 +199,7 @@ final case class Chronicle(
 
 - [ ] **Step 4: Run it to confirm it passes**
 
-Run: `./sbtw "testOnly oathdigital.model.ChronicleSuite"`
+Run: `./sbtw "testOnly distantlands.model.ChronicleSuite"`
 Expected: PASS (3 tests).
 
 - [ ] **Step 5: Commit**
@@ -227,7 +227,7 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 - [ ] **Step 1: Write the failing test**
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
 class ChronicleShuffleSuite extends munit.FunSuite {
   /** Reverses the input so ordering effects are deterministic and visible. */
@@ -257,13 +257,13 @@ class ChronicleShuffleSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run it to confirm it fails**
 
-Run: `./sbtw "testOnly oathdigital.application.ChronicleShuffleSuite"`
+Run: `./sbtw "testOnly distantlands.application.ChronicleShuffleSuite"`
 Expected: compile error -- `ChronicleRandomPort` and `ShufflePolicy` are not defined yet.
 
 - [ ] **Step 3: Implement the port and policy**
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
 /**
  * The application-layer source of randomness for Chronicle setup: every
@@ -309,7 +309,7 @@ object ShufflePolicy {
 
 - [ ] **Step 4: Run it to confirm it passes**
 
-Run: `./sbtw "testOnly oathdigital.application.ChronicleShuffleSuite"`
+Run: `./sbtw "testOnly distantlands.application.ChronicleShuffleSuite"`
 Expected: PASS (3 tests).
 
 - [ ] **Step 5: Commit**
@@ -331,22 +331,22 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 - Test: `src/test/scala/distantlands/application/ImplementedCardCatalogSuite.scala`
 
 **Interfaces:**
-- Consumes: nothing from earlier tasks (it reads `oathdigital.catalog.ExecutableCatalog` and `oathdigital.gameplay.powerresolver.PowerRegistry`, both existing).
+- Consumes: nothing from earlier tasks (it reads `distantlands.catalog.ExecutableCatalog` and `distantlands.gameplay.powerresolver.PowerRegistry`, both existing).
 - Produces: `object ImplementedCardCatalog { def denizens(catalog, registry): Set[DenizenId]; def ordinaryRelics(catalog, registry): Set[RelicId]; def homelandEdifice(catalog, suit, registry): Option[EdificeId] }`. Task 4 (the generator) consumes all three.
 
 - [ ] **Step 1: Write the failing test**
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.catalog._
-import oathdigital.gameplay.powerresolver._
-import oathdigital.model.PowerWindow._
-import oathdigital.model.{CardRestrictions, DenizenId, EdificeId, PowerId, RelicId, Suit}
+import distantlands.catalog._
+import distantlands.gameplay.powerresolver._
+import distantlands.model.PowerWindow._
+import distantlands.model.{CardRestrictions, DenizenId, EdificeId, PowerId, RelicId, Suit}
 
 class ImplementedCardCatalogSuite extends munit.FunSuite {
   private final case class TestPower(id: PowerId,
-      modifier: Option[oathdigital.model.MajorActionType],
+      modifier: Option[distantlands.model.MajorActionType],
       handlers: Vector[PowerHandler]) extends Power
 
   private def implementedPower(id: String): Power =
@@ -425,17 +425,17 @@ class ImplementedCardCatalogSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run it to confirm it fails**
 
-Run: `./sbtw "testOnly oathdigital.application.ImplementedCardCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.application.ImplementedCardCatalogSuite"`
 Expected: compile error -- `ImplementedCardCatalog` is not defined yet.
 
 - [ ] **Step 3: Implement it**
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.catalog.{CatalogPower, ExecutableCatalog, RelicRole}
-import oathdigital.gameplay.powerresolver.PowerRegistry
-import oathdigital.model.{DenizenId, EdificeId, RelicId, Suit}
+import distantlands.catalog.{CatalogPower, ExecutableCatalog, RelicRole}
+import distantlands.gameplay.powerresolver.PowerRegistry
+import distantlands.model.{DenizenId, EdificeId, RelicId, Suit}
 
 /**
  * Which catalog cards have every printed power implemented, read from the
@@ -475,7 +475,7 @@ object ImplementedCardCatalog {
 
 - [ ] **Step 4: Run it to confirm it passes**
 
-Run: `./sbtw "testOnly oathdigital.application.ImplementedCardCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.application.ImplementedCardCatalogSuite"`
 Expected: PASS (3 tests).
 
 - [ ] **Step 5: Commit**
@@ -507,11 +507,11 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 This test runs the generator against the real production catalog (the same one `FirstGameSetupFixture` loads), through the real reviewed power catalog registry, so it exercises the actual current "implemented" set rather than a synthetic one.
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.powers.ReviewedPowerCatalog
-import oathdigital.model.Suit
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.powers.ReviewedPowerCatalog
+import distantlands.model.Suit
 
 class FirstGameChronicleGeneratorSuite extends munit.FunSuite {
   private val registry = ReviewedPowerCatalog.registry(catalog).toOption.get
@@ -535,7 +535,7 @@ class FirstGameChronicleGeneratorSuite extends munit.FunSuite {
       handlerSuit match {
         case Some(suit) =>
           assertEquals(stored.items.size, 1)
-          val edificeId = stored.items.head.asInstanceOf[oathdigital.model.EdificeId]
+          val edificeId = stored.items.head.asInstanceOf[distantlands.model.EdificeId]
           assertEquals(catalog.edifices.find(_.id.value == edificeId.value).get.suit, suit)
         case None => assertEquals(stored.items, Vector.empty)
       }
@@ -575,8 +575,8 @@ class FirstGameChronicleGeneratorSuite extends munit.FunSuite {
 
   test("the relic deck has every ordinary relic exactly once, implemented ones first") {
     val chronicle = generated
-    val ordinary = catalog.relics.filter(_.role == oathdigital.catalog.RelicRole.Ordinary)
-      .map(r => oathdigital.model.RelicId(r.id.value))
+    val ordinary = catalog.relics.filter(_.role == distantlands.catalog.RelicRole.Ordinary)
+      .map(r => distantlands.model.RelicId(r.id.value))
     assertEquals(chronicle.relicDeck.toSet, ordinary.toSet)
     assertEquals(chronicle.relicDeck.size, ordinary.size)
     val implemented = ImplementedCardCatalog.ordinaryRelics(catalog, registry)
@@ -593,17 +593,17 @@ class FirstGameChronicleGeneratorSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run it to confirm it fails**
 
-Run: `./sbtw "testOnly oathdigital.application.FirstGameChronicleGeneratorSuite"`
-Expected: compile error -- `FirstGameChronicleGenerator` and `Chronicle` (unqualified, from the same package's wildcard) are not resolvable yet. Note this test file references `Chronicle` unqualified: add `import oathdigital.model.Chronicle` if your editor does not already resolve it via the file's other imports -- the final file must compile.
+Run: `./sbtw "testOnly distantlands.application.FirstGameChronicleGeneratorSuite"`
+Expected: compile error -- `FirstGameChronicleGenerator` and `Chronicle` (unqualified, from the same package's wildcard) are not resolvable yet. Note this test file references `Chronicle` unqualified: add `import distantlands.model.Chronicle` if your editor does not already resolve it via the file's other imports -- the final file must compile.
 
 - [ ] **Step 3: Implement the generator**
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.catalog.{ExecutableCatalog, RelicRole}
-import oathdigital.gameplay.powerresolver.PowerRegistry
-import oathdigital.model._
+import distantlands.catalog.{ExecutableCatalog, RelicRole}
+import distantlands.gameplay.powerresolver.PowerRegistry
+import distantlands.model._
 
 sealed trait ChronicleGeneratorFailure extends Product with Serializable
 object ChronicleGeneratorFailure {
@@ -726,11 +726,11 @@ object FirstGameChronicleGenerator {
 }
 ```
 
-Add `import oathdigital.model.Chronicle` to the test file at Task 4 Step 1 if it does not already compile; the implementation file above imports `oathdigital.model._`, which covers `Chronicle` for production code.
+Add `import distantlands.model.Chronicle` to the test file at Task 4 Step 1 if it does not already compile; the implementation file above imports `distantlands.model._`, which covers `Chronicle` for production code.
 
 - [ ] **Step 4: Run it to confirm it passes**
 
-Run: `./sbtw "testOnly oathdigital.application.FirstGameChronicleGeneratorSuite"`
+Run: `./sbtw "testOnly distantlands.application.FirstGameChronicleGeneratorSuite"`
 Expected: PASS (5 tests). If `TooFewSuitDenizens` fires, the alpha batch's per-suit counts (Global Constraints) have changed since 2026-09-21 -- re-check `docs/catalog/new-foundations-component-catalog.json` and the reviewed power catalog before assuming a code bug.
 
 - [ ] **Step 5: Commit**
@@ -752,7 +752,7 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 - Test: `src/test/scala/distantlands/application/ChronicleFirstGamePlanSuite.scala`
 
 **Interfaces:**
-- Consumes: `Chronicle`/`StoredSite` (Task 1); the existing `FirstGameBootstrapConfig`, `FirstGameSetupPlan` (`src/main/scala/distantlands/model/Setup.scala`, unmodified) and `oathdigital.gameplay.setup.FirstGameRulesData.visions`.
+- Consumes: `Chronicle`/`StoredSite` (Task 1); the existing `FirstGameBootstrapConfig`, `FirstGameSetupPlan` (`src/main/scala/distantlands/model/Setup.scala`, unmodified) and `distantlands.gameplay.setup.FirstGameRulesData.visions`.
 - Produces: `sealed trait ChronicleBridgeFailure` with cases `TooFewAtlasSites(actual: Int)`, `MissingHomelandEdifice(site: SiteId)`; `object ChronicleFirstGamePlan { def build(catalog: ExecutableCatalog, chronicle: Chronicle, config: FirstGameBootstrapConfig): Either[ChronicleBridgeFailure, FirstGameSetupPlan] }`. Tasks 6 and 7 both consume `build`.
 
 - [ ] **Step 1: Write the failing test**
@@ -760,11 +760,11 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 This test builds a Chronicle equivalent to `FirstGameSetupFixture`'s existing plan and checks the bridge reproduces that exact plan -- proving the bridge is a faithful, lossless translation.
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.setup.FirstGameSetupRules
-import oathdigital.model._
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.setup.FirstGameSetupRules
+import distantlands.model._
 
 class ChronicleFirstGamePlanSuite extends munit.FunSuite {
   private val config = FirstGameBootstrapConfig(participants, PlayerId("p2"))
@@ -809,17 +809,17 @@ class ChronicleFirstGamePlanSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run it to confirm it fails**
 
-Run: `./sbtw "testOnly oathdigital.application.ChronicleFirstGamePlanSuite"`
+Run: `./sbtw "testOnly distantlands.application.ChronicleFirstGamePlanSuite"`
 Expected: compile error -- `ChronicleFirstGamePlan` and `ChronicleBridgeFailure` are not defined yet.
 
 - [ ] **Step 3: Implement the bridge**
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.setup.FirstGameRulesData
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.setup.FirstGameRulesData
+import distantlands.model._
 
 sealed trait ChronicleBridgeFailure extends Product with Serializable
 object ChronicleBridgeFailure {
@@ -891,7 +891,7 @@ object ChronicleFirstGamePlan {
 
 - [ ] **Step 4: Run it to confirm it passes**
 
-Run: `./sbtw "testOnly oathdigital.application.ChronicleFirstGamePlanSuite"`
+Run: `./sbtw "testOnly distantlands.application.ChronicleFirstGamePlanSuite"`
 Expected: PASS (4 tests).
 
 - [ ] **Step 5: Commit**
@@ -920,7 +920,7 @@ This is a behavior-preserving refactor: the produced `FirstGameSetupPlan` must h
 
 - [ ] **Step 1: Confirm the baseline passes before refactoring**
 
-Run: `./sbtw "testOnly oathdigital.application.DevelopmentFirstGamePlanFactorySuite"`
+Run: `./sbtw "testOnly distantlands.application.DevelopmentFirstGamePlanFactorySuite"`
 Expected: PASS (current behavior, before this task's edit).
 
 - [ ] **Step 2: Rewrite the factory to build a dev Chronicle and bridge it**
@@ -928,10 +928,10 @@ Expected: PASS (current behavior, before this task's edit).
 Replace the full contents of `src/main/scala/distantlands/application/DevelopmentFirstGamePlanFactory.scala` with:
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.catalog.{ExecutableCatalog, RelicRole}
-import oathdigital.model._
+import distantlands.catalog.{ExecutableCatalog, RelicRole}
+import distantlands.model._
 
 final case class FirstGameBootstrapConfig(
     participants: Vector[FirstGameParticipant],
@@ -1034,14 +1034,14 @@ final class DevelopmentFirstGamePlanFactory(catalog: ExecutableCatalog)
 
 - [ ] **Step 3: Run the regression gate**
 
-Run: `./sbtw "testOnly oathdigital.application.DevelopmentFirstGamePlanFactorySuite"`
+Run: `./sbtw "testOnly distantlands.application.DevelopmentFirstGamePlanFactorySuite"`
 Expected: PASS, unchanged (same assertions as Step 1 -- the refactor produces byte-identical plan values).
 
 - [ ] **Step 4: Run the broader regression gate**
 
 These suites construct `DevelopmentFirstGamePlanFactory` directly and exercise it end-to-end; none should change behavior.
 
-Run: `./sbtw "testOnly oathdigital.server.TrustedGameProvisioningSuite oathdigital.server.AuthenticatedGameRoutesSuite oathdigital.server.GameTrustBoundaryRoutesSuite oathdigital.server.AuthenticatedGameBootstrapRoutesSuite oathdigital.server.GameRoutesSuite"`
+Run: `./sbtw "testOnly distantlands.server.TrustedGameProvisioningSuite distantlands.server.AuthenticatedGameRoutesSuite distantlands.server.GameTrustBoundaryRoutesSuite distantlands.server.AuthenticatedGameBootstrapRoutesSuite distantlands.server.GameRoutesSuite"`
 Expected: PASS, unchanged.
 
 - [ ] **Step 5: Commit**
@@ -1062,16 +1062,16 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 - Test: `src/test/scala/distantlands/application/GeneratedFirstGamePlanFactorySuite.scala`
 
 **Interfaces:**
-- Consumes: `FirstGameChronicleGenerator.generate` (Task 4); `ChronicleFirstGamePlan.build` (Task 5); `ChronicleRandomPort.random`, `ShufflePolicy.implementedFirst` (Task 2); the existing `FirstGamePlanFactory` trait, `FirstGameBootstrapConfig`, `BootstrapPlanFailure` (Task 6, unchanged signatures); `oathdigital.gameplay.powers.ReviewedPowerCatalog.registry`.
+- Consumes: `FirstGameChronicleGenerator.generate` (Task 4); `ChronicleFirstGamePlan.build` (Task 5); `ChronicleRandomPort.random`, `ShufflePolicy.implementedFirst` (Task 2); the existing `FirstGamePlanFactory` trait, `FirstGameBootstrapConfig`, `BootstrapPlanFailure` (Task 6, unchanged signatures); `distantlands.gameplay.powers.ReviewedPowerCatalog.registry`.
 - Produces: `final class GeneratedFirstGamePlanFactory(catalog: ExecutableCatalog, random: ChronicleRandomPort = ChronicleRandomPort.random, policy: ShufflePolicy = ShufflePolicy.implementedFirst) extends FirstGamePlanFactory`. Task 8 (`ServerRuntime` wiring) consumes this.
 
 - [ ] **Step 1: Write the failing test**
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.gameplay.setup.{FirstGameSetupFixture, FirstGameSetupRules}
-import oathdigital.model._
+import distantlands.gameplay.setup.{FirstGameSetupFixture, FirstGameSetupRules}
+import distantlands.model._
 
 class GeneratedFirstGamePlanFactorySuite extends munit.FunSuite {
   private val catalog = FirstGameSetupFixture.catalog
@@ -1096,17 +1096,17 @@ class GeneratedFirstGamePlanFactorySuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run it to confirm it fails**
 
-Run: `./sbtw "testOnly oathdigital.application.GeneratedFirstGamePlanFactorySuite"`
+Run: `./sbtw "testOnly distantlands.application.GeneratedFirstGamePlanFactorySuite"`
 Expected: compile error -- `GeneratedFirstGamePlanFactory` is not defined yet.
 
 - [ ] **Step 3: Implement the factory**
 
 ```scala
-package oathdigital.application
+package distantlands.application
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powers.ReviewedPowerCatalog
-import oathdigital.model.FirstGameSetupPlan
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powers.ReviewedPowerCatalog
+import distantlands.model.FirstGameSetupPlan
 
 /**
  * Production first-game plan derivation: draws a random Chronicle through
@@ -1136,7 +1136,7 @@ final class GeneratedFirstGamePlanFactory(
 
 - [ ] **Step 4: Run it to confirm it passes**
 
-Run: `./sbtw "testOnly oathdigital.application.GeneratedFirstGamePlanFactorySuite"`
+Run: `./sbtw "testOnly distantlands.application.GeneratedFirstGamePlanFactorySuite"`
 Expected: PASS (2 tests).
 
 - [ ] **Step 5: Commit**
@@ -1165,12 +1165,12 @@ Dev-only loopback routes (`firstGame: GameServerGateway`) keep the deterministic
 - [ ] **Step 1: Write the failing test**
 
 ```scala
-package oathdigital.server
+package distantlands.server
 
 import java.nio.file.{Files, Paths}
 
-import oathdigital.application.TrustedSeat
-import oathdigital.protocol._
+import distantlands.application.TrustedSeat
+import distantlands.protocol._
 
 class ServerRuntimeSuite extends munit.FunSuite {
   private def request(gameId: String) = TrustedGameCreateRequest(gameId, Vector(
@@ -1201,7 +1201,7 @@ class ServerRuntimeSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run it to confirm it fails**
 
-Run: `./sbtw "testOnly oathdigital.server.ServerRuntimeSuite"`
+Run: `./sbtw "testOnly distantlands.server.ServerRuntimeSuite"`
 Expected: FAIL -- all four site orders are identical (still wired to the deterministic dev factory).
 
 - [ ] **Step 3: Wire the generated factory in**
@@ -1210,7 +1210,7 @@ In `src/main/scala/distantlands/server/ServerRuntime.scala`, replace:
 
 ```scala
           val planFactory =
-            new oathdigital.application.DevelopmentFirstGamePlanFactory(
+            new distantlands.application.DevelopmentFirstGamePlanFactory(
               catalog
             )
           val authorization =
@@ -1240,11 +1240,11 @@ with:
 
 ```scala
           val devPlanFactory =
-            new oathdigital.application.DevelopmentFirstGamePlanFactory(
+            new distantlands.application.DevelopmentFirstGamePlanFactory(
               catalog
             )
           val generatedPlanFactory =
-            new oathdigital.application.GeneratedFirstGamePlanFactory(
+            new distantlands.application.GeneratedFirstGamePlanFactory(
               catalog
             )
           val authorization =
@@ -1275,14 +1275,14 @@ with:
 
 - [ ] **Step 4: Run it to confirm it passes**
 
-Run: `./sbtw "testOnly oathdigital.server.ServerRuntimeSuite"`
+Run: `./sbtw "testOnly distantlands.server.ServerRuntimeSuite"`
 Expected: PASS.
 
 - [ ] **Step 5: Run the broader regression gate**
 
 These suites boot a real `ServerRuntime` (or construct the gateways directly) and exercise trusted/authenticated bootstrap over HTTP; none assert specific board content, so none should change.
 
-Run: `./sbtw "testOnly oathdigital.server.ServerRoutesSuite oathdigital.server.TrustedSeatRoutesSuite oathdigital.server.TrustedGameProvisioningSuite"`
+Run: `./sbtw "testOnly distantlands.server.ServerRoutesSuite distantlands.server.TrustedSeatRoutesSuite distantlands.server.TrustedGameProvisioningSuite"`
 Expected: PASS, unchanged.
 
 - [ ] **Step 6: Commit**

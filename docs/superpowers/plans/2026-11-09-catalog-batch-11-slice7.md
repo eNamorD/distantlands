@@ -208,16 +208,16 @@ grep -rn "object RevealedVisions\|def qualifying\|object DesecratedGroundRule\|r
 Create `src/test/scala/distantlands/gameplay/powers/cardplay/VisionPlayPlayerSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.operations.OperationRestrictions
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{ProcedureWalker, WalkerPowers}
-import oathdigital.model._
-import oathdigital.testkit.{PowerRules, Table}
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.operations.OperationRestrictions
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerPowers}
+import distantlands.model._
+import distantlands.testkit.{PowerRules, Table}
+import distantlands.testkit.Table.{p1, p2}
 
 /** A faceup Vision play is judged for the player the hook names, not for
   * the walk's actor (catalog batch 11, slice 7): False Prophet's claimant
@@ -264,7 +264,7 @@ If a refusal is reported in another shape, assert on that shape instead.
 
 - [ ] **Step 2: Run the test to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.cardplay.VisionPlayPlayerSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.cardplay.VisionPlayPlayerSuite"`
 Expected: compile error: `CardPlayedFaceup` takes three arguments.
 
 - [ ] **Step 3: Add the player to the hook**
@@ -367,7 +367,7 @@ and `hookAt` take `actor`. Patterns on the hook in tests gain one `_`.
 
 - [ ] **Step 7: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.cardplay.*" "testOnly oathdigital.gameplay.powers.whenplayed.*" "testOnly oathdigital.gameplay.powers.targeting.*" "testOnly oathdigital.gameplay.VisionPlaySuite oathdigital.gameplay.ProcedureWalkerWindowSuite oathdigital.gameplay.powers.poweruse.AutomaticUseStepWiringSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.cardplay.*" "testOnly distantlands.gameplay.powers.whenplayed.*" "testOnly distantlands.gameplay.powers.targeting.*" "testOnly distantlands.gameplay.VisionPlaySuite distantlands.gameplay.ProcedureWalkerWindowSuite distantlands.gameplay.powers.poweruse.AutomaticUseStepWiringSuite"`
 Expected: PASS.
 
 - [ ] **Step 8: Commit**
@@ -519,7 +519,7 @@ and the colour type's name; match them.
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.RevealedVisionsSuite oathdigital.gameplay.StateBasedEvaluationSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.RevealedVisionsSuite distantlands.gameplay.StateBasedEvaluationSuite"`
 Expected: FAIL: the claim is not counted, `claimants` does not exist, and
 the move is refused with `IncompatibleLocation`.
 
@@ -611,7 +611,7 @@ If they only set a background, add a `color` rule for the mark the way
 
 - [ ] **Step 5: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.RevealedVisionsSuite oathdigital.gameplay.StateBasedEvaluationSuite oathdigital.gameplay.operations.*" "frontend/testOnly oathdigital.frontend.PlayerBoardSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.RevealedVisionsSuite distantlands.gameplay.StateBasedEvaluationSuite distantlands.gameplay.operations.*" "frontend/testOnly distantlands.frontend.PlayerBoardSuite"`
 Expected: PASS. If the frontend project id differs, read `build.sbt`.
 
 - [ ] **Step 6: Commit**
@@ -658,14 +658,14 @@ and 2's diff (`git diff <rebase base>..HEAD`), this plan's findings 1 to
 Create `FalseProphetSuite.scala`, following `WizardsConclaveSuite`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.RevealedVisions
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.model._
-import oathdigital.testkit.{Look, Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.RevealedVisions
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.powers.NoteText
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
 
 class FalseProphetSuite extends munit.FunSuite:
   import WhenPlayedHarness._
@@ -739,7 +739,7 @@ not exist, read the lineage from `ready.game.current.player(p1)`.
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.whenplayed.FalseProphetSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.whenplayed.FalseProphetSuite"`
 Expected: compile error: `FalseProphet` not found.
 
 - [ ] **Step 3: Move the card and write the power**
@@ -748,12 +748,12 @@ Delete `FalseProphetCard` (lines 15-22) from `HoldingDiscordDenizens.scala`;
 `ReliquaryRaidCard` stays. Create `whenplayed/FalseProphet.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.gameplay.powers.{PlayerFacts, PowerAnswers}
-import oathdigital.model._
+import distantlands.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.powers.{PlayerFacts, PowerAnswers}
+import distantlands.model._
 
 object FalseProphetCard extends Denizen(DenizenId("85"), "False Prophet", Suit.Discord) with Locked with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.false-prophet"),
@@ -855,7 +855,7 @@ denizen.false-prophet put = Put a warband on {0}'s {1}.
 
 - [ ] **Step 4: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.whenplayed.FalseProphetSuite oathdigital.gameplay.powers.UnimplementedPowersSuite oathdigital.gameplay.powers.DeclaredNotesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.whenplayed.FalseProphetSuite distantlands.gameplay.powers.UnimplementedPowersSuite distantlands.gameplay.powers.DeclaredNotesSuite"`
 Expected: PASS. If the declared-keys suite has another name, find it with
 `grep -rln "declared-keys.txt" src/test/scala`.
 
@@ -900,25 +900,25 @@ git commit -m "feat(powers): False Prophet puts a warband on another player's Vi
 - [ ] **Step 1: Write the failing walk tests**
 
 Create `src/test/scala/distantlands/gameplay/FalseProphetClaimSuite.scala`,
-in package `oathdigital.gameplay` so it reaches `SearchPlay` and
+in package `distantlands.gameplay` so it reaches `SearchPlay` and
 `PlacementFixture` as `VisionPlaySuite` does:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.powers.whenplayed.FalseProphetClaim
-import oathdigital.gameplay.roles.Citizenship
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.walker.{ParkedDecisionAssertions, ProcedureWalker}
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{Look, Outcomes, PlacementPicks, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.whenplayed.FalseProphetClaim
+import distantlands.gameplay.roles.Citizenship
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.walker.{ParkedDecisionAssertions, ProcedureWalker}
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Look, Outcomes, PlacementPicks, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, present}
 
 /** A claimed Vision's discard (catalog batch 11, rulings 14, 32 and 33):
   * p1 owns Conquest, which p2 claims with a warband. p1 stands at Ancient
@@ -1050,17 +1050,17 @@ Create `src/test/scala/distantlands/application/gamelog/FalseProphetLogSuite.sca
 following slice 6's `DesecratedGroundLogSuite`:
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.application.{GameApplicationService,
+import distantlands.application.{GameApplicationService,
   ParkedServiceFixture, TreeDecision}
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
-import oathdigital.model._
-import oathdigital.testkit.{Commands, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.model._
+import distantlands.testkit.{Commands, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.{accepted, present}
 import LogScripts.formatter
 
 /** False Prophet's lines as the Game Log shows them (catalog batch 11,
@@ -1111,7 +1111,7 @@ name, assert the whole line with it instead.
 
 - [ ] **Step 3: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.FalseProphetClaimSuite oathdigital.application.gamelog.FalseProphetLogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.FalseProphetClaimSuite distantlands.application.gamelog.FalseProphetLogSuite"`
 Expected: compile error: `FalseProphetClaim` not found.
 
 - [ ] **Step 4: Write the trigger**
@@ -1119,14 +1119,14 @@ Expected: compile error: `FalseProphetClaim` not found.
 Create `whenplayed/FalseProphetClaim.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.{RevealedVisions, TurnOrder}
-import oathdigital.gameplay.actions.PlacementLimit
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.powerresolver._
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.gameplay.{RevealedVisions, TurnOrder}
+import distantlands.gameplay.actions.PlacementLimit
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.powerresolver._
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 /** False Prophet's claim, when its Vision is discarded (card 85; catalog
   * batch 11, rulings 14, 32 and 33): "If it is ever discarded, kill the
@@ -1357,11 +1357,11 @@ the line is `s"${p2.value} kept Vision of Sanctuary."`.
 
 - [ ] **Step 6: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.FalseProphetClaimSuite oathdigital.application.gamelog.FalseProphetLogSuite oathdigital.application.gamelog.DesecratedGroundLogSuite oathdigital.gameplay.VisionPlaySuite oathdigital.gameplay.powers.DeclaredNotesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.FalseProphetClaimSuite distantlands.application.gamelog.FalseProphetLogSuite distantlands.application.gamelog.DesecratedGroundLogSuite distantlands.gameplay.VisionPlaySuite distantlands.gameplay.powers.DeclaredNotesSuite"`
 Expected: PASS.
 
 Run the walker and card-play suites in full (the spec asks it of slices
-4 to 7): `./sbtw "testOnly oathdigital.gameplay.walker.* oathdigital.gameplay.actions.* oathdigital.gameplay.powers.cardplay.* oathdigital.gameplay.powers.whenplayed.*"`
+4 to 7): `./sbtw "testOnly distantlands.gameplay.walker.* distantlands.gameplay.actions.* distantlands.gameplay.powers.cardplay.* distantlands.gameplay.powers.whenplayed.*"`
 Expected: PASS.
 
 If the walk tests park somewhere else, read finding 5 first: the

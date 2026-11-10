@@ -42,7 +42,7 @@
   - No power name appears in walker sources, in any case, not even in a comment.
   - Nothing under `gameplay/actions` imports `gameplay/powers`.
 - **Line width.** Scala lines stay at or under 80 characters, as in the files around them. Re-wrap any line in this plan that comes out longer.
-- **Never touch the live database `var/oathdigital`.** A browser check runs a scratch server on port 8081 through Bash, never `preview_start`.
+- **Never touch the live database `var/distantlands`.** A browser check runs a scratch server on port 8081 through Bash, never `preview_start`.
 - **Concurrent sessions.** Other sessions commit to `main` while you work.
   - Stage explicit paths only; never `git add -A`.
   - Re-check `git log --oneline -1` before any amend, reset or rebase.
@@ -122,7 +122,7 @@ Three `ModifierFlowSuite` tests are about the session, not the flow. Step 9 move
 In `TableControls.scala`, delete the `ActionControls` trait and its doc comment (from "/** The modifier flow's commands" through `def cancelModifiers(): Unit`). Change the import to:
 
 ```scala
-import oathdigital.protocol.GameIntent => GameCommand
+import distantlands.protocol.GameIntent => GameCommand
 ```
 
 - [ ] **Step 3: `SessionDrafts` loses the flow slot**
@@ -240,7 +240,7 @@ In `GameClient.scala`:
 - The protocol import becomes:
 
 ```scala
-import oathdigital.protocol.{ActorlessCommandCodec, ActorlessCommandRequest,
+import distantlands.protocol.{ActorlessCommandCodec, ActorlessCommandRequest,
   ProtocolDecodeFailure, GameIntent => GameCommand}
 ```
 
@@ -283,12 +283,12 @@ Expected: no output.
 In `RecordingControls.scala`:
 
 - `extends ActionControls` becomes `extends TableControls`.
-- Delete the five no-op stubs and the `PreviewModifier` import (`import oathdigital.protocol.GameIntent => Intent`).
+- Delete the five no-op stubs and the `PreviewModifier` import (`import distantlands.protocol.GameIntent => Intent`).
 - Its doc's first lines become "Spy of `TableControls`: records what was staged and submitted instead of touching a session, shared by every panel render suite." Delete "every other method is a no-op stub." from the doc.
 
 In `TableSessionSuite.scala`:
 
-- The protocol import becomes `import oathdigital.protocol.GameIntent => GameCommand`.
+- The protocol import becomes `import distantlands.protocol.GameIntent => GameCommand`.
 - In `RecordingClient`, delete the `Preview` case class, `previews`, `pendingPreviews`, `preview` and `answerPreview`. `submit` loses its `orderedModifiers` parameter. Its doc becomes "Spy of `GameClient`: records every load, submit and log load."
 - In "a stale-position submit empties the drafts, reloads, and keeps the notice", `fixture.session.send(GameCommand.BeginRest, Vector.empty)` becomes `fixture.session.submitCommand(GameCommand.BeginRest)`.
 - Delete "a preview answered after the session changed never lands" (with its `/** Spec, Fix 2. */` comment), "a preview answered under the same session lands", and "fail shows the failure and redraws; replaceDrafts does not redraw".
@@ -406,7 +406,7 @@ If `reconcile` at the same context does not keep the moved partition, stop and r
 
 Delete these tests, each to the end of its body:
 
-- `FollowUpControlsSuite`: "a queued start that offers modifiers shows their order in place of the panel". Drop `MajorActionPreviewResponse` from its import: `import oathdigital.protocol.GameIntent`.
+- `FollowUpControlsSuite`: "a queued start that offers modifiers shows their order in place of the panel". Drop `MajorActionPreviewResponse` from its import: `import distantlands.protocol.GameIntent`.
 - `BannerControlsSuite`: "Challenge starts through the modifier flow and Place Banner Resource does not".
 - `NegotiationControlsSuite`: "Negotiation does not start through the modifier flow".
 - `CampaignControlsSuite`: "Campaign does not start through the modifier flow".
@@ -461,14 +461,14 @@ No power selects at these three windows, so with the production catalog the deci
 Create `src/test/scala/distantlands/testkit/EmptyWindowModifier.scala`:
 
 ```scala
-package oathdigital.testkit
+package distantlands.testkit
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.Contribution
-import oathdigital.gameplay.powers.SelectedModifier
-import oathdigital.gameplay.setup.FirstGameSetupFixture
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.Contribution
+import distantlands.gameplay.powers.SelectedModifier
+import distantlands.gameplay.setup.FirstGameSetupFixture
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
 
 /** A modifier for an action no card gives one to yet: Forge, Challenge or
   * Campaign. It stands in for the future power those windows are kept for
@@ -551,11 +551,11 @@ Add to `CampaignProcedureSuite`:
         "Start Campaign"))))
 ```
 
-Add the imports each suite lacks: `oathdigital.testkit.EmptyWindowModifier`, `oathdigital.gameplay.powerresolver.ModifierPicks`, and `oathdigital.testkit.Table` or `oathdigital.model.OathState.Ready` where missing.
+Add the imports each suite lacks: `distantlands.testkit.EmptyWindowModifier`, `distantlands.gameplay.powerresolver.ModifierPicks`, and `distantlands.testkit.Table` or `distantlands.model.OathState.Ready` where missing.
 
 - [ ] **Step 3: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.ForgeProcedureSuite oathdigital.gameplay.ChallengeProcedureSuite oathdigital.gameplay.CampaignProcedureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.ForgeProcedureSuite distantlands.gameplay.ChallengeProcedureSuite distantlands.gameplay.CampaignProcedureSuite"`
 
 Expected: the three new tests FAIL. Each start parks on the action's first own decision or finishes, not on `*.modifiers`.
 
@@ -563,7 +563,7 @@ Expected: the three new tests FAIL. Each start parks on the action's first own d
 
 In `ForgeProcedure.scala`:
 
-- Add `import oathdigital.gameplay.walker.ModifierChoice`.
+- Add `import distantlands.gameplay.walker.ModifierChoice`.
 - Rename the private `tree(actor: PlayerId, cost: Tokens)` to `forging(actor: PlayerId, cost: Tokens)`. Keep its body and its doc comment.
 - Add, above `forging`:
 
@@ -601,7 +601,7 @@ In `ForgeProcedure.scala`:
 
 In `ChallengeProcedure.scala`:
 
-- The walker import becomes `import oathdigital.gameplay.walker.{ModifierChoice, WalkerPowers, WalkerSimulation}`.
+- The walker import becomes `import distantlands.gameplay.walker.{ModifierChoice, WalkerPowers, WalkerSimulation}`.
 - Replace `build`, `startable` and `rebuild`, and rename the private `tree(actor)` to `challenge(actor)`, keeping its body:
 
 ```scala
@@ -650,7 +650,7 @@ In `ChallengeProcedure.scala`:
 
 In `CampaignProcedure.scala`:
 
-- The walker import becomes `import oathdigital.gameplay.walker.{ModifierChoice, WalkerPowers, WalkerRollFeedback, WalkerSimulation}`. Re-wrap it to 80 characters.
+- The walker import becomes `import distantlands.gameplay.walker.{ModifierChoice, WalkerPowers, WalkerRollFeedback, WalkerSimulation}`. Re-wrap it to 80 characters.
 - Rename the private `tree(catalog, state, actor)` to `battle(catalog, state, actor)`, keeping its body.
 - Replace `build`, `startable`, `refusal` and `rebuild` with:
 
@@ -725,7 +725,7 @@ For Challenge, after `rebuild = ChallengeProcedure.rebuild,`; for Campaign, afte
 
 - [ ] **Step 8: Run the three suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.ForgeProcedureSuite oathdigital.gameplay.ChallengeProcedureSuite oathdigital.gameplay.CampaignProcedureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.ForgeProcedureSuite distantlands.gameplay.ChallengeProcedureSuite distantlands.gameplay.CampaignProcedureSuite"`
 
 Expected: the three new tests PASS. `ForgeProcedureSuite` fails where it reads paths and the root; Step 9 fixes those.
 
@@ -846,25 +846,25 @@ Add to `src/test/scala/distantlands/testkit/CatacombsGame.scala`:
         munit.Assertions.fail(s"expected the modifier decision, got $other")
 ```
 
-Imports: `oathdigital.gameplay.powerresolver.ModifierPicks`, `oathdigital.gameplay.powers.WalkerPowerCatalog`.
+Imports: `distantlands.gameplay.powerresolver.ModifierPicks`, `distantlands.gameplay.powers.WalkerPowerCatalog`.
 
 - [ ] **Step 2: Write the failing tests**
 
 Create `src/test/scala/distantlands/gameplay/powers/recover/RecoverModifierChoiceSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.recover
+package distantlands.gameplay.powers.recover
 
-import oathdigital.gameplay.{OathRules, WalkerDiceFixture}
-import oathdigital.gameplay.powerresolver.ModifierPicks
-import oathdigital.gameplay.powers.WalkerPowerCatalog
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatacombsGame, CatalogNames, Look, Outcomes,
+import distantlands.gameplay.{OathRules, WalkerDiceFixture}
+import distantlands.gameplay.powerresolver.ModifierPicks
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{CatacombsGame, CatalogNames, Look, Outcomes,
   ParkedNode, Table}
-import oathdigital.testkit.Table.p1
-import oathdigital.testkit.Unwrap.{accepted, rejected}
+import distantlands.testkit.Table.p1
+import distantlands.testkit.Unwrap.{accepted, rejected}
 
 /** Recover asks for its modifiers inside the walk (modifier walker design,
   * slice 4). */
@@ -948,7 +948,7 @@ Add to `ParkedDecisionSuite` (frontend):
 
 - [ ] **Step 3: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.recover.RecoverModifierChoiceSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.recover.RecoverModifierChoiceSuite"`
 
 Expected: FAIL. The start rolls at once and `startLabel` is not there.
 
@@ -956,7 +956,7 @@ Expected: FAIL. The start rolls at once and `startLabel` is not there.
 
 In `RecoverProcedure.scala`:
 
-- The walker import becomes `import oathdigital.gameplay.walker.{ModifierChoice, WalkerPowers, WalkerRollFeedback, WalkerSimulation}`, wrapped to 80 characters.
+- The walker import becomes `import distantlands.gameplay.walker.{ModifierChoice, WalkerPowers, WalkerRollFeedback, WalkerSimulation}`, wrapped to 80 characters.
 - Rename the private `tree(actor: PlayerId, siteId: SiteId, difficulty: Int)` to `recovery(…)`, keeping its body and doc comment.
 - Replace `build`, `startable` and `rebuild` with:
 
@@ -1037,7 +1037,7 @@ In `WalkerProcedureRegistry.scala`, the `ActionRef.Recover` entry ends:
 
 - [ ] **Step 6: Run the new suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.recover.RecoverModifierChoiceSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.recover.RecoverModifierChoiceSuite"`
 
 Expected: PASS.
 
@@ -1187,7 +1187,7 @@ Forest Paths hooks `TravelActionEligibility` with a Transform that changes nothi
 
 In `StartLines.scala`:
 
-- Add `import oathdigital.gameplay.actions.recover.RecoverProcedure`.
+- Add `import distantlands.gameplay.actions.recover.RecoverProcedure`.
 - In `opening`, before `case ActionRef.Travel | ActionRef.Search =>`, add:
 
 ```scala
@@ -1242,7 +1242,7 @@ In `frontend/src/main/scala/distantlands/frontend/ParkedDecision.scala`:
 
 **`RelicWorshipSuite`:** starts pick through the decision.
 
-- Imports: add `oathdigital.gameplay.ModifierPlay` to the `oathdigital.gameplay` import, and `oathdigital.testkit.CatacombsGame`. Drop `Refusals`.
+- Imports: add `distantlands.gameplay.ModifierPlay` to the `distantlands.gameplay` import, and `distantlands.testkit.CatacombsGame`. Drop `Refusals`.
 - `recover`'s start becomes:
 
 ```scala
@@ -1299,7 +1299,7 @@ In `frontend/src/main/scala/distantlands/frontend/ParkedDecision.scala`:
 
 **`CatacombsContributionSuite`:** Catacombs is picked; its secret is paid at the pick; the Recover is the root's second child.
 
-- Imports: add `oathdigital.gameplay.operations.Costs` and `oathdigital.gameplay.powers.recover.CatacombsContribution`.
+- Imports: add `distantlands.gameplay.operations.Costs` and `distantlands.gameplay.powers.recover.CatacombsContribution`.
 - `started` becomes:
 
 ```scala
@@ -1477,7 +1477,7 @@ In `frontend/src/main/scala/distantlands/frontend/ParkedDecision.scala`:
         fail(s"picking Catacombs must persist, got $error")
 ```
 
-  The batch's first two ops are now the pick's payment, then the relic move: swap the two expected operations, and change the comment to "The pick's payment onto the card, then Catacombs' relic move off the top of the relic deck, verbatim, survived encoding." Import `oathdigital.gameplay.ModifierPlay`.
+  The batch's first two ops are now the pick's payment, then the relic move: swap the two expected operations, and change the comment to "The pick's payment onto the card, then Catacombs' relic move off the top of the relic deck, verbatim, survived encoding." Import `distantlands.gameplay.ModifierPlay`.
 - "preview offers the walker Catacombs contribution, and OathRules.startWalker accepts exactly the offered id (Task 9a)": delete its second half, from the comment "The property that matters" to the end of the test. A start no longer takes the offered id. Task 4 deletes the rest with the preview.
 
 **`WalkerDecisionProjectionSuite`:** in "the projector reports the decision the walker actually parked at with Catacombs in effect…", the start becomes:
@@ -1488,7 +1488,7 @@ In `frontend/src/main/scala/distantlands/frontend/ParkedDecision.scala`:
       Vector(CatacombsGame.catacombsId)))
 ```
 
-Import `oathdigital.gameplay.ModifierPlay`. If the unwired projector no longer returns `None`, stop and report: it means the picks reach a projector that has no pool to find them in.
+Import `distantlands.gameplay.ModifierPlay`. If the unwired projector no longer returns `None`, stop and report: it means the picks reach a projector that has no pool to find them in.
 
 - [ ] **Step 12: Undo and the Game Log for a Recover pick**
 
@@ -1514,7 +1514,7 @@ Add to `UndoServiceSuite`:
     assertEquals(undone.state, withBoth.state)
 ```
 
-Import `oathdigital.gameplay.powers.recover.RelicWorship`.
+Import `distantlands.gameplay.powers.recover.RelicWorship`.
 
 Add to `LogScripts`, after `revealRelic`:
 
@@ -1532,7 +1532,7 @@ Add to `LogScripts`, after `revealRelic`:
     Script("recover-worship", service, p1)
 ```
 
-Import `oathdigital.gameplay.powers.recover.RelicWorship`.
+Import `distantlands.gameplay.powers.recover.RelicWorship`.
 
 Add to `GameLogStartLineSuite`:
 
@@ -1641,7 +1641,7 @@ final case class ActorlessCommandRequest(
 
 In `GameRoutes.scala`:
 
-- Delete the `oathdigital.protocol.{MajorActionPreviewRequest, …}` import.
+- Delete the `distantlands.protocol.{MajorActionPreviewRequest, …}` import.
 - In `CommandRejectionMessage.text`, delete the `InvalidModifierInvocation` case.
 - In `GameServerGateway`, delete `preview`.
 - Delete `MajorActionPreviewGuard`.
@@ -1655,7 +1655,7 @@ In `TrustedSeatRoutes.scala`, delete the `~ path("preview"): post { … }` alter
 
 In `AuthenticatedGameRoutes.scala`:
 
-- The protocol import becomes `import oathdigital.protocol.{ActorlessCommandRequest, FirstGameBootstrapRequest}`.
+- The protocol import becomes `import distantlands.protocol.{ActorlessCommandRequest, FirstGameBootstrapRequest}`.
 - `submit` binds with `GameIntentMapper.bind(actor.access.playerId, request.intent)`.
 - Delete the gateway's `preview`.
 - In the route, delete the `~ path("preview") { … }` alternative, so `path("commands") { … }` is followed by `~ path("bootstrap"):`.
@@ -1672,7 +1672,7 @@ In `GameApplicationService.scala`:
 - Delete `MajorActionPreviewAccepted`, the `descriptions` value, `preview`, `walkerAction`, `acceptPreview` and `majorAction`, each with its doc comment.
 - In `applyUnblockedCommand`, delete the `case GameCommand.WithModifiers(inner, ordered) => …` arm.
 - In `answersFollowUp`, delete the `WithModifiers` case.
-- Delete the imports of `PowerRuntime`, `WalkerProcedureRegistry` and `PreviewModifier`. `import oathdigital.gameplay.{PowerRuntime, OathRules}` becomes `import oathdigital.gameplay.OathRules`.
+- Delete the imports of `PowerRuntime`, `WalkerProcedureRegistry` and `PreviewModifier`. `import distantlands.gameplay.{PowerRuntime, OathRules}` becomes `import distantlands.gameplay.OathRules`.
 
 In `PowerRuntime.scala`, delete `options`, and drop `OrderedRuleInvocation` from the model import. `ignored` and `ignoredAtSource` stay: the rules' fallback diagnostics and their replay use them.
 
@@ -1687,11 +1687,11 @@ The Game Log named a modifier by the card it is printed on through `PreviewModif
 Create `src/main/scala/distantlands/application/gamelog/PrintedCards.scala`:
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.{IndexedRuleSource, RuleSourceFace, RuleSourceIndex}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.{IndexedRuleSource, RuleSourceFace, RuleSourceIndex}
+import distantlands.model._
 
 /** The card a power is printed on, so the log can name a modifier or a used
   * power by its card.
@@ -1739,7 +1739,7 @@ git rm src/main/scala/distantlands/application/PreviewModifierDescriptions.scala
 
 In `LogWords.scala`:
 
-- The application import becomes `import oathdigital.application.GamePresentationProjector`.
+- The application import becomes `import distantlands.application.GamePresentationProjector`.
 - `private val descriptions = new PreviewModifierDescriptions(catalog, presentation)` becomes `private val printed = new PrintedCards(catalog)`.
 - In `power`, `descriptions.printedOn(…)` becomes `printed.printedOn(…)`, and its doc's "as the modifier picker names it" becomes "as the modifier decision names it".
 
@@ -1959,10 +1959,10 @@ In `WalkerProcedureRegistry.scala`:
 
 - Delete the `choosesModifiers` field of `Entry`, with its doc comment, and the `choosesModifiers = true` line of every entry (Search, PlayFacedownAdviser, Travel, Muster, Trade, Recover, Forge, Challenge, Campaign). Where that line ended an entry, move the closing parenthesis to the line before.
 - Delete the `choosesModifiers` accessor.
-- In `Entry`'s doc, replace the paragraph that opens "`modifierWindow` (batch-1 Task 1) is the [[oathdigital.model.PowerWindow]] at which a player-selected `ContributingPower` is offered as a `StartWalker` modifier" with:
+- In `Entry`'s doc, replace the paragraph that opens "`modifierWindow` (batch-1 Task 1) is the [[distantlands.model.PowerWindow]] at which a player-selected `ContributingPower` is offered as a `StartWalker` modifier" with:
 
 ```scala
-    * `modifierWindow` is the [[oathdigital.model.PowerWindow]] at which the
+    * `modifierWindow` is the [[distantlands.model.PowerWindow]] at which the
     * procedure's modifier decision (`ModifierChoice`) offers player-selected
     * `ContributingPower`s, and at which `ModifierOffers.offerable` looks for
     * the Act panel's start controls.
@@ -2119,7 +2119,7 @@ Add to `WalkerDecisionWireSuite`:
 
 - [ ] **Step 2: Run it to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.serialization.WalkerDecisionWireSuite"`
+Run: `./sbtw "testOnly distantlands.serialization.WalkerDecisionWireSuite"`
 
 Expected: FAIL to compile: `WalkerParked` still takes `modifiers`.
 
@@ -2392,7 +2392,7 @@ Expected: only the ROADMAP's phase text and its checked slice line, which descri
 
 - [ ] **Step 5: Browser check on a scratch database**
 
-Follow the memory recipe (`preview-start-hits-live-db`). Never use `preview_start`, and never open `var/oathdigital`.
+Follow the memory recipe (`preview-start-hits-live-db`). Never use `preview_start`, and never open `var/distantlands`.
 
 1. Seed a scratch HSQLDB in the scratchpad from `FirstGameSetupFixture.initialSituation().endingWake(p2)`. In the throwaway seeding suite, assert that p2's site has a Recover difficulty (`RecoverRules.difficulty`) and holds a facedown relic. If it has no difficulty, have p2 Travel first, through the situation, to a site that has one. Arrange Relic Worship as p2's adviser (`Play` onto `Location.PlayArea(p2)`) and give p2 one faceup secret.
 2. Run the server on port 8081 through Bash, in the background.

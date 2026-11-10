@@ -152,13 +152,13 @@ Inventoried at `14e9d307`.
 - Test: `src/test/scala/distantlands/gameplay/powers/campaign/BanditCrownPlansSuite.scala` (create)
 
 **Interfaces:**
-- Produces: `oathdigital.gameplay.BanditCrownCard` (moved verbatim);
+- Produces: `distantlands.gameplay.BanditCrownCard` (moved verbatim);
   `private[gameplay] object BanditCrownRule` with
   `holder(ready: ReadyGame): Option[PlayerId]`,
   `banditSites(ready: ReadyGame): Set[SiteId]` and
   `sitesFor(ready: ReadyGame, player: PlayerId): Set[SiteId]`;
   `case object BanditCrown extends ContributingPower` in
-  `oathdigital.gameplay.powers.poweruse`.
+  `distantlands.gameplay.powers.poweruse`.
 
 - [ ] **Step 1: Move the card and add the rule**
 
@@ -167,10 +167,10 @@ to its `val powers`, and the blank line after) from `HoldingRelics.scala`.
 Create `src/main/scala/distantlands/gameplay/BanditCrown.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.catalog.{PrintedPower, Relic}
-import oathdigital.model._
+import distantlands.catalog.{PrintedPower, Relic}
+import distantlands.model._
 
 object BanditCrownCard extends Relic(RelicId("R11"), "Bandit Crown", value = 56, defense = 3):
   val power = PrintedPower(PowerId("relic.bandit-crown"),
@@ -205,11 +205,11 @@ private[gameplay] object BanditCrownRule:
 ```
 
 In `NewFoundations.scala`, add `BanditCrownCard` to the
-`oathdigital.gameplay.{...}` import (alphabetical: `ActingTroupeCard,
+`distantlands.gameplay.{...}` import (alphabetical: `ActingTroupeCard,
 BanditCrownCard, MarriageCard, PledgeToDiscordCard, SpitefulMirrorCard`).
 In the four suites of finding 12, replace
-`oathdigital.catalog.holding.BanditCrownCard` with
-`oathdigital.gameplay.BanditCrownCard` (in `RestSuite`, split the brace
+`distantlands.catalog.holding.BanditCrownCard` with
+`distantlands.gameplay.BanditCrownCard` (in `RestSuite`, split the brace
 import so `ArbiterCard` keeps `catalog.holding`).
 
 - [ ] **Step 2: Register the power**
@@ -217,11 +217,11 @@ import so `ArbiterCard` keeps `catalog.holding`).
 Create `src/main/scala/distantlands/gameplay/powers/poweruse/BanditCrown.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.poweruse
+package distantlands.gameplay.powers.poweruse
 
-import oathdigital.gameplay.BanditCrownCard
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution}
-import oathdigital.model._
+import distantlands.gameplay.BanditCrownCard
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution}
+import distantlands.model._
 
 /** Bandit Crown (R11): "You may use cards at sites ruled by bandits as if
   * you ruled them."
@@ -249,17 +249,17 @@ the line `relic.bandit-crown` from
 Create `src/test/scala/distantlands/gameplay/powers/poweruse/BanditCrownSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.poweruse
+package distantlands.gameplay.powers.poweruse
 
-import oathdigital.gameplay.{BanditCrownCard, PowerAccess}
-import oathdigital.gameplay.cards.{AncientCitySite, DeepWoodsSite}
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.gameplay.powers.action.{RovingTerror, RovingTerrorCard}
-import oathdigital.gameplay.powers.travel.{Tents, TentsCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{MenuPlay, Table}
-import oathdigital.testkit.Table.{p1, p2, p3}
+import distantlands.gameplay.{BanditCrownCard, PowerAccess}
+import distantlands.gameplay.cards.{AncientCitySite, DeepWoodsSite}
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.powers.action.{RovingTerror, RovingTerrorCard}
+import distantlands.gameplay.powers.travel.{Tents, TentsCard}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{MenuPlay, Table}
+import distantlands.testkit.Table.{p1, p2, p3}
 
 /** Bandit Crown (R11): its holder uses the cards at bandit-ruled sites as
   * if they ruled them, and the bandits still rule (catalog batch 11,
@@ -315,14 +315,14 @@ class BanditCrownSuite extends munit.FunSuite:
 Create `src/test/scala/distantlands/gameplay/powers/campaign/BanditCrownPlansSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.BanditCrownCard
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.model._
-import oathdigital.testkit.Look
+import distantlands.gameplay.BanditCrownCard
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.model._
+import distantlands.testkit.Look
 
 /** Bandit Crown's battle plans (catalog batch 11, ruling 3): the holder
   * uses the plans of cards at bandit sites in any Campaign, and a bandit
@@ -383,7 +383,7 @@ suites do.
 - [ ] **Step 5: Run the new suites to see them fail**
 
 ```bash
-./sbtw "testOnly oathdigital.gameplay.powers.poweruse.BanditCrownSuite oathdigital.gameplay.powers.campaign.BanditCrownPlansSuite"
+./sbtw "testOnly distantlands.gameplay.powers.poweruse.BanditCrownSuite distantlands.gameplay.powers.campaign.BanditCrownPlansSuite"
 ```
 
 Expected: they compile and fail. The menu, modifier and plan offers are
@@ -415,7 +415,7 @@ holder, or the one they act from".
 
 - [ ] **Step 7: Widen the plans' sources**
 
-In `PlanContext.scala`, add `import oathdigital.gameplay.BanditCrownRule`
+In `PlanContext.scala`, add `import distantlands.gameplay.BanditCrownRule`
 and replace
 
 ```scala
@@ -442,7 +442,7 @@ add "The Bandit Crown's holder also uses the cards at bandit sites."
 - [ ] **Step 8: Run the suites**
 
 ```bash
-./sbtw "testOnly oathdigital.gameplay.powers.poweruse.BanditCrownSuite oathdigital.gameplay.powers.campaign.BanditCrownPlansSuite oathdigital.gameplay.powers.UnimplementedPowersSuite oathdigital.gameplay.powers.PowerImplementationStatusSuite oathdigital.gameplay.powers.PowerCatalogUniquenessSuite oathdigital.gameplay.powers.whenplayed.* oathdigital.gameplay.RecoverProcedureSuite oathdigital.gameplay.RestSuite"
+./sbtw "testOnly distantlands.gameplay.powers.poweruse.BanditCrownSuite distantlands.gameplay.powers.campaign.BanditCrownPlansSuite distantlands.gameplay.powers.UnimplementedPowersSuite distantlands.gameplay.powers.PowerImplementationStatusSuite distantlands.gameplay.powers.PowerCatalogUniquenessSuite distantlands.gameplay.powers.whenplayed.* distantlands.gameplay.RecoverProcedureSuite distantlands.gameplay.RestSuite"
 ```
 
 Expected: all pass.
@@ -496,17 +496,17 @@ EOF
 Append to `BanditCrownSuite.scala`, with these imports added at the top:
 
 ```scala
-import oathdigital.gameplay.operations.{HallOfMinisters, HallOfMinistersCard}
-import oathdigital.gameplay.powers.ConsentPowers
-import oathdigital.gameplay.powers.cardplay.{SecretPolice, SecretPoliceCard}
-import oathdigital.gameplay.powers.economy.{Curfew, CurfewCard}
-import oathdigital.gameplay.powers.recover.{RelicPatrols, RelicPatrolsCard}
-import oathdigital.gameplay.powers.search.{ForcedLabor, ForcedLaborCard}
-import oathdigital.gameplay.powers.travel.{ForbiddenForest,
+import distantlands.gameplay.operations.{HallOfMinisters, HallOfMinistersCard}
+import distantlands.gameplay.powers.ConsentPowers
+import distantlands.gameplay.powers.cardplay.{SecretPolice, SecretPoliceCard}
+import distantlands.gameplay.powers.economy.{Curfew, CurfewCard}
+import distantlands.gameplay.powers.recover.{RelicPatrols, RelicPatrolsCard}
+import distantlands.gameplay.powers.search.{ForcedLabor, ForcedLaborCard}
+import distantlands.gameplay.powers.travel.{ForbiddenForest,
   ForbiddenForestCard, GraspingVines, GraspingVinesCard, TollRoads,
   TollRoadsCard}
-import oathdigital.gameplay.powers.wake.{HiddenPassages, HiddenPassagesCard}
-import oathdigital.gameplay.cards.NarrowPassSite
+import distantlands.gameplay.powers.wake.{HiddenPassages, HiddenPassagesCard}
+import distantlands.gameplay.cards.NarrowPassSite
 ```
 
 ```scala
@@ -577,7 +577,7 @@ it (catalog batch 11, ruling 6)." Replace the first test with:
 
 In the third test, change `exists(_.waiver.isEmpty)` to
 `exists(_.waiver.exists(_.granter.isEmpty))`. Add the import
-`oathdigital.gameplay.BanditCrownCard` and append:
+`distantlands.gameplay.BanditCrownCard` and append:
 
 ```scala
   test("the Crown's holder may waive it for an Imperial player"):
@@ -608,7 +608,7 @@ In the third test, change `exists(_.waiver.isEmpty)` to
 The second new test reaches the card through the Crown when p2's pawn is
 elsewhere, and through the pawn site otherwise; either way the refusal is
 the same. In `PassagesSuite.scala`, add the import
-`oathdigital.gameplay.BanditCrownCard` and append after "under bandits
+`distantlands.gameplay.BanditCrownCard` and append after "under bandits
 nobody may consent, and the ruler uses it freely":
 
 ```scala
@@ -630,7 +630,7 @@ nobody may consent, and the ruler uses it freely":
 - [ ] **Step 3: Run them to see them fail**
 
 ```bash
-./sbtw "testOnly oathdigital.gameplay.powers.poweruse.BanditCrownSuite oathdigital.gameplay.powers.poweruse.BanditForestSuite oathdigital.gameplay.powers.wake.PassagesSuite"
+./sbtw "testOnly distantlands.gameplay.powers.poweruse.BanditCrownSuite distantlands.gameplay.powers.poweruse.BanditForestSuite distantlands.gameplay.powers.wake.PassagesSuite"
 ```
 
 Expected: compile error on `forest.useAsked`, which Step 7 adds. That is
@@ -748,7 +748,7 @@ holder under bandits".
     forestSite(ready).flatMap(SiteRulers.consentGranterAt(ready, _))
 ```
 
-`HallOfMinisters.scala` (add `import oathdigital.gameplay.SiteRulers`):
+`HallOfMinisters.scala` (add `import distantlands.gameplay.SiteRulers`):
 
 ```scala
   /** Who may consent: the player who rules the intact Hall's site, or the
@@ -794,7 +794,7 @@ Bandits rule this site.""
 - [ ] **Step 6: Run the granter tests**
 
 ```bash
-./sbtw "testOnly oathdigital.gameplay.powers.poweruse.BanditCrownSuite oathdigital.gameplay.powers.wake.PassagesSuite oathdigital.gameplay.powers.ConsentPowersSuite"
+./sbtw "testOnly distantlands.gameplay.powers.poweruse.BanditCrownSuite distantlands.gameplay.powers.wake.PassagesSuite distantlands.gameplay.powers.ConsentPowersSuite"
 ```
 
 Expected: everything compiles except `BanditForestSuite` is not run yet;
@@ -868,7 +868,7 @@ and its two callers:
           PowerUseRules.cardRef(placed._2), placingPlain))
 ```
 
-Add `import oathdigital.gameplay.operations.PowerUseRules` and
+Add `import distantlands.gameplay.operations.PowerUseRules` and
 `Waiver` to the `powerresolver` import. Change the class doc's "It names
 no enemies, so no consent lifts it (consent design, ruling 1)." to "It
 names no enemies, so no ruler's consent lifts it (consent design, ruling
@@ -885,7 +885,7 @@ Pass the consent to Bandit Forest only:
           "without the Bandit Crown holder's consent.")))
 ```
 
-with `import oathdigital.gameplay.BanditCrownRule`, and its doc comment
+with `import distantlands.gameplay.BanditCrownRule`, and its doc comment
 gains "The Bandit Crown's holder may waive it for an Imperial other than
 themselves (catalog batch 11, ruling 6)."
 
@@ -905,7 +905,7 @@ edifice.e29.ruined no-powers-here-consent = Imperials cannot use the non-persist
 - [ ] **Step 8: Run the consent suites**
 
 ```bash
-./sbtw "testOnly oathdigital.gameplay.powers.poweruse.* oathdigital.gameplay.powers.wake.PassagesSuite oathdigital.gameplay.powers.ConsentPowersSuite oathdigital.gameplay.powers.DeclaredNoteKeysSuite oathdigital.gameplay.powers.LogNoteCatalogSuite oathdigital.gameplay.operations.* oathdigital.gameplay.powers.recover.* oathdigital.gameplay.powers.travel.* oathdigital.gameplay.powers.cardplay.*"
+./sbtw "testOnly distantlands.gameplay.powers.poweruse.* distantlands.gameplay.powers.wake.PassagesSuite distantlands.gameplay.powers.ConsentPowersSuite distantlands.gameplay.powers.DeclaredNoteKeysSuite distantlands.gameplay.powers.LogNoteCatalogSuite distantlands.gameplay.operations.* distantlands.gameplay.powers.recover.* distantlands.gameplay.powers.travel.* distantlands.gameplay.powers.cardplay.*"
 ```
 
 Expected: all pass.
@@ -952,7 +952,7 @@ EOF
 
 - [ ] **Step 1: Write the failing Curfew tests**
 
-In `CurfewSuite.scala`, add the import `oathdigital.gameplay.BanditCrownCard`
+In `CurfewSuite.scala`, add the import `distantlands.gameplay.BanditCrownCard`
 and append:
 
 ```scala
@@ -1014,7 +1014,7 @@ may let a trader off (catalog batch 11, rulings 4 and 5)."
 - [ ] **Step 2: Run them to see them fail**
 
 ```bash
-./sbtw "testOnly oathdigital.gameplay.powers.economy.CurfewSuite"
+./sbtw "testOnly distantlands.gameplay.powers.economy.CurfewSuite"
 ```
 
 Expected: the first, third and fourth new tests fail (no step is asked
@@ -1023,7 +1023,7 @@ under bandits); the burn tests pass.
 - [ ] **Step 3: Add `letOffBy`**
 
 In `PayOrAsk.scala`, in `object PayOrAsk`, add (with `import
-oathdigital.gameplay.BanditCrownRule` beside the `SiteRulers` import):
+distantlands.gameplay.BanditCrownRule` beside the `SiteRulers` import):
 
 ```scala
   /** Who may let `payer` off what `ruler` is owed: a player ruler, or the
@@ -1185,7 +1185,7 @@ traveller off, else the kill alone".
 - [ ] **Step 6: Run the toll suites**
 
 ```bash
-./sbtw "testOnly oathdigital.gameplay.powers.economy.* oathdigital.gameplay.powers.search.* oathdigital.gameplay.powers.travel.* oathdigital.gameplay.powers.ConsentPowersSuite oathdigital.application.*"
+./sbtw "testOnly distantlands.gameplay.powers.economy.* distantlands.gameplay.powers.search.* distantlands.gameplay.powers.travel.* distantlands.gameplay.powers.ConsentPowersSuite distantlands.application.*"
 ```
 
 Expected: all pass. Every pre-existing toll test keeps its result: with no

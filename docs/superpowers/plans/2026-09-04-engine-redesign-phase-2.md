@@ -68,7 +68,7 @@ Expected: success.
 - [ ] **Step 1: Write the failing test**
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
 class SupplyResourceSuite extends munit.FunSuite {
   test("favor clamp takes the full requested amount when available") {
@@ -92,13 +92,13 @@ class SupplyResourceSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.SupplyResourceSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.SupplyResourceSuite"`
 Expected: FAIL — `SupplyResource` does not exist.
 
 - [ ] **Step 3: Implement**
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
 /** Plan-time clamps for supply-capped effects. "As much as possible" is
   * resolved here, before an exact operation is built, so the executor never
@@ -116,11 +116,11 @@ object SupplyResource {
 `val gain = math.min(1, ready.banks.favor.getOrElse(suit, 0))`
 with
 `val gain = SupplyResource.favor(ready.banks.favor.getOrElse(suit, 0), 1)`
-(The 0/1 outcome is identical; `SupplyResource` is in `oathdigital.gameplay`, same package as `CardPlay`, so no import is needed.)
+(The 0/1 outcome is identical; `SupplyResource` is in `distantlands.gameplay`, same package as `CardPlay`, so no import is needed.)
 
 - [ ] **Step 5: Run to verify it passes**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.SupplyResourceSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.SupplyResourceSuite"`
 Expected: PASS (5 tests).
 
 - [ ] **Step 6: Commit**
@@ -242,7 +242,7 @@ object Costs {
 }
 ```
 
-(Verify the exact `CardIndex`/`LocatedCard` accessor names against `OperationStateAdapter.card` before committing to `statefulCard` — `LocatedCard.state: Option[CardState]` is the shape used there. `WrongPlayer`, `InvalidEventOrder`, `InsufficientFavor`, `InsufficientSecrets` are `OathViolation` members; the file header already imports `oathdigital.gameplay.OathViolation._` — confirm it still does after the edit.)
+(Verify the exact `CardIndex`/`LocatedCard` accessor names against `OperationStateAdapter.card` before committing to `statefulCard` — `LocatedCard.state: Option[CardState]` is the shape used there. `WrongPlayer`, `InvalidEventOrder`, `InsufficientFavor`, `InsufficientSecrets` are `OathViolation` members; the file header already imports `distantlands.gameplay.OathViolation._` — confirm it still does after the edit.)
 
 Delete `PowerOperationPlanner.payment`; keep `PowerOperationPlanner.placement`.
 
@@ -290,7 +290,7 @@ In `PowerOperationsSuite.scala`, replace every cost-construction test that uses 
 
 - [ ] **Step 6: Run the suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.PowerOperationsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.PowerOperationsSuite"`
 Expected: PASS (rewritten tests + the two new ones). Fix any assertion drift found — do not weaken assertions.
 
 - [ ] **Step 7: Commit**
@@ -349,13 +349,13 @@ In `OperationError.scala`, add after `InsufficientPieces` (line ~39):
 Create `src/test/scala/distantlands/gameplay/SupplyAdjustSuite.scala`, reusing the `OperationExecutorSuite` fixture pattern:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.operations._
-import oathdigital.gameplay.setup.{FirstGameFoundationProfile,
+import distantlands.gameplay.operations._
+import distantlands.gameplay.setup.{FirstGameFoundationProfile,
   FirstGameSupportState, PlayerColor}
-import oathdigital.model._
-import oathdigital.model.TestGameFixtures._
+import distantlands.model._
+import distantlands.model.TestGameFixtures._
 
 class SupplyAdjustSuite extends munit.FunSuite {
   private val blueId = PlayerId("player-blue")
@@ -437,7 +437,7 @@ class SupplyAdjustSuite extends munit.FunSuite {
 
 - [ ] **Step 4: Run to verify failure**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.SupplyAdjustSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.SupplyAdjustSuite"`
 Expected: FAIL — `AdjustSupply`/`InsufficientSupply` do not exist.
 
 - [ ] **Step 5: Implement the executor branch**
@@ -472,7 +472,7 @@ and add the helper next to `flipPlayerSecrets`:
 
 - [ ] **Step 6: Run to verify pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.SupplyAdjustSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.SupplyAdjustSuite"`
 Expected: PASS (4 tests).
 
 - [ ] **Step 7: Migrate the seven spend sites**
@@ -492,7 +492,7 @@ Each action's update lambda now only writes its non-supply module state; `Adjust
 
 - [ ] **Step 8: Run the action suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.*"`
 Expected: existing suites stay green — outcomes byte-identical because the op performs the same deduction earlier in the batch and the update lambda no longer touches supply.
 
 - [ ] **Step 9: Commit**
@@ -598,7 +598,7 @@ Run: `grep -rn "ResourceCost\|CostDisposition\|Planner.payment\|PayCosts" src/ma
 
 - [ ] **Step 5: Run the suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.PowerOperationsSuite"` plus any Catacombs/Recover/serialization suites (grep `CatacombsResolved` under `src/test` to enumerate)
+Run: `./sbtw "testOnly distantlands.gameplay.PowerOperationsSuite"` plus any Catacombs/Recover/serialization suites (grep `CatacombsResolved` under `src/test` to enumerate)
 Expected: green.
 
 - [ ] **Step 6: Commit**
@@ -643,7 +643,7 @@ Run: `grep -rn "bestEffort\|requireExact\|ResourceCost\|CostDisposition" src/` �
 
 - [ ] **Step 4: Live smoke**
 
-Restart the dev server on head (kill the running job, then background `./sbtw "runMain oathdigital.server.OathServer var/oathdigital docs/catalog/new-foundations-component-catalog.json"`), poll `/health`, then:
+Restart the dev server on head (kill the running job, then background `./sbtw "runMain distantlands.server.DistantLandsServer var/distantlands docs/catalog/new-foundations-component-catalog.json"`), poll `/health`, then:
 `curl -s "http://127.0.0.1:8080/api/dev/first-games/manual-1788482797070-427915?playerId=red-exile"` → `200` and `"ready":true`.
 Then bootstrap a fresh game and append one benign command (`placePawn`) → `200`, sequence advances.
 

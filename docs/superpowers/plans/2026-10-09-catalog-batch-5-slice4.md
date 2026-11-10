@@ -44,7 +44,7 @@ Task 1 amends both with the rulings made at plan time, so read them after Task 1
   - No power name appears in walker sources.
   - Nothing under `gameplay/actions` imports `gameplay/powers`.
 - **Line width.** Scala lines stay at or under 80 characters, as in the files around them.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Other sessions commit to `main` while you work.
   - Stage explicit paths only; never `git add -A`.
   - Re-check `git log --oneline -1` before any amend, reset or rebase.
@@ -216,7 +216,7 @@ git commit -m "docs(spec): settle the adviser arrival pass and Family Wagon"
 - Test: `src/test/scala/distantlands/gameplay/walker/AdviserArrivalPassSuite.scala`
 
 **Interfaces:**
-- Produces, in `oathdigital.gameplay.powerresolver`:
+- Produces, in `distantlands.gameplay.powerresolver`:
   - `final case class AdviserArrival(player: PlayerId, card: CardId)`
   - `final case class AdviserArrivals(actor: PlayerId, before: ReadyGame, after: ReadyGame, arrivals: Vector[AdviserArrival])`, with `AdviserArrivals.between(actor, before, after): AdviserArrivals`
   - `final case class ArrivalFollowUp(operations: Vector[CoreOperation], note: Note)`
@@ -227,13 +227,13 @@ git commit -m "docs(spec): settle the adviser arrival pass and Family Wagon"
 Create `src/test/scala/distantlands/gameplay/walker/AdviserArrivalPassSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.powerresolver.{AdviserArrival, AdviserArrivals,
+import distantlands.gameplay.powerresolver.{AdviserArrival, AdviserArrivals,
   ArrivalFollowUp, ContributingPower, Contribution}
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, Table}
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Look, Outcomes, Table}
+import distantlands.testkit.Table.{p1, p2}
 
 /** The adviser arrival pass (catalog batch 5, "The arrival pass"), driven by
   * stub rules over one leaf. */
@@ -348,7 +348,7 @@ class AdviserArrivalPassSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the tests to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.AdviserArrivalPassSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.AdviserArrivalPassSuite"`
 Expected: FAIL to compile, because `AdviserArrival`, `AdviserArrivals`, `ArrivalFollowUp` and `onArrival` do not exist.
 
 - [ ] **Step 3: Create the arrival types**
@@ -356,9 +356,9 @@ Expected: FAIL to compile, because `AdviserArrival`, `AdviserArrivals`, `Arrival
 Create `src/main/scala/distantlands/gameplay/powerresolver/AdviserArrivals.scala`:
 
 ```scala
-package oathdigital.gameplay.powerresolver
+package distantlands.gameplay.powerresolver
 
-import oathdigital.model.{AdviserState, CardId, CoreOperation, DenizenState,
+import distantlands.model.{AdviserState, CardId, CoreOperation, DenizenState,
   Note, Orientation, PlayerId, ReadyGame, VisionState}
 
 /** An adviser that arrived during one walker leaf: `card` is new among
@@ -413,12 +413,12 @@ Both types are in the same package, so no import changes.
 Create `src/main/scala/distantlands/gameplay/walker/AdviserArrivalPass.scala`:
 
 ```scala
-package oathdigital.gameplay.walker
+package distantlands.gameplay.walker
 
-import oathdigital.gameplay.operations.{OperationPipeline, OperationPolicy}
-import oathdigital.gameplay.powerresolver.{AdviserArrivals, ArrivalFollowUp,
+import distantlands.gameplay.operations.{OperationPipeline, OperationPolicy}
+import distantlands.gameplay.powerresolver.{AdviserArrivals, ArrivalFollowUp,
   ContributingPower}
-import oathdigital.model.{NoteStates, OathViolation, PowerId, ReadyGame}
+import distantlands.model.{NoteStates, OathViolation, PowerId, ReadyGame}
 
 /** The adviser arrival pass (catalog batch 5, "The arrival pass"). After a
   * leaf's operations apply, the advisers that arrived in it, new to a player
@@ -488,7 +488,7 @@ Add one sentence to `recordBatch`'s doc comment: `The adviser arrival pass then 
 
 - [ ] **Step 7: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.walker.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.walker.*"`
 Expected: PASS, the existing walker suites unchanged.
 
 - [ ] **Step 8: Commit**
@@ -509,7 +509,7 @@ git commit -m "feat(walker): run powers' follow-ups when an adviser arrives"
 - Test: `src/test/scala/distantlands/gameplay/CardSlotsSuite.scala`
 
 **Interfaces:**
-- Produces, in `oathdigital.gameplay.actions`:
+- Produces, in `distantlands.gameplay.actions`:
   - `final case class AdviserPlayNote(reason: OptionReason, applies: (Vector[AdviserFace], AdviserFace) => Boolean)`
   - `CardPlayRules.liftWhileFaceUp(card: CardId): CardPlayRules`
   - `CardPlayRules.noteAdviserPlay(note: AdviserPlayNote): CardPlayRules`
@@ -519,7 +519,7 @@ git commit -m "feat(walker): run powers' follow-ups when an adviser arrives"
 - [ ] **Step 1: Write the failing rules tests**
 
 In `CardPlayRulesSuite.scala`:
-- Change `import oathdigital.gameplay.actions.{AdviserFace, CardPlayRules}` to `import oathdigital.gameplay.actions.{AdviserFace, AdviserPlayNote, CardPlayRules}`.
+- Change `import distantlands.gameplay.actions.{AdviserFace, CardPlayRules}` to `import distantlands.gameplay.actions.{AdviserFace, AdviserPlayNote, CardPlayRules}`.
 - Add the field `private val wagon = CatalogNames.denizen("Family Wagon")` after `wrestlers`.
 - After the test `an adviser face that ignores the limit is not counted, in that face only`, add:
 
@@ -553,7 +553,7 @@ In `CardPlayRulesSuite.scala`:
 - [ ] **Step 2: Write the failing slot tests**
 
 In `CardSlotsSuite.scala`:
-- Change the first import to `import oathdigital.gameplay.actions.{AdviserFace, AdviserPlayNote, CardPlay, CardPlayRules, RuleNotes, VisionRules}`, wrapped to 80 columns.
+- Change the first import to `import distantlands.gameplay.actions.{AdviserFace, AdviserPlayNote, CardPlay, CardPlayRules, RuleNotes, VisionRules}`, wrapped to 80 columns.
 - After the test `a facedown adviser turned faceup must fit its own limit`, add:
 
 ```scala
@@ -584,7 +584,7 @@ In `CardSlotsSuite.scala`:
 
 - [ ] **Step 3: Run the tests to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CardPlayRulesSuite oathdigital.gameplay.CardSlotsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.CardPlayRulesSuite distantlands.gameplay.CardSlotsSuite"`
 Expected: FAIL to compile, because `AdviserPlayNote`, `liftWhileFaceUp`, `noteAdviserPlay`, `noteOn` and `Unbounded` do not exist.
 
 - [ ] **Step 4: Extend `CardPlayRules`**
@@ -703,7 +703,7 @@ In `CardSlots.scala`:
 
 - [ ] **Step 6: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CardPlayRulesSuite oathdigital.gameplay.CardSlotsSuite oathdigital.gameplay.powers.cardplay.* oathdigital.gameplay.powers.action.PiedPiperSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.CardPlayRulesSuite distantlands.gameplay.CardSlotsSuite distantlands.gameplay.powers.cardplay.* distantlands.gameplay.powers.action.PiedPiperSuite"`
 Expected: PASS.
 
 - [ ] **Step 7: Commit**
@@ -730,7 +730,7 @@ git commit -m "feat(cardplay): let a power lift the adviser limit and note a pla
 
 **Interfaces:**
 - Consumes: Task 2's `AdviserArrivals`, `ArrivalFollowUp`, `onArrival`; Task 3's `AdviserPlayNote`, `liftWhileFaceUp`, `noteAdviserPlay`, `Unbounded`.
-- Produces, in `oathdigital.gameplay.powers.cardplay`:
+- Produces, in `distantlands.gameplay.powers.cardplay`:
   - `FamilyWagonCard`
   - `final case class FamilyWagon` with `FamilyWagon.forCatalog(catalog)`, `FamilyWagon.id`, `FamilyWagon.cardId`, `FamilyWagon.buryWarning`, the keys `FamilyWagon.buried` and `FamilyWagon.buriedByHolder`, and `FamilyWagon.lifts(ready, player): Boolean`
 
@@ -739,19 +739,19 @@ git commit -m "feat(cardplay): let a power lift the adviser limit and note a pla
 Create `src/test/scala/distantlands/gameplay/powers/cardplay/FamilyWagonSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.gameplay.PlacementFixture
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.whenplayed.{ASmallFavor, FaithfulFriend}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.{WalkerOutcome, WalkerPowers}
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Unwrap
+import distantlands.gameplay.PlacementFixture
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.whenplayed.{ASmallFavor, FaithfulFriend}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.{WalkerOutcome, WalkerPowers}
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Look, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Unwrap
 
 /** Family Wagon (card 168) through card play: under a faceup Family Wagon
   * the arrival pass buries every adviser that is not a faceup Nomad, and
@@ -900,7 +900,7 @@ class FamilyWagonSuite extends munit.FunSuite:
     assertEquals(wagonLines(done.events), Vector.empty)
 ```
 
-In `AdviserLimitSuite.scala`, change `import oathdigital.gameplay.actions.{AdviserFace, VisionRules}` to `import oathdigital.gameplay.actions.{AdviserFace, CardPlayRules, VisionRules}` and add at the end:
+In `AdviserLimitSuite.scala`, change `import distantlands.gameplay.actions.{AdviserFace, VisionRules}` to `import distantlands.gameplay.actions.{AdviserFace, CardPlayRules, VisionRules}` and add at the end:
 
 ```scala
   test("a faceup Family Wagon gives its holder no limit; a lowering power " +
@@ -916,7 +916,7 @@ In `AdviserLimitSuite.scala`, change `import oathdigital.gameplay.actions.{Advis
 
 - [ ] **Step 2: Run the tests to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.cardplay.FamilyWagonSuite oathdigital.gameplay.powers.AdviserLimitSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.cardplay.FamilyWagonSuite distantlands.gameplay.powers.AdviserLimitSuite"`
 Expected: FAIL to compile, because `FamilyWagon` does not exist.
 
 - [ ] **Step 3: Create the card and its power**
@@ -924,15 +924,15 @@ Expected: FAIL to compile, because `FamilyWagon` does not exist.
 Delete `object FamilyWagonCard ...` (its six lines and the blank line after) from `HoldingNomadDenizens.scala`. Create `src/main/scala/distantlands/gameplay/powers/cardplay/FamilyWagon.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
   PrintedPower}
-import oathdigital.gameplay.actions.{AdviserFace, AdviserPlayNote}
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.powerresolver.{AdviserArrivals, ArrivalFollowUp,
+import distantlands.gameplay.actions.{AdviserFace, AdviserPlayNote}
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.powerresolver.{AdviserArrivals, ArrivalFollowUp,
   ContributingPower, Contribution, Transform}
-import oathdigital.model._
+import distantlands.model._
 
 object FamilyWagonCard extends Denizen(DenizenId("168"), "Family Wagon", Suit.Nomad) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.family-wagon"),
@@ -1077,7 +1077,7 @@ If any WHEN PLAYED power puts its own card into the world deck, stop and ask.
 - [ ] **Step 5: Give the holder no limit in `AdviserLimit`**
 
 In `AdviserLimit.scala`:
-- Change `import oathdigital.gameplay.powers.cardplay.LostTapestry` to `import oathdigital.gameplay.powers.cardplay.{FamilyWagon, LostTapestry}`.
+- Change `import distantlands.gameplay.powers.cardplay.LostTapestry` to `import distantlands.gameplay.powers.cardplay.{FamilyWagon, LostTapestry}`.
 - Replace `.flatten.minOption.getOrElse(Default)` in `of` with:
 
 ```scala
@@ -1094,12 +1094,12 @@ In `AdviserLimit.scala`:
   - Change the `cardplay` import to `{CardPlayTriggers, FamilyWagon, LostTapestry}`.
   - Add `Vector(FamilyWagon.forCatalog(catalog)) ++` after `Vector(PiedPiper) ++`.
   - In the doc comment, after the sentence about Lost Tapestry's and Pied Piper's exemptions, add `Family Wagon's lifted limit and note are inert until Search walks `SearchPlayAdviser` too, and its bury runs from the walker's arrival pass.`
-- `NewFoundations.scala`: add `FamilyWagonCard` to the `oathdigital.gameplay.powers.cardplay.{...}` import, in alphabetical order, wrapped to 80 columns. The list entry `FamilyWagonCard,` stays.
+- `NewFoundations.scala`: add `FamilyWagonCard` to the `distantlands.gameplay.powers.cardplay.{...}` import, in alphabetical order, wrapped to 80 columns. The list entry `FamilyWagonCard,` stays.
 - `PowerKindsCatalogSuite.scala`: add `"denizen.family-wagon"` to the end of `persistentRules`, after `"relic.lost-tapestry"`.
 
 - [ ] **Step 7: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.cardplay.* oathdigital.gameplay.powers.AdviserLimitSuite oathdigital.gameplay.PowerKindsCatalogSuite oathdigital.gameplay.CardCatalogSuite oathdigital.gameplay.powers.whenplayed.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.cardplay.* distantlands.gameplay.powers.AdviserLimitSuite distantlands.gameplay.PowerKindsCatalogSuite distantlands.gameplay.CardCatalogSuite distantlands.gameplay.powers.whenplayed.*"`
 Expected: PASS. If `CardCatalogSuite` or `PowerKindsCatalogSuite` sit in another package, run them by their simple names with `*`.
 
 - [ ] **Step 8: Commit**
@@ -1128,19 +1128,19 @@ git commit -m "feat(powers): Family Wagon buries every adviser but faceup Nomads
 Create `src/test/scala/distantlands/gameplay/powers/cardplay/FamilyWagonArrivalsSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.action.{Enchantress, PiedPiper}
-import oathdigital.gameplay.powers.wake.HornedMask
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.PowerNoted
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look, Outcomes, PowerRules, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.action.{Enchantress, PiedPiper}
+import distantlands.gameplay.powers.wake.HornedMask
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.PowerNoted
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{CatalogNames, Look, Outcomes, PowerRules, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** Family Wagon's bury after the arrival routes other than card play:
   * Horned Mask, a swap (Enchantress) and Pied Piper's move. They run under
@@ -1248,7 +1248,7 @@ In `AdviserLimitProjectionSuite.scala`, add at the end:
 
 - [ ] **Step 2: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.cardplay.FamilyWagonArrivalsSuite oathdigital.application.AdviserLimitProjectionSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.cardplay.FamilyWagonArrivalsSuite distantlands.application.AdviserLimitProjectionSuite"`
 Expected:
 - The three route tests PASS already, because Task 2's pass and Task 4's power cover every route.
 - The board test FAILS: the projector adds to `Int.MaxValue` and overflows.
@@ -1288,7 +1288,7 @@ with
 
 - [ ] **Step 4: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.cardplay.FamilyWagonArrivalsSuite oathdigital.application.AdviserLimitProjectionSuite oathdigital.gameplay.powers.wake.HornedMaskSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.cardplay.FamilyWagonArrivalsSuite distantlands.application.AdviserLimitProjectionSuite distantlands.gameplay.powers.wake.HornedMaskSuite"`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**

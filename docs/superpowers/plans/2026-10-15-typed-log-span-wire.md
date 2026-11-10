@@ -56,9 +56,9 @@ is 36 lines and still defines `LogSpanWire`.
   deletion must go.
 - **Cross-compilation.** Everything under `shared/src/main` is compiled for
   both the JVM backend and the Scala.js frontend, and may import only
-  `oathdigital.protocol` and `oathdigital.model` types that already appear
-  there. It may **not** import `oathdigital.application`,
-  `oathdigital.gameplay` or `oathdigital.model.DieFace`.
+  `distantlands.protocol` and `distantlands.model` types that already appear
+  there. It may **not** import `distantlands.application`,
+  `distantlands.gameplay` or `distantlands.model.DieFace`.
 - **File size.** Production and test Scala files stay at or under 800 lines
   (`scripts/check-architecture.py`, `BackendArchitectureSuite`).
   `WalkerDecisionProjectorSuite.scala` is 734 lines and
@@ -66,14 +66,14 @@ is 36 lines and still defines `LogSpanWire`.
 - **Line width.** Scala lines stay at or under 80 characters.
 - **Architecture tests.** `BackendArchitectureSuite` forbids `application`
   from importing `server`, `persistence` or `serialization`. It does not
-  restrict `application` from importing `oathdigital.protocol`, and
+  restrict `application` from importing `distantlands.protocol`, and
   `gamelog` already does.
 - **Full gate.** `./sbtw "test" "frontend/test" "frontend/fastLinkJS"` exit 0,
   and `git diff --check` clean, before each commit.
 - **Golden log files.** `src/test/resources/gamelog/*.log` must not change in
   this plan. If a task's diff touches one, the task is wrong: stop and report.
   `GAMELOG_GOLDEN=write` exists but is not authorized here.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Other sessions commit to `main` while you work.
   - Stage explicit paths only; never `git add -A`.
   - Re-check `git log --oneline -1` before any amend, reset or rebase.
@@ -87,7 +87,7 @@ is 36 lines and still defines `LogSpanWire`.
 
 Record these; a reviewer will ask.
 
-1. **`DieFace` collides with `oathdigital.model.DieFace`.** The domain already
+1. **`DieFace` collides with `distantlands.model.DieFace`.** The domain already
    owns that name for the open trait `AttackDieFace` and `DefenseDieFace`
    extend. The new shared enum keeps the spec's name, and the two collisions
    are resolved locally: `LogWords` imports it renamed (`DieFace => RolledFace`),
@@ -134,10 +134,10 @@ full gate must pass with no test edited beyond its import list.
 
 **Interfaces:**
 - Consumes: nothing.
-- Produces: `oathdigital.protocol.projection.{LogSpan, LogEntry, LogSection,
+- Produces: `distantlands.protocol.projection.{LogSpan, LogEntry, LogSection,
   LogTakenBack, LogKind}` with exactly the shapes they have today, including
   `LogEntry.depth: Int` as a field and `LogSpan.Cost(value: Int, unit: String)`.
-  `oathdigital.application.gamelog.Posted` keeps
+  `distantlands.application.gamelog.Posted` keeps
   `Posted(kind, depth, spans, section)` with `Posted.headline` and
   `Posted.line`.
 
@@ -227,9 +227,9 @@ git rm src/main/scala/distantlands/application/gamelog/LogEntry.scala
 Create `src/main/scala/distantlands/application/gamelog/Posted.scala`:
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.protocol.projection.{LogKind, LogSection, LogSpan}
+import distantlands.protocol.projection.{LogKind, LogSection, LogSpan}
 
 /** An entry before it has a key: what one event posts, in order. */
 private[gamelog] final case class Posted(kind: LogKind, depth: Int,
@@ -243,8 +243,8 @@ private[gamelog] object Posted:
 
 - [ ] **Step 3: Add the import line to every file that names a moved type**
 
-Insert `import oathdigital.protocol.projection.{...}` into each file, in the
-alphabetical position the file's existing `oathdigital.*` import block uses.
+Insert `import distantlands.protocol.projection.{...}` into each file, in the
+alphabetical position the file's existing `distantlands.*` import block uses.
 A file that already has `import LogSpan.Text` keeps it unchanged: it resolves
 against the newly imported `LogSpan`.
 
@@ -270,7 +270,7 @@ Production (`src/main/scala/distantlands/application/gamelog/`):
 `GameLogProjector.scala` already imports from the package; widen its braces to:
 
 ```scala
-import oathdigital.protocol.projection.{LogEntry, LogEntryWire, LogPageWire,
+import distantlands.protocol.projection.{LogEntry, LogEntryWire, LogPageWire,
   LogSectionWire, LogSpan, LogSpanWire, LogTakenBackWire}
 ```
 
@@ -368,9 +368,9 @@ Add to `src/test/scala/distantlands/application/gamelog/GameLogHeadlineSuite.sca
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogHeadlineSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogHeadlineSuite"`
 Expected: FAIL to compile, "value depth is not a member of
-oathdigital.protocol.projection.LogKind".
+distantlands.protocol.projection.LogKind".
 
 - [ ] **Step 3: Give `LogKind` a depth and `LogEntry` a derived one**
 
@@ -411,9 +411,9 @@ final case class LogEntry(sequence: Long, ordinal: Int, kind: LogKind,
 `src/main/scala/distantlands/application/gamelog/Posted.scala` becomes:
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.protocol.projection.{LogKind, LogSection, LogSpan}
+import distantlands.protocol.projection.{LogKind, LogSection, LogSpan}
 
 /** An entry before it has a key: what one event posts, in order. Its depth
   * is its kind's, so there is one constructor and no way to post a headline
@@ -467,7 +467,7 @@ Line 122 drops the argument:
 
 - [ ] **Step 7: Run the new test and the full gate**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.GameLogHeadlineSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.GameLogHeadlineSuite"`
 Expected: PASS.
 
 Run: `./sbtw "test" "frontend/test" "frontend/fastLinkJS"`
@@ -520,7 +520,7 @@ Add to `src/test/scala/distantlands/application/gamelog/LogWordsSuite.scala`:
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.LogWordsSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.LogWordsSuite"`
 Expected: FAIL to compile, "missing argument for parameter unit".
 
 - [ ] **Step 3: Narrow the case**
@@ -578,7 +578,7 @@ and nothing else:
 
 - [ ] **Step 5: Run the test and the full gate**
 
-Run: `./sbtw "testOnly oathdigital.application.gamelog.LogWordsSuite"`
+Run: `./sbtw "testOnly distantlands.application.gamelog.LogWordsSuite"`
 Expected: PASS.
 
 Run: `./sbtw "test" "frontend/test" "frontend/fastLinkJS"`
@@ -644,9 +644,9 @@ Replace the whole of
 `shared/src/test/scala/distantlands/protocol/LogPageCodecSuite.scala`:
 
 ```scala
-package oathdigital.protocol
+package distantlands.protocol
 
-import oathdigital.protocol.projection._
+import distantlands.protocol.projection._
 
 class LogPageCodecSuite extends munit.FunSuite:
   private val page = LogPage("game", 4L, 9L, Vector(
@@ -768,7 +768,7 @@ class LogPageCodecSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.protocol.LogPageCodecSuite"`
+Run: `./sbtw "testOnly distantlands.protocol.LogPageCodecSuite"`
 Expected: FAIL to compile, "Not found: type LogPage".
 
 - [ ] **Step 3: Delete the Wire twins and rename the page**
@@ -789,12 +789,12 @@ final case class LogPage(gameId: String, after: Long, nextSequence: Long,
 Replace the whole file:
 
 ```scala
-package oathdigital.protocol.projection
+package distantlands.protocol.projection
 
 import scala.util.control.NonFatal
 
-import oathdigital.protocol.ProtocolDecodeFailure
-import oathdigital.protocol.ProtocolDecodeFailure.{InvalidValue, MalformedJson,
+import distantlands.protocol.ProtocolDecodeFailure
+import distantlands.protocol.ProtocolDecodeFailure.{InvalidValue, MalformedJson,
   UnknownVariant}
 import ProjectionCodecSupport._
 
@@ -977,12 +977,12 @@ object LogPageCodec:
 - [ ] **Step 5: Strip `GameLogProjector` to its page assembly**
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.application.{GameHistory, GamePresentationProjector}
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.model.PlayerId
-import oathdigital.protocol.projection.LogPage
+import distantlands.application.{GameHistory, GamePresentationProjector}
+import distantlands.catalog.ExecutableCatalog
+import distantlands.model.PlayerId
+import distantlands.protocol.projection.LogPage
 
 /** The log page one seat reads: the whole prefix formatted for that seat,
   * then every entry at or after `after` (game log design, "Routes" and
@@ -1012,7 +1012,7 @@ rewrite.
 - [ ] **Step 7: Point `GameLogPane` at the sealed family**
 
 Change the import to
-`import oathdigital.protocol.projection.{LogEntry, LogSpan, LogTakenBack}`
+`import distantlands.protocol.projection.{LogEntry, LogSpan, LogTakenBack}`
 (not `LogKind`: the pane reads the kind's `key` and never names the type, and
 `-Wunused:imports` would fail the build),
 replace `LogEntryWire` with `LogEntry`, `LogSpanWire` with `LogSpan` and
@@ -1067,7 +1067,7 @@ In each of `GameClient.scala`, `TableSession.scala`, `TableScreen.scala`,
 the import braces. `GameClient.scala:10` becomes:
 
 ```scala
-import oathdigital.protocol.projection.{GameProjection, GameProjectionCodec,
+import distantlands.protocol.projection.{GameProjection, GameProjectionCodec,
   LogPage, LogPageCodec}
 ```
 
@@ -1076,9 +1076,9 @@ import oathdigital.protocol.projection.{GameProjection, GameProjectionCodec,
 `TestLog.scala` loses its `depth` parameter and takes a typed kind:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
-import oathdigital.protocol.projection.{LogEntry, LogKind, LogSection,
+import distantlands.protocol.projection.{LogEntry, LogKind, LogSection,
   LogSpan, LogTakenBack}
 import org.scalajs.dom
 import scala.scalajs.js
@@ -1156,12 +1156,12 @@ substitutions, in full:
 
 `GameLogProjector.span` no longer exists. Delete the whole test "every span
 kind has its wire form; only typed spans carry ids and amounts" (lines 27-38)
-and the now-unused `import oathdigital.protocol.projection.LogSpanWire`. The
+and the now-unused `import distantlands.protocol.projection.LogSpanWire`. The
 span shapes are covered by `LogPageCodecSuite`'s round trips.
 
 - [ ] **Step 11: Run the codec suite, then the full gate**
 
-Run: `./sbtw "testOnly oathdigital.protocol.LogPageCodecSuite"`
+Run: `./sbtw "testOnly distantlands.protocol.LogPageCodecSuite"`
 Expected: PASS, 15 tests.
 
 Run: `./sbtw "test" "frontend/test" "frontend/fastLinkJS"`
@@ -1199,11 +1199,11 @@ out of scope) to it with a set-equality test.
 
 **Interfaces:**
 - Consumes: nothing from earlier tasks.
-- Produces: `oathdigital.protocol.projection.Die` with
+- Produces: `distantlands.protocol.projection.Die` with
   `Die.Attack`/`Die.Defense` and `val key: String`;
-  `oathdigital.protocol.projection.DieFace` with seven cases and
+  `distantlands.protocol.projection.DieFace` with seven cases and
   `val key: String`, `val word: String`, `val die: Die`.
-  `WalkerDecisionProjector.faceName(value: oathdigital.model.DieFace):
+  `WalkerDecisionProjector.faceName(value: distantlands.model.DieFace):
   Vector[String]` moves to the companion object as `private[application]`.
 
 - [ ] **Step 1: Write the failing test**
@@ -1222,15 +1222,15 @@ Add to `src/test/scala/distantlands/application/WalkerDecisionProjectorSuite.sca
     val projected = (AttackDieFace.values ++ DefenseDieFace.values)
       .flatMap(WalkerDecisionProjector.faceName).toSet
     assertEquals(projected,
-      oathdigital.protocol.projection.DieFace.values.map(_.key).toSet)
+      distantlands.protocol.projection.DieFace.values.map(_.key).toSet)
 ```
 
-Add `import oathdigital.model.{AttackDieFace, DefenseDieFace}` if the suite's
-`oathdigital.model._` import does not already cover it.
+Add `import distantlands.model.{AttackDieFace, DefenseDieFace}` if the suite's
+`distantlands.model._` import does not already cover it.
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.application.WalkerDecisionProjectorSuite"`
+Run: `./sbtw "testOnly distantlands.application.WalkerDecisionProjectorSuite"`
 Expected: FAIL to compile, "value faceName is not a member of object
 WalkerDecisionProjector".
 
@@ -1239,7 +1239,7 @@ WalkerDecisionProjector".
 `shared/src/main/scala/distantlands/protocol/projection/DieFaces.scala`:
 
 ```scala
-package oathdigital.protocol.projection
+package distantlands.protocol.projection
 
 /** The two dice a roll is made on. */
 enum Die(val key: String):
@@ -1282,10 +1282,10 @@ its visibility:
 ```scala
   /** Local duplicate of `WalkerEventCodec`'s (serialization-layer) face
     * vocabulary: the application layer may not import the serialization
-    * layer (`BackendArchitectureSuite`). `oathdigital.model.DieFace` is
+    * layer (`BackendArchitectureSuite`). `distantlands.model.DieFace` is
     * open, so a face family neither pool rolls spells as nothing rather
     * than as a guess. Held to
-    * `oathdigital.protocol.projection.DieFace`'s keys by a test in
+    * `distantlands.protocol.projection.DieFace`'s keys by a test in
     * `WalkerDecisionProjectorSuite`.
     */
   private[application] def faceName(value: DieFace): Vector[String] =
@@ -1305,7 +1305,7 @@ The one caller, line 634, becomes
 
 - [ ] **Step 5: Run the test and the full gate**
 
-Run: `./sbtw "testOnly oathdigital.application.WalkerDecisionProjectorSuite"`
+Run: `./sbtw "testOnly distantlands.application.WalkerDecisionProjectorSuite"`
 Expected: PASS.
 
 Run: `./sbtw "test" "frontend/test" "frontend/fastLinkJS"`
@@ -1373,7 +1373,7 @@ paragraph:
   * doubler multiplies rather than adding, so it says so in figures.
   *
   * Named `DieFaceChip`, not `DieFace`: the face itself is
-  * `oathdigital.protocol.projection.DieFace`, and this is what the page
+  * `distantlands.protocol.projection.DieFace`, and this is what the page
   * draws for one.
   */
 ```
@@ -1387,7 +1387,7 @@ Expected: no output (Task 7 reintroduces the name as the imported enum).
 
 - [ ] **Step 4: Run the frontend suites and the full gate**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.DieFaceChipSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.DieFaceChipSuite"`
 Expected: PASS, with every assertion unchanged.
 
 Run: `./sbtw "test" "frontend/test" "frontend/fastLinkJS"`
@@ -1431,7 +1431,7 @@ four face tables collapse onto `DieFace.word` and `DieFace.key`.
 - Produces: `LogSpan.Dice(first: DieFace, rest: Vector[DieFace])` with
   `def die: Die = first.die` and
   `def text: String = (first +: rest).map(_.word).mkString(", ")`;
-  `LogWords.dice(faces: Vector[oathdigital.model.DieFace]):
+  `LogWords.dice(faces: Vector[distantlands.model.DieFace]):
   Option[LogSpan.Dice]`; `DieFaceChip.roll(faces: Vector[DieFace])`,
   `DieFaceChip.rollKeys(keys: Vector[String], die: Option[Die])`,
   `DieFaceChip.face(key: String, die: Option[Die])`;
@@ -1486,7 +1486,7 @@ In `src/test/scala/distantlands/application/gamelog/LogWordsSuite.scala`:
       AttackDieFace.TwoSwordsSkull)).map(_.text),
       Some("sword, two swords and a skull"))
     assertEquals(LogWords.dice(Vector(DefenseDieFace.OneShield))
-      .map(_.die), Some(oathdigital.protocol.projection.Die.Defense))
+      .map(_.die), Some(distantlands.protocol.projection.Die.Defense))
     assertEquals(LogWords.dice(Vector(AttackDieFace.OneSword,
       DefenseDieFace.Blank)), None)
     assertEquals(LogWords.dice(Vector.empty), None)
@@ -1494,7 +1494,7 @@ In `src/test/scala/distantlands/application/gamelog/LogWordsSuite.scala`:
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.protocol.LogPageCodecSuite oathdigital.application.gamelog.LogWordsSuite"`
+Run: `./sbtw "testOnly distantlands.protocol.LogPageCodecSuite distantlands.application.gamelog.LogWordsSuite"`
 Expected: FAIL to compile, "None of the overloaded alternatives of method
 apply ... LogSpan.Dice".
 
@@ -1544,12 +1544,12 @@ Decode:
 
 - [ ] **Step 5: Collapse `LogWords`'s four naming functions into one map**
 
-Add the renamed import to `LogWords.scala` — `oathdigital.model._` already
+Add the renamed import to `LogWords.scala` — `distantlands.model._` already
 binds `DieFace` to the domain's open trait, so the enum comes in under a
 second name:
 
 ```scala
-import oathdigital.protocol.projection.{DieFace => RolledFace, LogSpan}
+import distantlands.protocol.projection.{DieFace => RolledFace, LogSpan}
 ```
 
 Replace lines 128-156 (`dice` and the four private functions) with:
@@ -1563,7 +1563,7 @@ Replace lines 128-156 (`dice` and the four private functions) with:
       rolled.forall(_.die == rolled.head.die))(
       LogSpan.Dice(rolled.head, rolled.tail))
 
-  /** `oathdigital.model.DieFace` is open, so a face family neither pool
+  /** `distantlands.model.DieFace` is open, so a face family neither pool
     * rolls maps to nothing rather than to a guess. */
   private def rolledFace(value: DieFace): Option[RolledFace] = value match
     case AttackDieFace.HollowSword => Some(RolledFace.HollowSword)
@@ -1596,10 +1596,10 @@ so every character is the one already on disk.
 vocabulary, and split the entry points.
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 import org.scalajs.dom
-import oathdigital.protocol.projection.{Die, DieFace}
+import distantlands.protocol.projection.{Die, DieFace}
 
 /** The faces of the two dice, drawn as the symbols printed on them.
   *
@@ -1608,7 +1608,7 @@ import oathdigital.protocol.projection.{Die, DieFace}
   * doubler multiplies rather than adding, so it says so in figures.
   *
   * Named `DieFaceChip`, not `DieFace`: the face itself is
-  * `oathdigital.protocol.projection.DieFace`, and this is what the page
+  * `distantlands.protocol.projection.DieFace`, and this is what the page
   * draws for one. The words a face is read by are that enum's; this object
   * keeps only the glyph composition, which is the client's own drawing
   * concern and has no server twin.
@@ -1685,8 +1685,8 @@ private[frontend] object DieFaceChip:
           poolDie(outcome.pool)))
 ```
 
-Add `import oathdigital.protocol.projection.Die` to `WalkerPanelSupport.scala`
-and `oathdigital.protocol.projection.LogSpan` is already on `GameLogPane`.
+Add `import distantlands.protocol.projection.Die` to `WalkerPanelSupport.scala`
+and `distantlands.protocol.projection.LogSpan` is already on `GameLogPane`.
 
 - [ ] **Step 9: Update the three frontend suites**
 
@@ -1736,7 +1736,7 @@ contradictory rather than exercise anything.
     assertEquals(content.querySelectorAll(".die-face-attack").length, 2)
 ```
 
-Add `DieFace` to the suite's `oathdigital.protocol.projection` import.
+Add `DieFace` to the suite's `distantlands.protocol.projection` import.
 
 `WalkerDecisionDraftSuite.scala:80-84`:
 
@@ -1751,7 +1751,7 @@ Add `DieFace` to the suite's `oathdigital.protocol.projection` import.
 
 - [ ] **Step 10: Run the tests, then the full gate**
 
-Run: `./sbtw "testOnly oathdigital.protocol.LogPageCodecSuite oathdigital.application.gamelog.LogWordsSuite"`
+Run: `./sbtw "testOnly distantlands.protocol.LogPageCodecSuite distantlands.application.gamelog.LogWordsSuite"`
 Expected: PASS.
 
 Run: `./sbtw "test" "frontend/test" "frontend/fastLinkJS"`
@@ -1853,7 +1853,7 @@ In `frontend/src/test/scala/distantlands/frontend/TableSessionSuite.scala`:
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.TableSessionSuite oathdigital.frontend.HttpGameClientSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.TableSessionSuite distantlands.frontend.HttpGameClientSuite"`
 Expected: FAIL. The client test reports a `DecodeFailure` where an
 `UnsupportedProjection` was expected; the session test reports
 `shownFailure` as `None`.
@@ -1928,7 +1928,7 @@ Update `fetchLog`'s scaladoc to name the new branch:
 
 - [ ] **Step 5: Run the tests and the full gate**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.TableSessionSuite oathdigital.frontend.HttpGameClientSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.TableSessionSuite distantlands.frontend.HttpGameClientSuite"`
 Expected: PASS.
 
 Run: `./sbtw "test" "frontend/test" "frontend/fastLinkJS"`

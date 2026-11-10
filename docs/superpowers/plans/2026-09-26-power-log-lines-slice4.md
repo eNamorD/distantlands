@@ -27,7 +27,7 @@
 - Import rules:
   - `gameplay` never imports `application`, `serialization` or `server`.
   - A walker power (anything under `gameplay/powers`) never imports `gameplay.walker`.
-- Never touch the live database `var/oathdigital`.
+- Never touch the live database `var/distantlands`.
 - Other sessions commit to `main` while you work. Stage explicit paths only; never `git add -A`. Re-check `git log --oneline -1` before any amend, reset or rebase.
 - Work in a git worktree:
   - `EnterWorktree` branches from `origin`, which lags local `main`. Fast-forward the new branch to local `main` first.
@@ -232,7 +232,7 @@ In `GameLogPowerLinesSuite.scala`, add after "a card its viewer may not identify
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.PowerNoteWalkerSuite oathdigital.serialization.GameEventWireSuite oathdigital.application.gamelog.GameLogPowerLinesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.PowerNoteWalkerSuite distantlands.serialization.GameEventWireSuite distantlands.application.gamelog.GameLogPowerLinesSuite"`
 Expected: compilation FAILS: `NoteArg.Cards` and `NoteArg.Banner` do not exist.
 
 - [ ] **Step 3: Add the arguments to the model**
@@ -243,7 +243,7 @@ In `model/PowerNotes.scala`, inside `object NoteArg`, after `Dice`:
   /** Several cards as one phrase, "Tinker, 2 Denizens and a Vision". Each
     * card still passes the log's knowledge rule. */
   final case class Cards(ids: Vector[CardId]) extends NoteArg
-  final case class Banner(banner: oathdigital.model.Banner) extends NoteArg
+  final case class Banner(banner: distantlands.model.Banner) extends NoteArg
 ```
 
 Replace the `NoteStates` doc comment with:
@@ -287,7 +287,7 @@ In `PowerLines.scala`, add to `argument` after the `Dice` case:
     case NoteArg.Banner(banner) => Vector(words.banner(banner))
 ```
 
-In the test helper `NoteText.scala`, add `import oathdigital.gameplay.actions.BannerRules`, and to `plain` after the `Dice` case:
+In the test helper `NoteText.scala`, add `import distantlands.gameplay.actions.BannerRules`, and to `plain` after the `Dice` case:
 
 ```scala
     case NoteArg.Cards(ids) => ids.map(_.value).mkString(", ")
@@ -382,7 +382,7 @@ In `GamblingHall.scala`, replace the `gained` definition with `val gained: NoteK
 
 - [ ] **Step 8: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.PowerNoteWalkerSuite oathdigital.serialization.GameEventWireSuite oathdigital.application.gamelog.* oathdigital.gameplay.powers.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.PowerNoteWalkerSuite distantlands.serialization.GameEventWireSuite distantlands.application.gamelog.* distantlands.gameplay.powers.*"`
 Expected: all PASS, the golden logs unchanged.
 
 If an existing note's test fails, the unchanged-step change altered what it reads. Stop and report which note and why. Do not adjust the note to pass.
@@ -412,7 +412,7 @@ git commit -m "feat(log): card list and banner note arguments; an unchanged step
 
 - [ ] **Step 1: Write the failing tests**
 
-In each of the four suites, add `NoteText` to the `oathdigital.gameplay.powers` import (`{NoteText, PowerFixture, TargetsFixture}`, `{NoteText, PowerFixture}`, `{NoteText, PlayerFacts, PowerFixture}`), and append at the end of the class:
+In each of the four suites, add `NoteText` to the `distantlands.gameplay.powers` import (`{NoteText, PowerFixture, TargetsFixture}`, `{NoteText, PowerFixture}`, `{NoteText, PlayerFacts, PowerFixture}`), and append at the end of the class:
 
 `TollRoadsSuite.scala`:
 
@@ -498,14 +498,14 @@ In each of the four suites, add `NoteText` to the `oathdigital.gameplay.powers` 
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.travel.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.travel.*"`
 Expected: the tests that expect a line FAIL with an empty vector. The "writes nothing" halves pass.
 
 - [ ] **Step 3: Toll Roads**
 
 In `TollRoads.scala`:
 
-1. Change the import to `oathdigital.gameplay.powers.{CatalogCards, CatalogResolution, NoteSupport}`.
+1. Change the import to `distantlands.gameplay.powers.{CatalogCards, CatalogResolution, NoteSupport}`.
 2. Add to the class doc: "The payment writes "{Red} paid 1 favor to {Blue}.", or "{Red} burned 1 favor." when bandits rule, read from the payment's step."
 3. Replace `contributions`, `applicable` and `toll` with:
 
@@ -629,7 +629,7 @@ Add to the companion: `val gained: NoteKey = NoteSupport.gainedKey("gained")`.
 
 - [ ] **Step 7: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.travel.* oathdigital.gameplay.CampaignPowersSuite oathdigital.gameplay.powers.PowerNoteCatalogSuite oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.travel.* distantlands.gameplay.CampaignPowersSuite distantlands.gameplay.powers.PowerNoteCatalogSuite distantlands.application.gamelog.*"`
 Expected: all PASS.
 
 If a line appears twice, Travel's destination dry-run journaled into the command. Stop and report.
@@ -659,7 +659,7 @@ git commit -m "feat(powers): the Travel powers say what they did"
 
 - [ ] **Step 1: Write the failing tests**
 
-`GossipSuite.scala`: add `NoteText` to the `oathdigital.gameplay.powers` import and append:
+`GossipSuite.scala`: add `NoteText` to the `distantlands.gameplay.powers` import and append:
 
 ```scala
   // ---- Lines ----
@@ -678,7 +678,7 @@ git commit -m "feat(powers): the Travel powers say what they did"
       "adviser-faceup").events), Vector.empty)
 ```
 
-`BookBindersSuite.scala`: add `NoteText` to the `oathdigital.gameplay.powers` import and append:
+`BookBindersSuite.scala`: add `NoteText` to the `distantlands.gameplay.powers` import and append:
 
 ```scala
   // ---- Lines ----
@@ -708,7 +708,7 @@ git commit -m "feat(powers): the Travel powers say what they did"
       .events), Vector.empty)
 ```
 
-`TruthfulHarpSuite.scala`: add `NoteText` to the `oathdigital.gameplay.powers` import and append:
+`TruthfulHarpSuite.scala`: add `NoteText` to the `distantlands.gameplay.powers` import and append:
 
 ```scala
   // ---- Lines ----
@@ -728,7 +728,7 @@ git commit -m "feat(powers): the Travel powers say what they did"
       Vector.empty)
 ```
 
-`DazzleSuite.scala`: add `import oathdigital.gameplay.powers.NoteText`. At the end of the test "Dazzle discards Hearth and Order site cards from the actor region", after its last `assertEquals`, append:
+`DazzleSuite.scala`: add `import distantlands.gameplay.powers.NoteText`. At the end of the test "Dazzle discards Hearth and Order site cards from the actor region", after its last `assertEquals`, append:
 
 ```scala
     assertEquals(NoteText.said(power.id, power.noteKeys, finished.events),
@@ -742,7 +742,7 @@ git commit -m "feat(powers): the Travel powers say what they did"
       Vector.empty)
 ```
 
-`ConspiracyWhenPlayedSuite.scala`: change the `oathdigital.gameplay.powers` import to `{NoteText, WalkerPowerCatalog}` and append:
+`ConspiracyWhenPlayedSuite.scala`: change the `distantlands.gameplay.powers` import to `{NoteText, WalkerPowerCatalog}` and append:
 
 ```scala
   // ---- Lines ----
@@ -784,7 +784,7 @@ git commit -m "feat(powers): the Travel powers say what they did"
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.cardplay.GossipSuite oathdigital.gameplay.powers.cardplay.BookBindersSuite oathdigital.gameplay.powers.search.TruthfulHarpSuite oathdigital.gameplay.powers.whenplayed.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.cardplay.GossipSuite distantlands.gameplay.powers.cardplay.BookBindersSuite distantlands.gameplay.powers.search.TruthfulHarpSuite distantlands.gameplay.powers.whenplayed.*"`
 Expected: the tests that expect a line FAIL with an empty vector (every power still has the default, empty `noteKeys`). The "writes nothing" tests pass.
 
 - [ ] **Step 3: Gossip**
@@ -903,7 +903,7 @@ If `catalog.suitOf` does not take a `CardId`, use the lookup `effects` uses for 
 
 - [ ] **Step 7: Conspiracy**
 
-In `ConspiracyWhenPlayed.scala`, add `import oathdigital.gameplay.powers.NoteSupport`, add to the object doc "After the take it writes "{Red} seized {relic or banner} from {Blue}.", read from the take's step, and nothing when nothing was taken.", and:
+In `ConspiracyWhenPlayed.scala`, add `import distantlands.gameplay.powers.NoteSupport`, add to the object doc "After the take it writes "{Red} seized {relic or banner} from {Blue}.", read from the take's step, and nothing when nothing was taken.", and:
 
 ```scala
   override def noteKeys: Vector[NoteKey] = Vector(seized)
@@ -941,7 +941,7 @@ In `ConspiracyWhenPlayed.scala`, add `import oathdigital.gameplay.powers.NoteSup
 
 - [ ] **Step 8: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.cardplay.* oathdigital.gameplay.powers.search.* oathdigital.gameplay.powers.whenplayed.* oathdigital.gameplay.powers.targeting.* oathdigital.gameplay.powers.PowerNoteCatalogSuite oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.cardplay.* distantlands.gameplay.powers.search.* distantlands.gameplay.powers.whenplayed.* distantlands.gameplay.powers.targeting.* distantlands.gameplay.powers.PowerNoteCatalogSuite distantlands.application.gamelog.*"`
 Expected: all PASS, the golden logs unchanged.
 
 - [ ] **Step 9: Commit**
@@ -987,7 +987,7 @@ Fix what it confirms before Task 4.
 
 - [ ] **Step 1: Write the failing tests**
 
-In each existing suite below, add `import oathdigital.gameplay.powers.NoteText`. In `StickyFireSuite.scala` and `WarningSignalsSuite.scala`, also add `import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog`. In `KnightsErrantSuite.scala`, add `NoteText` to the `oathdigital.gameplay.powers` import instead.
+In each existing suite below, add `import distantlands.gameplay.powers.NoteText`. In `StickyFireSuite.scala` and `WarningSignalsSuite.scala`, also add `import distantlands.gameplay.setup.FirstGameSetupFixture.catalog`. In `KnightsErrantSuite.scala`, add `NoteText` to the `distantlands.gameplay.powers` import instead.
 
 `GleamingArmorSuite.scala`, append:
 
@@ -1142,14 +1142,14 @@ If the first `assertEquals(said(run.events), Vector.empty)` fails, pricing journ
 Create `OutridersSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.CampaignFixture._
-import oathdigital.gameplay.actions.campaign.CampaignIds
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.powers.campaign.PlanDriver._
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
+import distantlands.gameplay.CampaignFixture._
+import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.powers.campaign.PlanDriver._
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
 
 /** Outriders' line (power log lines design, "Altered procedures"): "Skulls
   * ignored.", written only when the attack rolled a skull to ignore.
@@ -1183,7 +1183,7 @@ class OutridersSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.* oathdigital.gameplay.powers.economy.KnightsErrantSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.* distantlands.gameplay.powers.economy.KnightsErrantSuite"`
 Expected: the tests that expect a line FAIL with an empty vector. The "writes nothing" tests pass.
 
 - [ ] **Step 3: Gleaming Armor**
@@ -1399,7 +1399,7 @@ Add to the companion:
 
 - [ ] **Step 9: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.* oathdigital.gameplay.powers.economy.* oathdigital.gameplay.Campaign* oathdigital.gameplay.powers.PowerNoteCatalogSuite oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.* distantlands.gameplay.powers.economy.* distantlands.gameplay.Campaign* distantlands.gameplay.powers.PowerNoteCatalogSuite distantlands.application.gamelog.*"`
 Expected: all PASS, the golden logs unchanged.
 
 - [ ] **Step 10: Commit**
@@ -1433,7 +1433,7 @@ git commit -m "feat(powers): the Campaign powers say what they did"
 
 - [ ] **Step 1: Write the failing tests**
 
-`PeoplesFavorMobSuite.scala`: add `NoteText` to the `oathdigital.gameplay.powers` import and append:
+`PeoplesFavorMobSuite.scala`: add `NoteText` to the `distantlands.gameplay.powers` import and append:
 
 ```scala
   // ---- Lines ----
@@ -1456,13 +1456,13 @@ git commit -m "feat(powers): the Campaign powers say what they did"
 Create `src/test/scala/distantlands/gameplay/HomelandLineSuite.scala`:
 
 ```scala
-package oathdigital.gameplay
+package distantlands.gameplay
 
-import oathdigital.gameplay.actions.{PlacementRules, RuleNotes}
-import oathdigital.gameplay.powers.NoteText
-import oathdigital.gameplay.setup.FirstGameSetupFixture._
-import oathdigital.gameplay.walker.{WalkerOutcome, WalkerPowers}
-import oathdigital.model._
+import distantlands.gameplay.actions.{PlacementRules, RuleNotes}
+import distantlands.gameplay.powers.NoteText
+import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.walker.{WalkerOutcome, WalkerPowers}
+import distantlands.model._
 
 /** The Homeland rule's line (power log lines design, "Game rules"): a play to
   * a full Homeland of the card's suit asks for a discard, and the Homeland
@@ -1516,9 +1516,9 @@ class HomelandLineSuite extends munit.FunSuite:
     assertEquals(said(events), Vector.empty)
 ```
 
-Add `ProcedureWalker` to the `oathdigital.gameplay.walker` import of that file (`{ProcedureWalker, WalkerOutcome, WalkerPowers}`).
+Add `ProcedureWalker` to the `distantlands.gameplay.walker` import of that file (`{ProcedureWalker, WalkerOutcome, WalkerPowers}`).
 
-`LeagueTreatySuite.scala`: change the `oathdigital.gameplay.powers` import to `{NoteText, WalkerPowerCatalog}` and append:
+`LeagueTreatySuite.scala`: change the `distantlands.gameplay.powers` import to `{NoteText, WalkerPowerCatalog}` and append:
 
 ```scala
   // ---- Lines ----
@@ -1559,7 +1559,7 @@ Add `ProcedureWalker` to the `oathdigital.gameplay.walker` import of that file (
     assertEquals(said(parked.events ++ declined.events), Vector.empty)
 ```
 
-`PowerNoteCatalogSuite.scala`: add `import oathdigital.gameplay.actions.RuleNotes`, append `++ RuleNotes.all` to `declared`, and add:
+`PowerNoteCatalogSuite.scala`: add `import distantlands.gameplay.actions.RuleNotes`, append `++ RuleNotes.all` to `declared`, and add:
 
 ```scala
   test("the Homeland rule declares the line it writes"):
@@ -1567,7 +1567,7 @@ Add `ProcedureWalker` to the `oathdigital.gameplay.walker` import of that file (
       .map(_.map(_.name)), Some(Vector("discard-first")))
 ```
 
-`GameLogPowerLinesSuite.scala`: add `import oathdigital.gameplay.actions.{PlacementRules, RuleNotes}` and:
+`GameLogPowerLinesSuite.scala`: add `import distantlands.gameplay.actions.{PlacementRules, RuleNotes}` and:
 
 ```scala
   test("a game rule's line is worded from RuleNotes"):
@@ -1577,14 +1577,14 @@ Add `ProcedureWalker` to the `oathdigital.gameplay.walker` import of that file (
 
 - [ ] **Step 2: Run the tests to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.HomelandLineSuite oathdigital.gameplay.powers.banner.PeoplesFavorMobSuite oathdigital.gameplay.powers.rest.LeagueTreatySuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.HomelandLineSuite distantlands.gameplay.powers.banner.PeoplesFavorMobSuite distantlands.gameplay.powers.rest.LeagueTreatySuite"`
 Expected: compilation FAILS: `RuleNotes` and `PlacementRules.discardFirst` do not exist.
 
 - [ ] **Step 3: The shared key and the Mob's note in `PlacementRules`**
 
 In `PlacementRules.scala`:
 
-1. Change the import to `import oathdigital.model.{Note, NoteKey, NotePart, Orientation}`.
+1. Change the import to `import distantlands.model.{Note, NoteKey, NotePart, Orientation}`.
 2. Add a bullet to the class doc after `siteDiscardFirst`'s:
 
    ```scala
@@ -1622,9 +1622,9 @@ In `PlacementRules.scala`:
 - [ ] **Step 4: Create `RuleNotes`**
 
 ```scala
-package oathdigital.gameplay.actions
+package distantlands.gameplay.actions
 
-import oathdigital.model.{NoteKey, PowerId}
+import distantlands.model.{NoteKey, PowerId}
 
 /** The game rules that write Game Log lines (power log lines design, "Game
   * rules"): each rule's id and the keys it writes. A rule is not a power, so
@@ -1643,7 +1643,7 @@ object RuleNotes:
 
 In `CardPlayProcedure.scala`:
 
-1. Change the import to `import oathdigital.gameplay.actions.{CardPlay, PlacementRules, RuleNotes}`.
+1. Change the import to `import distantlands.gameplay.actions.{CardPlay, PlacementRules, RuleNotes}`.
 2. In `childrenFor`'s `selected` branch, replace `choice ++ Vector(apply) ++ hook` with:
 
    ```scala
@@ -1678,7 +1678,7 @@ The `settled` path yields replacements exactly when the discard was asked, so it
 
 - [ ] **Step 6: The Mob names itself**
 
-In `PeoplesFavorMob.scala`, add `import oathdigital.gameplay.actions.PlacementRules`, add to the object doc "Its line, "{Red} may discard a card at their site first.", travels in the rules, and card play writes it after the discard answer.", and:
+In `PeoplesFavorMob.scala`, add `import distantlands.gameplay.actions.PlacementRules`, add to the object doc "Its line, "{Red} may discard a card at their site first.", travels in the rules, and card play writes it after the discard answer.", and:
 
 ```scala
   override def noteKeys: Vector[NoteKey] = Vector(PlacementRules.discardFirst)
@@ -1736,7 +1736,7 @@ In `LeagueTreatyContribution.scala`:
 
 - [ ] **Step 8: The formatter reads the rules' keys**
 
-In `NoteWordings.scala`, add `import oathdigital.gameplay.actions.RuleNotes`, and make `default`:
+In `NoteWordings.scala`, add `import distantlands.gameplay.actions.RuleNotes`, and make `default`:
 
 ```scala
   /** The walker powers', the phase powers' and the game rules' keys. */
@@ -1751,7 +1751,7 @@ In `NoteWordings.scala`, add `import oathdigital.gameplay.actions.RuleNotes`, an
 
 - [ ] **Step 9: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.HomelandLineSuite oathdigital.gameplay.SiteDiscardFirstSuite oathdigital.gameplay.PlacementRulesSuite oathdigital.gameplay.CardPlayProcedureSuite oathdigital.gameplay.DiscardRestrictionsSuite oathdigital.gameplay.powers.banner.* oathdigital.gameplay.powers.rest.* oathdigital.gameplay.powers.PowerNoteCatalogSuite oathdigital.application.gamelog.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.HomelandLineSuite distantlands.gameplay.SiteDiscardFirstSuite distantlands.gameplay.PlacementRulesSuite distantlands.gameplay.CardPlayProcedureSuite distantlands.gameplay.DiscardRestrictionsSuite distantlands.gameplay.powers.banner.* distantlands.gameplay.powers.rest.* distantlands.gameplay.powers.PowerNoteCatalogSuite distantlands.application.gamelog.*"`
 Expected: all PASS, the golden logs unchanged.
 
 - [ ] **Step 10: Amend the spec**

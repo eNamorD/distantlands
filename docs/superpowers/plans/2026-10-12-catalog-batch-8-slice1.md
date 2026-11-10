@@ -37,7 +37,7 @@ Where this plan quotes code, read the file as it is on `main` and apply the chan
   - No power name appears in walker sources.
   - Nothing under `gameplay/actions` imports `gameplay/powers`.
 - **Line width.** Scala lines stay at or under 80 characters, as in the files around them. Re-wrap any line in this plan that comes out longer.
-- **Never touch the live database `var/oathdigital`.**
+- **Never touch the live database `var/distantlands`.**
 - **Concurrent sessions.** Other sessions commit to `main` while you work.
   - Stage explicit paths only; never `git add -A`.
   - Re-check `git log --oneline -1` before any amend, reset or rebase.
@@ -49,7 +49,7 @@ Where this plan quotes code, read the file as it is on `main` and apply the chan
   - `WardOfSilence` (case object) and `WardOfSilenceCard`. Decisions `power.ward-of-silence.target` and `power.ward-of-silence.amount`.
   - `Hospitality` (final case class with `forCatalog`) and `HospitalityCard`. Decision `travel.hospitality`.
   - `VowOfWisdom` (case object) and `VowOfWisdomCard`.
-  - `oathdigital.model.RewritableComposite`, a trait extending `Operation`, with `def rewritten(rewrite: Operation => Operation): Operation`.
+  - `distantlands.model.RewritableComposite`, a trait extending `Operation`, with `def rewritten(rewrite: Operation => Operation): Operation`.
 - **Texts, exactly:**
   - Ward of Silence's unavailable target: "No faceup secrets". Its line: "Flipped 2 secrets on {Blue}'s board facedown.", the action's own line.
   - Ward of Silence's headings: "Ward of Silence: flip secrets of a player at your site", and "Ward of Silence: place X secrets on this card to flip X of their secrets facedown", confirmed with "Flip".
@@ -249,14 +249,14 @@ This is the slice's riskiest seam: a decision parked after the pawn's move in Tr
 Create `HospitalitySuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.gameplay.powers.PowerFixture
-import oathdigital.model._
-import oathdigital.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes,
+import distantlands.gameplay.powers.PowerFixture
+import distantlands.model._
+import distantlands.testkit.{ActPowerHarness, CatalogNames, Look, Outcomes,
   PhasePowerHarness}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Unwrap.accepted
 
 /** Hospitality: after its holder travels, 1 favor from a bank matching both
   * a card at the destination and one of the holder's faceup advisers. */
@@ -360,15 +360,15 @@ class HospitalitySuite extends munit.FunSuite:
 Create `HospitalityLogSuite.scala`:
 
 ```scala
-package oathdigital.application.gamelog
+package distantlands.application.gamelog
 
-import oathdigital.application.{GameApplicationService, GameCommand,
+import distantlands.application.{GameApplicationService, GameCommand,
   ParkedServiceFixture, TreeDecision}
-import oathdigital.gameplay.powers.travel.Hospitality
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Table}
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.{accepted, present}
+import distantlands.gameplay.powers.travel.Hospitality
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Table}
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.{accepted, present}
 import LogScripts.formatter
 
 /** How Hospitality's question reads in the Game Log: no "Chose" line and no
@@ -416,13 +416,13 @@ In `PowerKindsCatalogSuite`, after the Tyrant test, add:
   test("Hospitality's rule is automatic whatever its flag: it is a must, " +
       "not a modifier"):
     assertEquals(flag("denizen.hospitality"), Some(false))
-    assertEquals(oathdigital.gameplay.powers.travel.Hospitality
+    assertEquals(distantlands.gameplay.powers.travel.Hospitality
       .forCatalog(catalog).resolution, PowerResolution.Automatic)
 ```
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.travel.HospitalitySuite oathdigital.application.gamelog.HospitalityLogSuite oathdigital.gameplay.PowerKindsCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.travel.HospitalitySuite distantlands.application.gamelog.HospitalityLogSuite distantlands.gameplay.PowerKindsCatalogSuite"`
 Expected: compile failure, `Hospitality` not found.
 
 - [ ] **Step 3: Write the rule**
@@ -430,15 +430,15 @@ Expected: compile failure, `Hospitality` not found.
 Delete `HospitalityCard` from `HoldingNomadDenizens.scala`. Create `Hospitality.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.travel
+package distantlands.gameplay.powers.travel
 
-import oathdigital.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
+import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog,
   PrintedPower}
-import oathdigital.gameplay.actions.economy.AdviserSuits
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.gameplay.actions.economy.AdviserSuits
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerCtx, Transform}
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 object HospitalityCard extends Denizen(DenizenId("171"), "Hospitality",
     Suit.Nomad) with AdviserOnly:
@@ -544,11 +544,11 @@ object Hospitality:
       })
 ```
 
-Register it in `TravelModifiers.forCatalog`, before `Vector(Tyrant)`: `Vector(Hospitality.forCatalog(catalog)) ++`. Add `HospitalityCard` to the `oathdigital.gameplay.powers.travel` import in `NewFoundations.scala`, in alphabetical order.
+Register it in `TravelModifiers.forCatalog`, before `Vector(Tyrant)`: `Vector(Hospitality.forCatalog(catalog)) ++`. Add `HospitalityCard` to the `distantlands.gameplay.powers.travel` import in `NewFoundations.scala`, in alphabetical order.
 
 - [ ] **Step 4: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.travel.* oathdigital.application.gamelog.* oathdigital.gameplay.PowerKindsCatalogSuite oathdigital.catalog.* oathdigital.gameplay.cards.* oathdigital.gameplay.Travel*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.travel.* distantlands.application.gamelog.* distantlands.gameplay.PowerKindsCatalogSuite distantlands.catalog.* distantlands.gameplay.cards.* distantlands.gameplay.Travel*"`
 Expected: PASS. If the first test cannot park on `travel.hospitality`, or the coast drops out of the destinations, stop and ask the product owner (see the task's opening note).
 
 - [ ] **Step 5: Commit**
@@ -578,19 +578,19 @@ git commit -m "feat(batch8): Hospitality gains favor after Travel"
 Create `WardOfSilenceSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.phases.PhaseMenu
-import oathdigital.gameplay.powers.{NoteText, PhasePowerCatalog}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.WalkerPowers
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseAmountAnswer
-import oathdigital.testkit.{CatalogNames, Look, ParkedNode, PhasePowerHarness,
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.WalkerPowers
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseAmountAnswer
+import distantlands.testkit.{CatalogNames, Look, ParkedNode, PhasePowerHarness,
   Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2, p3}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2, p3}
+import distantlands.testkit.Unwrap.accepted
 
 /** Ward of Silence: X secrets placed on the card, and X of a player's
   * faceup secrets flipped facedown. */
@@ -707,7 +707,7 @@ The amount refusal text follows `BloodPactSuite`'s. If `main` words it different
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.WardOfSilenceSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.WardOfSilenceSuite"`
 Expected: compile failure, `WardOfSilence` not found.
 
 - [ ] **Step 3: Write the action**
@@ -715,13 +715,13 @@ Expected: compile failure, `WardOfSilence` not found.
 Delete `WardOfSilenceCard` from `HoldingArcaneDenizens.scala`. Create `WardOfSilence.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.{Denizen, PrintedPower}
-import oathdigital.gameplay.PowerAccess
-import oathdigital.gameplay.operations.Costs
-import oathdigital.gameplay.powers.{NoteSupport, PowerAnswers}
-import oathdigital.model._
+import distantlands.catalog.{Denizen, PrintedPower}
+import distantlands.gameplay.PowerAccess
+import distantlands.gameplay.operations.Costs
+import distantlands.gameplay.powers.{NoteSupport, PowerAnswers}
+import distantlands.model._
 
 object WardOfSilenceCard extends Denizen(DenizenId("202"), "Ward of Silence",
     Suit.Arcane):
@@ -847,11 +847,11 @@ case object WardOfSilence extends PaidAction(WardOfSilenceCard.power):
     NoteArg.Player(target))
 ```
 
-Register it in `TargetPowers.forCatalog`, after `SleightOfHand`. Add `WardOfSilenceCard` to the `oathdigital.gameplay.powers.action` import in `NewFoundations.scala`, in alphabetical order.
+Register it in `TargetPowers.forCatalog`, after `SleightOfHand`. Add `WardOfSilenceCard` to the `distantlands.gameplay.powers.action` import in `NewFoundations.scala`, in alphabetical order.
 
 - [ ] **Step 4: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.* oathdigital.gameplay.PhaseMenuSuite oathdigital.catalog.* oathdigital.gameplay.cards.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.* distantlands.gameplay.PhaseMenuSuite distantlands.catalog.* distantlands.gameplay.cards.*"`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -882,7 +882,7 @@ The engine half comes first. Its own tests pin it before Vow of Wisdom relies on
 
 **Interfaces:**
 - Consumes: `OperationRewrite.ops`, `CardPlayProcedure.PlacementTree.adjust`.
-- Produces: `oathdigital.model.RewritableComposite` with `rewritten(rewrite: Operation => Operation): Operation`; `CardPlayProcedure.PlacementBody` implementing it; `VowOfWisdom` (case object) with `Secrets: Int = 1`; `VowOfWisdomCard`.
+- Produces: `distantlands.model.RewritableComposite` with `rewritten(rewrite: Operation => Operation): Operation`; `CardPlayProcedure.PlacementBody` implementing it; `VowOfWisdom` (case object) with `Secrets: Int = 1`; `VowOfWisdomCard`.
 
 - [ ] **Step 1: Write the failing engine tests**
 
@@ -913,7 +913,7 @@ and, after the test "a node with its own window and a custom composite are left 
       Vector[Operation](RebuiltComposite(Vector(note))))
 ```
 
-In `CardPlayRulesSuite`, which imports `oathdigital.model._`, add this test after "two contributors compose in either order":
+In `CardPlayRulesSuite`, which imports `distantlands.model._`, add this test after "two contributors compose in either order":
 
 ```scala
   test("a rewrite of the play's body survives a later adjust"):
@@ -936,7 +936,7 @@ In `CardPlayRulesSuite`, which imports `oathdigital.model._`, add this test afte
 
 - [ ] **Step 2: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powerresolver.OperationRewriteSuite oathdigital.gameplay.CardPlayRulesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powerresolver.OperationRewriteSuite distantlands.gameplay.CardPlayRulesSuite"`
 Expected: compile failure, `RewritableComposite` not found.
 
 - [ ] **Step 3: The trait and the descent**
@@ -975,7 +975,7 @@ In `OperationRewrite.scala`:
           composite.rewritten(at(ready, pending)))(placed)
 ```
 
-Add `RewritableComposite` to the file's `oathdigital.model` import.
+Add `RewritableComposite` to the file's `distantlands.model` import.
 
 - [ ] **Step 4: The card play's body**
 
@@ -1002,7 +1002,7 @@ In `PlacementTree`, replace `override val children: Vector[Operation] = children
       Vector(new PlacementBody(CardPlayRules.default, childrenAt))
 ```
 
-In `PlacementTree`'s doc, replace ``children` is the play under the default rules.` with ``children` is the play under the default rules, in one body, so a rewrite of the body and an [[adjust]] compose in either order.`, re-wrapped. Import `RewritableComposite` if the file does not import `oathdigital.model._`.
+In `PlacementTree`'s doc, replace ``children` is the play under the default rules.` with ``children` is the play under the default rules, in one body, so a rewrite of the body and an [[adjust]] compose in either order.`, re-wrapped. Import `RewritableComposite` if the file does not import `distantlands.model._`.
 
 - [ ] **Step 5: Run the whole server suite**
 
@@ -1027,15 +1027,15 @@ In `PowerKindsCatalogSuite`, add `"denizen.vow-of-wisdom"` to the end of `persis
 Create `VowOfWisdomSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.gameplay.PlacementFixture
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.walker.{WalkerOutcome, WalkerPowers}
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Unwrap
+import distantlands.gameplay.PlacementFixture
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.walker.{WalkerOutcome, WalkerPowers}
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Look, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Unwrap
 
 /** Vow of Wisdom (card 203): its holder's play to a site gains 1 secret and
   * no favor. */
@@ -1100,7 +1100,7 @@ If the play to Ancient City asks a further question on `main` (the Homeland rule
 
 - [ ] **Step 8: Run them to see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.cardplay.VowOfWisdomSuite oathdigital.gameplay.PowerKindsCatalogSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.cardplay.VowOfWisdomSuite distantlands.gameplay.PowerKindsCatalogSuite"`
 Expected: compile failure, `VowOfWisdom` not found.
 
 - [ ] **Step 9: Write the rule**
@@ -1108,12 +1108,12 @@ Expected: compile failure, `VowOfWisdom` not found.
 Delete `VowOfWisdomCard` from `HoldingArcaneDenizens.scala`. Create `VowOfWisdom.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.cardplay
+package distantlands.gameplay.powers.cardplay
 
-import oathdigital.catalog.{AdviserOnly, Denizen, PrintedPower}
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.catalog.{AdviserOnly, Denizen, PrintedPower}
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   OperationRewrite, PowerCtx, Transform}
-import oathdigital.model._
+import distantlands.model._
 
 object VowOfWisdomCard extends Denizen(DenizenId("203"), "Vow of Wisdom",
     Suit.Arcane) with AdviserOnly:
@@ -1159,11 +1159,11 @@ case object VowOfWisdom extends ContributingPower:
       })
 ```
 
-Register it in `CardPlayTriggers.forCatalog`, last: `Vector(SacredGround) ++ Vector(VowOfWisdom)`. In that object's doc, replace `the triggers that reward a play and the rules that forbid one` with `the triggers that reward a play and the rules that change or forbid one`. Add `VowOfWisdomCard` to the `oathdigital.gameplay.powers.cardplay` import in `NewFoundations.scala`, in alphabetical order.
+Register it in `CardPlayTriggers.forCatalog`, last: `Vector(SacredGround) ++ Vector(VowOfWisdom)`. In that object's doc, replace `the triggers that reward a play and the rules that forbid one` with `the triggers that reward a play and the rules that change or forbid one`. Add `VowOfWisdomCard` to the `distantlands.gameplay.powers.cardplay` import in `NewFoundations.scala`, in alphabetical order.
 
 - [ ] **Step 10: Run the tests**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.CardPlay* oathdigital.gameplay.powers.cardplay.* oathdigital.gameplay.powers.search.* oathdigital.gameplay.PowerKindsCatalogSuite oathdigital.catalog.* oathdigital.gameplay.cards.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.CardPlay* distantlands.gameplay.powers.cardplay.* distantlands.gameplay.powers.search.* distantlands.gameplay.PowerKindsCatalogSuite distantlands.catalog.* distantlands.gameplay.cards.*"`
 Expected: PASS.
 
 - [ ] **Step 11: Commit**

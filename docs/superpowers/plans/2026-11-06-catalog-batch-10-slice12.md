@@ -142,7 +142,7 @@ lines" reading.
   - `CardPlay.Origin.DiscardPile(region: Region)`
   - `CardPlayProcedure.Origin.DiscardPile(region: Region)`
   - `SearchPartyCard` and `case object SearchParty extends WhenPlayedPower`
-    in `oathdigital.gameplay.powers.whenplayed`, with
+    in `distantlands.gameplay.powers.whenplayed`, with
     `pileDecisionId: String`, `cardDecisionId: String`,
     `pileRef(region: Region): DecisionOptionRef.Button`,
     `emptyPile: String`, `used: NoteKey`, `none: NoteKey`
@@ -159,15 +159,15 @@ Follow the "Slice 11 first" constraint above.
 Create `src/test/scala/distantlands/gameplay/powers/whenplayed/SearchPartyFixture.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.{PowerFixture, SearchFixture}
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.testkit.{PlacementPicks, Table}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.{PowerFixture, SearchFixture}
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.testkit.{PlacementPicks, Table}
+import distantlands.testkit.Unwrap.accepted
 
 /** Drives Search Party's WHEN PLAYED through the rules with the production
   * walker powers (catalog batch 10, slice 12). p1 stands at Ancient City,
@@ -232,21 +232,21 @@ object SearchPartyFixture:
 Create `src/test/scala/distantlands/gameplay/powers/whenplayed/SearchPartySuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.SearchPlay
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.{NoteText, PowerFixture, SearchFixture}
-import oathdigital.gameplay.powers.cardplay.GossipCard
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{ActPowerHarness, EconomyActions, Look, MenuPlay,
+import distantlands.gameplay.SearchPlay
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.{NoteText, PowerFixture, SearchFixture}
+import distantlands.gameplay.powers.cardplay.GossipCard
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{ActPowerHarness, EconomyActions, Look, MenuPlay,
   PlacementPicks, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.p2
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.p2
+import distantlands.testkit.Unwrap.accepted
 
 /** Search Party (card 240, catalog batch 10, slice 12), WHEN PLAYED: "peek
   * at the bottom 3 cards of a discard pile and play one as if you
@@ -383,7 +383,7 @@ class SearchPartySuite extends munit.FunSuite:
 
 - [ ] **Step 4: Run the suite to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.whenplayed.SearchPartySuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.whenplayed.SearchPartySuite"`
 Expected: FAIL to compile, with `Not found: SearchParty` (and the
 fixture's `SearchPartyCard` resolving to nothing in its package).
 
@@ -495,13 +495,13 @@ after them). The file's imports stay used.
 Create `src/main/scala/distantlands/gameplay/powers/whenplayed/SearchParty.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.{Denizen, PrintedPower}
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.powerresolver.{ModifierPicks, PowerCtx}
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.catalog.{Denizen, PrintedPower}
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.powerresolver.{ModifierPicks, PowerCtx}
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 object SearchPartyCard extends Denizen(DenizenId("240"), "Search Party",
     Suit.Nomad):
@@ -646,33 +646,33 @@ git grep -n "SearchPartyCard" -- src/test | grep "holding"
 ```
 
 Edit each match so `SearchPartyCard` comes from
-`oathdigital.gameplay.powers.whenplayed`:
+`distantlands.gameplay.powers.whenplayed`:
 
 - `PledgeOfDefenseSuite` and `ImperialTacticsSuite`: replace
-  `import oathdigital.catalog.holding.{SearchPartyCard, VowOfKinshipCard}`
+  `import distantlands.catalog.holding.{SearchPartyCard, VowOfKinshipCard}`
   with
 
   ```scala
-  import oathdigital.catalog.holding.VowOfKinshipCard
-  import oathdigital.gameplay.powers.whenplayed.SearchPartyCard
+  import distantlands.catalog.holding.VowOfKinshipCard
+  import distantlands.gameplay.powers.whenplayed.SearchPartyCard
   ```
 
 - `GreatCrusadeSuite`: replace
-  `import oathdigital.catalog.holding.{SearchPartyCard, TheGatheringCard,`
+  `import distantlands.catalog.holding.{SearchPartyCard, TheGatheringCard,`
   and the next line `  VowOfKinshipCard}` with
 
   ```scala
-  import oathdigital.catalog.holding.{TheGatheringCard, VowOfKinshipCard}
-  import oathdigital.gameplay.powers.whenplayed.SearchPartyCard
+  import distantlands.catalog.holding.{TheGatheringCard, VowOfKinshipCard}
+  import distantlands.gameplay.powers.whenplayed.SearchPartyCard
   ```
 
 - `KindredWarriorsSuite` and `SaltTheEarthSuite`: delete
-  `import oathdigital.catalog.holding.SearchPartyCard`, and change their
-  `import oathdigital.gameplay.powers.whenplayed.RoyalTaxCard` to
-  `import oathdigital.gameplay.powers.whenplayed.{RoyalTaxCard, SearchPartyCard}`.
+  `import distantlands.catalog.holding.SearchPartyCard`, and change their
+  `import distantlands.gameplay.powers.whenplayed.RoyalTaxCard` to
+  `import distantlands.gameplay.powers.whenplayed.{RoyalTaxCard, SearchPartyCard}`.
 - `RivalKhanSuite`: slice 11 left it importing the card on its own line,
-  `import oathdigital.catalog.holding.SearchPartyCard`. Replace that line
-  with `import oathdigital.gameplay.powers.whenplayed.SearchPartyCard`. If
+  `import distantlands.catalog.holding.SearchPartyCard`. Replace that line
+  with `import distantlands.gameplay.powers.whenplayed.SearchPartyCard`. If
   it still reads `{MagiciansCodeCard, SearchPartyCard}`, slice 11 has not
   landed: stop and report.
 
@@ -687,7 +687,7 @@ Expected: no output.
 - [ ] **Step 10: Regenerate the snapshots and run the suites**
 
 ```bash
-NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.*"
+NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.*"
 ```
 
 ```bash
@@ -702,7 +702,7 @@ denizen.search-party used = Peeked at the bottom of the {0}.
 denizen.search-party used.none = Every discard pile was empty.
 ```
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.whenplayed.* oathdigital.gameplay.powers.cardplay.* oathdigital.gameplay.powers.search.* oathdigital.gameplay.powers.campaign.* oathdigital.gameplay.powers.action.* oathdigital.gameplay.CardPlayProcedureSuite oathdigital.gameplay.CardPlayHooksSuite oathdigital.gameplay.CardPlayRulesSuite oathdigital.gameplay.SearchSuite oathdigital.gameplay.SearchProcedureSuite oathdigital.gameplay.FacedownAdviserWalkerSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.whenplayed.* distantlands.gameplay.powers.cardplay.* distantlands.gameplay.powers.search.* distantlands.gameplay.powers.campaign.* distantlands.gameplay.powers.action.* distantlands.gameplay.CardPlayProcedureSuite distantlands.gameplay.CardPlayHooksSuite distantlands.gameplay.CardPlayRulesSuite distantlands.gameplay.SearchSuite distantlands.gameplay.SearchProcedureSuite distantlands.gameplay.FacedownAdviserWalkerSuite"`
 Expected: PASS. If the same-pile discard test fails inside the operation
 pipeline, stop and report (finding 7).
 
@@ -755,25 +755,25 @@ EOF
 Create `src/test/scala/distantlands/gameplay/powers/whenplayed/SearchPartyModifiersSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.SearchPlay
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.cards.AncientCitySite
-import oathdigital.gameplay.powers.{PhasePowerCatalog, PowerFixture,
+import distantlands.gameplay.SearchPlay
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.powers.{PhasePowerCatalog, PowerFixture,
   SearchFixture, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.action.{TempleOfAncestors,
+import distantlands.gameplay.powers.action.{TempleOfAncestors,
   TempleOfAncestorsCard}
-import oathdigital.gameplay.powers.cardplay.{WelcomingParty,
+import distantlands.gameplay.powers.cardplay.{WelcomingParty,
   WelcomingPartyCard}
-import oathdigital.gameplay.powers.search.{NewGrowth, NewGrowthCard}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.model.DecisionAnswer.ChooseOneAnswer
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{Look, PlacementPicks, PowerRules, Table}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.powers.search.{NewGrowth, NewGrowthCard}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.model.DecisionAnswer.ChooseOneAnswer
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{Look, PlacementPicks, PowerRules, Table}
+import distantlands.testkit.Unwrap.accepted
 
 /** Search Party's play is not the Search's (catalog batch 10, slice 12,
   * ruling 5): no modifier picked for the Search reaches it, and Temple of
@@ -864,7 +864,7 @@ class SearchPartyModifiersSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the suite to see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.whenplayed.SearchPartyModifiersSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.whenplayed.SearchPartyModifiersSuite"`
 Expected: all three tests FAIL: p1's favor is `before + 2`; the nested
 card is offered sites beyond Ancient City; the Temple's site slots are
 unavailable with "Temple of Ancestors: the card goes to your advisers".
@@ -977,7 +977,7 @@ In `src/main/scala/distantlands/gameplay/actions/cardplay/CardPlayProcedure.scal
 - [ ] **Step 5: Keep selected modifiers off a power's play**
 
 In `src/main/scala/distantlands/gameplay/powers/SelectedModifier.scala`,
-add `import oathdigital.gameplay.actions.cardplay.CardPlayProcedure`, and
+add `import distantlands.gameplay.actions.cardplay.CardPlayProcedure`, and
 change the last case of `applicable` to:
 
 ```scala
@@ -1019,12 +1019,12 @@ In the trait's doc comment, after the "At every other window it asks
 3. `src/main/scala/distantlands/gameplay/powers/action/Oracle.scala`: pass
    `byPower = Some(id)` to its `CardPlayProcedure.unchecked` call.
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.whenplayed.SearchParty*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.whenplayed.SearchParty*"`
 Expected: PASS, both suites.
 
 - [ ] **Step 7: Run the touched suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.* oathdigital.gameplay.CardPlayProcedureSuite oathdigital.gameplay.CardPlayHooksSuite oathdigital.gameplay.CardPlayRulesSuite oathdigital.gameplay.SearchSuite oathdigital.gameplay.SearchProcedureSuite oathdigital.gameplay.SearchModifierChoiceSuite oathdigital.gameplay.FacedownAdviserWalkerSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.* distantlands.gameplay.CardPlayProcedureSuite distantlands.gameplay.CardPlayHooksSuite distantlands.gameplay.CardPlayRulesSuite distantlands.gameplay.SearchSuite distantlands.gameplay.SearchProcedureSuite distantlands.gameplay.SearchModifierChoiceSuite distantlands.gameplay.FacedownAdviserWalkerSuite"`
 Expected: PASS, and `git diff src/test/resources` shows nothing new.
 
 - [ ] **Step 8: Update the spec**

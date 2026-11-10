@@ -28,7 +28,7 @@
   - `gameplay` never imports `application`, `serialization` or `server`.
   - A walker power (anything under `gameplay/powers`) never imports `gameplay.walker`.
   - No power name appears in walker sources.
-- Never touch the live database `var/oathdigital`.
+- Never touch the live database `var/distantlands`.
 - Other sessions commit to `main` while you work. Stage explicit paths only; never `git add -A`. Re-check `git log --oneline -1` before any amend, reset or rebase.
 - Work in a git worktree:
   - `EnterWorktree` branches from `origin`, which lags local `main`. Fast-forward the new branch to local `main` first (`git merge --ff-only main`).
@@ -129,15 +129,15 @@ Read `economy/RowdyPubSuite.scala`, `economy/AnimalPlaymatesSuite.scala`, `banne
 Create `src/test/scala/distantlands/gameplay/powers/economy/VillageIdiotSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.actions.economy.MusterProcedure
-import oathdigital.gameplay.powers.SearchFixture
-import oathdigital.gameplay.powers.action.PaidActionHarness
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look, Table}
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.actions.economy.MusterProcedure
+import distantlands.gameplay.powers.SearchFixture
+import distantlands.gameplay.powers.action.PaidActionHarness
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{CatalogNames, Look, Table}
+import distantlands.testkit.Table.p1
 
 class VillageIdiotSuite extends munit.FunSuite:
   import SearchFixture.rules
@@ -206,15 +206,15 @@ class VillageIdiotSuite extends munit.FunSuite:
 Create `src/test/scala/distantlands/gameplay/powers/economy/DowntroddenSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.actions.economy.MusterProcedure
-import oathdigital.gameplay.powers.SearchFixture
-import oathdigital.gameplay.powers.action.PaidActionHarness
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look, Table}
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.actions.economy.MusterProcedure
+import distantlands.gameplay.powers.SearchFixture
+import distantlands.gameplay.powers.action.PaidActionHarness
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{CatalogNames, Look, Table}
+import distantlands.testkit.Table.p1
 
 class DowntroddenSuite extends munit.FunSuite:
   import SearchFixture.rules
@@ -277,7 +277,7 @@ class DowntroddenSuite extends munit.FunSuite:
 
 - [ ] **Step 3: Run the suites to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.VillageIdiotSuite oathdigital.gameplay.powers.economy.DowntroddenSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.economy.VillageIdiotSuite distantlands.gameplay.powers.economy.DowntroddenSuite"`
 Expected: compile FAIL with "Not found: VillageIdiot" and "Not found: Downtrodden".
 
 - [ ] **Step 4: Create Village Idiot**
@@ -285,13 +285,13 @@ Expected: compile FAIL with "Not found: VillageIdiot" and "Not found: Downtrodde
 Create `src/main/scala/distantlands/gameplay/powers/economy/VillageIdiot.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.economy.MusterProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, Transform}
-import oathdigital.gameplay.powers.{CatalogCards, PowerAnswers, SelectedModifier}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.economy.MusterProcedure
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.gameplay.powers.{CatalogCards, PowerAnswers, SelectedModifier}
+import distantlands.model._
 
 /** Village Idiot (card 231, site-only), a selected Muster modifier with no
   * cost: "After mustering with this card, gain [favor] from the Hearth bank."
@@ -329,14 +329,14 @@ object VillageIdiot:
 Create `src/main/scala/distantlands/gameplay/powers/economy/Downtrodden.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.economy.MusterProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, Transform}
-import oathdigital.gameplay.powers.{CatalogCards, PlayerFacts, PowerAnswers,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.economy.MusterProcedure
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.gameplay.powers.{CatalogCards, PlayerFacts, PowerAnswers,
   SelectedModifier}
-import oathdigital.model._
+import distantlands.model._
 
 /** Downtrodden (card 81), a selected Muster modifier with no cost: "Gain two
   * more warbands if mustering on a card whose favor bank has the least favor
@@ -388,14 +388,14 @@ object Downtrodden:
 Replace the whole of `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala` with:
 
 ```scala
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.ContributingPower
-import oathdigital.gameplay.powers.economy.{AnimalPlaymates, Birdsong, CupOfPlenty,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.ContributingPower
+import distantlands.gameplay.powers.economy.{AnimalPlaymates, Birdsong, CupOfPlenty,
   Downtrodden, RowdyPub, VillageIdiot}
-import oathdigital.gameplay.powers.recover.RelicWorship
-import oathdigital.gameplay.powers.search.{Augury, TruthfulHarp}
+import distantlands.gameplay.powers.recover.RelicWorship
+import distantlands.gameplay.powers.search.{Augury, TruthfulHarp}
 
 /** The Search, Trade, Muster and Recover modifiers, registered together. A
   * power whose card is absent from `catalog` is omitted.
@@ -415,7 +415,7 @@ object ActionModifiers:
 
 - [ ] **Step 7: Run the suites to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.economy.*"`
 Expected: PASS. 9 new tests (4 in `VillageIdiotSuite`, 5 in `DowntroddenSuite`), and every existing economy suite still passes.
 
 - [ ] **Step 8: Commit**
@@ -445,15 +445,15 @@ git commit -m "feat(powers): add Village Idiot and Downtrodden"
 Create `src/test/scala/distantlands/gameplay/powers/economy/InitiationRiteSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
-import oathdigital.gameplay.powers.SearchFixture
-import oathdigital.gameplay.powers.action.PaidActionHarness
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look, Table}
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
+import distantlands.gameplay.powers.SearchFixture
+import distantlands.gameplay.powers.action.PaidActionHarness
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{CatalogNames, Look, Table}
+import distantlands.testkit.Table.p1
 
 class InitiationRiteSuite extends munit.FunSuite:
   import SearchFixture.rules
@@ -549,7 +549,7 @@ In `src/test/scala/distantlands/application/gamelog/GameLogActionLineSuite.scala
 
 - [ ] **Step 3: Run the suites to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.InitiationRiteSuite oathdigital.application.gamelog.GameLogActionLineSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.economy.InitiationRiteSuite distantlands.application.gamelog.GameLogActionLineSuite"`
 Expected: compile FAIL with "Not found: InitiationRite".
 
 - [ ] **Step 4: Create Initiation Rite**
@@ -557,13 +557,13 @@ Expected: compile FAIL with "Not found: InitiationRite".
 Create `src/main/scala/distantlands/gameplay/powers/economy/InitiationRite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.{ContributingPower, Contribution,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerCtx, Transform}
-import oathdigital.gameplay.powers.CatalogCards
-import oathdigital.model._
+import distantlands.gameplay.powers.CatalogCards
+import distantlands.model._
 
 /** Initiation Rite (card 73, adviser-only, locked): "To muster, you must
   * place [secret] instead of [favor]."
@@ -617,7 +617,7 @@ In `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`:
 - Change the economy import to:
 
 ```scala
-import oathdigital.gameplay.powers.economy.{AnimalPlaymates, Birdsong, CupOfPlenty,
+import distantlands.gameplay.powers.economy.{AnimalPlaymates, Birdsong, CupOfPlenty,
   Downtrodden, InitiationRite, RowdyPub, VillageIdiot}
 ```
 
@@ -633,7 +633,7 @@ import oathdigital.gameplay.powers.economy.{AnimalPlaymates, Birdsong, CupOfPlen
 
 - [ ] **Step 6: Run the suites to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.* oathdigital.application.gamelog.GameLogActionLineSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.economy.* distantlands.application.gamelog.GameLogActionLineSuite"`
 Expected: PASS. 6 new tests (5 in `InitiationRiteSuite`, 1 in `GameLogActionLineSuite`), and every existing test in those suites still passes.
 
 - [ ] **Step 7: Commit**
@@ -661,15 +661,15 @@ git commit -m "feat(powers): add Initiation Rite"
 Create `src/test/scala/distantlands/gameplay/powers/economy/TheOldOakSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.gameplay.actions.economy.TradeProcedure
-import oathdigital.gameplay.powers.SearchFixture
-import oathdigital.gameplay.powers.action.PaidActionHarness
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look, Table}
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.actions.economy.TradeProcedure
+import distantlands.gameplay.powers.SearchFixture
+import distantlands.gameplay.powers.action.PaidActionHarness
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{CatalogNames, Look, Table}
+import distantlands.testkit.Table.p1
 
 class TheOldOakSuite extends munit.FunSuite:
   import SearchFixture.rules
@@ -734,7 +734,7 @@ class TheOldOakSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the suite to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.TheOldOakSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.economy.TheOldOakSuite"`
 Expected: compile FAIL with "Not found: TheOldOak".
 
 - [ ] **Step 3: Create The Old Oak**
@@ -742,13 +742,13 @@ Expected: compile FAIL with "Not found: TheOldOak".
 Create `src/main/scala/distantlands/gameplay/powers/economy/TheOldOak.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.economy
+package distantlands.gameplay.powers.economy
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.economy.TradeProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, Transform}
-import oathdigital.gameplay.powers.{CatalogCards, PowerAnswers, SelectedModifier}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.economy.TradeProcedure
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.gameplay.powers.{CatalogCards, PowerAnswers, SelectedModifier}
+import distantlands.model._
 
 /** The Old Oak (card 42, site-only), a selected Trade modifier with no cost:
   * "If trading with The Old Oak for [secret], gain one more [secret] if you
@@ -797,7 +797,7 @@ In `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`:
 - Change the economy import to:
 
 ```scala
-import oathdigital.gameplay.powers.economy.{AnimalPlaymates, Birdsong, CupOfPlenty,
+import distantlands.gameplay.powers.economy.{AnimalPlaymates, Birdsong, CupOfPlenty,
   Downtrodden, InitiationRite, RowdyPub, TheOldOak, VillageIdiot}
 ```
 
@@ -805,7 +805,7 @@ import oathdigital.gameplay.powers.economy.{AnimalPlaymates, Birdsong, CupOfPlen
 
 - [ ] **Step 5: Run the suites to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.economy.*"`
 Expected: PASS. 4 new tests in `TheOldOakSuite`, and every existing economy suite still passes.
 
 - [ ] **Step 6: Commit**
@@ -833,14 +833,14 @@ git commit -m "feat(powers): add The Old Oak"
 Create `src/test/scala/distantlands/gameplay/powers/search/DisciplesSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.powers.SearchFixture
-import oathdigital.gameplay.powers.action.PaidActionHarness
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Look, Table}
-import oathdigital.testkit.Table.{p1, p2}
+import distantlands.gameplay.powers.SearchFixture
+import distantlands.gameplay.powers.action.PaidActionHarness
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{CatalogNames, Look, Table}
+import distantlands.testkit.Table.{p1, p2}
 
 class DisciplesSuite extends munit.FunSuite:
   import SearchFixture.rules
@@ -907,7 +907,7 @@ class DisciplesSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the suite to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.search.DisciplesSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.search.DisciplesSuite"`
 Expected: compile FAIL with "Not found: Disciples".
 
 - [ ] **Step 3: Create Disciples**
@@ -915,13 +915,13 @@ Expected: compile FAIL with "Not found: Disciples".
 Create `src/main/scala/distantlands/gameplay/powers/search/Disciples.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.BannerRules
-import oathdigital.gameplay.powerresolver.{Contribution, Transform}
-import oathdigital.gameplay.powers.{CatalogCards, SelectedModifier}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.BannerRules
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.gameplay.powers.{CatalogCards, SelectedModifier}
+import distantlands.model._
 
 /** Disciples (card 205), a selected Search modifier with no cost: "If you
   * have the Darkest Secret, spend only 2 Supply if you're searching the world
@@ -973,14 +973,14 @@ In `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`:
 - Change the search import to:
 
 ```scala
-import oathdigital.gameplay.powers.search.{Augury, Disciples, TruthfulHarp}
+import distantlands.gameplay.powers.search.{Augury, Disciples, TruthfulHarp}
 ```
 
 - Add `Disciples.forCatalog(catalog).toVector ++` on the line after `TruthfulHarp.forCatalog(catalog).toVector ++`.
 
 - [ ] **Step 5: Run the suites to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.search.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.search.*"`
 Expected: PASS. 5 new tests in `DisciplesSuite`, and `AugurySuite` and `TruthfulHarpSuite` still pass.
 
 - [ ] **Step 6: Commit**
@@ -1008,18 +1008,18 @@ git commit -m "feat(powers): add Disciples"
 Create `src/test/scala/distantlands/gameplay/powers/search/CropRotationSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.powers.{NoteText, SearchFixture, WalkerPowerCatalog}
-import oathdigital.gameplay.powers.action.PaidActionHarness
-import oathdigital.gameplay.powers.banner.{BannerFixture, PeoplesFavorMob}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.gameplay.walker.ParkedDecisionAssertions
-import oathdigital.model._
-import oathdigital.model.OathState.Ready
-import oathdigital.testkit.{CatalogNames, Table}
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.powers.{NoteText, SearchFixture, WalkerPowerCatalog}
+import distantlands.gameplay.powers.action.PaidActionHarness
+import distantlands.gameplay.powers.banner.{BannerFixture, PeoplesFavorMob}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.walker.ParkedDecisionAssertions
+import distantlands.model._
+import distantlands.model.OathState.Ready
+import distantlands.testkit.{CatalogNames, Table}
+import distantlands.testkit.Table.p1
 
 class CropRotationSuite extends munit.FunSuite:
   import SearchFixture.{keep, place, rules, start}
@@ -1068,7 +1068,7 @@ class CropRotationSuite extends munit.FunSuite:
 
   private def cropSaid(events: Vector[OathEvent]): Vector[NoteText.Said] =
     NoteText.said(CropRotation.id, Vector(
-      oathdigital.gameplay.actions.PlacementRules.discardFirst), events)
+      distantlands.gameplay.actions.PlacementRules.discardFirst), events)
 
   test("selected, a play to a site with room asks first, and may decline"):
     val ready = staged(Vector(fillers(0)))
@@ -1135,7 +1135,7 @@ class CropRotationSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run the suite to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.search.CropRotationSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.search.CropRotationSuite"`
 Expected: compile FAIL with "Not found: CropRotation".
 
 - [ ] **Step 3: Create Crop Rotation**
@@ -1143,14 +1143,14 @@ Expected: compile FAIL with "Not found: CropRotation".
 Create `src/main/scala/distantlands/gameplay/powers/search/CropRotation.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.search
+package distantlands.gameplay.powers.search
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.PlacementRules
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure
-import oathdigital.gameplay.powerresolver.{Contribution, Transform}
-import oathdigital.gameplay.powers.{CatalogCards, SelectedModifier}
-import oathdigital.model._
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.PlacementRules
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.powerresolver.{Contribution, Transform}
+import distantlands.gameplay.powers.{CatalogCards, SelectedModifier}
+import distantlands.model._
 
 /** Crop Rotation (card 128), a selected Search modifier with no cost: "If
   * playing to a site, you may discard a denizen there first."
@@ -1198,7 +1198,7 @@ In `src/main/scala/distantlands/gameplay/powers/ActionModifiers.scala`:
 - Change the search import to:
 
 ```scala
-import oathdigital.gameplay.powers.search.{Augury, CropRotation, Disciples,
+import distantlands.gameplay.powers.search.{Augury, CropRotation, Disciples,
   TruthfulHarp}
 ```
 
@@ -1206,7 +1206,7 @@ import oathdigital.gameplay.powers.search.{Augury, CropRotation, Disciples,
 
 - [ ] **Step 5: Run the suites to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.search.* oathdigital.gameplay.powers.banner.* oathdigital.gameplay.powers.cardplay.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.search.* distantlands.gameplay.powers.banner.* distantlands.gameplay.powers.cardplay.*"`
 Expected: PASS. 8 new tests in `CropRotationSuite`, and every existing search, banner and card-play suite still passes.
 
 If "a full site takes the play only with a discard" fails on `toSite(full, Vector.empty).isLeft`, Ancient City is the Homeland of the played card's suit. Pick `played` from a suit whose Homeland is not Ancient City and say so in the report.

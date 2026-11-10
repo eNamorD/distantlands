@@ -80,7 +80,7 @@ Pure DOM builders with no layout dependency, so they can be written and tested b
 Create `frontend/src/test/scala/distantlands/frontend/RulesTextRendererSuite.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 import org.scalajs.dom
 
@@ -151,7 +151,7 @@ class RulesTextRendererSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run the test to verify it fails**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.RulesTextRendererSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.RulesTextRendererSuite"`
 
 Expected: FAIL to compile — `not found: value TokenSprite`.
 
@@ -160,7 +160,7 @@ Expected: FAIL to compile — `not found: value TokenSprite`.
 Create `frontend/src/main/scala/distantlands/frontend/TokenSprite.scala`. The paths are authored on a `0 0 24 24` grid and every one is filled `evenodd`, so an inner subpath is always a hole. They are deliberately geometric: shape, not colour, is what distinguishes a suit (see Global Constraints).
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 import org.scalajs.dom
 
@@ -263,7 +263,7 @@ private[frontend] object TokenSprite {
 Create `frontend/src/main/scala/distantlands/frontend/RulesTextRenderer.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 import org.scalajs.dom
 
@@ -380,7 +380,7 @@ In `frontend/styles.css`, replace the `:root` block (lines 1-6) with:
 
 - [ ] **Step 6: Run the test to verify it passes**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.RulesTextRendererSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.RulesTextRendererSuite"`
 
 Expected: PASS, 6 tests.
 
@@ -431,7 +431,7 @@ Builds the renderer and its CSS. Nothing calls it yet — Task 3 does the swap, 
 Create `frontend/src/test/scala/distantlands/frontend/CardFaceSuite.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 import org.scalajs.dom
 
@@ -561,7 +561,7 @@ class CardFaceSuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run the test to verify it fails**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.CardFaceSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.CardFaceSuite"`
 
 Expected: FAIL to compile — `not found: value CardFace`.
 
@@ -570,7 +570,7 @@ Expected: FAIL to compile — `not found: value CardFace`.
 Create `frontend/src/main/scala/distantlands/frontend/CardFace.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 import org.scalajs.dom
 import ServerUiSupport._
@@ -738,7 +738,7 @@ In `frontend/styles.css`, insert immediately before the `.pile-display` rule (cu
 
 - [ ] **Step 5: Run the test to verify it passes**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.CardFaceSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.CardFaceSuite"`
 
 Expected: PASS, 10 tests.
 
@@ -825,7 +825,7 @@ And create the boundary test the spec calls for. Add to the same class:
 
 - [ ] **Step 2: Run the test to verify it fails**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.CardFaceSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.CardFaceSuite"`
 
 Expected: FAIL to compile — `value emptySlot is not a member of object ServerUiSupport`.
 
@@ -1026,7 +1026,7 @@ EOF
 Create `frontend/src/test/scala/distantlands/frontend/CardInspectionOverlaySuite.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 import org.scalajs.dom
 import scala.scalajs.js
@@ -1197,7 +1197,7 @@ class CardInspectionOverlaySuite extends munit.FunSuite {
 
 - [ ] **Step 2: Run the test to verify it fails**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.CardInspectionOverlaySuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.CardInspectionOverlaySuite"`
 
 Expected: FAIL to compile — `not found: type CardInspectionOverlay`.
 
@@ -1206,7 +1206,7 @@ Expected: FAIL to compile — `not found: type CardInspectionOverlay`.
 Create `frontend/src/main/scala/distantlands/frontend/CardInspection.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 import org.scalajs.dom
 
@@ -1247,7 +1247,7 @@ In `frontend/src/main/scala/distantlands/frontend/CardFace.scala`, immediately b
 Create `frontend/src/main/scala/distantlands/frontend/CardInspectionOverlay.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 import org.scalajs.dom
 import ServerUiSupport._
@@ -1392,7 +1392,7 @@ Append to `frontend/styles.css`:
 
 - [ ] **Step 8: Run the test to verify it passes**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.CardInspectionOverlaySuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.CardInspectionOverlaySuite"`
 
 Expected: PASS, 10 tests.
 
@@ -1483,7 +1483,7 @@ Append to `frontend/src/test/scala/distantlands/frontend/PartitionPanelRenderSui
 
 - [ ] **Step 2: Run the test to verify it fails**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.PartitionPanelRenderSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.PartitionPanelRenderSuite"`
 
 Expected: FAIL to compile — `not found: value DragClickGuard`.
 
@@ -1492,7 +1492,7 @@ Expected: FAIL to compile — `not found: value DragClickGuard`.
 Create `frontend/src/main/scala/distantlands/frontend/DragClickGuard.scala`:
 
 ```scala
-package oathdigital.frontend
+package distantlands.frontend
 
 import org.scalajs.dom
 
@@ -1549,7 +1549,7 @@ and after `node.setAttribute("aria-label", option.label)` (line 312) add:
 
 - [ ] **Step 5: Run the test to verify it passes**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.PartitionPanelRenderSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.PartitionPanelRenderSuite"`
 
 Expected: PASS.
 
@@ -1613,7 +1613,7 @@ Append to `frontend/src/test/scala/distantlands/frontend/MapViewStateSuite.scala
 
 - [ ] **Step 2: Run the test to verify it fails**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.MapViewStateSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.MapViewStateSuite"`
 
 Expected: FAIL to compile — `value compactAtScale is not a member of object GameTableShell`.
 
@@ -1667,7 +1667,7 @@ In `frontend/styles.css`, replace the `.map-content` rule (line 399) with:
 
 - [ ] **Step 5: Run the test to verify it passes**
 
-Run: `./sbtw "frontend/testOnly oathdigital.frontend.MapViewStateSuite"`
+Run: `./sbtw "frontend/testOnly distantlands.frontend.MapViewStateSuite"`
 
 Expected: PASS.
 
@@ -1738,7 +1738,7 @@ The remaining spec requirements are visual and cannot be asserted in jsdom: that
 Follow the pattern of the existing panel UI record. Use a throwaway database path so the run cannot touch a real game:
 
 ```bash
-OATH_DATABASE_PATH=/tmp/card-shape-verification ./sbtw "run --port 8123"
+DLQ_DATABASE_PATH=/tmp/card-shape-verification ./sbtw "run --port 8123"
 ```
 
 - [ ] **Step 2: Check the no-reflow invariant at four viewports**

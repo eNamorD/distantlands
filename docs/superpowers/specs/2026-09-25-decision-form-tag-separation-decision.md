@@ -47,7 +47,7 @@ side effect, in a commit whose diff shows one string. The duplication is
 visible and inert; the coupling would be invisible and live.
 
 **The module layout would have to bend to allow it.** `shared/src/main` may
-import only `oathdigital.protocol`, enforced by the architecture check.
+import only `distantlands.protocol`, enforced by the architecture check.
 `DecisionAnswerCodec` is an outward serialization adapter in `src/main`. A
 constant shared between them would have to live in `shared`, which makes a
 durable journal format depend on a type whose purpose is a transient

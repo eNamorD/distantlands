@@ -29,7 +29,7 @@
   - `gameplay` never imports `application`, `serialization` or `server`.
   - A walker power (anything under `gameplay/powers`) never imports `gameplay.walker`.
   - No power name appears in walker sources.
-- Never touch the live database `var/oathdigital`.
+- Never touch the live database `var/distantlands`.
 - Other sessions commit to `main` while you work. Stage explicit paths only; never `git add -A`. Re-check `git log --oneline -1` before any amend, reset or rebase.
 - Work in a git worktree:
   - `EnterWorktree` branches from `origin`, which lags local `main`. Fast-forward the new branch to local `main` first (`git merge --ff-only main`).
@@ -123,12 +123,12 @@ Every new suite drives the power through `TargetsFixture` (`use`, `answer`, `aft
 Create `src/test/scala/distantlands/gameplay/powers/action/BloodPactSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.{NoteText, TargetsFixture}
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Table}
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.powers.{NoteText, TargetsFixture}
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Look, Table}
+import distantlands.testkit.Table.p1
 
 class BloodPactSuite extends munit.FunSuite:
   import TargetsFixture._
@@ -197,7 +197,7 @@ class BloodPactSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to make sure it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.BloodPactSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.BloodPactSuite"`
 Expected: compilation fails with "Not found: BloodPact".
 
 - [ ] **Step 3: Add P5**
@@ -225,10 +225,10 @@ with:
 Create `src/main/scala/distantlands/gameplay/powers/action/BloodPact.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.{NoteSupport, PlayerFacts, PowerAnswers}
-import oathdigital.model._
+import distantlands.gameplay.powers.{NoteSupport, PlayerFacts, PowerAnswers}
+import distantlands.model._
 
 /** Blood Pact (card 62), ACTION: place 1 secret on this card, then sacrifice
   * an even number of warbands on your board, gaining 1 secret for every two.
@@ -301,13 +301,13 @@ case object BloodPact extends PaidAction("denizen.blood-pact",
 Replace the whole of `src/main/scala/distantlands/gameplay/powers/action/SelfActionPowers.scala` with:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.PhasePower
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.PhasePower
 
 /** The phase powers of catalog batch 2's slice 3 and catalog batch 3's slice
-  * 3a, registered by [[oathdigital.gameplay.powers.PhasePowerCatalog]]
+  * 3a, registered by [[distantlands.gameplay.powers.PhasePowerCatalog]]
   * through this one object, like [[DiceAndRelicDrawPowers]]. A power that
   * needs the catalog is omitted when its card is absent.
   */
@@ -321,7 +321,7 @@ object SelfActionPowers:
 
 - [ ] **Step 6: Run the suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.BloodPactSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.BloodPactSuite"`
 Expected: 6 tests pass.
 
 If the out-of-range answer in the first test is accepted, the walker does not check a `ChooseAmount` answer against its range for a power's decision. Stop and report it: that is an engine gap, not this power's to fix.
@@ -356,12 +356,12 @@ git commit -m "feat(powers): add Blood Pact"
 Create `src/test/scala/distantlands/gameplay/powers/action/ArcaneBrokersSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.{NoteText, TargetsFixture}
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Table}
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.powers.{NoteText, TargetsFixture}
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Look, Table}
+import distantlands.testkit.Table.p1
 
 class ArcaneBrokersSuite extends munit.FunSuite:
   import TargetsFixture._
@@ -464,12 +464,12 @@ class ArcaneBrokersSuite extends munit.FunSuite:
 Create `src/test/scala/distantlands/gameplay/powers/action/BogSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.{NoteText, TargetsFixture}
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Table}
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.powers.{NoteText, TargetsFixture}
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Look, Table}
+import distantlands.testkit.Table.p1
 
 class BogSuite extends munit.FunSuite:
   import TargetsFixture._
@@ -554,12 +554,12 @@ class BogSuite extends munit.FunSuite:
 Create `src/test/scala/distantlands/gameplay/powers/action/RelicBreakerSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.{NoteText, TargetsFixture}
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Table}
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.powers.{NoteText, TargetsFixture}
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Look, Table}
+import distantlands.testkit.Table.p1
 
 class RelicBreakerSuite extends munit.FunSuite:
   import TargetsFixture._
@@ -638,7 +638,7 @@ class RelicBreakerSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run them to make sure they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.ArcaneBrokersSuite oathdigital.gameplay.powers.action.BogSuite oathdigital.gameplay.powers.action.RelicBreakerSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.ArcaneBrokersSuite distantlands.gameplay.powers.action.BogSuite distantlands.gameplay.powers.action.RelicBreakerSuite"`
 Expected: compilation fails with "Not found: ArcaneBrokers", "Not found: Bog" and "Not found: RelicBreaker".
 
 - [ ] **Step 3: Create the shared choice**
@@ -646,10 +646,10 @@ Expected: compilation fails with "Not found: ArcaneBrokers", "Not found: Bog" an
 Create `src/main/scala/distantlands/gameplay/powers/action/HeldRelicSpend.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.{NoteSupport, PlayerFacts, PowerAnswers}
-import oathdigital.model._
+import distantlands.gameplay.powers.{NoteSupport, PlayerFacts, PowerAnswers}
+import distantlands.model._
 
 /** A relic the player holds, faceup or facedown, chosen and then spent:
   * Arcane Brokers and Bog discard it, Relic Breaker buries it (catalog batch
@@ -713,10 +713,10 @@ final class HeldRelicSpend(decisionId: String, heading: String,
 Create `src/main/scala/distantlands/gameplay/powers/action/ArcaneBrokers.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.NoteSupport
-import oathdigital.model._
+import distantlands.gameplay.powers.NoteSupport
+import distantlands.model._
 
 /** Arcane Brokers (card 204), ACTION: place 1 favor on this card, then
   * discard a relic you hold, faceup or facedown, to gain 2 secrets.
@@ -768,10 +768,10 @@ case object ArcaneBrokers extends PaidAction("denizen.arcane-brokers",
 Create `src/main/scala/distantlands/gameplay/powers/action/Bog.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.NoteSupport
-import oathdigital.model._
+import distantlands.gameplay.powers.NoteSupport
+import distantlands.model._
 
 /** Bog (card 210, site-only), ACTION: discard a relic you hold, faceup or
   * facedown, to gain 3 favor from the Beast bank.
@@ -831,10 +831,10 @@ case object Bog extends PaidAction("denizen.bog", Cost.free):
 Create `src/main/scala/distantlands/gameplay/powers/action/RelicBreaker.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.NoteSupport
-import oathdigital.model._
+import distantlands.gameplay.powers.NoteSupport
+import distantlands.model._
 
 /** Relic Breaker (card 139), ACTION: bury a relic you hold, faceup or
   * facedown, to gain 1 secret.
@@ -899,7 +899,7 @@ with:
 
 - [ ] **Step 6: Run the suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.ArcaneBrokersSuite oathdigital.gameplay.powers.action.BogSuite oathdigital.gameplay.powers.action.RelicBreakerSuite oathdigital.gameplay.powers.action.FaeMerchantSuite oathdigital.gameplay.powers.action.MagicCarpetSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.ArcaneBrokersSuite distantlands.gameplay.powers.action.BogSuite distantlands.gameplay.powers.action.RelicBreakerSuite distantlands.gameplay.powers.action.FaeMerchantSuite distantlands.gameplay.powers.action.MagicCarpetSuite"`
 Expected: 9, 7 and 6 tests pass, and Fae Merchant's and Magic Carpet's suites still pass.
 
 If the "secrets return facedown" tests fail because the discard moves the relic before its secrets leave it, compare with `MagicCarpet`, which discards a relic with secrets on it the same way. Do not change `Discard.Relic`; report the failure.
@@ -929,13 +929,13 @@ git commit -m "feat(powers): add Arcane Brokers, Bog and Relic Breaker"
 Create `src/test/scala/distantlands/gameplay/powers/action/BedOfRootsSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.{NoteText, SearchFixture, TargetsFixture}
-import oathdigital.gameplay.setup.FirstGameSetupFixture.catalog
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Table}
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.powers.{NoteText, SearchFixture, TargetsFixture}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Look, Table}
+import distantlands.testkit.Table.p1
 
 class BedOfRootsSuite extends munit.FunSuite:
   import TargetsFixture._
@@ -1021,7 +1021,7 @@ class BedOfRootsSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to make sure it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.BedOfRootsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.BedOfRootsSuite"`
 Expected: compilation fails with "Not found: BedOfRoots".
 
 - [ ] **Step 3: Create Bed of Roots**
@@ -1029,12 +1029,12 @@ Expected: compilation fails with "Not found: BedOfRoots".
 Create `src/main/scala/distantlands/gameplay/powers/action/BedOfRoots.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powers.{CatalogCards, NoteSupport, PlayerFacts,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powers.{CatalogCards, NoteSupport, PlayerFacts,
   PowerAnswers}
-import oathdigital.model._
+import distantlands.model._
 
 /** Bed of Roots (card 212, site-only), ACTION: burn 3 favor, then bury a
   * faceup adviser you have, even if locked, to gain 2 secrets.
@@ -1133,13 +1133,13 @@ The class refers to its own power id as `this.id`, as `Oracle` does, because `im
 Replace the whole of `src/main/scala/distantlands/gameplay/powers/action/SelfActionPowers.scala` with:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.powerresolver.PhasePower
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.powerresolver.PhasePower
 
 /** The phase powers of catalog batch 2's slice 3 and catalog batch 3's slice
-  * 3a, registered by [[oathdigital.gameplay.powers.PhasePowerCatalog]]
+  * 3a, registered by [[distantlands.gameplay.powers.PhasePowerCatalog]]
   * through this one object, like [[DiceAndRelicDrawPowers]]. A power that
   * needs the catalog is omitted when its card is absent.
   */
@@ -1154,7 +1154,7 @@ object SelfActionPowers:
 
 - [ ] **Step 5: Run the suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.BedOfRootsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.BedOfRootsSuite"`
 Expected: 6 tests pass.
 
 - [ ] **Step 6: Commit**
@@ -1182,13 +1182,13 @@ git commit -m "feat(powers): add Bed of Roots"
 Create `src/test/scala/distantlands/gameplay/powers/action/TavernSongsSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.{NoteText, SearchFixture, TargetsFixture}
-import oathdigital.model._
-import oathdigital.protocol.projection.DecisionQueryProjection
-import oathdigital.testkit.{CatalogNames, Table}
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.powers.{NoteText, SearchFixture, TargetsFixture}
+import distantlands.model._
+import distantlands.protocol.projection.DecisionQueryProjection
+import distantlands.testkit.{CatalogNames, Table}
+import distantlands.testkit.Table.p1
 
 class TavernSongsSuite extends munit.FunSuite:
   import TargetsFixture._
@@ -1262,7 +1262,7 @@ class TavernSongsSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to make sure it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.TavernSongsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.TavernSongsSuite"`
 Expected: compilation fails with "Not found: TavernSongs".
 
 - [ ] **Step 3: Create Tavern Songs**
@@ -1270,10 +1270,10 @@ Expected: compilation fails with "Not found: TavernSongs".
 Create `src/main/scala/distantlands/gameplay/powers/action/TavernSongs.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.PowerAccess
-import oathdigital.model._
+import distantlands.gameplay.PowerAccess
+import distantlands.model._
 
 /** Tavern Songs (card 54), ACTION: peek at the top three cards of your
   * region's discard pile.
@@ -1351,7 +1351,7 @@ with:
 
 - [ ] **Step 5: Run the suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.TavernSongsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.TavernSongsSuite"`
 Expected: 4 tests pass.
 
 - [ ] **Step 6: Commit**
@@ -1381,12 +1381,12 @@ git commit -m "feat(powers): add Tavern Songs"
 Create `src/test/scala/distantlands/gameplay/powers/action/TinkersFairSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.{NoteText, TargetsFixture}
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Table}
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.powers.{NoteText, TargetsFixture}
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Look, Table}
+import distantlands.testkit.Table.p1
 
 class TinkersFairSuite extends munit.FunSuite:
   import TargetsFixture._
@@ -1444,7 +1444,7 @@ class TinkersFairSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to make sure it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.TinkersFairSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.TinkersFairSuite"`
 Expected: compilation fails with "Not found: TinkersFair".
 
 - [ ] **Step 3: Move Dowsing Sticks' draw into `RelicDraws`**
@@ -1480,10 +1480,10 @@ with:
 Replace the whole of `src/main/scala/distantlands/gameplay/powers/action/DowsingSticks.scala` with:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.RelicDraws
-import oathdigital.model._
+import distantlands.gameplay.powers.RelicDraws
+import distantlands.model._
 
 /** Dowsing Sticks (relic R09), ACTION: place 1 secret on this relic and burn
   * 2 secrets, then draw a relic and take it facedown. An empty relic deck
@@ -1506,10 +1506,10 @@ case object DowsingSticks extends PaidAction("relic.dowsing-sticks",
 Create `src/main/scala/distantlands/gameplay/powers/action/TinkersFair.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.RelicDraws
-import oathdigital.model._
+import distantlands.gameplay.powers.RelicDraws
+import distantlands.model._
 
 /** Tinker's Fair (card 13, site-only), ACTION: place 3 favor on this card,
   * then draw a relic and take it facedown, as Dowsing Sticks does. An empty
@@ -1543,7 +1543,7 @@ with:
 
 - [ ] **Step 6: Run the suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.TinkersFairSuite oathdigital.gameplay.powers.action.DowsingSticksSuite oathdigital.gameplay.powers.action.FaeMerchantSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.TinkersFairSuite distantlands.gameplay.powers.action.DowsingSticksSuite distantlands.gameplay.powers.action.FaeMerchantSuite"`
 Expected: Tinker's Fair's 4 tests pass, and Dowsing Sticks' and Fae Merchant's suites pass unchanged.
 
 - [ ] **Step 7: Commit**
@@ -1573,12 +1573,12 @@ git commit -m "feat(powers): add Tinker's Fair"
 Create `src/test/scala/distantlands/gameplay/powers/action/SkeletonKeySuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.{NoteText, TargetsFixture}
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Table}
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.powers.{NoteText, TargetsFixture}
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Look, Table}
+import distantlands.testkit.Table.p1
 
 class SkeletonKeySuite extends munit.FunSuite:
   import TargetsFixture._
@@ -1665,7 +1665,7 @@ class SkeletonKeySuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to make sure it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.SkeletonKeySuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.SkeletonKeySuite"`
 Expected: compilation fails with "Not found: SkeletonKey".
 
 - [ ] **Step 3: Move Barbed Net's take into `SiteRelicTake`**
@@ -1673,10 +1673,10 @@ Expected: compilation fails with "Not found: SkeletonKey".
 Create `src/main/scala/distantlands/gameplay/powers/action/SiteRelicTake.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.{NoteSupport, PowerAnswers}
-import oathdigital.model._
+import distantlands.gameplay.powers.{NoteSupport, PowerAnswers}
+import distantlands.model._
 
 /** Taking a relic from a site, as Barbed Net and Skeleton Key do.
   *
@@ -1769,10 +1769,10 @@ final class SiteRelicTake(power: PowerId, decisionId: String, heading: String,
 Replace the whole of `src/main/scala/distantlands/gameplay/powers/action/BarbedNet.scala` with:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.PowerAccess
-import oathdigital.model._
+import distantlands.gameplay.PowerAccess
+import distantlands.model._
 
 /** Barbed Net (relic R36), ACTION: burn 3 secrets, then take a relic from
   * the player's site. The player may keep it facedown; the existing minor
@@ -1802,7 +1802,7 @@ case object BarbedNet extends PaidAction("relic.barbed-net",
 
 - [ ] **Step 4: Run Barbed Net's suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.BarbedNetSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.BarbedNetSuite"`
 Expected: all 6 tests pass unchanged. (`SkeletonKeySuite` does not compile yet; if sbt refuses to run any test because of it, move on to Step 5 and run both together in Step 7.)
 
 - [ ] **Step 5: Create Skeleton Key**
@@ -1810,10 +1810,10 @@ Expected: all 6 tests pass unchanged. (`SkeletonKeySuite` does not compile yet; 
 Create `src/main/scala/distantlands/gameplay/powers/action/SkeletonKey.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.PowerAccess
-import oathdigital.model._
+import distantlands.gameplay.PowerAccess
+import distantlands.model._
 
 /** Skeleton Key (relic R13), ACTION: place 1 secret on this relic and burn 1
   * secret, then, if your pawn is at a Hinterland site, take a relic from
@@ -1865,7 +1865,7 @@ with:
 
 - [ ] **Step 7: Run the suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.SkeletonKeySuite oathdigital.gameplay.powers.action.BarbedNetSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.SkeletonKeySuite distantlands.gameplay.powers.action.BarbedNetSuite"`
 Expected: Skeleton Key's 6 tests pass, and Barbed Net's 6 pass unchanged.
 
 - [ ] **Step 8: Commit**
@@ -1895,12 +1895,12 @@ git commit -m "feat(powers): add Skeleton Key"
 Create `src/test/scala/distantlands/gameplay/powers/action/MessengerSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.powers.{NoteText, TargetsFixture}
-import oathdigital.model._
-import oathdigital.testkit.{CatalogNames, Look, Table}
-import oathdigital.testkit.Table.p1
+import distantlands.gameplay.powers.{NoteText, TargetsFixture}
+import distantlands.model._
+import distantlands.testkit.{CatalogNames, Look, Table}
+import distantlands.testkit.Table.p1
 
 class MessengerSuite extends munit.FunSuite:
   import TargetsFixture._
@@ -2001,7 +2001,7 @@ class MessengerSuite extends munit.FunSuite:
 
 - [ ] **Step 2: Run it to make sure it fails**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.MessengerSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.MessengerSuite"`
 Expected: compilation fails with "Not found: Messenger".
 
 - [ ] **Step 3: Add P6**
@@ -2009,9 +2009,9 @@ Expected: compilation fails with "Not found: Messenger".
 Create `src/main/scala/distantlands/gameplay/powers/WarbandArrangement.scala`:
 
 ```scala
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.model._
+import distantlands.model._
 
 /** A player's warbands arranged again over their board and a set of sites
   * (P6): Warning Signals over the sites it defends, Messenger over the sites
@@ -2076,13 +2076,13 @@ object WarbandArrangement:
 Replace the whole of `src/main/scala/distantlands/gameplay/powers/campaign/WarningSignals.scala` with:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.catalog.ExecutableCatalog
-import oathdigital.gameplay.actions.campaign.{CampaignProcedure, CampaignSetup}
-import oathdigital.gameplay.powers.{CatalogCards, PowerAnswers,
+import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.campaign.{CampaignProcedure, CampaignSetup}
+import distantlands.gameplay.powers.{CatalogCards, PowerAnswers,
   WarbandArrangement}
-import oathdigital.model._
+import distantlands.model._
 
 /** Warning Signals (card 25), a defender's battle plan: "Move any warbands to and
   * from your board and any sites you rule (except the last warband from a site).
@@ -2152,7 +2152,7 @@ object WarningSignals:
 
 - [ ] **Step 4: Run Warning Signals' suite**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.WarningSignalsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.WarningSignalsSuite"`
 Expected: every test passes unchanged. (If sbt refuses to compile because `MessengerSuite` names `Messenger`, do Step 5 first and run both in Step 7.)
 
 - [ ] **Step 5: Create Messenger**
@@ -2160,11 +2160,11 @@ Expected: every test passes unchanged. (If sbt refuses to compile because `Messe
 Create `src/main/scala/distantlands/gameplay/powers/action/Messenger.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.action
+package distantlands.gameplay.powers.action
 
-import oathdigital.gameplay.PowerAccess
-import oathdigital.gameplay.powers.{PowerAnswers, WarbandArrangement}
-import oathdigital.model._
+import distantlands.gameplay.PowerAccess
+import distantlands.gameplay.powers.{PowerAnswers, WarbandArrangement}
+import distantlands.model._
 
 /** Messenger (card 105), ACTION: place 1 favor on this card, then move any
   * warbands to and from your board and any sites you rule, except the last
@@ -2231,7 +2231,7 @@ with:
 
 - [ ] **Step 7: Run the suites**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.action.MessengerSuite oathdigital.gameplay.powers.campaign.WarningSignalsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.action.MessengerSuite distantlands.gameplay.powers.campaign.WarningSignalsSuite"`
 Expected: Messenger's 9 tests pass, and Warning Signals' suite passes unchanged.
 
 - [ ] **Step 8: Commit**

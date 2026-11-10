@@ -167,7 +167,7 @@ In `CoreOperationsSuite`, assert `Replace(a, b, at, by = Some(p1)).children` are
 
 - [ ] **Step 2: Run them and see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.economy.VowOfWanderingSuite oathdigital.serialization.WalkerOperationWireSuite oathdigital.gameplay.CoreOperationsSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.economy.VowOfWanderingSuite distantlands.serialization.WalkerOperationWireSuite distantlands.gameplay.CoreOperationsSuite"`
 Expected: compile failure, since `Replace` has no `by`.
 
 - [ ] **Step 3: Implement**
@@ -263,7 +263,7 @@ In `CitizenshipSuite`, add a tree with two `Citizenship.become` nodes in one `Se
 
 - [ ] **Step 2: Run it and see it fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.roles.CitizenshipSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.roles.CitizenshipSuite"`
 Expected: compile failure.
 
 - [ ] **Step 3: Implement**
@@ -282,9 +282,9 @@ Use `replaceDecisionId(actor)` in `become`, `answered` and the `kept` failure me
 `RoleNotes.scala`:
 
 ```scala
-package oathdigital.gameplay.roles
+package distantlands.gameplay.roles
 
-import oathdigital.model._
+import distantlands.model._
 
 /** The lines a "become a Citizen" power writes, under its own name: "Became
   * a Citizen." or, in a game that had no Empire, "Became the Chancellor." */
@@ -321,7 +321,7 @@ Update `GrandScepterActionSuite`, `RoleChangesScenarioSuite` and any golden-log 
 
 - [ ] **Step 4: Run the tests and see them pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.roles.* *GrandScepterAction* *RoleChangesScenario* *DeclaredNoteKeys* *GameLogGolden*"`
+Run: `./sbtw "testOnly distantlands.gameplay.roles.* *GrandScepterAction* *RoleChangesScenario* *DeclaredNoteKeys* *GameLogGolden*"`
 Expected: PASS. The note keys and golden logs are unchanged: the same ids, keys and wording.
 
 - [ ] **Step 5: Commit**
@@ -360,7 +360,7 @@ Read `KeepSuite` or `ImperialTacticsSuite` for an Imperial Campaign fixture, and
 
 - [ ] **Step 2: Run them and see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.GrandScepterPlanSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.GrandScepterPlanSuite"`
 Expected: compile failure.
 
 - [ ] **Step 3: Implement**
@@ -375,18 +375,18 @@ Expected: compile failure.
       "and victorious against a Citizen, you may exile them.")
 ```
 
-Import `oathdigital.catalog.ModifierMark`, and check the `Cost` field name against `DisgracedCaptain`.
+Import `distantlands.catalog.ModifierMark`, and check the `Cost` field name against `DisgracedCaptain`.
 
 `GrandScepterPlan.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.campaign
+package distantlands.gameplay.powers.campaign
 
-import oathdigital.gameplay.actions.campaign.CampaignProcedure
-import oathdigital.gameplay.operations.TheGrandScepterCard
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.gameplay.roles.Citizenship
-import oathdigital.model._
+import distantlands.gameplay.actions.campaign.CampaignProcedure
+import distantlands.gameplay.operations.TheGrandScepterCard
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.gameplay.roles.Citizenship
+import distantlands.model._
 
 /** The Grand Scepter's battle plan (3 burnt favor): "If you are Imperial
   * and victorious against a Citizen, you may exile them" (CR p. 34, card
@@ -506,7 +506,7 @@ Use `SaltTheEarthSuite`'s `CampaignFixture` boards. Martial Culture stands faceu
 
 - [ ] **Step 2: Run them and see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.campaign.MartialCultureSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.campaign.MartialCultureSuite"`
 Expected: compile failure.
 
 - [ ] **Step 3: Implement**
@@ -632,9 +632,9 @@ Expected: compile failure.
 `ReliquaryDraws.scala`:
 
 ```scala
-package oathdigital.gameplay.powers
+package distantlands.gameplay.powers
 
-import oathdigital.model._
+import distantlands.model._
 
 /** A random relic from the Reliquary, taken facedown (Bewitch, Ancient
   * Pact, Royal Ambitions). The draw shuffles the Reliquary, so the walker
@@ -714,12 +714,12 @@ Expected: compile failure.
 `CitizenshipWhenPlayed.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.gameplay.powers.{PowerAnswers, ReliquaryDraws}
-import oathdigital.gameplay.roles.{Citizenship, RoleNotes}
-import oathdigital.model._
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.powers.{PowerAnswers, ReliquaryDraws}
+import distantlands.gameplay.roles.{Citizenship, RoleNotes}
+import distantlands.model._
 
 /** A WHEN PLAYED "if you're an Exile and ..., you may [take a random relic
   * from the Reliquary and] become a Citizen" (Long-Lost Heir, Bewitch,
@@ -1004,7 +1004,7 @@ In `ChronicleSunSuite`, next to "an Exile winner becomes Chancellor...":
 
 - [ ] **Step 2: Run them and see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.chronicle.ChronicleSunSuite"`
+Run: `./sbtw "testOnly distantlands.gameplay.chronicle.ChronicleSunSuite"`
 Expected: FAIL. The sites are empty.
 
 - [ ] **Step 3: Implement**
@@ -1031,7 +1031,7 @@ The former Chancellor's own bank holds 14, and a map has at most 8 sites, so no 
 
 - [ ] **Step 4: Run the tests and see them pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.chronicle.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.chronicle.*"`
 Expected: PASS. Fix any end-to-end expectation the new pieces move, and explain each change in the commit body.
 
 - [ ] **Step 5: Commit**
@@ -1088,7 +1088,7 @@ Then run `ShapeEmpireSuite` and `LineageScoringSuite`. Tests that expect Shape E
 
 - [ ] **Step 2: Run them and see them fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.chronicle.OfferCitizenshipSuite *ChronicleStateOperations* *WalkerOperationWire*"`
+Run: `./sbtw "testOnly distantlands.gameplay.chronicle.OfferCitizenshipSuite *ChronicleStateOperations* *WalkerOperationWire*"`
 Expected: compile failure.
 
 - [ ] **Step 3: Implement the operation**
@@ -1106,11 +1106,11 @@ final case class ImperialWarbandsAdded(count: Int) extends PrimitiveOperation:
 - [ ] **Step 4: Implement the step**
 
 ```scala
-package oathdigital.gameplay.chronicle
+package distantlands.gameplay.chronicle
 
-import oathdigital.gameplay.actions.ProcedureNotes
-import oathdigital.gameplay.powers.{PlayerFacts, PowerAnswers}
-import oathdigital.model._
+import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.powers.{PlayerFacts, PowerAnswers}
+import distantlands.model._
 
 /** Offer Citizenship, the Throne's first step (CR p. 37, Chronicle rulings
   * 5, 20-22). The Throne holder picks any seated Exiles; each answers in
@@ -1208,7 +1208,7 @@ Check the signatures of `ChronicleTasks.seated` and `PowerAnswers.many`, the `No
 
 - [ ] **Step 5: Run the tests and see them pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.chronicle.* *ChronicleStateOperations* *WalkerOperationWire* *DeclaredNoteKeys* *GameLogGolden*"`
+Run: `./sbtw "testOnly distantlands.gameplay.chronicle.* *ChronicleStateOperations* *WalkerOperationWire* *DeclaredNoteKeys* *GameLogGolden*"`
 Expected: PASS once `chronicle-started` golden logs are regenerated. The only new line should be the offer decision, if the default answer offers no one; read the diff.
 
 - [ ] **Step 6: Commit**

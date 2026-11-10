@@ -50,7 +50,7 @@ This is the tenth of 14 slice plans, written against `0.2.0-alpha` at `95838b1f`
   - `./sbtw clean coverage test coverageReport`, run in the background, with statement coverage of at least 92%
   - `python3 scripts/check-architecture.py`, which caps files at 800 lines and enforces the layer import rules
   - `python3 scripts/check-markdown-links.py`
-- **Snapshots:** regenerate with `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.*"`, then read the diff. Commit only the lines the task explains. The files are `src/test/resources/notes/declared-keys.txt` and `src/test/resources/powers/unimplemented.txt`.
+- **Snapshots:** regenerate with `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.*"`, then read the diff. Commit only the lines the task explains. The files are `src/test/resources/notes/declared-keys.txt` and `src/test/resources/powers/unimplemented.txt`.
 - **Log lines:** a line names only non-actors (memory: "Log lines omit actor").
 - **Test helpers:** a helper's name states what it builds (memory: "Descriptive helper names").
 
@@ -99,8 +99,8 @@ In `WalkerOperationWireSuite.scala`, add after the test "every Location variant 
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `./sbtw "testOnly oathdigital.serialization.WalkerOperationWireSuite"`
-Expected: FAIL to compile, "value CardGathering is not a member of object oathdigital.model.Location".
+Run: `./sbtw "testOnly distantlands.serialization.WalkerOperationWireSuite"`
+Expected: FAIL to compile, "value CardGathering is not a member of object distantlands.model.Location".
 
 - [ ] **Step 3: Rename every use**
 
@@ -160,7 +160,7 @@ In `src/main/scala/distantlands/application/GamePresentationProjector.scala`:
 
 - [ ] **Step 5: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.serialization.* oathdigital.gameplay.chronicle.* oathdigital.gameplay.operations.* oathdigital.application.*"`
+Run: `./sbtw "testOnly distantlands.serialization.* distantlands.gameplay.chronicle.* distantlands.gameplay.operations.* distantlands.application.*"`
 Expected: PASS. The Chronicle suites show the World task's gathering is unchanged by the rename.
 
 - [ ] **Step 6: Commit**
@@ -194,7 +194,7 @@ Before this task, apply the "Slice 9 first" constraint above.
 - Create: `src/main/scala/distantlands/gameplay/powers/whenplayed/AutumnWind.scala`
 - Modify: `src/main/scala/distantlands/catalog/holding/HoldingBeastDenizens.scala` (remove `AutumnWindCard`; delete the file if no card is left)
 - Modify: `src/main/scala/distantlands/gameplay/powers/whenplayed/WhenPlayedPowers.scala` (register `AutumnWind`)
-- Modify: the four Campaign suites that import `AutumnWindCard` from `oathdigital.catalog.holding`: `BattleAxesSuite.scala`, `NatureWorshipSuite.scala`, `WalledGardenSuite.scala`, `WildMountsSuite.scala` under `src/test/scala/distantlands/gameplay/powers/campaign/`
+- Modify: the four Campaign suites that import `AutumnWindCard` from `distantlands.catalog.holding`: `BattleAxesSuite.scala`, `NatureWorshipSuite.scala`, `WalledGardenSuite.scala`, `WildMountsSuite.scala` under `src/test/scala/distantlands/gameplay/powers/campaign/`
 - Modify: `src/test/resources/powers/unimplemented.txt`, `src/test/resources/notes/declared-keys.txt`
 - Modify: `docs/superpowers/specs/2026-11-03-catalog-batch-10-design.md`, `docs/ROADMAP.md`
 - Test: `src/test/scala/distantlands/gameplay/powers/whenplayed/AutumnWindSuite.scala`
@@ -202,7 +202,7 @@ Before this task, apply the "Slice 9 first" constraint above.
 **Interfaces:**
 - Consumes: `Location.CardGathering`, `ShufflePile.CardGathering`, `cardGathering` (Task 1).
 - Produces:
-  - `AutumnWindCard` in `oathdigital.gameplay.powers.whenplayed` (id `DenizenId("213")`, power `denizen.autumn-wind`)
+  - `AutumnWindCard` in `distantlands.gameplay.powers.whenplayed` (id `DenizenId("213")`, power `denizen.autumn-wind`)
   - `case object AutumnWind extends WhenPlayedPower` with `decisionId = "power.autumn-wind.extra"`, `dealt: NoteKey` and `heading(extra: Int): String`
 
 - [ ] **Step 1: Write the failing tests**
@@ -210,18 +210,18 @@ Before this task, apply the "Slice 9 first" constraint above.
 Create `src/test/scala/distantlands/gameplay/powers/whenplayed/AutumnWindSuite.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.gameplay.WalkerDiceFixture
-import oathdigital.gameplay.actions.VisionRules
-import oathdigital.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
-import oathdigital.gameplay.powers.{NoteText, SearchFixture}
-import oathdigital.gameplay.walker.WalkerDice
-import oathdigital.model._
-import oathdigital.testkit.{Look, Outcomes, Table}
-import oathdigital.testkit.Outcomes.assertWireRoundTrips
-import oathdigital.testkit.Table.{p1, p2}
-import oathdigital.testkit.Unwrap.accepted
+import distantlands.gameplay.WalkerDiceFixture
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.powers.{NoteText, SearchFixture}
+import distantlands.gameplay.walker.WalkerDice
+import distantlands.model._
+import distantlands.testkit.{Look, Outcomes, Table}
+import distantlands.testkit.Outcomes.assertWireRoundTrips
+import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 
 /** Autumn Wind (card 213, catalog batch 10, slice 10), WHEN PLAYED: every
   * discard pile is shuffled together and dealt back out as evenly as
@@ -386,8 +386,8 @@ If `staged` draws more than 3 cards, so that the world deck's own cards join the
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.whenplayed.AutumnWindSuite"`
-Expected: FAIL to compile, "Not found: AutumnWind" (and `AutumnWindCard` still in `oathdigital.catalog.holding`).
+Run: `./sbtw "testOnly distantlands.gameplay.powers.whenplayed.AutumnWindSuite"`
+Expected: FAIL to compile, "Not found: AutumnWind" (and `AutumnWindCard` still in `distantlands.catalog.holding`).
 
 - [ ] **Step 3: Write Autumn Wind**
 
@@ -396,12 +396,12 @@ Remove `AutumnWindCard` from `src/main/scala/distantlands/catalog/holding/Holdin
 Create `src/main/scala/distantlands/gameplay/powers/whenplayed/AutumnWind.scala`:
 
 ```scala
-package oathdigital.gameplay.powers.whenplayed
+package distantlands.gameplay.powers.whenplayed
 
-import oathdigital.catalog.{Denizen, PrintedPower}
-import oathdigital.gameplay.powerresolver.PowerCtx
-import oathdigital.gameplay.powers.PowerAnswers
-import oathdigital.model._
+import distantlands.catalog.{Denizen, PrintedPower}
+import distantlands.gameplay.powerresolver.PowerCtx
+import distantlands.gameplay.powers.PowerAnswers
+import distantlands.model._
 
 object AutumnWindCard extends Denizen(DenizenId("213"), "Autumn Wind", Suit.Beast):
   val power = PrintedPower(PowerId("denizen.autumn-wind"),
@@ -528,30 +528,30 @@ In `WhenPlayedPowers.scala`, add `AutumnWind` after `Pilgrimage` in `all`:
       Pilgrimage, AutumnWind)
 ```
 
-In each of the four Campaign suites, import `AutumnWindCard` from `oathdigital.gameplay.powers.whenplayed` instead of `oathdigital.catalog.holding`. Leave `BrackenCard`'s import as slice 9 left it. For example, if slice 9 left `BattleAxesSuite.scala` with:
+In each of the four Campaign suites, import `AutumnWindCard` from `distantlands.gameplay.powers.whenplayed` instead of `distantlands.catalog.holding`. Leave `BrackenCard`'s import as slice 9 left it. For example, if slice 9 left `BattleAxesSuite.scala` with:
 
 ```scala
-import oathdigital.catalog.holding.AutumnWindCard
-import oathdigital.gameplay.powers.search.BrackenCard
+import distantlands.catalog.holding.AutumnWindCard
+import distantlands.gameplay.powers.search.BrackenCard
 ```
 
 it becomes:
 
 ```scala
-import oathdigital.gameplay.powers.search.BrackenCard
-import oathdigital.gameplay.powers.whenplayed.AutumnWindCard
+import distantlands.gameplay.powers.search.BrackenCard
+import distantlands.gameplay.powers.whenplayed.AutumnWindCard
 ```
 
-Keep each file's imports in the order its neighbours use. `WalledGardenSuite.scala` imports a third name from `oathdigital.catalog.holding`; keep that one there.
+Keep each file's imports in the order its neighbours use. `WalledGardenSuite.scala` imports a third name from `distantlands.catalog.holding`; keep that one there.
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
-Run: `./sbtw "testOnly oathdigital.gameplay.powers.whenplayed.* oathdigital.gameplay.powers.campaign.*"`
+Run: `./sbtw "testOnly distantlands.gameplay.powers.whenplayed.* distantlands.gameplay.powers.campaign.*"`
 Expected: PASS.
 
 - [ ] **Step 5: Regenerate the snapshots**
 
-Run: `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly oathdigital.gameplay.powers.*"`
+Run: `NOTE_KEYS_SNAPSHOT=write UNIMPLEMENTED_SNAPSHOT=write ./sbtw "testOnly distantlands.gameplay.powers.*"`
 
 Then `git diff src/test/resources`. Expected, and nothing else:
 - `unimplemented.txt` loses `denizen.autumn-wind`.
