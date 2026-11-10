@@ -1,7 +1,7 @@
 package distantlands.gameplay.powers.whenplayed
 
 import distantlands.catalog.Denizen
-import distantlands.catalog.holding.DeedWriterCard
+import distantlands.gameplay.actions.negotiation.DeedWriterCard
 import distantlands.gameplay.actions.CardPlay
 import distantlands.gameplay.powers.NoteText
 import distantlands.gameplay.powers.campaign.{MountainGiantCard, SecondWindCard,

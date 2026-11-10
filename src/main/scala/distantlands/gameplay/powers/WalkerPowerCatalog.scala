@@ -81,7 +81,7 @@ object WalkerPowerCatalog:
       TargetProtections.all ++
       Vector(KnightsErrant, Marriage, PledgeToDiscord, Jinx, BanditCrown,
         GrandMask, DesecratedGround, FalseProphetClaim, TravelingNegotiator,
-        TheTribunal, BanditTribunal, CouncilArbiter, FestivalDistrict) ++
+        TheTribunal, BanditTribunal, CouncilArbiter, FestivalDistrict, DeedWriter) ++
       BattlePlans.all ++
       PlanRules.all ++
       SimplePlans.all ++
