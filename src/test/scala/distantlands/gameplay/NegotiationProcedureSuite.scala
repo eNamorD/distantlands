@@ -1,18 +1,23 @@
 package distantlands.gameplay
 
 import distantlands.catalog.holding.CouncilArbiterCard
-import distantlands.gameplay.cards.{BrokenPeaksSite, DunesSite}
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite, DunesSite,
+  FairIsleSite}
 import distantlands.gameplay.powers.action.BrassHorseCard
 import distantlands.gameplay.powers.campaign.StickyFireCard
 import distantlands.gameplay.powers.search.{ErrandBoyCard, TruthfulHarpCard}
 import distantlands.testkit.MenuPlay
-import distantlands.gameplay.actions.negotiation.NegotiationDeal
+import distantlands.gameplay.actions.negotiation.{NegotiationDeal,
+  NegotiationStartFacts, TheTribunalCard, TravelingNegotiatorCard}
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.poweruse.CityWallCard
 import distantlands.gameplay.setup.FirstGameSetupFixture._
 import distantlands.gameplay.walker.{ParkedDecisionAssertions, WalkerPowers}
 import distantlands.model._
 import distantlands.model.DecisionAnswer.{AcceptDeal, ChooseManyAnswer, DeclineDeal, ProposeTerms}
 import distantlands.model.OathState.Ready
-import distantlands.testkit.{Journal, Look, Outcomes, Table}
+import distantlands.testkit.{Journal, Look, Outcomes, ParkedNode, PowerRules,
+  Table}
 import distantlands.testkit.Table.{p1, p2, p3}
 import distantlands.testkit.Unwrap.{accepted, present}
 import distantlands.testkit.StartPreview
@@ -241,3 +246,63 @@ class NegotiationProcedureSuite extends munit.FunSuite:
       a.events ++ done.events
     val replayed = Journal.replayed(rules, events)
     assertEquals(replayed, done.state)
+
+  /** The bounds of the deal `state` is parked on, by author. */
+  private def parkedBounds(state: OathState): Map[PlayerId, NegotiationBounds] =
+    ParkedNode.of(state, catalog) match
+      case Right(Some(ParkedNode.Decision(_, decide, _))) => decide.query match
+        case negotiate: DecisionQuery.Negotiate => negotiate.bounds
+        case other => fail(s"not a deal: $other")
+      case other => fail(s"not parked on a decision: $other")
+
+  test("Traveling Negotiator's holder chooses among players at other sites"):
+    val remote = Table.start.pawn(p1, at = site).pawn(p2, at = DunesSite)
+      .pawn(p3, at = DunesSite).favor(p1, 5).favor(p2, 5)
+      .adviser(p1, TravelingNegotiatorCard.id).ready
+    val started = start(remote).getOrElse(fail("Negotiation must start"))
+    parked.assertParked(started.state, ActionRef.Negotiation, negotiators, p1)
+    val dealt = choose(started.state, p1, p2).getOrElse(
+      fail("the negotiators must be accepted"))
+    parked.assertParked(dealt.state, ActionRef.Negotiation, dealId, p1)
+    assert(say(dealt.state, p1, gift(p2, 1)).isRight)
+
+  test("a lone remote candidate skips the choice, and the start stores " +
+      "the reach"):
+    val remote = Table.start.pawn(p1, at = site).pawn(p2, at = DunesSite)
+      .pawn(p3, at = FairIsleSite).adviser(p2, TravelingNegotiatorCard.id)
+      .ready
+    val started = start(remote).getOrElse(fail("Negotiation must start"))
+    parked.assertParked(started.state, ActionRef.Negotiation, dealId, p1)
+    assertEquals(Outcomes.ready(started.state).game.current.walkerStartFacts,
+      NegotiationStartFacts(Vector(p2), Vector.empty).refs)
+
+  test("City Wall's ruler's enemy at its site cannot use Traveling " +
+      "Negotiator to start one"):
+    val walled = Table.start.pawn(p1, at = AncientCitySite)
+      .pawn(p2, at = DunesSite).pawn(p3, at = DunesSite)
+      .adviser(p1, TravelingNegotiatorCard.id)
+      .denizen(CityWallCard.id, at = AncientCitySite)
+      .warbandsAt(AncientCitySite, p2, 1).ready
+    // With no walker powers nothing blocks it.
+    assert(start(walled).isRight)
+    val blocked = PowerRules.withWalkerPowers.startWalker(Ready(walled),
+      ActionRef.Negotiation, p1)
+    assert(blocked.left.toOption.exists(
+      _.isInstanceOf[OathViolation.NegotiationUnavailable]), blocked)
+    assert(!StartPreview.opens(catalog, walled, p1, ActionRef.Negotiation,
+      WalkerPowerCatalog.default(catalog)))
+
+  test("with The Tribunal in reach, binding promises are open to every " +
+      "author, and closed without it"):
+    val tribunal = gathered.pawn(p3, at = DunesSite)
+      .edifice(TheTribunalCard, EdificeSide.Intact, at = site).ready
+    // p1 may use The Tribunal, so it reaches p3 too: the choice is asked.
+    val open = atDeal(tribunal, p2)
+    assert(parkedBounds(open.state).values.forall(_.bindingPromises),
+      parkedBounds(open.state))
+    assert(say(open.state, p2, ProposeTerms(NegotiationTerms(
+      bindingPromises = Vector("I will not attack you this round."))))
+      .isRight)
+    val closed = atDeal(gathered.ready, p2)
+    assert(parkedBounds(closed.state).values.forall(!_.bindingPromises),
+      parkedBounds(closed.state))

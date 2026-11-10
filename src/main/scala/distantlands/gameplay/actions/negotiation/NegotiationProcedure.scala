@@ -2,6 +2,7 @@ package distantlands.gameplay.actions.negotiation
 
 import distantlands.catalog.ExecutableCatalog
 import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.powerresolver.PowerUseRestriction
 import distantlands.gameplay.roles.Citizenship
 import distantlands.model._
 import distantlands.model.DecisionAnswer.DeclineDeal
@@ -17,6 +18,10 @@ import distantlands.model.DecisionAnswer.DeclineDeal
   *   Repeat(!closed) { Branch -> Decide(deal, co-owned) }
   *   Branch(agreed -> BuildOps(settle), notes, Citizenship, promise notes))
   * }}}
+  *
+  * The start reads the reach once, under the walk's power-use restrictions,
+  * and stores it as walker start facts ([[NegotiationStartFacts]]); a
+  * rebuild reads them back.
   *
   * Nothing about the deal is stored: the guard, the query and the settlement
   * all read `PendingTree.answered` (see [[NegotiationDeal]]).
@@ -63,17 +68,32 @@ object NegotiationProcedure:
     NotePart.Arg(1), NotePart.Text(": "), NotePart.Arg(2)))
   def noteKeys: Vector[NoteKey] = notes.declared
 
-  def build(catalog: ExecutableCatalog, state: ReadyGame, actor: PlayerId,
-      args: Vector[DecisionOptionRef]): Either[OathViolation, Operation] = for
-    _ <- noStartArgs(args)
-    _ <- Either.cond(NegotiationDeal.eligible(state, actor).nonEmpty, (),
-      OathViolation.NegotiationUnavailable(
-        "no other player has a pawn at your site"))
-  yield tree(state, actor)
+  /** A fresh start: the reach is read once, under the walk's power-use
+    * restrictions, and refused when it holds nobody. */
+  def build(restrictions: Vector[PowerUseRestriction])(
+      catalog: ExecutableCatalog, state: ReadyGame, actor: PlayerId,
+      args: Vector[DecisionOptionRef]): Either[OathViolation, Operation] =
+    for
+      _ <- noStartArgs(args)
+      facts = NegotiationStartFacts.at(catalog, state, actor, restrictions)
+      _ <- Either.cond(facts.candidates.nonEmpty, (),
+        OathViolation.NegotiationUnavailable(
+          "no other player is at your site or within reach"))
+    yield tree(actor, facts)
 
+  /** A resume rebuilds what the start built, from the facts it stored. */
   def rebuild(catalog: ExecutableCatalog, state: ReadyGame, actor: PlayerId,
       args: Vector[DecisionOptionRef]): Either[OathViolation, Operation] =
-    noStartArgs(args).map(_ => tree(state, actor))
+    for
+      _ <- noStartArgs(args)
+      facts <- NegotiationStartFacts.read(state.game.current.walkerStartFacts)
+    yield tree(actor, facts)
+
+  /** What the start stores for every rebuild ([[NegotiationStartFacts]]). */
+  def startFacts(restrictions: Vector[PowerUseRestriction])(
+      catalog: ExecutableCatalog, state: ReadyGame,
+      actor: PlayerId): Vector[DecisionOptionRef] =
+    NegotiationStartFacts.at(catalog, state, actor, restrictions).refs
 
   private def noStartArgs(args: Vector[DecisionOptionRef])
       : Either[OathViolation, Unit] = Either.cond(args.isEmpty, (),
@@ -81,8 +101,8 @@ object NegotiationProcedure:
       s"walker procedure ${ActionRef.Negotiation.key} takes no start " +
         s"selection, got ${args.map(_.kind).mkString(", ")}"))
 
-  private def tree(state: ReadyGame, actor: PlayerId): Operation =
-    val candidates = NegotiationDeal.eligible(state, actor)
+  private def tree(actor: PlayerId, facts: NegotiationStartFacts): Operation =
+    val candidates = facts.candidates
     val choose: Vector[Operation] =
       if candidates.size < 2 then Vector.empty
       else Vector(Decide(NegotiationDeal.negotiatorsDecisionId, actor,
@@ -94,15 +114,16 @@ object NegotiationProcedure:
         window = Some(PowerWindow.NegotiationEligibility)))
     Sequence(choose ++ Vector[Operation](
       Repeat((ready, pending) =>
-        !NegotiationDeal.deal(ready, actor, pending).closed,
+        !NegotiationDeal.deal(ready, actor, candidates, pending).closed,
         Branch((ready, pending) => {
-          val deal = NegotiationDeal.deal(ready, actor, pending)
+          val deal = NegotiationDeal.deal(ready, actor, candidates, pending)
           Vector(Decide(NegotiationDeal.dealDecisionId, actor,
-            NegotiationDeal.snapshot(ready, deal),
+            NegotiationDeal.snapshot(ready, deal,
+              facts.bindingPromises(deal.participants)),
             coOwners = deal.participants.filter(_ != actor)))
         })),
       Branch((ready, pending) => {
-        val deal = NegotiationDeal.deal(ready, actor, pending)
+        val deal = NegotiationDeal.deal(ready, actor, candidates, pending)
         // The opening line, as the rule posted it: the decline names who
         // ended the deal, and anything else names who was negotiated with,
         // whether or not the deal had substance to settle.
@@ -110,7 +131,7 @@ object NegotiationProcedure:
           Note(ProcedureNotes.id(ActionRef.Negotiation),
             if deal.declined then endedNote
             else _ => Some(negotiated.sourceless(NoteArg.Players(
-              NegotiationDeal.chosen(ready, actor, pending))))))
+              NegotiationDeal.chosen(candidates, pending))))))
         // The settlement's lines, in the order `settle` applies them:
         // disclosures first, then transfers. A refused settlement fails the
         // command, so nothing is journaled and no note is reached.

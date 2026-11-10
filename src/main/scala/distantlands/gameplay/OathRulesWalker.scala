@@ -75,7 +75,7 @@ private[gameplay] trait OathRulesWalker:
       transition <- walkerTransition(state, procedure, tree,
         outcome, powers, startArgs,
         WalkerProcedureRegistry.startFacts(procedure, catalog, ready,
-          actor))
+          actor, walkerPowers = powers))
     yield transition
 
   /** Starts a dequeued `Run` entry for its actor, on the state its
@@ -381,14 +381,14 @@ private[gameplay] trait OathRulesWalker:
       case _: ActionRef.UsePower | TriggeredProcedureRef.ForcedWake |
           TriggeredProcedureRef.FollowUpOffer |
           TriggeredProcedureRef.WakeMenu | TriggeredProcedureRef.RestMenu |
-          TriggeredProcedureRef.ActMenu
+          TriggeredProcedureRef.ActMenu | ActionRef.Negotiation
           if starting =>
         WalkerProcedureRegistry.build(procedure, catalog, ready, actor,
           startArgs, phasePowerCatalog, walkerPowers = walkerPowers)
       case _: ActionRef.UsePower | TriggeredProcedureRef.ForcedWake |
           TriggeredProcedureRef.FollowUpOffer |
           TriggeredProcedureRef.WakeMenu | TriggeredProcedureRef.RestMenu |
-          TriggeredProcedureRef.ActMenu =>
+          TriggeredProcedureRef.ActMenu | ActionRef.Negotiation =>
         WalkerProcedureRegistry.rebuild(procedure, catalog, ready, actor,
           startArgs, phasePowerCatalog, walkerPowers = walkerPowers)
       case _ => walkerTree(catalog, procedure, ready, actor, startArgs, starting)

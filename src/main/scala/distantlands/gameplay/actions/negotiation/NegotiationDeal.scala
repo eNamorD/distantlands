@@ -1,7 +1,9 @@
 package distantlands.gameplay.actions.negotiation
 
+import distantlands.catalog.ExecutableCatalog
 import distantlands.gameplay.SpendableFavor
 import distantlands.gameplay.operations.TheGrandScepterCard
+import distantlands.gameplay.powerresolver.PowerUseRestriction
 import distantlands.gameplay.roles.Citizenship
 import distantlands.model._
 import distantlands.model.DecisionAnswer.{AcceptDeal, ChooseManyAnswer, DeclineDeal, ProposeTerms}
@@ -30,35 +32,38 @@ object NegotiationDeal:
   val negotiatorsDecisionId: String = "negotiation.negotiators"
   val dealDecisionId: String = "negotiation.deal"
 
-  /** The players the actor may deal with: the others whose pawn is at the
-    * actor's pawn site. The one place that rule lives, asked when the tree is
-    * built and (through the tree) when a later power widens it.
+  /** The players the actor may deal with, in table order: the others whose
+    * pawn is at the actor's pawn site, and the others a power lets the
+    * actor reach ([[NegotiationReach]], judged under `restrictions`, the
+    * walk's power-use restrictions). The one place that rule lives. The
+    * start reads it once and stores it ([[NegotiationStartFacts]]).
     */
-  def eligible(state: ReadyGame, actor: PlayerId): Vector[PlayerId] =
-    val players = state.game.current.players
-    state.game.current.pawnSite(actor).toVector.flatMap(site =>
-      players.collect {
-        case other if other.player != actor && other.pawnSite.contains(site) =>
-          other.player
-      })
+  def eligible(catalog: ExecutableCatalog, state: ReadyGame, actor: PlayerId,
+      restrictions: Vector[PowerUseRestriction] = Vector.empty)
+      : Vector[PlayerId] =
+    val current = state.game.current
+    val site = current.pawnSite(actor)
+    current.players.map(_.player).filter(other => other != actor &&
+      (site.exists(current.pawnSite(other).contains) ||
+        NegotiationReach.reaches(catalog, state, actor, other, restrictions)))
 
   /** The players the actor chose, in the order the answer named them, or
-    * the one eligible candidate when the choice was omitted. The Game Log's
-    * opening line names them in this order. */
-  def chosen(state: ReadyGame, actor: PlayerId,
+    * the one candidate when the choice was omitted. The Game Log's opening
+    * line names them in this order. */
+  def chosen(candidates: Vector[PlayerId],
       pending: PendingTree): Vector[PlayerId] =
     pending.answered.reverse.collectFirst {
       case Answered(`negotiatorsDecisionId`, ChooseManyAnswer(selected), _) =>
         selected.collect { case DecisionOptionRef.Player(id) => id }
-    }.getOrElse(eligible(state, actor))
+    }.getOrElse(candidates)
 
   /** Actor first, then the chosen players in table order. With no recorded
-    * negotiator answer the one eligible candidate is the negotiator: the
-    * tree omits the choice when there is only one.
+    * negotiator answer the one candidate is the negotiator: the tree omits
+    * the choice when there is only one.
     */
   def participants(state: ReadyGame, actor: PlayerId,
-      pending: PendingTree): Vector[PlayerId] =
-    val picked = chosen(state, actor, pending).toSet
+      candidates: Vector[PlayerId], pending: PendingTree): Vector[PlayerId] =
+    val picked = chosen(candidates, pending).toSet
     actor +: state.game.current.players.map(_.player).filter(picked)
 
   def fold(participants: Vector[PlayerId],
@@ -73,24 +78,28 @@ object NegotiationDeal:
       case (deal, Answered(_, DeclineDeal, _)) => deal.copy(declined = true)
       case (deal, _) => deal
 
-  def deal(state: ReadyGame, actor: PlayerId, pending: PendingTree): DealState =
-    fold(participants(state, actor, pending), pending.answered)
+  def deal(state: ReadyGame, actor: PlayerId, candidates: Vector[PlayerId],
+      pending: PendingTree): DealState =
+    fold(participants(state, actor, candidates, pending), pending.answered)
 
   /** The question the deal asks now: everyone's terms, who accepted, what each
     * author may still offer, and who may accept (anyone who has not, once the
-    * deal has substance).
+    * deal has substance). `bindingPromises` opens binding promises to every
+    * author (ruling 11).
     */
-  def snapshot(state: ReadyGame, deal: DealState): DecisionQuery.Negotiate =
+  def snapshot(state: ReadyGame, deal: DealState,
+      bindingPromises: Boolean = false): DecisionQuery.Negotiate =
     DecisionQuery.Negotiate(deal.participants, deal.terms, deal.accepted,
       deal.participants.map(author => author ->
-        bounds(state, author, deal.participants)).toMap,
+        bounds(state, author, deal.participants, bindingPromises)).toMap,
       if deal.hasSubstance && !deal.declined then
         deal.participants.filterNot(deal.accepted).toSet
       else Set.empty[PlayerId],
       heading = Some("Negotiation"))
 
   private def bounds(state: ReadyGame, author: PlayerId,
-      participants: Vector[PlayerId]): NegotiationBounds =
+      participants: Vector[PlayerId],
+      bindingPromises: Boolean): NegotiationBounds =
     val player = state.game.current.player(author).get
     val exiles = offerable(state, author, participants)
     val ignored = Citizenship.ignored(state)
@@ -99,7 +108,8 @@ object NegotiationDeal:
       player.relics.map(_.id), disclosable(state, player),
       citizenship = exiles,
       citizenshipRefused = Option.when(ignored && exiles.nonEmpty)(
-        Citizenship.ignoredReason))
+        Citizenship.ignoredReason),
+      bindingPromises = bindingPromises)
 
   /** The participants `author` may offer Citizenship: the other Exiles,
     * when `author` holds the Grand Scepter. The holder never names
