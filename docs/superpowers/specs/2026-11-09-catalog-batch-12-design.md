@@ -156,6 +156,9 @@ Taken with the owner on 2026-11-09.
     lines are public, since the moved pieces are on the table. Promise lines
     show only to the two participants, and other players get no line at
     all.
+30. **The Citizenship offer line is public** (2026-11-10). In a private
+    deal, "p1 offered Citizenship to p3." shows to every player, as the
+    transfer lines do: the new Citizen it makes is on the table.
 
 ### Power-use blockers
 
@@ -197,7 +200,8 @@ Taken with the owner on 2026-11-10.
   22), so `DealRules` carries no flag for them.
   Until then the author's bounds carry the binding-promise flag
   (`NegotiationBounds.bindingPromises`), which `DealRules` sets from slice 3
-  on. The `prefix` opens in slice 5. It holds:
+  on. `privateDeal` opens in slice 5 and the `prefix` in slice 6. It
+  holds:
   - `participants`;
   - `kinds(author, recipient): Set[TermKind]`, with `TermKind` one of
     `Favor`, `Relic`, `Secret`, `Adviser` and `Site`;
@@ -215,10 +219,11 @@ Taken with the owner on 2026-11-10.
   18 and 19. The panel shows each reason on the disabled Accept button.
 - **Substance.** `DealState.hasSubstance` also counts promises (ruling 13).
 - **One decision id per deal.** The deal fold reads only the answers to
-  `<prefix>.deal`. The Negotiate action uses `negotiation`, Whispering Stone
-  `whispering-stone`, and the Gathering `gathering.<n>`, with `n` the deal's
-  index, so one Gathering can hold several deals without mixing their
-  answers.
+  `<prefix>.deal`. The Negotiate action uses `negotiation`, and the
+  Gathering `gathering.<n>`, with `n` the deal's index, so one Gathering
+  can hold several deals without mixing their answers. Whispering Stone
+  runs a Negotiation walk of its own (slice 5), so its deal keeps
+  `negotiation`.
 - **Settlement order.** Disclosures, then transfers in participant order
   (favor, secrets, relics, advisers, sites), then the Deed Writer warband
   questions, then Citizenship, then the promise lines.
@@ -363,30 +368,42 @@ and the new ruler asked for 1 to N; rule passing to the new ruler.
 
 ## Slice 5: A remote, private deal
 
-**Whispering Stone** (rulings 21 to 23).
+**Whispering Stone** (rulings 21 to 23, 30).
 
-- **The action.** A `PaidAction` costing 1 secret that asks for one other
-  player from every other player in the game, then runs the deal subtree
-  with prefix `whispering-stone` and the Negotiate action's `DealRules`,
-  with `privateDeal` on. Binding promises follow slice 2.
-- **Projection.** For a viewer outside the deal, `NegotiationDealProjector`
-  keeps the participants and the accepted marks and leaves transfers,
-  disclosures, Citizenship and promises empty, with `privateDeal = true`.
-  The panel then shows "Blue and Red are negotiating in private."
-- **Log.** The opening line is "Negotiated with Red, in private." Transfer
-  and disclosure lines are public. `LogNote` gains
-  `readers: Option[Set[PlayerId]]`, `None` on every other line, and the
-  promise lines carry `readers = participants`. The formatter numbers every
-  entry first and then drops each entry whose readers exclude the viewer,
-  so the other entries keep their `(sequence, ordinal)`. The Game Log
-  property "every viewer receives the same entries" narrows to entries
-  without readers.
+- **The action.** A `PaidAction` costing 1 secret that queues a
+  Negotiation `Run` at the front of the queue, sourced on the relic, with
+  one start argument: the private marker. The queued Negotiation is the
+  Negotiate action's own walk, so its power-use restrictions, start facts,
+  `DealRules`, binding promises (slice 2), adviser terms (slice 3), site
+  terms (slice 4) and Citizenship hold unchanged. Its decision ids stay
+  `negotiation.*`.
+- **The private start.** The Negotiation takes the marker only from a
+  sourced `Run` entry that carries it, as Travel takes a queued
+  destination. Its candidates are then every other player in table order,
+  and its negotiators question asks for exactly one of them (omitted with
+  one other player). `DealRules.privateDeal` is on, and the snapshot
+  copies it into `DecisionQuery.Negotiate.privateDeal`.
+- **Projection.** For a viewer outside a private deal,
+  `NegotiationDealProjector` keeps the participants and the accepted marks
+  and leaves transfers, disclosures, Citizenship and promises empty.
+  `NegotiationDealProjection.privateDeal` is true for every viewer of a
+  private deal. The panel shows an outsider "Blue and Red are negotiating
+  in private."
+- **Log.** The opening line is "Negotiated with Red, in private." Transfer,
+  disclosure, site and Citizenship lines are public (ruling 30). `LogNote`
+  gains `readers: Option[Set[PlayerId]]`, `None` on every other line, and
+  the promise lines carry `readers = participants`. The formatter numbers
+  every entry first and then drops each entry whose readers exclude the
+  viewer, so the other entries keep their `(sequence, ordinal)`. The Game
+  Log property "every viewer receives the same entries" is judged before
+  that drop.
 - **Catalog.** Whispering Stone leaves holding.
 
-Tests: any player chosen regardless of pawn; the cost paid; an outsider's
-projection with no terms; the settlement lines visible to an outsider and
-the promise lines absent from their log; a When Negotiating power (Council
-Arbiter) widening the private deal.
+Tests: any player chosen regardless of pawn; the cost paid; the marker
+refused from the menu; an outsider's projection with no terms; the
+settlement lines visible to an outsider and the promise lines absent from
+their log; a When Negotiating power (Council Arbiter) widening the private
+deal.
 
 ## Slice 6: A deal loop inside card play
 
@@ -435,7 +452,8 @@ refused without it; a lone player skipping the loop.
 |---|---|---|
 | Promise terms, `NoteArg.Promise`, `NegotiationBounds.bindingPromises` | 1 | every Negotiation, The Tribunal |
 | `DealRules` | 3 | slices 4 to 6 |
-| Per-deal decision prefix, `LogNote.readers` | 5 | Whispering Stone, The Gathering |
+| `LogNote.readers` | 5 | Whispering Stone |
+| Per-deal decision prefix | 6 | The Gathering |
 | `NegotiationReach`, `NegotiationStartFacts` | 2 | Traveling Negotiator, The Tribunal, Bandit Tribunal; Whispering Stone's binding promises; The Gathering's reach and binding promises |
 | Adviser terms, `AdviserLimits` and the limit check | 3 | Council Arbiter, Festival District, The Gathering |
 | Site terms and the warband question | 4 | Deed Writer, The Gathering |
