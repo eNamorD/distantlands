@@ -289,11 +289,15 @@ class ProjectionProtocolSuite extends munit.FunSuite:
     val editing = NegotiationEditingProjection(5, Vector(card), Vector.empty,
       Vector(NegotiationSiteRelicProjection("s1", card)), canAccept = true,
       editableCitizenship = Vector("blue"),
-      citizenshipRefused = Some("Citizenship is ignored due to setup option"))
+      citizenshipRefused = Some("Citizenship is ignored due to setup option"),
+      bindingPromisesOpen = true)
     val deal = NegotiationDealProjection(Vector("red", "blue"), Vector("blue"),
       Vector(NegotiationTransferProjection("red", "blue", 3, 1, Vector(card))),
       Vector(NegotiationDisclosureProjection("red", "blue", "held-relic", None)),
-      Some(editing), Vector(NegotiationCitizenshipProjection("red", "blue")))
+      Some(editing), Vector(NegotiationCitizenshipProjection("red", "blue")),
+      Vector(NegotiationPromiseProjection("red", "I will not attack you.",
+        binding = false), NegotiationPromiseProjection("blue",
+        "I will give you 1 favor.", binding = true)))
     val query = DecisionQueryProjection.Negotiate(deal,
       heading = Some("Negotiation"))
     val waiting = WalkerWaitingProjection(Vector("red", "blue"),
