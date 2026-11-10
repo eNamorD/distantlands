@@ -134,9 +134,10 @@ ln -s /Users/roman/projects/oathdigital/node_modules node_modules
    restrictions are seen only at the start (slice 2, finding 2), so the
    start facts gain `arbiterUsers` and `festivalUsers`.
 9. **`DealRules` holds no participant list.** The deal carries its
-   participants, and the rules ask for them where needed. The spec's
-   `disclosures`, `citizenship`, `privateDeal` and `prefix` fields, and
-   the `Secret` and `Site` kinds, open with the slices that read them.
+   participants, and the rules ask for them where needed. Disclosures
+   and Citizenship hold in every deal (spec rulings 5 and 22), so they
+   need no field. The spec's `privateDeal` and `prefix` fields, and the
+   `Secret` and `Site` kinds, open with the slices that read them.
 10. **The two cards move beside the Negotiation.** Council Arbiter leaves
     `HoldingArcaneDenizens.scala`, which then holds nothing and is
     deleted. Festival District leaves `powers/action/SqualidDistrict.scala`,
@@ -1880,6 +1881,6 @@ EOF
   `NegotiationTransfer.advisers` (Task 2) is what Tasks 3 to 5 read.
   `NegotiationBounds.advisers` / `adviserRecipients` and
   `Negotiate.overAdviserLimit` (Task 3) are what Task 4 projects.
-- **Not in this slice.** `DealRules`' disclosures, Citizenship, private
-  and prefix fields, and the `Secret` and `Site` kinds (slices 4 to 6).
+- **Not in this slice.** `DealRules`' private and prefix fields, and the
+  `Secret` and `Site` kinds (slices 4 to 6).
 ```

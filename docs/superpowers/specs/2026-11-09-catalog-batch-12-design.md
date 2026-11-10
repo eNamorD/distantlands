@@ -29,8 +29,9 @@ written as text, to every Negotiation.
 Slices are ordered so that each seam exists before the slice that reuses
 it. Slice 2's binding-promise box is slice 1's promise field with
 `NegotiationBounds.bindingPromises` set. Slice 5 reuses slice 2's Tribunal check
-for its binding promises. Slice 6 reuses slice 3's adviser terms and the
-deal subtree that slices 1 to 5 generalize. Slices 5 and 6 touch the
+for its binding promises. Slice 6 reuses slice 2's reach and Tribunal
+check, slice 3's adviser terms, slice 4's site terms, and the deal subtree
+that slices 1 to 5 generalize. Slices 5 and 6 touch the
 procedure walker's Negotiation subtree and run the walker suites in full
 before landing.
 
@@ -64,10 +65,22 @@ Taken with the owner on 2026-11-09.
    unpass. A passed player may still be named in a deal, and may decline it.
    The Gathering ends the moment every player at the site has passed and no
    deal is open.
-5. **Printed exchanges only.** A Gathering deal holds favor, secrets, relics
-   and advisers, between any pair of its participants, and non-binding
-   promises. It is not a Negotiate action, so it holds no disclosures and no
-   Citizenship offer, and no **When Negotiating** power widens it.
+5. **Each deal is a Negotiation** (revised 2026-11-10). The card's
+   players "may negotiate", so a Gathering deal is a full Negotiation
+   beside its printed exchanges. It holds favor, secrets, relics and
+   advisers between any pair of its participants, disclosures, the Grand
+   Scepter's Citizenship offer ("In Negotiation"), and non-binding
+   promises. **When Negotiating** powers apply as in the Negotiate action:
+   The Tribunal opens binding promises (ruling 11), Deed Writer opens site
+   terms, and Council Arbiter and Festival District add nothing, since
+   every pair may already trade advisers. The power-use blockers apply
+   (rulings 24 to 26).
+
+   **Reach widens a Gathering deal.** A player who opens a deal may also
+   name a player whose pawn is elsewhere, when Traveling Negotiator, The
+   Tribunal or Bandit Tribunal lets the opener reach them (rulings 7 to
+   9). Only players at the site open deals, pass and unpass; a named
+   remote player takes part in that deal and may decline it.
 6. **Secrets come from the player's supply.** A banner's secrets are never
    exchanged.
 
@@ -168,14 +181,14 @@ Taken with the owner on 2026-11-10.
   a promise as plain text, never as markup.
 - **`DealRules`**, built when a deal opens, is the one place that says who
   may put what into it. It opens in slice 3, its first per-pair reader.
+  Disclosures and the Citizenship offer hold in every deal (rulings 5 and
+  22), so `DealRules` carries no flag for them.
   Until then the author's bounds carry the binding-promise flag
   (`NegotiationBounds.bindingPromises`), which `DealRules` sets from slice 3
   on. The `prefix` opens in slice 5. It holds:
   - `participants`;
   - `kinds(author, recipient): Set[TermKind]`, with `TermKind` one of
     `Favor`, `Relic`, `Secret`, `Adviser` and `Site`;
-  - `disclosures` and `citizenship`, on for Negotiate and Whispering Stone
-    and off for the Gathering;
   - `bindingPromises` (ruling 11) and `privateDeal` (ruling 23);
   - `prefix`, the deal's decision-id prefix.
 - **Bounds.** `NegotiationBounds` gains the author's secrets, their
@@ -354,13 +367,20 @@ Arbiter) widening the private deal.
   no. A yes moves the pawn with no Travel window.
 - **The loop.** A `Repeat` runs while the Gathering is not ended. Each pass
   asks one decision, `gathering.<n>.open`, co-owned by every player at the
-  site. Its answers are **Negotiate** with chosen players from the site,
-  **Pass** and **Unpass**. A Negotiate answer runs one deal subtree with
-  prefix `gathering.<n>` and the Gathering's `DealRules`: all four printed
-  kinds between any pair, non-binding promises, no disclosures, no
-  Citizenship, no **When Negotiating** window.
+  site. Its answers are **Negotiate** with chosen players, **Pass** and
+  **Unpass**. The opener may choose players at the site, and players
+  elsewhere whom `NegotiationReach` lets the opener reach (ruling 5). A
+  Negotiate answer runs one deal subtree with prefix `gathering.<n>` and
+  the Gathering's `DealRules`: all four printed kinds between any pair,
+  site terms under Deed Writer, disclosures, the Citizenship offer,
+  non-binding promises, and binding promises when a participant may use
+  The Tribunal (ruling 5). The reach and the Tribunal's and Deed Writer's
+  users are read when the deal opens, under the walk's power-use
+  restrictions, and stored with the deal's answers so a rebuild reads
+  them back.
 - **Passing during a deal.** The deal's decision is co-owned by every
-  player at the site. A non-participant may answer only Pass or Unpass,
+  player at the site and every named remote participant. Only players at
+  the site may pass or unpass. A non-participant may answer only Pass or Unpass,
   which the deal fold ignores and the pass fold counts.
 - **Ending.** Passes are folded from the answers. The loop ends when every
   player at the site has passed and no deal is open. With fewer than two
@@ -373,8 +393,10 @@ Arbiter) widening the private deal.
 Tests: the pawn question in Chancellor order, and from the first player
 with no Chancellor; a moved pawn opening no Travel window; two deals in one
 Gathering kept apart by prefix; a pass, an unpass and a passed player named
-in a deal; the end once all pass; a secret and an adviser exchanged; no
-disclosure or Citizenship input; a lone player skipping the loop.
+in a deal; the end once all pass; a secret and an adviser exchanged; a
+disclosure and a Citizenship offer settled; a binding promise opened by
+The Tribunal; a remote player named through Traveling Negotiator, and
+refused without it; a lone player skipping the loop.
 
 ## Seams opened
 
@@ -383,9 +405,9 @@ disclosure or Citizenship input; a lone player skipping the loop.
 | Promise terms, `NoteArg.Promise`, `NegotiationBounds.bindingPromises` | 1 | every Negotiation, The Tribunal |
 | `DealRules` | 3 | slices 4 to 6 |
 | Per-deal decision prefix, `LogNote.readers` | 5 | Whispering Stone, The Gathering |
-| `NegotiationReach`, `NegotiationStartFacts` | 2 | Traveling Negotiator, The Tribunal, Bandit Tribunal; Whispering Stone's binding promises |
+| `NegotiationReach`, `NegotiationStartFacts` | 2 | Traveling Negotiator, The Tribunal, Bandit Tribunal; Whispering Stone's binding promises; The Gathering's reach and binding promises |
 | Adviser terms, `AdviserLimits` and the limit check | 3 | Council Arbiter, Festival District, The Gathering |
-| Site terms and the warband question | 4 | Deed Writer |
+| Site terms and the warband question | 4 | Deed Writer, The Gathering |
 | Private deal projection | 5 | Whispering Stone |
 | Deal loop inside card play, secret terms | 6 | The Gathering |
 
