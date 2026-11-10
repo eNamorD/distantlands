@@ -4,19 +4,21 @@ import distantlands.application._
 import distantlands.gameplay.actions.negotiation.{CouncilArbiterCard,
   DeedWriterCard, NegotiationDeal, NegotiationSites, TheTribunalCard}
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.powers.action.{WhisperingStone,
+  WhisperingStoneCard}
 import distantlands.gameplay.powers.economy.BirdsongCard
 import distantlands.model._
 import distantlands.model.DecisionAnswer.{AcceptDeal, ChooseAmountAnswer,
-  DeclineDeal, ProposeTerms}
+  ChooseManyAnswer, DeclineDeal, ProposeTerms}
 import distantlands.testkit.{MenuPlay, Situation, Table}
-import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Table.{p1, p2, p3}
 import LogScriptSupport.{atTable, tableWithOnePawnPerSite}
 import distantlands.testkit.Commands
 
 /** The Negotiation scripts: a deal declined, a deal agreed, a deal of one
   * promise, a binding promise through The Tribunal, a facedown adviser
-  * disclosed, a facedown adviser given, and a site given. Reached through
-  * `LogScripts`.
+  * disclosed, a facedown adviser given, a site given, and a private deal
+  * through Whispering Stone. Reached through `LogScripts`.
   */
 object NegotiationLogScripts:
   /** p1 and p2 share Ancient City, so p1 can negotiate with exactly one
@@ -121,3 +123,26 @@ object NegotiationLogScripts:
       .after(Commands.resolveWalker(actor, TreeDecision(
         NegotiationSites.warbandsDecisionId(peaks), ChooseAmountAnswer(2))))
     Script("negotiation-site-given", service, actor)
+
+  /** p1 uses Whispering Stone to negotiate in private with p3, whose pawn
+    * stands at Buried Giant, away from p1's. p1 gives p3 1 favor and makes
+    * a promise. p2, outside the deal and the script's other seat, reads
+    * the opening line and the transfer, never the promise (catalog batch
+    * 12, rulings 21 to 23). */
+  def negotiationWhispered(using munit.Location): Script =
+    val stone = WhisperingStoneCard.id
+    val (service, act) = atTable("negotiation-whispered",
+      tableWithOnePawnPerSite.relic(p1, stone).secrets(p1, faceUp = 1)
+        .banditsRefilled)
+    act
+      .parkedAfter(MenuPlay.start(p1, ActionRef.UsePower(WhisperingStone.id),
+        Vector(DecisionOptionRef.Relic(stone))))
+      .parkedAfter(Commands.resolveWalker(p1, TreeDecision(
+        NegotiationDeal.negotiatorsDecisionId, ChooseManyAnswer(Vector(
+          DecisionOptionRef.Player(p3))))))
+      .parkedAfter(deal(p1, ProposeTerms(NegotiationTerms(Vector(
+        NegotiationTransfer(p3, 1, Vector.empty)),
+        promises = Vector("I will not attack you this round.")))))
+      .parkedAfter(deal(p3, AcceptDeal))
+      .after(deal(p1, AcceptDeal))
+    Script("negotiation-whispered", service, p1)

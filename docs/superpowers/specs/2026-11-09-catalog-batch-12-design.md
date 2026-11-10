@@ -1,6 +1,6 @@
 # Catalog Batch 12: Negotiation
 
-**Status:** designed 2026-11-09. Slices 1 to 4 landed.
+**Status:** designed 2026-11-09. Slices 1 to 5 landed.
 
 **Builds on** [Catalog batch 11](2026-11-07-catalog-batch-11-design.md),
 [batch 10](2026-11-03-catalog-batch-10-design.md) and
