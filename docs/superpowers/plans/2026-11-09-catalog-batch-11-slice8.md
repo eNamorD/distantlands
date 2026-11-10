@@ -68,6 +68,7 @@ section "Slice 8: Nested follow-ups". Read "Slice 7" too, and the
    finds no holder; Brass Army's follow-up buries the relic or flips a
    secret and moves no pawn (`travel/BrassArmyMoves.scala:52-62`). So all
    triggers answer nested batches; the depth cap only stops a broken one.
+   (Overturned while executing: nesting is opt-in. See Execution changes.)
 6. **Pledge to Discord answers any batch.** Its `onExecuted` does not read
    `batch.executed`. With nesting it may now ask inside another trigger's
    follow-up rather than after it. Its outer ask then finds nothing
@@ -718,9 +719,39 @@ git commit -m "docs(catalog): close catalog batch 11 slice 8, nested follow-ups"
   -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ```
 
+## Execution changes
+
+Decided while executing, the first with the owner:
+
+- **Nesting is opt-in.** With every trigger answering nested batches, the
+  claim restarted itself (its claimant's discard of the claimed Vision, or
+  a swap of two claimed Visions, is a discard while its warband is still
+  on the card), and Pledge to Discord, which answers every batch, could
+  park inside any follow-up where a resume rebuilds a different tree.
+  `ExecutedTrigger.answersFollowUps` (default false) selects the triggers
+  a follow-up's batch asks; only False Prophet's claim turns it on.
+  `ExecutedTriggers.of` takes the depth.
+- **The claim skips its own discards:** one from a discard pile, and one
+  from the slot of a player whose warband is still on the Vision. So a
+  walk never plays one Vision twice, which the walk-wide placement
+  answers could not tell apart.
+- **The narrowing search starts at depth 0.** It walks again from the
+  root and re-enters each level by its path, so its context resets
+  `followUps` and `triggersOff` (`DecideNarrowing.verdict`).
+- **Test triggers read the batch, not the state,** so a resume rebuilds
+  them after their own follow-up has run.
+- **Log order:** a nested claim's lines read before the outer claimant's
+  reveal line, since a play's own line follows the follow-ups walked
+  under its batch (slice 7, finding 9).
+
 ## Known limits
 
 - **The owner's reveal line still comes last** (slice 7, finding 9): the
   walk writes the play's own line after its follow-ups.
 - **A chain deeper than 8 levels stops the walk.** No card's chain comes
   near it; a trigger that hits it is a bug in that trigger.
+- **Only False Prophet's claim answers a follow-up's batches.** Brass Army
+  and Pledge to Discord still answer the action's own batches alone.
+- **The claimant's discard of their own Vision names no one.** The
+  generic "Discarded Vision of Sanctuary to the Provinces discard" line
+  does not say whose it was when the claimant is off turn.

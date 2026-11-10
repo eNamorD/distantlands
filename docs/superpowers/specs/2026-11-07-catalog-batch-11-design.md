@@ -1,6 +1,6 @@
 # Catalog Batch 11: The Engine-Wide Seams
 
-**Status:** designed 2026-11-07. Slices 0 to 7 landed.
+**Status:** designed 2026-11-07. Slices 0 to 8 landed.
 
 **Builds on** [Catalog batch 10](2026-11-03-catalog-batch-10-design.md),
 [batch 9](2026-11-02-catalog-batch-9-design.md) and
@@ -593,13 +593,21 @@ not tell the two levels apart.
   `walker.executed-triggers`; depth n uses `walker.executed-triggers.n`.
   The walk counts the follow-ups it is inside, and the take, the resume
   check and the rebuild each read their own level's key.
-- **Every trigger answers nested batches.** A follow-up's batch asks the
-  triggers like any other batch, so a Vision discarded inside False
-  Prophet's claim is claimed in its turn. Stopping is each trigger's job:
-  each card's follow-up removes what started it (the claim kills its
-  warbands, Pledge to Discord buries itself, Brass Army moves no pawn).
-  The walker refuses a chain deeper than 8 levels as a contract
-  violation, so a trigger that restarts itself fails loudly.
+- **A trigger opts in to nested batches** (owner ruling at execution).
+  A follow-up's batch asks only the triggers that answer follow-ups
+  (`ExecutedTrigger.answersFollowUps`); False Prophet's claim is the only
+  one. Brass Army and Pledge to Discord keep answering the action's own
+  batches alone: Pledge answers every batch, and inside a follow-up it
+  could park where a resume rebuilds a different tree. The walker
+  refuses a chain deeper than 8 levels as a contract violation.
+- **The claim does not restart itself.** Its kills come after every
+  question, so while it runs the claimant's warband is still on the
+  Vision. Two discards it makes start no claim: one from a discard pile
+  (the claimant discards the claimed Vision), and one from the slot of a
+  player whose warband is on it (the claimant swaps it out again). Its
+  other claimants get nothing, as ruling 32 gives them, and the kills
+  follow. So one walk never plays the same Vision twice, which the
+  walk-wide placement answers could not tell apart.
 - **What stays.** A claimed burn or cost that runs whole, and the take of
   a held batch, start no follow-up, since a resume cannot reach one there.
 - **The look-ahead reads every level.** The restriction look-ahead folds
@@ -607,9 +615,10 @@ not tell the two levels apart.
   a nested claimant's reveal is judged for them too.
 
 Tests: a nested follow-up parking and resuming, at the right addresses,
-with each level's key; a parked decision two levels down resolving; the
-depth cap; False Prophet's nested claim resolved, judged by Sacred Ground
-for the nested claimant, and its log lines in order.
+with each level's key; a trigger that does not opt in ignoring a
+follow-up's batch; a parked decision two levels down resolving; the depth
+cap; False Prophet's nested claim resolved, judged by Sacred Ground for
+the nested claimant, and its log lines in order.
 
 ## Seams opened
 

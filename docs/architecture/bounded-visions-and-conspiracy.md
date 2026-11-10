@@ -98,4 +98,8 @@ discarded it, and every claimant's warband is killed
 (`FalseProphetClaim`, `denizen.false-prophet.claim`; catalog batch 11,
 slice 7). The play's hook names the claimant, so the rules above judge the
 reveal for them. The play runs in an executed trigger's follow-up, and the
-restriction look-ahead reads that follow-up beside the action's tree.
+restriction look-ahead reads that follow-up beside the action's tree. A
+claimant's reveal discards their own revealed Vision inside that
+follow-up; when another player claims it, its claim resolves one level
+down before the outer kills. The claim is the one trigger that answers a
+follow-up's batches (`answersFollowUps`; slice 8).
