@@ -66,6 +66,7 @@ type FavorBankState = protocol.projection.FavorBankProjection
 val FavorBankState = protocol.projection.FavorBankProjection
 type NegotiationTransferState = protocol.projection.NegotiationTransferProjection
 val NegotiationTransferState = protocol.projection.NegotiationTransferProjection
+type NegotiationSiteState = protocol.projection.NegotiationSiteProjection
 type NegotiationDisclosureState = protocol.projection.NegotiationDisclosureProjection
 val NegotiationDisclosureState = protocol.projection.NegotiationDisclosureProjection
 type NegotiationSiteRelicState = protocol.projection.NegotiationSiteRelicProjection

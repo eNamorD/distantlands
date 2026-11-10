@@ -7,7 +7,8 @@ import distantlands.protocol.projection._
   *
   * Everyone sees what a non-author participant sees: who is in the deal, who
   * has accepted, favor amounts, relic and adviser counts and the details of
-  * faceup relics and advisers, and the kind and recipient of each disclosure. Only an author sees the
+  * faceup relics and advisers, the sites on offer, and the kind and
+  * recipient of each disclosure. Only an author sees the
   * identity of a facedown relic they offer or of information they promise.
   * Only a participant gets the editing inputs, and never another player's.
   * Everyone reads every promise.
@@ -37,7 +38,9 @@ private[application] final class NegotiationDealProjector(
         }
         NegotiationTransferProjection(author.value, transfer.recipient.value,
           transfer.favor, transfer.relics.size, relicDetails,
-          transfer.advisers.size, advisers)
+          transfer.advisers.size, advisers,
+          transfer.sites.map(site => NegotiationSiteProjection(site.value,
+            presentation.siteLabel(site))))
       }
     }
     val disclosures = query.participants.flatMap { author =>
@@ -96,4 +99,8 @@ private[application] final class NegotiationDealProjector(
         presentation.cardDetails(adviser.id,
           Some(presentation.adviserOrientation(adviser)), hidden = false)),
       adviserRecipients = own.adviserRecipients.map(_.value),
-      overAdviserLimit = query.overAdviserLimit.map(_.value))
+      overAdviserLimit = query.overAdviserLimit.map(_.value),
+      giftableSites = own.sites.map(site => NegotiationSiteProjection(
+        site.value, presentation.siteLabel(site))),
+      siteRecipients = own.siteRecipients.map(_.value),
+      shortOfWarbands = query.shortOfWarbands.map(_.value))
