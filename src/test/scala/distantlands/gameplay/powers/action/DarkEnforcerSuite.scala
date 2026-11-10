@@ -1,5 +1,6 @@
 package distantlands.gameplay.powers.action
 
+import distantlands.gameplay.actions.negotiation.FestivalDistrictCard
 import distantlands.gameplay.cards.AncientCitySite
 import distantlands.gameplay.operations.HallOfMinistersCard
 import distantlands.gameplay.powers.NoteText
