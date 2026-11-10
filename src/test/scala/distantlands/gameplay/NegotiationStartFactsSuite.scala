@@ -1,7 +1,11 @@
 package distantlands.gameplay
 
 import distantlands.gameplay.actions.negotiation.NegotiationStartFacts
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
+  BuriedGiantSite}
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
+import distantlands.testkit.Table
 import distantlands.testkit.Table.{p1, p2, p3}
 
 /** A Negotiation's start facts as the walker stores them. */
@@ -47,3 +51,12 @@ class NegotiationStartFactsSuite extends munit.FunSuite:
       Vector(p1, p3)), Vector(p3))
     assertEquals(facts.rules(Vector(p1, p2)).siteTraders,
       Vector.empty[PlayerId])
+
+  test("a private start's candidates are every other player, wherever " +
+      "their pawns stand"):
+    val ready = Table.start.pawn(p1, AncientCitySite)
+      .pawn(p2, BrokenPeaksSite).pawn(p3, BuriedGiantSite).ready
+    assertEquals(NegotiationStartFacts.at(catalog, ready, p1, Vector.empty,
+      privately = true).candidates, Vector(p2, p3))
+    assertEquals(NegotiationStartFacts.at(catalog, ready, p1, Vector.empty)
+      .candidates, Vector.empty)

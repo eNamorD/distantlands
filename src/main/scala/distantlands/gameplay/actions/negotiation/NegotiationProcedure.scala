@@ -26,6 +26,11 @@ import distantlands.model.DecisionAnswer.DeclineDeal
   * rebuild reads them back. The adviser limit is the powers' knowledge, so
   * the registry passes `AdviserLimit` to `build` and `rebuild`.
   *
+  * Whispering Stone queues a private one: its start argument is the
+  * private marker, its candidates are every other player, its negotiators
+  * question takes one, and its promise lines are read only by the
+  * participants.
+  *
   * Nothing about the deal is stored: the guard, the query and the settlement
   * all read `PendingTree.answered` (see [[NegotiationDeal]]).
   */
@@ -34,6 +39,10 @@ object NegotiationProcedure:
   /** "Negotiated with p2", or "Negotiated with p2 and p3". */
   val negotiated: NoteKey = notes.key("negotiated", Vector(
     NotePart.Text("Negotiated with "), NotePart.Arg(0)))
+  /** "Negotiated with p3, in private." (Whispering Stone, ruling 23). */
+  val negotiatedPrivately: NoteKey = notes.key("negotiated-private", Vector(
+    NotePart.Text("Negotiated with "), NotePart.Arg(0),
+    NotePart.Text(", in private.")))
   val ended: NoteKey = notes.key("ended", Vector(
     NotePart.Text("Negotiation ended by "), NotePart.Arg(0)))
   /** "p1 gave 1 favor to p2". */
@@ -81,50 +90,84 @@ object NegotiationProcedure:
     NotePart.Arg(1), NotePart.Text(": "), NotePart.Arg(2)))
   def noteKeys: Vector[NoteKey] = notes.declared
 
+  /** The one start argument of a private Negotiation, which only a
+    * power's queued `Run` passes (Whispering Stone, ruling 21). */
+  val privateArgs: Vector[DecisionOptionRef] =
+    Vector(DecisionOptionRef.Button("negotiation.private"))
+
+  /** Whether `actor`'s Negotiation walk is a power's private one: its
+    * entry is a sourced `Run` of the Negotiation carrying the private
+    * marker. A menu Negotiation has no entry. */
+  def queuedPrivately(state: ReadyGame, actor: PlayerId): Boolean =
+    state.game.current.walkerEntry.exists(entry =>
+      entry.procedure == ActionRef.Negotiation && entry.actor == actor &&
+        entry.source.nonEmpty && entry.kind == QueueKind.Run &&
+        entry.startArgs == privateArgs)
+
   /** A fresh start: the reach is read once, under the walk's power-use
-    * restrictions, and refused when it holds nobody. */
+    * restrictions, and refused when it holds nobody. A private start
+    * offers every other player. */
   def build(limits: AdviserLimits,
       restrictions: Vector[PowerUseRestriction])(
       catalog: ExecutableCatalog, state: ReadyGame, actor: PlayerId,
       args: Vector[DecisionOptionRef]): Either[OathViolation, Operation] =
     for
-      _ <- noStartArgs(args)
-      facts = NegotiationStartFacts.at(catalog, state, actor, restrictions)
+      privately <- marked(args)
+      _ <- Either.cond(!privately || queuedPrivately(state, actor), (),
+        refusedArgs(args))
+      facts = NegotiationStartFacts.at(catalog, state, actor, restrictions,
+        privately)
       _ <- Either.cond(facts.candidates.nonEmpty, (),
         OathViolation.NegotiationUnavailable(
           "no other player is at your site or within reach"))
-    yield tree(catalog, limits, actor, facts)
+    yield tree(catalog, limits, actor, facts, privately)
 
-  /** A resume rebuilds what the start built, from the facts it stored. */
+  /** A resume rebuilds what the start built, from the facts it stored and
+    * the start arguments. */
   def rebuild(limits: AdviserLimits)(catalog: ExecutableCatalog,
       state: ReadyGame, actor: PlayerId,
       args: Vector[DecisionOptionRef]): Either[OathViolation, Operation] =
     for
-      _ <- noStartArgs(args)
+      privately <- marked(args)
       facts <- NegotiationStartFacts.read(state.game.current.walkerStartFacts)
-    yield tree(catalog, limits, actor, facts)
+    yield tree(catalog, limits, actor, facts, privately)
 
-  /** What the start stores for every rebuild ([[NegotiationStartFacts]]). */
+  /** What the start stores for every rebuild ([[NegotiationStartFacts]]).
+    * The registry passes no start arguments here, so a private start is
+    * read from the walk's entry. */
   def startFacts(restrictions: Vector[PowerUseRestriction])(
       catalog: ExecutableCatalog, state: ReadyGame,
       actor: PlayerId): Vector[DecisionOptionRef] =
-    NegotiationStartFacts.at(catalog, state, actor, restrictions).refs
+    NegotiationStartFacts.at(catalog, state, actor, restrictions,
+      queuedPrivately(state, actor)).refs
 
-  private def noStartArgs(args: Vector[DecisionOptionRef])
-      : Either[OathViolation, Unit] = Either.cond(args.isEmpty, (),
+  /** What the start arguments say: none for a menu Negotiation, the
+    * private marker for a power's private one. */
+  private def marked(args: Vector[DecisionOptionRef])
+      : Either[OathViolation, Boolean] =
+    if args.isEmpty then Right(false)
+    else if args == privateArgs then Right(true)
+    else Left(refusedArgs(args))
+
+  private def refusedArgs(args: Vector[DecisionOptionRef]): OathViolation =
     OathViolation.InvalidEventOrder(
       s"walker procedure ${ActionRef.Negotiation.key} takes no start " +
-        s"selection, got ${args.map(_.kind).mkString(", ")}"))
+        "selection but a power's private marker, got " +
+        args.map(_.kind).mkString(", "))
 
   private def tree(catalog: ExecutableCatalog, limits: AdviserLimits,
-      actor: PlayerId, facts: NegotiationStartFacts): Operation =
+      actor: PlayerId, facts: NegotiationStartFacts,
+      privately: Boolean): Operation =
     val candidates = facts.candidates
     val choose: Vector[Operation] =
       if candidates.size < 2 then Vector.empty
       else Vector(Decide(NegotiationDeal.negotiatorsDecisionId, actor,
-        DecisionQuery.ChooseMany(1, candidates.size, candidates.map(id =>
-          DecisionOption.Player(DecisionOptionRef.Player(id))),
-          heading = Some("Choose who to negotiate with"),
+        DecisionQuery.ChooseMany(1, if privately then 1 else candidates.size,
+          candidates.map(id =>
+            DecisionOption.Player(DecisionOptionRef.Player(id))),
+          heading = Some(if privately then
+            "Choose who to negotiate with in private"
+            else "Choose who to negotiate with"),
           confirm = Some(CountedConfirm("Negotiate with", "player",
             "players"))),
         window = Some(PowerWindow.NegotiationEligibility)))
@@ -135,7 +178,8 @@ object NegotiationProcedure:
           val deal = NegotiationDeal.deal(ready, actor, candidates, pending)
           Vector(Decide(NegotiationDeal.dealDecisionId, actor,
             NegotiationDeal.snapshot(catalog, ready, deal,
-              facts.rules(deal.participants), limits),
+              facts.rules(deal.participants).copy(privateDeal = privately),
+              limits),
             coOwners = deal.participants.filter(_ != actor)))
         })),
       Branch((ready, pending) => {
@@ -146,7 +190,8 @@ object NegotiationProcedure:
         val opening: Vector[Operation] = Vector(
           Note(ProcedureNotes.id(ActionRef.Negotiation),
             if deal.declined then endedNote
-            else _ => Some(negotiated.sourceless(NoteArg.Players(
+            else _ => Some((if privately then negotiatedPrivately
+              else negotiated).sourceless(NoteArg.Players(
               NegotiationDeal.chosen(candidates, pending))))))
         // The settlement's lines, in the order `settle` applies them:
         // disclosures first, then transfers, then each given site's
@@ -185,11 +230,15 @@ object NegotiationProcedure:
             Note(ProcedureNotes.id(ActionRef.Negotiation),
               becameNote(_, citizen))))
         // Each promise's line, last: the deal's pieces have all moved and
-        // its roles changed by now. The engine enforces none of them.
+        // its roles changed by now. The engine enforces none of them. In
+        // private, only the participants read them (ruling 23); every
+        // other line of the settlement is public (rulings 23 and 30).
         val promises: Vector[Operation] =
           if !deal.agreed then Vector.empty
           else promisedLines(deal).map(note =>
-            Note(ProcedureNotes.id(ActionRef.Negotiation), _ => Some(note)))
+            val read = if privately then note.readBy(deal.participants)
+              else note
+            Note(ProcedureNotes.id(ActionRef.Negotiation), _ => Some(read)))
         opening ++ settlement ++ placements ++ citizenship ++ promises
       })))
 

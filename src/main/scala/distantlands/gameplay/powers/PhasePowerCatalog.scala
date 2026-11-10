@@ -4,7 +4,7 @@ import distantlands.gameplay.powerresolver.{PhasePower, PhasePowers}
 import distantlands.gameplay.powers.action.{DiceAndRelicDrawPowers, Elders,
   GrandScepterAction, ImperialSeal, MagicWaterskin, MovementPowers,
   OtherActionPowers, SelfActionPowers, StonePortal, TargetPowers, WaysideInn,
-  WorldActionPowers}
+  WhisperingStone, WorldActionPowers}
 import distantlands.gameplay.powers.banner.BannerFacePowers
 import distantlands.gameplay.powers.cardplay.VowOfObedience
 import distantlands.gameplay.powers.economy.VowOfPoverty
@@ -25,7 +25,7 @@ object PhasePowerCatalog:
       Vector[PhasePower](WaysideInn, Elders, MagicWaterskin, MarbleFountains,
         GrandScepterAction, ImperialSeal,
         Quartermaster, StonePortal, SinkingPassages, HiddenPassages,
-        TrackerAction, TrackerWake) ++
+        TrackerAction, TrackerWake, WhisperingStone) ++
       DiceAndRelicDrawPowers.powers ++
       TargetPowers.all ++
       MovementPowers.all ++

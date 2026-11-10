@@ -101,7 +101,7 @@ object NegotiationDeal:
         deal.participants.filterNot(deal.accepted).toSet
       else Set.empty[PlayerId],
       heading = Some("Negotiation"), overAdviserLimit = over,
-      shortOfWarbands = short)
+      shortOfWarbands = short, privateDeal = rules.privateDeal)
 
   private def bounds(catalog: ExecutableCatalog, state: ReadyGame,
       author: PlayerId, deal: DealState,
