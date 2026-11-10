@@ -620,7 +620,11 @@ object DecisionQuery:
       heading: Option[String] = None,
       /** The participants the terms would leave over their adviser limit.
         * While it is not empty nobody may accept (ruling 17). */
-      overAdviserLimit: Vector[PlayerId] = Vector.empty) extends DecisionQuery
+      overAdviserLimit: Vector[PlayerId] = Vector.empty,
+      /** The recipients the terms would leave with too few warbands to rule
+        * every site they receive. While it is not empty nobody may accept
+        * (ruling 29). */
+      shortOfWarbands: Vector[PlayerId] = Vector.empty) extends DecisionQuery
 
   /** Look at `cards`, in order, then press Done (catalog batch 2, N5). There
     * is no choice: the one answer is the choose-one answer of the `Done`

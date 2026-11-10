@@ -345,6 +345,7 @@ object DecisionQueries:
           terms.disclosures.map(_.recipient) ++ terms.citizenship
         val relics = terms.transfers.flatMap(_.relics)
         val advisers = terms.transfers.flatMap(_.advisers)
+        val sites = terms.transfers.flatMap(_.sites)
         for
           _ <- require(recipients.forall(own.recipients.contains), decisionId,
             "offers terms to a player outside the deal")
@@ -359,6 +360,11 @@ object DecisionQueries:
             terms.transfers.forall(transfer => transfer.advisers.isEmpty ||
               own.adviserRecipients.contains(transfer.recipient)),
             decisionId, "offers an adviser it cannot")
+          _ <- require(sites.distinct.size == sites.size &&
+            sites.forall(own.sites.contains) &&
+            terms.transfers.forall(transfer => transfer.sites.isEmpty ||
+              own.siteRecipients.contains(transfer.recipient)),
+            decisionId, "offers a site it cannot")
           _ <- require(terms.disclosures.map(_.information)
             .forall(own.disclosures.contains), decisionId,
             "promises a disclosure its author cannot make")

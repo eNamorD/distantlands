@@ -16,7 +16,9 @@ import distantlands.model.DecisionAnswer.DeclineDeal
   * Sequence(
   *   Decide(negotiators)                  -- omitted when there is one candidate
   *   Repeat(!closed) { Branch -> Decide(deal, co-owned) }
-  *   Branch(agreed -> BuildOps(settle), notes, Citizenship, promise notes))
+  *   Branch(agreed -> BuildOps(settle), BuildOps(site returns), notes,
+  *     per site: Branch -> Decide(warbands), BuildOps(place), note;
+  *     Citizenship, promise notes))
   * }}}
   *
   * The start reads the reach once, under the walk's power-use restrictions,
@@ -41,6 +43,16 @@ object NegotiationProcedure:
   val gaveCard: NoteKey = notes.key("gave-card", Vector(
     NotePart.Arg(0), NotePart.Text(" gave "), NotePart.Arg(1),
     NotePart.Text(" to "), NotePart.Arg(2)))
+  /** "p2 gave Broken Peaks to p1" (Deed Writer, catalog batch 12, ruling
+    * 18). */
+  val gaveSite: NoteKey = notes.key("gave-site", Vector(
+    NotePart.Arg(0), NotePart.Text(" gave "), NotePart.Arg(1),
+    NotePart.Text(" to "), NotePart.Arg(2)))
+  /** "p1 placed 2 warbands at Broken Peaks" (ruling 20). */
+  val placedWarbands: NoteKey = notes.key("placed-warbands", Vector(
+    NotePart.Arg(0), NotePart.Text(" placed "), NotePart.Arg(1),
+    NotePart.Text(" "), NotePart.Plural(1, "warband", "warbands"),
+    NotePart.Text(" at "), NotePart.Arg(2)))
   /** "p2 showed p1 Birdsong". */
   val showed: NoteKey = notes.key("showed", Vector(
     NotePart.Arg(0), NotePart.Text(" showed "), NotePart.Arg(1),
@@ -137,7 +149,8 @@ object NegotiationProcedure:
             else _ => Some(negotiated.sourceless(NoteArg.Players(
               NegotiationDeal.chosen(candidates, pending))))))
         // The settlement's lines, in the order `settle` applies them:
-        // disclosures first, then transfers. A refused settlement fails the
+        // disclosures first, then transfers, then each given site's
+        // warbands home. A refused settlement fails the
         // command, so nothing is journaled and no note is reached.
         //
         // They state the agreement rather than the journal: the deleted
@@ -145,12 +158,23 @@ object NegotiationProcedure:
         // same `DealState` the settling node is. No power contributes at
         // `NegotiationSettlement`; a first one that removed an operation
         // would leave its line standing, so it must not.
+        val returns: Vector[Operation] =
+          Option.when(NegotiationSites.moves(deal).nonEmpty)(
+            // Required: a refused return fails the settlement rather than
+            // leaving two kinds of warband at a site (ruling 20).
+            BuildOps((state, _) => Right(NegotiationSites.returns(state,
+              deal)), required = true)).toVector
         val settlement: Vector[Operation] =
           if !deal.agreed then Vector.empty
-          else BuildOps((state, _) => NegotiationDeal.settle(state, deal),
-            window = Some(PowerWindow.NegotiationSettlement)) +:
+          else (BuildOps((state, _) => NegotiationDeal.settle(state, deal),
+            window = Some(PowerWindow.NegotiationSettlement)) +: returns) ++
             (disclosed(deal) ++ transferred(deal) ++ offered(deal)).map(note =>
               Note(ProcedureNotes.id(ActionRef.Negotiation), _ => Some(note)))
+        // After every transfer, each new ruler places warbands at each site
+        // they received, in the order the sites moved (rulings 20, 29).
+        val placements: Vector[Operation] =
+          if !deal.agreed then Vector.empty
+          else NegotiationSites.moves(deal).flatMap(placing(catalog, deal, _))
         // Each Exile offered Citizenship becomes Imperial after the
         // transfers, in participant order; each may be asked their own
         // warband split (CR p. 34).
@@ -166,7 +190,7 @@ object NegotiationProcedure:
           if !deal.agreed then Vector.empty
           else promisedLines(deal).map(note =>
             Note(ProcedureNotes.id(ActionRef.Negotiation), _ => Some(note)))
-        opening ++ settlement ++ citizenship ++ promises
+        opening ++ settlement ++ placements ++ citizenship ++ promises
       })))
 
   private def endedNote(states: NoteStates): Option[LogNote] =
@@ -192,7 +216,7 @@ object NegotiationProcedure:
           NoteArg.Site(site))
 
   /** One line per transfer, in `NegotiationDeal.transfers`' order: each
-    * author's favor, then relics, then advisers. A facedown adviser reads as
+    * author's favor, then relics, then advisers, then sites. A facedown adviser reads as
     * its back to every player but the two who held it (`LogWords.seen`). */
   private def transferred(deal: DealState): Vector[LogNote] =
     deal.participants.flatMap(author =>
@@ -205,7 +229,32 @@ object NegotiationProcedure:
             NoteArg.Player(transfer.recipient))) ++
           transfer.advisers.map(card => gaveCard.sourceless(
             NoteArg.Player(author), NoteArg.Card(card),
+            NoteArg.Player(transfer.recipient))) ++
+          transfer.sites.map(site => gaveSite.sourceless(
+            NoteArg.Player(author), NoteArg.Site(site),
             NoteArg.Player(transfer.recipient)))))
+
+  /** `move`'s new ruler answers how many warbands to place, from 1 to
+    * `NegotiationSites.most`; the answer places them, a required move, and
+    * writes its line (ruling 20). The question sits in a `Branch` so its
+    * bound reads the board when it is asked. */
+  private def placing(catalog: ExecutableCatalog, deal: DealState,
+      move: SiteMove): Vector[Operation] =
+    val id = NegotiationSites.warbandsDecisionId(move.site)
+    val name = catalog.site(move.site).fold(move.site.value)(_.name)
+    Vector(
+      Branch((ready, pending) => Vector(Decide(id, move.recipient,
+        DecisionQuery.ChooseAmount(1, NegotiationSites.most(ready, deal,
+          move, pending.answered),
+          Some(s"Place how many warbands at $name?"), "Place")))),
+      BuildOps((ready, pending) => Right(NegotiationSites.placed(
+        pending.answered, move.site).flatMap(count =>
+        NegotiationSites.placement(ready, move, count)).toVector),
+        required = true),
+      Note(ProcedureNotes.id(ActionRef.Negotiation), states =>
+        NegotiationSites.placed(states.answered, move.site).map(count =>
+          placedWarbands.sourceless(NoteArg.Player(move.recipient),
+            NoteArg.Number(count), NoteArg.Site(move.site)))))
 
   /** The line for `citizen`'s new role, once the change has run. */
   private def becameNote(states: NoteStates, citizen: PlayerId)

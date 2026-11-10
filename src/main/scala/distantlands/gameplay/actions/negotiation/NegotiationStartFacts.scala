@@ -8,13 +8,15 @@ import distantlands.model._
   * `walkerStartFacts` (catalog batch 12, slices 2 and 3): the players the
   * actor may choose (`candidates`), and the players among the actor and
   * the candidates who may use The Tribunal (`tribunalUsers`), Council
-  * Arbiter (`arbiterUsers`) and Festival District (`festivalUsers`).
+  * Arbiter (`arbiterUsers`), Festival District (`festivalUsers`) and Deed
+  * Writer (`deedWriterUsers`).
   *
   * Each reads the walk's power-use restrictions, which a rebuild does not
   * carry, and each could change once the deal settles: Citizenship changes
   * a role, which Bandit Forest reads, and an adviser term can move Council
-  * Arbiter. So the start computes them, and every rebuild reads them back,
-  * as Travel reads its source.
+  * Arbiter. A site term moves no card, but Deed Writer is non-persistent,
+  * so its users are read under the restrictions too. So the start computes
+  * them, and every rebuild reads them back, as Travel reads its source.
   *
   * Stored as option refs: each candidate as a player, then for each user
   * list a `Button` holding its marker followed by its players.
@@ -22,11 +24,12 @@ import distantlands.model._
 final case class NegotiationStartFacts(candidates: Vector[PlayerId],
     tribunalUsers: Vector[PlayerId],
     arbiterUsers: Vector[PlayerId] = Vector.empty,
-    festivalUsers: Vector[PlayerId] = Vector.empty):
+    festivalUsers: Vector[PlayerId] = Vector.empty,
+    deedWriterUsers: Vector[PlayerId] = Vector.empty):
   def refs: Vector[DecisionOptionRef] =
     candidates.map(DecisionOptionRef.Player(_)) ++
       NegotiationStartFacts.Markers.zip(Vector(tribunalUsers, arbiterUsers,
-        festivalUsers)).flatMap((marker, users) =>
+        festivalUsers, deedWriterUsers)).flatMap((marker, users) =>
         DecisionOptionRef.Button(marker) +: users.map(DecisionOptionRef.Player(_)))
 
   /** Whether a deal among `participants` takes binding promises: one of
@@ -34,19 +37,22 @@ final case class NegotiationStartFacts(candidates: Vector[PlayerId],
   def bindingPromises(participants: Vector[PlayerId]): Boolean =
     participants.exists(tribunalUsers.contains)
 
-  /** What a deal among `participants` allows (rulings 11, 14 and 15). */
+  /** What a deal among `participants` allows (rulings 11, 14, 15 and
+    * 18). */
   def rules(participants: Vector[PlayerId]): DealRules =
     DealRules(arbiterUsers.filter(participants.contains),
       festivalUsers.exists(participants.contains),
-      bindingPromises(participants))
+      bindingPromises(participants),
+      siteTraders = deedWriterUsers.filter(participants.contains))
 
 object NegotiationStartFacts:
   /** The key of the `Button` ref before the Tribunal's users. */
   val Marker: String = "negotiation.tribunal-users"
   val ArbiterMarker: String = "negotiation.arbiter-users"
   val FestivalMarker: String = "negotiation.festival-users"
+  val DeedWriterMarker: String = "negotiation.deed-writer-users"
   private val Markers: Vector[String] =
-    Vector(Marker, ArbiterMarker, FestivalMarker)
+    Vector(Marker, ArbiterMarker, FestivalMarker, DeedWriterMarker)
 
   def at(catalog: ExecutableCatalog, ready: ReadyGame, actor: PlayerId,
       restrictions: Vector[PowerUseRestriction]): NegotiationStartFacts =
@@ -57,7 +63,8 @@ object NegotiationStartFacts:
       NegotiationReach.tribunalUsers(catalog, ready, players, restrictions),
       NegotiationAdvisers.arbiterUsers(catalog, ready, players, restrictions),
       NegotiationAdvisers.festivalUsers(catalog, ready, players,
-        restrictions))
+        restrictions),
+      NegotiationSites.deedWriterUsers(catalog, ready, players, restrictions))
 
   /** The facts `refs` store: every marker once, in order, with only
     * players around them. */
@@ -68,7 +75,7 @@ object NegotiationStartFacts:
         Right(Vector.empty))((done, part) =>
         done.flatMap(lists => players(part, refs).map(lists :+ _))))
       .map(lists => NegotiationStartFacts(lists(0), lists(1), lists(2),
-        lists(3)))
+        lists(3), lists(4)))
 
   /** `refs` cut at each marker in order, or `None` when one is missing. */
   private def sections(refs: Vector[DecisionOptionRef])
